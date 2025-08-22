@@ -58,6 +58,7 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
             'count' => 1000,
             'operator' => 'OR',
             'isApplied' => false,
+            'isExcluded' => false,
         ],
         [
             'value' => '0/AV/',
@@ -65,6 +66,7 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
             'count' => 600,
             'operator' => 'OR',
             'isApplied' => false,
+            'isExcluded' => false,
         ],
         [
             'value' => '0/Audio/',
@@ -72,6 +74,7 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
             'count' => 400,
             'operator' => 'OR',
             'isApplied' => false,
+            'isExcluded' => false,
         ],
         [
             'value' => '1/Book/BookPart/',
@@ -79,6 +82,7 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
             'count' => 300,
             'operator' => 'OR',
             'isApplied' => false,
+            'isExcluded' => false,
         ],
         [
             'value' => '1/Book/Section/',
@@ -86,6 +90,7 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
             'count' => 200,
             'operator' => 'OR',
             'isApplied' => false,
+            'isExcluded' => false,
         ],
         [
             'value' => '1/Audio/Spoken/',
@@ -93,6 +98,7 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
             'count' => 100,
             'operator' => 'OR',
             'isApplied' => false,
+            'isExcluded' => false,
         ],
         [
             'value' => '1/Audio/Music/',
@@ -100,6 +106,7 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
             'count' => 50,
             'operator' => 'OR',
             'isApplied' => false,
+            'isExcluded' => false,
         ],
     ];
 
@@ -115,6 +122,7 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
             'count' => 1000,
             'operator' => 'OR',
             'isApplied' => false,
+            'isExcluded' => false,
         ],
         [
             'value' => 'AV',
@@ -122,6 +130,7 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
             'count' => 600,
             'operator' => 'OR',
             'isApplied' => false,
+            'isExcluded' => false,
         ],
         [
             'value' => 'Audio',
@@ -129,6 +138,7 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
             'count' => 400,
             'operator' => 'OR',
             'isApplied' => false,
+            'isExcluded' => false,
         ],
     ];
 
@@ -510,6 +520,7 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
                 'href' => '',
                 'exclude' => '',
                 'children' => [],
+                'isExcluded' => false,
             ],
             [
                 'value' => '0/Audio/',
@@ -535,8 +546,10 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
                         'href' => '',
                         'exclude' => '',
                         'children' => [],
+                        'isExcluded' => false,
                     ],
                 ],
+                'isExcluded' => false,
             ],
         ];
         $options = $this->getMockOptions();
@@ -588,6 +601,7 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
                         'href' => '',
                         'exclude' => '',
                         'children' => [],
+                        'isExcluded' => false,
                     ],
                     [
                         'value' => '1/Audio/Music/',
@@ -601,8 +615,10 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
                         'href' => '',
                         'exclude' => '',
                         'children' => [],
+                        'isExcluded' => false,
                     ],
                 ],
+                'isExcluded' => false,
             ],
         ];
         $options = $this->getMockOptions();

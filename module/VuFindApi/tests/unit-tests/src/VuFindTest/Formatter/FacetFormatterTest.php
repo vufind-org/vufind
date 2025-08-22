@@ -63,6 +63,7 @@ class FacetFormatterTest extends \PHPUnit\Framework\TestCase
                         'count' => 100,
                         'operator' => 'AND',
                         'isApplied' => false,
+                        'isExcluded' => false,
                     ],
                     [
                         'value' => 'baz',
@@ -70,6 +71,7 @@ class FacetFormatterTest extends \PHPUnit\Framework\TestCase
                         'count' => 150,
                         'operator' => 'AND',
                         'isApplied' => true,
+                        'isExcluded' => false,
                     ],
                 ],
             ],
@@ -82,6 +84,7 @@ class FacetFormatterTest extends \PHPUnit\Framework\TestCase
                         'count' => 10,
                         'operator' => 'OR',
                         'isApplied' => false,
+                        'isExcluded' => false,
                     ],
                     [
                         'value' => 'val2',
@@ -89,6 +92,7 @@ class FacetFormatterTest extends \PHPUnit\Framework\TestCase
                         'count' => 15,
                         'operator' => 'OR',
                         'isApplied' => true,
+                        'isExcluded' => false,
                     ],
                     [
                         'value' => 'val3',
@@ -96,6 +100,7 @@ class FacetFormatterTest extends \PHPUnit\Framework\TestCase
                         'count' => 5,
                         'operator' => 'OR',
                         'isApplied' => true,
+                        'isExcluded' => false,
                     ],
                 ],
             ],
@@ -124,6 +129,7 @@ class FacetFormatterTest extends \PHPUnit\Framework\TestCase
                     'count' => 100,
                     'operator' => 'AND',
                     'isApplied' => false,
+                    'isExcluded' => false,
                 ],
                 [
                     'value' => '1/bar/cookie/',
@@ -131,6 +137,7 @@ class FacetFormatterTest extends \PHPUnit\Framework\TestCase
                     'count' => 150,
                     'operator' => 'AND',
                     'isApplied' => true,
+                    'isExcluded' => false,
                 ],
             ],
             'hierarchical_xyzzy' => [
@@ -140,6 +147,7 @@ class FacetFormatterTest extends \PHPUnit\Framework\TestCase
                     'count' => 10,
                     'operator' => 'OR',
                     'isApplied' => false,
+                    'isExcluded' => false,
                 ],
                 [
                     'value' => '1/val1/val2/',
@@ -147,6 +155,7 @@ class FacetFormatterTest extends \PHPUnit\Framework\TestCase
                     'count' => 15,
                     'operator' => 'OR',
                     'isApplied' => true,
+                    'isExcluded' => false,
                 ],
             ],
         ];
