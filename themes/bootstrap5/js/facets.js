@@ -326,7 +326,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
   }
 
   function toggleSelectedFacetStyle(elem) {
-    excluded = elem.classList.contains('exclude');
+    let excluded = elem.classList.contains('exclude');
     let facet;
     if (elem.classList.contains('facet')) {
       facet = elem;
