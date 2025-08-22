@@ -356,7 +356,7 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
      */
     protected function createExpiryDateTime(): \DateTimeImmutable
     {
-        return new \DateTimeImmutable(date('Y-m-d H:i:s', strtotime('now+1hour')));
+        return new \DateTimeImmutable(date(VUFIND_DATABASE_DATETIME_FORMAT, strtotime('now+1hour')));
     }
 
     /**
