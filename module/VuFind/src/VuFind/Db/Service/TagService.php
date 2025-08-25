@@ -29,10 +29,17 @@
 
 namespace VuFind\Db\Service;
 
-use Laminas\Db\Sql\Select;
+use Doctrine\ORM\Query\ResultSetMapping;
+use Laminas\Log\LoggerAwareInterface;
+use VuFind\Db\Entity\ResourceEntityInterface;
+use VuFind\Db\Entity\ResourceTagsEntityInterface;
 use VuFind\Db\Entity\TagsEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
+use VuFind\Db\Entity\UserResourceEntityInterface;
+use VuFind\Log\LoggerAwareTrait;
+
+use function count;
 
 /**
  * Database service for tags.
@@ -43,9 +50,11 @@ use VuFind\Db\Entity\UserListEntityInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class TagService extends AbstractDbService implements TagServiceInterface, \VuFind\Db\Table\DbTableAwareInterface
+class TagService extends AbstractDbService implements TagServiceInterface, DbServiceAwareInterface, LoggerAwareInterface
 {
-    use \VuFind\Db\Table\DbTableAwareTrait;
+    use DbServiceAwareTrait;
+    use Feature\ResourceSortTrait;
+    use LoggerAwareTrait;
 
     /**
      * Get statistics on use of tags.
@@ -57,7 +66,18 @@ class TagService extends AbstractDbService implements TagServiceInterface, \VuFi
      */
     public function getStatistics(bool $extended = false, bool $caseSensitiveTags = false): array
     {
-        return $this->getDbTable('ResourceTags')->getStatistics($extended, $caseSensitiveTags);
+        $dql = 'SELECT COUNT(DISTINCT(rt.user)) AS users, '
+            . 'COUNT(DISTINCT(rt.resource)) AS resources, '
+            . 'COUNT(rt.id) AS total '
+            . 'FROM ' . ResourceTagsEntityInterface::class . ' rt';
+        $query = $this->entityManager->createQuery($dql);
+        $stats = current($query->getResult());
+        $resourceTagsService = $this->getDbService(ResourceTagsServiceInterface::class);
+        if ($extended) {
+            $stats['unique'] = count($resourceTagsService->getUniqueTags(caseSensitive: $caseSensitiveTags));
+            $stats['anonymous'] = $resourceTagsService->getAnonymousCount();
+        }
+        return $stats;
     }
 
     /**
@@ -76,7 +96,9 @@ class TagService extends AbstractDbService implements TagServiceInterface, \VuFi
         int $limit = 100,
         bool $caseSensitive = false
     ): array {
-        return $this->getDbTable('Tags')->matchText($text, $sort, $limit, $caseSensitive);
+        $where = ['LOWER(t.tag) LIKE LOWER(:text)', 'rt.resource is NOT NULL '];
+        $parameters = ['text' => $text . '%'];
+        return $this->getTagListWithDoctrine($sort, $limit, $where, $parameters, $caseSensitive);
     }
 
     /**
@@ -91,14 +113,11 @@ class TagService extends AbstractDbService implements TagServiceInterface, \VuFi
      */
     public function getTagsByText(string $text, bool $caseSensitive = false): array
     {
-        $callback = function ($select) use ($text, $caseSensitive) {
-            if ($caseSensitive) {
-                $select->where->equalTo('tag', $text);
-            } else {
-                $select->where->literal('lower(tag) = lower(?)', [$text]);
-            }
-        };
-        return iterator_to_array($this->getDbTable('Tags')->select($callback));
+        $dql = 'SELECT t FROM ' . TagsEntityInterface::class . ' t '
+            . ($caseSensitive ? 'WHERE t.tag=:tag' : 'WHERE LOWER(t.tag) = LOWER(:tag)');
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters(['tag' => $text]);
+        return $query->getResult();
     }
 
     /**
@@ -113,6 +132,56 @@ class TagService extends AbstractDbService implements TagServiceInterface, \VuFi
     {
         $tags = $this->getTagsByText($text, $caseSensitive);
         return $tags[0] ?? null;
+    }
+
+    /**
+     * Get a list of tags based on a sort method ($sort) and a where clause.
+     *
+     * @param string $sort          Sort/search parameter
+     * @param int    $limit         Maximum number of tags (default = 100, < 1 = no limit)
+     * @param array  $where         Array of where clauses
+     * @param array  $parameters    Array of query parameters
+     * @param bool   $caseSensitive Should tags be retrieved case-sensitively?
+     *
+     * @return array Tag details.
+     */
+    protected function getTagListWithDoctrine(
+        string $sort = 'alphabetical',
+        int $limit = 100,
+        array $where = [],
+        array $parameters = [],
+        bool $caseSensitive = false
+    ) {
+        $tagClause = $caseSensitive ? 't.tag' : 'LOWER(t.tag)';
+        $dql = 'SELECT t.id as id, COUNT(DISTINCT(rt.resource)) as cnt, MAX(rt.posted) as posted, '
+            . $tagClause . ' AS tag '
+            . 'FROM ' . ResourceTagsEntityInterface::class . ' rt '
+            . 'JOIN rt.tag t ';
+        if (!empty($where)) {
+            $dql .= ' WHERE ' . implode(' AND ', $where) . ' ';
+        }
+
+        $dql .= 'GROUP BY t.id, t.tag ';
+        $dql .= match ($sort) {
+            'alphabetical' => 'ORDER BY lower(t.tag), cnt DESC ',
+            'popularity' => 'ORDER BY cnt DESC, lower(t.tag) ',
+            'recent' => 'ORDER BY posted DESC, cnt DESC, lower(t.tag) ',
+            default => '',
+        };
+
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $query->setMaxResults($limit);
+        $results = $query->getResult();
+
+        $tagList = [];
+        foreach ($results as $result) {
+            $tagList[] = [
+                'tag' => $result['tag'],
+                'cnt' => $result['cnt'],
+            ];
+        }
+        return $tagList;
     }
 
     /**
@@ -137,17 +206,107 @@ class TagService extends AbstractDbService implements TagServiceInterface, \VuFi
         bool $fuzzy = true,
         bool $caseSensitive = false
     ): array {
-        return iterator_to_array(
-            $this->getDbTable('Tags')->resourceSearch(
-                $q,
-                $source,
-                $sort,
-                $offset,
-                $limit,
-                $fuzzy,
-                $caseSensitive
-            )
-        );
+        $orderByDetails = empty($sort) ? [] : $this->getResourceOrderByClause($sort);
+        $dql = 'SELECT DISTINCT(r.id) AS resource, r';
+        if (!empty($orderByDetails['extraSelect'])) {
+            $dql .= ', ' . $orderByDetails['extraSelect'];
+        }
+        $dql .= ' FROM ' . TagsEntityInterface::class . ' t '
+            . 'JOIN ' . ResourceTagsEntityInterface::class . ' rt WITH t.id = rt.tag '
+            . 'JOIN ' . ResourceEntityInterface::class . ' r WITH r.id = rt.resource '
+            . 'WHERE rt.resource IS NOT NULL ';
+        $parameters = compact('q');
+        if ($fuzzy) {
+            $dql .= 'AND LOWER(t.tag) LIKE LOWER(:q) ';
+        } elseif (!$caseSensitive) {
+            $dql .= 'AND LOWER(t.tag) = LOWER(:q) ';
+        } else {
+            $dql .= 'AND t.tag = :q ';
+        }
+
+        if (!empty($source)) {
+            $dql .= 'AND r.source = :source';
+            $parameters['source'] = $source;
+        }
+
+        if (!empty($orderByDetails['orderByClause'])) {
+            $dql .= $orderByDetails['orderByClause'];
+        }
+
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        if ($offset > 0) {
+            $query->setFirstResult($offset);
+        }
+        if (null !== $limit) {
+            $query->setMaxResults($limit);
+        }
+        $results = $query->getResult();
+        return $results;
+    }
+
+    /**
+     * Support method for other getRecordTags*() methods to consolidate shared logic.
+     *
+     * @param string                       $id                Record ID to look up
+     * @param string                       $source            Source of record to look up
+     * @param int                          $limit             Max. number of tags to return (0 = no limit)
+     * @param UserEntityInterface|int|null $userOrId          ID of user to load tags from (null for all users)
+     * @param string                       $sort              Sort type ('count' or 'tag')
+     * @param UserEntityInterface|int|null $ownerOrId         ID of user to check for ownership
+     * @param array                        $extraWhereClauses Extra where clauses to apply to query
+     * @param array                        $extraParameters   Extra parameters to provide with query
+     * @param bool                         $caseSensitive     Should tags be treated case-sensitively?
+     *
+     * @return array
+     */
+    protected function getRecordTagsWithDoctrine(
+        string $id,
+        string $source = DEFAULT_SEARCH_BACKEND,
+        int $limit = 0,
+        UserEntityInterface|int|null $userOrId = null,
+        string $sort = 'count',
+        UserEntityInterface|int|null $ownerOrId = null,
+        array $extraWhereClauses = [],
+        array $extraParameters = [],
+        bool $caseSensitive = false
+    ): array {
+        $parameters = compact('id', 'source') + $extraParameters;
+        $tag = $caseSensitive ? 't.tag' : 'lower(t.tag)';
+        $fieldList = 't.id AS id, COUNT(DISTINCT(rt.user)) AS cnt, ' . $tag . ' AS tag';
+        // If we're looking for ownership, adjust query to include an "is_me" flag value indicating
+        // if the selected resource is tagged by the specified user.
+        if (!empty($ownerOrId)) {
+            $fieldList .= ', MAX(CASE WHEN rt.user = :userToCheck THEN 1 ELSE 0 END) AS is_me';
+            $parameters['userToCheck'] = $this->getDoctrineReference(UserEntityInterface::class, $ownerOrId);
+        }
+        $dql = 'SELECT ' . $fieldList . ' FROM ' . TagsEntityInterface::class . ' t '
+            . 'JOIN ' . ResourceTagsEntityInterface::class . ' rt WITH t.id = rt.tag '
+            . 'JOIN ' . ResourceEntityInterface::class . ' r WITH r.id = rt.resource '
+            . 'WHERE r.recordId = :id AND r.source = :source ';
+
+        foreach ($extraWhereClauses as $clause) {
+            $dql .= "AND $clause ";
+        }
+
+        if (null !== $userOrId) {
+            $dql .= 'AND rt.user = :user ';
+            $parameters['user'] = $this->getDoctrineReference(UserEntityInterface::class, $userOrId);
+        }
+
+        $dql .= 'GROUP BY t.id, t.tag ';
+        if ($sort == 'count') {
+            $dql .= 'ORDER BY cnt DESC, LOWER(t.tag) ';
+        } elseif ($sort == 'tag') {
+            $dql .= 'ORDER BY LOWER(t.tag) ';
+        }
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        if ($limit > 0) {
+            $query->setMaxResults($limit);
+        }
+        $results = $query->getResult();
+        return $results;
     }
 
     /**
@@ -161,11 +320,9 @@ class TagService extends AbstractDbService implements TagServiceInterface, \VuFi
      */
     public function getTagBrowseList(string $sort, int $limit, bool $caseSensitive = false): array
     {
-        $callback = function ($select) {
-            // Discard user list tags
-            $select->where->isNotNull('resource_tags.resource_id');
-        };
-        return $this->getDbTable('Tags')->getTagList($sort, $limit, $callback, $caseSensitive);
+        // Extra where clause is to discard user list tags:
+        return $this
+            ->getTagListWithDoctrine($sort, $limit, ['rt.resource is NOT NULL'], caseSensitive: $caseSensitive);
     }
 
     /**
@@ -192,12 +349,22 @@ class TagService extends AbstractDbService implements TagServiceInterface, \VuFi
         UserEntityInterface|int|null $ownerOrId = null,
         bool $caseSensitive = false
     ): array {
-        $listId = $listOrId instanceof UserListEntityInterface ? $listOrId->getId() : $listOrId;
-        $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
-        $userToCheck = $ownerOrId instanceof UserEntityInterface ? $ownerOrId->getId() : $ownerOrId;
-        return $this->getDbTable('Tags')
-            ->getForResource($id, $source, $limit, $listId, $userId, $sort, $userToCheck, $caseSensitive)
-            ->toArray();
+        $extraClauses = $extraParams = [];
+        if ($listOrId) {
+            $extraClauses[] = 'rt.list = :list';
+            $extraParams['list'] = $this->getDoctrineReference(UserListEntityInterface::class, $listOrId);
+        }
+        return $this->getRecordTagsWithDoctrine(
+            $id,
+            $source,
+            $limit,
+            $userOrId,
+            $sort,
+            $ownerOrId,
+            $extraClauses,
+            $extraParams,
+            $caseSensitive
+        );
     }
 
     /**
@@ -226,12 +393,24 @@ class TagService extends AbstractDbService implements TagServiceInterface, \VuFi
         UserEntityInterface|int|null $ownerOrId = null,
         bool $caseSensitive = false
     ): array {
-        $listId = $listOrId instanceof UserListEntityInterface ? $listOrId->getId() : $listOrId;
-        $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
-        $userToCheck = $ownerOrId instanceof UserEntityInterface ? $ownerOrId->getId() : $ownerOrId;
-        return $this->getDbTable('Tags')
-            ->getForResource($id, $source, $limit, $listId ?? true, $userId, $sort, $userToCheck, $caseSensitive)
-            ->toArray();
+        $extraClauses = $extraParams = [];
+        if ($listOrId) {
+            $extraClauses[] = 'rt.list = :list';
+            $extraParams['list'] = $this->getDoctrineReference(UserListEntityInterface::class, $listOrId);
+        } else {
+            $extraClauses[] = 'rt.list IS NOT NULL';
+        }
+        return $this->getRecordTagsWithDoctrine(
+            $id,
+            $source,
+            $limit,
+            $userOrId,
+            $sort,
+            $ownerOrId,
+            $extraClauses,
+            $extraParams,
+            $caseSensitive
+        );
     }
 
     /**
@@ -257,11 +436,58 @@ class TagService extends AbstractDbService implements TagServiceInterface, \VuFi
         UserEntityInterface|int|null $ownerOrId = null,
         bool $caseSensitive = false
     ): array {
-        $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
-        $userToCheck = $ownerOrId instanceof UserEntityInterface ? $ownerOrId->getId() : $ownerOrId;
-        return $this->getDbTable('Tags')
-            ->getForResource($id, $source, $limit, false, $userId, $sort, $userToCheck, $caseSensitive)
-            ->toArray();
+        return $this->getRecordTagsWithDoctrine(
+            $id,
+            $source,
+            $limit,
+            $userOrId,
+            $sort,
+            $ownerOrId,
+            ['rt.list IS NULL'],
+            [],
+            $caseSensitive
+        );
+    }
+
+    /**
+     * Merge source tag into target tag.
+     *
+     * @param TagsEntityInterface $target Target tag
+     * @param TagsEntityInterface $source Source tag
+     *
+     * @return void
+     */
+    public function mergeTags(TagsEntityInterface $target, TagsEntityInterface $source): void
+    {
+        // Don't merge a tag with itself!
+        if ($target->getId() === $source->getId()) {
+            return;
+        }
+
+        $result = $this->entityManager->getRepository(ResourceTagsEntityInterface::class)
+            ->findBy(['tag' => $source]);
+
+        foreach ($result as $current) {
+            // Move the link to the target ID:
+            $this->getDbService(ResourceTagsServiceInterface::class)->createLink(
+                $current->getResource(),
+                $target,
+                $current->getUser(),
+                $current->getUserList(),
+                $current->getPosted()
+            );
+
+            // Remove the duplicate link:
+            $this->entityManager->remove($current);
+        }
+        // Remove the source tag:
+        $this->entityManager->remove($source);
+        try {
+            $this->entityManager->flush();
+        } catch (\Exception $e) {
+            $this->logError('Clean up operation failed: ' . $e->getMessage());
+            throw $e;
+        }
     }
 
     /**
@@ -274,7 +500,17 @@ class TagService extends AbstractDbService implements TagServiceInterface, \VuFi
      */
     public function getDuplicateTags(bool $caseSensitive = false): array
     {
-        return $this->getDbTable('Tags')->getDuplicates($caseSensitive)->toArray();
+        $rsm = new ResultSetMapping();
+        $rsm->addScalarResult('tag', 'tag');
+        $rsm->addScalarResult('cnt', 'cnt');
+        $rsm->addScalarResult('id', 'id');
+        $sql = 'SELECT MIN(tag) AS tag, COUNT(tag) AS cnt, MIN(id) AS id '
+            . 'FROM tags t '
+            . 'GROUP BY ' . ($caseSensitive ? 't.tag ' : 'LOWER(t.tag) ')
+            . 'HAVING COUNT(tag) > 1';
+        $statement = $this->entityManager->createNativeQuery($sql, $rsm);
+        $results = $statement->getResult();
+        return $results;
     }
 
     /**
@@ -301,8 +537,32 @@ class TagService extends AbstractDbService implements TagServiceInterface, \VuFi
     ): array {
         $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
         $listId = $listOrId instanceof UserListEntityInterface ? $listOrId->getId() : $listOrId;
-        return $this->getDbTable('Tags')->getListTagsForUser($userId, $recordId, $listId, $source, $caseSensitive)
-            ->toArray();
+        $tag = $caseSensitive ? 't.tag' : 'lower(t.tag)';
+        $dql = 'SELECT MIN(t.id) AS id, ' . $tag . ' AS tag, COUNT(DISTINCT(rt.resource)) AS cnt '
+            . 'FROM ' . ResourceTagsEntityInterface::class . ' rt '
+            . 'JOIN rt.tag t '
+            . 'JOIN rt.resource r '
+            . 'JOIN ' . UserResourceEntityInterface::class . ' ur '
+            . 'WITH r.id = ur.resource '
+            . 'WHERE ur.user = :userId AND rt.user = :userId AND ur.list = rt.list ';
+        $parameters = compact('userId');
+        if (null !== $source) {
+            $dql .= 'AND r.source = :source ';
+            $parameters['source'] = $source;
+        }
+        if (null !== $recordId) {
+            $dql .= 'AND r.recordId = :recordId ';
+            $parameters['recordId'] = $recordId;
+        }
+        if (null !== $listId) {
+            $dql .= 'AND rt.list = :listId ';
+            $parameters['listId'] = $listId;
+        }
+        $dql .= 'GROUP BY t.tag ORDER BY LOWER(t.tag) ';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $results = $query->getResult();
+        return $results;
     }
 
     /**
@@ -320,8 +580,24 @@ class TagService extends AbstractDbService implements TagServiceInterface, \VuFi
         $caseSensitive = false
     ): array {
         $listId = $listOrId instanceof UserListEntityInterface ? $listOrId->getId() : $listOrId;
-        $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
-        return $this->getDbTable('Tags')->getForList($listId, $userId, $caseSensitive)->toArray();
+        $user = $this->getDoctrineReference(UserEntityInterface::class, $userOrId);
+        $tag = $caseSensitive ? 't.tag' : 'lower(t.tag)';
+
+        $dql = 'SELECT MIN(t.id) AS id, ' . $tag . ' AS tag '
+            . 'FROM ' . ResourceTagsEntityInterface::class . ' rt '
+            . 'JOIN rt.tag t '
+            . 'WHERE rt.list = :listId AND rt.resource IS NULL ';
+        $parameters  = compact('listId');
+        if ($user) {
+            $dql .= 'AND rt.user = :userId ';
+            $parameters['userId'] = $user;
+        }
+
+        $dql .= 'GROUP BY t.tag ORDER BY LOWER(t.tag) ';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $results = $query->getResult();
+        return $results;
     }
 
     /**
@@ -331,15 +607,11 @@ class TagService extends AbstractDbService implements TagServiceInterface, \VuFi
      */
     public function deleteOrphanedTags(): void
     {
-        $callback = function ($select) {
-            $subQuery = $this->getDbTable('ResourceTags')
-                ->getSql()
-                ->select()
-                ->quantifier(Select::QUANTIFIER_DISTINCT)
-                ->columns(['tag_id']);
-            $select->where->notIn('id', $subQuery);
-        };
-        $this->getDbTable('Tags')->delete($callback);
+        $dql = 'DELETE FROM ' . TagsEntityInterface::class . ' t '
+            . 'WHERE t NOT IN (SELECT IDENTITY(rt.tag) FROM '
+            . ResourceTagsEntityInterface::class . ' rt)';
+        $query = $this->entityManager->createQuery($dql);
+        $query->execute();
     }
 
     /**
@@ -351,7 +623,7 @@ class TagService extends AbstractDbService implements TagServiceInterface, \VuFi
      */
     public function getTagById(int $id): ?TagsEntityInterface
     {
-        return $this->getDbTable('Tags')->select(['id' => $id])->current();
+        return $this->entityManager->find(TagsEntityInterface::class, $id);
     }
 
     /**
@@ -361,6 +633,6 @@ class TagService extends AbstractDbService implements TagServiceInterface, \VuFi
      */
     public function createEntity(): TagsEntityInterface
     {
-        return $this->getDbTable('Tags')->createRow();
+        return $this->entityPluginManager->get(TagsEntityInterface::class);
     }
 }

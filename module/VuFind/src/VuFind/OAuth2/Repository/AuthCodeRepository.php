@@ -73,7 +73,7 @@ class AuthCodeRepository extends AbstractTokenRepository implements AuthCodeRepo
      *
      * @return AuthCodeEntityInterface
      */
-    public function getNewAuthCode()
+    public function getNewAuthCode(): AuthCodeEntityInterface
     {
         return $this->getNew();
     }
@@ -87,7 +87,7 @@ class AuthCodeRepository extends AbstractTokenRepository implements AuthCodeRepo
      *
      * @throws InvalidArgumentException
      */
-    public function persistNewAuthCode(AuthCodeEntityInterface $entity)
+    public function persistNewAuthCode(AuthCodeEntityInterface $entity): void
     {
         $this->persistNew($entity);
     }
@@ -99,7 +99,7 @@ class AuthCodeRepository extends AbstractTokenRepository implements AuthCodeRepo
      *
      * @return void
      */
-    public function revokeAuthCode($tokenId)
+    public function revokeAuthCode($tokenId): void
     {
         $this->revoke($tokenId);
     }
@@ -111,7 +111,7 @@ class AuthCodeRepository extends AbstractTokenRepository implements AuthCodeRepo
      *
      * @return bool Return true if this code has been revoked
      */
-    public function isAuthCodeRevoked($tokenId)
+    public function isAuthCodeRevoked($tokenId): bool
     {
         return $this->isRevoked($tokenId);
     }

@@ -1,6 +1,9 @@
 /* global VuFind, d3 */
 /* exported showVisualFacets*/
 
+/**
+ * Position and size a treemap node element.
+ */
 function position() {
   this.style("left", function leftStyle(d) { return d.parentlevel ? d.x + 3 + "px" : d.x + "px"; })
     .style("top", function topStyle(d) { return d.parentlevel ? d.y + 3 + "px" : d.y + "px"; })
@@ -8,6 +11,9 @@ function position() {
     .style("height", function heightStyle(d) { return d.parentlevel ? Math.max(0, d.dy - 4) + "px" : Math.max(0, d.dy - 1) + "px"; });
 }
 
+/**
+ * Set the visible text content of a treemap node.
+ */
 function settext() {
   this.text(function createText(d) {
     // Is this a top-level box?
@@ -33,6 +39,9 @@ function settext() {
   });
 }
 
+/**
+ * Set the screen reader text for a treemap node.
+ */
 function setscreenreader() {
   this.attr("class", "visually-hidden")
     .text(function createTextForScreenReader(d) {
@@ -44,6 +53,9 @@ function setscreenreader() {
     });
 }
 
+/**
+ * Set the title attribute of a treemap node.
+ */
 function settitle() {
   this.attr("title", function createTitle(d) {
     // Case 1: Top-level field
@@ -63,6 +75,10 @@ function settitle() {
   });
 }
 
+/**
+ * Display the visual facets as a treemap.
+ * @param {object} pivotdata The data object containing pivot facets to visualize.
+ */
 function showVisualFacets(pivotdata) {
   if (!d3.select("#visualResults").empty()) {
     $('#visualResults').html('');

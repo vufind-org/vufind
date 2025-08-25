@@ -1,6 +1,12 @@
 /*global VuFind, Chart */
 VuFind.register('explain', function explain() {
 
+  /**
+   * Determine the color for a bar chart based on a record's score as a percentage of the maximum score.
+   * @param {number} score The score of the record.
+   * @param {number} maxScore The maximum possible score.
+   * @returns {object} An object containing the border and fill colors.
+   */
   function _getBarChartColor(score, maxScore) {
     let percentage = 0;
     if (maxScore > 0) {
@@ -24,6 +30,10 @@ VuFind.register('explain', function explain() {
     };
   }
 
+  /**
+   * Set up and render a bar chart for each search result in a list.
+   * @param {HTMLElement} [container] The container to search for charts  (default = document).
+   */
   function _setupResultListChart(container = document) {
     container.querySelectorAll('.js-result-list-explain .bar-chart').forEach(function createResultListChart(barChart) {
       const maxScore = barChart.dataset.maxScore;
@@ -90,7 +100,9 @@ VuFind.register('explain', function explain() {
     });
   }
 
-
+  /**
+   * Set up and render the explain pie chart.
+   */
   function _setupExplainPieChart() {
     const pieChart = document.getElementById('js-explain-pie-chart');
     if (!pieChart) {
@@ -135,6 +147,9 @@ VuFind.register('explain', function explain() {
     });
   }
 
+  /**
+   * Set up and render the explain column chart.
+   */
   function _setupExplainColumnChart() {
     const columnChart = document.getElementById('js-explain-column-chart');
     if (!columnChart) {
@@ -204,10 +219,17 @@ VuFind.register('explain', function explain() {
     });
   }
 
+  /**
+   * Callback function for the 'results-init' event to set up charts in new search results.
+   * @param {object} [params] An object containing the container element (default = null).
+   */
   function _resultsInitCallback(params = null) {
     _setupResultListChart(params && params.container ? params.container : document);
   }
 
+  /**
+   * Initialize the module by setting up all charts.
+   */
   function init() {
     _setupExplainPieChart();
     _setupExplainColumnChart();
