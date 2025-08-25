@@ -1,7 +1,7 @@
 <!-- START of: finna - myresearch/helpers/record-author.phtml -->
 <?php
   $author = null;
-  $authors = $record->tryMethod('getNonPresenterAuthors', [], false);
+  $authors = $record->tryMethod('getPrimaryAuthorsExtended') ?? $record->tryMethod('getNonPresenterAuthors', [], false);
   if (!empty($authors[0])) {
     $author = $authors[0];
   } else {

@@ -67,7 +67,7 @@
           <?php if($this->driver->isCollection()): ?>
             <?=implode('<br>', array_map([$this, 'escapeHtml'], $this->driver->getSummary())); ?>
           <?php else: ?>
-            <?php $authors = $this->driver->tryMethod('getAuthorsWithRoles');
+            <?php $authors = $this->driver->tryMethod('getPrimaryAuthorsExtended') ?? $this->driver->tryMethod('getAuthorsWithRoles');
             if (!empty($authors)): ?>
               <div class="truncate-field" data-rows="1">
                 <?php foreach($authors as $index => $author): ?>
