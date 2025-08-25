@@ -47,6 +47,7 @@ class CollectionRecord extends \Finna\RecordDataFormatter\Specs\DefaultRecord
      * @var array
      */
     protected array $recordFieldOrder = [
+        'Contains collections',
         'Record Links',
         'child_records',
         'Genre',

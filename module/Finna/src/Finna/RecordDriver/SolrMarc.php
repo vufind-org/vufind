@@ -599,13 +599,18 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc implements \Laminas\Log\Log
     /**
      * Get an array of embedded component parts
      *
+     * @param boolean $onlyCollections Only get component parts that are collections
+     *
      * @return array Component parts
      */
-    public function getEmbeddedComponentParts()
+    public function getEmbeddedComponentParts($onlyCollections = false)
     {
         $componentParts = [];
         $partOrderCounter = 0;
         foreach ($this->getMarcReader()->getFields('979') as $field) {
+            if ($onlyCollections && $field['i2'] !== '1') {
+                continue;
+            }
             $partOrderCounter++;
             $partAuthors = [];
             $uniformTitle = '';
@@ -2032,6 +2037,16 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc implements \Laminas\Log\Log
             }
         }
         return '';
+    }
+
+    /**
+     * Get component parts that are collections
+     *
+     * @return array
+     */
+    public function getChildCollections(): array
+    {
+        return $this->getEmbeddedComponentParts(true);
     }
 
     /**

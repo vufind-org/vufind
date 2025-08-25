@@ -70,6 +70,7 @@ class DefaultRecord extends \VuFind\RecordDataFormatter\Specs\DefaultRecord
      * @var array
      */
     protected array $recordFieldOrder = [
+        'Contains collections',
         'Genre',
         'Age Limit',
         'Original Work',
@@ -586,6 +587,13 @@ class DefaultRecord extends \VuFind\RecordDataFormatter\Specs\DefaultRecord
                     'context' => [
                         'class' => 'recordContainerInformation',
                     ],
+                ],
+            ],
+            'Contains collections' => [
+                'getChildCollections',
+                'data-childCollections.phtml',
+                [
+                    'context' => ['class' => 'record-child-collections'],
                 ],
             ],
             'Content Description' => [

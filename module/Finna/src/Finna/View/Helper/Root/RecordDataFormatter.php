@@ -79,6 +79,7 @@ class RecordDataFormatter extends \VuFind\View\Helper\Root\RecordDataFormatter
             'child_records',
             'Capture Information',
             'Classification',
+            'Contains collections',
             'Copyright Notes',
             'Country of Producing Entity',
             'Creator Characteristics',
