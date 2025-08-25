@@ -83,7 +83,7 @@ class AccessTokenRepository extends AbstractTokenRepository implements AccessTok
         ClientEntityInterface $clientEntity,
         array $scopes,
         $userIdentifier = null
-    ) {
+    ): AccessTokenEntityInterface {
         $accessToken = $this->getNew();
         $accessToken->setClient($clientEntity);
         foreach ($scopes as $scope) {
@@ -102,7 +102,7 @@ class AccessTokenRepository extends AbstractTokenRepository implements AccessTok
      *
      * @throws InvalidArgumentException
      */
-    public function persistNewAccessToken(AccessTokenEntityInterface $entity)
+    public function persistNewAccessToken(AccessTokenEntityInterface $entity): void
     {
         $this->persistNew($entity);
     }
@@ -114,7 +114,7 @@ class AccessTokenRepository extends AbstractTokenRepository implements AccessTok
      *
      * @return void
      */
-    public function revokeAccessToken($tokenId)
+    public function revokeAccessToken($tokenId): void
     {
         $this->revoke($tokenId);
     }
@@ -126,7 +126,7 @@ class AccessTokenRepository extends AbstractTokenRepository implements AccessTok
      *
      * @return bool Return true if this token has been revoked
      */
-    public function isAccessTokenRevoked($tokenId)
+    public function isAccessTokenRevoked($tokenId): bool
     {
         return $this->isRevoked($tokenId);
     }

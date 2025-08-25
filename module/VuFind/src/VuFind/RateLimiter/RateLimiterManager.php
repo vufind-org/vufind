@@ -193,6 +193,16 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
                 . ', retry-after: ' . $result['retryAfter']
                 . ', limit: ' . $result['requestLimit']
             );
+            if (isset($turnstileLimit)) {
+                $this->verboseDebug(
+                    'Turnstile: '
+                    . ($turnstileLimit->isAccepted() ? 'Accepted' : 'Refused')
+                    . " by policy '$policyId'"
+                    . ', remaining: ' . $turnstileLimit->getRemainingTokens()
+                    . ', retry-after: ' . $turnstileLimit->getRetryAfter()->getTimestamp() - time()
+                    . ', limit: ' . $turnstileLimit->getLimit()
+                );
+            }
 
             // Add headers if configured:
             if ($this->config['Policies'][$policyId]['addHeaders'] ?? false) {

@@ -135,7 +135,7 @@ class AuthHashService extends AbstractDbService implements
         $subQueryBuilder->select('ah.id')
             ->from(AuthHashEntityInterface::class, 'ah')
             ->where('ah.created < :dateLimit')
-            ->setParameter('dateLimit', $dateLimit->format('Y-m-d H:i:s'));
+            ->setParameter('dateLimit', $dateLimit->format(VUFIND_DATABASE_DATETIME_FORMAT));
         if ($limit) {
             $subQueryBuilder->setMaxResults($limit);
         }

@@ -68,8 +68,8 @@ class AuthCodeEntity implements AuthCodeEntityInterface, \JsonSerializable
         foreach ($properties as $property) {
             $result[$property] = $this->{$property};
         }
-        $client = $this->getClient();
-        $result['clientIdentifier'] = $client ? $client->getIdentifier() : null;
+        // Only call getClient() if we know the client has been initialized to avoid trouble with its return type:
+        $result['clientIdentifier'] = isset($this->client) ? $this->getClient()->getIdentifier() : null;
 
         return $result;
     }
