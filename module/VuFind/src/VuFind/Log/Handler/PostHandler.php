@@ -104,15 +104,11 @@ class PostHandler extends AbstractProcessingHandler
             'timestamp' => $record->datetime,
             'priority' => $record->level->value,
             'priorityName' => $record->level->getName(),
-            'message' => $record->formatted,
+            'message' => is_array($record->formatted) ? $record->formatted[$this->verbosity] : $record->formatted,
             'extra' => $record->extra,
             'context' => $record->context,
             'channel' => $record->channel,
         ];
-
-        if (is_array($event['message'])) {
-            $event['message'] = $event['message'][$this->verbosity];
-        }
 
         $this->client->setUri($this->url);
         $this->client->setMethod('POST');

@@ -65,8 +65,8 @@ class SlackWebhookHandler extends MonologSlackWebhookHandler
      * Constructor
      *
      * @param string      $webhookUrl             Slack webhook URL
-     * @param string|null $channel                Slack channel (default: '#log')
-     * @param string|null $username               Username for messages (default: 'VuFind Log')
+     * @param string      $channel                Slack channel (default: '#log')
+     * @param string      $username               Username for messages (default: 'VuFind Log')
      * @param bool        $useAttachment          Whether to use attachment formatting
      * @param string|null $iconEmoji              Icon emoji for messages
      * @param bool        $useShortAttachment     Whether to use short attachment format
@@ -74,8 +74,8 @@ class SlackWebhookHandler extends MonologSlackWebhookHandler
      */
     public function __construct(
         string $webhookUrl,
-        protected ?string $channel = '#log',
-        protected ?string $username = 'VuFind Log',
+        protected string $channel = '#log',
+        protected string $username = 'VuFind Log',
         bool $useAttachment = true,
         ?string $iconEmoji = null,
         bool $useShortAttachment = false,

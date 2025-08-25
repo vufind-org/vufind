@@ -59,7 +59,7 @@ class Office365Handler extends PostHandler
      *
      * @throws \Exception
      */
-    public function __construct(protected string $url, protected Client $client, array $options = [])
+    public function __construct(string $url, Client $client, array $options = [])
     {
         $this->title = $options['title'] ?? 'VuFind Log';
         parent::__construct($url, $client);
