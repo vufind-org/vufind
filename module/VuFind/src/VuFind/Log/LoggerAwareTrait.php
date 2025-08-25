@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Extension of \Psr\Log\LoggerAwareTrait with some convenience methods.
+ * Implementation of PSR-3 \Psr\Log\LoggerAwareTrait with some additional convenience methods.
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use Psr\Log\LogLevel;
 use function get_class;
 
 /**
- * Extension of PSR-3 LoggerAwareTrait with some convenience methods.
+ * Implementation of PSR-3 \Psr\Log\LoggerAwareTrait with some additional convenience methods.
  * This trait provides methods to log messages, now utilizing a PSR-3 compatible logger.
  *
  * @category VuFind
