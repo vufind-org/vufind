@@ -105,7 +105,7 @@ class LoggerFactory implements FactoryInterface
         $error_types = $parts[1] ?? '';
         $filters = explode(',', $error_types);
 
-        $connection = $container->get('doctrine.connection.orm_default');
+        $connection = $container->get(\VuFind\Db\Connection::class);
         $baseDatabaseHandler = new \VuFind\Log\Handler\DatabaseHandler($connection, $table_name);
 
         $this->addHandlers($logger, $baseDatabaseHandler, $filters);

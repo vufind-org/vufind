@@ -69,14 +69,11 @@ trait VerbosityTrait
      */
     protected function applyVerbosity(array $record): array
     {
-        $vufindDetails = $record['context']['vufind_log_details'] ?? null;
-        // Apply verbosity filter directly if the detailed array exists
+        $vufindDetails = $record['context']['details'] ?? null;
         if (is_array($vufindDetails) && isset($vufindDetails[$this->verbosity])) {
             $record['message'] = $vufindDetails[$this->verbosity];
-            unset($record['context']['vufind_log_details']);
+            unset($record['context']['details']);
         }
-        // If message is not an array or verbosity level not found,
-        // the original $record['message'] will be used, which is good.
         return $record;
     }
 }
