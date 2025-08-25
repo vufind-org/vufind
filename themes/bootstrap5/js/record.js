@@ -187,7 +187,6 @@ function handleAjaxTabLinkClick(event){
 }
 
 function handleAjaxTabLinks() {
-  // Form submission
   document.querySelectorAll('a').forEach((a) => {
     const href = a.href;
     if (typeof href !== 'undefined' && href.match(/\/AjaxTab[/?]/)) {
@@ -205,8 +204,6 @@ function registerTabEvents(params) {
   recaptchaOnLoad(container);
 
   setUpCheckRequest(container);
-
-  handleAjaxTabLinks();
 }
 VuFind.listen('record-tab-init', registerTabEvents);
 
@@ -359,16 +356,16 @@ function applyRecordTabHash(scrollToTabs) {
 
   // Open tab in url hash
   if (initiallyActiveTab && (newTab.length <= 1 || newTab === '#tabnav')) {
-    initiallyActiveTab.dispatchEvent(new Event('click'));
+    initiallyActiveTab.click();
   } else if (newTab.length > 1 && '#' + activeTab !== newTab) {
     const tabLink = document.querySelector('.record-tabs .' + newTab.substring(1) + ' a');
     if (tabLink) {
-      tabLink.dispatchEvent(new Event('click'));
+      tabLink.click();
       if (typeof scrollToTabs === 'undefined' || false !== scrollToTabs) {
         $('html, body').animate({
           scrollTop: $('.record-tabs').offset().top
         }, 500);
-        tabLink.dispatchEvent(new Event('focus'));
+        tabLink.focus();
       }
     }
   }
@@ -387,11 +384,14 @@ function removeCheckRouteParam() {
 
 function recordDocReady() {
   removeCheckRouteParam();
+
+  handleAjaxTabLinks();
   document.querySelectorAll('.record-tabs .nav-tabs a')
     .forEach((tab) => tab.addEventListener('click', (event) => {
       const li = tab.parentNode;
-      // Don't change behavior of active tab.
+      // Do nothing if the tab is already active:
       if (tab.classList.contains('active')) {
+        event.preventDefault();
         return;
       }
       const tabId = li.dataset.tab;
