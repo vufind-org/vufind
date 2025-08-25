@@ -53,7 +53,7 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetFromRecord(): void
     {
-        [$similar, $expectedResult] = $this->configureTestTargetAndExpectations();
+        [$similar, $expectedResult] = $this->configureTestTargetAndExpectations(['rows' => 6]);
         $recordDriver = $this->getDriver();
         $this->assertSame($expectedResult, $similar->getFromRecord($recordDriver));
     }
@@ -84,7 +84,7 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
         $recordDriver = $this->getDriver();
         $results->expects($this->once())->method('getResults')
             ->willReturn([$recordDriver]);
-        [$similar, $expectedResult] = $this->configureTestTargetAndExpectations();
+        [$similar, $expectedResult] = $this->configureTestTargetAndExpectations(['rows' => 6]);
         $this->assertSame($expectedResult, $similar->getFromSearch($results));
     }
 
@@ -128,7 +128,7 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
         $results->expects($this->once())->method('getResults')
             ->willReturn([$recordDriver]);
         [$similar, $expectedResult]  = $this->configureTestTargetAndExpectations(
-            ['maxRecordsToExamine' => 0],
+            ['maxRecordsToExamine' => 0, 'rows' => 6],
             true
         );
         $this->assertSame(
@@ -148,16 +148,17 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
      * @return array
      */
     public function configureTestTargetAndExpectations(
-        $options = ['maxRecordsToExamine' => 1],
+        $options = [],
         $fetchFromSearchService = false
     ) {
+		$options = array_merge(['maxRecordsToExamine' => 1, 'rows' => 20], $options);
         $mockObjects = $this->getSimilarItems($options);
         $similar = $mockObjects['similar'];
         $search = $mockObjects['search'];
         $url = $mockObjects['url'];
         $router = $mockObjects['router'];
         $similar->setProviderId('foo_ProviderId');
-        $params = new ParamBag(['rows' => 20]);
+        $params = new ParamBag(['rows' => $options['rows']]);
         $retrieveParams = new ParamBag();
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
             ->disableOriginalConstructor()
