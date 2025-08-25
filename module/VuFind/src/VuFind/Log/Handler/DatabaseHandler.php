@@ -4,14 +4,11 @@ namespace VuFind\Log\Handler;
 use Monolog\Handler\AbstractProcessingHandler;
 use Monolog\LogRecord;
 use Monolog\Logger;
-use VuFind\Db\Service\DbServiceAwareInterface;
-use VuFind\Db\Service\DbServiceAwareTrait;
-use VuFind\Db\Table\LogEntry;
+use Doctrine\DBAL\Connection;
 
-class DatabaseHandler extends AbstractProcessingHandler implements DbServiceAwareInterface
+class DatabaseHandler extends AbstractProcessingHandler
 {
     use VerbosityTrait;
-    use DbServiceAwareTrait;
 
     /**
      * Column mapping for log data
@@ -26,7 +23,7 @@ class DatabaseHandler extends AbstractProcessingHandler implements DbServiceAwar
     /**
      * Constructor
      */
-    public function __construct(protected string $tableName) {}
+    public function __construct(protected Connection $connection, protected string $tableName) {}
 
     /**
      * Set column mapping
@@ -46,18 +43,8 @@ class DatabaseHandler extends AbstractProcessingHandler implements DbServiceAwar
         
         // Prepare data for database insertion
         $logData = $this->formatLogData($modifiedRecordData);
-        
-        try {
-            // Get the database table service
-            $table = $this->getDbService($this->tableName);
-            
-            // Insert log entry
-            $table->insert($logData);
-        } catch (\Exception $e) {
-            // Fallback to error_log if database write fails
-            error_log("DatabaseHandler failed to write log: " . $e->getMessage());
-            error_log("Original log message: " . $record->message);
-        }
+        $this->connection->insert($this->tableName, $logData);
+
     }
 
     /**
