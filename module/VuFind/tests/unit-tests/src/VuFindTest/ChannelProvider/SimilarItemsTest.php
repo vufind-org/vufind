@@ -151,7 +151,7 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
         $options = [],
         $fetchFromSearchService = false
     ) {
-		$options = array_merge(['maxRecordsToExamine' => 1, 'rows' => 20], $options);
+        $options = array_merge(['maxRecordsToExamine' => 1, 'rows' => 20], $options);
         $mockObjects = $this->getSimilarItems($options);
         $similar = $mockObjects['similar'];
         $search = $mockObjects['search'];

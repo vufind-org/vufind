@@ -117,7 +117,7 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
      */
     public function setOptions(array $options)
     {
-		$this->channelSize = $options['channelSize'] ?? 6;
+        $this->channelSize = $options['channelSize'] ?? 6;
         $this->fields = $options['fields']
             ?? ['topic_facet' => 'Topic', 'author_facet' => 'Author'];
         $this->maxFieldsToSuggest = $options['maxFieldsToSuggest'] ?? 2;
@@ -138,12 +138,12 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
             $params->addFacet($field, $desc);
         }
 
-		// Add pagination params
-		$request = new HttpRequest();
-		$params->setPage($request->getQuery('page', 1));
-		if ($limit = $request->getQuery('limit', false)) {
-			$params->setLimit($limit);
-		}
+        // Add pagination params
+        $request = new HttpRequest();
+        $params->setPage($request->getQuery('page', 1));
+        if ($limit = $request->getQuery('limit', false)) {
+            $params->setLimit($limit);
+        }
     }
 
     /**
@@ -298,16 +298,16 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
                 . $query . '&source=' . urlencode($params->getSearchClassId()),
         ];
 
-		// Add pagination
+        // Add pagination
         $pagedParams = $newResults->getParams();
-		$request = new HttpRequest();
-		if ($page = $request->getQuery('page', false)) {
-			$pagedParams->setPage($page);
-		}
-		if ($limit = $request->getQuery('limit', $this->channelSize)) {
-			$pagedParams->setLimit($limit);
-		}
-		$newResults->setParams($pagedParams);
+        $request = new HttpRequest();
+        if ($page = $request->getQuery('page', false)) {
+            $pagedParams->setPage($page);
+        }
+        if ($limit = $request->getQuery('limit', $this->channelSize)) {
+            $pagedParams->setLimit($limit);
+        }
+        $newResults->setParams($pagedParams);
 
         // Run the search and convert the results into a channel:
         $newResults->performAndProcessSearch();

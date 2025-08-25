@@ -32,7 +32,7 @@
   <?php
     $groupId = $channel['groupId'] ?? $channel['providerId'];
     $channelID = 'channel-' . md5(serialize($channel));
-		$channelRoot = current(explode('?', $this->serverUrl(true))) . '?' . (empty($queryParams) ? '' : $this->escapeHtmlAttr($queryParams . '&')) . 'layout=lightbox';
+        $channelRoot = $this->url('channels-home') . '?' . (empty($queryParams) ? '' : $this->escapeHtmlAttr($queryParams . '&')) . 'layout=lightbox';
   ?>
   <div class="channel">
     <div class="channel-title">
@@ -77,7 +77,7 @@
       id="<?=$channelID ?>"
       data-group="<?=$groupId ?>"
     >
-      <?php foreach ($channel['contents'] as $index => $item): ?>
+      <?php foreach ($channel['contents'] as $item): ?>
         <?php
           $url = empty($item['routeDetails'])
             ? $this->recordLinker()->getUrl("{$item['source']}|{$item['id']}")
@@ -110,7 +110,14 @@
     </ul>
 
     <div class="channel-bottom-menu">
-      <a class="channel-load-more-btn btn btn-default" href="<?=$channelRoot ?>&channelProvider=<?=urlencode($channel['providerId']) ?>&channelToken=<?=urlencode($channel['token']) ?>&page=1&limit=6"><?=$this->translate('channel_more_items') ?></a>
+      <?php $disabled = count($channel['contents']) < 6; ?>
+      <a
+        class="channel-load-more-btn btn btn-default<?=$disabled ? ' disabled' : ''?>"
+        href="<?=$channelRoot ?>&channelProvider=<?=urlencode($channel['providerId']) ?>&channelToken=<?=urlencode($channel['token']) ?>&page=1&limit=6"
+        <?=$disabled ? 'aria-disabled="true"' : ''?>
+      >
+        <?=$this->translate('channel_more_items') ?>
+      </a>
     </div>
   </div>
 <?php endforeach; ?>
