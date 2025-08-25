@@ -4,28 +4,27 @@
 
 .channel {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: 1fr auto;
   grid-template-areas:
-    "title"
-    "menu"
-    "channel"
-    "bottom";
+    "title menu"
+    "channel channel"
+    "bottom bottom";
+  align-items: center;
   gap: 1rem;
   margin-block: 1rem;
   padding: 1rem;
   background-color: #eee;
   border-radius: $border-radius;
+  container-type: inline-size;
 
   .btn {
     background-color: white;
   }
 
-  @media (min-width: 640px) {
-    grid-template-columns: 1fr auto;
-    grid-template-areas:
-      "title menu"
-      "channel channel"
-      "bottom bottom";
+  @container (width < 768px) {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
   }
 }
 
@@ -48,19 +47,25 @@
   grid-area: bottom;
 }
 
+.tab-pane {
+  container-type: inline-size;
+}
 .channel-list {
   position: relative;
   grid-area: channel;
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
+  grid-template-columns: repeat(6, 1fr);
   gap: 1rem;
   width: 100%;
   margin: 0;
   padding: 0;
   border-radius: $border-radius;
 
-  @media (min-width: 640px) {
-    grid-template-columns: repeat(6, 1fr);
+  @container (width < 768px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  @container (width < 480px) {
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 

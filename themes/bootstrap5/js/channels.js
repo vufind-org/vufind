@@ -145,7 +145,6 @@ VuFind.register("channels", function Channels() {
 
     const parser = new DOMParser();
     const resDom = parser.parseFromString(resHTML, "text/html");
-    console.log(resDom);
 
     const records = resDom.querySelectorAll(".channel-item");
     const channelList = btn.closest(".channel").querySelector(".channel-list");
