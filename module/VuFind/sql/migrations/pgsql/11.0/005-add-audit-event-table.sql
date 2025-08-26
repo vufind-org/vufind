@@ -10,7 +10,7 @@ CREATE TABLE audit_event (
   server_ip varchar(255),
   server_name varchar(255),
   message  varchar(255),
-  form_data json,
+  data json,
   PRIMARY KEY (id)
 );
 CREATE INDEX audit_event_user_id_idx ON audit_event (user_id);
