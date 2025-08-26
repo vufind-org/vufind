@@ -160,7 +160,6 @@
   <!-- Quality Assurance Javascript Tasks -->
   <target name="qa-js-and-scss" description="quality assurance js and scss tasks">
     <phingcall target="eslint"/>
-    <phingcall target="eslint-jsdoc"/>
     <phingcall target="jshint"/>
     <phingcall target="checkSassBuild"/>
   </target>
@@ -278,20 +277,6 @@
   <target name="eslint-report">
     <exec executable="npx" escape="false">
       <arg line="eslint ${srcdir}/themes/**/*.js -c ${srcdir}/.eslintrc.js --format checkstyle -o ${builddir}/reports/eslint-checkstyle.xml" />
-    </exec>
-  </target>
-
-  <!-- ESLint jsDoc (test only) -->
-  <target name="eslint-jsdoc">
-    <exec executable="npx" escape="false" checkreturn="true" passthru="true">
-      <arg line="eslint ${srcdir}/themes/**/*.js -c ${srcdir}/.eslintrc.jsdoc.js" />
-    </exec>
-  </target>
-
-  <!-- ESLint jsDoc (auto-fix eligible issues) -->
-  <target name="eslint-jsdoc-fix">
-    <exec executable="npx" escape="false" checkreturn="true" passthru="true">
-      <arg line="eslint ${srcdir}/themes/**/*.js -c ${srcdir}/.eslintrc.jsdoc.js --fix" />
     </exec>
   </target>
 

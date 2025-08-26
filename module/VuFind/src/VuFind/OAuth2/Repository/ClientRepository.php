@@ -29,6 +29,7 @@
 
 namespace VuFind\OAuth2\Repository;
 
+use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Repositories\ClientRepositoryInterface;
 use VuFind\OAuth2\Entity\ClientEntity;
 
@@ -65,9 +66,9 @@ class ClientRepository implements ClientRepositoryInterface
      *
      * @param string $clientIdentifier The client's identifier
      *
-     * @return ClientEntityInterface|null
+     * @return ?ClientEntityInterface
      */
-    public function getClientEntity($clientIdentifier)
+    public function getClientEntity($clientIdentifier): ?ClientEntityInterface
     {
         if (!($config = $this->oauth2Config['Clients'][$clientIdentifier] ?? null)) {
             return null;
@@ -86,7 +87,7 @@ class ClientRepository implements ClientRepositoryInterface
      *
      * @return bool
      */
-    public function validateClient($clientIdentifier, $clientSecret, $grantType)
+    public function validateClient($clientIdentifier, $clientSecret, $grantType): bool
     {
         if (!($config = $this->oauth2Config['Clients'][$clientIdentifier] ?? null)) {
             return false;

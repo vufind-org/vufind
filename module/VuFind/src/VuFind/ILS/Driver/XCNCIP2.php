@@ -1256,10 +1256,14 @@ class XCNCIP2 extends AbstractBase implements
             $amount = (string)($amount[0] ?? '');
             $date = $current->xpath('ns1:AccrualDate');
             $date = $this->displayDate(!empty($date) ? (string)$date[0] : null);
-            $desc = $current->xpath(
+            $fineType = $current->xpath(
                 'ns1:FiscalTransactionInformation/ns1:FiscalTransactionType'
             );
-            $desc = (string)($desc[0] ?? '');
+            $fineType = (string)($fineType[0] ?? '');
+            $description = $current->xpath(
+                'ns1:FiscalTransactionInformation/ns1:FiscalTransactionDescription'
+            );
+            $description = (string)($description[0] ?? '');
 
             $bibId = $current->xpath(
                 'ns1:FiscalTransactionInformation/ns1:ItemDetails/' .
@@ -1275,7 +1279,8 @@ class XCNCIP2 extends AbstractBase implements
                 'amount' => $amount,
                 'balance' => $amount,
                 'checkout' => '',
-                'fine' => $desc,
+                'fine' => $fineType,
+                'description' => $description,
                 'duedate' => '',
                 'createdate' => $date,
                 'id' => $id,
