@@ -31,7 +31,6 @@
 
 namespace VuFindTest\Mink;
 
-use VuFind\Db\Service\AuditEventService;
 use VuFind\Db\Service\AuditEventServiceInterface;
 
 /**
@@ -88,7 +87,7 @@ final class AuditEventsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Purge events:
-        $eventService = $this->getDbService(AuditEventService::class);
+        $eventService = $this->getDbService(AuditEventServiceInterface::class);
         $eventService->purgeEvents();
 
         // Log in:
@@ -160,7 +159,7 @@ final class AuditEventsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
 
         // Check events:
-        $eventService = $this->getDbService(AuditEventService::class);
+        $eventService = $this->getDbService(AuditEventServiceInterface::class);
         $events = $eventService->getEvents(sort: ['date ASC']);
 
         $expectedEvents = [
