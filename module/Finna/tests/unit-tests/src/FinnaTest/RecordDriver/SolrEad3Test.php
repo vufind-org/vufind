@@ -453,7 +453,7 @@ class SolrEad3Test extends \PHPUnit\Framework\TestCase
                         'Koteloita 5',
                     ],
                     'ead3_test2.xml' => [
-                        '9 koteloa',
+                        '9 koteloa (kuva, luetteloitu ja kuvailtu)',
                     ],
                 ],
             ],
@@ -464,7 +464,7 @@ class SolrEad3Test extends \PHPUnit\Framework\TestCase
                         'Hyllmeter ordnat 0.96 hm',
                     ],
                     'ead3_test2.xml' => [
-                        '9 mappar',
+                        '9 mappar (bild, listad och beskriven)',
                     ],
                 ],
             ],
@@ -476,7 +476,7 @@ class SolrEad3Test extends \PHPUnit\Framework\TestCase
                         'Koteloita 5',
                     ],
                     'ead3_test2.xml' => [
-                        '9 koteloa',
+                        '9 koteloa (kuva, luetteloitu ja kuvailtu)',
                     ],
                 ],
             ],

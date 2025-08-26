@@ -21,11 +21,19 @@
     <physdescstructured coverage="whole" physdescstructuredtype="materialtype" lang="fi">
       <quantity>9</quantity>
       <unittype>Koteloa</unittype>
+      <descriptivenote>
+        <p>kuva</p>
+        <p>luetteloitu ja kuvailtu</p>
+      </descriptivenote>
     </physdescstructured>
 
     <physdescstructured coverage="whole" physdescstructuredtype="materialtype" lang="sv">
       <quantity>9</quantity>
       <unittype>Mappar</unittype>
+      <descriptivenote>
+        <p>bild</p>
+        <p>listad och beskriven</p>
+      </descriptivenote>
     </physdescstructured>
 
   </did>

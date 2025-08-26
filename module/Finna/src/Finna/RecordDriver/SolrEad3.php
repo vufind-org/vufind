@@ -1148,6 +1148,9 @@ class SolrEad3 extends SolrEad
             $quantity = trim((string)($desc->quantity ?? ''));
             $unittype = trim((string)($desc->unittype ?? ''));
             if ($result = trim($quantity . ' ' . mb_strtolower($unittype, 'UTF-8'))) {
+                if ($descriptions = implode(', ', $this->getDisplayLabel($desc->descriptivenote, 'p'))) {
+                    $result .= ' (' . $descriptions . ')';
+                }
                 $results[] = $result;
                 if ($lang['preferred'] ?? false) {
                     $localeResults[] = $result;
