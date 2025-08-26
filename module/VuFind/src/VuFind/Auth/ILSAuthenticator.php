@@ -32,10 +32,13 @@ namespace VuFind\Auth;
 use Closure;
 use VuFind\Config\Config;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\AuditEventServiceInterface;
 use VuFind\Db\Service\DbServiceAwareInterface;
 use VuFind\Db\Service\DbServiceAwareTrait;
 use VuFind\Db\Service\UserCardServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
+use VuFind\Db\Type\AuditEventSubtype;
+use VuFind\Db\Type\AuditEventType;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Connection as ILSConnection;
 
@@ -79,6 +82,13 @@ class ILSAuthenticator implements DbServiceAwareInterface
      * @var string
      */
     protected $encryptionKey = null;
+
+    /**
+     * Audit event service (optional)
+     *
+     * @var ?AuditEventServiceInterface
+     */
+    protected ?AuditEventServiceInterface $auditEventService;
 
     /**
      * Constructor
@@ -136,6 +146,18 @@ class ILSAuthenticator implements DbServiceAwareInterface
     public function encrypt(?string $text)
     {
         return $this->encryptOrDecrypt($text, true);
+    }
+
+    /**
+     * Set audit event service.
+     *
+     * @param AuditEventServiceInterface $auditEventService Audit event service
+     *
+     * @return void
+     */
+    public function setAuditEventService(AuditEventServiceInterface $auditEventService): void
+    {
+        $this->auditEventService = $auditEventService;
     }
 
     /**
@@ -358,15 +380,21 @@ class ILSAuthenticator implements DbServiceAwareInterface
     /**
      * Send email authentication link
      *
-     * @param string $email       Email address
-     * @param string $route       Route for the login link
-     * @param array  $routeParams Route parameters
-     * @param array  $urlParams   URL parameters
+     * @param string               $email        Email address
+     * @param string               $route        Route for the login link
+     * @param array                $routeParams  Route parameters
+     * @param array                $urlParams    URL parameters
+     * @param ?UserEntityInterface $loggedInUser Logged-in user (optional, for auditing purposes)
      *
-     * @return ?array Patron information, or null if not found
+     * @return void
      */
-    public function sendEmailLoginLink($email, $route, $routeParams = [], $urlParams = []): ?array
-    {
+    public function sendEmailLoginLink(
+        string $email,
+        string $route,
+        array $routeParams = [],
+        array $urlParams = [],
+        ?UserEntityInterface $loggedInUser = null
+    ): void {
         if (null === $this->emailAuthenticator) {
             throw new \Exception('Email authenticator not set');
         }
@@ -380,8 +408,19 @@ class ILSAuthenticator implements DbServiceAwareInterface
                 $route,
                 $routeParams
             );
+
+            if ($this->auditEventService) {
+                $this->auditEventService->addEvent(
+                    AuditEventType::User,
+                    AuditEventSubtype::SendEmailLoginLink,
+                    $loggedInUser,
+                    data: [
+                        'username' => $email,
+                        'email' => $userData['email'],
+                    ]
+                );
+            }
         }
-        return $userData;
     }
 
     /**

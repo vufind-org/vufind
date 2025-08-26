@@ -36,6 +36,8 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use VuFind\Crypt\BlockCipher;
+use VuFind\Db\Service\AuditEventServiceInterface;
+use VuFind\Db\Service\PluginManager as DatabaseServiceManager;
 
 /**
  * ILS Authenticator factory.
@@ -87,6 +89,8 @@ class ILSAuthenticatorFactory implements FactoryInterface
             $container->get(\VuFind\Auth\EmailAuthenticator::class),
             $container->get(\VuFind\Config\PluginManager::class)->get('config')
         );
+        $dbServiceManager = $container->get(DatabaseServiceManager::class);
+        $service->setAuditEventService($dbServiceManager->get(AuditEventServiceInterface::class));
         return $service;
     }
 }

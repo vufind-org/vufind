@@ -32,6 +32,7 @@
 namespace VuFindTest\Mink;
 
 use VuFind\Db\Service\AuditEventService;
+use VuFind\Db\Service\AuditEventServiceInterface;
 
 /**
  * Mink audit event test class.
@@ -133,7 +134,7 @@ final class AuditEventsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Purge events:
-        $eventService = $this->getDbService(AuditEventService::class);
+        $eventService = $this->getDbService(AuditEventServiceInterface::class);
         $eventService->purgeEvents();
 
         // Log in:

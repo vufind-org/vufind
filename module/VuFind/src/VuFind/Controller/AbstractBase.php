@@ -413,19 +413,9 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
                     $routeName = $routeMatch ? $routeMatch->getMatchedRouteName()
                         : 'myresearch-profile';
                     $routeParams = $routeMatch ? $routeMatch->getParams() : [];
-                    $userData = $ilsAuth
-                        ->sendEmailLoginLink($username, $routeName, $routeParams, ['catalogLogin' => 'true']);
+                    $ilsAuth
+                        ->sendEmailLoginLink($username, $routeName, $routeParams, ['catalogLogin' => 'true'], $user);
                     $this->flashMessenger()->addSuccessMessage('email_login_link_sent');
-
-                    $this->getAuditEventService()->addEvent(
-                        AuditEventType::User,
-                        AuditEventSubtype::SendEmailLoginLink,
-                        $user,
-                        data: [
-                            'username' => $username,
-                            'email' => $userData['email'],
-                        ]
-                    );
                 } else {
                     $patron = $ilsAuth->newCatalogLogin($username, $password);
 
