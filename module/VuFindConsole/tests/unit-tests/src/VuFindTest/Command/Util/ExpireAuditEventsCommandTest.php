@@ -1,11 +1,11 @@
 <?php
 
 /**
- * ExpireSessionsCommand test.
+ * ExpireAuditEventsCommand test.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2020.
+ * Copyright (C) The National Library of Finland 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,58 +22,66 @@
  *
  * @category VuFind
  * @package  Tests
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 
 namespace VuFindTest\Command\Util;
 
-use VuFindConsole\Command\Util\ExpireSessionsCommand;
+use VuFind\Db\Service\AuditEventService;
+use VuFindConsole\Command\Util\ExpireAuditEventsCommand;
 
 /**
- * ExpireSessionsCommand test.
+ * ExpireAuditEventsCommand test.
  *
  * @category VuFind
  * @package  Tests
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ExpireSessionsCommandTest extends AbstractExpireCommandTest
+class ExpireAuditEventsCommandTest extends AbstractExpireCommandTest
 {
     /**
      * Name of class being tested
      *
      * @var string
      */
-    protected $targetClass = ExpireSessionsCommand::class;
+    protected $targetClass = ExpireAuditEventsCommand::class;
 
     /**
      * Name of a valid service class to test with
      *
      * @var string
      */
-    protected $validServiceClass = \VuFind\Db\Service\SessionService::class;
+    protected $validServiceClass = AuditEventService::class;
 
     /**
      * Label to use for rows in help messages.
      *
      * @var string
      */
-    protected $rowLabel = 'sessions';
+    protected $rowLabel = 'audit events';
 
     /**
      * Age parameter to use when testing illegal age input.
      *
      * @var float
      */
-    protected $illegalAge = 0.01;
+    protected $illegalAge = 0.9;
 
     /**
      * Expected minimum age in error message.
      *
      * @var float
      */
-    protected $expectedMinAge = 0.1;
+    protected $expectedMinAge = 1.0;
+
+    /**
+     * Expected threshold.
+     *
+     * @var float
+     */
+    protected $expectedThreshold = 365.0;
 }

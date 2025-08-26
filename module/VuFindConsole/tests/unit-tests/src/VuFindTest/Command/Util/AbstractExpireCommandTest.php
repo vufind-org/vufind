@@ -72,16 +72,23 @@ class AbstractExpireCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Age parameter to use when testing illegal age input.
      *
-     * @var int
+     * @var float
      */
-    protected $illegalAge = 1;
+    protected $illegalAge = 1.0;
 
     /**
      * Expected minimum age in error message.
      *
-     * @var int
+     * @var float
      */
-    protected $expectedMinAge = 2;
+    protected $expectedMinAge = 2.0;
+
+    /**
+     * Expected threshold.
+     *
+     * @var float
+     */
+    protected $expectedThreshold = 2.0;
 
     /**
      * Test an illegal age parameter.
@@ -185,7 +192,7 @@ class AbstractExpireCommandTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $command->expects($this->once())
             ->method('getDateThreshold')
-            ->with(2)
+            ->with($this->expectedThreshold)
             ->willReturn($date);
         return $command;
     }
