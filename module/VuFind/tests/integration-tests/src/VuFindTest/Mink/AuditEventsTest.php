@@ -171,6 +171,10 @@ final class AuditEventsTest extends \VuFindTest\Integration\MinkTestCase
                 '{"main_method":"ILS","delegate_method":false,"request":{"username":"username2","password":"***",'
                 . '"auth_method":"ILS","csrf":"***","processLogin":"Login"},'
                 . '"__method":"VuFind\\\\Auth\\\\Manager::login"}',
+                true,
+                true,
+                true,
+                true,
             ],
             [
                 'user',
@@ -178,6 +182,10 @@ final class AuditEventsTest extends \VuFindTest\Integration\MinkTestCase
                 'username2',
                 null,
                 '{"cat_username":"username2","__method":"VuFind\\\\Auth\\\\Manager::login"}',
+                true,
+                true,
+                true,
+                true,
             ],
             [
                 'user',
@@ -185,6 +193,10 @@ final class AuditEventsTest extends \VuFindTest\Integration\MinkTestCase
                 'username2',
                 null,
                 '{"auth_method":"ils","last_login":"<datetime>","__method":"VuFind\\\\Auth\\\\Manager::updateUser"}',
+                true,
+                true,
+                true,
+                true,
             ],
             [
                 'user',
@@ -192,6 +204,10 @@ final class AuditEventsTest extends \VuFindTest\Integration\MinkTestCase
                 'username2',
                 'logout',
                 '{"__method":"VuFind\\\\Auth\\\\Manager::clearLoginState"}',
+                true,
+                true,
+                true,
+                true,
             ],
             [
                 'user',
@@ -201,6 +217,10 @@ final class AuditEventsTest extends \VuFindTest\Integration\MinkTestCase
                 '{"main_method":"ILS","delegate_method":false,"request":{"username":"username2","password":"***",'
                 . '"auth_method":"ILS","csrf":"***","processLogin":"Login"},'
                 . '"__method":"VuFind\\\\Auth\\\\Manager::login"}',
+                true,
+                true,
+                true,
+                true,
             ],
             [
                 'user',
@@ -208,6 +228,10 @@ final class AuditEventsTest extends \VuFindTest\Integration\MinkTestCase
                 'username2',
                 null,
                 '{"auth_method":"ils","last_login":"<datetime>","__method":"VuFind\\\\Auth\\\\Manager::updateUser"}',
+                true,
+                true,
+                true,
+                true,
             ],
             [
                 'user',
@@ -215,6 +239,10 @@ final class AuditEventsTest extends \VuFindTest\Integration\MinkTestCase
                 'username2',
                 null,
                 '{"user_id":<userid>,"__method":"VuFind\\\\Controller\\\\MyResearchController::deleteAccountAction"}',
+                true,
+                true,
+                true,
+                true,
             ],
             [
                 'user',
@@ -222,6 +250,10 @@ final class AuditEventsTest extends \VuFindTest\Integration\MinkTestCase
                 null,
                 'logout',
                 '{"__method":"VuFind\\\\Auth\\\\Manager::clearLoginState"}',
+                true,
+                true,
+                true,
+                true,
             ],
         ];
 
@@ -234,6 +266,10 @@ final class AuditEventsTest extends \VuFindTest\Integration\MinkTestCase
                     $event->getSubType()->value,
                     $event->getUsername(),
                     $event->getMessage(),
+                    null !== $event->getSessionId(),
+                    null !== $event->getClientIp(),
+                    null !== $event->getServerIp(),
+                    null !== $event->getServerName(),
                     $data,
                 ];
             },

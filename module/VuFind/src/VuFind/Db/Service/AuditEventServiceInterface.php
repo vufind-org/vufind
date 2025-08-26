@@ -48,7 +48,7 @@ interface AuditEventServiceInterface extends DbServiceInterface
     /**
      * Create an event entity object.
      *
-     * @return static
+     * @return AuditEventEntityInterface
      */
     public function createEntity(): AuditEventEntityInterface;
 

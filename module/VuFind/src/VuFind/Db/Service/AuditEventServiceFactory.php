@@ -31,9 +31,11 @@ namespace VuFind\Db\Service;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\Session\SessionManager;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use VuFind\Config\Feature\ExplodeSettingTrait;
+use VuFind\Net\UserIpReader;
 
 /**
  * Audit event database service factory
@@ -67,9 +69,29 @@ class AuditEventServiceFactory extends AbstractDbServiceFactory
         $requestedName,
         ?array $options = null
     ) {
-        $sessionManager = $container->get(\Laminas\Session\SessionManager::class);
         $config = $container->get(\VuFind\Config\PluginManager::class)->get('config')->toArray();
         $enabledEventTypes = $this->explodeListSetting($config['Logging']['log_audit_events'] ?? '');
-        return parent::__invoke($container, $requestedName, [$sessionManager, $enabledEventTypes]);
+        $sessionId = null;
+        $clientIp = null;
+        $serverIp = null;
+        $serverName = null;
+        if ('cli' !== PHP_SAPI) {
+            $sessionId = $container->get(SessionManager::class)->getId();
+            $clientIp = $container->get(UserIpReader::class)->getUserIp();
+            $serverParams = $container->get('Request')->getServer();
+            $serverIp = $serverParams->get('SERVER_ADDR');
+            $serverName = $serverParams->get('SERVER_NAME');
+        }
+        return parent::__invoke(
+            $container,
+            $requestedName,
+            [
+                $enabledEventTypes,
+                $sessionId,
+                $clientIp,
+                $serverIp,
+                $serverName,
+            ]
+        );
     }
 }

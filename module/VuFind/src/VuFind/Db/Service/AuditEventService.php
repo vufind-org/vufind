@@ -31,7 +31,6 @@ namespace VuFind\Db\Service;
 
 use DateTime;
 use Doctrine\ORM\EntityManager;
-use Laminas\Session\SessionManager;
 use VuFind\Db\Entity\AuditEventEntityInterface;
 use VuFind\Db\Entity\PluginManager as EntityPluginManager;
 use VuFind\Db\Entity\UserEntityInterface;
@@ -60,15 +59,21 @@ class AuditEventService extends AbstractDbService implements
      * @param EntityManager       $entityManager       Doctrine ORM entity manager
      * @param EntityPluginManager $entityPluginManager Database entity plugin manager
      * @param PersistenceManager  $persistenceManager  Entity persistence manager
-     * @param SessionManager      $sessionManager      Session manager
      * @param array               $enabledEventTypes   Event types enabled in configuration
+     * @param ?string             $sessionId           Session ID (if applicable)
+     * @param ?string             $clientIp            Client IP address (if applicable)
+     * @param ?string             $serverIp            Server IP address (if applicable)
+     * @param ?string             $serverName          Server name (if applicable)
      */
     public function __construct(
         protected EntityManager $entityManager,
         protected EntityPluginManager $entityPluginManager,
         protected PersistenceManager $persistenceManager,
-        protected SessionManager $sessionManager,
-        protected array $enabledEventTypes
+        protected array $enabledEventTypes,
+        protected ?string $sessionId,
+        protected ?string $clientIp,
+        protected ?string $serverIp,
+        protected ?string $serverName
     ) {
     }
 
@@ -110,10 +115,10 @@ class AuditEventService extends AbstractDbService implements
             ->setType($type)
             ->setSubtype($subtype)
             ->setUser($user)
-            ->setSessionId('cli' !== PHP_SAPI ? $this->sessionManager->getId() : null)
-            ->setClientIp($_SERVER['REMOTE_ADDR'] ?? null)
-            ->setServerIp($_SERVER['SERVER_ADDR'] ?? null)
-            ->setServerName($_SERVER['SERVER_NAME'] ?? null)
+            ->setSessionId($this->sessionId)
+            ->setClientIp($this->clientIp)
+            ->setServerIp($this->serverIp)
+            ->setServerName($this->serverName)
             ->setMessage($message)
             ->setData(json_encode($data));
         $this->persistEntity($event);
