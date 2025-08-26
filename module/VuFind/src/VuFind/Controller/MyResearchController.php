@@ -2313,9 +2313,7 @@ class MyResearchController extends AbstractBase
             AuditEventType::User,
             AuditEventSubtype::DeleteLoginToken,
             $this->getUser(),
-            data: [
-                'series' => $series,
-            ]
+            data: compact('series')
         );
 
         return $this->redirect()->toRoute('myresearch-profile');
