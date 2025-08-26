@@ -277,6 +277,10 @@ final class AuditEventsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         $this->assertEquals($expectedEvents, $eventData);
+
+        // Try another event search:
+        $events = $eventService->getEvents(username: 'username2', type: 'user', subtype: 'login');
+        $this->assertCount(2, $events);
     }
 
     /**

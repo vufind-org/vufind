@@ -169,31 +169,31 @@ class AuditEventService extends AbstractDbService implements
         }
         if (null !== $type) {
             $conditions[] = 'e.type = :type';
-            $params[$type] = $type;
+            $params['type'] = $type;
         }
         if (null !== $subtype) {
             $conditions[] = 'e.subtype = :subtype';
-            $params[$subtype] = $subtype;
+            $params['subtype'] = $subtype;
         }
         if (null !== $user) {
             $conditions[] = 'e.user = :user';
-            $params[$user] = $user;
+            $params['user'] = $user;
         }
         if (null !== $username) {
             $conditions[] = 'e.username = :username';
-            $params[$username] = $username;
+            $params['username'] = $username;
         }
         if (null !== $clientIp) {
             $conditions[] = 'e.clientIp = :clientIp';
-            $params[$clientIp] = $clientIp;
+            $params['clientIp'] = $clientIp;
         }
         if (null !== $serverIp) {
             $conditions[] = 'e.serverIp = :serverIp';
-            $params[$serverIp] = $serverIp;
+            $params['serverIp'] = $serverIp;
         }
         if (null !== $serverName) {
             $conditions[] = 'e.serverName = :serverName';
-            $params[$serverName] = $serverName;
+            $params['serverName'] = $serverName;
         }
 
         if ($conditions) {
