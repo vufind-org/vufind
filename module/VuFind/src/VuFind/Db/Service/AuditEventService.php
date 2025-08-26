@@ -156,11 +156,11 @@ class AuditEventService extends AbstractDbService implements
         // Handle date limits:
         if (null !== $fromDate) {
             $conditions[] = 'e.date >= :fromDate';
-            $params['fromDate'] = $fromDate->format('Y-m-d H:i:s');
+            $params['fromDate'] = $fromDate->format(VUFIND_DATABASE_DATETIME_FORMAT);
         }
         if (null !== $untilDate) {
             $conditions[] = 'e.date <= :untilDate';
-            $params['untilDate'] = $untilDate->format('Y-m-d H:i:s');
+            $params['untilDate'] = $untilDate->format(VUFIND_DATABASE_DATETIME_FORMAT);
         }
         if (null !== $type) {
             $conditions[] = 'e.type = :type';
@@ -223,7 +223,7 @@ class AuditEventService extends AbstractDbService implements
         $subQueryBuilder->select('a.id')
             ->from(AuditEventEntityInterface::class, 'a')
             ->where('a.date < :latestDate')
-            ->setParameter('latestDate', $dateLimit->format('Y-m-d H:i:s'));
+            ->setParameter('latestDate', $dateLimit->format(VUFIND_DATABASE_DATETIME_FORMAT));
         if ($limit) {
             $subQueryBuilder->setMaxResults($limit);
         }
