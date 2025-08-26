@@ -34,6 +34,7 @@ use VuFind\Record\Loader;
 use VuFind\Search\Factory\UrlQueryHelperFactory;
 use VuFindSearch\Service as SearchService;
 
+use function array_slice;
 use function call_user_func_array;
 use function count;
 use function func_get_args;
@@ -908,7 +909,7 @@ abstract class Results
 
         $result = $this->initializeFacetResults($facetList, $filter);
 
-        $this->addExcludeFilters($result, $filter);
+        $this->addExcludeFilters($result, $filter, $hierarchicalFacets);
 
         $this->setDisplayTextForFacetValues($result, $hierarchicalFacets);
 
@@ -965,13 +966,14 @@ abstract class Results
     /**
      * Helper for buildFacetList. Adds exclude filters (they are not included in the search result facet values).
      *
-     * @param array $result Facet data arrays (passed by reference)
-     * @param array $filter Array of field => on-screen description listing
+     * @param array $result             Facet data arrays (passed by reference)
+     * @param array $filter             Array of field => on-screen description listing
      * all of the desired facet fields
+     * @param array $hierarchicalFacets List of hierarchical facets
      *
      * @return void
      */
-    protected function addExcludeFilters(array &$result, array $filter)
+    protected function addExcludeFilters(array &$result, array $filter, array $hierarchicalFacets)
     {
         foreach ($this->getParams()->getExcludeFilters() as $field => $values) {
             if (!isset($filter[$field])) {
@@ -995,6 +997,32 @@ abstract class Results
                     'isExcluded' => true,
                 ]);
             }
+            if (in_array($field, $hierarchicalFacets)) {
+                // Add the ancestors of excluded filters if needed
+                foreach ($values as $value) {
+                    $parts = explode('/', $value);
+                    if (count($parts) < 4) {
+                        continue;
+                    }
+                    $parts = array_slice($parts, 1, count($parts) - 3);
+                    for ($level = count($parts) - 1; $level >= 0; $level--) {
+                        $ancestor = $level . '/' . implode('/', $parts) . '/';
+                        $resultListValues = array_map(fn ($item) => $item['value'], $resultList);
+                        if (in_array($ancestor, $resultListValues)) {
+                            continue;
+                        }
+                        array_unshift($resultList, [
+                            'value' => $ancestor,
+                            'count' => 0,
+                            'operator' => $this->getParams()->getFacetOperator($field),
+                            'isApplied' => $this->getParams()->hasFilter("$field:" . $ancestor)
+                                || $this->getParams()->hasFilter("~$field:" . $ancestor),
+                            'isExcluded' => false,
+                        ]);
+                        array_pop($parts);
+                    }
+                }
+            }
             $result[$field]['list'] = $resultList;
         }
     }
@@ -1007,7 +1035,7 @@ abstract class Results
      *
      * @return void
      */
-    protected function setDisplayTextForFacetValues(&$result, $hierarchicalFacets)
+    protected function setDisplayTextForFacetValues(array &$result, array $hierarchicalFacets)
     {
         $translatedFacets = $this->getOptions()->getTranslatedFacets();
         foreach ($result as $field => $fieldResult) {
@@ -1046,7 +1074,7 @@ abstract class Results
      *
      * @return void
      */
-    protected function buildHierarchicalFacets(&$result, $hierarchicalFacets)
+    protected function buildHierarchicalFacets(array &$result, array $hierarchicalFacets)
     {
         $hierarchicalFacetSortSettings
             = is_callable([$this->getOptions(), 'getHierarchicalFacetSortSettings'])
