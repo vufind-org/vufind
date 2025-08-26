@@ -949,6 +949,44 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test that individual favorite items can be deleted.
+     *
+     * @depends testAddRecordToFavoritesNewAccount
+     *
+     * @return void
+     */
+    public function testDeleteSingleFavoriteItem(): void
+    {
+        $page = $this->gotoUserAccount();
+
+        // Get the initial count of items
+        $initialItems = $page->findAll('css', '.result');
+        $initialCount = count($initialItems);
+        $this->assertGreaterThan(0, $initialCount, 'Should have at least one item to delete');
+
+        // Find the first delete button dropdown and click it
+        $deleteDropdown = $this->findCss($page, '.vc-confirm-button .dropdown-toggle');
+        $deleteDropdown->click();
+
+        // Wait for dropdown to appear and click the "Yes" confirmation
+        $this->waitForPageLoad($page);
+        $confirmButton = $this->findCss($page, '.vc-confirm-button .dropdown-menu .dropdown-item');
+        $confirmButton->click();
+
+        // Wait for the page to reload after deletion
+        $this->waitForPageLoad($page);
+
+        // Verify that the item count has decreased by one
+        $remainingItems = $page->findAll('css', '.result');
+        $remainingCount = count($remainingItems);
+        $this->assertEquals(
+            $initialCount - 1,
+            $remainingCount,
+            'Item count should decrease by one after deletion'
+        );
+    }
+
+    /**
      * Test that the bulk delete control works.
      *
      * @depends testAddRecordToFavoritesNewAccount
