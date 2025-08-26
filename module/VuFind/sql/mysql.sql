@@ -457,7 +457,7 @@ CREATE TABLE `audit_event` (
   `server_ip` varchar(255) NULL,
   `server_name` varchar(255) NULL,
   `message`  varchar(255) NULL,
-  `data` mediumtext NULL,
+  `data` json DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `audit_event_user_id_idx` (`user_id`),
   CONSTRAINT `audit_event_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE SET NULL

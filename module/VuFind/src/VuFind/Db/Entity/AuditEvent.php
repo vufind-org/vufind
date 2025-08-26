@@ -147,7 +147,7 @@ class AuditEvent implements AuditEventEntityInterface
      *
      * @var ?string
      */
-    #[ORM\Column(name: 'data', type: 'text', length: 16777215, nullable: true)]
+    #[ORM\Column(name: 'data', type: 'json', nullable: true)]
     protected ?string $data = null;
 
     /**
