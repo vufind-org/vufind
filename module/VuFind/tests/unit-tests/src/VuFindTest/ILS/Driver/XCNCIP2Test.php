@@ -168,6 +168,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'id' => '8071750247', 'duedate' => '', 'amount' => 25,
                     'balance' => 25, 'checkout' => '', 'fine' => 'Service Charge',
                     'createdate' => '11-14-2014',
+                    'description' => 'Please note that there is an additional accrued overdue items fine of: 0.00.',
                 ],
             ],
         ], [
@@ -177,6 +178,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'id' => '', 'duedate' => '', 'amount' => 25, 'balance' => 25,
                     'checkout' => '', 'fine' => 'Service Charge',
                     'createdate' => '11-14-2014',
+                    'description' => 'Please note that there is an additional accrued overdue items fine of: 0.00.',
                 ],
             ],
         ],
