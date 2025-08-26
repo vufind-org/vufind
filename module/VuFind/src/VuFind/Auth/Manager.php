@@ -1135,7 +1135,7 @@ class Manager implements
             $user,
             data: [
                 'auth_method' => $user->getAuthMethod(),
-                'last_login' => $user->getLastLogin()?->format('Y-m-d H:i:s'),
+                'last_login' => $user->getLastLogin()?->format(\DateTimeInterface::ATOM),
             ]
         );
     }
