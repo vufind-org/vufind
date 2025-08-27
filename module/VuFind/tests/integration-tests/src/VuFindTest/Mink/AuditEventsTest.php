@@ -264,8 +264,8 @@ final class AuditEventsTest extends \VuFindTest\Integration\MinkTestCase
                 $data = preg_replace('/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/', '<datetime>', $event->getData());
                 $data = preg_replace('/"user_id":\d+/', '"user_id":<userid>', $data);
                 return [
-                    $event->getType()->value,
-                    $event->getSubType()->value,
+                    $event->getType(),
+                    $event->getSubType(),
                     $event->getUsername(),
                     $event->getMessage(),
                     null !== $event->getSessionId(),

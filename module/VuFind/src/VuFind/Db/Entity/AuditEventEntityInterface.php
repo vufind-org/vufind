@@ -63,9 +63,9 @@ interface AuditEventEntityInterface extends EntityInterface
     /**
      * Get type.
      *
-     * @return AuditEventType|string|null
+     * @return ?string
      */
-    public function getType(): AuditEventType|string|null;
+    public function getType(): ?string;
 
     /**
      * Set type.
@@ -79,9 +79,9 @@ interface AuditEventEntityInterface extends EntityInterface
     /**
      * Get subtype.
      *
-     * @return AuditEventSubtype|string|null
+     * @return ?string
      */
-    public function getSubtype(): AuditEventSubtype|string|null;
+    public function getSubtype(): ?string;
 
     /**
      * Set subtype.

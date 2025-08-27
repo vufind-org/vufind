@@ -187,11 +187,11 @@ class AuditEvent implements AuditEventEntityInterface
     /**
      * Get type.
      *
-     * @return AuditEventType|string|null
+     * @return ?string
      */
-    public function getType(): AuditEventType|string|null
+    public function getType(): ?string
     {
-        return AuditEventType::tryFrom($this->type) ?? $this->type;
+        return $this->type;
     }
 
     /**
@@ -210,11 +210,11 @@ class AuditEvent implements AuditEventEntityInterface
     /**
      * Get subtype.
      *
-     * @return AuditEventSubtype|string|null
+     * @return ?string
      */
-    public function getSubtype(): AuditEventSubtype|string|null
+    public function getSubtype(): ?string
     {
-        return AuditEventSubtype::tryFrom($this->subtype) ?? $this->subtype;
+        return $this->subtype;
     }
 
     /**
