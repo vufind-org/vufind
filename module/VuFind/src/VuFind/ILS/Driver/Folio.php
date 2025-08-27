@@ -660,7 +660,8 @@ class Folio extends AbstractAPI implements
      */
     public function getStatus($bibId)
     {
-        return $this->getStatuses([$bibId])[0];
+        $holding = $this->getHolding($bibId);
+        return $holding['holdings'];
     }
 
     /**
@@ -1248,7 +1249,6 @@ class Folio extends AbstractAPI implements
         } else {
             $instances = $this->getInstancesByBibIds($bibIds);
             $instanceIds = array_map(fn ($instance) => $instance->id, $instances);
-            $idType = $this->getBibIdType();
             foreach ($instances as $instance) {
                 $bibIdToInstanceId[$instance->$idType] = $instance->id;
             }
