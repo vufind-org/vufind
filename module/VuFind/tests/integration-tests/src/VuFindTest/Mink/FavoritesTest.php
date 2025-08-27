@@ -560,12 +560,12 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Login and go to account home
-     * 
+     *
      * @param string $username The username to log in as (default = "username1").
      *
      * @return DocumentElement
      */
-    protected function gotoUserAccount(string $username = "username1"): DocumentElement
+    protected function gotoUserAccount(string $username = 'username1'): DocumentElement
     {
         // Go home
         $session = $this->getMinkSession();
@@ -959,7 +959,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testDeleteSingleFavoriteItem(): void
     {
-        $page = $this->gotoUserAccount("username2");
+        $page = $this->gotoUserAccount('username2');
 
         // Get the initial count of items
         $initialItems = $page->findAll('css', '.result');
