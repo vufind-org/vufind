@@ -39,6 +39,7 @@ use VuFind\Db\Type\AuditEventSubtype;
 use VuFind\Db\Type\AuditEventType;
 
 use function in_array;
+use function is_string;
 
 /**
  * Database service for event table.
