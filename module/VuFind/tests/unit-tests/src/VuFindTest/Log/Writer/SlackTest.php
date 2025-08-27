@@ -42,7 +42,6 @@ use VuFind\Log\Handler\SlackWebhookHandler;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-
 class SlackTest extends \PHPUnit\Framework\TestCase
 {
     /**
@@ -74,7 +73,8 @@ class SlackTest extends \PHPUnit\Framework\TestCase
         $handler->expects($this->once())
             ->method('write')
             ->with($this->callback(function (LogRecord $record) {
-                return $record->message === 'test';
+                $this->assertEquals('test', $record->message);
+                return true;
             }));
 
         $handler->handle($logRecord);

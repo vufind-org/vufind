@@ -45,7 +45,11 @@ use VuFind\Auth\Manager as AuthManager;
 use VuFind\Config\Config;
 use VuFind\Config\Feature\EmailSettingsTrait;
 use VuFind\Config\PluginManager as ConfigPluginManager;
+use VuFind\Db\Connection;
+use VuFind\Log\Handler\DatabaseHandler;
 use VuFind\Log\Handler\MailHandler;
+use VuFind\Log\Handler\Office365Handler;
+use VuFind\Log\Handler\SlackWebhookHandler;
 use VuFind\Log\Handler\StreamHandler;
 use VuFind\Mailer\Mailer;
 use VuFind\Net\UserIpReader;
@@ -105,8 +109,8 @@ class LoggerFactory implements FactoryInterface
         $error_types = $parts[1] ?? '';
         $filters = explode(',', $error_types);
 
-        $connection = $container->get(\VuFind\Db\Connection::class);
-        $baseDatabaseHandler = new \VuFind\Log\Handler\DatabaseHandler($connection, $table_name);
+        $connection = $container->get(Connection::class);
+        $baseDatabaseHandler = new DatabaseHandler($connection, $table_name);
 
         $this->addHandlers($logger, $baseDatabaseHandler, $filters);
     }
@@ -182,7 +186,7 @@ class LoggerFactory implements FactoryInterface
         }
         $filters = explode(',', $error_types);
 
-        $handler = new \VuFind\Log\Handler\Office365Handler(
+        $handler = new Office365Handler(
             $config->Logging->office365_url,
             $container->get(\VuFindHttp\HttpService::class)->createClient(),
             $options
@@ -209,7 +213,7 @@ class LoggerFactory implements FactoryInterface
         $username = $config->Logging->slackname;
         $webhookUrl = $config->Logging->slackurl;
 
-        $baseSlackHandler = new \VuFind\Log\Handler\SlackWebhookHandler(
+        $baseSlackHandler = new SlackWebhookHandler(
             $webhookUrl,
             $channel,
             $username

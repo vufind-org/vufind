@@ -51,7 +51,6 @@ use function is_string;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-
 class Logger implements LoggerInterface
 {
     /**
@@ -61,6 +60,11 @@ class Logger implements LoggerInterface
      */
     protected bool $debugNeeded = false;
 
+    /**
+     * Monolog logger instance
+     *
+     * @var MonologLogger
+     */
     protected MonologLogger $monologLogger;
 
     protected const LEVEL_MAP = [
@@ -72,8 +76,8 @@ class Logger implements LoggerInterface
     /**
      * Constructor
      *
-     * @param UserIpReader       $userIpReader  User IP reader service
-     * @param MonologLogger|null $monologLogger Optional Monolog logger instance
+     * @param UserIpReader   $userIpReader  User IP reader service
+     * @param ?MonologLogger $monologLogger Optional Monolog logger instance
      */
     public function __construct(protected UserIpReader $userIpReader, ?MonologLogger $monologLogger)
     {

@@ -81,7 +81,6 @@ class SlackWebhookHandler extends MonologSlackWebhookHandler
         bool $useShortAttachment = false,
         bool $includeContextAndExtra = false
     ) {
-
         parent::__construct(
             $webhookUrl,
             $this->channel,
