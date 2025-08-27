@@ -82,8 +82,7 @@ class ImageFactory implements FactoryInterface
             'imgDir' => $cacheOptions->getCacheDir(),
         ];
 
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
+        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config');
 
         if (isset($config->Captcha->image_length)) {
             $imageOptions['wordLen'] = $config->Captcha->image_length;

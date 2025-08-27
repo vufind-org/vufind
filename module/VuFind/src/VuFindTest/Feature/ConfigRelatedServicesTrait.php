@@ -169,6 +169,67 @@ trait ConfigRelatedServicesTrait
      * entry is found in $configs
      * @param ?InvocationOrder $getExpect The expected invocation order for the get()
      * method (null for any)
+     *
+     * @return MockObject&ConfigManager
+     */
+    protected function getMockConfigManager(
+        array $configs,
+        array $default = [],
+        ?InvocationOrder $getExpect = null
+    ): ConfigManager {
+        $manager = $this->createMock(ConfigManager::class);
+        $manager->expects($getExpect ?? $this->any())
+            ->method('getConfigArray')
+            ->with($this->isType('string'))
+            ->will(
+                $this->returnCallback(
+                    function ($config) use ($configs, $default): array {
+                        return $configs[$config] ?? $default;
+                    }
+                )
+            );
+        $manager->expects($this->any())
+            ->method('getConfigObject')
+            ->with($this->isType('string'))
+            ->will(
+                $this->returnCallback(
+                    function ($config) use ($configs, $default): Config {
+                        return new Config($configs[$config] ?? $default);
+                    }
+                )
+            );
+        return $manager;
+    }
+
+    /**
+     * Get a mock configuration manager that will throw an exception.
+     *
+     * @param \Throwable $exception Exception to throw
+     *
+     * @return MockObject&ConfigManager
+     */
+    protected function getMockFailingConfigManager(
+        \Throwable $exception
+    ): ConfigManager {
+        $manager = $this->createMock(ConfigManager::class);
+        $manager->expects($this->any())
+            ->method('getConfig')
+            ->with($this->isType('string'))
+            ->will($this->throwException($exception));
+        return $manager;
+    }
+
+    /**
+     * Get a mock configuration plugin manager with the given configuration "files"
+     * available.
+     *
+     * @param array            $configs   An associative array of configurations
+     * where key is the file (e.g. 'config') and value an array of configuration
+     * sections and directives
+     * @param array            $default   Default configuration to return when no
+     * entry is found in $configs
+     * @param ?InvocationOrder $getExpect The expected invocation order for the get()
+     * method (null for any)
      * @param ?InvocationOrder $hasExpect The expected invocation order for the has()
      * method (null for any)
      *

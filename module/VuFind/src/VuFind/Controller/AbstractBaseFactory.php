@@ -56,8 +56,7 @@ class AbstractBaseFactory implements FactoryInterface
      */
     protected function applyPermissions($container, $controller)
     {
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('permissionBehavior');
+        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('permissionBehavior');
         $permissions = $config->global->controllerAccess ?? [];
 
         if (!empty($permissions) && $controller instanceof Feature\AccessPermissionInterface) {

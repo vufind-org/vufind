@@ -71,8 +71,7 @@ class CookieManagerFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
+        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config');
         $path = '/';
         if ($config->Cookies->limit_by_path ?? false) {
             $path = (PHP_SAPI == 'cli')

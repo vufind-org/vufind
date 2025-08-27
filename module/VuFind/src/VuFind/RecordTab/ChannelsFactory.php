@@ -70,7 +70,7 @@ class ChannelsFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)->get('channels')->toArray();
+        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('channels');
         return new $requestedName($container->get(ChannelLoader::class), $config['RecordTab'] ?? []);
     }
 }

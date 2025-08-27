@@ -69,7 +69,7 @@ class ServerUrlFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $cfg = $container->get(\VuFind\Config\PluginManager::class)->get('config');
+        $cfg = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config');
         $helper = new $requestedName();
         if ($cfg->Site->reverse_proxy ?? false) {
             $helper->setUseProxy(true);

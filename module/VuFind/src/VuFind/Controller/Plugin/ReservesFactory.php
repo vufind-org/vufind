@@ -68,8 +68,7 @@ class ReservesFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config
-            = $container->get(\VuFind\Config\PluginManager::class)->get('config');
+        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config');
         $useIndex = $config->Reserves->search_enabled ?? false;
         $ss = $useIndex ? $container->get(\VuFindSearch\Service::class) : null;
         return new $requestedName($useIndex, $ss);

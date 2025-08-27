@@ -72,8 +72,7 @@ class HoldingsILSFactory implements \Laminas\ServiceManager\Factory\FactoryInter
         // If VuFind is configured to suppress the holdings tab when the
         // ILS driver specifies no holdings, we need to pass in a connection
         // object:
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
+        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config');
         $catalog = $container->get(\VuFind\ILS\Connection::class);
         return new $requestedName(
             $catalog,

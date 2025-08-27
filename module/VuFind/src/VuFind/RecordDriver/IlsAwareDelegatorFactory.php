@@ -92,8 +92,7 @@ class IlsAwareDelegatorFactory implements DelegatorFactoryInterface
         // Get a list of ILS-compatible backends.
         static $ilsBackends = null;
         if (!is_array($ilsBackends)) {
-            $config = $container->get(\VuFind\Config\PluginManager::class)
-                ->get('config');
+            $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config');
             $settings = isset($config->Catalog) ? $config->Catalog->toArray() : [];
 
             // If the setting is missing, default to the default backend; if it

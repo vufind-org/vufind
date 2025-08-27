@@ -70,7 +70,7 @@ class HierarchyTreeFactory implements \Laminas\ServiceManager\Factory\FactoryInt
             throw new \Exception('Unexpected options passed to factory.');
         }
         return new $requestedName(
-            $container->get(\VuFind\Config\PluginManager::class)->get('config')
+            $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config')
         );
     }
 }

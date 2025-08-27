@@ -102,8 +102,7 @@ class Factory implements \Laminas\ServiceManager\Factory\FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
         $pm = $container->get($this->getPluginManagerServiceName($requestedName));
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
+        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config');
         $setting = $this->getConfigSettingName($requestedName);
         $providers = $config->Content->$setting ?? '';
         return new Loader($pm, $providers);

@@ -33,7 +33,6 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\Config\PluginManager as ConfigManager;
 
 /**
  * AuthorInfo recommendation module factory.
@@ -70,7 +69,7 @@ class AuthorInfoFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(ConfigManager::class)->get('config');
+        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config');
         return new $requestedName(
             $container->get(\VuFind\Search\Results\PluginManager::class),
             $container->get(\VuFindHttp\HttpService::class)->createClient(),

@@ -67,8 +67,7 @@ class ParamsFactory extends \VuFind\Search\Params\ParamsFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $configLoader = $container->get(\VuFind\Config\PluginManager::class);
-        $blenderConfig = $configLoader->get('Blender');
+        $blenderConfig = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('Blender');
         $backendConfig = $blenderConfig->Backends
             ? $blenderConfig->Backends->toArray() : [];
         if (!$backendConfig) {

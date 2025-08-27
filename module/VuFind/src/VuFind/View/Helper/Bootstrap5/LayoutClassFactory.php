@@ -68,8 +68,7 @@ class LayoutClassFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
+        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config');
         $sidebarOnLeft = $config->Site->sidebarOnLeft ?? false;
         $mirror = $config->Site->mirrorSidebarInRTL ?? true;
         $offcanvas = $config->Site->offcanvas ?? false;

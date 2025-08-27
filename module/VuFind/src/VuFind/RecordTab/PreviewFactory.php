@@ -72,7 +72,7 @@ class PreviewFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $cfg = $container->get(\VuFind\Config\PluginManager::class)->get('config');
+        $cfg = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config');
         // currently only active if config [content] [previews] contains google
         // and googleoptions[tab] is not empty.
         $active = false;

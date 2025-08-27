@@ -69,8 +69,7 @@ class KohaFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
+        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config');
         if (empty($config->Content->koha_cover_url)) {
             throw new \Exception('Koha cover URL must be provided.');
         }

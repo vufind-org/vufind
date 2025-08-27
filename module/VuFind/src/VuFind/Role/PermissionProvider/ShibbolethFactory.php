@@ -69,7 +69,7 @@ class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $cfg = $container->get(\VuFind\Config\PluginManager::class)->get('config');
+        $cfg = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config');
         return new $requestedName($container->get('Request'), $cfg);
     }
 }

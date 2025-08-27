@@ -65,7 +65,7 @@ class MetadataFactory implements FactoryInterface
 
         return new Metadata(
             $container->get(\VuFind\MetadataVocabulary\PluginManager::class),
-            $container->get(\VuFind\Config\PluginManager::class)->get('metadata'),
+            $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('metadata'),
             $container->get('ViewHelperManager')->get('HeadMeta')
         );
     }

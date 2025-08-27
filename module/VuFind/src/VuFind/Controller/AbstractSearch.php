@@ -670,8 +670,7 @@ class AbstractSearch extends AbstractBase
      */
     protected function getRangeFieldList($config, $section, $filter)
     {
-        $config = $this->getService(\VuFind\Config\PluginManager::class)
-            ->get($config);
+        $config = $this->getService(\VuFind\Config\ConfigManager::class)->getConfigObject($config);
         $fields = isset($config->SpecialFacets->$section)
             ? $config->SpecialFacets->$section->toArray() : [];
 
@@ -842,8 +841,7 @@ class AbstractSearch extends AbstractBase
         $section = $params[1] ?? 'CheckboxFacets';
 
         // Load config file:
-        $config = $this->getService(\VuFind\Config\PluginManager::class)
-            ->get($config);
+        $config = $this->getService(\VuFind\Config\ConfigManager::class)->getConfigObject($config);
 
         // Process checkbox settings in config:
         $flipCheckboxes = false;
@@ -913,8 +911,8 @@ class AbstractSearch extends AbstractBase
                 ? 'count'
                 : current(array_keys($facetSortOptions));
         }
-        $config = $this->getService(\VuFind\Config\PluginManager::class)
-            ->get($options->getFacetsIni());
+        $config = $this->getService(\VuFind\Config\ConfigManager::class)
+            ->getConfigObject($options->getFacetsIni());
         $limit = $config->Results_Settings->lightboxLimit ?? 50;
         $limit = $this->params()->fromQuery('facetlimit', $limit);
         if (!empty($contains)) {

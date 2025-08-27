@@ -62,9 +62,9 @@ class Factory implements FactoryInterface
         ?array $options = null
     ) {
         // Load configurations:
-        $configManager = $container->get(\VuFind\Config\PluginManager::class);
-        $mainConfig = $configManager->get('config');
-        $smsConfig = $configManager->get('sms');
+        $configManager = $container->get(\VuFind\Config\ConfigManager::class);
+        $mainConfig = $configManager->getConfigObject('config');
+        $smsConfig = $configManager->getConfigObject('sms');
 
         // Determine SMS type:
         $type = $smsConfig->General->smsType ?? 'Mailer';
