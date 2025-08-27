@@ -53,6 +53,11 @@ class ConfigManager
 {
     use MergeRecursiveTrait;
 
+    /**
+     * Configuration cache
+     *
+     * @var array[]
+     */
     protected array $cache = [];
 
     /**
