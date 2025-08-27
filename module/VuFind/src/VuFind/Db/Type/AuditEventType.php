@@ -40,7 +40,6 @@ namespace VuFind\Db\Type;
  */
 enum AuditEventType: string
 {
-    case Custom = 'custom';
     case ILS = 'ils';
     case User = 'user';
 }

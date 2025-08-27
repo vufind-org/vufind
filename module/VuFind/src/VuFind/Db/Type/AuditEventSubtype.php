@@ -52,7 +52,6 @@ enum AuditEventSubtype: string
     case ConnectCard = 'connect_card';
     case ConnectCardByEmail = 'connect_card_by_email';
     case Create = 'create';
-    case Custom = 'custom';
     case Delete = 'delete';
     case DeleteCard = 'delete_card';
     case DeleteLoginToken = 'delete_login_token';

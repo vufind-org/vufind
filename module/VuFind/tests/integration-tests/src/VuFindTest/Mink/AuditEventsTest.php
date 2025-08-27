@@ -32,6 +32,8 @@
 namespace VuFindTest\Mink;
 
 use VuFind\Db\Service\AuditEventServiceInterface;
+use VuFind\Db\Type\AuditEventSubtype;
+use VuFind\Db\Type\AuditEventType;
 
 /**
  * Mink audit event test class.
@@ -281,6 +283,71 @@ final class AuditEventsTest extends \VuFindTest\Integration\MinkTestCase
         // Try another event search:
         $events = $eventService->getEvents(username: 'username2', type: 'user', subtype: 'login');
         $this->assertCount(2, $events);
+    }
+
+    /**
+     * Test custom events.
+     *
+     * @return void
+     */
+    public function testCustomEvents(): void
+    {
+        // Setup config
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Logging' => [
+                        'log_audit_events' => 'ils,user,custom',
+                    ],
+                ],
+            ]
+        );
+
+        // Get event service:
+        $eventService = $this->getDbService(AuditEventServiceInterface::class);
+        $this->assertInstanceOf(AuditEventServiceInterface::class, $eventService);
+
+        // Purge events:
+        $eventService->purgeEvents();
+        $this->assertEmpty($eventService->getEvents());
+
+        // Add an event with built-in type:
+        $eventService->addEvent(
+            AuditEventType::ILS,
+            AuditEventSubtype::SaveSearch,
+            null,
+            'Standard',
+            ['foo' => 'bar']
+        );
+
+        // Add a custom event:
+        $eventService->addEvent(
+            'custom',
+            'foobar',
+            null,
+            'Custom',
+            ['foo' => 'bar']
+        );
+
+        // Add a custom event that should not be logged:
+        $eventService->addEvent(
+            'disabled',
+            'foobar',
+            null,
+            'Disabled event',
+            ['foo' => 'bar']
+        );
+
+        // Check results:
+        $events = $eventService->getEvents(type: AuditEventType::ILS);
+        $this->assertCount(1, $events);
+        $this->assertEquals('Standard', $events[0]->getMessage());
+
+        $events = $eventService->getEvents(type: 'custom');
+        $this->assertCount(1, $events);
+        $this->assertEquals('Custom', $events[0]->getMessage());
+
+        $this->assertEmpty($eventService->getEvents(type: 'disabled'));
     }
 
     /**
