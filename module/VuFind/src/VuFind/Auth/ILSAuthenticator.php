@@ -377,9 +377,7 @@ class ILSAuthenticator implements DbServiceAwareInterface
                 AuditEventType::User,
                 $result ? AuditEventSubtype::ILSLogin : AuditEventSubtype::ILSLoginFailure,
                 $loggedInUser,
-                data: [
-                    'username' => $username,
-                ]
+                data: compact('username')
             );
         }
 
