@@ -56,6 +56,10 @@ class PluginManager extends Base
         array $v3config = []
     ) {
         $this->addAbstractFactory(PluginFactory::class);
+        // Disable caching in the plugin manager. This is handled by the \VuFind\Config\ConfigManager.
+        if (!isset($v3config['shared_by_default'])) {
+            $v3config['shared_by_default'] = false;
+        }
         parent::__construct($configOrContainerInstance, $v3config);
     }
 

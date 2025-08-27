@@ -66,6 +66,26 @@ abstract class ConfigTestCase extends \PHPUnit\Framework\TestCase
     protected string $localDirPath;
 
     /**
+     * Path to local dir backup
+     *
+     * @var string
+     */
+    protected string $localDirBackupPath;
+
+    /**
+     * Set local dir path.
+     *
+     * @param string $localDirPath Local dir path
+     *
+     * @return void
+     */
+    protected function setLocalDirPath(string $localDirPath): void
+    {
+        $this->localDirPath = $localDirPath;
+        $this->localDirBackupPath = $localDirPath . '.bak';
+    }
+
+    /**
      * Setup local dir with fixture.
      *
      * @param string $fixture Fixture to use
@@ -75,11 +95,10 @@ abstract class ConfigTestCase extends \PHPUnit\Framework\TestCase
     protected function setUpLocalConfigDir(string $fixture): void
     {
         $fixtureDir = realpath($this->getFixtureDir() . 'configs/' . $fixture);
-        $localDirPath = $this->localDirPath;
-        if (is_dir($localDirPath)) {
-            self::rmDir($localDirPath);
+        if (is_dir($this->localDirPath)) {
+            self::rmDir($this->localDirPath);
         }
-        self::cpDir($fixtureDir, $localDirPath);
+        self::cpDir($fixtureDir, $this->localDirPath);
     }
 
     /**
@@ -115,15 +134,14 @@ abstract class ConfigTestCase extends \PHPUnit\Framework\TestCase
 
         $pathResolver = $this->getPathResolver();
         $this->baseDirPath = $pathResolver->getBaseConfigDirPath();
-        $this->localDirPath = $pathResolver->getLocalConfigDirPath();
+        $this->setLocalDirPath($pathResolver->getLocalConfigDirPath());
         if ($this->localDirPath === null) {
             $this->markTestSkipped('No local config dir configured.');
         }
 
         // create backup of local config dir
         if (is_dir($this->localDirPath)) {
-            $backUpDir = $this->localDirPath . '.bak';
-            rename($this->localDirPath, $backUpDir);
+            rename($this->localDirPath, $this->localDirBackupPath);
             mkdir($this->localDirPath);
         }
     }
@@ -136,13 +154,11 @@ abstract class ConfigTestCase extends \PHPUnit\Framework\TestCase
     public function tearDown(): void
     {
         // restore backup of local config dir
-        $localDirPath = $this->localDirPath;
-        $backUpDir = $localDirPath . '.bak';
-        if (is_dir($localDirPath)) {
-            self::rmDir($localDirPath);
+        if (is_dir($this->localDirPath)) {
+            self::rmDir($this->localDirPath);
         }
-        if (is_dir($backUpDir)) {
-            rename($backUpDir, $localDirPath);
+        if (is_dir($this->localDirBackupPath)) {
+            rename($this->localDirBackupPath, $this->localDirPath);
         }
     }
 }

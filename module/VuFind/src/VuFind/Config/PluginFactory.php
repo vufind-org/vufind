@@ -64,11 +64,9 @@ class PluginFactory implements AbstractFactoryInterface
      *
      * @param ContainerInterface $container     Service container
      * @param string             $requestedName Name of service
-     * @param array              $options       Options (unused)
+     * @param array              $options       Options
      *
      * @return object
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(
         ContainerInterface $container,

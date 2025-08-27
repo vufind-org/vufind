@@ -29,7 +29,6 @@
 
 namespace VuFindTest\Config;
 
-use VuFind\Config\ConfigManager;
 use VuFindTest\Integration\ConfigTestCase;
 
 /**
@@ -51,7 +50,7 @@ class ConfigManagerIntegrationTest extends ConfigTestCase
     public function testCaching(): void
     {
         $container = $this->getContainerWithConfigRelatedServices();
-        $configManager = $container->get(ConfigManager::class);
+        $configManager = $container->get(\VuFind\Config\ConfigManager::class);
         $this->setUpLocalConfigDir('defaultgenerator');
         $config = $configManager->getConfig('config');
         $this->assertEquals('VuFind 1.0', $config['Site']['generator']);
@@ -61,6 +60,29 @@ class ConfigManagerIntegrationTest extends ConfigTestCase
         $this->assertEquals('VuFind 1.0', $config['Site']['generator']);
         // check that the cache is ignored
         $config = $configManager->getConfig('config', forceReload: true);
+        $this->assertEquals('Custom Generator', $config['Site']['generator']);
+    }
+
+    /**
+     * Test that the config PluginManager caching is disabled.
+     *
+     * @return void
+     */
+    public function testDisabledPluginManagerCaching(): void
+    {
+        $container = $this->getContainerWithConfigRelatedServices();
+        $configManager = $container->get(\VuFind\Config\ConfigManager::class);
+        $pluginManager = $container->get(\VuFind\Config\PluginManager::class);
+        $this->setUpLocalConfigDir('defaultgenerator');
+        $config = $pluginManager->get('config')->toArray();
+        $this->assertEquals('VuFind 1.0', $config['Site']['generator']);
+        // check that the cache is used and the change in the config files is ignored
+        $this->setUpLocalConfigDir('customgenerator');
+        $config = $pluginManager->get('config')->toArray();
+        $this->assertEquals('VuFind 1.0', $config['Site']['generator']);
+        // check that the plugin manager cache is ignored
+        $configManager->getConfig('config', forceReload: true);
+        $config = $pluginManager->get('config')->toArray();
         $this->assertEquals('Custom Generator', $config['Site']['generator']);
     }
 
@@ -76,7 +98,7 @@ class ConfigManagerIntegrationTest extends ConfigTestCase
             baseSubDir: ''
         );
         $this->setUpLocalConfigDir('customgenerator');
-        $configManager = $container->get(ConfigManager::class);
+        $configManager = $container->get(\VuFind\Config\ConfigManager::class);
         $config = $configManager->getConfig('config');
         $this->assertEquals('Custom Generator', $config['Site']['generator']);
         $config = $configManager->getConfig('config', useLocalConfig: false);
