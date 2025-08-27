@@ -63,34 +63,34 @@ interface AuditEventEntityInterface extends EntityInterface
     /**
      * Get type.
      *
-     * @return ?AuditEventType
+     * @return AuditEventType|string|null
      */
-    public function getType(): ?AuditEventType;
+    public function getType(): AuditEventType|string|null;
 
     /**
      * Set type.
      *
-     * @param AuditEventType $type Type
+     * @param AuditEventType|string $type Type
      *
      * @return static
      */
-    public function setType(AuditEventType $type): static;
+    public function setType(AuditEventType|string $type): static;
 
     /**
      * Get subtype.
      *
-     * @return ?AuditEventSubtype
+     * @return AuditEventSubtype|string|null
      */
-    public function getSubtype(): ?AuditEventSubtype;
+    public function getSubtype(): AuditEventSubtype|string|null;
 
     /**
      * Set subtype.
      *
-     * @param AuditEventSubtype $subtype Subtype
+     * @param AuditEventSubtype|string $subtype Subtype
      *
      * @return static
      */
-    public function setSubtype(AuditEventSubtype $subtype): static;
+    public function setSubtype(AuditEventSubtype|string $subtype): static;
 
     /**
      * Get user.

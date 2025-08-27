@@ -35,6 +35,8 @@ use VuFind\Db\Feature\DateTimeTrait;
 use VuFind\Db\Type\AuditEventSubtype;
 use VuFind\Db\Type\AuditEventType;
 
+use function is_string;
+
 /**
  * Entity model for audit_event table
  *
@@ -185,11 +187,11 @@ class AuditEvent implements AuditEventEntityInterface
     /**
      * Get type.
      *
-     * @return ?AuditEventType
+     * @return AuditEventType|string|null
      */
-    public function getType(): ?AuditEventType
+    public function getType(): AuditEventType|string|null
     {
-        return AuditEventType::tryFrom($this->type);
+        return AuditEventType::tryFrom($this->type) ?? $this->type;
     }
 
     /**
@@ -199,32 +201,32 @@ class AuditEvent implements AuditEventEntityInterface
      *
      * @return static
      */
-    public function setType(AuditEventType $type): static
+    public function setType(AuditEventType|string $type): static
     {
-        $this->type = $type->value;
+        $this->type = is_string($type) ? $type : $type->value;
         return $this;
     }
 
     /**
      * Get subtype.
      *
-     * @return ?AuditEventSubtype
+     * @return AuditEventSubtype|string|null
      */
-    public function getSubtype(): ?AuditEventSubtype
+    public function getSubtype(): AuditEventSubtype|string|null
     {
-        return AuditEventSubtype::tryFrom($this->subtype);
+        return AuditEventSubtype::tryFrom($this->subtype) ?? $this->subtype;
     }
 
     /**
      * Set subtype.
      *
-     * @param AuditEventSubtype $subtype Subtype
+     * @param AuditEventSubtype|string $subtype Subtype
      *
      * @return static
      */
-    public function setSubtype(AuditEventSubtype $subtype): static
+    public function setSubtype(AuditEventSubtype|string $subtype): static
     {
-        $this->subtype = $subtype->value;
+        $this->subtype = is_string($subtype) ? $subtype : $subtype->value;
         return $this;
     }
 
