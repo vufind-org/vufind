@@ -822,8 +822,7 @@ class BackendTest extends TestCase
                 'VuFindSearch\Backend\Blender\Backend:'
                 . ' Invalid blender_backend filter: Backend Foo not enabled',
                 []
-            )
-        ;
+            );
         $backend->setLogger($logger);
         $backend->search(new Query(), 0, 20, $params);
     }

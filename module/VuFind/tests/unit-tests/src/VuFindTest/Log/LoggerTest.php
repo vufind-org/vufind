@@ -53,7 +53,7 @@ class LoggerTest extends \PHPUnit\Framework\TestCase
      */
     public function testLogException()
     {
-        $callback = function ($level, $message, $context = []) use (&$capturedArgs): bool {
+        $callback = function ($level, $message, $context = []): bool {
             $capturedArgs = func_get_args();
 
             $expectedContext = <<<CONTEXT
