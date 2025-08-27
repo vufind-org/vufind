@@ -82,12 +82,14 @@ class PluginManager extends Base
      * @param string $id Service identifier
      *
      * @return \VuFind\Config\Config
+     *
+     * @deprecated Use \VuFind\Config\ConfigManager::getConfig with forceReload=true directly
      */
     public function reload($id)
     {
         $oldOverrideSetting = $this->getAllowOverride();
         $this->setAllowOverride(true);
-        $this->setService($id, $this->build($id));
+        $this->setService($id, $this->build($id, ['forceReload' => true]));
         $this->setAllowOverride($oldOverrideSetting);
         return $this->get($id);
     }
