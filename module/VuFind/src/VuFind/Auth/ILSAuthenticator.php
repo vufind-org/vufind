@@ -88,7 +88,7 @@ class ILSAuthenticator implements DbServiceAwareInterface
      *
      * @var ?AuditEventServiceInterface
      */
-    protected ?AuditEventServiceInterface $auditEventService;
+    protected ?AuditEventServiceInterface $auditEventService = null;
 
     /**
      * Constructor
@@ -359,17 +359,30 @@ class ILSAuthenticator implements DbServiceAwareInterface
     /**
      * Attempt to log in the user to the ILS, and save credentials if it works.
      *
-     * @param string $username Catalog username
-     * @param string $password Catalog password
+     * @param string               $username     Catalog username
+     * @param string               $password     Catalog password
+     * @param ?UserEntityInterface $loggedInUser Logged-in user (optional, for auditing purposes)
      *
      * Returns associative array of patron data on success, false on failure.
      *
      * @return array|bool
      * @throws ILSException
      */
-    public function newCatalogLogin($username, $password)
+    public function newCatalogLogin(string $username, string $password, ?UserEntityInterface $loggedInUser = null)
     {
         $result = $this->catalog->patronLogin($username, $password);
+
+        if ($this->auditEventService) {
+            $this->auditEventService->addEvent(
+                AuditEventType::User,
+                $result ? AuditEventSubtype::ILSLogin : AuditEventSubtype::ILSLoginFailure,
+                $loggedInUser,
+                data: [
+                    'username' => $username,
+                ]
+            );
+        }
+
         if ($result) {
             $this->updateUser($username, $password, $result);
             return $result;

@@ -41,8 +41,6 @@ use VuFind\Controller\Feature\AccessPermissionInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\AuditEventServiceInterface;
 use VuFind\Db\Service\PluginManager as DatabaseServiceManager;
-use VuFind\Db\Type\AuditEventSubtype;
-use VuFind\Db\Type\AuditEventType;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Http\PhpEnvironment\Request as HttpRequest;
@@ -417,21 +415,12 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
                         ->sendEmailLoginLink($username, $routeName, $routeParams, ['catalogLogin' => 'true'], $user);
                     $this->flashMessenger()->addSuccessMessage('email_login_link_sent');
                 } else {
-                    $patron = $ilsAuth->newCatalogLogin($username, $password);
+                    $patron = $ilsAuth->newCatalogLogin($username, $password, $user);
 
                     // If login failed, store a warning message:
                     if (!$patron) {
                         $this->flashMessenger()->addErrorMessage('Invalid Patron Login');
                     }
-
-                    $this->getAuditEventService()->addEvent(
-                        AuditEventType::User,
-                        $patron ? AuditEventSubtype::ILSLogin : AuditEventSubtype::ILSLoginFailure,
-                        $user,
-                        data: [
-                            'username' => $username,
-                        ]
-                    );
                 }
             } catch (ILSException $e) {
                 $this->flashMessenger()->addErrorMessage('ils_connection_failed');
