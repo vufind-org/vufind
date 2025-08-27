@@ -560,10 +560,12 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
 
     /**
      * Login and go to account home
+     * 
+     * @param string $username The username to log in as (default = "username1").
      *
      * @return DocumentElement
      */
-    protected function gotoUserAccount(): DocumentElement
+    protected function gotoUserAccount(string $username = "username1"): DocumentElement
     {
         // Go home
         $session = $this->getMinkSession();
@@ -572,7 +574,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $page = $session->getPage();
         // Login
         $this->clickCss($page, '#loginOptions a');
-        $this->fillInLoginForm($page, 'username1', 'test');
+        $this->fillInLoginForm($page, $username, 'test');
         $this->submitLoginForm($page);
         $this->waitForPageLoad($page);
         // Go to saved lists
@@ -951,13 +953,13 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that individual favorite items can be deleted.
      *
-     * @depends testAddRecordToFavoritesNewAccount
+     * @depends testAddSearchItemToFavoritesNewAccount
      *
      * @return void
      */
     public function testDeleteSingleFavoriteItem(): void
     {
-        $page = $this->gotoUserAccount();
+        $page = $this->gotoUserAccount("username2");
 
         // Get the initial count of items
         $initialItems = $page->findAll('css', '.result');
@@ -965,13 +967,11 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertGreaterThan(0, $initialCount, 'Should have at least one item to delete');
 
         // Find the first delete button dropdown and click it
-        $deleteDropdown = $this->findCss($page, '.vc-confirm-button .dropdown-toggle');
-        $deleteDropdown->click();
+        $this->clickCss($page, '.vc-confirm-button .dropdown-toggle');
 
         // Wait for dropdown to appear and click the "Yes" confirmation
         $this->waitForPageLoad($page);
-        $confirmButton = $this->findCss($page, '.vc-confirm-button .dropdown-menu .dropdown-item');
-        $confirmButton->click();
+        $this->clickCss($page, '.vc-confirm-button .dropdown-menu .dropdown-item');
 
         // Wait for the page to reload after deletion
         $this->waitForPageLoad($page);
