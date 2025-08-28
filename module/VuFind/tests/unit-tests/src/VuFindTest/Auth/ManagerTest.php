@@ -587,7 +587,8 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
             $csrf,
             $loginTokenManager,
             $ils,
-            $viewRenderer
+            $viewRenderer,
+            $this->createMock(\VuFind\Db\Service\AuditEventServiceInterface::class)
         );
     }
 

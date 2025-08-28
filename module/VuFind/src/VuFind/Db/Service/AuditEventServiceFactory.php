@@ -1,11 +1,11 @@
 <?php
 
 /**
- * ILS Authenticator factory.
+ * Audit event database service factory
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) The National Library of Finland 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,35 +21,35 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Authentication
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Database
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
-namespace VuFind\Auth;
+namespace VuFind\Db\Service;
 
-use Closure;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-use Laminas\ServiceManager\Factory\FactoryInterface;
+use Laminas\Session\SessionManager;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\Crypt\BlockCipher;
-use VuFind\Db\Service\AuditEventServiceInterface;
-use VuFind\Db\Service\PluginManager as DatabaseServiceManager;
+use VuFind\Config\Feature\ExplodeSettingTrait;
+use VuFind\Net\UserIpReader;
 
 /**
- * ILS Authenticator factory.
+ * Audit event database service factory
  *
  * @category VuFind
- * @package  Authentication
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Database
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class ILSAuthenticatorFactory implements FactoryInterface
+class AuditEventServiceFactory extends AbstractDbServiceFactory
 {
+    use ExplodeSettingTrait;
+
     /**
      * Create an object
      *
@@ -69,28 +69,29 @@ class ILSAuthenticatorFactory implements FactoryInterface
         $requestedName,
         ?array $options = null
     ) {
-        if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config')->toArray();
+        $enabledEventTypes = $this->explodeListSetting($config['Logging']['log_audit_events'] ?? '');
+        $sessionId = null;
+        $clientIp = null;
+        $serverIp = null;
+        $serverName = null;
+        if ('cli' !== PHP_SAPI) {
+            $sessionId = $container->get(SessionManager::class)->getId();
+            $clientIp = $container->get(UserIpReader::class)->getUserIp();
+            $serverParams = $container->get('Request')->getServer();
+            $serverIp = $serverParams->get('SERVER_ADDR');
+            $serverName = $serverParams->get('SERVER_NAME');
         }
-        $service = new $requestedName(
-            // Use a callback to retrieve authentication manager to break a circular reference:
-            Closure::fromCallable(
-                function () use ($container) {
-                    return $container->get(\VuFind\Auth\Manager::class);
-                }
-            ),
-            // Use a callback to build BlockCipher objects:
-            Closure::fromCallable(
-                function (string $algo) use ($container) {
-                    return $container->get(BlockCipher::class)->setAlgorithm($algo);
-                }
-            ),
-            $container->get(\VuFind\ILS\Connection::class),
-            $container->get(\VuFind\Auth\EmailAuthenticator::class),
-            $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config')
+        return parent::__invoke(
+            $container,
+            $requestedName,
+            [
+                $enabledEventTypes,
+                $sessionId,
+                $clientIp,
+                $serverIp,
+                $serverName,
+            ]
         );
-        $dbServiceManager = $container->get(DatabaseServiceManager::class);
-        $service->setAuditEventService($dbServiceManager->get(AuditEventServiceInterface::class));
-        return $service;
     }
 }
