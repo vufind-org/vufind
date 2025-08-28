@@ -848,7 +848,7 @@ class AbstractSearch extends AbstractBase
             $section = substr($section, 1);
             $flipCheckboxes = true;
         }
-        $checkboxFacets = ($section && isset($config['$section'])) ? $config['$section'] : [];
+        $checkboxFacets = ($section && isset($config[$section])) ? $config[$section] : [];
         if ($flipCheckboxes) {
             $checkboxFacets = array_flip($checkboxFacets);
         }
