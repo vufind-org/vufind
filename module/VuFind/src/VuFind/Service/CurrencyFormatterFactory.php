@@ -68,10 +68,10 @@ class CurrencyFormatterFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config');
+        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config');
         return new $requestedName(
-            $config->Site->defaultCurrency ?? null,
-            $config->Site->locale ?? null
+            $config['Site']['defaultCurrency'] ?? null,
+            $config['Site']['locale'] ?? null
         );
     }
 }

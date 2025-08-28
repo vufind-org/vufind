@@ -56,7 +56,7 @@ class ServiceInitializer implements InitializerInterface
         static $enabled = null;
         if (null === $enabled) {
             // Return true if Record Cache is enabled for any data source
-            $cacheConfig = $sm->get(\VuFind\Config\ConfigManager::class)->getConfigObject('RecordCache');
+            $cacheConfig = $sm->get(\VuFind\Config\ConfigManager::class)->getConfigArray('RecordCache');
             $enabled = false;
             foreach ($cacheConfig as $section) {
                 foreach ($section as $setting) {

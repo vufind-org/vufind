@@ -162,12 +162,12 @@ trait ConfigRelatedServicesTrait
      * Get a mock configuration plugin manager with the given configuration "files"
      * available.
      *
-     * @param array            $configs   An associative array of configurations
+     * @param array            $configs              An associative array of configurations
      * where key is the file (e.g. 'config') and value an array of configuration
      * sections and directives
-     * @param array            $default   Default configuration to return when no
+     * @param array            $default              Default configuration to return when no
      * entry is found in $configs
-     * @param ?InvocationOrder $getExpect The expected invocation order for the get()
+     * @param ?InvocationOrder $getConfigArrayExpect The expected invocation order for the getConfigArray()
      * method (null for any)
      *
      * @return MockObject&ConfigManager
@@ -175,10 +175,10 @@ trait ConfigRelatedServicesTrait
     protected function getMockConfigManager(
         array $configs,
         array $default = [],
-        ?InvocationOrder $getExpect = null
+        ?InvocationOrder $getConfigArrayExpect = null
     ): ConfigManager {
         $manager = $this->createMock(ConfigManager::class);
-        $manager->expects($getExpect ?? $this->any())
+        $manager->expects($getConfigArrayExpect ?? $this->any())
             ->method('getConfigArray')
             ->with($this->isType('string'))
             ->will(

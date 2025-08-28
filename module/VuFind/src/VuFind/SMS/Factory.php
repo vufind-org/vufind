@@ -63,7 +63,7 @@ class Factory implements FactoryInterface
     ) {
         // Load configurations:
         $configManager = $container->get(\VuFind\Config\ConfigManager::class);
-        $mainConfig = $configManager->getConfigObject('config');
+        $mainConfig = $configManager->getConfigArray('config');
         $smsConfig = $configManager->getConfigObject('sms');
 
         // Determine SMS type:
@@ -79,8 +79,8 @@ class Factory implements FactoryInterface
                 $options = [
                     'mailer' => $container->get(\VuFind\Mailer\Mailer::class),
                 ];
-                if (isset($mainConfig->Site->email)) {
-                    $options['defaultFrom'] = $mainConfig->Site->email;
+                if (isset($mainConfig['Site']['email'])) {
+                    $options['defaultFrom'] = $mainConfig['Site']['email'];
                 }
                 return new Mailer($smsConfig, $options);
             default:

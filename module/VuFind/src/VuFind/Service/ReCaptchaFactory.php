@@ -73,8 +73,6 @@ class ReCaptchaFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
 
-        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config');
-
         $legacySettingsMap = [
             'publicKey' => 'recaptcha_siteKey',
             'siteKey' => 'recaptcha_siteKey',
@@ -83,7 +81,7 @@ class ReCaptchaFactory implements FactoryInterface
             'theme' => 'recaptcha_theme',
         ];
 
-        $recaptchaConfig = $config->Captcha->toArray();
+        $recaptchaConfig = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config')['Captcha'];
         foreach ($legacySettingsMap as $old => $new) {
             if (isset($recaptchaConfig[$old])) {
                 error_log(

@@ -70,9 +70,9 @@ class ConfigurationBasedFactory
         $config = end($parts);
         // Set up options based on global VuFind settings:
         $configManager = $container->get(\VuFind\Config\ConfigManager::class);
-        $globalConfig = $configManager->getConfigObject('config');
+        $globalConfig = $configManager->getConfigArray('config');
         $options = [
-            'enabled' => $globalConfig->Hierarchy->showTree ?? false,
+            'enabled' => $globalConfig['Hierarchy']['showTree'] ?? false,
         ];
 
         // Load driver-specific configuration:

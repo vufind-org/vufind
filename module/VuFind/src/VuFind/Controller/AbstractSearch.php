@@ -670,9 +670,8 @@ class AbstractSearch extends AbstractBase
      */
     protected function getRangeFieldList($config, $section, $filter)
     {
-        $config = $this->getService(\VuFind\Config\ConfigManager::class)->getConfigObject($config);
-        $fields = isset($config->SpecialFacets->$section)
-            ? $config->SpecialFacets->$section->toArray() : [];
+        $config = $this->getService(\VuFind\Config\ConfigManager::class)->getConfigArray($config);
+        $fields = $config['SpecialFacets'][$section] ?? [];
 
         if (!empty($filter)) {
             $fields = array_intersect($fields, $filter);
@@ -841,7 +840,7 @@ class AbstractSearch extends AbstractBase
         $section = $params[1] ?? 'CheckboxFacets';
 
         // Load config file:
-        $config = $this->getService(\VuFind\Config\ConfigManager::class)->getConfigObject($config);
+        $config = $this->getService(\VuFind\Config\ConfigManager::class)->getConfigArray($config);
 
         // Process checkbox settings in config:
         $flipCheckboxes = false;
@@ -849,8 +848,7 @@ class AbstractSearch extends AbstractBase
             $section = substr($section, 1);
             $flipCheckboxes = true;
         }
-        $checkboxFacets = ($section && isset($config->$section))
-            ? $config->$section->toArray() : [];
+        $checkboxFacets = ($section && isset($config['$section'])) ? $config['$section'] : [];
         if ($flipCheckboxes) {
             $checkboxFacets = array_flip($checkboxFacets);
         }

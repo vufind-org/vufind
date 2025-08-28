@@ -214,7 +214,7 @@ class DeduplicationListener
     protected function fetchLocalRecords($event)
     {
         $dataSourceConfig = $this->getService(\VuFind\Config\ConfigManager::class)
-            ->getConfigObject($this->dataSourceConfig);
+            ->getConfigArray($this->dataSourceConfig);
         $recordSources = $this->getActiveRecordSources($event);
         $sourcePriority = $this->determineSourcePriority($recordSources);
         $command = $event->getParam('command');
