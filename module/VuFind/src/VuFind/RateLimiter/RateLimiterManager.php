@@ -224,7 +224,7 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
                         );
                         $turnstileIgnoredLimit = $turnstileIgnoredLimiter->consume(1);
                         if (!$turnstileIgnoredLimit->isAccepted()) {
-                            $this->verboseDebug('No more ignoring the challenge.');
+                            $this->verboseDebug('Turnstile ignored limit exceeded.');
                             $this->turnstile->setResult($policyId, $this->clientIp, false);
                             $result['presentTurnstileChallenge'] = false;
                         } else {
