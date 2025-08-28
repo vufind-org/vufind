@@ -51,7 +51,6 @@ class RejectAllTest extends \PHPUnit\Framework\TestCase
     public function testReserve()
     {
         $policy = new RejectAll();
-
         $this->expectException(ReserveNotSupportedException::class);
         $policy->reserve(42);
     }
