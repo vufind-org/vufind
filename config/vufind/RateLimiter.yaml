@@ -110,10 +110,10 @@ Storage:
 # turnstileRateLimiterSettings Defined like rateLimiterSettings, but when the limit is
 #                              reached, a Turnstile challenge is used instead of simply
 #                              returning a 429. The challenge result is cached. 
+#                              To show the challenge immediately, use policy reject_all.
 #                              Failing the challenge results in standard 429 behavior.
 #                              Passing the challenge bypasses this Turnstile check, but
 #                              note the rateLimiterSettings quota is still separately applied.
-#                              To show the challenge immediately, use policy reject_all.
 #                              Default (not defined) means don't use Turnstile.
 #
 # addHeaders            Whether to add X-RateLimit-* headers (default is false)
