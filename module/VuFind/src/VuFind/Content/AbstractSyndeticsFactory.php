@@ -80,7 +80,7 @@ class AbstractSyndeticsFactory implements FactoryInterface
             ? substr($requestedName, 0, strlen($requestedName) - 4) : $requestedName;
 
         return new $className(
-            isset($config['Syndetics']['use_ssl']) && $config['Syndetics']['use_ssl'],
+            $config['Syndetics']['use_ssl'] ?? false,
             $plus,
             $config['Syndetics']['timeout'] ?? 10
         );
