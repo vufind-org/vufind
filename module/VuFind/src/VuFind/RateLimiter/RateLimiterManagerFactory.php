@@ -135,7 +135,7 @@ class RateLimiterManagerFactory implements FactoryInterface
         }
 
         $rateLimiterConfig = $policy[$configSection] ?? [];
-        if ('reject_all' == $rateLimiterConfig['policy'] ?? null) {
+        if ('reject_all' === ($rateLimiterConfig['policy'] ?? null)) {
             return new RejectAll();
         }
         $rateLimiterConfig['id'] = $policyId;
