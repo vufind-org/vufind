@@ -100,10 +100,14 @@ class CachingHttpStreamWrapper
         }
 
         stream_wrapper_unregister('http');
-        stream_wrapper_register('http', __CLASS__, STREAM_IS_URL);
+        // Note: STREAM_IS_URL would cause the stream to be blocked by PHP's allow_url_fopen, but we need to allow it
+        // (the remote files will never get executed, so this does not affect security):
+        stream_wrapper_register('http', __CLASS__/*, STREAM_IS_URL*/);
 
         stream_wrapper_unregister('https');
-        stream_wrapper_register('https', __CLASS__, STREAM_IS_URL);
+        // Note: STREAM_IS_URL would cause the stream to be blocked by PHP's allow_url_fopen, but we need to allow it
+        // (the remote files will never get executed, so this does not affect security):
+        stream_wrapper_register('https', __CLASS__/*, STREAM_IS_URL*/);
 
         self::$enabled = true;
         self::$httpService = $httpService;
