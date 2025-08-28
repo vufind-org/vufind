@@ -34,6 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Exception\BadConfig;
 
 /**
  * Generic factory suitable for most resolver drivers.
@@ -66,6 +67,9 @@ class AbstractBaseFactory implements FactoryInterface
         ?array $options = null
     ) {
         $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config');
+        if (!isset($config['OpenURL']['url'])) {
+            throw new BadConfig('OpenURL url is not set.');
+        }
         return new $requestedName(
             $config['OpenURL']['url'],
             ...($options ?: [])
