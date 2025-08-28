@@ -319,6 +319,11 @@ a.authority {
       }
     }
   }
+  .record-child-collections {
+    .contained-in:not(:last-child) {
+      padding-bottom: 0.5rem;
+    }
+  }
 }
 .record-alt-titles {
   color: $gray-slightly-lighter;
