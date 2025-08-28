@@ -286,7 +286,7 @@ class Preview extends AbstractPlugin
     protected function createDOMDocumentWithDefaultNamespace(string $xml, string $format): DOMDocument
     {
         $document = new DOMDocument();
-        $document->preserveWhiteSpace = true;
+        $document->preserveWhiteSpace = false;
         $document->loadXML($xml);
 
         // Pretty-print:
@@ -386,6 +386,8 @@ class Preview extends AbstractPlugin
         }
 
         // Reload for any changes to take effect:
+        $document = new DOMDocument();
+        $document->preserveWhiteSpace = true;
         $document->loadXML($xml);
 
         return $document;
