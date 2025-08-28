@@ -30,6 +30,10 @@
 namespace VuFind\Db;
 
 use Composer\Semver\Comparator;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Exception;
+
+use function get_class;
 
 /**
  * Database migration manager.
@@ -42,6 +46,27 @@ use Composer\Semver\Comparator;
  */
 class MigrationManager
 {
+    /**
+     * Active database platform.
+     *
+     * @var string
+     */
+    protected $platform;
+
+    /**
+     * Constructor
+     *
+     * @param Connection $connection A database connection (with read rights)
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function __construct(protected Connection $connection)
+    {
+        $rawPlatform = strtolower(get_class($connection->getDatabasePlatform()));
+        $this->platform = str_contains($rawPlatform, 'postgres') ? 'pgsql' : 'mysql';
+    }
+
     /**
      * Given a directory, retrieve a list of .sql migration files within it.
      *
@@ -65,15 +90,14 @@ class MigrationManager
     /**
      * Given a database platform and an old version, return a list of migrations that should be applied.
      *
-     * @param string $platform   Platform (mysql or pgsql)
      * @param string $oldVersion Version we're upgrading from
      *
      * @return string[]
      */
-    public function getMigrations(string $platform, string $oldVersion): array
+    public function getMigrations(string $oldVersion): array
     {
         $matches = [];
-        $migrationPath = APPLICATION_PATH . '/module/VuFind/sql/migrations/' . $platform;
+        $migrationPath = APPLICATION_PATH . '/module/VuFind/sql/migrations/' . $this->platform;
         $dir = opendir($migrationPath);
         // Make sure version number at least includes a ".0" on the end:
         if (!str_contains($oldVersion, '.')) {
@@ -87,5 +111,48 @@ class MigrationManager
         closedir($dir);
         natsort($matches);
         return $matches;
+    }
+
+    /**
+     * Apply a single database migration string.
+     *
+     * @param string      $migration  Migration file to apply
+     * @param ?Connection $connection Database connection to use for applying migrations
+     * (if null, the method returns the SQL to apply without actually writing to the database)
+     *
+     * @return string Processed migration SQL
+     */
+    public function applyMigration(string $migration, ?Connection $connection): string
+    {
+        $output = '';
+        $sql = file_get_contents($migration);
+        foreach (explode(';', $sql) as $sqlLine) {
+            $trimmedLine = trim($sqlLine);
+            if (!empty($trimmedLine)) {
+                if ($connection) {
+                    $connection->executeQuery($trimmedLine);
+                }
+                $output .= "$trimmedLine;\n";
+            }
+        }
+        return $output;
+    }
+
+    /**
+     * Apply a batch of database migrations.
+     *
+     * @param string[]    $migrations Migration files to apply
+     * @param ?Connection $connection Database connection to use for applying migrations
+     * (if null, the method returns the SQL to apply without actually writing to the database)
+     *
+     * @return string Combined migration SQL
+     */
+    public function applyMigrations(array $migrations, ?Connection $connection): string
+    {
+        $output = '';
+        foreach ($migrations as $migration) {
+            $output .= $this->applyMigration($migration, $connection);
+        }
+        return $output;
     }
 }

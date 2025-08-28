@@ -467,6 +467,7 @@ $config = [
             'VuFind\Db\ConnectionFactory' => 'VuFind\Db\ConnectionFactoryFactory',
             'VuFind\Db\Connection' => 'VuFind\Db\ConnectionFactory',
             'VuFind\Db\Entity\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\Db\MigrationManager' => 'VuFind\Db\MigrationManagerFactory',
             'VuFind\Db\PersistenceManager' => 'VuFind\Db\PersistenceManagerFactory',
             'VuFind\Db\Service\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\DigitalContent\OverdriveConnector' => 'VuFind\DigitalContent\OverdriveConnectorFactory',
