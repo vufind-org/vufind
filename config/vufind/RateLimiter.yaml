@@ -111,8 +111,8 @@ Storage:
 #                              reached, a Turnstile challenge is used instead of simply
 #                              returning a 429. The challenge result is cached. 
 #                              Failing the challenge results in standard 429 behavior.
-#                              Passing the challenge bypasses this check, but note the
-#                              rateLimiterSettings quota is still separately applied.
+#                              Passing the challenge bypasses this Turnstile check, but
+#                              note the rateLimiterSettings quota is still separately applied.
 #                              To show the challenge immediately, use policy reject_all.
 #                              Default (not defined) means don't use Turnstile.
 #
