@@ -68,18 +68,17 @@ class SearchBoxFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class);
-        $mainConfig = $config->get('config');
-        $searchboxConfig = $config->get('searchbox')->toArray();
+        $configManager = $container->get(\VuFind\Config\ConfigManager::class);
+        $mainConfig = $configManager->getConfigArray('config');
+        $searchboxConfig = $configManager->getConfigArray('searchbox');
         $includeAlphaOptions
             = $searchboxConfig['General']['includeAlphaBrowse'] ?? false;
         return new $requestedName(
             $container->get(\VuFind\Search\Options\PluginManager::class),
             $searchboxConfig,
-            isset($mainConfig->SearchPlaceholder)
-                ? $mainConfig->SearchPlaceholder->toArray() : [],
-            $includeAlphaOptions && isset($mainConfig->AlphaBrowse_Types)
-                ? $mainConfig->AlphaBrowse_Types->toArray() : []
+            $mainConfig['SearchPlaceholder'] ?? [],
+            $includeAlphaOptions && isset($mainConfig['AlphaBrowse_Types'])
+                ? $mainConfig['AlphaBrowse_Types'] : []
         );
     }
 }

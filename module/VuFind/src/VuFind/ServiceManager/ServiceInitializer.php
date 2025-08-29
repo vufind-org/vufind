@@ -56,8 +56,7 @@ class ServiceInitializer implements InitializerInterface
         static $enabled = null;
         if (null === $enabled) {
             // Return true if Record Cache is enabled for any data source
-            $cacheConfig = $sm->get(\VuFind\Config\PluginManager::class)
-                ->get('RecordCache');
+            $cacheConfig = $sm->get(\VuFind\Config\ConfigManager::class)->getConfigArray('RecordCache');
             $enabled = false;
             foreach ($cacheConfig as $section) {
                 foreach ($section as $setting) {
@@ -84,11 +83,6 @@ class ServiceInitializer implements InitializerInterface
      */
     public function __invoke(ContainerInterface $sm, $instance)
     {
-        if ($instance instanceof \VuFind\Db\Table\DbTableAwareInterface) {
-            $instance->setDbTableManager(
-                $sm->get(\VuFind\Db\Table\PluginManager::class)
-            );
-        }
         if ($instance instanceof \VuFind\Db\Service\DbServiceAwareInterface) {
             $instance->setDbServiceManager(
                 $sm->get(\VuFind\Db\Service\PluginManager::class)

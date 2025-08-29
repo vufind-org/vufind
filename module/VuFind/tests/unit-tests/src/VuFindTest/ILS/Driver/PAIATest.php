@@ -323,6 +323,8 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
     protected $profileTestResult = [
         'firstname' => 'Susan Q.',
         'lastname' => 'Nothing',
+        'birthdate' => null,
+        'expiration_date' => null,
         'address1' => 'No street at all 8, D-21073 Hamburg',
         'address2' => null,
         'city' => null,
@@ -334,6 +336,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
         'expires' => '12-31-9999',
         'statuscode' => 0,
         'canWrite' => true,
+        'home_library' => null,
     ];
 
     /*******************

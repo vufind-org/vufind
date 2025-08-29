@@ -85,7 +85,7 @@ class LoggerFactory implements FactoryInterface
         // Make Writers
         $filters = explode(',', $error_types);
         $writer = new Writer\Db(
-            $container->get(\Laminas\Db\Adapter\Adapter::class),
+            $container->get(\VuFind\Db\Connection::class),
             $table_name,
             $columnMapping
         );
@@ -259,8 +259,7 @@ class LoggerFactory implements FactoryInterface
      */
     protected function configureLogger(ContainerInterface $container, Logger $logger)
     {
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
+        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config');
 
         // Add a no-op writer so fatal errors are not triggered if log messages are
         // sent during the initialization process.

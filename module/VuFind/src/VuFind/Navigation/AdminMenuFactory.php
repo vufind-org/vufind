@@ -64,14 +64,13 @@ class AdminMenuFactory extends AbstractMenuFactory
         $requestedName,
         ?array $options = null
     ) {
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('Overdrive');
+        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('Overdrive');
         return parent::__invoke(
             $container,
             $requestedName,
             [
                 'AdminMenu.yaml',
-                $config->Overdrive->showOverdriveAdminMenu ?? false,
+                $config['Overdrive']['showOverdriveAdminMenu'] ?? false,
             ]
         );
     }

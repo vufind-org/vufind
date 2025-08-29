@@ -68,18 +68,13 @@ class CartFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $active = isset($config->Site->showBookBag)
-            ? (bool)$config->Site->showBookBag : false;
-        $size = $config->Site->bookBagMaxSize ?? 100;
-        $activeInSearch = $config->Site->bookbagTogglesInSearch ?? true;
+        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config')['Site'];
         return new $requestedName(
             $container->get(\VuFind\Record\Loader::class),
             $container->get(\VuFind\Cookie\CookieManager::class),
-            $size,
-            $active,
-            $activeInSearch
+            $config['bookBagMaxSize'] ?? 100,
+            $config['showBookBag'] ?? false,
+            $config['bookbagTogglesInSearch'] ?? true
         );
     }
 }

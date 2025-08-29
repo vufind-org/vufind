@@ -193,6 +193,16 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
                 . ', retry-after: ' . $result['retryAfter']
                 . ', limit: ' . $result['requestLimit']
             );
+            if (isset($turnstileLimit)) {
+                $this->verboseDebug(
+                    'Turnstile: '
+                    . ($turnstileLimit->isAccepted() ? 'Accepted' : 'Refused')
+                    . " by policy '$policyId'"
+                    . ', remaining: ' . $turnstileLimit->getRemainingTokens()
+                    . ', retry-after: ' . $turnstileLimit->getRetryAfter()->getTimestamp() - time()
+                    . ', limit: ' . $turnstileLimit->getLimit()
+                );
+            }
 
             // Add headers if configured:
             if ($this->config['Policies'][$policyId]['addHeaders'] ?? false) {
@@ -211,6 +221,28 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
                     $result['allow'] = false;
                     $result['message'] = $this->getTooManyRequestsResponseMessage($event, $result);
                     $result['presentTurnstileChallenge'] = ($priorTurnstileResult === null);
+                    if (
+                        $result['presentTurnstileChallenge'] &&
+                        ($this->config['Policies'][$policyId]['turnstileIgnoredRateLimiterSettings'] ?? false)
+                    ) {
+                        $turnstileIgnoredLimiter = ($this->rateLimiterFactoryCallback)(
+                            $this->config,
+                            $policyId,
+                            $this->clientIp,
+                            $this->userId,
+                            'turnstileIgnoredRateLimiterSettings'
+                        );
+                        $turnstileIgnoredLimit = $turnstileIgnoredLimiter->consume(1);
+                        if (!$turnstileIgnoredLimit->isAccepted()) {
+                            $this->verboseDebug('Turnstile ignored limit exceeded.');
+                            $this->turnstile->setResult($policyId, $this->clientIp, false);
+                            $result['presentTurnstileChallenge'] = false;
+                        } else {
+                            $this->verboseDebug(
+                                'Turnstile ignored limit down to ' . $turnstileIgnoredLimit->getRemainingTokens()
+                            );
+                        }
+                    }
                     return $result;
                 }
             }

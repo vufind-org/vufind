@@ -68,13 +68,12 @@ class CoverControllerFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
-        $configArray = $config?->Content?->toArray() ?? [];
+        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config')['Content'] ?? [];
         return new $requestedName(
             $container->get(\VuFind\Cover\Loader::class),
             $container->get(\VuFind\Cover\CachingProxy::class),
             $container->get(\VuFind\Session\Settings::class),
-            $configArray
+            $config
         );
     }
 }

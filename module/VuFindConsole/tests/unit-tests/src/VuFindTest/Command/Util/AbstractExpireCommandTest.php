@@ -33,7 +33,6 @@ use DateTime;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Console\Tester\CommandTester;
 use VuFind\Db\Service\Feature\DeleteExpiredInterface;
-use VuFind\Db\Table\Gateway;
 use VuFindConsole\Command\Util\AbstractExpireCommand;
 
 /**
@@ -73,16 +72,23 @@ class AbstractExpireCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Age parameter to use when testing illegal age input.
      *
-     * @var int
+     * @var float
      */
-    protected $illegalAge = 1;
+    protected $illegalAge = 1.0;
 
     /**
      * Expected minimum age in error message.
      *
-     * @var int
+     * @var float
      */
-    protected $expectedMinAge = 2;
+    protected $expectedMinAge = 2.0;
+
+    /**
+     * Expected threshold.
+     *
+     * @var float
+     */
+    protected $expectedThreshold = 2.0;
 
     /**
      * Test an illegal age parameter.
@@ -171,13 +177,13 @@ class AbstractExpireCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Get the command class
      *
-     * @param Gateway|DeleteExpiredInterface $service Table to process
-     * @param DateTime                       $date    Expiration date threshold
+     * @param DeleteExpiredInterface $service Table to process
+     * @param DateTime               $date    Expiration date threshold
      *
      * @return MockObject&AbstractExpireCommand
      */
     protected function getCommand(
-        Gateway|DeleteExpiredInterface $service,
+        DeleteExpiredInterface $service,
         DateTime $date
     ): MockObject&AbstractExpireCommand {
         $command = $this->getMockBuilder($this->targetClass)
@@ -186,7 +192,7 @@ class AbstractExpireCommandTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $command->expects($this->once())
             ->method('getDateThreshold')
-            ->with(2)
+            ->with($this->expectedThreshold)
             ->willReturn($date);
         return $command;
     }

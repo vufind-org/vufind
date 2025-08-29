@@ -69,10 +69,8 @@ class AlphaBrowseFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         $helpers = $container->get('ViewHelperManager');
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $options = isset($config->AlphaBrowse)
-            ? $config->AlphaBrowse->toArray() : [];
+        $options = $container->get(\VuFind\Config\ConfigManager::class)
+            ->getConfigArray('config')['AlphaBrowse'] ?? [];
         return new $requestedName($helpers->get('url'), $options);
     }
 }
