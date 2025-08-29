@@ -623,6 +623,14 @@
       </not>
       <then>
         <copy file="${localdir}/httpd-vufind.conf" tofile="${apacheconfdir}/vufindtest.conf" />
+        <!-- Enable testing mode -->
+        <reflexive file="${apacheconfdir}/vufindtest.conf">
+          <filterchain>
+            <replaceregexp>
+              <regexp pattern="#SetEnv VUFIND_ENV development" replace="SetEnv VUFIND_ENV testing" />
+            </replaceregexp>
+          </filterchain>
+        </reflexive>
         <if>
           <istrue value="${phpunit_remote_coverage}" />
           <then>
