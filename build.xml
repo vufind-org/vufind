@@ -39,6 +39,7 @@
   <property name="vufinddb" value="vufind_test" />
   <property name="vufinddbuser" value="vufindtest" />
   <property name="vufinddbpass" value="vufindtestpass" />
+  <property name="vufind_env" value="testing" />
   <property name="dbtype" value="mysql" /><!-- use pgsql for PostgreSQL -->
   <property name="mysqlhost" value="localhost" />
   <property name="mysqlport" value="3306" />
@@ -622,11 +623,19 @@
         <equals arg1="${apachectl}" arg2="" />
       </not>
       <then>
-        <copy file="${localdir}/httpd-vufind.conf" tofile="${apacheconfdir}/vufindtest.conf" />
+        <!-- Enable testing mode -->
+        <reflexive file="${localdir}/httpd-vufind.conf">
+          <filterchain>
+            <replaceregexp>
+              <regexp pattern="#SetEnv VUFIND_ENV development" replace="SetEnv VUFIND_ENV ${vufind_env}" />
+            </replaceregexp>
+          </filterchain>
+        </reflexive>
         <if>
           <istrue value="${phpunit_remote_coverage}" />
           <then>
-            <reflexive file="${apacheconfdir}/vufindtest.conf">
+            <!-- Enable code coverage support -->
+            <reflexive file="${localdir}/httpd-vufind.conf">
               <filterchain>
                 <replaceregexp>
                   <regexp pattern="#SetEnv VUFIND_CODE_COVERAGE 1" replace="SetEnv VUFIND_CODE_COVERAGE 1" />
@@ -635,6 +644,8 @@
             </reflexive>
           </then>
         </if>
+        <!-- Copy the file and restart Apache -->
+        <copy file="${localdir}/httpd-vufind.conf" tofile="${apacheconfdir}/vufindtest.conf" />
         <exec executable="${sh}" passthru="true">
           <arg line="-c &apos;${apachectl} restart&apos;" />
         </exec>

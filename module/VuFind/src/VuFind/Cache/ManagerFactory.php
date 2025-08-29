@@ -68,9 +68,10 @@ class ManagerFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
+        $configManager = $container->get(\VuFind\Config\ConfigManager::class);
         return new $requestedName(
-            $container->get(\VuFind\Config\PluginManager::class)->get('config'),
-            $container->get(\VuFind\Config\PluginManager::class)->get('searches'),
+            $configManager->getConfigObject('config'),
+            $configManager->getConfigObject('searches'),
             $container->get(\Laminas\Cache\Service\StorageAdapterFactory::class)
         );
     }

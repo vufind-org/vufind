@@ -70,8 +70,7 @@ class ObalkyKnihServiceFactory implements FactoryInterface
                 'Unexpected options passed to factory.'
             );
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('obalkyknih');
+        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('obalkyknih');
         if (!isset($config->ObalkyKnih)) {
             throw new ServiceNotCreatedException(
                 'ObalkyKnih service is not properly configured'

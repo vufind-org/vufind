@@ -112,8 +112,7 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $this->config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get($this->configName);
+        $this->config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject($this->configName);
         $this->container = $container;
         return $this->getConnection();
     }

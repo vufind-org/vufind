@@ -73,13 +73,12 @@ class SessionCsrfFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
+        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config');
         $sessionManager = $container->get(\Laminas\Session\SessionManager::class);
         return new $requestedName(
             [
                 'session' => new \Laminas\Session\Container('csrf', $sessionManager),
-                'salt' => $config->Security->HMACkey ?? 'VuFindCsrfSalt',
+                'salt' => $config['Security']['HMACkey'] ?? 'VuFindCsrfSalt',
             ]
         );
     }

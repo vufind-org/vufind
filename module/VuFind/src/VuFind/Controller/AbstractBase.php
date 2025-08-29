@@ -462,7 +462,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     public function getConfig($id = 'config')
     {
-        return $this->getService(\VuFind\Config\PluginManager::class)->get($id);
+        return $this->getService(\VuFind\Config\ConfigManager::class)->getConfigObject($id);
     }
 
     /**
