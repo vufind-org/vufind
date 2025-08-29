@@ -39,6 +39,7 @@
   <property name="vufinddb" value="vufind_test" />
   <property name="vufinddbuser" value="vufindtest" />
   <property name="vufinddbpass" value="vufindtestpass" />
+  <property name="vufind_env" value="testing" />
   <property name="dbtype" value="mysql" /><!-- use pgsql for PostgreSQL -->
   <property name="mysqlhost" value="localhost" />
   <property name="mysqlport" value="3306" />
@@ -627,7 +628,7 @@
         <reflexive file="${apacheconfdir}/vufindtest.conf">
           <filterchain>
             <replaceregexp>
-              <regexp pattern="#SetEnv VUFIND_ENV development" replace="SetEnv VUFIND_ENV testing" />
+              <regexp pattern="#SetEnv VUFIND_ENV development" replace="SetEnv VUFIND_ENV ${vufind_env}" />
             </replaceregexp>
           </filterchain>
         </reflexive>
