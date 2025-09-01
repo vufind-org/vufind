@@ -116,7 +116,7 @@
               <div>
                 <?=$this->transEsc('Use instead') ?>:
                 <ul>
-                  <?php foreach ($item['useInstead'] as $heading): ?>
+                  <?php foreach (array_unique($item['useInstead']) as $heading): ?>
                   <li><a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', [], ['query' => ['from' => $heading] + $baseQuery]))?>"><?=$this->escapeHtml($heading)?></a></li>
                   <?php endforeach; ?>
                 </ul>
@@ -127,7 +127,7 @@
               <div>
                 <?=$this->transEsc('See also') ?>:
                 <ul>
-                  <?php foreach ($item['seeAlso'] as $heading): ?>
+                  <?php foreach (array_unique($item['seeAlso']) as $heading): ?>
                   <li><a href="<?=$this->escapeHtmlAttr($this->url('alphabrowse-home', [], ['query' => ['from' => $heading] + $baseQuery]))?>"><?=$this->escapeHtml($heading)?></a></li>
                   <?php endforeach; ?>
                 </ul>

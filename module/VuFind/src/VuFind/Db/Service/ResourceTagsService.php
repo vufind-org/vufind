@@ -30,6 +30,8 @@
 namespace VuFind\Db\Service;
 
 use DateTime;
+use Doctrine\ORM\Tools\Pagination\Paginator as DoctrinePaginator;
+use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as DoctrinePaginatorAdapter;
 use Laminas\Paginator\Paginator;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\ResourceTagsEntityInterface;
@@ -37,7 +39,8 @@ use VuFind\Db\Entity\TagsEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
 
-use function is_int;
+use function count;
+use function in_array;
 
 /**
  * Database service for resource_tags.
@@ -49,11 +52,37 @@ use function is_int;
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 class ResourceTagsService extends AbstractDbService implements
+    DbServiceAwareInterface,
     ResourceTagsServiceInterface,
-    Feature\TransactionInterface,
-    \VuFind\Db\Table\DbTableAwareInterface
+    Feature\TransactionInterface
 {
-    use \VuFind\Db\Table\DbTableAwareTrait;
+    use DbServiceAwareTrait;
+
+    /**
+     * Given an array for sorting database results, make sure the tag field is
+     * sorted in a case-insensitive fashion and that no illegal fields are
+     * specified.
+     *
+     * @param array $order Order settings
+     *
+     * @return array
+     */
+    protected function formatTagOrder(array $order)
+    {
+        // This array defines legal sort fields:
+        $legalSorts = ['tag', 'title', 'username', 'posted asc', 'posted desc'];
+        $newOrder = [];
+        foreach ($order as $next) {
+            if (in_array($next, $legalSorts)) {
+                if ('posted asc' === $next || 'posted desc' === $next) {
+                    $newOrder[] = $next;
+                } else {
+                    $newOrder[] = $next . 'Sort ASC';
+                }
+            }
+        }
+        return $newOrder;
+    }
 
     /**
      * Begin a database transaction.
@@ -63,7 +92,7 @@ class ResourceTagsService extends AbstractDbService implements
      */
     public function beginTransaction(): void
     {
-        $this->getDbTable('ResourceTags')->beginTransaction();
+        $this->entityManager->getConnection()->beginTransaction();
     }
 
     /**
@@ -74,7 +103,7 @@ class ResourceTagsService extends AbstractDbService implements
      */
     public function commitTransaction(): void
     {
-        $this->getDbTable('ResourceTags')->commitTransaction();
+        $this->entityManager->getConnection()->commit();
     }
 
     /**
@@ -85,7 +114,7 @@ class ResourceTagsService extends AbstractDbService implements
      */
     public function rollBackTransaction(): void
     {
-        $this->getDbTable('ResourceTags')->rollbackTransaction();
+        $this->entityManager->getConnection()->rollBack();
     }
 
     /**
@@ -110,8 +139,51 @@ class ResourceTagsService extends AbstractDbService implements
         int $limit = 20,
         bool $caseSensitiveTags = false
     ): Paginator {
-        return $this->getDbTable('ResourceTags')
-            ->getResourceTags($userId, $resourceId, $tagId, $order, $page, $limit, $caseSensitiveTags);
+        $tag = $caseSensitiveTags ? 't.tag' : 'lower(t.tag)';
+        $dql = 'SELECT rt.id, ' . $tag . ' AS tag, rt.posted AS posted, u.username AS username, r.title AS title,'
+            . ' t.id AS tag_id, r.id AS resource_id, r.source AS source, r.recordId AS record_id, u.id AS user_id,'
+            . ' lower(t.tag) AS HIDDEN tagSort, lower(u.username) AS HIDDEN usernameSort,'
+            . ' lower(r.title) AS HIDDEN titleSort '
+            . 'FROM ' . ResourceTagsEntityInterface::class . ' rt '
+            . 'LEFT JOIN rt.resource r '
+            . 'LEFT JOIN rt.tag t '
+            . 'LEFT JOIN rt.user u';
+        $parameters = $dqlWhere = [];
+        if (null !== $userId) {
+            $dqlWhere[] = 'rt.user = :user';
+            $parameters['user'] = $userId;
+        }
+        if (null !== $resourceId) {
+            $dqlWhere[] = 'r.id = :resource';
+            $parameters['resource'] = $resourceId;
+        }
+        if (null !== $tagId) {
+            $dqlWhere[] = 'rt.tag = :tag';
+            $parameters['tag'] = $tagId;
+        }
+        if (!empty($dqlWhere)) {
+            $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);
+        }
+        $sanitizedOrder = $this->formatTagOrder(
+            (array)($order ?? ['username', 'tag', 'title'])
+        );
+        $dql .= ' ORDER BY ' . implode(', ', $sanitizedOrder);
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+
+        if (null !== $page) {
+            $query->setMaxResults($limit);
+            $query->setFirstResult($limit * ($page - 1));
+        }
+
+        $doctrinePaginator = new DoctrinePaginator($query);
+        $doctrinePaginator->setUseOutputWalkers(false);
+        $paginator = new Paginator(new DoctrinePaginatorAdapter($doctrinePaginator));
+        if (null !== $page) {
+            $paginator->setCurrentPageNumber($page);
+            $paginator->setItemCountPerPage($limit);
+        }
+        return $paginator;
     }
 
     /**
@@ -121,7 +193,7 @@ class ResourceTagsService extends AbstractDbService implements
      */
     public function createEntity(): ResourceTagsEntityInterface
     {
-        return $this->getDbTable('ResourceTags')->createRow();
+        return $this->entityPluginManager->get(ResourceTagsEntityInterface::class);
     }
 
     /**
@@ -142,41 +214,56 @@ class ResourceTagsService extends AbstractDbService implements
         UserListEntityInterface|int|null $listOrId = null,
         ?DateTime $posted = null
     ) {
-        $table = $this->getDbTable('ResourceTags');
-        $resourceId = is_int($resourceOrId) ? $resourceOrId : $resourceOrId?->getId();
-        $tagId = is_int($tagOrId) ? $tagOrId : $tagOrId->getId();
-        $userId = is_int($userOrId) ? $userOrId : $userOrId?->getId();
-        $listId = is_int($listOrId) ? $listOrId : $listOrId?->getId();
+        $tag = $this->getDoctrineReference(TagsEntityInterface::class, $tagOrId);
+        $dql = ' SELECT rt FROM ' . ResourceTagsEntityInterface::class . ' rt ';
+        $dqlWhere = ['rt.tag = :tag '];
+        $parameters = compact('tag');
 
-        $callback = function ($select) use ($resourceId, $tagId, $userId, $listId) {
-            $select->where->equalTo('resource_id', $resourceId)
-                ->equalTo('tag_id', $tagId);
-            if (null !== $listId) {
-                $select->where->equalTo('list_id', $listId);
-            } else {
-                $select->where->isNull('list_id');
-            }
-            if (null !== $userId) {
-                $select->where->equalTo('user_id', $userId);
-            } else {
-                $select->where->isNull('user_id');
-            }
-        };
-        $result = $table->select($callback)->current();
+        if (null !== $resourceOrId) {
+            $resource = $this->getDoctrineReference(ResourceEntityInterface::class, $resourceOrId);
+            $dqlWhere[] = 'rt.resource = :resource ';
+            $parameters['resource'] = $resource;
+        } else {
+            $resource = null;
+            $dqlWhere[] = 'rt.resource IS NULL ';
+        }
+
+        if (null !== $listOrId) {
+            $list = $this->getDoctrineReference(UserListEntityInterface::class, $listOrId);
+            $dqlWhere[] = 'rt.list = :list ';
+            $parameters['list'] = $list;
+        } else {
+            $list = null;
+            $dqlWhere[] = 'rt.list IS NULL ';
+        }
+
+        if (null !== $userOrId) {
+            $user = $this->getDoctrineReference(UserEntityInterface::class, $userOrId);
+            $dqlWhere[] = 'rt.user = :user';
+            $parameters['user'] = $user;
+        } else {
+            $user = null;
+            $dqlWhere[] = 'rt.user IS NULL ';
+        }
+        $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);
+
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $result = current($query->getResult());
 
         // Only create row if it does not already exist:
-        if (!$result) {
-            $result = $this->createEntity();
-            $result->resource_id = $resourceId;
-            $result->tag_id = $tagId;
-            if (null !== $listId) {
-                $result->list_id = $listId;
+        if (empty($result)) {
+            $row = $this->createEntity()
+                ->setResource($resource)
+                ->setTag($tag);
+            if (null !== $list) {
+                $row->setUserList($list);
             }
-            if (null !== $userId) {
-                $result->user_id = $userId;
+            if (null !== $user) {
+                $row->setUser($user);
             }
-            $result->setPosted($posted ?? new DateTime());
-            $this->persistEntity($result);
+            $row->setPosted($posted ?? new DateTime());
+            $this->persistEntity($row);
         }
     }
 
@@ -189,7 +276,50 @@ class ResourceTagsService extends AbstractDbService implements
      */
     public function deleteLinksByResourceTagsIdArray(array $ids): int
     {
-        return $this->getDbTable('ResourceTags')->deleteByIdArray($ids);
+        $dql = 'DELETE FROM ' . ResourceTagsEntityInterface::class . ' rt '
+            . 'WHERE rt.id IN (:ids)';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters(compact('ids'));
+        $query->execute();
+        return count($ids);
+    }
+
+    /**
+     * Support method for the other destroyResourceTagsLinksForUser methods.
+     *
+     * @param int|int[]|null          $resourceId  ID (or array of IDs) of resource(s) to
+     * unlink (null for ALL matching resources)
+     * @param UserEntityInterface|int $userOrId    ID or entity representing user
+     * @param int|int[]|null          $tagId       ID or array of IDs of tag(s) to unlink (null
+     * for ALL matching tags)
+     * @param array                   $extraWhere  Extra where clauses for query
+     * @param array                   $extraParams Extra parameters for query
+     *
+     * @return void
+     */
+    protected function destroyResourceTagsLinksForUserWithDoctrine(
+        int|array|null $resourceId,
+        UserEntityInterface|int $userOrId,
+        int|array|null $tagId = null,
+        $extraWhere = [],
+        $extraParams = [],
+    ) {
+        $dql = 'DELETE FROM ' . ResourceTagsEntityInterface::class . ' rt ';
+
+        $dqlWhere = ['rt.user = :user '];
+        $parameters = ['user' => $this->getDoctrineReference(UserEntityInterface::class, $userOrId)];
+        if (null !== $resourceId) {
+            $dqlWhere[] = 'rt.resource IN (:resource) ';
+            $parameters['resource'] = (array)$resourceId;
+        }
+        if (null !== $tagId) {
+            $dqlWhere[] = 'rt.tag IN (:tag) ';
+            $parameters['tag'] = (array)$tagId;
+        }
+        $dql .= ' WHERE ' . implode(' AND ', array_merge($dqlWhere, $extraWhere));
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters + $extraParams);
+        $query->execute();
     }
 
     /**
@@ -210,21 +340,13 @@ class ResourceTagsService extends AbstractDbService implements
         UserListEntityInterface|int|null $listOrId = null,
         int|array|null $tagId = null
     ): void {
-        $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
-        $listId = $listOrId instanceof UserListEntityInterface ? $listOrId->getId() : $listOrId;
-        $callback = function ($select) use ($resourceId, $userId, $listId, $tagId) {
-            $select->where->equalTo('user_id', $userId);
-            if (null !== $resourceId) {
-                $select->where->in('resource_id', (array)$resourceId);
-            }
-            if (null !== $listId) {
-                $select->where->equalTo('list_id', $listId);
-            }
-            if (null !== $tagId) {
-                $select->where->in('tag_id', (array)$tagId);
-            }
-        };
-        $this->getDbTable('ResourceTags')->delete($callback);
+        $dqlWhere = $parameters = [];
+        if (null !== $listOrId) {
+            $listId = $listOrId instanceof UserListEntityInterface ? $listOrId->getId() : $listOrId;
+            $dqlWhere[] = 'rt.list = :list';
+            $parameters['list'] = $listId;
+        }
+        $this->destroyResourceTagsLinksForUserWithDoctrine($resourceId, $userOrId, $tagId, $dqlWhere, $parameters);
     }
 
     /**
@@ -242,18 +364,8 @@ class ResourceTagsService extends AbstractDbService implements
         UserEntityInterface|int $userOrId,
         int|array|null $tagId = null
     ): void {
-        $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
-        $callback = function ($select) use ($resourceId, $userId, $tagId) {
-            $select->where->equalTo('user_id', $userId);
-            if (null !== $resourceId) {
-                $select->where->in('resource_id', (array)$resourceId);
-            }
-            $select->where->isNull('list_id');
-            if (null !== $tagId) {
-                $select->where->in('tag_id', (array)$tagId);
-            }
-        };
-        $this->getDbTable('ResourceTags')->delete($callback);
+        $dqlWhere = ['rt.list IS NULL '];
+        $this->destroyResourceTagsLinksForUserWithDoctrine($resourceId, $userOrId, $tagId, $dqlWhere);
     }
 
     /**
@@ -272,18 +384,8 @@ class ResourceTagsService extends AbstractDbService implements
         UserEntityInterface|int $userOrId,
         int|array|null $tagId = null
     ): void {
-        $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
-        $callback = function ($select) use ($resourceId, $userId, $tagId) {
-            $select->where->equalTo('user_id', $userId);
-            if (null !== $resourceId) {
-                $select->where->in('resource_id', (array)$resourceId);
-            }
-            $select->where->isNotNull('list_id');
-            if (null !== $tagId) {
-                $select->where->in('tag_id', (array)$tagId);
-            }
-        };
-        $this->getDbTable('ResourceTags')->delete($callback);
+        $dqlWhere = ['rt.list IS NOT NULL '];
+        $this->destroyResourceTagsLinksForUserWithDoctrine($resourceId, $userOrId, $tagId, $dqlWhere);
     }
 
     /**
@@ -301,20 +403,18 @@ class ResourceTagsService extends AbstractDbService implements
         UserEntityInterface|int $userOrId,
         int|array|null $tagId = null
     ): void {
-        $listId = $listOrId instanceof UserListEntityInterface ? $listOrId->getId() : $listOrId;
-        $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
-        $callback = function ($select) use ($userId, $listId, $tagId) {
-            $select->where->equalTo('user_id', $userId);
-            // retrieve tags assigned to a user list and filter out user resource tags
-            // (resource_id is NULL for list tags).
-            $select->where->isNull('resource_id');
-            $select->where->equalTo('list_id', $listId);
-
-            if (null !== $tagId) {
-                $select->where->in('tag_id', (array)$tagId);
-            }
-        };
-        $this->getDbTable('ResourceTags')->delete($callback);
+        $list = $this->getDoctrineReference(UserListEntityInterface::class, $listOrId);
+        $user = $this->getDoctrineReference(UserEntityInterface::class, $userOrId);
+        $dql = 'DELETE FROM ' . ResourceTagsEntityInterface::class . ' rt '
+            . 'WHERE rt.user = :user AND rt.resource IS NULL AND rt.list = :list ';
+        $parameters = compact('user', 'list');
+        if (null !== $tagId) {
+            $dqlWhere[] = 'AND rt.tag IN (:tag) ';
+            $parameters['tag'] = (array)$tagId;
+        }
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $query->execute();
     }
 
     /**
@@ -331,7 +431,32 @@ class ResourceTagsService extends AbstractDbService implements
         ?int $resourceId = null,
         ?int $tagId = null
     ): array {
-        return $this->getDbTable('ResourceTags')->getUniqueResources($userId, $resourceId, $tagId)->toArray();
+        $dql = 'SELECT r.id AS resource_id, MAX(rt.tag) AS tag_id, '
+            . 'MAX(rt.list) AS list_id, MAX(rt.user) AS user_id, MAX(rt.id) AS id, '
+            . 'r.title AS title '
+            . 'FROM ' . ResourceTagsEntityInterface::class . ' rt '
+            . 'LEFT JOIN rt.resource r ';
+        $parameters = $dqlWhere = [];
+        if (null !== $userId) {
+            $dqlWhere[] = 'rt.user = :user';
+            $parameters['user'] = $userId;
+        }
+        if (null !== $resourceId) {
+            $dqlWhere[] = 'r.id = :resource';
+            $parameters['resource'] = $resourceId;
+        }
+        if (null !== $tagId) {
+            $dqlWhere[] = 'rt.tag = :tag';
+            $parameters['tag'] = $tagId;
+        }
+        if (!empty($dqlWhere)) {
+            $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);
+        }
+        $dql .= ' GROUP BY resource_id, title'
+            . ' ORDER BY title';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        return $query->getResult();
     }
 
     /**
@@ -350,8 +475,42 @@ class ResourceTagsService extends AbstractDbService implements
         ?int $tagId = null,
         bool $caseSensitive = false
     ): array {
-        return $this->getDbTable('ResourceTags')->getUniqueTags($userId, $resourceId, $tagId, $caseSensitive)
-            ->toArray();
+        if ($caseSensitive) {
+            $tagClause = 't.tag AS tag';
+            $sort = 'LOWER(t.tag), tag';
+        } else {
+            $tagClause = 'LOWER(t.tag) AS tag, MAX(t.tag) AS HIDDEN tagTiebreaker';
+            $sort = 'tag, tagTiebreaker';
+        }
+        $dql = 'SELECT MAX(r.id) AS resource_id, MAX(t.id) AS tag_id, '
+            . 'MAX(l.id) AS list_id, MAX(u.id) AS user_id, MAX(rt.id) AS id, '
+            . $tagClause
+            . ' FROM ' . ResourceTagsEntityInterface::class . ' rt '
+            . 'LEFT JOIN rt.resource r '
+            . 'LEFT JOIN rt.tag t '
+            . 'LEFT JOIN rt.list l '
+            . 'LEFT JOIN rt.user u';
+        $parameters = $dqlWhere = [];
+        if (null !== $userId) {
+            $dqlWhere[] = 'u.id = :user';
+            $parameters['user'] = $userId;
+        }
+        if (null !== $resourceId) {
+            $dqlWhere[] = 'r.id = :resource';
+            $parameters['resource'] = $resourceId;
+        }
+        if (null !== $tagId) {
+            $dqlWhere[] = 't.id = :tag';
+            $parameters['tag'] = $tagId;
+        }
+        if (!empty($dqlWhere)) {
+            $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);
+        }
+        $dql .= ' GROUP BY tag'
+            . ' ORDER BY ' . $sort;
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        return $query->getResult();
     }
 
     /**
@@ -368,7 +527,32 @@ class ResourceTagsService extends AbstractDbService implements
         ?int $resourceId = null,
         ?int $tagId = null
     ): array {
-        return $this->getDbTable('ResourceTags')->getUniqueUsers($userId, $resourceId, $tagId)->toArray();
+        $dql = 'SELECT MAX(rt.resource) AS resource_id, MAX(rt.tag) AS tag_id, '
+            . 'MAX(rt.list) AS list_id, u.id AS user_id, MAX(rt.id) AS id, '
+            . 'u.username AS username '
+            . 'FROM ' . ResourceTagsEntityInterface::class . ' rt '
+            . 'INNER JOIN rt.user u ';
+        $parameters = $dqlWhere = [];
+        if (null !== $userId) {
+            $dqlWhere[] = 'rt.user = :user';
+            $parameters['user'] = $userId;
+        }
+        if (null !== $resourceId) {
+            $dqlWhere[] = 'rt.resource = :resource';
+            $parameters['resource'] = $resourceId;
+        }
+        if (null !== $tagId) {
+            $dqlWhere[] = 'rt.tag = :tag';
+            $parameters['tag'] = $tagId;
+        }
+        if (!empty($dqlWhere)) {
+            $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);
+        }
+        $dql .= ' GROUP BY user_id, username'
+            . ' ORDER BY username';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        return $query->getResult();
     }
 
     /**
@@ -406,7 +590,12 @@ class ResourceTagsService extends AbstractDbService implements
      */
     public function getAnonymousCount(): int
     {
-        return $this->getDbTable('ResourceTags')->getAnonymousCount();
+        $dql = 'SELECT COUNT(rt.id) AS total '
+            . 'FROM ' . ResourceTagsEntityInterface::class . ' rt '
+            . 'WHERE rt.user IS NULL';
+        $query = $this->entityManager->createQuery($dql);
+        $stats = current($query->getResult());
+        return $stats['total'];
     }
 
     /**
@@ -418,8 +607,13 @@ class ResourceTagsService extends AbstractDbService implements
      */
     public function assignAnonymousTags(UserEntityInterface|int $userOrId): void
     {
-        $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
-        $this->getDbTable('ResourceTags')->assignAnonymousTags($userId);
+        $id = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
+        $dql = 'UPDATE ' . ResourceTagsEntityInterface::class . ' rt '
+            . 'SET rt.user = :id WHERE rt.user is NULL';
+        $parameters = compact('id');
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $query->execute();
     }
 
     /**
@@ -432,7 +626,30 @@ class ResourceTagsService extends AbstractDbService implements
      */
     public function changeResourceId(int $old, int $new): void
     {
-        $this->getDbTable('ResourceTags')->update(['resource_id' => $new], ['resource_id' => $old]);
+        $dql = 'UPDATE ' . ResourceTagsEntityInterface::class . ' e '
+            . 'SET e.resource = :new WHERE e.resource = :old';
+        $parameters = compact('new', 'old');
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $query->execute();
+    }
+
+    /**
+     * Get a list of duplicate resource_tags rows (this sometimes happens after merging IDs,
+     * for example after a Summon resource ID changes).
+     *
+     * @return array
+     */
+    protected function getDuplicateResourceLinks(): array
+    {
+        $dql = 'SELECT MIN(rt.resource) as resource_id, MiN(rt.tag) as tag_id, MIN(rt.list) as list_id, '
+            . 'MIN(rt.user) as user_id, COUNT(rt.resource) as cnt, MIN(rt.id) as id '
+            . 'FROM ' . ResourceTagsEntityInterface::class . ' rt '
+            . 'GROUP BY rt.resource, rt.tag, rt.list, rt.user '
+            . 'HAVING COUNT(rt.resource) > 1';
+        $query = $this->entityManager->createQuery($dql);
+        $result = $query->getResult();
+        return $result;
     }
 
     /**
@@ -442,6 +659,29 @@ class ResourceTagsService extends AbstractDbService implements
      */
     public function deduplicate(): void
     {
-        $this->getDbTable('ResourceTags')->deduplicate();
+        // match on all relevant IDs in duplicate group
+        // getDuplicates returns the minimum id in the set, so we want to
+        // delete all of the duplicates with a higher id value.
+        foreach ($this->getDuplicateResourceLinks() as $dupe) {
+            $dql = 'DELETE FROM ' . ResourceTagsEntityInterface::class . ' rt '
+                . 'WHERE rt.resource = :resource AND rt.tag = :tag '
+                . 'AND rt.user = :user AND rt.id > :id';
+            $parameters = [
+                'resource' => $dupe['resource_id'],
+                'user' => $dupe['user_id'],
+                'tag' => $dupe['tag_id'],
+                'id' =>  $dupe['id'],
+            ];
+            // List ID might be null (for record-level tags); this requires special handling.
+            if ($dupe['list_id'] !== null) {
+                $parameters['list'] = $dupe['list_id'];
+                $dql .= ' AND rt.list = :list ';
+            } else {
+                $dql .= ' AND rt.list IS NULL';
+            }
+            $query =  $this->entityManager->createQuery($dql);
+            $query->setParameters($parameters);
+            $query->execute();
+        }
     }
 }

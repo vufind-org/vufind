@@ -409,6 +409,27 @@ CREATE TABLE login_token (
 CREATE INDEX login_token_user_id_idx ON login_token (user_id);
 CREATE INDEX login_token_series_idx ON login_token (series);
 
+--
+-- Table structure for table `audit_event`
+--
+
+CREATE TABLE audit_event (
+  id SERIAL,
+  date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  type varchar(50) NOT NULL,
+  subtype varchar(50) NOT NULL,
+  user_id int,
+  session_id varchar(128),
+  username varchar(255),
+  client_ip varchar(255),
+  server_ip varchar(255),
+  server_name varchar(255),
+  message  varchar(255),
+  data json,
+  PRIMARY KEY (id)
+);
+CREATE INDEX audit_event_user_id_idx ON audit_event (user_id);
+
 -- --------------------------------------------------------
 
 --
@@ -480,6 +501,7 @@ ADD CONSTRAINT feedback_ibfk_1 FOREIGN KEY (user_id) REFERENCES "user" (id) ON D
 ADD CONSTRAINT feedback_ibfk_2 FOREIGN KEY (updated_by) REFERENCES "user" (id) ON DELETE SET NULL;
 
 
+--
 -- Constraints for table access_token
 --
 ALTER TABLE access_token
@@ -490,5 +512,11 @@ ADD CONSTRAINT access_token_ibfk_1 FOREIGN KEY (user_id) REFERENCES "user" (id) 
 --
 ALTER TABLE login_token
 ADD CONSTRAINT login_token_ibfk_1 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE;
+
+--
+-- Constraints for table audit_event
+--
+ALTER TABLE audit_event
+ADD CONSTRAINT audit_event_ibfk_1 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE SET NULL;
 
 -- --------------------------------------------------------

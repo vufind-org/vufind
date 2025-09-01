@@ -72,15 +72,15 @@ class TagsServiceFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
+        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config');
         $serviceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         return new $requestedName(
             $serviceManager->get(TagServiceInterface::class),
             $serviceManager->get(ResourceTagsServiceInterface::class),
             $serviceManager->get(UserListServiceInterface::class),
             $container->get(ResourcePopulator::class),
-            $config->Social->max_tag_length ?? 64,
-            $config->Social->case_sensitive_tags ?? false
+            $config['Social']['max_tag_length'] ?? 64,
+            $config['Social']['case_sensitive_tags'] ?? false
         );
     }
 }

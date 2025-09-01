@@ -32,11 +32,7 @@ namespace VuFindTest\Config;
 use VuFind\Config\ConfigManager;
 use VuFind\Config\PathResolver;
 use VuFind\Config\Upgrade;
-use VuFind\Exception\FileAccess;
-use VuFind\Feature\DirUtilityTrait;
-use VuFindTest\Feature\ConfigRelatedServicesTrait;
-use VuFindTest\Feature\FixtureTrait;
-use VuFindTest\Feature\LiveDetectionTrait;
+use VuFindTest\Integration\ConfigTestCase;
 
 /**
  * Config Upgrade Integration Test Class
@@ -47,78 +43,14 @@ use VuFindTest\Feature\LiveDetectionTrait;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ConfigUpgradeTest extends \PHPUnit\Framework\TestCase
+class ConfigUpgradeTest extends ConfigTestCase
 {
-    use LiveDetectionTrait;
-    use FixtureTrait;
-    use DirUtilityTrait;
-    use ConfigRelatedServicesTrait;
-
     /**
      * Target upgrade version
      *
      * @var string
      */
     protected static string $targetVersion = '11.0';
-
-    /**
-     * Path to base configurations
-     *
-     * @var string
-     */
-    protected string $baseDirPath;
-
-    /**
-     * Path to local dir configurations
-     *
-     * @var string
-     */
-    protected string $localDirPath;
-
-    /**
-     * Standard setup method.
-     *
-     * @return void
-     */
-    public function setUp(): void
-    {
-        // Give up if we're not running in CI:
-        if (!$this->continuousIntegrationRunning()) {
-            $this->markTestSkipped('Continuous integration not running.');
-            return;
-        }
-
-        $pathResolver = $this->getPathResolver();
-        $this->baseDirPath = $pathResolver->getBaseConfigDirPath();
-        $this->localDirPath = $pathResolver->getLocalConfigDirPath();
-        if ($this->localDirPath === null) {
-            $this->markTestSkipped('No local config dir configured.');
-        }
-
-        // create backup of local config dir
-        if (is_dir($this->localDirPath)) {
-            $backUpDir = $this->localDirPath . '.bak';
-            rename($this->localDirPath, $backUpDir);
-        }
-    }
-
-    /**
-     * Standard teardown method.
-     *
-     * @return void
-     */
-    public function tearDown(): void
-    {
-        // restore backup of local config dir
-        $localDirPath = $this->localDirPath;
-        $backUpDir = $localDirPath . '.bak';
-        if (is_dir($localDirPath)) {
-            self::rmDir($localDirPath);
-        }
-        if (is_dir($backUpDir)) {
-            rename($backUpDir, $localDirPath);
-        }
-    }
 
     /**
      * Get an upgrade object for the specified source version:
@@ -129,35 +61,12 @@ class ConfigUpgradeTest extends \PHPUnit\Framework\TestCase
      */
     protected function getUpgrader(string $fixture): Upgrade
     {
-        $fixtureDir = realpath($this->getFixtureDir() . 'configs/' . $fixture);
-        $localDirPath = $this->localDirPath;
-        if (is_dir($localDirPath)) {
-            self::rmDir($localDirPath);
-        }
-        self::cpDir($fixtureDir, $localDirPath);
+        $this->setUpLocalConfigDir($fixture);
         $container = $this->getContainerWithConfigRelatedServices();
         return new Upgrade(
             $container->get(PathResolver::class),
             $container->get(ConfigManager::class),
         );
-    }
-
-    /**
-     * Read the current config.
-     *
-     * @param string  $config Config name
-     * @param ?string $path   Optional alternative path to config directory
-     *
-     * @return array
-     */
-    protected function readConfig(string $config, ?string $path = null): array
-    {
-        $configFile = ($path ?? $this->localDirPath) . '/' . $config . '.ini';
-        $result = parse_ini_file($configFile, true);
-        if ($result === false) {
-            throw new FileAccess('Could not read config file: ' . $configFile);
-        }
-        return $result;
     }
 
     /**

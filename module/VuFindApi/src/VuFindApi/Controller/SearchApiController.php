@@ -133,7 +133,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements
     /**
      * Facet configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $facetConfig;
 
@@ -499,7 +499,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements
             $resumptionToken = $this->createResumptionToken($request, $nextCursor, $nextCursorMark);
             $response['resumptionToken'] = [
                 'token' => $resumptionToken->getToken(),
-                'expires' => $resumptionToken->getExpiry()->format('Y-m-d H:i:s'),
+                'expires' => $resumptionToken->getExpiry()->format(VUFIND_DATABASE_DATETIME_FORMAT),
             ];
         }
         return $response;

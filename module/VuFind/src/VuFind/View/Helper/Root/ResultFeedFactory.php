@@ -68,7 +68,7 @@ class ResultFeedFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)->get('searches');
+        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('searches');
         $settings = ['prioritizeRecordDriverLinks' => $config->RSS->prioritizeRecordDriverLinks ?? false];
         $helper = new $requestedName($settings);
         $helper->registerExtensions($container);

@@ -75,7 +75,7 @@ class IntervalFactory implements FactoryInterface
         );
         return new $requestedName(
             $sessionStorage,
-            $container->get(\VuFind\Config\PluginManager::class)->get('config')
+            $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config')
         );
     }
 }

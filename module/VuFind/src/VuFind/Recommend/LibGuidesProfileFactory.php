@@ -71,8 +71,7 @@ class LibGuidesProfileFactory implements \Laminas\ServiceManager\Factory\Factory
         }
         return new $requestedName(
             $container->get(\VuFind\Connection\LibGuides::class),
-            $container->get(\VuFind\Config\PluginManager::class)
-                ->get('LibGuidesAPI'),
+            $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('LibGuidesAPI'),
             $container->get(\VuFind\Cache\Manager::class)
                 ->getCache('object'),
         );

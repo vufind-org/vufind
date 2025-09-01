@@ -71,21 +71,20 @@ class CookieManagerFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
+        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config')['Cookies'] ?? [];
         $path = '/';
-        if ($config->Cookies->limit_by_path ?? false) {
+        if ($config['limit_by_path'] ?? false) {
             $path = (PHP_SAPI == 'cli')
                 ? '' : $container->get('Request')->getBasePath();
             if (empty($path)) {
                 $path = '/';
             }
         }
-        $secure = $config->Cookies->only_secure ?? false;
-        $httpOnly = $config->Cookies->http_only ?? true;
-        $domain = $config->Cookies->domain ?? null;
-        $sessionName = $config->Cookies->session_name ?? null;
-        $sameSite = $config->Cookies->sameSite ?? 'Lax';
+        $secure = $config['only_secure'] ?? false;
+        $httpOnly = $config['http_only'] ?? true;
+        $domain = $config['domain'] ?? null;
+        $sessionName = $config['session_name'] ?? null;
+        $sameSite = $config['sameSite'] ?? 'Lax';
         return new $requestedName(
             $_COOKIE,
             $path,

@@ -501,16 +501,14 @@ class GeniePlus extends AbstractAPI
             )
         );
         [$last, $first] = explode(',', $name, 2);
-        return [
-            'id'           => $id,
-            'firstname'    => trim($first),
-            'lastname'     => trim($last),
-            'cat_username' => trim($username),
-            'cat_password' => trim($password),
-            'email'        => $email,
-            'major'        => null,
-            'college'      => null,
-        ];
+        return $this->createPatronArray(
+            id: $id,
+            cat_username: $username,
+            cat_password: $password,
+            firstname: $first,
+            lastname: $last,
+            email: $email
+        );
     }
 
     /**
@@ -591,17 +589,17 @@ class GeniePlus extends AbstractAPI
             )
         );
         $cityAndState = trim($city . (!empty($city) ? ', ' : '') . $state);
-        return [
-            'firstname'       => $patron['firstname'],
-            'lastname'        => $patron['lastname'],
-            'address1'        => empty($addr1) ? null : $addr1,
-            'address2'        => empty($addr2) ? null : $addr2,
-            'zip'             => empty($zip) ? null : $zip,
-            'city'            => empty($city) ? null : $cityAndState,
-            'country'         => empty($country) ? null : $country,
-            'phone'           => empty($phone) ? null : $phone,
-            'expiration_date' => empty($expirationDate) ? null : $expirationDate,
-        ];
+        return $this->createProfileArray(
+            firstname: $patron['firstname'],
+            lastname: $patron['lastname'],
+            address1: $addr1 ?: null,
+            address2: $addr2 ?: null,
+            zip: $zip ?: null,
+            city: $city ? $cityAndState : null,
+            country: $country ?: null,
+            phone: $phone ?: null,
+            expiration_date: $expirationDate ?: null
+        );
     }
 
     /**

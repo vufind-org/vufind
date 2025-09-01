@@ -73,9 +73,9 @@ class MailerTest extends \PHPUnit\Framework\TestCase
                 'dsn' => 'esmtp://foo@bar/',
             ],
         ];
-        $cm = $this->getMockConfigPluginManager(compact('config'));
+        $cm = $this->getMockConfigManager(compact('config'));
         $sm = new MockContainer($this);
-        $sm->set(\VuFind\Config\PluginManager::class, $cm);
+        $sm->set(\VuFind\Config\ConfigManager::class, $cm);
         $factory = new MailerFactory();
 
         $this->assertEquals(

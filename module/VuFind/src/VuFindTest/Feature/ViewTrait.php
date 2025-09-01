@@ -34,8 +34,7 @@ use Laminas\Cache\Storage\StorageInterface;
 use Laminas\View\Renderer\PhpRenderer;
 use Psr\Container\ContainerInterface;
 use VuFind\Cache\Manager as CacheManager;
-use VuFind\Config\Config;
-use VuFind\Config\PluginManager as ConfigPluginManager;
+use VuFind\Config\ConfigManager;
 use VuFind\View\Helper\Root\CleanHtml;
 use VuFind\View\Helper\Root\CleanHtmlFactory;
 use VuFind\View\Helper\Root\SearchMemory;
@@ -161,19 +160,18 @@ trait ViewTrait
         $cacheManager->expects($this->any())
             ->method('getCache')
             ->willReturn($cache);
-        $config = $this->createMock(Config::class);
-        $configPluginManager = $this->createMock(ConfigPluginManager::class);
-        $configPluginManager->expects($this->any())
-            ->method('get')
-            ->willReturn($config);
+        $configManager = $this->createMock(ConfigManager::class);
+        $configManager->expects($this->any())
+            ->method('getConfigArray')
+            ->willReturn([]);
         $container = $this->createMock(ContainerInterface::class);
         $container->expects($this->any())
             ->method('get')
             ->willReturnCallback(
-                function ($class) use ($cacheManager, $configPluginManager) {
+                function ($class) use ($cacheManager, $configManager) {
                     return match ($class) {
                         CacheManager::class => $cacheManager,
-                        ConfigPluginManager::class => $configPluginManager,
+                        ConfigManager::class => $configManager,
                     };
                 }
             );

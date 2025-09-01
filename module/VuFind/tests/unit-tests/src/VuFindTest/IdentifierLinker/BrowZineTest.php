@@ -240,10 +240,12 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
         if ($bestIntegratorLinksConfig !== null) {
             $configArray['BestIntegratorLinks'] = $bestIntegratorLinksConfig;
         }
-        $configObj = new \VuFind\Config\Config($configArray);
-        $mockConfigManager = $this->createMock(\VuFind\Config\PluginManager::class);
-        $mockConfigManager->expects($this->once())->method('get')->with('BrowZine')->willReturn($configObj);
-        $container->set(\VuFind\Config\PluginManager::class, $mockConfigManager);
+        $mockConfigManager = $this->createMock(\VuFind\Config\ConfigManager::class);
+        $mockConfigManager->expects($this->once())
+            ->method('getConfigArray')
+            ->with('BrowZine')
+            ->willReturn($configArray);
+        $container->set(\VuFind\Config\ConfigManager::class, $mockConfigManager);
         $factory = new BrowZineFactory();
         return $factory($container, BrowZine::class);
     }

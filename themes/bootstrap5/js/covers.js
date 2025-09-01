@@ -1,5 +1,10 @@
 /*global VuFind */
 VuFind.register('covers', function covers() {
+  /**
+   * Load a cover image for a single element by making an AJAX call.
+   * @param {object}      data    An object containing the cover data.
+   * @param {HTMLElement} element The element to update with the cover image.
+   */
   function loadCoverByElement(data, element) {
     var img = element.querySelector('img');
     var spinner = element.querySelector('div.spinner');
@@ -8,7 +13,10 @@ VuFind.register('covers', function covers() {
     source.classList.add('cover-source');
     source.innerText = VuFind.translate('cover_source_label');
     var context = data.context;
-
+    /**
+     * Callback function for the AJAX cover request.
+     * @param {object} response The AJAX response object.
+     */
     function coverCallback(response) {
       if (typeof response.data.url !== 'undefined' && response.data.url !== false) {
         img.src = response.data.url;
@@ -62,7 +70,10 @@ VuFind.register('covers', function covers() {
       .then(response => response.json())
       .then(coverCallback);
   }
-
+  /**
+   * Find and load cover images for all `.ajaxcover` elements within a container.
+   * @param {HTMLElement} container The container to search for `.ajaxcover` elements.
+   */
   function loadCovers(container) {
     container.querySelectorAll('.ajaxcover').forEach(
       (cover) => {
@@ -81,14 +92,21 @@ VuFind.register('covers', function covers() {
       }
     );
   }
-
+  /**
+   * Check if a cover image is too small to be displayed. Unavailable images may be represented by a 1x1
+   * image, and this prevents them from cluttering the interface.
+   * @param {HTMLImageElement} img The image element to check.
+   */
   function checkImgSize(img) {
     if (img.getBoundingClientRect().width < 2) {
       img.classList.add('hidden');
     }
     img.dataset.loaded = 'true';
   }
-
+  /**
+   * Check the loaded state of cover images within a container.
+   * @param {HTMLElement} container The container to check for images.
+   */
   function checkLoaded(container) {
     container.querySelectorAll('.recordcover').forEach(
       (img) => {
@@ -104,12 +122,19 @@ VuFind.register('covers', function covers() {
     );
   }
 
+  /**
+   * Update a container by loading covers and checking the loaded state.
+   * @param {object} params An object containing the container element.
+   */
   function updateContainer(params) {
     let container = params.container;
     loadCovers(container);
     checkLoaded(container);
   }
 
+  /**
+   * Initialize the covers module by loading covers on page load
+   */
   function init() {
     updateContainer({container: document});
     VuFind.listen('results-init', updateContainer);
