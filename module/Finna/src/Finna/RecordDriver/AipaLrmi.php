@@ -265,28 +265,9 @@ class AipaLrmi extends SolrLrmi implements
      *
      * @return string
      */
-    public function getEncapsulatedRecordElementTagName(): string
+    protected function getEncapsulatedRecordElementTagName(): string
     {
         return 'material';
-    }
-
-    /**
-     * Return ID for an encapsulated record.
-     *
-     * @param mixed $item Encapsulated record item.
-     *
-     * @return string
-     */
-    protected function getEncapsulatedRecordId($item): string
-    {
-        // Implementation for XML items with ID specified in an 'identifier' element
-        if ($item instanceof \SimpleXMLElement) {
-            return (string)$item->identifier;
-        }
-        if ($item instanceof \DOMNode) {
-            return $item->getElementsByTagName('identifier')[0]->nodeValue;
-        }
-        throw new \RuntimeException('Unable to determine ID');
     }
 
     /**

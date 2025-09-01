@@ -197,25 +197,6 @@ trait ContainerFormatTrait
     }
 
     /**
-     * Return ID for an encapsulated record.
-     *
-     * @param mixed $item Encapsulated record item.
-     *
-     * @return string
-     */
-    protected function getEncapsulatedRecordId($item): string
-    {
-        // Implementation for XML items with ID specified in an 'id' element
-        if ($item instanceof \SimpleXMLElement) {
-            return (string)$item->id;
-        }
-        if ($item instanceof \DOMNode) {
-            return $item->getElementsByTagName('id')[0]->nodeValue;
-        }
-        throw new \RuntimeException('Unable to determine ID');
-    }
-
-    /**
      * Return format for an encapsulated record.
      *
      * @param mixed $item Encapsulated record item
@@ -293,9 +274,6 @@ trait ContainerFormatTrait
      * The cache is an array of arrays with the following keys:
      * - id: Record ID
      * - item: Record item
-     *
-     * and if the driver has been loaded using
-     * ContainerFormatTrait::getCachedEncapsulatedRecordDriver():
      * - driver: VuFind record driver
      *
      * @return array
@@ -308,9 +286,11 @@ trait ContainerFormatTrait
 
         $records = [];
         foreach ($this->getEncapsulatedRecordItems() as $item) {
+            $driver = $this->getEncapsulatedRecordDriver($item);
             $record = [
-                'id' => $this->getEncapsulatedRecordId($item),
+                'id' => $driver->getUniqueId(),
                 'item' => $item,
+                'driver' => $driver,
             ];
             // Position is optional
             if (null !== ($position = $this->getEncapsulatedRecordPosition($item))) {
@@ -342,18 +322,7 @@ trait ContainerFormatTrait
     ): ?EncapsulatedRecordInterface {
         // Ensure cache is warm
         $cache = $this->getEncapsulatedRecordCache();
-        // Ensure position is valid
-        if (!isset($cache[$position])) {
-            return null;
-        }
-        // Try to get driver from cache
-        if (!$driver = $cache[$position]['driver'] ?? null) {
-            // Not in cache so get driver and add it to cache
-            $driver
-                = $this->encapsulatedRecordCache[$position]['driver']
-                    = $this->getEncapsulatedRecordDriver($cache[$position]['item']);
-        }
-        return $driver;
+        return $cache[$position]['driver'] ?? null;
     }
 
     /**
@@ -408,7 +377,7 @@ trait ContainerFormatTrait
         $tagName = $this->getEncapsulatedRecordElementTagName();
         foreach ($container->getElementsByTagName($tagName) as $item) {
             $encapsulated = $this->getEncapsulatedRecord(
-                $this->getEncapsulatedRecordId($item)
+                $this->getEncapsulatedRecordDriver(simplexml_import_dom($item))->getUniqueID()
             );
             if (is_callable([$encapsulated, 'getFilteredXMLElement'])) {
                 $filtered = dom_import_simplexml($encapsulated->getFilteredXMLElement());
@@ -486,7 +455,9 @@ trait ContainerFormatTrait
         $driver->setContainerRecord($this);
 
         $data = [
-            'id' => (string)$item->identifier,
+            'id' => $this->getUniqueID()
+                . ContainerFormatInterface::ENCAPSULATED_RECORD_ID_SEPARATOR
+                . (string)$item->identifier,
             'title' => (string)$item->name,
             'description' => (string)($item->description ?? ''),
             'additionalType' => (string)$item->additionalType,

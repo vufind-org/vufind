@@ -35,6 +35,7 @@
 namespace Finna\View\Helper\Root;
 
 use Finna\Form\Form;
+use Finna\RecordDriver\Feature\ContainerFormatInterface;
 use Finna\RecordDriver\SolrAipa;
 use Finna\RecordTab\TabManager;
 use Finna\Search\Solr\AuthorityHelper;
@@ -1499,7 +1500,13 @@ class Record extends \VuFind\View\Helper\Root\Record
 
         $id = $opt['id'] = $this->driver->getUniqueID();
 
-        if (str_contains($id, '._preview')) {
+        // Check for an encapsulated record ID
+        $parts = explode(
+            ContainerFormatInterface::ENCAPSULATED_RECORD_ID_SEPARATOR,
+            $id,
+            2
+        );
+        if ($id !== $parts[0] && $parts[0] === '0') {
             // Special case for preview records.
             // Always request all remaining encapsulated records because the load
             // more AJAX handler currently has no access to the previewed record.

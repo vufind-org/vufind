@@ -57,7 +57,7 @@ class Params extends \VuFind\Search\Base\Params
         // Special filter -- if the "id" parameter is set, limit to a specific
         // record:
         $id = $request->get('id');
-        if (!empty($id)) {
+        if (isset($id)) {
             $this->addFilter("ids:{$id}");
         }
 
