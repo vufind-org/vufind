@@ -38,7 +38,7 @@ use Laminas\Stdlib\Parameters;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\ApiKey\ApiKeyService;
 use VuFind\Config\Config;
-use VuFind\Config\PluginManager as ConfigPluginManager;
+use VuFind\Config\ConfigManager;
 use VuFind\Db\Service\OaiResumptionService;
 use VuFind\Db\Service\OaiResumptionServiceInterface;
 use VuFind\Db\Service\PluginManager as DbPluginManager;
@@ -187,11 +187,12 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
     {
         $configurationMap = [
             ['config', null, new Config($config)],
+            ['facets', null, new Config([])],
         ];
 
-        $configPluginManager = $this->getMockBuilder(ConfigPluginManager::class)->disableOriginalConstructor()
-            ->onlyMethods(['get'])->getMock();
-        $configPluginManager->expects($this->any())->method('get')->willReturnMap($configurationMap);
+        $configPluginManager = $this->getMockBuilder(ConfigManager::class)->disableOriginalConstructor()
+            ->onlyMethods(['getConfigObject'])->getMock();
+        $configPluginManager->expects($this->any())->method('getConfigObject')->willReturnMap($configurationMap);
 
         $solrOptions = $this->getMockBuilder(Options::class)->disableOriginalConstructor()
             ->onlyMethods(['getAPISettings'])->getMock();
@@ -231,7 +232,7 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
             ->onlyMethods(['debug'])->getMock();
         $this->setProperty($logger, 'writers', []);
         $serviceLocatorMap = [
-            [ConfigPluginManager::class, $configPluginManager],
+            [ConfigManager::class, $configPluginManager],
             [SearchPluginManager::class, $optionsPluginManager],
             [DbPluginManager::class, $dbPluginManager],
             [Loader::class, $recordLoader],
