@@ -119,7 +119,6 @@
       <?php endif; ?>
       <div class="result-formats">
         <?=$this->record($this->driver)->getFormatList() ?>
-        <?=$this->record($this->driver)->getLabelList() ?>
         <?php if (empty($urls) && $supportsRtac): ?>
           <span class="status ajax-availability hidden">
             <span class="label label-default"><?=$this->transEsc('loading_ellipsis')?></span>
