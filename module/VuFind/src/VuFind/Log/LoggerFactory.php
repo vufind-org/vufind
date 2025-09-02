@@ -87,7 +87,7 @@ class LoggerFactory implements FactoryInterface
     {
         return new LineFormatter(
             "[%datetime%] %channel%.%level_name%:\n %message%\n %extra%\n",
-            'Y-m-d H:i:s',
+            'c',
             true,
             true
         );

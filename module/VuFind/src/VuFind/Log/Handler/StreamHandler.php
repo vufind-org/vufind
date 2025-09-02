@@ -37,7 +37,7 @@ use Monolog\LogRecord;
  *
  * @category VuFind
  * @package  Error_Logging
- * @author   Sambhav Pokharel <sambhav.pokharel@gmail.com>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */

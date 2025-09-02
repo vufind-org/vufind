@@ -39,7 +39,7 @@ use Monolog\LogRecord;
  *
  * @category VuFind
  * @package  Error_Logging
- * @author   Sambhav Pokharel <sambhav.pokharel@gmail.com>
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
@@ -111,7 +111,7 @@ class DatabaseHandler extends AbstractProcessingHandler
             $data[$this->columnMapping['message']] = $modifiedRecordData['message'];
         }
         if (isset($this->columnMapping['logtime'])) {
-            $data[$this->columnMapping['logtime']] = $record->datetime->format('Y-m-d H:i:s');
+            $data[$this->columnMapping['logtime']] = $record->datetime->format(VUFIND_DATABASE_DATETIME_FORMAT);
         }
         if (isset($this->columnMapping['ident'])) {
             $data[$this->columnMapping['ident']] = $record->channel;

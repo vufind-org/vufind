@@ -364,8 +364,6 @@ class Logger implements LoggerInterface
             $this->getSeverityFromException($error),
             $baseError,
             [
-                'exception' => $error,
-                'server_data' => $server,
                 'details' => $errorDetails,
             ]
         );
