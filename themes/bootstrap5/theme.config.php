@@ -194,7 +194,7 @@ return [
             'facet-applied' => 'FontAwesome:check',
             'facet-checked' => 'FontAwesome:check-square-o',
             'facet-collapse' => 'FontAwesome:caret-down',
-            'facet-exclude' => 'FontAwesome:eye-slash',
+            'facet-exclude' => 'FontAwesome:times',
             'facet-expand' => 'FontAwesome:caret-right',
             'facet-noncollapsible' => 'FontAwesome:none',
             'facet-unchecked' => 'FontAwesome:square-o',
