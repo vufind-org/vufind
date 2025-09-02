@@ -181,14 +181,12 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
             [true, 'Available'],
             [true, 'Available'],
         ];
-        $i = 0;
-        foreach ($result['holdings'] as &$holding) {
+        foreach ($result['holdings'] as $i => &$holding) {
             // Add 'availability' field using the real class
             $holding['availability'] = $this->createAvailabilityStatus(
                 $availabilityStatus[$i][0],
                 $availabilityStatus[$i][1]
             );
-            $i++;
         }
 
         $holdConfig = [
