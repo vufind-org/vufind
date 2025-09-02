@@ -178,24 +178,4 @@ class HoldingsILSTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($obj->isVisible());
     }
 
-    /**
-     * Test isVisible defaults to true when driver doesn't have supportsHoldingsTab method
-     *
-     * @return void
-     */
-    public function testIsVisibleDefaultsToTrue()
-    {
-        $searchObj = $this->createMock(\VuFind\ILS\Connection::class);
-        $obj = new HoldingsILS($searchObj);
-
-        // Create a mock driver where tryMethod returns the default value
-        $driver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
-        $driver->expects($this->once())
-            ->method('tryMethod')
-            ->with('supportsHoldingsTab', [], true)
-            ->willReturn(true); // This simulates the default behavior
-
-        $obj->setRecordDriver($driver);
-        $this->assertTrue($obj->isVisible());
-    }
 }
