@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Permission manager factory.
+ * Piwik helper factory.
  *
  * PHP version 8
  *
@@ -21,31 +21,31 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Authorization
+ * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Role;
+namespace VuFind\View\Helper\Root;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\Role\Assertion\DeveloperPermissionAssertion;
+use VuFind\ApiKey\ApiKeyService;
 
 /**
- * Permission manager factory.
+ * Piwik helper factory.
  *
  * @category VuFind
- * @package  Authorization
+ * @package  View_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class PermissionManagerFactory implements FactoryInterface
+class DeveloperFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -69,11 +69,10 @@ class PermissionManagerFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $permissions = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('permissions');
-        $authorizationService = $container->get(\LmcRbacMvc\Service\AuthorizationService::class);
-        $authorizationService->setAssertion('feature.Developer', new DeveloperPermissionAssertion());
-        $permManager = new $requestedName($permissions);
-        $permManager->setAuthorizationService($authorizationService);
-        return $permManager;
+
+        return new $requestedName(
+            $container->get(ApiKeyService::class),
+            $container->get(\VuFind\Auth\Manager::class)->getIdentity()
+        );
     }
 }

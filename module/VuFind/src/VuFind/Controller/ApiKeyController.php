@@ -62,7 +62,6 @@ class ApiKeyController extends AbstractBase
 
         $apiKeyService = $this->getService(ApiKeyService::class);
         $view = $this->createViewModel();
-        $view->userValid = $apiKeyService->isUserValid($user);
         $view->apiKey = $apiKeyService->getApiKeyForUser($user);
         return $view;
     }
@@ -79,13 +78,13 @@ class ApiKeyController extends AbstractBase
         }
         // If not submitted, are we logged in?
         if (!$this->apiKeysEnabled()) {
-            throw new Forbidden('API keys disabled.');
+            throw new Forbidden('Access denied.');
         }
-        $apiKeyService = $this->getService(ApiKeyService::class);
-        if (!$apiKeyService->isUserValid($user)) {
+        if (!$this->permission()->isAuthorized('feature.Developer')) {
             $this->flashMessenger()->addMessage('Developer::verify_email_address', 'error');
             return $this->inLightbox() ? $this->getRefreshResponse() : $this->redirect()->toRoute('myresearch-profile');
         }
+        $apiKeyService = $this->getService(ApiKeyService::class);
         if ($apiKeyService->getApiKeyForUser($user)?->isRevoked()) {
             $this->flashMessenger()->addMessage('Developer::api_key_locked', 'error');
             return $this->inLightbox() ? $this->getRefreshResponse() : $this->redirect()->toRoute('myresearch-profile');
@@ -111,13 +110,13 @@ class ApiKeyController extends AbstractBase
         }
         // If not submitted, are we logged in?
         if (!$this->apiKeysEnabled()) {
-            throw new Forbidden('API keys disabled.');
+            throw new Forbidden('Access denied.');
         }
-        $apiKeyService = $this->getService(ApiKeyService::class);
-        if (!$apiKeyService->isUserValid($user)) {
+        if (!$this->permission()->isAuthorized('feature.Developer')) {
             $this->flashMessenger()->addMessage('Developer::verify_email_address', 'error');
             return $this->inLightbox() ? $this->getRefreshResponse() : $this->redirect()->toRoute('myresearch-profile');
         }
+        $apiKeyService = $this->getService(ApiKeyService::class);
         if ($apiKeyService->getApiKeyForUser($user)?->isRevoked()) {
             $this->flashMessenger()->addMessage('Developer::api_key_locked', 'error');
             return $this->inLightbox() ? $this->getRefreshResponse() : $this->redirect()->toRoute('myresearch-profile');

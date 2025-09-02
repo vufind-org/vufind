@@ -171,8 +171,12 @@
     <?=$this->partial($this->patronLoginView);?>
   <?php endif; ?>
 
-  <?php if ($this->config()->apiKeysEnabled()): ?>
-    <a class="btn btn-default" data-lightbox href="<?=$this->url('apikey-displaysettings')?>" role="button"><?=$this->transEsc('Developer::settings')?></a>
+  <?php if ($this->developer()->isEnabled()): ?>
+    <?php if ($this->permission()->allowDisplay('feature.Developer')): ?>
+      <?=$this->developer()->render()?>
+    <?php elseif ($block = $this->permission()->getAlternateContent('feature.Developer')): ?>
+      <?=$block?>
+    <?php endif; ?>
   <?php endif; ?>
 </div>
 

@@ -115,18 +115,6 @@ class ApiKeyService implements DbServiceAwareInterface
     }
 
     /**
-     * Validate user can use API keys. It is expected that the user has a verified email address.
-     *
-     * @param UserEntityInterface $user User
-     *
-     * @return bool
-     */
-    public function isUserValid(UserEntityInterface $user): bool
-    {
-        return $user->getEmailVerified() !== null;
-    }
-
-    /**
      * Generate an API key for a user.
      *
      * @param UserEntityInterface $user User
