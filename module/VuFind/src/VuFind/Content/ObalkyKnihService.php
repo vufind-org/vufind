@@ -207,6 +207,7 @@ class ObalkyKnihService implements
      * Get query params for service
      *
      * @param array $ids Record identifiers
+     *
      * @return array
      */
     protected function getServiceQuery(array $ids): array
