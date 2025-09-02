@@ -76,7 +76,7 @@ trait HoldsTrait
             return $this->redirectToRecord();
         }
         // the gatheredDetails['id'] is the original ID, but for API Holds (e.g. EDS)
-        // we may need to use the originalId. So only in that case we will set it to the
+        // we may need to use the override ID. So only in that case we will set it to the
         // value returned by getUniqueIDOverrideForRequest.
         if ($originalId != $id && $originalId == $gatheredDetails['id']) {
             $gatheredDetails['id'] = $id;
