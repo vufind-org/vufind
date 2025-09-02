@@ -77,7 +77,7 @@ trait VerbosityTrait
         $vufindDetails = $record['context']['details'] ?? null;
         if (is_array($vufindDetails) && isset($vufindDetails[$this->verbosity])) {
             $record['message'] = $vufindDetails[$this->verbosity];
-            unset($record['context']['details']);
+            $record['context'] = [];
         }
         return $record;
     }

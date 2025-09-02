@@ -86,7 +86,7 @@ class LoggerFactory implements FactoryInterface
     protected function getStandardFileFormatter(): LineFormatter
     {
         return new LineFormatter(
-            "[%datetime%] %channel%.%level_name%: %message% %context% %extra%\n",
+            "[%datetime%] %channel%.%level_name%:\n %message%\n %extra%\n",
             'Y-m-d H:i:s',
             true,
             true
