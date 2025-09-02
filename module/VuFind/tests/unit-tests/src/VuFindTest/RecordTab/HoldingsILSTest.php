@@ -177,5 +177,4 @@ class HoldingsILSTest extends \PHPUnit\Framework\TestCase
         $obj->setRecordDriver($driver);
         $this->assertFalse($obj->isVisible());
     }
-
 }
