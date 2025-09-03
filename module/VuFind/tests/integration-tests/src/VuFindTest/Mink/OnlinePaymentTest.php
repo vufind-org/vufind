@@ -46,6 +46,7 @@ use VuFindTest\Feature\LiveDatabaseTrait;
 use VuFindTest\Feature\UserCreationTrait;
 
 use function assert;
+use function count;
 
 /**
  * Mink online payment actions test class.
