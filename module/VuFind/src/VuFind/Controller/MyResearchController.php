@@ -1732,7 +1732,10 @@ class MyResearchController extends AbstractBase
         }
 
         $view = $this->createViewModel(compact('fines', 'accountStatus'));
-        $this->handleOnlinePayment($patron, $view->fines, $view);
+        // Handle online payment and return any response (redirect, receipt):
+        if ($paymentResponse = $this->handleOnlinePayment($patron, $view->fines, $view)) {
+            return $paymentResponse;
+        }
         return $view;
     }
 

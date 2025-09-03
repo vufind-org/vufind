@@ -31,6 +31,8 @@ declare(strict_types=1);
 
 namespace VuFind\Controller\Feature;
 
+use Laminas\Http\Header\ContentType;
+use Laminas\Http\PhpEnvironment\Response;
 use Laminas\View\Model\ViewModel;
 use VuFind\Db\Type\AuditEventSubtype;
 use VuFind\Exception\PaymentException;
@@ -84,16 +86,16 @@ trait OnlinePaymentTrait
      * @param array     $fines  List of fines
      * @param ViewModel $view   View
      *
-     * @return void
+     * @return ?Response Payment handling response, if any
      */
-    protected function handleOnlinePayment(array $patron, array $fines, ViewModel $view): void
+    protected function handleOnlinePayment(array $patron, array $fines, ViewModel $view): ?Response
     {
         $view->onlinePaymentEnabled = false;
         $sourceIls = $patron['__source'] ?? 'default';
 
         if (!($user = $this->getUser())) {
             $this->handleError('Could not get user');
-            return;
+            return null;
         }
 
         // Check if online payment configuration exists and is valid for the ILS driver
@@ -101,7 +103,7 @@ trait OnlinePaymentTrait
         $paymentConfig = $onlinePaymentManager->getAndValidateOnlinePaymentConfig($patron);
         if (!$paymentConfig) {
             $this->handleDebugMsg("No online payment ILS configuration for $sourceIls");
-            return;
+            return null;
         }
 
         $selectFees = $paymentConfig['selectFines'] ?? false;
@@ -116,7 +118,7 @@ trait OnlinePaymentTrait
         );
         if ($selectedIds && !$paymentDetails['fines']) {
             $this->handleError("Fines to pay missing from ILS driver for $sourceIls");
-            return;
+            return null;
         }
 
         $view->onlinePayment = true;
@@ -142,13 +144,13 @@ trait OnlinePaymentTrait
         ) {
             $receipt = $this->serviceLocator->get(\VuFind\OnlinePayment\Receipt::class);
             $data = $receipt->createReceiptPDF($lastPayment, $paymentConfig);
-            header('Content-Type: application/pdf');
-            header(
-                'Content-disposition: inline; filename="' .
-                addcslashes($data['filename'], '"') . '"'
-            );
-            echo $data['pdf'];
-            exit(0);
+            $response = $this->getResponse();
+            $response->getHeaders()->addHeaders([
+                'Content-Type' => 'application/pdf',
+                'Content-disposition' => 'inline; filename="' . addcslashes($data['filename'], '"') . '"',
+            ]);
+            $response->setBody($data['pdf']);
+            return $response;
         }
         $view->lastPayment = $lastPayment;
 
@@ -164,8 +166,7 @@ trait OnlinePaymentTrait
             $csrf = $this->getRequest()->getPost()->get('csrf');
             if (!$csrfValidator->isValid($csrf)) {
                 $this->flashMessenger()->addErrorMessage('Payment::error_payment_request_failed');
-                header('Location: ' . $this->getServerUrl('myresearch-fines'));
-                exit();
+                return $this->redirect()->toRoute('myresearch-fines');
             }
             // After successful token verification, clear list to shrink session and
             // ensure that the form is not re-sent:
@@ -174,8 +175,7 @@ trait OnlinePaymentTrait
             // Payment requested, do preliminary checks:
             if ($paymentInProgress) {
                 $this->flashMessenger()->addErrorMessage('Payment::error_payment_request_failed');
-                header('Location: ' . $this->getServerUrl('myresearch-fines'));
-                exit();
+                return $this->redirect()->toRoute('myresearch-fines');
             }
             if (
                 (($paymentConfig['exactBalanceRequired'] ?? true)
@@ -185,8 +185,7 @@ trait OnlinePaymentTrait
             ) {
                 // Fines updated, redirect and show updated list.
                 $this->flashMessenger()->addErrorMessage('Payment::error_fines_changed');
-                header('Location: ' . $this->getServerUrl('myresearch-fines'));
-                exit();
+                return $this->redirect()->toRoute('myresearch-fines');
             }
             $returnUrl = $this->getServerUrl('myresearch-fines');
             // Include language in notify url because it's a back-channel request that
@@ -210,8 +209,7 @@ trait OnlinePaymentTrait
             }
             // We should only end up here on error, but redirect always just in case
             // the payment handler somehow misbehaves:
-            header('Location: ' . $this->getServerUrl('myresearch-fines'));
-            exit();
+            return $this->redirect()->toRoute('myresearch-fines');
         }
 
         // Now check for local payment identifier in the URL and process any payment handler response:
@@ -287,6 +285,7 @@ trait OnlinePaymentTrait
                 }
             }
         }
+        return null;
     }
 
     /**
