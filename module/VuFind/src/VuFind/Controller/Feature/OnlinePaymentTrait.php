@@ -31,7 +31,6 @@ declare(strict_types=1);
 
 namespace VuFind\Controller\Feature;
 
-use Laminas\Http\Header\ContentType;
 use Laminas\Http\PhpEnvironment\Response;
 use Laminas\View\Model\ViewModel;
 use VuFind\Db\Type\AuditEventSubtype;
@@ -149,7 +148,7 @@ trait OnlinePaymentTrait
                 'Content-Type' => 'application/pdf',
                 'Content-disposition' => 'inline; filename="' . addcslashes($data['filename'], '"') . '"',
             ]);
-            $response->setBody($data['pdf']);
+            $response->setContent($data['pdf']);
             return $response;
         }
         $view->lastPayment = $lastPayment;
