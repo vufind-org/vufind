@@ -78,7 +78,7 @@ class StreamHandler extends MonologStreamHandler
     protected function getStandardFileFormatter(): LineFormatter
     {
         return new LineFormatter(
-            "[%datetime%] %channel%.%level_name%:\n %message%\n %extra%\n",
+            "[%datetime%] %channel%.%level_name%: %message%\n %extra%\n",
             'c',
             true,
             true
