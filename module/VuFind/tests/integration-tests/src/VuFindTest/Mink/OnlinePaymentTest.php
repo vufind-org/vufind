@@ -299,7 +299,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      *
-     * @depends testPaymentDisabled
+     * @depends testPayment
      */
     public function testNotify(): void
     {
@@ -354,7 +354,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      *
-     * @depends testPaymentDisabled
+     * @depends testPayment
      */
     public function testLastPaymentInfo(): void
     {
@@ -368,11 +368,51 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         $page = $this->goToFines(false, false);
-
         $this->assertStringStartsWith(
             'Last Paid: $15.00',
             $this->findCssAndGetText($page, '.last-payment-information')
         );
+    }
+
+    /**
+     * Test receipt on demand.
+     *
+     * @return void
+     *
+     * @depends testPayment
+     */
+    public function testReceipt(): void
+    {
+        $this->changeConfigs(
+            [
+                'config' => $this->getConfigIniOverrides(false),
+                'Demo' => $this->getDemoIniOverrides() + $this->getDemoIniOverridesForPayment(),
+            ]
+        );
+
+        $page = $this->goToFines(false, false);
+        $session = $this->getMinkSession();
+        $windowNames = $session->getWindowNames();
+        $windowCount = count($windowNames);
+        $this->clickCss($page, '.last-payment-information a');
+        $this->assertEqualsWithTimeout(
+            $windowCount + 1,
+            function () use ($session) {
+                return count($session->getWindowNames());
+            }
+        );
+        $newWindows = array_diff($session->getWindowNames(), $windowNames);
+        $this->assertCount(1, $newWindows);
+        $session->switchToWindow(reset($newWindows));
+        // Reload is needed for headers to be updated:
+        $session->reload();
+        $this->assertEqualsWithTimeout(
+            'application/pdf',
+            function () use ($session) {
+                return $session->getResponseHeaders()['Content-Type'] ?? '';
+            }
+        );
+        $this->assertEquals(200, $session->getStatusCode());
     }
 
     /**
@@ -420,7 +460,6 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
      * @return void
      *
      * @dataProvider blockedPaymentProvider
-     * @depends      testPaymentDisabled
      */
     public function testBlockedPayment(array $paymentSettings, string $expectedMsg): void
     {
