@@ -33,7 +33,6 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use LmcRbacMvc\Service\AuthorizationService;
-use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\FilterHandler;
 use Monolog\Handler\HandlerInterface;
 use Monolog\Logger as MonologLogger;
@@ -79,21 +78,6 @@ class LoggerFactory implements FactoryInterface
     use EmailSettingsTrait;
 
     /**
-     * Get a standard LineFormatter for file logging.
-     *
-     * @return LineFormatter
-     */
-    protected function getStandardFileFormatter(): LineFormatter
-    {
-        return new LineFormatter(
-            "[%datetime%] %channel%.%level_name%:\n %message%\n %extra%\n",
-            'c',
-            true,
-            true
-        );
-    }
-
-    /**
      * Configure Database handler.
      *
      * @param MonologLogger      $logger    The Monolog logger instance to add handlers to.
@@ -137,7 +121,6 @@ class LoggerFactory implements FactoryInterface
         }
 
         $baseFileHandler = new StreamHandler($file, LogLevel::DEBUG, false);
-        $baseFileHandler->setFormatter($this->getStandardFileFormatter());
 
         // Use the generic addHandlers method to configure and add the filtered handlers
         $this->addHandlers($monologLogger, $baseFileHandler, $error_types);

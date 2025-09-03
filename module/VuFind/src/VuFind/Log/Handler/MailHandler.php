@@ -120,7 +120,7 @@ class MailHandler extends MonologMailHandler
 
             $message .= sprintf(
                 "[%s] %s.%s: %s\n",
-                $recordData['datetime']->format('Y-m-d H:i:s'),
+                $recordData['datetime']->format('c'),
                 $recordData['channel'],
                 $recordData['level_name'],
                 $modifiedRecordData['message']

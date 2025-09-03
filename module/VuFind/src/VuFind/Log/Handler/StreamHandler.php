@@ -29,6 +29,7 @@
 
 namespace VuFind\Log\Handler;
 
+use Monolog\Formatter\LineFormatter;
 use Monolog\Handler\StreamHandler as MonologStreamHandler;
 use Monolog\LogRecord;
 
@@ -37,7 +38,7 @@ use Monolog\LogRecord;
  *
  * @category VuFind
  * @package  Error_Logging
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Chris Hallberg <challber@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
@@ -57,17 +58,30 @@ class StreamHandler extends MonologStreamHandler
         $recordData = $record->toArray();
 
         $modifiedRecordData = $this->applyVerbosity($recordData);
-
         $modifiedRecord = new LogRecord(
             $record->datetime,
             $record->channel,
             $record->level,
             $modifiedRecordData['message'],
             $modifiedRecordData['context'],
-            $modifiedRecordData['extra'],
-            $record->formatted
+            $modifiedRecordData['extra']
         );
-
+        $modifiedRecord->formatted = $this->getStandardFileFormatter()->format($modifiedRecord);
         parent::write($modifiedRecord);
+    }
+
+    /**
+     * Get a standard LineFormatter for file logging.
+     *
+     * @return LineFormatter
+     */
+    protected function getStandardFileFormatter(): LineFormatter
+    {
+        return new LineFormatter(
+            "[%datetime%] %channel%.%level_name%:\n %message%\n %extra%\n",
+            'c',
+            true,
+            true
+        );
     }
 }
