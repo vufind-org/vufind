@@ -35,7 +35,6 @@ use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Exception\TableNotFoundException;
 
 use function get_class;
-use function in_array;
 
 /**
  * Database migration manager.
@@ -91,7 +90,7 @@ class MigrationManager
             // If the migrations table doesn't exist, we haven't applied any migrations yet!
             return [];
         }
-        return array_column($result, 'name');
+        return array_map(fn ($filename) => "{$this->migrationPath}/$filename", array_column($result, 'name'));
     }
 
     /**
@@ -103,17 +102,11 @@ class MigrationManager
      */
     protected function getMigrationsFromDir(string $path): array
     {
-        $lastPart = array_pop(explode('/', $path));
+        $parts = explode('/', $path);
+        $lastPart = array_pop($parts);
         $appliedMigrations = $this->getAppliedMigrations($lastPart);
-        $migrations = [];
-        $dir = opendir($path);
-        while ($next = readdir($dir)) {
-            if (str_ends_with($next, '.sql') && !in_array("$lastPart/$next", $appliedMigrations)) {
-                $migrations[] = "$path/$next";
-            }
-        }
-        closedir($dir);
-        return $migrations;
+        $migrations = glob("$path/*.sql");
+        return array_diff($migrations, $appliedMigrations);
     }
 
     /**
