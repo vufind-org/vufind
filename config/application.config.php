@@ -36,9 +36,6 @@ if (APPLICATION_ENV === 'development' || APPLICATION_ENV === 'testing') {
     }
     $modules[] = 'VuFindDevTools';
 }
-if (APPLICATION_ENV === 'development') {
-    $modules[] = 'VuFindDevTools';
-}
 if ($localModules = getenv('VUFIND_LOCAL_MODULES')) {
     $localModules = array_map('trim', explode(',', $localModules));
     foreach ($localModules as $current) {

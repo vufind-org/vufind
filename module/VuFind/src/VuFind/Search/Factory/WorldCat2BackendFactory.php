@@ -87,9 +87,9 @@ class WorldCat2BackendFactory extends AbstractBackendFactory
     public function __invoke(ContainerInterface $sm, $name, ?array $options = null)
     {
         $this->setup($sm);
-        $configManager = $this->getService(\VuFind\Config\PluginManager::class);
-        $this->config = $configManager->get('config');
-        $this->wcConfig = $configManager->get('WorldCat2');
+        $configManager = $this->getService(\VuFind\Config\ConfigManager::class);
+        $this->config = $configManager->getConfigObject('config');
+        $this->wcConfig = $configManager->getConfigObject('WorldCat2');
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
             $this->logger = $this->getService(\VuFind\Log\Logger::class);
         }

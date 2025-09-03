@@ -82,26 +82,25 @@ class ImageFactory implements FactoryInterface
             'imgDir' => $cacheOptions->getCacheDir(),
         ];
 
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-
-        if (isset($config->Captcha->image_length)) {
-            $imageOptions['wordLen'] = $config->Captcha->image_length;
+        $config = $container->get(\VuFind\Config\ConfigManager::class)
+            ->getConfigArray('config')['Captcha'] ?? [];
+        if (isset($config['image_length'])) {
+            $imageOptions['wordLen'] = $config['image_length'];
         }
-        if (isset($config->Captcha->image_width)) {
-            $imageOptions['width'] = $config->Captcha->image_width;
+        if (isset($config['image_width'])) {
+            $imageOptions['width'] = $config['image_width'];
         }
-        if (isset($config->Captcha->image_height)) {
-            $imageOptions['height'] = $config->Captcha->image_height;
+        if (isset($config['image_height'])) {
+            $imageOptions['height'] = $config['image_height'];
         }
-        if (isset($config->Captcha->image_fontSize)) {
-            $imageOptions['fsize'] = $config->Captcha->image_fontSize;
+        if (isset($config['image_fontSize'])) {
+            $imageOptions['fsize'] = $config['image_fontSize'];
         }
-        if (isset($config->Captcha->image_dotNoiseLevel)) {
-            $imageOptions['dotNoiseLevel'] = $config->Captcha->image_dotNoiseLevel;
+        if (isset($config['image_dotNoiseLevel'])) {
+            $imageOptions['dotNoiseLevel'] = $config['image_dotNoiseLevel'];
         }
-        if (isset($config->Captcha->image_lineNoiseLevel)) {
-            $imageOptions['lineNoiseLevel'] = $config->Captcha->image_lineNoiseLevel;
+        if (isset($config['image_lineNoiseLevel'])) {
+            $imageOptions['lineNoiseLevel'] = $config['image_lineNoiseLevel'];
         }
 
         $baseUrl = rtrim(

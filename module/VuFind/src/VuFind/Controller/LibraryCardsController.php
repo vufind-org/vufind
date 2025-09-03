@@ -33,6 +33,8 @@ namespace VuFind\Controller;
 
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
+use VuFind\Db\Type\AuditEventSubtype;
+use VuFind\Db\Type\AuditEventType;
 use VuFind\Exception\ILS as ILSException;
 
 /**
@@ -154,6 +156,15 @@ class LibraryCardsController extends AbstractBase
         );
         if ($confirm) {
             $this->getDbService(UserCardServiceInterface::class)->deleteLibraryCard($user, $cardID);
+
+            $this->getAuditEventService()->addEvent(
+                AuditEventType::User,
+                AuditEventSubtype::DeleteCard,
+                $user,
+                data: [
+                    'card_id' => $cardID,
+                ]
+            );
 
             // Success Message
             $this->flashMessenger()->addMessage('Library Card Deleted', 'success');
@@ -315,9 +326,29 @@ class LibraryCardsController extends AbstractBase
                 $this->flashMessenger()->addErrorMessage('ils_connection_failed');
                 return false;
             }
-            if ('password' === $loginMethod && !$patron) {
-                $this->flashMessenger()
-                    ->addMessage('authentication_error_invalid', 'error');
+            if ($patron) {
+                $this->getAuditEventService()->addEvent(
+                    AuditEventType::User,
+                    AuditEventSubtype::EditCard,
+                    $user,
+                    data: [
+                        'username' => $username,
+                        'card_id' => $id,
+                    ]
+                );
+            } else {
+                if ('password' === $loginMethod) {
+                    $this->flashMessenger()->addErrorMessage('authentication_error_invalid');
+                }
+                $this->getAuditEventService()->addEvent(
+                    AuditEventType::User,
+                    AuditEventSubtype::ILSLoginFailure,
+                    $user,
+                    data: [
+                        'username' => $username,
+                        'card_id' => $id,
+                    ]
+                );
                 return false;
             }
             if ('email' === $loginMethod) {
@@ -331,6 +362,16 @@ class LibraryCardsController extends AbstractBase
                         $info,
                         ['auth_method' => 'Email'],
                         'editLibraryCard'
+                    );
+                    $this->getAuditEventService()->addEvent(
+                        AuditEventType::User,
+                        AuditEventSubtype::SendCardAuthEmail,
+                        $user,
+                        data: [
+                            'username' => $username,
+                            'card_id' => $id,
+                            'email' => $info['email'],
+                        ]
                     );
                 }
                 // Don't reveal the result
@@ -348,7 +389,7 @@ class LibraryCardsController extends AbstractBase
                 $password
             );
         } catch (\VuFind\Exception\LibraryCard $e) {
-            $this->flashMessenger()->addMessage($e->getMessage(), 'error');
+            $this->flashMessenger()->addErrorMessage($e->getMessage());
             return false;
         }
 
@@ -375,6 +416,16 @@ class LibraryCardsController extends AbstractBase
                 $info['cardName'],
                 $info['cat_username'],
                 ' '
+            );
+            $this->getAuditEventService()->addEvent(
+                AuditEventType::User,
+                AuditEventSubtype::ConnectCardByEmail,
+                $user,
+                data: [
+                    'username' => $info['cat_username'],
+                    'card_id' => $info['cardID'],
+                    'email' => $info['email'],
+                ]
             );
         } catch (\VuFind\Exception\Auth | \VuFind\Exception\LibraryCard $e) {
             $this->flashMessenger()->addErrorMessage($e->getMessage());

@@ -69,14 +69,13 @@ class BuchhandelFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $url = isset($config->Buchhandel->url)
-            ? trim($config->Buchhandel->url, '/') . '/'
+        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config');
+        $url = isset($config['Buchhandel']['url'])
+            ? trim($config['Buchhandel']['url'], '/') . '/'
             : 'https://api.vlb.de/api/v1/cover/';
-        if (!isset($config->Buchhandel->token)) {
+        if (!isset($config['Buchhandel']['token'])) {
             throw new \Exception("Buchhandel.de 'token' not set in VuFind config");
         }
-        return new $requestedName($url, $config->Buchhandel->token);
+        return new $requestedName($url, $config['Buchhandel']['token']);
     }
 }

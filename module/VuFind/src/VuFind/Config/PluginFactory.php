@@ -64,18 +64,18 @@ class PluginFactory implements AbstractFactoryInterface
      *
      * @param ContainerInterface $container     Service container
      * @param string             $requestedName Name of service
-     * @param array              $options       Options (unused)
+     * @param array              $options       Options
      *
      * @return object
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
         ?array $options = null
     ) {
-        $configManager = $container->get(ConfigManager::class);
-        return $configManager->getConfigObject($requestedName);
+        return $container->get(ConfigManager::class)->getConfigObject(
+            $requestedName,
+            forceReload: $options['forceReload'] ?? false
+        );
     }
 }

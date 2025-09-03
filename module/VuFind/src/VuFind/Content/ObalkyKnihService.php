@@ -180,6 +180,38 @@ class ObalkyKnihService implements
     protected function getFromService(array $ids): ?\stdClass
     {
         $param = 'multi';
+        $query = $this->getServiceQuery($ids);
+
+        $url = $this->getBaseUrl();
+        if ($url === '') {
+            $this->logWarning('All ObalkyKnih servers are down.');
+            return null;
+        }
+        $url .= $this->endpoints['books'] . '?';
+        $url .= http_build_query([$param => json_encode([$query])]);
+        $client = $this->getHttpClient($url);
+        try {
+            $response = $client->send();
+        } catch (\Exception $e) {
+            $this->logError('Unexpected ' . $e::class . ': ' . $e->getMessage());
+            return null;
+        }
+        if ($response->isSuccess()) {
+            $json = json_decode($response->getBody());
+            return empty($json) ? null : $json[0];
+        }
+        return null;
+    }
+
+    /**
+     * Get query params for service
+     *
+     * @param array $ids Record identifiers
+     *
+     * @return array
+     */
+    protected function getServiceQuery(array $ids): array
+    {
         $query = [];
         $isbn = null;
         if (!empty($ids['isbns'])) {
@@ -209,25 +241,7 @@ class ObalkyKnihService implements
             }
         }
 
-        $url = $this->getBaseUrl();
-        if ($url === '') {
-            $this->logWarning('All ObalkyKnih servers are down.');
-            return null;
-        }
-        $url .= $this->endpoints['books'] . '?';
-        $url .= http_build_query([$param => json_encode([$query])]);
-        $client = $this->getHttpClient($url);
-        try {
-            $response = $client->send();
-        } catch (\Exception $e) {
-            $this->logError('Unexpected ' . $e::class . ': ' . $e->getMessage());
-            return null;
-        }
-        if ($response->isSuccess()) {
-            $json = json_decode($response->getBody());
-            return empty($json) ? null : $json[0];
-        }
-        return null;
+        return $query;
     }
 
     /**

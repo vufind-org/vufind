@@ -72,7 +72,7 @@ class LogicFactory implements FactoryInterface
             $container->get(\VuFind\Auth\ILSAuthenticator::class),
             $container->get(\VuFind\ILS\Connection::class),
             $container->get(\VuFind\Crypt\HMAC::class),
-            $container->get(\VuFind\Config\PluginManager::class)->get('config')
+            $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config')
         );
     }
 }

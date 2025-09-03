@@ -75,12 +75,23 @@ final class DoctrineSchemaValidationTest extends \PHPUnit\Framework\TestCase
         $entityManager = $container->get('doctrine.entitymanager.orm_vufind');
         $platform = $entityManager->getConnection()->getDatabasePlatform()->getName();
         $validator = new SchemaValidator($entityManager);
+        $errorList = $validator->validateMapping();
         $schemaList = $validator->getUpdateSchemaList();
         if ($platform === 'postgresql') {
             $schemaList = $this->filterIndexRecreation($schemaList);
         }
-        $this->assertEquals([], $validator->validateMapping(), 'Unexpected validation error');
-        $this->assertEquals([], $schemaList, 'Unexpected schema updates pending');
+        $this->assertEquals(
+            [],
+            $errorList,
+            'Unexpected validation error'
+            . (($firstError = reset($errorList)) ? "; first error: $firstError" : '')
+        );
+        $this->assertEquals(
+            [],
+            $schemaList,
+            'Unexpected schema updates pending'
+            . (($firstUpdate = reset($schemaList)) ? "; first update: $firstUpdate" : '')
+        );
     }
 
     /**

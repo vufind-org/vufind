@@ -157,7 +157,7 @@ class Turnstile implements HttpServiceAwareInterface, LoggerAwareInterface
      *
      * @return void
      */
-    protected function setResult($policyId, $clientIp, $success)
+    public function setResult($policyId, $clientIp, $success)
     {
         $cacheKey = $this->getCacheKey($policyId, $clientIp);
         $this->turnstileCache->setItem($cacheKey, $success);

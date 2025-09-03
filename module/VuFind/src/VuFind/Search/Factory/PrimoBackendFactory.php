@@ -132,8 +132,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
     public function __invoke(ContainerInterface $sm, $name, ?array $options = null)
     {
         $this->setup($sm);
-        $configReader = $this->getService(\VuFind\Config\PluginManager::class);
-        $this->primoConfig = $configReader->get('Primo');
+        $this->primoConfig = $this->getService(\VuFind\Config\ConfigManager::class)->getConfigObject('Primo');
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
             $this->logger = $this->getService(\VuFind\Log\Logger::class);
         }

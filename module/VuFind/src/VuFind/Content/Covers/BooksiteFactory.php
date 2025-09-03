@@ -69,12 +69,11 @@ class BooksiteFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $url = $config->Booksite->url ?? 'https://api.booksite.com';
-        if (!isset($config->Booksite->key)) {
+        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config');
+        $url = $config['Booksite']['url'] ?? 'https://api.booksite.com';
+        if (!isset($config['Booksite']['key'])) {
             throw new \Exception("Booksite 'key' not set in VuFind config");
         }
-        return new $requestedName($url, $config->Booksite->key);
+        return new $requestedName($url, $config['Booksite']['key']);
     }
 }
