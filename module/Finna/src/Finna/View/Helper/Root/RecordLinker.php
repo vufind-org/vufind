@@ -177,6 +177,7 @@ class RecordLinker extends \VuFind\View\Helper\Root\RecordLinker
                 [
                         'query' => [
                             'lookfor' => $lookFor,
+                            'filter[]' => 'finna.include_hidden_parts:1',
                             'jumpto' => 1,
                         ],
                     ],
