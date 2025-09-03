@@ -38,9 +38,6 @@ module.exports = {
     "semi-spacing": ["warn", { "before": false, "after": true }],
     "space-infix-ops": "warn",
 
-    // the following is required for Bootstrap 3 collapse:
-    "no-jquery/no-support": "off",
-
     // jsdoc rules
 
     // Recommended

@@ -518,7 +518,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     }
 
     /**
-     * Get attibute value from user info
+     * Get attribute value from user info
      *
      * @param object $userInfo  User info claim from OIDC server
      * @param string $attribute Attribute to get value for
