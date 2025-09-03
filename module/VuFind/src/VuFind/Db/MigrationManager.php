@@ -32,6 +32,7 @@ namespace VuFind\Db;
 use Composer\Semver\Comparator;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
+use Doctrine\DBAL\Exception\TableNotFoundException;
 
 use function get_class;
 use function in_array;
@@ -84,7 +85,12 @@ class MigrationManager
             ->from('migrations')
             ->where('name like ?')
             ->andWhere('status = ?');
-        $result = $this->connection->executeQuery($queryBuilder, ["$version/%", 'success'])->fetchAllAssociative();
+        try {
+            $result = $this->connection->executeQuery($queryBuilder, ["$version/%", 'success'])->fetchAllAssociative();
+        } catch (TableNotFoundException $e) {
+            // If the migrations table doesn't exist, we haven't applied any migrations yet!
+            return [];
+        }
         return array_column($result, 'name');
     }
 
@@ -108,6 +114,31 @@ class MigrationManager
         }
         closedir($dir);
         return $migrations;
+    }
+
+    /**
+     * Use the database to determine the most likely source version based on past migrations.
+     *
+     * @return string
+     */
+    public function determineOldVersion(): string
+    {
+        $queryBuilder = $this->connection->createQueryBuilder();
+        $queryBuilder->select('target_version')
+            ->from('migrations')
+            ->where('status = ?')
+            ->orderBy('id', 'DESC')
+            ->setMaxResults(1);
+        try {
+            $result = $this->connection->executeQuery($queryBuilder, ['success']);
+        } catch (TableNotFoundException $e) {
+            // If the migrations table doesn't exist yet, we know we're on 10.x. We'll default to 10.0,
+            // but it doesn't really make a difference since there were no migrations made during the
+            // 10.x release line.
+            return '10.0';
+        }
+        $row = $result->fetchAssociative();
+        return $row['target_version'] ?? '10.0';
     }
 
     /**
