@@ -115,7 +115,7 @@ class Paytrail extends AbstractBase
     ): void {
         $email = $user->getEmail() ?? $patron['email'] ?? null;
         if (!$email) {
-            throw new PaymentException('Payment::email_address_missing');
+            throw new PaymentException('email_address_missing');
         }
         $localIdentifier = $this->generateLocalIdentifier($patron);
 
