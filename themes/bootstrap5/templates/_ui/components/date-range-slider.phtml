@@ -1,4 +1,15 @@
 <?php
+  /**
+   * Date range slider component
+   *
+   * @param string $inputMaxId The ID of the input element for maximum range value
+   * @param string $inputMinId The ID of the input element for minimum range value
+   * @param ?int   $rangeMin   The minimum allowed year (default = 1400)
+   * @param ?int   $rangeMax   The maximum allowed year (default = next year)
+   * @param string $sliderId   The ID for the slider element
+   * @param ?array $values     An array of [minimum, maximum] values representing the current selection (defaults to
+   *                           [$rangeMin, $rangeMax])
+   */
   $this->assetManager()->appendScriptLink('vendor/nouislider.min.js');
   $this->assetManager()->appendStyleLink('vendor/nouislider.min.css');
   $this->assetManager()->appendScriptLink('date_range_slider.js');

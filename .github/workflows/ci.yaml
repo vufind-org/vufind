@@ -33,7 +33,7 @@ jobs:
           ini-values: error_reporting=E_ALL
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Disable Solr installation
         run: touch solr/.disableAutomaticInstall
@@ -49,7 +49,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.npm
-          key: npm-${{ hashFiles('package-lock.json') }}
+          key: npm-${{ hashFiles('**/package.json') }}
           restore-keys: npm-
 
       - name: Install node dependencies

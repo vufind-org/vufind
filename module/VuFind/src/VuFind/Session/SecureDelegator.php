@@ -33,7 +33,6 @@ namespace VuFind\Session;
 
 use VuFind\Cookie\CookieManager;
 use VuFind\Crypt\BlockCipher;
-use VuFind\Db\Table\PluginManager;
 
 use function func_get_args;
 
@@ -166,29 +165,6 @@ class SecureDelegator implements HandlerInterface
     public function disableWrites()
     {
         $this->__call(__FUNCTION__, []);
-    }
-
-    /**
-     * Get the plugin manager. Throw an exception if it is missing.
-     *
-     * @throws \Exception
-     * @return PluginManager
-     */
-    public function getDbTableManager()
-    {
-        return $this->__call(__FUNCTION__, []);
-    }
-
-    /**
-     * Set the plugin manager.
-     *
-     * @param PluginManager $manager Plugin manager
-     *
-     * @return void
-     */
-    public function setDbTableManager(PluginManager $manager)
-    {
-        $this->__call(__FUNCTION__, func_get_args());
     }
 
     /**

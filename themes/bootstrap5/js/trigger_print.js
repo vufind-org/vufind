@@ -1,5 +1,9 @@
 /* global VuFind */
 
+/**
+ * Call a function after AJAX routines have completed.
+ * @param {Function} fn Function to call when AJAX is done loading.
+ */
 function waitForAjaxContentToLoad(fn) {
   var itemDone = typeof VuFind.itemStatuses === "undefined";
   var saveDone = typeof VuFind.saveStatuses === "undefined";
@@ -23,6 +27,10 @@ function waitForAjaxContentToLoad(fn) {
   }
 
   var fnCalled = false;
+  /**
+   * Check whether all AJAX loading conditions have been met.
+   * @returns {boolean} True when conditions are met
+   */
   function checkAllConditions() {
     if (!fnCalled && itemDone && saveDone && tabDone) {
       fn();
@@ -59,6 +67,10 @@ VuFind.listen("ready", function triggerPrint() {
     return;
   }
 
+  /**
+   * Call the provided function after 10ms.
+   * @param {Function} fn Callback
+   */
   function defer(fn) {
     setTimeout(fn, 10);
   }

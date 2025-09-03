@@ -48,23 +48,6 @@ class PathResolverTest extends \PHPUnit\Framework\TestCase
     use ConfigRelatedServicesTrait;
 
     /**
-     * Stacked path resolver
-     *
-     * @var PathResolver
-     */
-    protected $stackedResolver;
-
-    /**
-     * Setup method.
-     *
-     * @return void
-     */
-    public function setUp(): void
-    {
-        $this->stackedResolver = $this->getPathResolver(localDir: $this->getStackedFixtureDir() . 'primary');
-    }
-
-    /**
      * Test PathResolver
      *
      * @return void
@@ -97,7 +80,7 @@ class PathResolverTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider for testPathStack
+     * Data provider for testPathStack.
      *
      * @return array
      */
@@ -106,54 +89,44 @@ class PathResolverTest extends \PHPUnit\Framework\TestCase
         return [
             [
                 // A file that exists only in the primary path:
-                'only-primary.ini',
-                'primary/config/vufind/only-primary.ini',
+                'primary.ini',
+                'primary/config/vufind/primary.ini',
             ],
             [
-                // A file that exists both in the primary and secondary paths:
-                'both.ini',
-                'primary/config/vufind/both.ini',
+                // A file that exists in all paths:
+                'all.ini',
+                'primary/config/vufind/all.ini',
             ],
             [
                 // A file that exists in the secondary path as well as base path:
-                'facets.ini',
-                'primary/../secondary/config/custom/facets.ini',
+                'base-secondary.ini',
+                'primary/../secondary/config/custom/base-secondary.ini',
             ],
             [
                 // A file that exists only in the base path:
-                'config.ini',
-                'config/vufind/config.ini',
-                APPLICATION_PATH . '/',
+                'base.ini',
+                'base/config/vufind/base.ini',
             ],
         ];
     }
 
     /**
-     * Test stacked path resolution
+     * Test stacked path resolution.
      *
-     * @param string  $filename         Filename to check
-     * @param string  $expectedFilePath Expected result (minus base path)
-     * @param ?string $expectedBasePath Expected base path in result (null = use default fixture path)
+     * @param string $filename         Filename to check
+     * @param string $expectedFilePath Expected result (minus base path)
      *
      * @dataProvider getTestPathStackData
      *
      * @return void
      */
-    public function testPathStack(string $filename, string $expectedFilePath, ?string $expectedBasePath = null): void
+    public function testPathStack(string $filename, string $expectedFilePath): void
     {
+        $fixtureDir = realpath($this->getFixtureDir() . 'configs/pathstack') . '/';
+        $pathResolver = $this->getPathResolver(baseDir: $fixtureDir . 'base', localDir: $fixtureDir . 'primary');
         $this->assertEquals(
-            ($expectedBasePath ?? $this->getStackedFixtureDir()) . $expectedFilePath,
-            $this->stackedResolver->getConfigPath($filename)
+            $fixtureDir . $expectedFilePath,
+            $pathResolver->getConfigPath($filename)
         );
-    }
-
-    /**
-     * Get path to stacked config fixtures
-     *
-     * @return string
-     */
-    public function getStackedFixtureDir(): string
-    {
-        return realpath($this->getFixtureDir() . 'configs/pathstack') . '/';
     }
 }

@@ -33,3 +33,6 @@ defined('LOCAL_CACHE_DIR')
             ? getenv('VUFIND_CACHE_DIR')
             : (strlen(LOCAL_OVERRIDE_DIR) > 0 ? LOCAL_OVERRIDE_DIR . '/cache' : ''))
     );
+
+// Define database datetime format
+defined('VUFIND_DATABASE_DATETIME_FORMAT') || define('VUFIND_DATABASE_DATETIME_FORMAT', 'Y-m-d H:i:s');

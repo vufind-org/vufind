@@ -68,7 +68,7 @@ class EscaperFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
-        return new $requestedName((bool)($config->Site->extendedHtmlAttributeEscaping ?? false));
+        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config');
+        return new $requestedName((bool)($config['Site']['extendedHtmlAttributeEscaping'] ?? false));
     }
 }

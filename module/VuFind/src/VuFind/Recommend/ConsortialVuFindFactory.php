@@ -71,7 +71,7 @@ class ConsortialVuFindFactory implements \Laminas\ServiceManager\Factory\Factory
         }
 
         return new $requestedName(
-            $container->get(\VuFind\Config\PluginManager::class)->get('ExternalVuFind'),
+            $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('ExternalVuFind'),
             $container->get(\VuFind\Connection\ExternalVuFind::class)
         );
     }
