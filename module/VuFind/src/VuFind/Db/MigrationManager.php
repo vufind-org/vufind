@@ -205,7 +205,7 @@ class MigrationManager
             $output .= $this->logMigrationEvent($connection, $shortMigrationName, 'start');
         }
         $sql = file_get_contents($migration);
-        foreach (explode(';', $sql) as $sqlLine) {
+        foreach (preg_split('/;\s*([\r\n]|$)/', $sql) as $sqlLine) {
             $trimmedLine = trim($sqlLine);
             if (!empty($trimmedLine)) {
                 if ($connection) {
