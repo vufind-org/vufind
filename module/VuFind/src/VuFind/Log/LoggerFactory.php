@@ -296,16 +296,7 @@ class LoggerFactory implements FactoryInterface
         }
 
         $hasDebugWriter = true;
-        $debugFormatter = new LineFormatter(
-            PHP_SAPI === 'cli'
-                ? "[%datetime%] %level_name%: %message% %context% %extra%\n"
-                : '<pre>[%datetime%] %level_name%: %message% %context% %extra%</pre>' . PHP_EOL,
-            'Y-m-d H:i:s',
-            true,
-            true
-        );
         $debugHandler = new StreamHandler('php://output');
-        $debugHandler->setFormatter($debugFormatter);
         $level = (is_int($debug) ? $debug : '5');
         $this->addHandlers($monologLogger, $debugHandler, "debug-$level,notice-$level,error-$level,alert-$level");
     }
