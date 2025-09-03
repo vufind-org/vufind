@@ -34,6 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\Version;
 
 /**
  * Factory for the migration manager.
@@ -67,6 +68,7 @@ class MigrationManagerFactory implements FactoryInterface
     ) {
         return new $requestedName(
             $container->get(Connection::class),
+            Version::getBuildVersion(),
             ...($options ?? [])
         );
     }

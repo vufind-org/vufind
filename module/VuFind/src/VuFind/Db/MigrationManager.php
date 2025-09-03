@@ -34,6 +34,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 
 use function get_class;
+use function in_array;
 
 /**
  * Database migration manager.
@@ -47,24 +48,44 @@ use function get_class;
 class MigrationManager
 {
     /**
-     * Active database platform.
+     * Base path for migration files.
      *
      * @var string
      */
-    protected $platform;
+    protected $migrationPath;
 
     /**
      * Constructor
      *
-     * @param Connection $connection A database connection (with read rights)
+     * @param Connection $connection    A database connection (with read rights)
+     * @param string     $targetVersion The VuFind version we are migrating to
      *
      * @return void
      * @throws Exception
      */
-    public function __construct(protected Connection $connection)
+    public function __construct(protected Connection $connection, protected string $targetVersion)
     {
         $rawPlatform = strtolower(get_class($connection->getDatabasePlatform()));
-        $this->platform = str_contains($rawPlatform, 'postgres') ? 'pgsql' : 'mysql';
+        $platform = str_contains($rawPlatform, 'postgres') ? 'pgsql' : 'mysql';
+        $this->migrationPath = APPLICATION_PATH . '/module/VuFind/sql/migrations/' . $platform;
+    }
+
+    /**
+     * Get a list of successfully applied migrations for the provided version.
+     *
+     * @param string $version Version directory containing migrations
+     *
+     * @return string[]
+     */
+    protected function getAppliedMigrations(string $version): array
+    {
+        $queryBuilder = $this->connection->createQueryBuilder();
+        $queryBuilder->select('name')
+            ->from('migrations')
+            ->where('name like ?')
+            ->andWhere('status = ?');
+        $result = $this->connection->executeQuery($queryBuilder, ["$version/%", 'success'])->fetchAllAssociative();
+        return array_column($result, 'name');
     }
 
     /**
@@ -76,10 +97,12 @@ class MigrationManager
      */
     protected function getMigrationsFromDir(string $path): array
     {
+        $lastPart = array_pop(explode('/', $path));
+        $appliedMigrations = $this->getAppliedMigrations($lastPart);
         $migrations = [];
         $dir = opendir($path);
         while ($next = readdir($dir)) {
-            if (str_ends_with($next, '.sql')) {
+            if (str_ends_with($next, '.sql') && !in_array("$lastPart/$next", $appliedMigrations)) {
                 $migrations[] = "$path/$next";
             }
         }
@@ -97,20 +120,48 @@ class MigrationManager
     public function getMigrations(string $oldVersion): array
     {
         $matches = [];
-        $migrationPath = APPLICATION_PATH . '/module/VuFind/sql/migrations/' . $this->platform;
-        $dir = opendir($migrationPath);
+        $dir = opendir($this->migrationPath);
         // Make sure version number at least includes a ".0" on the end:
         if (!str_contains($oldVersion, '.')) {
             $oldVersion .= '.0';
         }
         while ($next = readdir($dir)) {
-            if (preg_match('/^\d/', $next) && Comparator::greaterThan($next, $oldVersion)) {
-                $matches = array_merge($matches, $this->getMigrationsFromDir($migrationPath . '/' . $next));
+            if (preg_match('/^\d/', $next) && Comparator::greaterThanOrEqualTo($next, $oldVersion)) {
+                $matches = array_merge($matches, $this->getMigrationsFromDir($this->migrationPath . '/' . $next));
             }
         }
         closedir($dir);
         natsort($matches);
         return $matches;
+    }
+
+    /**
+     * Log a migration event to the migrations table (if connection provided). Return the SQL used to log the event.
+     *
+     * @param null|Connection $connection Database connection to use for applying migrations
+     * (if null, the method returns the SQL to apply without actually writing to the database)
+     * @param string          $name       Short name of migration being applied
+     * @param string          $status     Status message
+     *
+     * @return string
+     * @throws Exception
+     */
+    protected function logMigrationEvent(?Connection $connection, string $name, string $status): string
+    {
+        $queryBuilder = $connection ? $connection->createQueryBuilder() : $this->connection->createQueryBuilder();
+        $queryBuilder->insert('migrations')
+            ->values(
+                [
+                    'name' => $this->connection->quote($name),
+                    'status' => $this->connection->quote($status),
+                    'target_version' => $this->connection->quote($this->targetVersion),
+                ]
+            );
+        $sql = (string)$queryBuilder;
+        if ($connection) {
+            $connection->executeQuery($queryBuilder);
+        }
+        return "$sql;\n";
     }
 
     /**
@@ -125,6 +176,10 @@ class MigrationManager
     public function applyMigration(string $migration, ?Connection $connection): string
     {
         $output = '';
+        $shortMigrationName = str_replace($this->migrationPath . '/', '', $migration);
+        if ($shortMigrationName !== '11.0/000-add-migrations-table.sql') {
+            $output .= $this->logMigrationEvent($connection, $shortMigrationName, 'start');
+        }
         $sql = file_get_contents($migration);
         foreach (explode(';', $sql) as $sqlLine) {
             $trimmedLine = trim($sqlLine);
@@ -135,6 +190,7 @@ class MigrationManager
                 $output .= "$trimmedLine;\n";
             }
         }
+        $output .= $this->logMigrationEvent($connection, $shortMigrationName, 'success');
         return $output;
     }
 
