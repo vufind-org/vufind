@@ -30,6 +30,7 @@
 namespace VuFind\Controller;
 
 use Laminas\Mvc\MvcEvent;
+use VuFind\Config\Version;
 use VuFind\Config\Writer as ConfigWriter;
 use VuFind\Crypt\PasswordHasher;
 use VuFind\Db\ConnectionFactory;
@@ -541,16 +542,21 @@ class InstallController extends AbstractBase
      */
     protected function getPostCommands($view)
     {
+        $version = Version::getBuildVersion();
+        $filename = $view->driver === 'pgsql' ? 'pgsql' : 'mysql';
+        $migrationSql = 'INSERT INTO migrations(name, status, target_version) VALUES '
+            . "('{$filename}.sql', 'success', '$version')";
+
         // Special case: PostgreSQL:
         if ($view->driver == 'pgsql') {
             $grantTables = 'GRANT ALL PRIVILEGES ON ALL TABLES IN '
                 . "SCHEMA public TO {$view->dbuser} ";
             $grantSequences = 'GRANT ALL PRIVILEGES ON ALL SEQUENCES'
                 . " IN SCHEMA public TO {$view->dbuser} ";
-            return [$grantTables, $grantSequences];
+            return [$grantTables, $grantSequences, $migrationSql];
         }
         // Default: MySQL:
-        return [];
+        return [$migrationSql];
     }
 
     /**

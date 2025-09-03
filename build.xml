@@ -864,6 +864,11 @@ return [
           <arg line="-U ${vufinddbuser} -f ${srcdir}/module/VuFind/sql/pgsql.sql ${vufinddb}" />
           <env key="PGPASSWORD" value="${vufinddbpass}" />
         </exec>
+
+        <exec executable="psql" checkreturn="true">
+          <arg line="-U ${vufinddbuser} -c &quot;INSERT INTO migrations(name, status, target_version) values ('pgsql.sql', 'success', '${version}')&quot; ${vufinddb}" />
+          <env key="PGPASSWORD" value="${vufinddbpass}" />
+        </exec>
       </then>
       <else>
         <!-- build database -->
@@ -887,6 +892,9 @@ return [
         </exec>
         <exec executable="mysql" checkreturn="true" passthru="true">
           <arg line="${mysqlconnectionargs} -D ${vufinddb} &lt; ${srcdir}/module/VuFind/sql/mysql.sql" />
+        </exec>
+        <exec executable="mysql" checkreturn="true" passthru="true">
+          <arg line="${mysqlconnectionargs} -D ${vufinddb} -e &quot;INSERT INTO migrations(name, status, target_version) values ('mysql.sql', 'success', '$(version)')&quot;" />
         </exec>
       </else>
     </if>
