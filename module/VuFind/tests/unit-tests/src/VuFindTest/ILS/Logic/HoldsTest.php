@@ -123,7 +123,6 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
         $result = $this->callMethod($logic, 'formatHoldings', [$holdings]);
 
         // assert various properties of the result
-        // I need to update the fixture and test to be more readable - remove UUIDs and replace with simple strings
         $this->assertArrayHasKey('location1_id|Main Library', $result);
         $this->assertEquals('Main Library', $result['location1_id|Main Library']['location']);
         $this->assertCount(2, $result['location1_id|Main Library']['items']);
