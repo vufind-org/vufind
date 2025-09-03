@@ -197,10 +197,16 @@ VuFind.register('itemStatuses', function ItemStatuses() {
    * @param {HTMLElement} el The element representing the item.
    */
   function checkItemStatus(el) {
-    const hiddenIdEl = el.querySelector(".hiddenId");
+    let hiddenIdEl = el.querySelector(".hiddenId");
+    const hiddenRTACIdEl = el.querySelector(".hiddenRTACId");
+
+    if (hiddenRTACIdEl != null) {
+      hiddenIdEl = hiddenRTACIdEl;
+    }
 
     if (
       hiddenIdEl === null ||
+      hiddenIdEl.value === "no_rtac" ||
       el.classList.contains("js-item-pending") ||
       el.classList.contains("js-item-done")
     ) {

@@ -23,9 +23,12 @@
 <?php ob_end_clean(); ?>
 
 <?php if ($supportsRtac): ?>
-  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueIDOverrideForRequest())?>" class="hiddenId">
-  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource">
+  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueIDOverrideForRequest())?>" class="hiddenRTACId">
+<?php else: ?>
+  <input type="hidden" value="no_rtac" class="hiddenRTACId">
 <?php endif; ?>
+  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId">
+  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource">
 <div class="media<?=$this->driver->supportsAjaxStatus() ? ' ajaxItem' : ''?>">
   <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
     <?=$thumbnail ?>
