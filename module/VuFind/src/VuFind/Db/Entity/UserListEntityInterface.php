@@ -116,16 +116,16 @@ interface UserListEntityInterface extends EntityInterface
     /**
      * Set user.
      *
-     * @param ?UserEntityInterface $user User owning the list.
+     * @param UserEntityInterface $user User owning the list.
      *
      * @return static
      */
-    public function setUser(?UserEntityInterface $user): static;
+    public function setUser(UserEntityInterface $user): static;
 
     /**
      * Get user.
      *
-     * @return ?UserEntityInterface
+     * @return UserEntityInterface
      */
-    public function getUser(): ?UserEntityInterface;
+    public function getUser(): UserEntityInterface;
 }

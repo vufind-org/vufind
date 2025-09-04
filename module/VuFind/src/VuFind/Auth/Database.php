@@ -38,6 +38,7 @@ use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
+use VuFind\Exception\DuplicateKeyException;
 
 use function in_array;
 use function is_object;
@@ -146,19 +147,6 @@ class Database extends AbstractBase
     }
 
     /**
-     * Does the provided exception indicate that a duplicate key value has been
-     * created?
-     *
-     * @param \Exception $e Exception to check
-     *
-     * @return bool
-     */
-    protected function exceptionIndicatesDuplicateKey(\Exception $e): bool
-    {
-        return strstr($e->getMessage(), 'Duplicate entry') !== false;
-    }
-
-    /**
      * Create a new user account from the request.
      *
      * @param Request $request Request object containing new account details.
@@ -185,7 +173,7 @@ class Database extends AbstractBase
         $user = $this->createUserFromParams($params, $userService);
         try {
             $userService->persistEntity($user);
-        } catch (\Laminas\Db\Adapter\Exception\RuntimeException $e) {
+        } catch (DuplicateKeyException $e) {
             // In a scenario where the unique key of the user table is
             // shorter than the username field length, it is possible that
             // a user will pass validation but still get rejected due to
@@ -193,8 +181,7 @@ class Database extends AbstractBase
             // unlikely scenario, but if it occurs, we will treat it the
             // same as a duplicate username. Other unexpected database
             // errors will be passed through unmodified.
-            throw $this->exceptionIndicatesDuplicateKey($e)
-                ? new AuthException('That username is already taken') : $e;
+            throw new AuthException('That username is already taken');
         }
 
         // Verify email address:

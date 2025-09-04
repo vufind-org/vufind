@@ -54,6 +54,13 @@ class ConfigManager
     use MergeRecursiveTrait;
 
     /**
+     * Configuration cache
+     *
+     * @var array[]
+     */
+    protected array $cache = [];
+
+    /**
      * Constructor
      *
      * @param HandlerPluginManager $configHandlerManager Config handler plugin manager
@@ -70,32 +77,44 @@ class ConfigManager
      *
      * The path consists of a base configuration name and a path to a subsection of that configuration.
      *
-     * @param string $configPath Config path
+     * @param string  $configPath     Config path
+     * @param boolean $forceReload    If cache should be ignored
+     * @param boolean $useLocalConfig Use local configuration if available
      *
      * @return mixed
      */
-    public function getConfig(string $configPath): mixed
+    public function getConfig(string $configPath, bool $forceReload = false, bool $useLocalConfig = true): mixed
     {
+        $cacheKey =  ($useLocalConfig ? 'local_' : 'base_') . $configPath;
+        if (!$forceReload && isset($this->cache[$cacheKey])) {
+            return $this->cache[$cacheKey];
+        }
         $subsection = explode('/', $configPath);
         $configName = array_shift($subsection);
-        $configLocation = $this->pathResolver->getConfigLocation($configName);
+        $configLocation = $useLocalConfig
+            ? $this->pathResolver->getConfigLocation($configName)
+            : $this->pathResolver->getBaseConfigLocation($configName);
         if (!$configLocation) {
             return [];
         }
         $configLocation->setSubsection($subsection);
-        return $this->loadConfigFromLocation($configLocation);
+        $config = $this->loadConfigFromLocation($configLocation);
+        $this->cache[$cacheKey] = $config;
+        return $config;
     }
 
     /**
      * Get config as array by path.
      *
-     * @param string $configPath Config path
+     * @param string  $configPath     Config path
+     * @param boolean $forceReload    If cache should be ignored
+     * @param boolean $useLocalConfig Use local configuration if available
      *
      * @return array
      */
-    public function getConfigArray(string $configPath): array
+    public function getConfigArray(string $configPath, bool $forceReload = false, bool $useLocalConfig = true): array
     {
-        $config = $this->getConfig($configPath);
+        $config = $this->getConfig($configPath, $forceReload, $useLocalConfig);
         if (!is_array($config)) {
             throw new ConfigException('Configuration on path ' . $configPath . ' is not an array.');
         }
@@ -105,24 +124,29 @@ class ConfigManager
     /**
      * Get config as object by path.
      *
-     * @param string $configPath Config path
+     * @param string  $configPath     Config path
+     * @param boolean $forceReload    If cache should be ignored
+     * @param boolean $useLocalConfig Use local configuration if available
      *
      * @return Config
      */
-    public function getConfigObject(string $configPath): Config
+    public function getConfigObject(string $configPath, bool $forceReload = false, bool $useLocalConfig = true): Config
     {
-        return new Config($this->getConfigArray($configPath));
+        return new Config($this->getConfigArray($configPath, $forceReload, $useLocalConfig));
     }
 
     /**
      * Load config from a specific location.
      *
-     * @param ConfigLocationInterface $configLocation Config location
+     * @param ConfigLocationInterface $configLocation     Config location
+     * @param bool                    $handleParentConfig If parent configuration should be handled
      *
      * @return mixed
      */
-    public function loadConfigFromLocation(ConfigLocationInterface $configLocation): mixed
-    {
+    public function loadConfigFromLocation(
+        ConfigLocationInterface $configLocation,
+        bool $handleParentConfig = true
+    ): mixed {
         $loadedConfigPaths = [];
 
         $configs = [];
@@ -144,10 +168,10 @@ class ConfigManager
             $loadedConfigPaths[] = $currentConfigLocationPath;
             $currentConfig = $this->configHandlerManager
                 ->getForLocation($currentConfigLocation)
-                ->parseConfig($currentConfigLocation);
+                ->parseConfig($currentConfigLocation, $handleParentConfig);
             $configs[] = $currentConfig;
             $currentConfigLocation = null;
-            if ($parentLocation = $currentConfig['parentLocation'] ?? null) {
+            if ($handleParentConfig && $parentLocation = $currentConfig['parentLocation'] ?? null) {
                 $currentConfigLocation = $parentLocation;
             }
         } while ($currentConfigLocation);
@@ -166,5 +190,25 @@ class ConfigManager
             $result = $result[$subsectionPart] ?? null;
         }
         return $result;
+    }
+
+    /**
+     * Write config to a specific location.
+     *
+     * @param ConfigLocationInterface  $destinationLocation Destination location
+     * @param array|string             $config              Configuration
+     * @param ?ConfigLocationInterface $baseLocation        Optional base location that can provide additional
+     * structure (e.g. comments)
+     *
+     * @return void
+     */
+    public function writeConfig(
+        ConfigLocationInterface $destinationLocation,
+        array|string $config,
+        ?ConfigLocationInterface $baseLocation
+    ): void {
+        $this->configHandlerManager
+            ->getForLocation($destinationLocation)
+            ->writeConfig($destinationLocation, $config, $baseLocation);
     }
 }

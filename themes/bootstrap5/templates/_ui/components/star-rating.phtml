@@ -1,4 +1,13 @@
 <?php
+  /**
+   * Component to display a star rating.
+   *
+   * @param ?bool  $allowClear Should the control include a clear button? (default = false)
+   * @param ?array $labelAttrs Array of HTML attributes to apply to the label (optional)
+   * @param ?array $inputAttrs Array of HTML attributes to apply to the input (optional)
+   * @param array  $ratingData Rating data (array containing 'count' and 'rating' values)
+   * @param ?bool  $readonly   Should the control be read-only? (default = false)
+   */
   $id = $this->escapeHtmlAttr(uniqid());
   $labelAttrs = !empty($this->labelAttrs) ? (' ' . implode(' ', $this->labelAttrs)) : '';
   $inputAttrs = !empty($this->inputAttrs) ? (' ' . implode(' ', $this->inputAttrs)) : '';

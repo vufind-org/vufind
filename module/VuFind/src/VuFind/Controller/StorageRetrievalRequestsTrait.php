@@ -29,6 +29,9 @@
 
 namespace VuFind\Controller;
 
+use VuFind\Db\Type\AuditEventSubtype;
+use VuFind\Db\Type\AuditEventType;
+
 use function in_array;
 use function is_array;
 
@@ -141,6 +144,17 @@ trait StorageRetrievalRequestsTrait
                     ];
                     $this->flashMessenger()->addMessage($msg, 'success');
                     $this->getViewRenderer()->plugin('session')->put('reset_account_status', true);
+
+                    $this->getAuditEventService()->addEvent(
+                        AuditEventType::ILS,
+                        AuditEventSubtype::PlaceStorageRetrievalRequest,
+                        $this->getUser(),
+                        data: [
+                            'username' => $patron['cat_username'],
+                            'details' => $details,
+                        ]
+                    );
+
                     return $this->redirectToRecord($this->inLightbox() ? '?layout=lightbox' : '');
                 } else {
                     // Failure: use flash messenger to display messages, stay on

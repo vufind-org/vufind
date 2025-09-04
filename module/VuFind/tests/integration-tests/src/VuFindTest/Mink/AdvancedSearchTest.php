@@ -473,4 +473,44 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $expectedValue = $this->getExpectedHierarchicalFacetFilterText($expectedSort, 1);
         $this->assertAppliedFilter($page, 0, 'hierarchy', $expectedValue);
     }
+
+    /**
+     * Test that checkbox facets work on the advanced search screen.
+     *
+     * @return void
+     */
+    public function testAdvancedCheckboxes(): void
+    {
+        // Activate checkboxes on advanced search:
+        $this->changeConfigs(
+            [
+                'facets' => [
+                    'Advanced_Settings' => [
+                        'special_facets' => 'checkboxes,illustrated,daterange',
+                    ],
+                    'CheckboxFacets' => [
+                        'id:testbug2' => 'The Test Record',
+                    ],
+                ],
+            ]
+        );
+        $session = $this->getMinkSession();
+        $page = $this->goToAdvancedSearch($session);
+
+        // Confirm expected label text:
+        $checkboxSelector = '.checkbox-filters .checkbox label';
+        $this->assertEquals('The Test Record', $this->findCssAndGetText($page, $checkboxSelector));
+
+        // Select checkbox and submit search:
+        $this->clickCss($page, $checkboxSelector);
+        $this->clickCss($page, '.adv-submit .btn-primary');
+        $this->waitForPageLoad($page);
+
+        // Confirm expected result -- just the record specified by the checkbox filter:
+        $this->assertEquals('Showing 1 - 1 results of 1', $this->findCssAndGetText($page, '.js-search-stats'));
+        $this->assertStringStartsWith(
+            'La congiura dei Principi Napoletani 1701',
+            $this->findCssAndGetText($page, '.result-body .title')
+        );
+    }
 }

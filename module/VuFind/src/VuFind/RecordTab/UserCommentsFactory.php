@@ -70,9 +70,8 @@ class UserCommentsFactory implements \Laminas\ServiceManager\Factory\FactoryInte
             throw new \Exception('Unexpected options passed to factory.');
         }
         $capabilities = $container->get(\VuFind\Config\AccountCapabilities::class);
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $captchaConfig = $config->Captcha->forms ?? '';
+        $captchaConfig = $container->get(\VuFind\Config\ConfigManager::class)
+            ->getConfigArray('config')['Captcha']['forms'] ?? '';
         $useCaptcha = trim($captchaConfig) === '*'
             || str_contains($captchaConfig, 'userComments');
         return new $requestedName(

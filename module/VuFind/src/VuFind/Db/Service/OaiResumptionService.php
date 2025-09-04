@@ -30,9 +30,8 @@
 namespace VuFind\Db\Service;
 
 use Laminas\Log\LoggerAwareInterface;
+use VuFind\Db\Entity\OaiResumption;
 use VuFind\Db\Entity\OaiResumptionEntityInterface;
-use VuFind\Db\Table\DbTableAwareInterface;
-use VuFind\Db\Table\DbTableAwareTrait;
 use VuFind\Log\LoggerAwareTrait;
 
 use function intval;
@@ -47,11 +46,9 @@ use function intval;
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 class OaiResumptionService extends AbstractDbService implements
-    DbTableAwareInterface,
     LoggerAwareInterface,
     OaiResumptionServiceInterface
 {
-    use DbTableAwareTrait;
     use LoggerAwareTrait;
 
     /**
@@ -61,7 +58,12 @@ class OaiResumptionService extends AbstractDbService implements
      */
     public function removeExpired(): void
     {
-        $this->getDbTable('oairesumption')->removeExpired();
+        $dql = 'DELETE FROM ' . OaiResumptionEntityInterface::class . ' O '
+            . 'WHERE O.expires <= :now';
+        $parameters['now'] = new \DateTime();
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $query->execute();
     }
 
     /**
@@ -73,7 +75,7 @@ class OaiResumptionService extends AbstractDbService implements
      * @return     ?OaiResumptionEntityInterface
      * @deprecated Use OaiResumptionService::findWithId
      */
-    public function findToken(string $token): ?OaiResumptionEntityInterface
+    public function findToken($token): ?OaiResumptionEntityInterface
     {
         return $this->findWithId($token);
     }
@@ -88,7 +90,12 @@ class OaiResumptionService extends AbstractDbService implements
      */
     public function findWithId(string $id): ?OaiResumptionEntityInterface
     {
-        return $this->getDbTable('oairesumption')->findWithId($id);
+        $dql = 'SELECT O FROM ' . OaiResumptionEntityInterface::class . ' O '
+            . 'WHERE O.id = :id';
+        $parameters = compact('id');
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        return $query->getOneOrNullResult();
     }
 
     /**
@@ -101,7 +108,30 @@ class OaiResumptionService extends AbstractDbService implements
      */
     public function findWithToken(string $token): ?OaiResumptionEntityInterface
     {
-        return $this->getDbTable('oairesumption')->findWithToken($token);
+        $dql = 'SELECT O FROM ' . OaiResumptionEntityInterface::class . ' O '
+            . 'WHERE O.token = :token';
+        $parameters = compact('token');
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        return $query->getOneOrNullResult();
+    }
+
+    /**
+     * Retrieve a row from the database based on primary key and where the token is null.
+     *
+     * @param int $id Id used for the search.
+     *
+     * @return ?OaiResumptionEntityInterface
+     * @todo   In future, we should migrate data to prevent null token fields, which will make this method obsolete.
+     */
+    protected function findWithLegacyIdToken(int $id): ?OaiResumptionEntityInterface
+    {
+        $dql = 'SELECT O FROM ' . OaiResumptionEntityInterface::class . ' O '
+            . 'WHERE O.token IS NULL AND O.id = :id';
+        $parameters = compact('id');
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        return $query->getOneOrNullResult();
     }
 
     /**
@@ -118,7 +148,7 @@ class OaiResumptionService extends AbstractDbService implements
         if (!$result && is_numeric($tokenOrId)) {
             $idInt = intval($tokenOrId);
             if ($idInt > 0) {
-                $result = $this->getDbTable('oairesumption')->findWithLegacyIdToken($idInt);
+                return $this->findWithLegacyIdToken($idInt);
             }
         }
         return $result;
@@ -174,7 +204,7 @@ class OaiResumptionService extends AbstractDbService implements
      */
     public function createEntity(): OaiResumptionEntityInterface
     {
-        return $this->getDbTable('oairesumption')->createRow();
+        return $this->entityPluginManager->get(OaiResumptionEntityInterface::class);
     }
 
     /**

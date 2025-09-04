@@ -59,9 +59,26 @@ interface HandlerInterface
      * - parentLocation (Config location of the parent config)
      * - mergeCallback (A callback that specifies how the parent config should be merged)
      *
-     * @param ConfigLocationInterface $configLocation Config location
+     * @param ConfigLocationInterface $configLocation     Config location
+     * @param bool                    $handleParentConfig If parent configuration should be handled
      *
      * @return array
      */
-    public function parseConfig(ConfigLocationInterface $configLocation): array;
+    public function parseConfig(ConfigLocationInterface $configLocation, bool $handleParentConfig = true): array;
+
+    /**
+     * Write configuration to a specific location.
+     *
+     * @param ConfigLocationInterface  $destinationLocation Destination location for the config
+     * @param array|string             $config              Config to write
+     * @param ?ConfigLocationInterface $baseLocation        Location of a base configuration that can provide additional
+     * structure (e.g. comments)
+     *
+     * @return void
+     */
+    public function writeConfig(
+        ConfigLocationInterface $destinationLocation,
+        array|string $config,
+        ?ConfigLocationInterface $baseLocation
+    ): void;
 }

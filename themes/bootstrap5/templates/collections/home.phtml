@@ -1,5 +1,4 @@
 <?php
-  $this->headTitle($this->translate('Collection Browse'));
   $this->breadcrumbs()->set($this->translate('Collections'), $this->url('collections-home'));
   $filterList = [];
   $filterString = '';
@@ -55,7 +54,7 @@
 <?php $pageLinks = ob_get_contents(); ?>
 <?php ob_end_clean(); ?>
 
-<h2><?=$this->transEsc('Collection Browse')?></h2>
+<?=$this->component('page-title', ['title' => $this->translate('Collection Browse')]);?>
 
 <?php if (!empty($filterList)): ?>
   <strong><?=$this->transEsc('Remove Filters')?></strong>

@@ -66,13 +66,12 @@ class DatabaseFactory
         $baseUrl = $serverUrl($router->assemble([], ['name' => 'home']));
         $service = $container->get(\VuFind\Db\Service\PluginManager::class)
             ->get(ShortlinksServiceInterface::class);
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $salt = $config->Security->HMACkey ?? '';
+        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config');
+        $salt = $config['Security']['HMACkey'] ?? '';
         if (empty($salt)) {
             throw new Exception('HMACkey missing from configuration.');
         }
-        $hashType = $config->Mail->url_shortener_key_type ?? 'md5';
+        $hashType = $config['Mail']['url_shortener_key_type'] ?? 'md5';
         return new $requestedName(rtrim($baseUrl, '/'), $service, $salt, $hashType);
     }
 }

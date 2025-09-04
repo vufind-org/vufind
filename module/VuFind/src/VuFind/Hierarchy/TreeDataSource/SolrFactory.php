@@ -76,14 +76,9 @@ class SolrFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         }
         $cacheDir = $container->get(\VuFind\Cache\Manager::class)
             ->getCacheDir(false);
-        $hierarchyFilters = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('HierarchyDefault');
-        $filters = isset($hierarchyFilters->HierarchyTree->filterQueries)
-          ? $hierarchyFilters->HierarchyTree->filterQueries->toArray()
-          : [];
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $batchSize = $config->Index->cursor_batch_size ?? 1000;
+        $configManager = $container->get(\VuFind\Config\ConfigManager::class);
+        $filters = $configManager->getConfigArray('HierarchyDefault')['HierarchyTree']['filterQueries'] ?? [];
+        $batchSize = $configManager->getConfigArray('config')['Index']['cursor_batch_size'] ?? 1000;
         $searchService = $container->get(\VuFindSearch\Service::class);
         $formatterManager = $container
             ->get(\VuFind\Hierarchy\TreeDataFormatter\PluginManager::class);

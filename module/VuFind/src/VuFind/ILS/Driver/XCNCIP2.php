@@ -1106,20 +1106,18 @@ class XCNCIP2 extends AbstractBase implements
             'ns1:UserAddressInformation/ns1:ElectronicAddress/' .
                 'ns1:ElectronicAddressData'
         );
-
         // Fill in basic patron details:
-        return [
-            'id' => (string)$id[0],
-            'patronAgencyId' => !empty($patronAgencyId)
-                ? (string)$patronAgencyId[0] : null,
-            'cat_username' => $username,
-            'cat_password' => $password,
-            'email' => !empty($email) ? (string)$email[0] : null,
-            'major' => null,
-            'college' => null,
-            'firstname' => (string)($first[0] ?? ''),
-            'lastname' => (string)($last[0] ?? ''),
-        ];
+        return $this->createPatronArray(
+            id: (string)$id[0],
+            cat_username: $username,
+            cat_password: $password,
+            email: !empty($email[0]) ? (string)$email[0] : null,
+            firstname: (string)($first[0] ?? ''),
+            lastname: (string)($last[0] ?? ''),
+            nonDefaultFields: [
+                'patronAgencyId' => !empty($patronAgencyId) ? (string)$patronAgencyId[0] : null,
+            ]
+        );
     }
 
     /**
@@ -1258,10 +1256,14 @@ class XCNCIP2 extends AbstractBase implements
             $amount = (string)($amount[0] ?? '');
             $date = $current->xpath('ns1:AccrualDate');
             $date = $this->displayDate(!empty($date) ? (string)$date[0] : null);
-            $desc = $current->xpath(
+            $fineType = $current->xpath(
                 'ns1:FiscalTransactionInformation/ns1:FiscalTransactionType'
             );
-            $desc = (string)($desc[0] ?? '');
+            $fineType = (string)($fineType[0] ?? '');
+            $description = $current->xpath(
+                'ns1:FiscalTransactionInformation/ns1:FiscalTransactionDescription'
+            );
+            $description = (string)($description[0] ?? '');
 
             $bibId = $current->xpath(
                 'ns1:FiscalTransactionInformation/ns1:ItemDetails/' .
@@ -1277,7 +1279,8 @@ class XCNCIP2 extends AbstractBase implements
                 'amount' => $amount,
                 'balance' => $amount,
                 'checkout' => '',
-                'fine' => $desc,
+                'fine' => $fineType,
+                'description' => $description,
                 'duedate' => '',
                 'createdate' => $date,
                 'id' => $id,
@@ -1470,17 +1473,15 @@ class XCNCIP2 extends AbstractBase implements
         );
         $expirationDate = !empty($expirationDate) ?
             $this->displayDate((string)$expirationDate[0]) : null;
-
-        return [
-            'firstname' => (string)($firstname[0] ?? null),
-            'lastname' => (string)($lastname[0] ?? null),
-            'address1' => $address1,
-            'address2' => $address2,
-            'zip' => $zip,
-            'phone' => null,  // TODO: phone number support
-            'group' => null,
-            'expiration_date' => $expirationDate,
-        ];
+        // TODO: add phone number support
+        return $this->createProfileArray(
+            firstname: (string)($firstname[0] ?? null),
+            lastname: (string)($lastname[0] ?? null),
+            address1: $address1,
+            address2: $address2,
+            zip: $zip,
+            expiration_date: $expirationDate
+        );
     }
 
     /**
