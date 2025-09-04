@@ -34,9 +34,11 @@ use DOMXPath;
 use Finna\Record\Schema\Schematron;
 use Finna\Util\CachingHttpStreamWrapper;
 use Laminas\Cache\Storage\StorageInterface;
+use Laminas\Log\LoggerAwareInterface;
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 use Psr\Container\ContainerInterface;
 use VuFind\Config\PathResolver;
+use VuFind\Log\LoggerAwareTrait;
 use VuFindHttp\HttpServiceInterface;
 
 /**
@@ -48,8 +50,10 @@ use VuFindHttp\HttpServiceInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Preview extends AbstractPlugin
+class Preview extends AbstractPlugin implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     /**
      * Record validation - no issues
      *
@@ -175,7 +179,7 @@ class Preview extends AbstractPlugin
                 $result = json_decode($response->getBody(), true);
                 $errors = [
                     'Failed to load preview',
-                    ...array_filter(explode("\n", $result['error_message'])),
+                    ...array_filter(explode("\n", $result['error_message'] ?? '')),
                 ];
                 $metadata = [
                     'id' => '1',
@@ -188,14 +192,20 @@ class Preview extends AbstractPlugin
                         => '<collection><record><leader/></record></collection>',
                 ];
             } else {
+                $this->logError(
+                    'Failed to load preview: ' . $response->getStatusCode() . ' ' . $response->getReasonPhrase()
+                );
                 throw new \Exception(
-                    'Failed to load preview: ' . $response->getStatusCode() . ' '
-                    . $response->getReasonPhrase()
+                    'Failed to load preview: ' . $response->getStatusCode() . ' ' . $response->getReasonPhrase()
                 );
             }
         } else {
             $body = $response->getBody();
             $metadata = json_decode($body, true);
+            if (null === $metadata) {
+                $this->logError('Failed to parse preview response: ' . $body);
+                throw new \Exception('Failed to parse preview response');
+            }
         }
 
         return compact('errors', 'metadata');

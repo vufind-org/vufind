@@ -30,6 +30,8 @@
 
 namespace Finna\Controller;
 
+use Finna\Controller\Feature\FinnaRecordPreviewSupportTrait;
+
 /**
  * Collection Controller
  *
@@ -43,6 +45,7 @@ namespace Finna\Controller;
 class CollectionController extends \VuFind\Controller\CollectionController
 {
     use \Finna\Statistics\ReporterTrait;
+    use FinnaRecordPreviewSupportTrait;
 
     /**
      * Display a particular tab.
@@ -74,6 +77,7 @@ class CollectionController extends \VuFind\Controller\CollectionController
     {
         $result = parent::homeAction();
         $this->triggerStatsRecordView($result->driver ?? null);
+        $this->addValidationResultMessage();
         return $result;
     }
 }

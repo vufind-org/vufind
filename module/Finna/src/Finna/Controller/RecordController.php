@@ -30,15 +30,13 @@
 
 namespace Finna\Controller;
 
+use Finna\Controller\Feature\FinnaRecordPreviewSupportTrait;
 use Finna\Controller\Plugin\Preview;
 use Finna\Form\Form;
-use Laminas\Session\Exception\RuntimeException as SessionRuntimeException;
-use VuFindSearch\ParamBag;
 
 use function count;
 use function in_array;
 use function is_array;
-use function is_object;
 use function is_string;
 
 /**
@@ -55,13 +53,7 @@ class RecordController extends \VuFind\Controller\RecordController
 {
     use FinnaRecordControllerTrait;
     use \Finna\Statistics\ReporterTrait;
-
-    /**
-     * Any preview record validation result
-     *
-     * @var ?int
-     */
-    protected ?int $validationResult = null;
+    use FinnaRecordPreviewSupportTrait;
 
     /**
      * Create record feedback form and send feedback to correct recipient.
@@ -114,25 +106,7 @@ class RecordController extends \VuFind\Controller\RecordController
     {
         $result = parent::homeAction();
         $this->triggerStatsRecordView($result->driver ?? null);
-
-        // Add flash messages about any validation issues:
-        if ($this->validationResult) {
-            $msg = Preview::VALIDATION_ERRORS === $this->validationResult
-                ? 'Validation::metadata_errors_html'
-                : 'Validation::metadata_issues_html';
-            try {
-                $this->flashMessenger()->addErrorMessage(
-                    [
-                        'msg' => $msg,
-                        'tokens' => ['%%url%%' => $this->url()->fromRoute('record-validationreport', ['id' => 0])],
-                        'html' => true,
-                    ]
-                );
-            } catch (SessionRuntimeException $e) {
-                // This will fail in tabs etc. where session is immutable
-            }
-        }
-
+        $this->addValidationResultMessage();
         return $result;
     }
 
@@ -882,39 +856,6 @@ class RecordController extends \VuFind\Controller\RecordController
                     => $driver->getSourceIdentifier() . '|' . $driver->getUniqueID(),
             ]]
         );
-    }
-
-    /**
-     * Load the record requested by the user; note that this is not done in the
-     * init() method since we don't want to perform an expensive search twice
-     * when homeAction() forwards to another method.
-     *
-     * @param ?ParamBag $params Search backend parameters
-     * @param bool      $force  Set to true to force a reload of the record, even if
-     * already loaded (useful if loading a record using different parameters)
-     *
-     * @return AbstractRecordDriver
-     */
-    protected function loadRecord(?ParamBag $params = null, bool $force = false)
-    {
-        $id = $this->params()->fromRoute('id', $this->params()->fromQuery('id'));
-        // 0 = preview record
-        if ($id != '0') {
-            return parent::loadRecord($params, $force);
-        }
-
-        if (!$force && is_object($this->driver)) {
-            return $this->driver;
-        }
-
-        $result = $this->plugin('preview')->loadAndValidatePreviewRecord();
-        $this->driver = $result['driver'];
-        $this->validationResult = $result['validation_result'];
-        // Add flash messages about any load issues:
-        foreach ($result['errors'] as $error) {
-            $this->flashMessenger()->addErrorMessage($error);
-        }
-        return $this->driver;
     }
 
     /**

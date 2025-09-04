@@ -61,7 +61,8 @@ class RecordPreviewController extends \VuFind\Controller\AbstractBase
             if (Preview::VALIDATION_ERRORS === $result['validation_result']) {
                 return $this->redirect()->toRoute('record-validationreport', ['id' => '0']);
             }
-            return $this->redirect()->toRoute('record-home', ['id' => 0]);
+            $route = $result['driver']->tryMethod('isCollection') ? 'collection-home' : 'record-home';
+            return $this->redirect()->toRoute($route, ['id' => 0]);
         }
 
         $httpService = $this->serviceLocator->get(\VuFindHttp\HttpService::class);

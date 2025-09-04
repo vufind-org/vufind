@@ -743,7 +743,7 @@ trait SolrFinnaTrait
      */
     public function getSource()
     {
-        return $this->fields['source_str_mv'][0] ?? '';
+        return $this->getSources()[0] ?? '';
     }
 
     /**
@@ -753,7 +753,7 @@ trait SolrFinnaTrait
      */
     public function getSources()
     {
-        return $this->fields['source_str_mv'] ?? [];
+        return (array)($this->fields['source_str_mv'] ?? []);
     }
 
     /**
