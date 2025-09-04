@@ -161,7 +161,6 @@ public class DateTools
         if (bc_matcher.find()) {
             prefix = "-";
             found_year = bc_matcher.group(1);
-            return "-" + String.format("%04d", Integer.parseInt(bc_matcher.group(1)));
         } else {
             Matcher matcher = YEAR_PATTERN.matcher(year);
             if (matcher.find()) {
