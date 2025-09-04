@@ -2,26 +2,24 @@
   $title = $this->translate('Icons');
   $titleEsc = $this->escapeHtml($title);
   $this->headTitle($title);
-  $this->breadcrumbs()->set('Development Tools', $this->url('devtools-home'))
+  $this->breadcrumbs()
+  	->set('Development Tools', $this->url('devtools-home'))
     ->add($title, active: true);
 ?>
-<h1><?=$titleEsc?></h1>
-<table class="table table-striped" style="width: fit-content;text-align: end">
+<h1><?=$titleEsc ?></h1>
+<table class="icon-table table table-striped">
   <thead>
     <tr>
-      <th>Index</th>
       <th>Alias</th>
       <th>Icon</th>
     </tr>
   </thead>
   <tbody>
-    <?php foreach ($aliases as $index => $icon): ?>
+    <?php foreach ($aliases as $icon): ?>
       <tr>
-        <td><?=$index ?></td>
-        <td><?=$this->escapeHtml($icon)?></td>
-        <td style="text-align: center"><?=$this->icon($icon)?></td>
+        <td><?=$this->escapeHtml($icon) ?></td>
+        <td><?=$this->icon($icon) ?></td>
       </tr>
     <?php endforeach; ?>
   </tbody>
 </table>
-
