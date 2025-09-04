@@ -1439,20 +1439,22 @@ class Folio extends AbstractAPI implements
                 }
             }
         }
-
-        return [
-            'id' => $profile->id,
-            'username' => $username,
-            'cat_username' => $username,
-            'cat_password' => $password,
-            'firstname' => $profile->personal->firstName ?? null,
-            'lastname' => $profile->personal->lastName ?? null,
-            'email' => $profile->personal->email ?? null,
-            'addressTypeIds' => array_map(
-                fn ($address) => $address->addressTypeId,
-                $profile->personal->addresses ?? []
-            ),
-        ];
+        return $this->createPatronArray(
+            id: $profile->id,
+            cat_username: $username,
+            cat_password: $password,
+            firstname: $profile->personal->firstName ?? null,
+            lastname: $profile->personal->lastName ?? null,
+            email: $profile->personal->email ?? null,
+            nonDefaultFields: [
+                // Add username just in case for legacy
+                'username' => $username,
+                'addressTypeIds' => array_map(
+                    fn ($address) => $address->addressTypeId,
+                    $profile->personal->addresses ?? []
+                ),
+            ],
+        );
     }
 
     /**
@@ -1480,24 +1482,26 @@ class Folio extends AbstractAPI implements
     public function getMyProfile($patron)
     {
         $profile = $this->getUserById($patron['id']);
-        $expiration = isset($profile->expirationDate)
-            ? $this->dateConverter->convertToDisplayDate(
-                'Y-m-d H:i',
-                $profile->expirationDate
-            )
-            : null;
-        return [
-            'id' => $profile->id,
-            'firstname' => $profile->personal->firstName ?? null,
-            'lastname' => $profile->personal->lastName ?? null,
-            'address1' => $profile->personal->addresses[0]->addressLine1 ?? null,
-            'city' => $profile->personal->addresses[0]->city ?? null,
-            'country' => $profile->personal->addresses[0]->countryId ?? null,
-            'zip' => $profile->personal->addresses[0]->postalCode ?? null,
-            'phone' => $profile->personal->phone ?? null,
-            'mobile_phone' => $profile->personal->mobilePhone ?? null,
-            'expiration_date' => $expiration,
-        ];
+        $address = $profile->personal->addresses[0] ?? null;
+        return $this->createProfileArray(
+            firstname: $profile->personal->firstName ?? null,
+            lastname: $profile->personal->lastName ?? null,
+            address1: $address->addressLine1 ?? null,
+            city: $address->city ?? null,
+            country: $address->countryId ?? null,
+            zip: $address->postalCode ?? null,
+            phone: $profile->personal->phone ?? null,
+            mobile_phone: $profile->personal->mobilePhone ?? null,
+            expiration_date: isset($profile->expirationDate)
+                ? $this->dateConverter->convertToDisplayDate(
+                    'Y-m-d H:i',
+                    $profile->expirationDate
+                )
+                : null,
+            nonDefaultFields: [
+                'id' => $profile->id,
+            ]
+        );
     }
 
     /**
@@ -1726,7 +1730,11 @@ class Folio extends AbstractAPI implements
         // have to obtain a list of IDs to use as a filter below.
         $legalServicePoints = null;
         if ($holdInfo) {
-            $allowed = $this->getAllowedServicePoints($this->getInstanceByBibId($holdInfo['id'])->id, $patron['id']);
+            $allowed = $this->getAllowedServicePoints(
+                $this->getInstanceByBibId($holdInfo['id'])->id,
+                $holdInfo['item_id'] ?? null,
+                $patron['id']
+            );
             if ($allowed !== null) {
                 $legalServicePoints = [];
                 $preferredRequestType = $this->getPreferredRequestType($holdInfo);
@@ -2070,14 +2078,16 @@ class Folio extends AbstractAPI implements
     /**
      * Get allowed service points for a request. Returns null if data cannot be obtained.
      *
-     * @param string $instanceId  Instance UUID being requested
-     * @param string $requesterId Patron UUID placing request
-     * @param string $operation   Operation type (default = create)
+     * @param string  $instanceId  Instance UUID being requested
+     * @param ?string $itemId      Item UUID being requested (or null if unavailable/inapplicable)
+     * @param string  $requesterId Patron UUID placing request
+     * @param string  $operation   Operation type (default = create)
      *
      * @return ?array
      */
-    public function getAllowedServicePoints(
+    protected function getAllowedServicePoints(
         string $instanceId,
+        ?string $itemId,
         string $requesterId,
         string $operation = 'create'
     ): ?array {
@@ -2086,7 +2096,7 @@ class Folio extends AbstractAPI implements
             $response = $this->makeRequest(
                 'GET',
                 '/circulation/requests/allowed-service-points?'
-                . http_build_query(compact('instanceId', 'requesterId', 'operation'))
+                . http_build_query(compact(empty($itemId) ? 'instanceId' : 'itemId', 'requesterId', 'operation'))
             );
             if (!$response->isSuccess()) {
                 $this->warning('Unexpected service point lookup response: ' . $response->getBody());
@@ -2175,7 +2185,11 @@ class Folio extends AbstractAPI implements
         if (!empty($holdDetails['comment'])) {
             $requestBody['patronComments'] = $holdDetails['comment'];
         }
-        $allowed = $this->getAllowedServicePoints($instance->id, $holdDetails['patron']['id']);
+        $allowed = $this->getAllowedServicePoints(
+            $instance->id,
+            $holdDetails['item_id'] ?? null,
+            $holdDetails['patron']['id']
+        );
         $preferredRequestType = $this->getPreferredRequestType($holdDetails);
         foreach ($this->getRequestTypeList($preferredRequestType) as $requestType) {
             // Skip illegal request types, if we have validation data available:
@@ -2297,12 +2311,18 @@ class Folio extends AbstractAPI implements
             ];
         }
 
-        $allowed = $this->getAllowedServicePoints($this->getInstanceByBibId($id)->id, $patron['id']);
+        $allowed = $this->getAllowedServicePoints(
+            $this->getInstanceByBibId($id)->id,
+            $data['item_id'] ?? null,
+            $patron['id']
+        );
+
+        // If we got this far, it's valid if we can't obtain allowed service point
+        // data, or if the allowed service point data is non-empty:
+        $valid = null === $allowed || !empty($allowed);
         return [
-            // If we got this far, it's valid if we can't obtain allowed service point
-            // data, or if the allowed service point data is non-empty:
-            'valid' => null === $allowed || !empty($allowed),
-            'status' => 'request_place_text',
+            'valid' => $valid,
+            'status' => $valid ? 'request_place_text' : 'No pickup locations available',
         ];
     }
 

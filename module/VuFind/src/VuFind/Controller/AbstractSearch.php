@@ -35,6 +35,7 @@ use Laminas\Http\Response as HttpResponse;
 use Laminas\Session\SessionManager;
 use Laminas\Stdlib\ResponseInterface as Response;
 use Laminas\View\Model\ViewModel;
+use VuFind\Config\Config;
 use VuFind\Db\Entity\SearchEntityInterface;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Search\RecommendListener;
@@ -107,9 +108,10 @@ class AbstractSearch extends AbstractBase
 
         // Handle request to edit existing saved search:
         $view->saved = false;
-        // 'edit' query parameter is added for legacy template support
-        $searchId = $this->params()->fromQuery('sid') ?? $this->params()->fromQuery('edit');
-        if ($searchId !== null) {
+        // 'edit' query parameter is added for legacy template support; we use intval to ensure that
+        // the correct type is passed to restoreAdvancedSearch.
+        $searchId = intval($this->params()->fromQuery('sid') ?? $this->params()->fromQuery('edit') ?? 0);
+        if ($searchId > 0) {
             $view->saved = $this->restoreAdvancedSearch($searchId);
         }
 
@@ -335,6 +337,23 @@ class AbstractSearch extends AbstractBase
     }
 
     /**
+     * Get the value multiFacetsSelection from the config
+     *
+     * @param Config $config The config containing multiFacetsSelection
+     *
+     * @return string
+     */
+    protected static function getMultiSelectionValueFromConfig(Config $config)
+    {
+        $multiFacetsSelection = $config->Results_Settings->multiFacetsSelection ?? 'false';
+        return match ($multiFacetsSelection) {
+            true, '1' => 'true',
+            false, '', '0' => 'false',
+            default => $multiFacetsSelection,
+        };
+    }
+
+    /**
      * Perform a search and send results to a results view
      *
      * @param callable $setupCallback Optional setup callback that overrides the
@@ -346,7 +365,7 @@ class AbstractSearch extends AbstractBase
     {
         $view = $this->createViewModel();
         $config = $this->getConfig($this->getOptionsForClass()->getFacetsIni());
-        $view->multiFacetsSelection = (bool)($config->Results_Settings->multiFacetsSelection ?? false);
+        $view->multiFacetsSelection = static::getMultiSelectionValueFromConfig($config);
         $extraErrors = [];
 
         // Handle saved search requests:
@@ -930,7 +949,7 @@ class AbstractSearch extends AbstractBase
             'key' => $sort,
             'urlBase' => $urlBase,
             'searchAction' => $searchAction,
-            'multiFacetsSelection' => (bool)($config->Results_Settings->multiFacetsSelection ?? false),
+            'multiFacetsSelection' => static::getMultiSelectionValueFromConfig($config),
         ];
         $viewParams['delegateParams'] = $viewParams;
         $view = $this->createViewModel($viewParams);

@@ -1,9 +1,4 @@
-<?php
-  // Set page title.
-  $this->headTitle($this->translate('VuFind Administration - Tag Maintenance'));
-?>
-
-<h2><?=$this->transEsc('Tag Management')?></h2>
+<?=$this->component('page-title', ['title' => $this->translate('Tag Management'), 'headTitle' => $this->translate('VuFind Administration - Tag Maintenance')]);?>
 <div class="<?=$this->layoutClass('mainbody')?>">
   <h3><?=$this->transEsc('Manage Tags')?></h3>
 

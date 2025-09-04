@@ -44,7 +44,7 @@ use function chr;
  */
 class VuFindTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\PathResolverTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Support method -- set up a mock container for testing the class.
@@ -80,10 +80,8 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
     public function testGetConfig()
     {
         $container = $this->getMockContainer();
-        $this->addPathResolverToContainer($container);
-        $config = new \VuFind\Config\Config([]);
-        $container->get(\VuFind\Config\PluginManager::class)->expects($this->once())
-            ->method('get')->with('config')->will($this->returnValue($config));
+        $this->addConfigRelatedServicesToContainer($container);
+        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
         VuFind::setServiceLocator($container);
         $this->assertEquals($config, VuFind::getConfig());
     }

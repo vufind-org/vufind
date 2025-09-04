@@ -574,22 +574,13 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute();
             $row = $sqlStmt->fetch(PDO::FETCH_ASSOC);
-            if (isset($row['LOGIN']) && ($row['LOGIN'] != '')) {
-                return [
-                    'id' => $row['LOGIN'],
-                    'firstname' => $row['FIRST_NAME'],
-                    'lastname' => $lname,
-                    'cat_username' => $barcode,
-                    'cat_password' => $lname,
-                    // There's supposed to be a getPatronEmailAddress stored
-                    // procedure in Oracle, but I couldn't get it to work here;
-                    // might be worth investigating further if needed later.
-                    'email' => null,
-                    'major' => null,
-                    'college' => null];
-            } else {
-                return null;
-            }
+            return !empty($row['LOGIN']) ? $this->createPatronArray(
+                id: $row['LOGIN'],
+                firstname: $row['FIRST_NAME'],
+                lastname: $lname,
+                cat_username: $barcode,
+                cat_password: $lname
+            ) : null;
         } catch (PDOException $e) {
             $this->throwAsIlsException($e);
         }
@@ -740,15 +731,18 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
             $sqlStmt->execute();
             $row = $sqlStmt->fetch(PDO::FETCH_ASSOC);
             if ($row) {
-                $patron = ['firstname' => $row['FIRST_NAME'],
-                                'lastname' => $row['LAST_NAME'],
-                                'address1' => $row['ADDRESS_LINE1'],
-                                'address2' => $row['ADDRESS_LINE2'],
-                                'zip' => $row['ZIP_POSTAL'],
-                                'phone' => $row['TFNO'],
-                                'email' => $row['EMAIL'],
-                                'group' => $row['PATRON_GROUP_NAME']];
-                return $patron;
+                return $this->createProfileArray(
+                    firstname: $row['FIRST_NAME'],
+                    lastname: $row['LAST_NAME'],
+                    address1: $row['ADDRESS_LINE1'],
+                    address2: $row['ADDRESS_LINE2'],
+                    zip: $row['ZIP_POSTAL'],
+                    phone: $row['TFNO'],
+                    group: $row['PATRON_GROUP_NAME'],
+                    nonDefaultFields: [
+                        'email' => $row['EMAIL'],
+                    ]
+                );
             }
         } catch (PDOException $e) {
             $this->throwAsIlsException($e);

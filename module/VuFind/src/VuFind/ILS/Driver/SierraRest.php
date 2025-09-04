@@ -675,25 +675,16 @@ class SierraRest extends AbstractBase implements
                 return null;
             }
         }
-
-        $firstname = '';
-        $lastname = '';
-        if (!empty($patron['names'])) {
-            $name = $patron['names'][0];
-            $parts = explode(', ', $name, 2);
-            $lastname = $parts[0];
-            $firstname = $parts[1] ?? '';
-        }
-        return [
-            'id' => $patron['id'],
-            'firstname' => $firstname,
-            'lastname' => $lastname,
-            'cat_username' => $username,
-            'cat_password' => $password,
-            'email' => !empty($patron['emails']) ? $patron['emails'][0] : '',
-            'major' => null,
-            'college' => null,
-        ];
+        $name = $patron['names'][0] ?? '';
+        [$lastname, $firstname] = $this->getLastAndFirstName($name);
+        return $this->createPatronArray(
+            id: $patron['id'],
+            firstname: $firstname,
+            lastname: $lastname,
+            cat_username: $username,
+            cat_password: $password,
+            email: $patron['emails'][0] ?? null
+        );
     }
 
     /**
@@ -746,16 +737,11 @@ class SierraRest extends AbstractBase implements
         if (empty($result)) {
             return [];
         }
-        $firstname = '';
-        $lastname = '';
         $address = '';
         $zip = '';
         $city = '';
-        if (!empty($result['names'])) {
-            $nameParts = explode(', ', $result['names'][0], 2);
-            $lastname = $nameParts[0];
-            $firstname = $nameParts[1] ?? '';
-        }
+        [$lastname, $firstname] = $this->getLastAndFirstName($result['names'][0] ?? '');
+
         if (!empty($result['addresses'][0]['lines'][1])) {
             $address = $result['addresses'][0]['lines'][0];
             $postalParts = explode(' ', $result['addresses'][0]['lines'][1], 2);
@@ -766,23 +752,23 @@ class SierraRest extends AbstractBase implements
                 $city = $postalParts[0];
             }
         }
-        $expirationDate = !empty($result['expirationDate'])
+        return $this->createProfileArray(
+            firstname: $firstname,
+            lastname: $lastname,
+            phone: $result['phones'][0]['number'] ?? null,
+            address1: $address,
+            zip: $zip,
+            city: $city,
+            birthdate: $result['birthDate'] ?? '',
+            expiration_date: !empty($result['expirationDate'])
                 ? $this->dateConverter->convertToDisplayDate(
                     'Y-m-d',
                     $result['expirationDate']
-                ) : null;
-        return [
-            'firstname' => $firstname,
-            'lastname' => $lastname,
-            'phone' => !empty($result['phones'][0]['number'])
-                ? $result['phones'][0]['number'] : '',
-            'email' => !empty($result['emails']) ? $result['emails'][0] : '',
-            'address1' => $address,
-            'zip' => $zip,
-            'city' => $city,
-            'birthdate' => $result['birthDate'] ?? '',
-            'expiration_date' => $expirationDate,
-        ];
+                ) : null,
+            nonDefaultFields: [
+                'email' => $result['emails'][0] ?? null,
+            ]
+        );
     }
 
     /**
@@ -1641,6 +1627,168 @@ class SierraRest extends AbstractBase implements
     }
 
     /**
+     * Get password recovery data for a user
+     *
+     * @param array $params Required params such as cat_username and email
+     *
+     * @return array Associative array of the results
+     */
+    public function getPasswordRecoveryData($params)
+    {
+        // We need a username and an email address to find the account:
+        if (empty($params['cat_username'])) {
+            return [
+                'success' => false,
+                'error' => 'Username cannot be blank',
+            ];
+        }
+        if (empty($params['email'])) {
+            return [
+                'success' => false,
+                'error' => 'no_email_address',
+            ];
+        }
+
+        $request = [
+            'queries' => [
+                [
+                    'target' => [
+                        'record' => [
+                            'type' => 'patron',
+                        ],
+                        'field' => [
+                            'tag' => 'b',
+                        ],
+                    ],
+                    'expr' => [
+                        'op' => 'equals',
+                        'operands' => [
+                            str_replace(' ', '', $params['cat_username']),
+                        ],
+                    ],
+                ],
+                'and',
+                [
+                    'target' => [
+                        'record' => [
+                            'type' => 'patron',
+                        ],
+                        'field' => [
+                            'tag' => 'z',
+                        ],
+                    ],
+                    'expr' => [
+                        'op' => 'equals',
+                        'operands' => [
+                            trim($params['email']),
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $result = $this->makeRequest(
+            [
+                [
+                    'type' => 'encoded',
+                    'value' => 'v6/patrons/query?offset=0&limit=1',
+                ],
+            ],
+            json_encode($request),
+            'POST'
+        );
+
+        if (
+            $result['total'] === 1
+            && $link = $result['entries'][0]['link'] ?? null
+        ) {
+            $patronId = $this->extractId($link);
+
+            // Check that there's an existing PIN in varFields:
+            $result = $this->makeRequest(
+                [$this->apiBase, 'patrons', $patronId],
+                [
+                    'fields' => 'varFields',
+                ],
+                'GET'
+            );
+            $pinExists = false;
+            foreach ($result['varFields'] ?? [] as $field) {
+                if ('=' === $field['fieldTag']) {
+                    $pinExists = true;
+                    break;
+                }
+            }
+            if (!$pinExists) {
+                return [
+                    'success' => false,
+                    'error' => 'authentication_error_account_locked',
+                ];
+            }
+            return [
+                'success' => true,
+                'data' => [
+                    'username' => $params['cat_username'],
+                    'email' => $params['email'],
+                    'details' => [
+                        'id' => $patronId,
+                    ],
+                ],
+            ];
+        }
+        return [
+            'success' => false,
+            'error' => 'recovery_user_not_found',
+        ];
+    }
+
+    /**
+     * Reset a user's password using password recovery data.
+     *
+     * @param array $details Driver-specific account recovery details.
+     * @param array $params  User-entered form parameters.
+     *
+     * @throws AuthException
+     * @return array Status
+     */
+    public function resetPassword(array $details, array $params)
+    {
+        if (empty($details['id']) || empty($params['password'])) {
+            return [
+                'success' => false,
+                'error' => 'error_inconsistent_parameters',
+            ];
+        }
+        $request = [
+            'pin' => $params['password'],
+        ];
+        $result = $this->makeRequest(
+            [
+                'v6', 'patrons', $details['id'],
+            ],
+            json_encode($request),
+            'PUT',
+            false,
+            true
+        );
+
+        if (!in_array($result['statusCode'], ['200', '204'])) {
+            $this->logError(
+                "Patron update request failed with status code {$result['statusCode']}: "
+                . (var_export($result['response'] ?? '', true))
+            );
+            return [
+                'success' => false,
+                'error' => 'An error has occurred',
+            ];
+        }
+
+        return [
+            'success' => true,
+        ];
+    }
+
+    /**
      * Change Password
      *
      * Attempts to change patron password (PIN code)
@@ -1652,7 +1800,8 @@ class SierraRest extends AbstractBase implements
      * 'newPassword' New password
      *
      * @return array An array of data on the request including
-     * whether or not it was successful and a system message (if available)
+     * whether it was successful or not and a system message (if available)
+     * @throws ILSException
      */
     public function changePassword($details)
     {
@@ -1667,14 +1816,7 @@ class SierraRest extends AbstractBase implements
                 'success' => false, 'status' => 'authentication_error_invalid',
             ];
         }
-
-        $newPIN = preg_replace('/[^\d]/', '', trim($details['newPassword']));
-        if (strlen($newPIN) != 4) {
-            return [
-                'success' => false, 'status' => 'password_error_invalid',
-            ];
-        }
-
+        $newPIN = trim($details['newPassword']);
         $request = ['pin' => $newPIN];
 
         $result = $this->makeRequest(
@@ -1728,6 +1870,11 @@ class SierraRest extends AbstractBase implements
                 'purge_selected'  => $this->config['TransactionHistory']['purgeSelected'] ?? true,
             ];
         }
+        if ('getPasswordRecoveryData' === $function || 'resetPassword' === $function) {
+            $config = $this->config['PasswordRecovery'] ?? [];
+            return ($config['enabled'] ?? false) ? $config : false;
+        }
+
         return $this->config[$function] ?? false;
     }
 
@@ -2014,6 +2161,13 @@ class SierraRest extends AbstractBase implements
     {
         $url = $this->config['Catalog']['host'];
         foreach ($hierarchy as $value) {
+            if (is_array($value)) {
+                if ('encoded' === $value['type']) {
+                    $url .= '/' . $value['value'];
+                    continue;
+                }
+                $value = $value['value'];
+            }
             $url .= '/' . urlencode($value);
         }
         return $url;

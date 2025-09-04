@@ -30,7 +30,7 @@
 namespace VuFindTest\Search\EPF;
 
 use VuFind\Search\EPF\Options;
-use VuFindTest\Feature\ConfigPluginManagerTrait;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
  * EPF Options Test
@@ -43,7 +43,7 @@ use VuFindTest\Feature\ConfigPluginManagerTrait;
  */
 class OptionsTest extends \PHPUnit\Framework\TestCase
 {
-    use ConfigPluginManagerTrait;
+    use ConfigRelatedServicesTrait;
 
     /**
      * Data provider for testOptions
@@ -75,14 +75,14 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
     /**
      * Test that the Options object returns correct data .
      *
-     * @param array  $config  Blender configuration
-     * @param string $epfView Expected epfView
+     * @param array  $config    Blender configuration
+     * @param string $ebscoView Expected epfView
      *
      * @return void
      *
      * @dataProvider optionsProvider
      */
-    public function testOptions(array $config, $epfView): void
+    public function testOptions(array $config, $ebscoView): void
     {
         $configMgr = $this->getMockConfigPluginManager(
             [
@@ -90,6 +90,6 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $options = new Options($configMgr);
-        $this->assertEquals($epfView, $options->getEpfView());
+        $this->assertEquals($ebscoView, $options->getEbscoView());
     }
 }

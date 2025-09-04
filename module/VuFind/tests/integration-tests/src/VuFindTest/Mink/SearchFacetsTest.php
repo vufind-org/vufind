@@ -262,49 +262,49 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
                 false,
                 false,
                 $andFacets,
-                false,
+                'false',
             ],
             'deferred AND facets' => [
                 true,
                 false,
                 $andFacets,
-                false,
+                'false',
             ],
             'non-deferred OR facets' => [
                 false,
                 true,
                 $orFacets,
-                false,
+                'false',
             ],
             'deferred OR facets' => [
                 true,
                 true,
                 $orFacets,
-                false,
+                'false',
             ],
             'multiselect non-deferred AND facets' => [
                 false,
                 false,
                 $andFacets,
-                true,
+                'unchecked',
             ],
             'multiselect deferred AND facets' => [
                 true,
                 false,
                 $andFacets,
-                true,
+                 'unchecked',
             ],
             'multiselect non-deferred OR facets' => [
                 false,
                 true,
                 $orFacets,
-                true,
+                'unchecked',
             ],
             'multiselect deferred OR facets' => [
                 true,
                 true,
                 $orFacets,
-                true,
+                'unchecked',
             ],
         ];
     }
@@ -332,16 +332,16 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test applying a facet to filter results (deferred facet sidebar)
      *
-     * @param bool  $deferred    Are deferred facets enabled?
-     * @param bool  $orFacets    Are OR facets enabled?
-     * @param array $facets      Facets to apply
-     * @param bool  $multiselect Use multiselection?
+     * @param bool   $deferred    Are deferred facets enabled?
+     * @param bool   $orFacets    Are OR facets enabled?
+     * @param array  $facets      Facets to apply
+     * @param string $multiselect Use multiselection?
      *
      * @dataProvider applyFacetProvider
      *
      * @return void
      */
-    public function testApplyFacet(bool $deferred, bool $orFacets, array $facets, bool $multiselect): void
+    public function testApplyFacet(bool $deferred, bool $orFacets, array $facets, string $multiselect): void
     {
         $this->changeConfigs(
             [
@@ -375,7 +375,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#side-panel-genre_facet .collapsed');
 
         // Now run the body of the test procedure:
-        $this->facetApplyProcedure($page, $facets, $multiselect);
+        $this->facetApplyProcedure($page, $facets, $multiselect !== 'false');
 
         // Verify that sort order is still correct:
         $this->assertSelectedSort($page, 'title');
@@ -689,7 +689,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
                     'Results_Settings' => [
                         'showMoreInLightbox[*]' => true,
                         'lightboxLimit' => 10,
-                        'multiFacetsSelection' => true,
+                        'multiFacetsSelection' => 'unchecked',
                         'exclude' => '*',
                     ],
                 ],
@@ -766,7 +766,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
                         'hierarchical[]' => 'hierarchical_facet_str_mv',
                     ],
                     'Results_Settings' => [
-                        'multiFacetsSelection' => false,
+                        'multiFacetsSelection' => 'false',
                     ],
                 ],
             ]
@@ -801,7 +801,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
                     ],
                     'Results_Settings' => [
                         'exclude' => 'hierarchical_facet_str_mv',
-                        'multiFacetsSelection' => false,
+                        'multiFacetsSelection' => 'false',
                     ],
                 ],
             ]
@@ -904,7 +904,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
                     ],
                     'Results_Settings' => [
                         'collapsedFacets' => '*',
-                        'multiFacetsSelection' => false,
+                        'multiFacetsSelection' => 'false',
                     ],
                     'SpecialFacets' => [
                         'hierarchical[]' => 'hierarchical_facet_str_mv',
@@ -1193,9 +1193,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool  $selectMulti   Select multiple?
      * @param bool  $unselectMulti Unselect multiple?
      *
+     * @return       void
+     * @throws       \Exception
      * @dataProvider checkboxFacetSelectionProvider
-     *
-     * @return void
      */
     public function testCheckboxFacetSelection(
         array $checkFacets,
@@ -1208,7 +1208,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             [
                 'facets' => [
                     'Results_Settings' => [
-                        'multiFacetsSelection' => $multiSelectActive,
+                        'multiFacetsSelection' => $multiSelectActive ? 'unchecked' : 'false',
                     ],
                     'CheckboxFacets' => [
                         'format:Book' => 'Books',
@@ -1304,7 +1304,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
                 'facets' => [
                     'Results_Settings' => [
                         'checkboxFacetCounts' => $counts,
-                        'multiFacetsSelection' => false,
+                        'multiFacetsSelection' => 'false',
                     ],
                     'CheckboxFacets' => [
                         'format:Book' => 'Books',
@@ -1353,21 +1353,24 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     public static function rangeFacetsProvider(): array
     {
         return [
-            [false],
-            [true],
+            ['false'],
+            ['true'],
+            ['checked'],
+            ['unchecked'],
+            ['always'],
         ];
     }
 
     /**
      * Test range facets
      *
-     * @param bool $multiselection Use multi-facet selection?
+     * @param string $multiselection Use multi-facet selection?
      *
      * @dataProvider rangeFacetsProvider
      *
      * @return void
      */
-    public function testRangeFacets(bool $multiselection): void
+    public function testRangeFacets(string $multiselection): void
     {
         $this->changeConfigs(
             [
@@ -1381,6 +1384,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
                 ],
             ]
         );
+        $multiselection = $multiselection !== 'false';
 
         $page = $this->performSearch('building:weird_ids.mrc');
         $sidebar = $this->findCss($page, '.sidebar');
@@ -1508,7 +1512,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     {
         $facets = [
             'Results_Settings' => [
-                'multiFacetsSelection' => true,
+                'multiFacetsSelection' => 'unchecked',
             ],
         ];
         if ($includeCheckbox) {
@@ -1581,7 +1585,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             [
                 'facets' => [
                     'Results_Settings' => [
-                        'multiFacetsSelection' => true,
+                        'multiFacetsSelection' => 'unchecked',
                     ],
                 ],
             ]
@@ -1598,6 +1602,52 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $checkbox = $this->findCss($sidebar, '.js-user-selection-multi-filters');
         $this->assertTrue($checkbox->isChecked()); // checked state remembered from last page
         $this->deactivateMultiFilterSelection($sidebar);
+    }
+
+    /**
+     * Test setting "checked" for multi facet selection, the feature is checked by default
+     *
+     * @return void
+     */
+    public function testMultiFacetsSelectionChecked(): void
+    {
+        $this->changeConfigs(
+            [
+                'facets' => [
+                    'Results_Settings' => [
+                        'multiFacetsSelection' => 'checked',
+                    ],
+                ],
+            ]
+        );
+
+        $page = $this->performSearch('building:weird_ids.mrc OR building:journals.mrc');
+        $sidebar = $this->findCss($page, '.sidebar');
+        $checkbox = $this->findCss($sidebar, '.js-user-selection-multi-filters');
+        $this->assertStringContainsString($checkbox->isChecked(), true);
+    }
+
+    /**
+     * Test setting "always" for multi facet selection, the feature is enabled but the checkbox is hidden
+     *
+     * @return void
+     */
+    public function testMultiFacetsSelectionAlways(): void
+    {
+        $this->changeConfigs(
+            [
+                'facets' => [
+                    'Results_Settings' => [
+                        'multiFacetsSelection' => 'always',
+                    ],
+                ],
+            ]
+        );
+
+        $page = $this->performSearch('building:weird_ids.mrc OR building:journals.mrc');
+        $sidebar = $this->findCss($page, '.sidebar');
+        $this->assertFalse($this->findCss($sidebar, '.js-user-selection-multi-filters')->isVisible());
+        $this->assertNotNull($sidebar->find('css', '.js-apply-multi-facets-selection'));
     }
 
     /**

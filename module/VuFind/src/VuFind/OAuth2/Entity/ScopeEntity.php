@@ -81,9 +81,9 @@ class ScopeEntity implements ScopeEntityInterface
             }
         }
         $this->setIdentifier($config['identifier']);
-        $this->setDescription($config['description']);
-        $this->setILSNeeded((bool)($config['ils'] ?? false));
-        $this->setHidden($config['hidden'] ?? false);
+        $this->setDescription($config['description'])
+            ->setILSNeeded((bool)($config['ils'] ?? false))
+            ->setHidden($config['hidden'] ?? false);
     }
 
     /**
@@ -101,11 +101,12 @@ class ScopeEntity implements ScopeEntityInterface
      *
      * @param string $description Description
      *
-     * @return void
+     * @return static
      */
-    public function setDescription(string $description): void
+    public function setDescription(string $description): static
     {
         $this->description = $description;
+        return $this;
     }
 
     /**
@@ -123,11 +124,12 @@ class ScopeEntity implements ScopeEntityInterface
      *
      * @param bool $value New value
      *
-     * @return void
+     * @return static
      */
-    public function setHidden(bool $value): void
+    public function setHidden(bool $value): static
     {
         $this->hidden = $value;
+        return $this;
     }
 
     /**
@@ -145,10 +147,11 @@ class ScopeEntity implements ScopeEntityInterface
      *
      * @param bool $value New value
      *
-     * @return void
+     * @return static
      */
-    public function setILSNeeded(bool $value): void
+    public function setILSNeeded(bool $value): static
     {
         $this->ilsNeeded = $value;
+        return $this;
     }
 }

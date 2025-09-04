@@ -50,65 +50,27 @@ use function is_bool;
 class TitleHolds
 {
     /**
-     * ILS authenticator
-     *
-     * @var \VuFind\Auth\ILSAuthenticator
-     */
-    protected $ilsAuth;
-
-    /**
-     * Catalog connection object
-     *
-     * @var ILSConnection
-     */
-    protected $catalog;
-
-    /**
-     * HMAC generator
-     *
-     * @var \VuFind\Crypt\HMAC
-     */
-    protected $hmac;
-
-    /**
-     * VuFind configuration
-     *
-     * @var \VuFind\Config\Config
-     */
-    protected $config;
-
-    /**
      * Holding locations to hide from display
      *
      * @var array
      */
-    protected $hideHoldings = [];
+    protected $hideHoldings;
 
     /**
      * Constructor
      *
      * @param \VuFind\Auth\ILSAuthenticator $ilsAuth ILS authenticator
-     * @param ILSConnection                 $ils     A catalog connection
+     * @param ILSConnection                 $catalog A catalog connection
      * @param \VuFind\Crypt\HMAC            $hmac    HMAC generator
      * @param \VuFind\Config\Config         $config  VuFind configuration
      */
     public function __construct(
-        \VuFind\Auth\ILSAuthenticator $ilsAuth,
-        ILSConnection $ils,
-        \VuFind\Crypt\HMAC $hmac,
-        \VuFind\Config\Config $config
+        protected \VuFind\Auth\ILSAuthenticator $ilsAuth,
+        protected ILSConnection $catalog,
+        protected \VuFind\Crypt\HMAC $hmac,
+        protected \VuFind\Config\Config $config
     ) {
-        $this->ilsAuth = $ilsAuth;
-        $this->hmac = $hmac;
-        $this->config = $config;
-
-        if (isset($this->config->Record->hide_holdings)) {
-            foreach ($this->config->Record->hide_holdings as $current) {
-                $this->hideHoldings[] = $current;
-            }
-        }
-
-        $this->catalog = $ils;
+        $this->hideHoldings = ($this->config?->Record?->hide_holdings?->toArray() ?? []);
     }
 
     /**
@@ -123,31 +85,28 @@ class TitleHolds
     public function getHold($id)
     {
         // Get Holdings Data
-        if ($this->catalog) {
-            $mode = $this->catalog->getTitleHoldsMode();
-            if ($mode == 'disabled') {
-                return false;
-            } elseif ($mode == 'driver') {
-                try {
-                    $patron = $this->ilsAuth->storedCatalogLogin();
-                    if (!$patron) {
-                        return false;
-                    }
-                    return $this->driverHold($id, $patron);
-                } catch (ILSException $e) {
+        $mode = $this->catalog->getTitleHoldsMode();
+        if ($mode == 'disabled') {
+            return false;
+        } elseif ($mode == 'driver') {
+            try {
+                $patron = $this->ilsAuth->storedCatalogLogin();
+                if (!$patron) {
                     return false;
                 }
-            } else {
-                try {
-                    $patron = $this->ilsAuth->storedCatalogLogin();
-                } catch (ILSException $e) {
-                    $patron = false;
-                }
-                $mode = $this->checkOverrideMode($id, $mode);
-                return $this->generateHold($id, $mode, $patron);
+                return $this->driverHold($id, $patron);
+            } catch (ILSException $e) {
+                return false;
             }
+        } else {
+            try {
+                $patron = $this->ilsAuth->storedCatalogLogin();
+            } catch (ILSException $e) {
+                $patron = false;
+            }
+            $mode = $this->checkOverrideMode($id, $mode);
+            return $this->generateHold($id, $mode, $patron);
         }
-        return false;
     }
 
     /**

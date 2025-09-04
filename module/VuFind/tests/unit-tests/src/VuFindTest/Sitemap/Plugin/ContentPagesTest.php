@@ -48,7 +48,7 @@ use function func_get_args;
  */
 class ContentPagesTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Mock container

@@ -139,7 +139,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Util\LintMarcCommand::class => InvokableFactory::class,
         Util\OptimizeCommand::class => Util\AbstractSolrCommandFactory::class,
         Util\PurgeCachedRecordCommand::class => Util\PurgeCachedRecordCommandFactory::class,
-        Util\ScssBuilderCommand::class => Util\ScssBuilderCommandFactory::class,
+        Util\ScssBuilderCommand::class => InvokableFactory::class,
         Util\SitemapCommand::class => Util\SitemapCommandFactory::class,
         Util\SuppressedCommand::class => Util\AbstractSolrAndIlsCommandFactory::class,
         Util\SwitchDbHashCommand::class => Util\SwitchDbHashCommandFactory::class,

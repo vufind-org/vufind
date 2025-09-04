@@ -34,6 +34,7 @@ use Laminas\Http\Client\Adapter\Test as TestAdapter;
 use Laminas\Http\Response as HttpResponse;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Driver\XCNCIP2;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
  * ILS driver test
@@ -47,6 +48,7 @@ use VuFind\ILS\Driver\XCNCIP2;
 class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use ConfigRelatedServicesTrait;
 
     /**
      * Standard setup method.
@@ -55,7 +57,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      */
     public function setUp(): void
     {
-        $this->driver = new XCNCIP2(new \VuFind\Date\Converter());
+        $this->driver = new XCNCIP2(new \VuFind\Date\Converter(), $this->getPathResolver());
     }
 
     /**
@@ -273,39 +275,47 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
             'file' => 'lookupUserResponse.xml',
             'result' => [
                 'firstname' => 'John', 'lastname' => 'Smith',
-                'address1' => 'Trvalá ulice 123, Big City, 12345', 'address2' => '',
-                'zip' => '', 'phone' => '', 'group' => '',
-                'expiration_date' => '12-30-2099',
+                'address1' => 'Trvalá ulice 123, Big City, 12345',
+                'expiration_date' => '12-30-2099', 'birthdate' => null,
+                'address2' => null, 'city' => null, 'country' => null,
+                'zip' => null, 'phone' => null, 'mobile_phone' => null,
+                'group' => null, 'home_library' => null,
             ],
         ], [
             'file' => 'LookupUserResponseWithoutNamespacePrefix.xml',
             'result' => [
                 'firstname' => 'John', 'lastname' => 'Smith',
                 'address1' => 'Trvalá ulice 123, Big City, 12345',
-                'address2' => '', 'zip' => '', 'phone' => '', 'group' => '',
-                'expiration_date' => '12-30-2099',
+                'expiration_date' => '12-30-2099', 'birthdate' => null,
+                'address2' => null, 'city' => null, 'country' => null,
+                'zip' => null, 'phone' => null, 'mobile_phone' => null,
+                'group' => null, 'home_library' => null,
             ],
         ], [
             'file' => 'lookupUserResponseStructuredAddress.xml', 'result' => [
                 'firstname' => 'John', 'lastname' => 'Smith',
                 'address1' => 'Trvalá ulice 123', 'address2' => '12345 Big City',
-                'zip' => '', 'phone' => '', 'group' => '',
-                'expiration_date' => '12-30-2099',
+                'expiration_date' => '12-30-2099', 'birthdate' => null,
+                'city' => null, 'country' => null,
+                'zip' => null, 'phone' => null, 'mobile_phone' => null,
+                'group' => null, 'home_library' => null,
             ],
         ], [
             'file' => 'lookupUserResponseStructuredAddressDetail.xml',
             'result' => [
                 'firstname' => 'John', 'lastname' => 'Smith',
                 'address1' => 'Trvalá ulice 123', 'address2' => 'Big City',
-                'zip' => '12345', 'phone' => '', 'group' => '',
-                'expiration_date' => '12-30-2099',
+                'zip' => '12345', 'expiration_date' => '12-30-2099', 'birthdate' => null,
+                'city' => null, 'country' => null, 'phone' => null, 'mobile_phone' => null,
+                'group' => null, 'home_library' => null,
             ],
         ], [
             'file' => 'lookupUserResponseUnstructuredName.xml', 'result' => [
                 'firstname' => '', 'lastname' => 'John Smith Jr.',
                 'address1' => 'Trvalá ulice 123', 'address2' => '12345 Big City',
-                'zip' => '', 'phone' => '', 'group' => '',
-                'expiration_date' => '12-30-2099',
+                'expiration_date' => '12-30-2099', 'birthdate' => null,
+                'city' => null, 'country' => null, 'zip' => null,
+                'phone' => null, 'mobile_phone' => null, 'group' => null, 'home_library' => null,
             ],
         ],
     ];
@@ -1569,7 +1579,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      */
     public function testInitDriver()
     {
-        $driver = new XCNCIP2(new \VuFind\Date\Converter());
+        $driver = new XCNCIP2(new \VuFind\Date\Converter(), $this->getPathResolver());
         $driver->setConfig(
             [
                 'Catalog' => [
@@ -1671,7 +1681,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
      */
     protected function configureDriver($config = null)
     {
-        $this->driver = new XCNCIP2(new \VuFind\Date\Converter());
+        $this->driver = new XCNCIP2(new \VuFind\Date\Converter(), $this->getPathResolver());
         $this->driver->setConfig(
             $config ?? [
                 'Catalog' => [

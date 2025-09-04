@@ -82,8 +82,7 @@ use function count;
 class User extends RowGateway implements
     UserEntityInterface,
     \VuFind\Db\Service\DbServiceAwareInterface,
-    \VuFind\Db\Table\DbTableAwareInterface,
-    \LmcRbacMvc\Identity\IdentityInterface
+    \VuFind\Db\Table\DbTableAwareInterface
 {
     use \VuFind\Db\Service\DbServiceAwareTrait;
     use \VuFind\Db\Table\DbTableAwareTrait;

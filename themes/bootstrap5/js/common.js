@@ -1,5 +1,5 @@
-/*global grecaptcha, isPhoneNumberValid, loadCovers */
-/*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, extractClassParams, getFocusableNodes, getUrlRoot, htmlEncode, phoneNumberFormHandler, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery */
+/*global grecaptcha, loadCovers */
+/*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, extractClassParams, getFocusableNodes, getUrlRoot, htmlEncode, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery */
 
 var VuFind = (function VuFind() {
   var defaultSearchBackend = null;
@@ -297,6 +297,21 @@ var VuFind = (function VuFind() {
   };
 
   /**
+   * Return an overlay html element that contains a spinner with loading text
+   * @param {string|null} text [Optional] Translation key to append inside span wrapper, default loading_ellipsis
+   * @param {string} extraClass [Optional] Extra class string to add for spinner wrapper
+   * @returns {HTMLDivElement}
+   */
+  function loadingOverlay(text = null, extraClass = '') {
+    const overlay = document.createElement('div');
+    overlay.classList = 'loading-overlay';
+    overlay.setAttribute('aria-live', 'polite');
+    overlay.setAttribute('role', 'status');
+    overlay.append(loadingElement(text, extraClass));
+    return overlay;
+  }
+
+  /**
    * Reload the page without causing trouble with POST parameters while keeping hash
    */
   var refreshPage = function refreshPage(forceGet) {
@@ -584,6 +599,30 @@ var VuFind = (function VuFind() {
     return newParams;
   }
 
+  /**
+   * MultiILS: Display password recovery link for enabled login targets
+   * @param {Object} links Recovery links
+   * @param {?String} idPrefix
+   */
+  function displayILSPasswordRecoveryLink(links, idPrefix) {
+    const searchPrefix = idPrefix ? '#' + idPrefix : '#';
+    const targetSelector = document.querySelector(searchPrefix + 'target');
+    const recoveryLink = document.querySelector('#recovery_link');
+    if (targetSelector && recoveryLink) {
+      const changeListener = () => {
+        const target = targetSelector.value;
+        if (links[target]) {
+          recoveryLink.setAttribute('href', links[target]);
+          recoveryLink.classList.remove('hidden');
+        } else {
+          recoveryLink.classList.add('hidden');
+        }
+      };
+      targetSelector.addEventListener('change', changeListener);
+      changeListener();
+    }
+  }
+
   //Reveal
   return {
     defaultSearchBackend: defaultSearchBackend,
@@ -608,6 +647,7 @@ var VuFind = (function VuFind() {
     loadHtml: loadHtml,
     loading: loading,
     loadingElement: loadingElement,
+    loadingOverlay,
     translate: translate,
     updateCspNonce: updateCspNonce,
     getCurrentSearchId: getCurrentSearchId,
@@ -623,7 +663,8 @@ var VuFind = (function VuFind() {
     deleteKeyValueFromURLSearchParams: deleteKeyValueFromURLSearchParams,
     deleteParamsFromURLSearchParams: deleteParamsFromURLSearchParams,
     getTheme,
-    setTheme
+    setTheme,
+    displayILSPasswordRecoveryLink
   };
 })();
 
@@ -763,29 +804,6 @@ function getUrlRoot(url) {
   return urlroot;
 }
 
-/**
- * Phone number validation
- * @param {String} numID Phone number field ID
- * @param {String} regionCode Region code
- * @deprecated See validation.js for replacement
- */
-function phoneNumberFormHandler(numID, regionCode) {
-  var phoneInput = document.getElementById(numID);
-  var number = phoneInput.value;
-  var valid = isPhoneNumberValid(number, regionCode);
-  if (valid !== true) {
-    if (typeof valid === 'string') {
-      valid = VuFind.translate(valid);
-    } else {
-      valid = VuFind.translate('libphonenumber_invalid');
-    }
-    phoneInput.setCustomValidity(valid);
-    return false;
-  } else {
-    phoneInput.setCustomValidity('');
-  }
-}
-
 // Setup captchas after Google script loads
 function recaptchaOnLoad(_context) {
   if (typeof grecaptcha !== 'undefined') {
@@ -906,8 +924,7 @@ document.addEventListener('DOMContentLoaded', () => {
   setupJumpMenus();
 
   // Print
-  var url = window.location.href;
-  if (url.indexOf('?print=') !== -1 || url.indexOf('&print=') !== -1) {
+  if (VuFind.isPrinting()) {
     var printStylesheets = document.querySelectorAll('link[media="print"]');
     printStylesheets.forEach((stylesheet) => {
       stylesheet.media = 'all';

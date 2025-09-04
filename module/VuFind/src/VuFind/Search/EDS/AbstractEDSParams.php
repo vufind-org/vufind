@@ -35,6 +35,7 @@ namespace VuFind\Search\EDS;
 
 use VuFindSearch\ParamBag;
 
+use function count;
 use function in_array;
 
 /**
@@ -144,5 +145,33 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
             return 'OR';
         }
         return parent::getFacetOperator($field);
+    }
+
+    /**
+     * Return the value for which search view we use
+     *
+     * @return string
+     */
+    public function getEbscoView()
+    {
+        $viewArr = explode('_', $this->view ?? '');
+        return (1 < count($viewArr)) ? $viewArr[1] : $this->options->getEbscoView();
+    }
+
+    /**
+     * Basic 'getter' for list of available view options.
+     *
+     * @return array
+     */
+    public function getViewList()
+    {
+        $list = [];
+        foreach ($this->getOptions()->getViewOptions() as $key => $value) {
+            $list[$key] = [
+                'desc' => $value,
+                'selected' => ($key == $this->getView() . '_' . $this->getEbscoView()),
+            ];
+        }
+        return $list;
     }
 }

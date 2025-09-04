@@ -1,15 +1,31 @@
-/*global VuFind, multiFacetsSelectionEnabled, unwrapJQuery */
+/*global VuFind, multiFacetsSelection, unwrapJQuery */
 
 /**
- * Returns if multiFacetsSelectionEnabled is set. Fallback if the value is missing for false
+ * Get the globally-configured multi-facets selection setting (or default to 'false').
  *
- * @type {Function} Function to check for multiFacetsSelectionEnabled
+ * @returns string
+ */
+const getMultiFacetsSelectionSetting = () => {
+  return typeof multiFacetsSelection === 'undefined' ? 'false' : multiFacetsSelection;
+};
+
+/**
+ * Returns whether multi-facets selection is enabled.
+ *
+ * @returns boolean
  */
 const isMultiFacetsSelectionEnabled = () => {
-  if (typeof multiFacetsSelectionEnabled === "undefined") {
-    return false;
-  }
-  return multiFacetsSelectionEnabled;
+  return getMultiFacetsSelectionSetting() !== 'false';
+};
+
+/**
+ * Get the default checkbox selection state to apply if overriding user state is not found.
+ *
+ * @returns boolean
+ */
+const getMultiFacetsSelectionPageLoadValue = () => {
+  const setting = getMultiFacetsSelectionSetting();
+  return setting === 'always' || setting === 'checked';
 };
 
 /* --- Facet List --- */
@@ -136,6 +152,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
   let callbackOnApply;
   let callbackWhenDeactivated;
   let defaultContext;
+  let defaultCountText;
   // Events to emit
   const activation_event = 'facet-selection-begin';
   const deactivation_event = 'facet-selection-cancel';
@@ -331,6 +348,42 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     }
   }
 
+  function getModifiedFiltersCount() {
+    return document.querySelectorAll('[data-multi-filters-modified="true"]').length;
+  }
+
+  function updateCountText() {
+    const textElems = document.getElementsByClassName('multi-filters-text');
+    const count = getModifiedFiltersCount();
+    const text = count === 0 ? defaultCountText : VuFind.translate('modified_filter_count', { '%%count%%': count });
+    for (const textElem of textElems) {
+      textElem.textContent = text;
+    }
+  }
+
+  function hideCountText() {
+    document.querySelectorAll('.multi-filters-text').forEach(el => el.style.display = 'none');
+  }
+
+  function showCountText() {
+    document.querySelectorAll('.multi-filters-text').forEach(el => el.style.display = 'block');
+  }
+
+  function toggleCountText(show = true) {
+    if (show) {
+      showCountText();
+    } else {
+      hideCountText();
+    }
+  }
+
+  function initOriginalCountText(context) {
+    if (typeof defaultCountText === 'undefined') {
+      const multiFiltersTextEl = context.querySelector('.multi-filters-text');
+      defaultCountText = multiFiltersTextEl ? multiFiltersTextEl.textContent : '-';
+    }
+  }
+
   function handleMultiSelectionClick(e) {
     e.preventDefault();
     const elem = e.currentTarget;
@@ -342,6 +395,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
       elem.closest('.facet').querySelector('[data-multi-filters-modified="true"]').click();
     }
     elem.setAttribute('data-multi-filters-modified', isOriginalState);
+    updateCountText();
     toggleSelectedFacetStyle(elem);
   }
 
@@ -350,14 +404,15 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
   }
 
   function getUserSelectionLastState() {
+    const state = localStorage.getItem(local_storage_variable_name);
+    if (state === null) {
+      return undefined;
+    }
     return localStorage.getItem(local_storage_variable_name) === 'true';
   }
 
   function toggleMultiFacetsSelection(enable) {
     if (typeof enable !== 'undefined') {
-      if (isMultiFacetsSelectionActivated === enable) {
-        return;
-      }
       isMultiFacetsSelectionActivated = enable;
       saveUserSelectionLastState(isMultiFacetsSelectionActivated);
     }
@@ -373,6 +428,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
         toggleSelectedFacetStyle(elem);
       }
     }
+    toggleCountText(isMultiFacetsSelectionActivated);
     const event = isMultiFacetsSelectionActivated ? activation_event : deactivation_event;
     VuFind.emit(event);
   }
@@ -445,11 +501,21 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
       }
     }
     const context = (typeof _context === "undefined") ? defaultContext : _context;
+    initOriginalCountText(context);
     initMultiFacetControls(context);
     initFacetClickHandler(context);
     initRangeSelection(context);
     // Synchronize the state of multi-facet checkboxes in case there's e.g. a lightbox with its own controls:
-    VuFind.multiFacetsSelection.toggleMultiFacetsSelection();
+    let state;
+    if (getMultiFacetsSelectionSetting() === 'always') {
+      state = true;
+    } else {
+      state = getUserSelectionLastState();
+      if (state === undefined) {
+        state = getMultiFacetsSelectionPageLoadValue() ? true : undefined;
+      }
+    }
+    VuFind.multiFacetsSelection.toggleMultiFacetsSelection(state);
   }
 
   return {
@@ -643,13 +709,15 @@ VuFind.register('sideFacets', function SideFacets() {
     delayLoadAjaxSideFacets();
 
     // Keep filter dropdowns on screen
-    $(".search-filter-dropdown").on("shown.bs.dropdown", function checkFilterDropdownWidth(e) {
-      var $dropdown = $(e.target).find(".dropdown-menu");
-      if ($(e.target).position().left + $dropdown.width() >= window.innerWidth) {
-        $dropdown.addClass("dropdown-menu-right");
-      } else {
-        $dropdown.removeClass("dropdown-menu-right");
-      }
+    document.querySelectorAll('.search-filter-dropdown').forEach((dropdown) => {
+      dropdown.addEventListener('shown.bs.dropdown', () => {
+        let dropdownMenu = dropdown.querySelector('.dropdown-menu');
+        if (dropdown.getBoundingClientRect().left + dropdownMenu.offsetWidth >= window.innerWidth) {
+          dropdownMenu.classList.add('dropdown-menu-end');
+        } else {
+          dropdownMenu.classList.remove('dropdown-menu-end');
+        }
+      });
     });
 
     setupFacetFormListeners();

@@ -51,7 +51,7 @@ use VuFindSearch\Service;
  */
 class ResultsTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Test that empty searches are blocked.

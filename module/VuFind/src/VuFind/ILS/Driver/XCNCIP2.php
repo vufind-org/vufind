@@ -307,11 +307,11 @@ class XCNCIP2 extends AbstractBase implements
      * Constructor
      *
      * @param \VuFind\Date\Converter $dateConverter Date converter object
-     * @param ?PathResolver          $pathResolver  Config file path resolver
+     * @param PathResolver           $pathResolver  Config file path resolver
      */
     public function __construct(
         \VuFind\Date\Converter $dateConverter,
-        ?PathResolver $pathResolver = null
+        PathResolver $pathResolver
     ) {
         $this->dateConverter = $dateConverter;
         $this->pathResolver = $pathResolver;
@@ -426,9 +426,7 @@ class XCNCIP2 extends AbstractBase implements
     protected function loadPickUpLocationsFromFile($filename)
     {
         // Load pickup locations file:
-        $pickupLocationsFile = $this->pathResolver
-            ? $this->pathResolver->getConfigPath($filename)
-            : \VuFind\Config\Locator::getConfigPath($filename);
+        $pickupLocationsFile = $this->pathResolver->getConfigPath($filename);
         if (!file_exists($pickupLocationsFile)) {
             throw new ILSException(
                 "Cannot load pickup locations file: {$pickupLocationsFile}."
@@ -1108,20 +1106,18 @@ class XCNCIP2 extends AbstractBase implements
             'ns1:UserAddressInformation/ns1:ElectronicAddress/' .
                 'ns1:ElectronicAddressData'
         );
-
         // Fill in basic patron details:
-        return [
-            'id' => (string)$id[0],
-            'patronAgencyId' => !empty($patronAgencyId)
-                ? (string)$patronAgencyId[0] : null,
-            'cat_username' => $username,
-            'cat_password' => $password,
-            'email' => !empty($email) ? (string)$email[0] : null,
-            'major' => null,
-            'college' => null,
-            'firstname' => (string)($first[0] ?? ''),
-            'lastname' => (string)($last[0] ?? ''),
-        ];
+        return $this->createPatronArray(
+            id: (string)$id[0],
+            cat_username: $username,
+            cat_password: $password,
+            email: !empty($email[0]) ? (string)$email[0] : null,
+            firstname: (string)($first[0] ?? ''),
+            lastname: (string)($last[0] ?? ''),
+            nonDefaultFields: [
+                'patronAgencyId' => !empty($patronAgencyId) ? (string)$patronAgencyId[0] : null,
+            ]
+        );
     }
 
     /**
@@ -1472,17 +1468,15 @@ class XCNCIP2 extends AbstractBase implements
         );
         $expirationDate = !empty($expirationDate) ?
             $this->displayDate((string)$expirationDate[0]) : null;
-
-        return [
-            'firstname' => (string)($firstname[0] ?? null),
-            'lastname' => (string)($lastname[0] ?? null),
-            'address1' => $address1,
-            'address2' => $address2,
-            'zip' => $zip,
-            'phone' => null,  // TODO: phone number support
-            'group' => null,
-            'expiration_date' => $expirationDate,
-        ];
+        // TODO: add phone number support
+        return $this->createProfileArray(
+            firstname: (string)($firstname[0] ?? null),
+            lastname: (string)($lastname[0] ?? null),
+            address1: $address1,
+            address2: $address2,
+            zip: $zip,
+            expiration_date: $expirationDate
+        );
     }
 
     /**

@@ -43,7 +43,7 @@ use VuFind\Search\Solr\Options;
  */
 class OptionsTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Get Options object

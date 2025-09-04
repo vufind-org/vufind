@@ -196,7 +196,8 @@ class Email implements HandlerInterface, LoggerAwareInterface
                 $emailMessage,
                 null,
                 !empty($replyToEmail)
-                    ? new Address($replyToEmail, $replyToName) : null
+                    ? new Address($replyToEmail, $replyToName) : null,
+                false
             );
             return true;
         } catch (MailException $e) {

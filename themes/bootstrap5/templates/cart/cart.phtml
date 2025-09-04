@@ -1,7 +1,4 @@
 <?php
-  // Set page title.
-  $this->headTitle($this->translate('Book Bag'));
-
   // Set up breadcrumbs:
   $this->breadcrumbs()->reset();
   if ($url = $this->searchMemory()->getLastSearchUrl()) {
@@ -9,7 +6,7 @@
   }
   $this->breadcrumbs()->add($this->translate('Book Bag'), $this->url('cart-home'), active: true);
 ?>
-<h2><?=$this->transEsc('Book Bag') ?></h2>
+<?=$this->component('page-title', ['title' => $this->translate('Book Bag')]);?>
 <?=$this->flashmessages()?>
 <form class="form-inline" action="<?=$this->url('cart-processor')?>" method="post"  name="cartForm" data-lightbox-onsubmit="cartFormHandler">
   <input type="hidden" id="dropdown_value">

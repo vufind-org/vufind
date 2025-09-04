@@ -29,6 +29,10 @@
 
 namespace VuFindTest\View\Helper;
 
+use Laminas\View\Helper\HeadLink;
+use Laminas\View\Helper\HeadMeta;
+use Laminas\View\Helper\HeadScript;
+use PHPUnit\Framework\MockObject\MockObject;
 use VuFindTheme\ResourceContainer;
 use VuFindTheme\View\Helper\SetupThemeResources;
 
@@ -108,9 +112,9 @@ class SetupThemeResourcesTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a fake HeadMeta helper.
      *
-     * @return \PHPUnit\Framework\MockObject\MockObject&\VuFindTheme\View\Helper\HeadMeta
+     * @return MockObject&HeadMeta
      */
-    protected function getMockHeadMeta()
+    protected function getMockHeadMeta(): MockObject&HeadMeta
     {
         $mock = $this->getMockBuilder(\Laminas\View\Helper\HeadMeta::class)
             ->disableOriginalConstructor()
@@ -129,28 +133,24 @@ class SetupThemeResourcesTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a fake HeadLink helper.
      *
-     * @return \Laminas\View\Helper\HeadLink
+     * @return MockObject&HeadLink
      */
-    protected function getMockHeadLink()
+    protected function getMockHeadLink(): MockObject&HeadLink
     {
-        $mock = $this->getMockBuilder(\VuFindTheme\View\Helper\HeadLink::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $mock->expects($this->any())->method('__invoke')->will($this->returnValue($mock));
+        $mock = $this->createMock(HeadLink::class);
+        $mock->expects($this->any())->method('__invoke')->willReturn($mock);
         return $mock;
     }
 
     /**
      * Get a fake HeadScript helper.
      *
-     * @return \Laminas\View\Helper\HeadScript
+     * @return MockObject&HeadScript
      */
-    protected function getMockHeadScript()
+    protected function getMockHeadScript(): MockObject&HeadScript
     {
-        $mock = $this->getMockBuilder(\VuFindTheme\View\Helper\HeadScript::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $mock->expects($this->any())->method('__invoke')->will($this->returnValue($mock));
+        $mock = $this->createMock(HeadScript::class);
+        $mock->expects($this->any())->method('__invoke')->willReturn($mock);
         return $mock;
     }
 }
