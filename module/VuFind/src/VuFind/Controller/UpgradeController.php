@@ -604,9 +604,9 @@ class UpgradeController extends AbstractBase
                 $this->flashMessenger()->addErrorMessage(
                     'Illegal version number; please upgrade to at least version 10.x before proceeding.'
                 );
-            } elseif (Comparator::greaterThanOrEqualTo($version, $newVersion)) {
+            } elseif (Comparator::greaterThan($version, $newVersion)) {
                 $this->flashMessenger()->addMessage(
-                    "Source version must be less than {$newVersion}.",
+                    "Source version must be less than or equal to {$newVersion}.",
                     'error'
                 );
             } else {
