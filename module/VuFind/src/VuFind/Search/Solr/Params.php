@@ -247,9 +247,10 @@ class Params extends \VuFind\Search\Base\Params
                     $facetSet["f.{$facetField}.facet.matches"] = $fieldMatches;
                 }
                 if ('DateRangeField' === ($dateRangeTypes[$facetField] ?? null)) {
-                    // TODO: Consolidate these and defaults in date-range-slider.phtml into a single place?
-                    $startYear = $this->getOptions()->getDateRangeSliderMinValue($facetField) ?? 1400;
-                    $endYear = $this->getOptions()->getDateRangeSliderMinValue($facetField) ?? ((int)date('Y') + 1);
+                    $startYear = $this->getOptions()->getDateRangeSliderMinValue($facetField)
+                        ?? VUFIND_DEFAULT_EARLIEST_YEAR;
+                    $endYear = $this->getOptions()->getDateRangeSliderMinValue($facetField)
+                        ?? ((int)date('Y') + VUFIND_DEFAULT_LATEST_YEAR_OFFSET);
                     $facetSet["f.{$facetField}.facet.range.start"]
                         = sprintf('%s%04d-01-01T00:00:00Z', $startYear < 0 ? '-' : '', $startYear);
                     $facetSet["f.{$facetField}.facet.range.end"]
