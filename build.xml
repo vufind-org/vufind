@@ -814,6 +814,14 @@ return [
       <equals arg1="${dbtype}" arg2="pgsql" />
       <then>
         <!-- build database -->
+        <property name="pgsqldatabaseprecommands" value="${tmp}/create-pgsql1.sql" />
+        <exec executable="php" passthru="true" checkreturn="true">
+          <arg line="${srcdir}/public/index.php generate/database --skip=main,post --driver=pgsql --test-only ${vufinddb} ${vufinddbuser} ${vufinddbpass} > ${pgsqldatabaseprecommands}" />
+        </exec>
+        <property name="pgsqldatabasemainpostcommands" value="${tmp}/create-pgsql2.sql" />
+        <exec executable="php" passthru="true" checkreturn="true">
+          <arg line="${srcdir}/public/index.php generate/database --skip=pre --driver=pgsql --test-only ${vufinddb} ${vufinddbuser} ${vufinddbpass} > ${pgsqldatabasemainpostcommands}" />
+        </exec>
         <if>
           <equals arg1="${psql_needs_sudo}" arg2="false" />
           <then>
@@ -823,17 +831,11 @@ return [
             <exec executable="psql">
               <arg line="-c &quot;DROP USER ${vufinddbuser};&quot; ${pgsqlrootuser}" />
             </exec>
-            <exec executable="psql" checkreturn="true">
-              <arg line="-c &quot;CREATE DATABASE ${vufinddb};&quot; ${pgsqlrootuser}" />
+            <exec executable="psql" passthru="true" checkreturn="true">
+              <arg line="-f ${pgsqldatabaseprecommands} ${pgsqlrootuser}" />
             </exec>
-            <exec executable="psql" checkreturn="true">
-              <arg line="-c &quot;CREATE USER ${vufinddbuser} PASSWORD '${vufinddbpass}';&quot; ${pgsqlrootuser}" />
-            </exec>
-            <exec executable="psql" checkreturn="true">
-              <arg line="-c &quot;GRANT ALL ON DATABASE ${vufinddb} TO ${vufinddbuser};&quot; ${pgsqlrootuser}" />
-            </exec>
-            <exec executable="psql" checkreturn="true">
-              <arg line="-c &quot;ALTER DATABASE ${vufinddb} OWNER TO ${vufinddbuser};&quot; ${pgsqlrootuser}" />
+            <exec executable="psql" passthru="true" checkreturn="true">
+              <arg line="-f ${pgsqldatabasemainpostcommands} --dbname=${vufinddb} ${pgsqlrootuser}" />
             </exec>
           </then>
           <else>
@@ -844,26 +846,15 @@ return [
               <arg line="su -c &quot;psql -c 'DROP USER ${vufinddbuser};'&quot; ${pgsqlrootuser}" />
             </exec>
             <exec executable="sudo" checkreturn="true">
-              <arg line="su -c &quot;psql -c 'CREATE DATABASE ${vufinddb};'&quot; ${pgsqlrootuser}" />
+              <arg line="su -c &quot;psql -f ${pgsqldatabaseprecommands}&quot; ${pgsqlrootuser}" />
             </exec>
             <exec executable="sudo" checkreturn="true">
-              <!-- due to deep quote nesting and Phing bugs, we need to use a variable to make this work -->
-              <env key="PG_COMMAND" value="&quot;\&quot;CREATE USER ${vufinddbuser} PASSWORD '${vufinddbpass}';\&quot;&quot;" />
-              <arg line="su -c &quot;psql -c $PG_COMMAND &quot; ${pgsqlrootuser}" />
-            </exec>
-            <exec executable="sudo" checkreturn="true">
-              <arg line="su -c &quot;psql -c 'GRANT ALL ON DATABASE ${vufinddb} TO ${vufinddbuser};'&quot; ${pgsqlrootuser}" />
-            </exec>
-            <exec executable="sudo" checkreturn="true">
-              <arg line="su -c &quot;psql -c 'ALTER DATABASE ${vufinddb} OWNER TO ${vufinddbuser};'&quot; ${pgsqlrootuser}" />
+              <arg line="su -c &quot;psql -f ${pgsqldatabasemainpostcommands} --dbname=${vufinddb}&quot; ${pgsqlrootuser}" />
             </exec>
           </else>
         </if>
-
-        <exec executable="psql" checkreturn="true">
-          <arg line="-U ${vufinddbuser} -f ${srcdir}/module/VuFind/sql/pgsql.sql ${vufinddb}" />
-          <env key="PGPASSWORD" value="${vufinddbpass}" />
-        </exec>
+        <delete file="${pgsqldatabaseprecommands}" />
+        <delete file="${pgsqldatabasemainpostcommands}" />
       </then>
       <else>
         <!-- build database -->
