@@ -234,7 +234,7 @@ return [
             /**
              * Icons can be assigned or overridden here
              *
-             * Format: 'icon' => [set:]icon[:extra_classes]
+             * Format: 'icon' => [set:]icon[.extra.classes]
              * Icons assigned without set will use the defaultSet.
              * In order to specify extra CSS classes, you must also specify a set.
              *
@@ -243,8 +243,10 @@ return [
              */
             'cites' => 'Unicode:275D',
             'cited-by' => 'Unicode:275E',
-            // Customize by editting 'collapse-close' and 'collapse-open'.
+
             'collapse' => 'Collapse:_',
+			'collapse-close' => 'Unicode:2303',
+            'collapse-open' => 'Unicode:2304',
         ],
     ],
 ];
