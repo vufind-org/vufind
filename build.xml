@@ -870,23 +870,11 @@ return [
         <exec executable="mysql" passthru="true">
           <arg line="${mysqlconnectionargs} -e &quot;DROP DATABASE IF EXISTS ${vufinddb}&quot;" />
         </exec>
-        <exec executable="mysql" checkreturn="true" passthru="true">
-          <arg line="${mysqlconnectionargs} -e &quot;CREATE DATABASE ${vufinddb}&quot;" />
-        </exec>
         <exec executable="mysql" passthru="true">
           <arg line="${mysqlconnectionargs} -e &quot;DROP USER IF EXISTS '${vufinddbuser}'@'%'&quot;" />
         </exec>
-        <exec executable="mysql" checkreturn="true" passthru="true">
-          <arg line="${mysqlconnectionargs} -e &quot;CREATE USER '${vufinddbuser}'@'%' IDENTIFIED BY '${vufinddbpass}'&quot;" />
-        </exec>
-        <exec executable="mysql" checkreturn="true" passthru="true">
-          <arg line="${mysqlconnectionargs} -e &quot;GRANT SELECT,INSERT,UPDATE,DELETE ON ${vufinddb}.* TO '${vufinddbuser}'@'%' WITH GRANT OPTION&quot;" />
-        </exec>
-        <exec executable="mysql" checkreturn="true" passthru="true">
-          <arg line="${mysqlconnectionargs} -e &quot;FLUSH PRIVILEGES&quot;" />
-        </exec>
-        <exec executable="mysql" checkreturn="true" passthru="true">
-          <arg line="${mysqlconnectionargs} -D ${vufinddb} &lt; ${srcdir}/module/VuFind/sql/mysql.sql" />
+        <exec executable="php" passthru="true" checkreturn="true">
+          <arg line="${srcdir}/public/index.php generate/database --dbHost=${mysqlhost}:${mysqlport} --vufindHost=% --rootUser=${mysqlrootuser} --rootPass=${mysqlrootpass} ${vufinddb} ${vufinddbuser} ${vufinddbpass}" />
         </exec>
       </else>
     </if>
