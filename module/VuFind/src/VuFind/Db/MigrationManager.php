@@ -189,6 +189,30 @@ class MigrationManager
     }
 
     /**
+     * After a migration has succeeded, clean up history related to the migration; we only want to retain
+     * details about failed migrations so we can use them for troubleshooting (and as a flag in future).
+     *
+     * @param null|Connection $connection Database connection to use for applying migrations
+     * (if null, the method returns the SQL to apply without actually writing to the database)
+     * @param string          $name       Short name of migration being applied
+     *
+     * @return string
+     * @throws Exception
+     */
+    protected function cleanUpMigrationEvents(?Connection $connection, string $name): string
+    {
+        $queryBuilder = $connection ? $connection->createQueryBuilder() : $this->connection->createQueryBuilder();
+        $queryBuilder->delete('migrations')
+            ->where('name = ' . $this->connection->quote($name))
+            ->andWhere('status != ' . $this->connection->quote('success'));
+        $sql = (string)$queryBuilder;
+        if ($connection) {
+            $connection->executeQuery($queryBuilder);
+        }
+        return "$sql;\n";
+    }
+
+    /**
      * Apply a single database migration string.
      *
      * @param string      $migration  Migration file to apply
@@ -205,9 +229,10 @@ class MigrationManager
             $output .= $this->logMigrationEvent($connection, $shortMigrationName, 'start');
         }
         $sql = file_get_contents($migration);
-        foreach (preg_split('/;\s*([\r\n]|$)/', $sql) as $sqlLine) {
+        foreach (preg_split('/;\s*([\r\n]|$)/', $sql) as $i => $sqlLine) {
             $trimmedLine = trim($sqlLine);
             if (!empty($trimmedLine)) {
+                $output .= $this->logMigrationEvent($connection, $shortMigrationName, "writing line $i");
                 if ($connection) {
                     $connection->executeQuery($trimmedLine);
                 }
@@ -215,6 +240,7 @@ class MigrationManager
             }
         }
         $output .= $this->logMigrationEvent($connection, $shortMigrationName, 'success');
+        $output .= $this->cleanUpMigrationEvents($connection, $shortMigrationName);
         return $output;
     }
 
