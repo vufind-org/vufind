@@ -33,7 +33,6 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\Config\PluginManager as ConfigManager;
 use VuFind\Content\PluginManager as ContentManager;
 
 use function in_array;
@@ -80,7 +79,7 @@ abstract class AbstractContentFactory implements \Laminas\ServiceManager\Factory
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(ConfigManager::class)->get('config');
+        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config');
         // Only instantiate the loader if the feature is enabled:
         $loader = isset($config->Content->{$this->tabName})
             ? $container->get(ContentManager::class)->get($this->tabName)

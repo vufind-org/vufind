@@ -48,7 +48,7 @@ use VuFindTest\Container\MockDbServicePluginManager;
  */
 class MultiILSTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Container for building mocks.

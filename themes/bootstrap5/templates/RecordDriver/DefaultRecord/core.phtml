@@ -72,7 +72,7 @@
     <?php $summary = $this->driver->getSummary(); ?>
     <?php if ($summary = $summary[0] ?? null): ?>
       <?php $shortSummary = $this->truncate($summary, 300); ?>
-      <p><?=$this->escapeOrCleanHtml($shortSummary, $summary, 'summary')?></p>
+      <p><?=$this->escapeOrCleanHtml($shortSummary, 'summary', true)?></p>
 
       <?php if ($shortSummary !== $summary): ?>
         <p><a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, 'Description'))?>#tabnav"><?=$this->transEsc('Full description')?></a></p>

@@ -44,7 +44,7 @@ use VuFind\Service\MarkdownFactory;
  */
 class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Test to ensure the markdown factory is using right config for markdown
@@ -375,8 +375,8 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
             new \VuFindTest\Markdown\ExampleExtension()
         );
         $container->set(
-            \VuFind\Config\PluginManager::class,
-            $this->getMockConfigPluginManager(['markdown' => $config])
+            \VuFind\Config\ConfigManager::class,
+            $this->getMockConfigManager(['markdown' => $config])
         );
         $markdownFactory = new MarkdownFactory();
         return $markdownFactory(

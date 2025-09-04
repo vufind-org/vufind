@@ -40,8 +40,6 @@ use VuFind\Auth\Shibboleth\ConfigurationLoaderInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\ExternalSessionServiceInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
-use VuFind\Db\Table\DbTableAwareInterface;
-use VuFind\Db\Table\DbTableAwareTrait;
 use VuFind\Exception\Auth as AuthException;
 
 /**
@@ -58,10 +56,8 @@ use VuFind\Exception\Auth as AuthException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Shibboleth extends AbstractBase implements DbTableAwareInterface
+class Shibboleth extends AbstractBase
 {
-    use DbTableAwareTrait;
-
     /**
      * Header name for entityID of the IdP that authenticated the user.
      */
@@ -238,9 +234,9 @@ class Shibboleth extends AbstractBase implements DbTableAwareInterface
      * @param string $target Full URL where external authentication method should
      * send user after login (some drivers may override this).
      *
-     * @return bool|string
+     * @return ?string
      */
-    public function getSessionInitiator($target)
+    public function getSessionInitiator(string $target): ?string
     {
         $config = $this->getConfig();
         $shibTarget = $config->Shibboleth->target ?? $target;

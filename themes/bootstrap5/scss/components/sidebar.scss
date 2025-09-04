@@ -207,12 +207,14 @@ body.rtl .full-facet-list .active .fa.fa-times { float: left; }
 .truncate-done {
   overflow: clip;
 }
-.more-less-btn-wrapper .fa {
-  line-height: inherit;
-}
-.more-less-btn-wrapper .facet {
-  display: block;
-  width: 100%;
+.more-less-btn-wrapper {
+  .icon {
+    line-height: inherit;
+  }
+  .facet {
+    display: block;
+    width: 100%;
+  }
 }
 
 .facet-range-form {

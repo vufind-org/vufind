@@ -99,7 +99,7 @@
           <?php $selectAllCheckboxId = $this->idPrefix . 'addFormCheckboxSelectAll'; ?>
           <label<?=$this->htmlAttributes(['for' => $selectAllCheckboxId])?>>
             <?php $selectAllCheckboxAttrs = ['type' => 'checkbox', 'name' => 'selectAll', 'class' => 'checkbox-select-all', 'id' => $selectAllCheckboxId]; ?>
-            <?php if($this->formAttr): ?>
+            <?php if ($this->formAttr): ?>
               <?php $selectAllCheckboxAttrs['form'] = $this->formAttr; ?>
             <?php endif; ?>
             <input<?=$this->htmlAttributes($selectAllCheckboxAttrs)?>>

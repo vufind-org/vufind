@@ -7,14 +7,23 @@
   <property name="srcdir"   value="${project.basedir}" override="true" />
   <property name="downloadsdir" value="${srcdir}/downloads" override="true" />
   <!--
-    Use builddir/local as the local directory if defaultconfigs=true. This allows the
-    tests to be run without any custom configuration possibly interfering in the
-    normal local directory.
+    Use builddir/local-symlink that points to builddir/local as the local directory
+    if defaultconfigs=true. This allows the tests to be run without any custom
+    configuration possibly interfering in the normal local directory. It also
+    ensures that a local directory containing symlinks works properly.
   -->
   <if>
     <equals arg1="${defaultconfigs}" arg2="true" />
     <then>
-      <property name="localdir" value="${builddir}/local" override="true" />
+      <property name="localdir" value="${builddir}/local-symlink" override="true" />
+      <mkdir dir="${builddir}/local"/>
+      <!-- Create the local directory symlink if it doesn't already exist: -->
+      <if>
+        <not><available file="${builddir}/local-symlink"/></not>
+        <then>
+          <symlink target="${builddir}/local" link="${builddir}/local-symlink" overwrite="true"/>
+        </then>
+      </if>
     </then>
     <else>
       <property name="localdir" value="${srcdir}/local" override="false" />
@@ -30,6 +39,7 @@
   <property name="vufinddb" value="vufind_test" />
   <property name="vufinddbuser" value="vufindtest" />
   <property name="vufinddbpass" value="vufindtestpass" />
+  <property name="vufind_env" value="testing" />
   <property name="dbtype" value="mysql" /><!-- use pgsql for PostgreSQL -->
   <property name="mysqlhost" value="localhost" />
   <property name="mysqlport" value="3306" />
@@ -50,7 +60,7 @@
   <property name="default_test_timeout" value="5000" /><!-- default timeout (in ms) for Mink tests; increase when tests fail on slow systems -->
   <property name="solr_startup_sleep" value="0" />
   <property name="solr_additional_jvm_options" value="-Dlog4j2.formatMsgNoLookups=true" />
-  <property name="solr_version" value="9.5.0" />
+  <property name="solr_version" value="9.8.1" />
   <property name="solr_port" value="8983" />
   <property name="skip_phpdoc" value="false" />
   <property name="phpdoc_version" value="3.3.1" />
@@ -66,7 +76,7 @@
   <property name="marc_bib_dir" value="${srcdir}/tests/data" /><!-- directory containing MARC bib records for test environment -->
   <property name="marc_authority_dir" value="${marc_bib_dir}/authority" /><!-- directory containing MARC authority records for test environment -->
 
-  <property name="version" value="10.1.4" />
+  <property name="version" value="10.2.0" />
 
   <property name="mysqlconnectionargs" value="-h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser}" />
   <!-- Add password if not empty -->
@@ -151,7 +161,6 @@
   <!-- Quality Assurance Javascript Tasks -->
   <target name="qa-js-and-scss" description="quality assurance js and scss tasks">
     <phingcall target="eslint"/>
-    <phingcall target="eslint-jsdoc"/>
     <phingcall target="jshint"/>
     <phingcall target="checkSassBuild"/>
   </target>
@@ -269,20 +278,6 @@
   <target name="eslint-report">
     <exec executable="npx" escape="false">
       <arg line="eslint ${srcdir}/themes/**/*.js -c ${srcdir}/.eslintrc.js --format checkstyle -o ${builddir}/reports/eslint-checkstyle.xml" />
-    </exec>
-  </target>
-
-  <!-- ESLint jsDoc (test only) -->
-  <target name="eslint-jsdoc">
-    <exec executable="npx" escape="false" checkreturn="true" passthru="true">
-      <arg line="eslint ${srcdir}/themes/**/*.js -c ${srcdir}/.eslintrc.jsdoc.js" />
-    </exec>
-  </target>
-
-  <!-- ESLint jsDoc (auto-fix eligible issues) -->
-  <target name="eslint-jsdoc-fix">
-    <exec executable="npx" escape="false" checkreturn="true" passthru="true">
-      <arg line="eslint ${srcdir}/themes/**/*.js -c ${srcdir}/.eslintrc.jsdoc.js --fix" />
     </exec>
   </target>
 
@@ -518,7 +513,7 @@
       </fileset>
       <filterchain>
         <replaceregexp>
-          <regexp pattern="url: &quot;.*&quot;" replace="url: &quot;../api/v1?openapi&quot;" />
+          <regexp pattern="url: &quot;.*&quot;" replace="url: &quot;../api/v1/?openapi&quot;" />
         </replaceregexp>
       </filterchain>
     </reflexive>
@@ -628,11 +623,19 @@
         <equals arg1="${apachectl}" arg2="" />
       </not>
       <then>
-        <copy file="${localdir}/httpd-vufind.conf" tofile="${apacheconfdir}/vufindtest.conf" />
+        <!-- Enable testing mode -->
+        <reflexive file="${localdir}/httpd-vufind.conf">
+          <filterchain>
+            <replaceregexp>
+              <regexp pattern="#SetEnv VUFIND_ENV development" replace="SetEnv VUFIND_ENV ${vufind_env}" />
+            </replaceregexp>
+          </filterchain>
+        </reflexive>
         <if>
           <istrue value="${phpunit_remote_coverage}" />
           <then>
-            <reflexive file="${apacheconfdir}/vufindtest.conf">
+            <!-- Enable code coverage support -->
+            <reflexive file="${localdir}/httpd-vufind.conf">
               <filterchain>
                 <replaceregexp>
                   <regexp pattern="#SetEnv VUFIND_CODE_COVERAGE 1" replace="SetEnv VUFIND_CODE_COVERAGE 1" />
@@ -641,6 +644,8 @@
             </reflexive>
           </then>
         </if>
+        <!-- Copy the file and restart Apache -->
+        <copy file="${localdir}/httpd-vufind.conf" tofile="${apacheconfdir}/vufindtest.conf" />
         <exec executable="${sh}" passthru="true">
           <arg line="-c &apos;${apachectl} restart&apos;" />
         </exec>

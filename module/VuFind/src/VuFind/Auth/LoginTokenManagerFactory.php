@@ -83,7 +83,7 @@ class LoginTokenManagerFactory implements \Laminas\ServiceManager\Factory\Factor
 
         $dbServiceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         return new $requestedName(
-            $container->get(\VuFind\Config\PluginManager::class)->get('config'),
+            $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config'),
             $dbServiceManager->get(UserServiceInterface::class),
             $dbServiceManager->get(LoginTokenServiceInterface::class),
             $container->get(\VuFind\Cookie\CookieManager::class),

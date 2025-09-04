@@ -46,7 +46,7 @@ use VuFind\Session\Settings;
  */
 class GetResolverLinksTest extends \VuFindTest\Unit\AjaxHandlerTestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Set up configuration for a test.
@@ -58,8 +58,8 @@ class GetResolverLinksTest extends \VuFindTest\Unit\AjaxHandlerTestCase
     protected function setupConfig($config = [])
     {
         $this->container->set(
-            \VuFind\Config\PluginManager::class,
-            $this->getMockConfigPluginManager(compact('config'))
+            \VuFind\Config\ConfigManager::class,
+            $this->getMockConfigManager(compact('config'))
         );
     }
 

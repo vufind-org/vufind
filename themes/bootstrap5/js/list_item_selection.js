@@ -2,6 +2,12 @@
 
 VuFind.register("listItemSelection", function ListItemSelection() {
 
+  /**
+   * Store data in the session storage for a specific form
+   * @param {HTMLElement} form The form element
+   * @param {string}      key  The key to store the data under
+   * @param {*}           data The data to be stored.
+   */
   function _sessionSet(form, key, data) {
     let formId = form.id;
     let formStorage = JSON.parse(window.sessionStorage.getItem(formId) || "{}");
@@ -9,12 +15,22 @@ VuFind.register("listItemSelection", function ListItemSelection() {
     window.sessionStorage.setItem(formId, JSON.stringify(formStorage));
   }
 
+  /**
+   * Retrieve data from session storage for a specific form.
+   * @param {HTMLElement} form The form element.
+   * @param {string}      key  The key of the data to retrieve.
+   * @returns {*} The retrieved data (or undefined if not found).
+   */
   function _sessionGet(form, key) {
     let formId = form.id;
     let formStorage = JSON.parse(window.sessionStorage.getItem(formId) || "{}");
     return formStorage[key];
   }
 
+  /**
+   * Write the current multi-page selection state to session storage.
+   * @param {HTMLElement} form The form element.
+   */
   function _writeState(form) {
     if (form.classList.contains('multi-page-selection')) {
       let nonDefaultIdsInput = form.querySelector('.non_default_ids');
@@ -26,10 +42,20 @@ VuFind.register("listItemSelection", function ListItemSelection() {
     }
   }
 
+  /**
+   * Get all item checkboxes associated with a form.
+   * @param {HTMLElement} form The form element.
+   * @returns {NodeList} A list of item checkboxes.
+   */
   function getItemCheckboxes(form) {
     return document.querySelectorAll('#' + form.id + ' .checkbox-select-item, .checkbox-select-item[form="' + form.id + '"]');
   }
 
+  /**
+   * Check or uncheck a checkbox or a list of checkboxes.
+   * @param {NodeList|HTMLElement} checkbox The checkbox or checkboxes to update.
+   * @param {boolean}              checked  The desired checked state.
+   */
   function _check(checkbox, checked) {
     if (checkbox instanceof NodeList) {
       checkbox.forEach((cb) => _check(cb, checked));
@@ -38,6 +64,11 @@ VuFind.register("listItemSelection", function ListItemSelection() {
     }
   }
 
+  /**
+   * Update the text and visibility of the clear selection button.
+   * @param {HTMLElement} button The clear selection button element.
+   * @param {number}      count  The number of selected items.
+   */
   function _updateSelectionCount(button, count) {
     if (count < 1) {
       button.classList.add('hidden');
@@ -47,6 +78,11 @@ VuFind.register("listItemSelection", function ListItemSelection() {
     }
   }
 
+  /**
+   * Get all selected item IDs, handling both simple and multi-page selection modes.
+   * @param {HTMLElement} form The form element.
+   * @returns {Array<string>} An array of selected item IDs.
+   */
   function getAllSelected(form) {
     let selected = [];
     let nonDefaultIdsInput = form.querySelector('.non_default_ids');
@@ -72,11 +108,21 @@ VuFind.register("listItemSelection", function ListItemSelection() {
     return selected;
   }
 
+  /**
+   * Check if all items on the current page are selected.
+   * @param {HTMLElement} form The form element.
+   * @returns {boolean} Return true if all items are selected
+   */
   function _allOnPageAreSelected(form) {
     return form.querySelectorAll('.checkbox-select-item:not(:checked)').length === 0
       && document.querySelectorAll('.checkbox-select-item[form="' + form.id + '"]:not(:checked)').length === 0;
   }
 
+  /**
+   * Check if all items across all pages are selected.
+   * @param {HTMLElement} form The form element.
+   * @returns {boolean} Return true if all items are selected across all pages.
+   */
   function _allGlobalAreSelected(form) {
     let allIdsInput = form.querySelector('.all-ids-global');
     if (allIdsInput == null) return false;
@@ -88,10 +134,8 @@ VuFind.register("listItemSelection", function ListItemSelection() {
   /**
    * Updates the form inputs based on the input data. "data" can contain the values for "non_default_ids",
    * "checked_default" and if all single item checkboxes should be checked.
-   *
-   * @private
-   * @param form
-   * @param data
+   * @param {HTMLElement} form   The form element.
+   * @param {object}      [data] An object containing state data to apply (default = {}).
    */
   function _writeToForm(form, data = {}) {
     if (data.nonDefaultIds !== undefined) {
@@ -108,9 +152,7 @@ VuFind.register("listItemSelection", function ListItemSelection() {
   /**
    * Updates the state of the hidden input "checked_default" and "non_default_ids" and the checkboxes
    * "checkbox-select-all" and "checkbox-select-all-global" to match the current selection.
-   *
-   * @private
-   * @param form
+   * @param {HTMLElement} form The form element.
    */
   function _updateSelectionState(form) {
     let nonDefaultIdsInput = form.querySelector('.non_default_ids');
@@ -143,6 +185,10 @@ VuFind.register("listItemSelection", function ListItemSelection() {
       .forEach((button) => _updateSelectionCount(button, getAllSelected(form).length));
   }
 
+  /**
+   * Handle the 'change' event for the 'select all on page' checkbox.
+   * @param {HTMLElement} checkbox The 'select all on page' checkbox.
+   */
   function _selectAllCheckbox(checkbox) {
     let form = checkbox.form ? checkbox.form : checkbox.closest('form');
     if (form == null) {
@@ -157,6 +203,10 @@ VuFind.register("listItemSelection", function ListItemSelection() {
     _writeState(form);
   }
 
+  /**
+   * Handle the 'change' event for the 'select all global' checkbox.
+   * @param {HTMLElement} checkbox The 'select all global' checkbox.
+   */
   function _selectAllGlobalCheckbox(checkbox) {
     let form = checkbox.form ? checkbox.form : checkbox.closest('form');
     if (form == null) {
@@ -173,6 +223,10 @@ VuFind.register("listItemSelection", function ListItemSelection() {
     _writeState(form);
   }
 
+  /**
+   * Clear all selected items, both on the current page and globally.
+   * @param {HTMLElement} button The 'clear selection' button.
+   */
   function _clearAllSelected(button) {
     let form = button.form ? button.form : button.closest('form');
     if (form == null) {
@@ -187,6 +241,9 @@ VuFind.register("listItemSelection", function ListItemSelection() {
     _writeState(form);
   }
 
+  /**
+   * Set up event listeners for all selection controls on the page.
+   */
   function _setupControls() {
     document.querySelectorAll('.checkbox-select-all').forEach((checkbox) => {
       checkbox.addEventListener('change', () => _selectAllCheckbox(checkbox));
@@ -209,6 +266,10 @@ VuFind.register("listItemSelection", function ListItemSelection() {
     });
   }
 
+  /**
+   * Initialize a form for multi-page selection, loading state from session storage.
+   * @param {HTMLElement} form The form to initialize.
+   */
   function _setupMultiPageSelectionForm(form) {
     let nonDefaultIdsInput = document.createElement('input');
     nonDefaultIdsInput.setAttribute('class', 'non_default_ids hidden');
@@ -243,6 +304,9 @@ VuFind.register("listItemSelection", function ListItemSelection() {
     window.addEventListener('beforeunload', () => _writeState(form));
   }
 
+  /**
+   * Initialize the list item selection module.
+   */
   function init() {
     document.querySelectorAll('.select-all-global').forEach((checkbox) => {
       checkbox.classList.remove("hidden");

@@ -31,11 +31,15 @@ namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\Request;
 use Laminas\Session\SessionManager;
+use Laminas\View\Renderer\RendererInterface;
 use LmcRbacMvc\Identity\IdentityInterface;
 use VuFind\Config\Config;
 use VuFind\Cookie\CookieManager;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\AuditEventServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
+use VuFind\Db\Type\AuditEventSubtype;
+use VuFind\Db\Type\AuditEventType;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\ILS\Connection;
 use VuFind\Validator\CsrfInterface;
@@ -101,6 +105,13 @@ class Manager implements
     protected ?ILSAuthenticator $ilsAuthenticator = null;
 
     /**
+     * Default session initiator target
+     *
+     * @var ?string
+     */
+    protected ?string $defaultSessionInitiatorTarget = null;
+
+    /**
      * Constructor
      *
      * @param Config                          $config            VuFind configuration
@@ -112,6 +123,8 @@ class Manager implements
      * @param CsrfInterface                   $csrf              CSRF validator
      * @param LoginTokenManager               $loginTokenManager Login Token manager
      * @param Connection                      $ils               ILS connection
+     * @param RendererInterface               $viewRenderer      View renderer
+     * @param AuditEventServiceInterface      $auditEventService Event database service
      */
     public function __construct(
         protected Config $config,
@@ -122,7 +135,9 @@ class Manager implements
         protected CookieManager $cookieManager,
         protected CsrfInterface $csrf,
         protected LoginTokenManager $loginTokenManager,
-        protected Connection $ils
+        protected Connection $ils,
+        protected RendererInterface $viewRenderer,
+        protected AuditEventServiceInterface $auditEventService
     ) {
         // Initialize active authentication setting (defaulting to Database
         // if no setting passed in):
@@ -202,15 +217,37 @@ class Manager implements
     /**
      * Does the current configuration support password recovery?
      *
-     * @param ?string $authMethod optional; check this auth method rather than
-     *  the one in config file
+     * @param ?string $authMethod optional; check this auth method rather than the one in config file
+     * @param ?string $target     Login target (only for MultiILS)
      *
      * @return bool
      */
-    public function supportsRecovery(?string $authMethod = null): bool
+    public function supportsRecovery(?string $authMethod = null, ?string $target = null): bool
     {
         return ($this->config->Authentication->recover_password ?? false)
-            && $this->getAuth($authMethod)->supportsPasswordRecovery();
+            && $this->getAuth($authMethod)->supportsPasswordRecovery($target);
+    }
+
+    /**
+     * Get password recovery data (such as a user id or recovery token) based on form data submitted by the user.
+     *
+     * @param array $params Request params (form data)
+     *
+     * @return ?array Null if user not found, or associative array with following keys:
+     *   string email       User's email address
+     *   string username    Username (optional, for display)
+     *   string auth_method Authentication method
+     *   string target      Authentication target for methods that support target selection (e.g. MultiILS)
+     *   int    timestamp   Request timestamp (unix time)
+     *   array  details     Array of user details required for resetPassword request
+     */
+    public function getPasswordRecoveryData(array $params): ?array
+    {
+        if ($result = $this->getAuth()->getPasswordRecoveryData($params)) {
+            $result['auth_method'] = $this->getAuthMethod();
+            $result['timestamp'] = time();
+        }
+        return $result;
     }
 
     /**
@@ -300,31 +337,42 @@ class Manager implements
     /**
      * Password policy for a new password (e.g. minLength, maxLength)
      *
-     * @param ?string $authMethod optional; check this auth method rather than
-     * the one in config file
+     * @param ?string $authMethod optional; check this auth method rather than the one in config file
+     * @param ?string $target     Authentication target for methods that support target selection
      *
      * @return array
      */
-    public function getPasswordPolicy(?string $authMethod = null): array
+    public function getPasswordPolicy(?string $authMethod = null, ?string $target = null): array
     {
         return $this->processPolicyConfig(
-            $this->getAuth($authMethod)->getPasswordPolicy()
+            $this->getAuth($authMethod)->getPasswordPolicy($target)
         );
+    }
+
+    /**
+     * Check if session initiator is used.
+     *
+     * @return bool
+     */
+    public function hasSessionInitiator(): bool
+    {
+        return $this->getAuth()->hasSessionInitiator();
     }
 
     /**
      * Get the URL to establish a session (needed when the internal VuFind login
      * form is inadequate). Returns false when no session initiator is needed.
      *
-     * @param string $target Full URL where external authentication method should
+     * @param ?string $target Full URL where external authentication method should
      * send user after login (some drivers may override this).
      *
-     * @return bool|string
+     * @return ?string
      */
-    public function getSessionInitiator(string $target): bool|string
+    public function getSessionInitiator(?string $target = null): ?string
     {
+        $target ??= $this->getDefaultSessionInitiatorTarget();
         try {
-            return $this->getAuth()->getSessionInitiator($target);
+            $sessionInitiator = $this->getAuth()->getSessionInitiator($target);
         } catch (InvalidArgumentException $e) {
             // If the authentication is in an illegal state but there is an
             // active user session, we should clear everything out so the user
@@ -336,9 +384,24 @@ class Manager implements
             if (!$this->getIdentity()) {
                 throw $e;
             }
-            $this->clearLoginState();
-            return $this->getAuth()->getSessionInitiator($target);
+            $sessionInitiator = $this->getAuth()->getSessionInitiator($target);
         }
+        return $sessionInitiator;
+    }
+
+    /**
+     * Get default session initiator target.
+     *
+     * @return string
+     */
+    protected function getDefaultSessionInitiatorTarget(): string
+    {
+        if ($this->defaultSessionInitiatorTarget === null) {
+            $serverHelper = $this->viewRenderer->plugin('serverurl');
+            $urlHelper = $this->viewRenderer->plugin('url');
+            $this->defaultSessionInitiatorTarget = $serverHelper($urlHelper('myresearch-home'));
+        }
+        return $this->defaultSessionInitiatorTarget;
     }
 
     /**
@@ -515,6 +578,13 @@ class Manager implements
      */
     public function clearLoginState(bool $destroy = true): void
     {
+        $this->auditEventService->addEvent(
+            AuditEventType::User,
+            AuditEventSubtype::Logout,
+            $this->userSession->getUserFromSession(),
+            $destroy ? 'logout' : 'session expired',
+        );
+
         // Reset authentication state
         $this->getAuth()->clearLoginState();
 
@@ -574,6 +644,8 @@ class Manager implements
                     $this->clearLoginState();
                 }
             } elseif ($user = $this->loginTokenManager->tokenLogin($this->sessionManager->getId())) {
+                $this->auditEventService->addEvent(AuditEventType::User, AuditEventSubtype::TokenLogin, $user);
+
                 if ($this->getAuth() instanceof ChoiceAuth) {
                     $this->getAuth()->setStrategy($user->getAuthMethod());
                 }
@@ -674,6 +746,12 @@ class Manager implements
         $user = $this->getAuth()->create($request);
         $this->updateUser($user, $this->getSelectedAuthMethod());
         $this->updateSession($user);
+        $this->auditEventService->addEvent(
+            AuditEventType::User,
+            AuditEventSubtype::Create,
+            $user,
+            data: $request->getPost()->toArray()
+        );
         return $user;
     }
 
@@ -689,7 +767,27 @@ class Manager implements
     {
         $user = $this->getAuth()->updatePassword($request);
         $this->updateSession($user);
+        $this->auditEventService->addEvent(
+            AuditEventType::User,
+            AuditEventSubtype::Update,
+            $user,
+            data: ['password' => null]
+        );
         return $user;
+    }
+
+    /**
+     * Reset a user's password.
+     *
+     * @param array $recoveryData Account recovery data from getPasswordRecoveryData.
+     * @param array $params       User-entered form parameters.
+     *
+     * @throws AuthException
+     * @return void
+     */
+    public function resetPassword(array $recoveryData, array $params)
+    {
+        $this->getAuth()->resetPassword($recoveryData, $params);
     }
 
     /**
@@ -717,6 +815,15 @@ class Manager implements
         }
         $this->userService->persistEntity($user);
         $this->updateSession($user);
+        $this->auditEventService->addEvent(
+            AuditEventType::User,
+            AuditEventSubType::Update,
+            $user,
+            data: [
+                'email' => $email,
+                'pending' => $user->getPendingEmail() ? true : false,
+            ]
+        );
     }
 
     /**
@@ -733,6 +840,12 @@ class Manager implements
         $time = str_pad(substr((string)time(), 0, 10), 10, '0', STR_PAD_LEFT);
         $user->setVerifyHash($hash . $time);
         $this->userService->persistEntity($user);
+        $this->auditEventService->addEvent(
+            AuditEventType::User,
+            AuditEventSubtype::Update,
+            $user,
+            data: ['hash' => $user->getVerifyHash()]
+        );
     }
 
     /**
@@ -765,7 +878,7 @@ class Manager implements
 
             // Validate CSRF for form-based authentication methods:
             if (
-                !$this->getAuth()->getSessionInitiator('')
+                !$this->getAuth()->hasSessionInitiator()
                 && $this->getAuth()->needsCsrfCheck($request)
             ) {
                 if (!$this->csrf->isValid($request->getPost()->get('csrf'))) {
@@ -782,6 +895,16 @@ class Manager implements
             try {
                 $user = $this->getAuth()->authenticate($request);
             } catch (AuthException $e) {
+                $this->auditEventService->addEvent(
+                    AuditEventType::User,
+                    AuditEventSubtype::LoginFailure,
+                    message: $e->getMessage(),
+                    data: [
+                        'main_method' => $mainAuthMethod,
+                        'delegate_method' => $delegate,
+                        'request' => $request->getPost()->toArray(),
+                    ]
+                );
                 // Pass authentication exceptions through unmodified
                 throw $e;
             } catch (\VuFind\Exception\PasswordSecurity $e) {
@@ -793,6 +916,17 @@ class Manager implements
                 $this->logError((string)$e);
                 throw new AuthException('authentication_error_technical', 0, $e);
             }
+
+            $this->auditEventService->addEvent(
+                AuditEventType::User,
+                AuditEventSubtype::Login,
+                $user,
+                data: [
+                    'main_method' => $mainAuthMethod,
+                    'delegate_method' => $delegate,
+                    'request' => $request->getPost()->toArray(),
+                ]
+            );
 
             // Attempt catalog login so that any bad credentials are cleared before further processing
             // (avoids e.g. multiple login attempts by account AJAX checks).
@@ -816,6 +950,19 @@ class Manager implements
                         // prompted again; perhaps their password has changed in the
                         // system!
                         $user->setCatUsername(null)->setRawCatPassword(null)->setCatPassEnc(null);
+                        $this->auditEventService->addEvent(
+                            AuditEventType::User,
+                            AuditEventSubtype::ILSLoginFailure,
+                            $user,
+                            data: ['cat_username' => $catUsername]
+                        );
+                    } else {
+                        $this->auditEventService->addEvent(
+                            AuditEventType::User,
+                            AuditEventSubtype::ILSLogin,
+                            $user,
+                            data: ['cat_username' => $catUsername]
+                        );
                     }
                 } catch (\Exception $e) {
                     // Ignore exceptions here so that the login can continue
@@ -832,6 +979,11 @@ class Manager implements
                     $this->logError((string)$e);
                     throw new AuthException('authentication_error_technical', 0, $e);
                 }
+                $this->auditEventService->addEvent(
+                    AuditEventType::User,
+                    AuditEventSubtype::RememberLogin,
+                    $user
+                );
             }
 
             // Store the user in the session:
@@ -954,6 +1106,12 @@ class Manager implements
             throw new \Exception('Connecting of library cards is not supported');
         }
         $auth->connectLibraryCard($request, $user);
+        $this->auditEventService->addEvent(
+            AuditEventType::User,
+            AuditEventSubtype::ConnectCard,
+            $user,
+            data: ['request' => $request->getPost()->toArray()]
+        );
     }
 
     /**
@@ -971,6 +1129,15 @@ class Manager implements
         }
         $user->setLastLogin(new \DateTime());
         $this->userService->persistEntity($user);
+        $this->auditEventService->addEvent(
+            AuditEventType::User,
+            AuditEventSubtype::Update,
+            $user,
+            data: [
+                'auth_method' => $user->getAuthMethod(),
+                'last_login' => $user->getLastLogin()?->format(\DateTimeInterface::ATOM),
+            ]
+        );
     }
 
     /**

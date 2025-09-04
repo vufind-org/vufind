@@ -11,6 +11,7 @@
     "bootstrap": "5.3.3",
     "chart.js": "^4.4.0",
     "jquery": "^3.7.1",
+    "libphonenumber-js": "^1.12.10",
     "nouislider": "^15.8.1",
     "simple-keyboard": "^3.6.0",
     "simple-keyboard-layouts": "^3.0.0",

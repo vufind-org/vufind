@@ -65,11 +65,11 @@ class WebCrawlCommandFactory implements FactoryInterface
         $requestedName,
         ?array $options = null
     ) {
-        $configLoader = $container->get(\VuFind\Config\PluginManager::class);
+        $configManager = $container->get(\VuFind\Config\ConfigManager::class);
         return new $requestedName(
             new \VuFind\XSLT\Importer($container),
             $container->get(\VuFind\Solr\Writer::class),
-            $configLoader->get('webcrawl'),
+            $configManager->getConfigObject('webcrawl'),
             ...($options ?? [])
         );
     }

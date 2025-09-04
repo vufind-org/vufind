@@ -38,7 +38,6 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\Config\PluginManager as ConfigPluginManager;
 
 /**
  * CleanHtml helper factory.
@@ -97,7 +96,7 @@ class CleanHtmlFactory implements FactoryInterface
         }
 
         // Modify default context settings per configuration
-        $config = $container->get(ConfigPluginManager::class)->get('config')->toArray();
+        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config');
         $this->allowedElements = ($config['HTML_Rendering_Contexts']['allowed_elements'] ?? [])
             + $this->allowedElements;
 

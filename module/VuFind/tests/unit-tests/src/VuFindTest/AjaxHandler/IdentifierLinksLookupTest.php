@@ -48,7 +48,7 @@ use function func_get_args;
  */
 class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Set up configuration for a test.
@@ -60,8 +60,8 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
     protected function setupConfig($config)
     {
         $this->container->set(
-            \VuFind\Config\PluginManager::class,
-            $this->getMockConfigPluginManager(compact('config'))
+            \VuFind\Config\ConfigManager::class,
+            $this->getMockConfigManager(compact('config'))
         );
     }
 

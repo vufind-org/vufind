@@ -108,9 +108,10 @@ class AbstractSearch extends AbstractBase
 
         // Handle request to edit existing saved search:
         $view->saved = false;
-        // 'edit' query parameter is added for legacy template support
-        $searchId = $this->params()->fromQuery('sid') ?? $this->params()->fromQuery('edit');
-        if ($searchId !== null) {
+        // 'edit' query parameter is added for legacy template support; we use intval to ensure that
+        // the correct type is passed to restoreAdvancedSearch.
+        $searchId = intval($this->params()->fromQuery('sid') ?? $this->params()->fromQuery('edit') ?? 0);
+        if ($searchId > 0) {
             $view->saved = $this->restoreAdvancedSearch($searchId);
         }
 
@@ -669,10 +670,8 @@ class AbstractSearch extends AbstractBase
      */
     protected function getRangeFieldList($config, $section, $filter)
     {
-        $config = $this->getService(\VuFind\Config\PluginManager::class)
-            ->get($config);
-        $fields = isset($config->SpecialFacets->$section)
-            ? $config->SpecialFacets->$section->toArray() : [];
+        $config = $this->getService(\VuFind\Config\ConfigManager::class)->getConfigArray($config);
+        $fields = $config['SpecialFacets'][$section] ?? [];
 
         if (!empty($filter)) {
             $fields = array_intersect($fields, $filter);
@@ -841,8 +840,7 @@ class AbstractSearch extends AbstractBase
         $section = $params[1] ?? 'CheckboxFacets';
 
         // Load config file:
-        $config = $this->getService(\VuFind\Config\PluginManager::class)
-            ->get($config);
+        $config = $this->getService(\VuFind\Config\ConfigManager::class)->getConfigArray($config);
 
         // Process checkbox settings in config:
         $flipCheckboxes = false;
@@ -850,8 +848,7 @@ class AbstractSearch extends AbstractBase
             $section = substr($section, 1);
             $flipCheckboxes = true;
         }
-        $checkboxFacets = ($section && isset($config->$section))
-            ? $config->$section->toArray() : [];
+        $checkboxFacets = ($section && isset($config[$section])) ? $config[$section] : [];
         if ($flipCheckboxes) {
             $checkboxFacets = array_flip($checkboxFacets);
         }
@@ -912,8 +909,8 @@ class AbstractSearch extends AbstractBase
                 ? 'count'
                 : current(array_keys($facetSortOptions));
         }
-        $config = $this->getService(\VuFind\Config\PluginManager::class)
-            ->get($options->getFacetsIni());
+        $config = $this->getService(\VuFind\Config\ConfigManager::class)
+            ->getConfigObject($options->getFacetsIni());
         $limit = $config->Results_Settings->lightboxLimit ?? 50;
         $limit = $this->params()->fromQuery('facetlimit', $limit);
         if (!empty($contains)) {

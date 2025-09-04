@@ -1,0 +1,197 @@
+{
+    "ResultId": 1,
+    "Header": {
+      "DbId": "bsu",
+      "DbLabel": "Business Source Ultimate",
+      "An": "1234567890",
+      "PubType": "Academic Journal",
+      "PubTypeId": "academicJournal",
+      "PreciseRelevancyScore": "0"
+    },
+    "PLink": "https://search.ebscohost.com/login.aspx?direct=true&site=eds-live&db=bsu&AN=1234567890",
+    "FullText": {
+      "Links": [
+        {
+          "Type": "pdflink",
+          "Url": "https://content.ebscohost.com/cds/retrieve?content=fake_content_token"
+        }
+      ],
+      "Text": {
+        "Availability": "1",
+        "Value": "&lt;anid&gt;AN01234567890;[levo]01mar.25;2024Dec23.00:44;v2.2.500&lt;/anid&gt;\n  &lt;title id=&quot;AN01234567890-1&quot;&gt;Test Title: Test Subitle&nbsp;&lt;/title&gt;\n  &lt;p&gt;ABSTRACT would have been here&lt;/p&gt;\n  &lt;p&gt;Keywords: Keyword Removed&lt;/p&gt;\n  &lt;hd id=&quot;AN01234567890-2&quot;&gt;1. Introduction&lt;/hd&gt;\n  &lt;p&gt;Very cool scientific findings would have been here&lt;/p&gt;\n  &lt;p&gt;Graph&lt;/p&gt;\n  &lt;p&gt;\n    &lt;ephtml&gt; &amp;lt;math display=&quot;block&quot; xmlns=&quot;http://www.w3.org/1998/Math/MathML&quot;&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mtext mathvariant=&quot;italic&quot;&amp;gt;TPP&amp;lt;/mtext&amp;gt;&amp;lt;mo&amp;gt;:&amp;lt;/mo&amp;gt;&amp;lt;mtext mathvariant=&quot;normal&quot;&amp;gt;Max&amp;lt;/mtext&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mover&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mover accent=&quot;true&quot;&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;munder&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;munder accentunder=&quot;true&quot;&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;munder&amp;gt;&amp;lt;mo&amp;gt;&amp;amp;#8721;&amp;lt;/mo&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mi&amp;gt;t&amp;lt;/mi&amp;gt;&amp;lt;mo&amp;gt;&amp;amp;#8712;&amp;lt;/mo&amp;gt;&amp;lt;mi mathvariant=&quot;script&quot;&amp;gt;T&amp;lt;/mi&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;/munder&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;mi&amp;gt;p&amp;lt;/mi&amp;gt;&amp;lt;mtext /&amp;gt;&amp;lt;msub&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mi&amp;gt;F&amp;lt;/mi&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;mi&amp;gt;t&amp;lt;/mi&amp;gt;&amp;lt;/msub&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;mo stretchy=&quot;true&quot;&amp;gt;&amp;amp;#9183;&amp;lt;/mo&amp;gt;&amp;lt;/munder&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mover&amp;gt;&amp;lt;mrow /&amp;gt;&amp;lt;mtable&amp;gt;&amp;lt;mtr&amp;gt;&amp;lt;mtd&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mtext&amp;gt;The total revenue&amp;lt;/mtext&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;/mtd&amp;gt;&amp;lt;/mtr&amp;gt;&amp;lt;mtr&amp;gt;&amp;lt;mtd&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mtext&amp;gt;yielded by selling the&amp;lt;/mtext&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;/mtd&amp;gt;&amp;lt;/mtr&amp;gt;&amp;lt;mtr&amp;gt;&amp;lt;mtd&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mtext&amp;gt;ROM to the facility&amp;lt;/mtext&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;/mtd&amp;gt;&amp;lt;/mtr&amp;gt;&amp;lt;/mtable&amp;gt;&amp;lt;/mover&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;/munder&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;mo&amp;gt;&amp;amp;#8722;&amp;lt;/mo&amp;gt;&amp;lt;mtext /&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;munder&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;munder accentunder=&quot;true&quot;&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;munder&amp;gt;&amp;lt;mo&amp;gt;&amp;amp;#8721;&amp;lt;/mo&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mi&amp;gt;t&amp;lt;/mi&amp;gt;&amp;lt;mo&amp;gt;&amp;amp;#8712;&amp;lt;/mo&amp;gt;&amp;lt;mi mathvariant=&quot;script&quot;&amp;gt;T&amp;lt;/mi&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;/munder&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;mi&amp;gt;f&amp;lt;/mi&amp;gt;&amp;lt;mtext /&amp;gt;&amp;lt;mo stretchy=&quot;false&quot;&amp;gt;(&amp;lt;/mo&amp;gt;&amp;lt;munderover&amp;gt;&amp;lt;mo&amp;gt;&amp;amp;#8721;&amp;lt;/mo&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mi&amp;gt;j&amp;lt;/mi&amp;gt;&amp;lt;mo&amp;gt;=&amp;lt;/mo&amp;gt;&amp;lt;mn&amp;gt;1&amp;lt;/mn&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;mi&amp;gt;t&amp;lt;/mi&amp;gt;&amp;lt;/munderover&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;msub&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mi&amp;gt;Y&amp;lt;/mi&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;mi&amp;gt;j&amp;lt;/mi&amp;gt;&amp;lt;/msub&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;mo&amp;gt;&amp;amp;#8722;&amp;lt;/mo&amp;gt;&amp;lt;munderover&amp;gt;&amp;lt;mo&amp;gt;&amp;amp;#8721;&amp;lt;/mo&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mi&amp;gt;j&amp;lt;/mi&amp;gt;&amp;lt;mo&amp;gt;=&amp;lt;/mo&amp;gt;&amp;lt;mn&amp;gt;1&amp;lt;/mn&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;mi&amp;gt;t&amp;lt;/mi&amp;gt;&amp;lt;/munderover&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;msub&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mi&amp;gt;X&amp;lt;/mi&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;mi&amp;gt;j&amp;lt;/mi&amp;gt;&amp;lt;/msub&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;mo stretchy=&quot;false&quot;&amp;gt;)&amp;lt;/mo&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;mo stretchy=&quot;true&quot;&amp;gt;&amp;amp;#9183;&amp;lt;/mo&amp;gt;&amp;lt;/munder&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mover&amp;gt;&amp;lt;mrow /&amp;gt;&amp;lt;mtable&amp;gt;&amp;lt;mtr&amp;gt;&amp;lt;mtd&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mtext&amp;gt;The total cost of the miner&amp;lt;/mtext&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;/mtd&amp;gt;&amp;lt;/mtr&amp;gt;&amp;lt;mtr&amp;gt;&amp;lt;mtd&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mtext&amp;gt;for extracting the ROM and&amp;lt;/mtext&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;/mtd&amp;gt;&amp;lt;/mtr&amp;gt;&amp;lt;mtr&amp;gt;&amp;lt;mtd&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mtext&amp;gt;transporting it to the facility&amp;lt;/mtext&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;/mtd&amp;gt;&amp;lt;/mtr&amp;gt;&amp;lt;/mtable&amp;gt;&amp;lt;/mover&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;/munder&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;mtext /&amp;gt;&amp;lt;mo&amp;gt;&amp;amp;#8722;&amp;lt;/mo&amp;gt;&amp;lt;mtext /&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;munder&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;munder accentunder=&quot;true&quot;&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;munder&amp;gt;&amp;lt;mo&amp;gt;&amp;amp;#8721;&amp;lt;/mo&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mi&amp;gt;i&amp;lt;/mi&amp;gt;&amp;lt;mo&amp;gt;&amp;amp;#8712;&amp;lt;/mo&amp;gt;&amp;lt;mi mathvariant=&quot;script&quot;&amp;gt;P&amp;lt;/mi&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;/munder&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;munder&amp;gt;&amp;lt;mo&amp;gt;&amp;amp;#8721;&amp;lt;/mo&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mi&amp;gt;t&amp;lt;/mi&amp;gt;&amp;lt;mo&amp;gt;&amp;amp;#8712;&amp;lt;/mo&amp;gt;&amp;lt;mi mathvariant=&quot;script&quot;&amp;gt;T&amp;lt;/mi&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;/munder&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;mi&amp;gt;p&amp;lt;/mi&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;mtext /&amp;gt;&amp;lt;msub&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mi&amp;gt;A&amp;lt;/mi&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mtext mathvariant=&quot;italic&quot;&amp;gt;it&amp;lt;/mtext&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;/msub&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;mo stretchy=&quot;true&quot;&amp;gt;&amp;amp;#9183;&amp;lt;/mo&amp;gt;&amp;lt;/munder&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mover&amp;gt;&amp;lt;mrow /&amp;gt;&amp;lt;mtable&amp;gt;&amp;lt;mtr&amp;gt;&amp;lt;mtd&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mtext&amp;gt;The total cost &amp;lt;/mtext&amp;gt;&amp;lt;mi mathvariant=&quot;normal&quot;&amp;gt;(&amp;lt;/mi&amp;gt;&amp;lt;mtext&amp;gt;penalty&amp;lt;/mtext&amp;gt;&amp;lt;mi mathvariant=&quot;normal&quot;&amp;gt;)&amp;lt;/mi&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;/mtd&amp;gt;&amp;lt;/mtr&amp;gt;&amp;lt;mtr&amp;gt;&amp;lt;mtd&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mtext&amp;gt;of the miner for reducing&amp;lt;/mtext&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;/mtd&amp;gt;&amp;lt;/mtr&amp;gt;&amp;lt;mtr&amp;gt;&amp;lt;mtd&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mtext&amp;gt;the ROM sold to the facility&amp;lt;/mtext&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;/mtd&amp;gt;&amp;lt;/mtr&amp;gt;&amp;lt;/mtable&amp;gt;&amp;lt;/mover&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;/munder&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;mo stretchy=&quot;true&quot;&amp;gt;&amp;amp;#9182;&amp;lt;/mo&amp;gt;&amp;lt;/mover&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;mrow&amp;gt;&amp;lt;mtext&amp;gt;The net profit of the miner obtained from the ROM sold to the facility&amp;lt;/mtext&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;/mover&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;/mrow&amp;gt;&amp;lt;/math&amp;gt; &lt;/ephtml&gt; (&lt;reflink idref=&quot;bib1&quot; id=&quot;ref45&quot;&gt;1&lt;/reflink&gt;)&lt;/p&gt;\n  &lt;p&gt;Table 1. &lt;/p&gt;\n  &lt;p&gt;\n    &lt;ephtml&gt; &amp;lt;table&amp;gt;&amp;lt;thead&amp;gt;&amp;lt;tr&amp;gt;&amp;lt;td&amp;gt;td1&amp;lt;/td&amp;gt;&amp;lt;td&amp;gt;td2&amp;lt;td&amp;gt;td3&amp;lt;/tr&amp;gt;&amp;lt;/thead&amp;gt;&amp;lt;tbody valign=&amp;quot;top&amp;quot;&amp;gt;&amp;lt;tr&amp;gt;&amp;lt;td&amp;gt;01&amp;lt;/td&amp;gt;&amp;lt;td&amp;gt;01&amp;lt;/td&amp;gt;&amp;lt;td&amp;gt;01&amp;lt;/td&amp;gt;&amp;lt;/tr&amp;gt;&amp;lt;tr&amp;gt;&amp;lt;td&amp;gt;02&amp;lt;/td&amp;gt;&amp;lt;td&amp;gt;02&amp;lt;/td&amp;gt;&amp;lt;td&amp;gt;02&amp;lt;/td&amp;gt;&amp;lt;/tr&amp;gt;&amp;lt;/tbody&amp;gt;&amp;lt;/table&amp;gt; &lt;/ephtml&gt;\n  &lt;/p&gt;"
+      }
+    },
+    "Items": [
+      {
+        "Name": "Title",
+        "Label": "Title",
+        "Group": "Ti",
+        "Data": "Test Title: Test Subtitle."
+      },
+      {
+        "Name": "Author",
+        "Label": "Authors",
+        "Group": "Au",
+        "Data": "&lt;searchLink fieldCode=&quot;AR&quot; term=&quot;%22Last1%2C+First1%22&quot;&gt;Last1, First1&lt;/searchLink&gt;&lt;relatesTo&gt;1&lt;/relatesTo&gt; (AUTHOR)&lt;br /&gt;&lt;searchLink fieldCode=&quot;AR&quot; term=&quot;%22Last2%2C+First2;lay%22&quot;&gt;Last2, First2&lt;/searchLink&gt;"
+      },
+      {
+        "Name": "TitleSource",
+        "Label": "Source",
+        "Group": "Src",
+        "Data": "&lt;searchLink fieldCode=&quot;JN&quot; term=&quot;%22Journal+of+Testing+Science%22&quot;&gt;Journal of Testing Science&lt;/searchLink&gt;. Mar2025, Vol. 10 Issue 1, p1-15. 14p."
+      },
+      {
+        "Name": "TypeDocument",
+        "Label": "Document Type",
+        "Group": "TypDoc",
+        "Data": "Article"
+      },
+      {
+        "Name": "Subject",
+        "Label": "Subject Terms",
+        "Group": "Su",
+        "Data": "*&lt;searchLink fieldCode=&quot;DE&quot; term=&quot;%22subject_removed%22&quot;&gt;Subject Removed&lt;/searchLink&gt;"
+      },
+      {
+        "Name": "Keyword",
+        "Label": "Author-Supplied Keywords",
+        "Group": "Kw",
+        "Data": "&lt;searchLink fieldCode=&quot;DE&quot; term=&quot;%2keyword_removed%22&quot;&gt;mixed-integer programming&lt;/searchLink&gt;&lt;br /&gt;"
+      },
+      {
+        "Name": "Abstract",
+        "Label": "Abstract",
+        "Group": "Ab",
+        "Data": "This abstract was removed to make the test fixture easier to read"
+      },
+      {
+        "Name": "AbstractSuppliedCopyright",
+        "Label": "",
+        "Group": "Ab",
+        "Data": "ABSTRACT WAS REMOVED"
+      },
+      {
+        "Name": "AffiliationAuthor",
+        "Label": "Author Affiliations",
+        "Group": "AuInfo",
+        "Data": "AFFILIATION WAS REMOVED"
+      },
+      {
+        "Name": "FullTextWordCount",
+        "Label": "Full Text Word Count",
+        "Group": "FTInfo",
+        "Data": "11521"
+      },
+      {
+        "Name": "ISSN",
+        "Label": "ISSN",
+        "Group": "ISSN",
+        "Data": "1234-5678"
+      },
+      {
+        "Name": "DOI",
+        "Label": "DOI",
+        "Group": "ID",
+        "Data": "10.1234/56789.1011121314"
+      },
+      {
+        "Name": "AN",
+        "Label": "Accession Number",
+        "Group": "ID",
+        "Data": "181729121"
+      }
+    ],
+    "RecordInfo": {
+      "BibRecord": {
+        "BibEntity": {
+          "Identifiers": [
+            {
+              "Type": "doi",
+              "Value": "10.1234/56789.1011121314"
+            }
+          ],
+          "Languages": [
+            {
+              "Code": "eng",
+              "Text": "English"
+            }
+          ],
+          "PhysicalDescription": {
+            "Pagination": {
+              "PageCount": "14",
+              "StartPage": "322"
+            }
+          },
+          "Subjects": [
+            {
+              "SubjectFull": "SUBJECT REMOVED",
+              "Type": "general"
+            }
+          ],
+          "Titles": [
+            {
+              "TitleFull": "Test Title: Test Subtitle",
+              "Type": "main"
+            }
+          ]
+        },
+        "BibRelationships": {
+          "HasContributorRelationships": [
+            {
+              "PersonEntity": {
+                "Name": {
+                  "NameFull": "Last1, First1"
+                }
+              }
+            },
+            {
+              "PersonEntity": {
+                "Name": {
+                  "NameFull": "Last2, First2"
+                }
+              }
+            }
+          ],
+          "IsPartOfRelationships": [
+            {
+              "BibEntity": {
+                "Dates": [
+                  {
+                    "D": "01",
+                    "M": "03",
+                    "Text": "Mar2025",
+                    "Type": "published",
+                    "Y": "2025"
+                  }
+                ],
+                "Identifiers": [
+                  {
+                    "Type": "issn-print",
+                    "Value": "12345678"
+                  }
+                ],
+                "Numbering": [
+                  {
+                    "Type": "volume",
+                    "Value": "10"
+                  },
+                  {
+                    "Type": "issue",
+                    "Value": "1"
+                  }
+                ],
+                "Titles": [
+                  {
+                    "TitleFull": "Journal of Testing Science",
+                    "Type": "main"
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    "IllustrationInfo": {
+    }
+}

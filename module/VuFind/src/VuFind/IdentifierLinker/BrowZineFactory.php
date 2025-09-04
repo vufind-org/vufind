@@ -60,6 +60,13 @@ class BrowZineFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
     protected array $defaultIssnServices;
 
     /**
+     * Default labels and icons for 'bestIntegratorLink' service to return if no configuration is provided.
+     *
+     * @var array
+     */
+    protected array $defaultBestIntegratorLinks;
+
+    /**
      * Constructor
      */
     public function __construct()
@@ -72,6 +79,7 @@ class BrowZineFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
         $this->defaultIssnServices = [
             'browzineWebLink' => "Browse Available Issues|browzine-issue|{$baseIconUrl}browzine-open-book-icon.svg",
         ];
+        $this->defaultBestIntegratorLinks = $this->defaultDoiServices;
     }
 
     /**
@@ -99,7 +107,7 @@ class BrowZineFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
             throw new \Exception('Unexpected options passed to factory.');
         }
         $search = $container->get(\VuFindSearch\Service::class);
-        $fullConfig = $container->get(\VuFind\Config\PluginManager::class)->get('BrowZine')->toArray();
+        $fullConfig = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('BrowZine');
         // DOI config section is supported as a fallback for legacy back-compatibility:
         $config = $fullConfig['IdentifierLinks'] ?? $fullConfig['DOI'] ?? [];
 
@@ -107,7 +115,8 @@ class BrowZineFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
             $search,
             $config,
             $fullConfig['DOIServices'] ?? $this->defaultDoiServices,
-            $fullConfig['ISSNServices'] ?? $this->defaultIssnServices
+            $fullConfig['ISSNServices'] ?? $this->defaultIssnServices,
+            $fullConfig['BestIntegratorLinks'] ?? $this->defaultBestIntegratorLinks
         );
     }
 }

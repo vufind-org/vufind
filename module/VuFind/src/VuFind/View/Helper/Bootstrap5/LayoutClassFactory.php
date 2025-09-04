@@ -68,11 +68,10 @@ class LayoutClassFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $sidebarOnLeft = $config->Site->sidebarOnLeft ?? false;
-        $mirror = $config->Site->mirrorSidebarInRTL ?? true;
-        $offcanvas = $config->Site->offcanvas ?? false;
+        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config')['Site'];
+        $sidebarOnLeft = $config['sidebarOnLeft'] ?? false;
+        $mirror = $config['mirrorSidebarInRTL'] ?? true;
+        $offcanvas = $config['offcanvas'] ?? false;
         // The right-to-left setting is injected into the layout by the Bootstrapper;
         // pull it back out here to avoid duplicate effort, then use it to apply
         // the mirror setting appropriately.

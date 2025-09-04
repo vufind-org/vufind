@@ -47,7 +47,7 @@ use function array_slice;
 class ImporterTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
-    use \VuFindTest\Feature\PathResolverTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Location of fixture files.
@@ -72,7 +72,7 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
     {
         $this->csvFixtureDir = $this->getFixtureDir() . 'csv/';
         $this->container = new MockContainer($this);
-        $this->addPathResolverToContainer($this->container);
+        $this->addConfigRelatedServicesToContainer($this->container);
     }
 
     /**

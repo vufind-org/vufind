@@ -6,7 +6,7 @@
  * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
- * Copyright (C) The National Library of Finland 2023.
+ * Copyright (C) The National Library of Finland 2023-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -33,10 +33,12 @@ namespace VuFind\Controller;
 
 use DateTime;
 use Exception;
+use Laminas\Http\PhpEnvironment\Response;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container;
 use Laminas\View\Model\ViewModel;
 use VuFind\Account\UserAccountService;
+use VuFind\Auth\EmailAuthenticator;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Controller\Feature\ListItemSelectionTrait;
 use VuFind\Crypt\SecretCalculator;
@@ -47,11 +49,14 @@ use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserResourceServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
+use VuFind\Db\Type\AuditEventSubtype;
+use VuFind\Db\Type\AuditEventType;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
 use VuFind\Exception\AuthInProgress as AuthInProgressException;
 use VuFind\Exception\BadRequest as BadRequestException;
 use VuFind\Exception\Forbidden as ForbiddenException;
+use VuFind\Exception\ILS as ILSException;
 use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Exception\LoginRequired as LoginRequiredException;
 use VuFind\Exception\Mail as MailException;
@@ -85,6 +90,13 @@ class MyResearchController extends AbstractBase
     use Feature\CatchIlsExceptionsTrait;
     use \VuFind\ILS\Logic\SummaryTrait;
     use ListItemSelectionTrait;
+
+    /**
+     * Default life time for recovery hashes (one hour)
+     *
+     * @var int
+     */
+    public const DEFAULT_RECOVERY_HASH_LIFE_TIME = 3600;
 
     /**
      * Configuration loader
@@ -180,7 +192,7 @@ class MyResearchController extends AbstractBase
         if (
             $msg == 'authentication_error_admin'
             && $this->getAuthManager()->userHasLoggedOut()
-            && $this->getSessionInitiator()
+            && $this->getAuthManager()->hasSessionInitiator()
         ) {
             $msg = 'authentication_error_loggedout';
         }
@@ -209,7 +221,7 @@ class MyResearchController extends AbstractBase
         // submitted or because we're using an external login provider):
         if (
             $this->params()->fromPost('processLogin')
-            || $this->getSessionInitiator()
+            || $this->getAuthManager()->hasSessionInitiator()
             || $this->params()->fromPost('auth_method')
             || $this->params()->fromQuery('auth_method')
         ) {
@@ -328,7 +340,7 @@ class MyResearchController extends AbstractBase
     {
         // If this authentication method doesn't use a VuFind-generated login
         // form, force it through:
-        if ($this->getSessionInitiator()) {
+        if ($this->getAuthManager()->hasSessionInitiator()) {
             // Don't get stuck in an infinite loop -- if processLogin is already
             // set, it probably means Home action is forwarding back here to
             // report an error!
@@ -372,7 +384,7 @@ class MyResearchController extends AbstractBase
         // can decide whether to use it:
         $this->setFollowupUrlToReferer(true, ['isReferrer' => true]);
 
-        if ($si = $this->getSessionInitiator()) {
+        if ($si = $this->getAuthManager()->getSessionInitiator()) {
             return $this->redirect()->toUrl($si);
         }
         return $this->forwardTo('MyResearch', 'Login');
@@ -463,22 +475,30 @@ class MyResearchController extends AbstractBase
      * Support method for savesearchAction(): set the saved flag in a secure
      * fashion, throwing an exception if somebody attempts something invalid.
      *
-     * @param int  $searchId The search ID to save/unsave
-     * @param bool $saved    The new desired state of the saved flag
-     * @param int  $userId   The user ID requesting the change
+     * @param int                 $searchId The search ID to save/unsave
+     * @param bool                $saved    The new desired state of the saved flag
+     * @param UserEntityInterface $user     The user requesting the change
      *
      * @throws \Exception
      * @return void
      */
-    protected function setSavedFlagSecurely($searchId, $saved, $userId)
+    protected function setSavedFlagSecurely($searchId, $saved, $user)
     {
-        $row = $this->getSearchRowSecurely($searchId, $userId);
-        $row->saved = $saved ? 1 : 0;
+        $row = $this->getSearchRowSecurely($searchId, $user->getId());
+        $row->setSaved($saved ? 1 : 0);
         if (!$saved) {
-            $row->notification_frequency = 0;
+            $row->setNotificationFrequency(0);
         }
-        $row->user_id = $userId;
-        $row->save();
+        $row->setUser($user);
+        $this->getDbService(SearchServiceInterface::class)->persistEntity($row);
+        $this->getAuditEventService()->addEvent(
+            AuditEventType::User,
+            $saved ? AuditEventSubtype::SaveSearch : AuditEventSubtype::UnSaveSearch,
+            $user,
+            data: [
+                'search_id' => $searchId,
+            ]
+        );
     }
 
     /**
@@ -523,14 +543,14 @@ class MyResearchController extends AbstractBase
             $userId
         );
         if ($duplicateId) {
-            $savedRow->delete();
+            $this->getDbService(SearchServiceInterface::class)->deleteSearch($savedRow);
             $sid = $duplicateId;
             $savedRow = $this->getSearchRowSecurely($sid, $userId);
         }
 
         // If we didn't find an already-saved row, let's save and retry:
         if (!($savedRow->saved ?? false)) {
-            $this->setSavedFlagSecurely($sid, true, $userId);
+            $this->setSavedFlagSecurely($sid, true, $user);
             $savedRow = $this->getSearchRowSecurely($sid, $userId);
         }
         if (!($this->getConfig()->Account->force_first_scheduled_email ?? false)) {
@@ -542,6 +562,18 @@ class MyResearchController extends AbstractBase
         $savedRow->setNotificationFrequency($schedule);
         $savedRow->setNotificationBaseUrl($baseurl);
         $this->getDbService(SearchServiceInterface::class)->persistEntity($savedRow);
+
+        $this->getAuditEventService()->addEvent(
+            AuditEventType::User,
+            AuditEventSubtype::ScheduleSearch,
+            $user,
+            data: [
+                'search_id' => $sid,
+                'notification_frequency' => $schedule,
+                'base_url' => $baseurl,
+            ]
+        );
+
         return $this->redirect()->toRoute('search-history');
     }
 
@@ -583,7 +615,7 @@ class MyResearchController extends AbstractBase
             $user->getId()
         );
         if ($duplicateId) {
-            $search->delete();
+            $this->getDbService(SearchServiceInterface::class)->deleteSearch($search);
             $this->redirect()->toRoute(
                 'myresearch-schedulesearch',
                 [],
@@ -679,14 +711,14 @@ class MyResearchController extends AbstractBase
                 $user->getId()
             );
             if ($duplicateId) {
-                $rowToCheck->delete();
+                $searchService->deleteSearch($rowToCheck);
                 $id = $duplicateId;
             } else {
-                $this->setSavedFlagSecurely($id, true, $user->getId());
+                $this->setSavedFlagSecurely($id, true, $user);
             }
             $this->flashMessenger()->addMessage('search_save_success', 'success');
         } elseif (($id = $this->params()->fromQuery('delete', false)) !== false) {
-            $this->setSavedFlagSecurely($id, false, $user->getId());
+            $this->setSavedFlagSecurely($id, false, $user);
             $this->flashMessenger()->addMessage('search_unsave_success', 'success');
         } else {
             throw new \Exception('Missing save and delete parameters.');
@@ -1529,6 +1561,18 @@ class MyResearchController extends AbstractBase
             )
             : [];
 
+        if ($renewResult) {
+            $this->getAuditEventService()->addEvent(
+                AuditEventType::ILS,
+                AuditEventSubtype::RenewLoans,
+                $this->getUser(),
+                data: [
+                    'username' => $patron['cat_username'],
+                    'result' => $renewResult,
+                ]
+            );
+        }
+
         // By default, assume we will not need to display a renewal form:
         $renewForm = false;
 
@@ -1689,18 +1733,6 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Convenience method to get a session initiator URL. Returns false if not
-     * applicable.
-     *
-     * @return string|bool
-     */
-    protected function getSessionInitiator()
-    {
-        $url = $this->getServerUrl('myresearch-home');
-        return $this->getAuthManager()->getSessionInitiator($url);
-    }
-
-    /**
      * Send account recovery email
      *
      * @return mixed
@@ -1709,32 +1741,37 @@ class MyResearchController extends AbstractBase
     {
         // Make sure we're configured to do this
         $this->setUpAuthenticationFromRequest();
-        if (!$this->getAuthManager()->supportsRecovery()) {
-            $this->flashMessenger()->addMessage('recovery_disabled', 'error');
+        $target = $this->params()->fromQuery('target') ?? $this->params()->fromPost('target') ?? '';
+        $authManager = $this->getAuthManager();
+        if (!$authManager->supportsRecovery(target: $target)) {
+            $this->flashMessenger()->addErrorMessage('recovery_disabled');
             return $this->redirect()->toRoute('myresearch-home');
         }
         if ($this->getUser()) {
             return $this->redirect()->toRoute('myresearch-home');
         }
-        // Database
-        $userService = $this->getDbService(UserServiceInterface::class);
-        $user = false;
-        // Check if we have a submitted form, and use the information
-        // to get the user's information
-        if ($email = $this->params()->fromPost('email')) {
-            $user = $userService->getUserByEmail($email);
-        } elseif ($username = $this->params()->fromPost('username')) {
-            $user = $userService->getUserByUsername($username);
-        }
-        $view = $this->createViewModel();
+        $view = $this->createViewModel(compact('target'));
         $view->useCaptcha = $this->captcha()->active('passwordRecovery');
         // If we have a submitted form
         if ($this->formWasSubmitted(useCaptcha: $view->useCaptcha)) {
-            if ($user) {
-                $this->sendRecoveryEmail($user, $this->getConfig());
+            $csrf = $this->getService(CsrfInterface::class);
+            if (!$csrf->isValid($this->getRequest()->getPost()->get('csrf'))) {
+                throw new \VuFind\Exception\BadRequest('error_inconsistent_parameters');
             } else {
-                $this->flashMessenger()
-                    ->addMessage('recovery_user_not_found', 'error');
+                // After successful token verification, clear list to shrink session:
+                $csrf->trimTokenList(0);
+            }
+
+            try {
+                if ($recoveryData = $authManager->getPasswordRecoveryData($this->params()->fromPost())) {
+                    $this->sendRecoveryEmail($recoveryData);
+                } else {
+                    $this->flashMessenger()->addErrorMessage('recovery_user_not_found');
+                }
+            } catch (AuthException $e) {
+                $this->flashMessenger()->addErrorMessage($e->getMessage());
+            } catch (ILSException $e) {
+                $this->flashMessenger()->addErrorMessage('ils_connection_failed');
             }
         }
         return $view;
@@ -1743,52 +1780,39 @@ class MyResearchController extends AbstractBase
     /**
      * Helper function for recoverAction
      *
-     * @param UserEntityInterface $user   User object we're recovering
-     * @param \VuFind\Config      $config Configuration object
+     * @param array $recoveryData Recovery information required by the authentication to reset the password
      *
      * @return void (sends email or adds error message)
      */
-    protected function sendRecoveryEmail(UserEntityInterface $user, $config)
+    protected function sendRecoveryEmail(array $recoveryData)
     {
-        // If we can't find a user
-        if (!$user) {
-            $this->flashMessenger()->addMessage('recovery_user_not_found', 'error');
-        } else {
-            // Make sure we've waited long enough
-            $hashtime = $this->getHashAge($user->getVerifyHash());
-            $recoveryInterval = $config->Authentication->recover_interval ?? 60;
-            if (time() - $hashtime < $recoveryInterval) {
-                $this->flashMessenger()->addMessage('recovery_too_soon', 'error');
-            } else {
-                // Attempt to send the email
-                try {
-                    // Create a fresh hash
-                    $this->getAuthManager()->updateUserVerifyHash($user);
-                    $config = $this->getConfig();
-                    $renderer = $this->getViewRenderer();
-                    $method = $this->getAuthManager()->getAuthMethod();
-                    // Custom template for emails (text-only)
-                    $message = $renderer->render(
-                        'Email/recover-password.phtml',
-                        [
-                            'library' => $config->Site->title,
-                            'url' => $this->getServerUrl('myresearch-verify')
-                                . '?hash='
-                                . $user->getVerifyHash() . '&auth_method=' . $method,
-                        ]
-                    );
-                    $this->getService(Mailer::class)->send(
-                        $user->getEmail(),
-                        $this->getEmailSenderAddress($config),
-                        $this->translate('recovery_email_subject'),
-                        $message
-                    );
-                    $this->flashMessenger()
-                        ->addMessage('recovery_email_sent', 'success');
-                } catch (MailException $e) {
-                    $this->flashMessenger()->addMessage($e->getDisplayMessage(), 'error');
-                }
-            }
+        if (empty($recoveryData['email'])) {
+            throw new AuthException('no_email_address');
+        }
+        $emailAuthenticator = $this->getService(EmailAuthenticator::class);
+        $authHelper = $this->getViewRenderer()->plugin('auth');
+        $target = $this->params()->fromPost('target');
+        try {
+            $emailAuthenticator->sendAuthenticationLink(
+                email: $recoveryData['email'],
+                data: $recoveryData,
+                urlParams: [],
+                linkRoute: 'myresearch-resetpassword',
+                subject: 'recovery_email_subject',
+                template: $authHelper->getPasswordRecoveryEmailTemplate(),
+                templateParams: compact('target'),
+            );
+
+            $this->flashMessenger()->addSuccessMessage('recovery_email_sent');
+
+            $this->getAuditEventService()->addEvent(
+                AuditEventType::User,
+                AuditEventSubtype::SendEmailRecoveryLink,
+                $this->getUser(),
+                data: ['email' => $recoveryData['email']]
+            );
+        } catch (MailException $e) {
+            $this->flashMessenger()->addErrorMessage($e->getDisplayMessage());
         }
     }
 
@@ -1903,6 +1927,17 @@ class MyResearchController extends AbstractBase
                     if ($change) {
                         $this->sendChangeNotificationEmail($user, $to);
                     }
+
+                    $this->getAuditEventService()->addEvent(
+                        AuditEventType::User,
+                        AuditEventSubtype::SendAddressVerificationEmail,
+                        $user,
+                        data: [
+                            'email' => $user->getEmail(),
+                            'pending_email' => $user->getPendingEmail(),
+                            'change' => $change,
+                        ]
+                    );
                 } catch (MailException $e) {
                     $this->flashMessenger()->addMessage($e->getDisplayMessage(), 'error');
                 }
@@ -1911,7 +1946,11 @@ class MyResearchController extends AbstractBase
     }
 
     /**
-     * Receive a hash and display the new password form if it's valid
+     * Receive a hash and display the new password form if it's valid.
+     *
+     * Used for Alma and legacy password reset links.
+     *
+     * @see resetPasswordAction
      *
      * @return mixed
      */
@@ -1922,8 +1961,7 @@ class MyResearchController extends AbstractBase
             $hashtime = $this->getHashAge($hash);
             $config = $this->getConfig();
             // Check if hash is expired
-            $hashLifetime = $config->Authentication->recover_hash_lifetime
-                ?? 1209600; // Two weeks
+            $hashLifetime = $config->Authentication->recover_hash_lifetime ?? static::DEFAULT_RECOVERY_HASH_LIFE_TIME;
             if (time() - $hashtime > $hashLifetime) {
                 $this->flashMessenger()
                     ->addMessage('recovery_expired_hash', 'error');
@@ -1943,12 +1981,78 @@ class MyResearchController extends AbstractBase
                     $view->passwordPolicy = $this->getAuthManager()
                         ->getPasswordPolicy();
                     $view->setTemplate('myresearch/newpassword');
+
+                    $this->getAuditEventService()->addEvent(
+                        AuditEventType::User,
+                        AuditEventSubtype::VerifyEmailHash,
+                        $user,
+                    );
+
                     return $view;
                 }
             }
         }
         $this->flashMessenger()->addMessage('recovery_invalid_hash', 'error');
         return $this->forwardTo('MyResearch', 'Login');
+    }
+
+    /**
+     * Reset user's password with details from email authentication hash.
+     *
+     * @return mixed
+     */
+    public function resetPasswordAction()
+    {
+        $sessionStorage = new \Laminas\Session\Container(
+            'PasswordRecovery',
+            $this->getService(\Laminas\Session\SessionManager::class)
+        );
+        // Check for recovery hash in query:
+        if ($hash = ($this->params()->fromQuery('hash'))) {
+            $emailAuthenticator = $this->getService(EmailAuthenticator::class);
+            try {
+                $sessionStorage['recoveryData'] = $emailAuthenticator->authenticate($hash, true);
+                // Redirect to clear the query parameters before proceeding.
+                return $this->redirect()->toRoute('myresearch-resetpassword');
+            } catch (AuthException $e) {
+                $this->flashMessenger()->addErrorMessage($e->getMessage());
+                return $this->forwardTo('MyResearch', 'Login');
+            }
+        }
+        if (!($recoveryData = $sessionStorage['recoveryData'])) {
+            $this->flashMessenger()->addErrorMessage('recovery_invalid_hash');
+            return $this->forwardTo('MyResearch', 'Login');
+        }
+        // Check if hash is expired (we do this here to ensure that repeated calls work but not for too long):
+        $config = $this->getConfig();
+        $hashLifetime = $config->Authentication->recover_hash_lifetime ?? static::DEFAULT_RECOVERY_HASH_LIFE_TIME;
+        if (time() - $recoveryData['timestamp'] > $hashLifetime) {
+            $this->flashMessenger()->addErrorMessage('recovery_expired_hash');
+            return $this->forwardTo('MyResearch', 'Login');
+        }
+
+        // At this point we have password recovery details, so prompt for a new password or process the form
+        $useCaptcha = $this->captcha()->active('passwordRecovery');
+        $this->getAuthManager()->setAuthMethod($recoveryData['auth_method']);
+        if ($this->formWasSubmitted(useCaptcha: $useCaptcha)) {
+            try {
+                $this->getAuthManager()
+                    ->resetPassword($recoveryData, $this->params()->fromPost());
+                $sessionStorage['recoveryData'] = null;
+                $this->flashMessenger()->addSuccessMessage('new_password_success');
+                return $this->getNonRedirectingMyResearchHomeRedirect();
+            } catch (AuthException $e) {
+                $this->flashMessenger()->addErrorMessage($e->getMessage());
+            }
+        }
+        return $this->createViewModel(
+            [
+                'auth_method' => $this->getAuthManager()->getAuthMethod(),
+                'passwordPolicy' => $this->getAuthManager()->getPasswordPolicy(target: $recoveryData['target'] ?? null),
+                'useCaptcha' => $useCaptcha,
+                'recoveryData' => $sessionStorage['recoveryData'],
+            ]
+        );
     }
 
     /**
@@ -1963,8 +2067,7 @@ class MyResearchController extends AbstractBase
             $hashtime = $this->getHashAge($hash);
             $config = $this->getConfig();
             // Check if hash is expired
-            $hashLifetime = $config->Authentication->recover_hash_lifetime
-                ?? 1209600; // Two weeks
+            $hashLifetime = $config->Authentication->recover_hash_lifetime ?? static::DEFAULT_RECOVERY_HASH_LIFE_TIME;
             if (time() - $hashtime > $hashLifetime) {
                 $this->flashMessenger()
                     ->addMessage('recovery_expired_hash', 'error');
@@ -1982,6 +2085,13 @@ class MyResearchController extends AbstractBase
                     $this->getDbService(UserServiceInterface::class)->persistEntity($user);
 
                     $this->flashMessenger()->addMessage('verification_done', 'info');
+
+                    $this->getAuditEventService()->addEvent(
+                        AuditEventType::User,
+                        AuditEventSubtype::VerifyEmail,
+                        $user,
+                    );
+
                     return $this->redirect()->toRoute('myresearch-profile');
                 }
             }
@@ -2080,6 +2190,13 @@ class MyResearchController extends AbstractBase
         $this->getAuthManager()->login($this->request);
         // Return to account home
         $this->flashMessenger()->addMessage('new_password_success', 'success');
+
+        $this->getAuditEventService()->addEvent(
+            AuditEventType::User,
+            AuditEventSubtype::PasswordChanged,
+            $user,
+        );
+
         return $this->redirect()->toRoute('myresearch-home');
     }
 
@@ -2191,6 +2308,14 @@ class MyResearchController extends AbstractBase
         }
         $series = $this->params()->fromPost('series', '');
         $this->getAuthManager()->deleteToken($series);
+
+        $this->getAuditEventService()->addEvent(
+            AuditEventType::User,
+            AuditEventSubtype::DeleteLoginToken,
+            $this->getUser(),
+            data: compact('series')
+        );
+
         return $this->redirect()->toRoute('myresearch-profile');
     }
 
@@ -2211,6 +2336,13 @@ class MyResearchController extends AbstractBase
             );
         }
         $this->getAuthManager()->deleteUserLoginTokens($this->getUser()->id);
+
+        $this->getAuditEventService()->addEvent(
+            AuditEventType::User,
+            AuditEventSubtype::DeleteLoginTokens,
+            $this->getUser()
+        );
+
         return $this->redirect()->toRoute('myresearch-profile');
     }
 
@@ -2272,6 +2404,17 @@ class MyResearchController extends AbstractBase
                 // After successful token verification, clear list to shrink session:
                 $csrf->trimTokenList(0);
             }
+
+            $user = $this->getUser();
+            $this->getAuditEventService()->addEvent(
+                AuditEventType::User,
+                AuditEventSubtype::Delete,
+                $user,
+                data: [
+                    'user_id' => $user->getId(),
+                ]
+            );
+
             $this->getService(UserAccountService::class)->purgeUserData(
                 $user,
                 $config->Authentication->delete_comments_with_user ?? true,
@@ -2314,12 +2457,41 @@ class MyResearchController extends AbstractBase
                 }
                 $search->setNotificationFrequency(0);
                 $searchService->persistEntity($search);
+
+                $this->getAuditEventService()->addEvent(
+                    AuditEventType::User,
+                    AuditEventSubtype::SaveSearch,
+                    $search->getUser(),
+                    data: [
+                        'search_id' => $search->getId(),
+                        'notification_frequency' => 0,
+                    ]
+                );
+
                 $view->success = true;
             }
         } else {
             $view->unsubscribeUrl = $this->getRequest()->getRequestUri() . '&confirm=1';
         }
         return $view;
+    }
+
+    /**
+     * Get User Content (comments, ratings, tags)
+     *
+     * @return mixed
+     */
+    public function userContentAction()
+    {
+        $user = $this->getUser();
+        if (!$user) {
+            return $this->forceLogin();
+        }
+        $tabs = array_keys($this->getService(\VuFind\Config\AccountCapabilities::class)->getUserContentTabs());
+        if (empty($tabs)) {
+            throw new ForbiddenException('User content disabled.');
+        }
+        return $this->redirect()->toRoute($tabs[0] . '-userlist');
     }
 
     /**
@@ -2373,5 +2545,15 @@ class MyResearchController extends AbstractBase
                 ]
             );
         }
+    }
+
+    /**
+     * Return a response that redirects to MyResearch/Home with any further redirects disabled
+     *
+     * @return Response
+     */
+    protected function getNonRedirectingMyResearchHomeRedirect(): Response
+    {
+        return $this->redirect()->toRoute('myresearch-home', options: ['query' => ['redirect' => 0]]);
     }
 }

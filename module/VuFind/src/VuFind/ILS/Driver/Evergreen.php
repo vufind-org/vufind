@@ -122,6 +122,7 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
                 . $this->config['Catalog']['port']
             );
         } catch (PDOException $e) {
+            $this->logError((string)$e);
             throw $e;
         }
     }
@@ -161,6 +162,7 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
             $sqlStmt->bindParam(1, $id, PDO::PARAM_INT);
             $sqlStmt->execute();
         } catch (PDOException $e) {
+            $this->logError((string)$e);
             $this->throwAsIlsException($e);
         }
 
@@ -261,6 +263,7 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
             $sqlStmt->bindParam(1, $id, PDO::PARAM_INT);
             $sqlStmt->execute();
         } catch (PDOException $e) {
+            $this->logError((string)$e);
             $this->throwAsIlsException($e);
         }
 
@@ -364,21 +367,16 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
             $sqlStmt->bindParam(2, $barcode, PDO::PARAM_STR);
             $sqlStmt->execute();
             $row = $sqlStmt->fetch(PDO::FETCH_ASSOC);
-            if (isset($row['id']) && ($row['id'] != '')) {
-                $return = [];
-                $return['id'] = $row['id'];
-                $return['firstname'] = $row['firstname'];
-                $return['lastname'] = $row['lastname'];
-                $return['cat_username'] = $row['usrname'];
-                $return['cat_password'] = $passwd;
-                $return['email'] = $row['email'];
-                $return['major'] = null;    // Don't know which table this comes from
-                $return['college'] = null;  // Don't know which table this comes from
-                return $return;
-            } else {
-                return null;
-            }
+            return !empty($row['id']) ? $this->createPatronArray(
+                id: $row['id'],
+                firstname: $row['firstname'],
+                lastname: $row['lastname'],
+                cat_username: $row['usrname'],
+                cat_password: $passwd,
+                email: $row['email']
+            ) : null;
         } catch (PDOException $e) {
+            $this->logError((string)$e);
             $this->throwAsIlsException($e);
         }
     }
@@ -467,6 +465,7 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
                                ];
             }
         } catch (PDOException $e) {
+            $this->logError((string)$e);
             $this->throwAsIlsException($e);
         }
         return ['count' => count($transList), 'records' => $transList];
@@ -524,6 +523,7 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
             }
             return $fineList;
         } catch (PDOException $e) {
+            $this->logError((string)$e);
             $this->throwAsIlsException($e);
         }
     }
@@ -580,6 +580,7 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
                 ];
             }
         } catch (PDOException $e) {
+            $this->logError((string)$e);
             $this->throwAsIlsException($e);
         }
         return $holdList;
@@ -624,21 +625,21 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
             }
 
             if ($row) {
-                $patron = [
-                    'firstname' => $row['first_given_name'],
-                    'lastname' => $row['family_name'],
-                    'address1' => $row['street1'],
-                    'address2' => $row['street2'],
-                    'city' => $row['city'],
-                    'zip' => $row['post_code'],
-                    'country' => $row['country'],
-                    'phone' => $phone,
-                    'group' => $row['usrgroup'],
-                    'expiration_date' => $this->formatDate($row['expire_date']),
-                ];
-                return $patron;
+                return $this->createProfileArray(
+                    firstname: $row['first_given_name'],
+                    lastname: $row['family_name'],
+                    address1: $row['street1'],
+                    address2: $row['street2'],
+                    city: $row['city'],
+                    zip: $row['post_code'],
+                    country: $row['country'],
+                    phone: $phone,
+                    group: $row['usrgroup'],
+                    expiration_date: $this->formatDate($row['expire_date'])
+                );
             }
         } catch (PDOException $e) {
+            $this->logError((string)$e);
             $this->throwAsIlsException($e);
         }
         return null;
@@ -680,6 +681,7 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
         $sqlStmt = $this->db->prepare($sql);
         $sqlStmt->execute();
     } catch (PDOException $e) {
+        $this->logError((string)$e);
         $this->throwAsIlsException($e);
     }
     */
@@ -740,6 +742,7 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
             $row = $sqlStmt->fetch(PDO::FETCH_ASSOC);
             $items['count'] = $row['count'];
         } catch (PDOException $e) {
+            $this->logError((string)$e);
             $this->throwAsIlsException($e);
         }
 
@@ -762,6 +765,7 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
                 $items['results'][]['id'] = $row['record'];
             }
         } catch (PDOException $e) {
+            $this->logError((string)$e);
             $this->throwAsIlsException($e);
         }
         return $items;
@@ -789,6 +793,7 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
                 $list[] = $row['name'];
             }
         } catch (PDOException $e) {
+            $this->logError((string)$e);
             $this->throwAsIlsException($e);
         }
         */
@@ -817,6 +822,7 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
                 $list[] = $row['id'];
             }
         } catch (PDOException $e) {
+            $this->logError((string)$e);
             $this->throwAsIlsException($e);
         }
 

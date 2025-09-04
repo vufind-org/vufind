@@ -771,35 +771,29 @@ class PAIA extends DAIA
      */
     public function getMyProfile($patron)
     {
-        if (is_array($patron)) {
-            $type = isset($patron['type'])
-                ? implode(
-                    ', ',
-                    array_map(
-                        [$this, 'getReadableGroupType'],
-                        (array)$patron['type']
-                    )
-                )
-                : null;
-            return [
-                'firstname'  => $patron['firstname'],
-                'lastname'   => $patron['lastname'],
-                'address1'   => $patron['address'],
-                'address2'   => null,
-                'city'       => null,
-                'country'    => null,
-                'zip'        => null,
-                'phone'      => null,
-                'mobile_phone' => null,
-                'group'      => $type,
-                // PAIA specific custom values
-                'expires'    => isset($patron['expires'])
-                    ? $this->convertDate($patron['expires']) : null,
-                'statuscode' => $patron['status'] ?? null,
-                'canWrite'   => in_array(self::SCOPE_WRITE_ITEMS, $this->getScope()),
-            ];
+        if (!is_array($patron)) {
+            return [];
         }
-        return [];
+        $type = isset($patron['type'])
+            ? implode(
+                ', ',
+                array_map(
+                    [$this, 'getReadableGroupType'],
+                    (array)$patron['type']
+                )
+            )
+            : null;
+        return $this->createProfileArray(
+            firstname: $patron['firstname'],
+            lastname: $patron['lastname'],
+            address1: $patron['address'],
+            group: $type,
+            nonDefaultFields: [
+                'expires' => isset($patron['expires']) ? $this->convertDate($patron['expires']) : null,
+                'statuscode' => $patron['status'] ?? null,
+                'canWrite' => in_array(self::SCOPE_WRITE_ITEMS, $this->getScope()),
+            ]
+        );
     }
 
     /**
@@ -1426,21 +1420,22 @@ class PAIA extends DAIA
         // TODO: implement parsing of user details according to types set
         // (cf. https://github.com/gbv/paia/issues/29)
 
-        $user = [];
-        $user['id']        = $patron;
-        $user['firstname'] = $firstname;
-        $user['lastname']  = $lastname;
-        $user['email']     = ($user_response['email'] ?? '');
-        $user['major']     = null;
-        $user['college']   = null;
         // add other information from PAIA - we don't want anything to get lost
         // while parsing
+        $undefinedData = [];
         foreach ($user_response as $key => $value) {
-            if (!isset($user[$key])) {
-                $user[$key] = $value;
+            if (in_array($key, ['id', 'firstname', 'lastname', 'email'])) {
+                continue;
             }
+            $undefinedData[$key] = $value;
         }
-        return $user;
+        return $this->createPatronArray(
+            id: $patron,
+            firstname: $firstname,
+            lastname: $lastname,
+            email: $user_response['email'] ?? null,
+            nonDefaultFields: $undefinedData
+        );
     }
 
     /**
