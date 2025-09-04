@@ -1,0 +1,11 @@
+{
+  "name": "vufind-mixin-fa-7",
+  "description": "Dependencies for the FontAwesome 7 icons mixin",
+  "scripts": {
+    "installBuildDeps": "npm install --no-audit && node tools/copyDependencies.mjs --only-build-deps",
+    "updateDeps": "npm update && node tools/copyDependencies.mjs"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-free": "^7.0.1"
+  }
+}

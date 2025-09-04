@@ -124,7 +124,7 @@
             type="button"
             title="<?=$this->transEscAttr('searchform_reset_button')?>"
             aria-label="<?=$this->transEscAttr('searchform_reset_button')?>"
-          ><?=$this->icon('ui-reset-search');?></button>
+          ><?=$this->icon('search-reset');?></button>
           <?php if (!empty($keyboardLayouts)): ?>
             <?php
             $this->assetManager()->appendScriptLink('vendor/js.cookie.js');
@@ -134,7 +134,7 @@
             ?>
             <div class="keyboard-selection dropdown">
               <button class="btn btn-primary dropdown-toggle" type="button" id="keyboard-selection-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <?=$this->icon('keyboard-o') ?>
+                <?=$this->icon('keyboard') ?>
                 <?=$this->icon('dropdown-caret') ?>
               </button>
               <ul class="dropdown-menu" aria-labelledby="keyboard-selection-button">

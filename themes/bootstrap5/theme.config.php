@@ -2,7 +2,7 @@
 return [
     'extends' => 'root',
     'mixins' => [
-        'mixin-icons-fontawesome6',
+        'mixin-icons-fontawesome-6',
     ],
     'css' => [
         /**
