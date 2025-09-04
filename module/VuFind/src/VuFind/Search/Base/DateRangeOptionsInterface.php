@@ -48,7 +48,7 @@ interface DateRangeOptionsInterface
     public function getDateRangeFacets(): array;
 
     /**
-     * Get full date range facets.
+     * Get full (day/month/year, rather than just year) date range facets.
      *
      * @return array
      */
