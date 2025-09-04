@@ -542,7 +542,9 @@ class InstallController extends AbstractBase
      */
     protected function getPostCommands($view)
     {
-        $version = Version::getBuildVersion();
+        // Version should always consist of digits and dots, but strip out anything
+        // unexpected just to be on the safe side -- don't want any weird SQL injection.
+        $version = preg_replace('/[^\d.]/', '', Version::getBuildVersion());
         $filename = $view->driver === 'pgsql' ? 'pgsql' : 'mysql';
         $migrationSql = 'INSERT INTO migrations(name, status, target_version) VALUES '
             . "('{$filename}.sql', 'success', '$version')";
