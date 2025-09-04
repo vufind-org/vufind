@@ -809,7 +809,43 @@ return [
     <echo file="${contentdir}/test/sub/test.phtml">&lt;h1&gt;SUB SUB LEVEL PHTML&lt;/h1&gt;</echo>
   </target>
 
+  <target name="teardown_database" description="clean up existing database and users">
+    <if>
+      <equals arg1="${dbtype}" arg2="pgsql" />
+      <then>
+        <if>
+          <equals arg1="${psql_needs_sudo}" arg2="false" />
+          <then>
+            <exec executable="psql">
+              <arg line="-c &quot;DROP DATABASE ${vufinddb};&quot; ${pgsqlrootuser}" />
+            </exec>
+            <exec executable="psql">
+              <arg line="-c &quot;DROP USER ${vufinddbuser};&quot; ${pgsqlrootuser}" />
+            </exec>
+          </then>
+          <else>
+            <exec executable="sudo">
+              <arg line="su -c &quot;psql -c 'DROP DATABASE ${vufinddb};'&quot; ${pgsqlrootuser}" />
+            </exec>
+            <exec executable="sudo">
+              <arg line="su -c &quot;psql -c 'DROP USER ${vufinddbuser};'&quot; ${pgsqlrootuser}" />
+            </exec>
+          </else>
+        </if>
+      </then>
+      <else>
+        <exec executable="mysql" passthru="true">
+          <arg line="${mysqlconnectionargs} -e &quot;DROP DATABASE IF EXISTS ${vufinddb}&quot;" />
+        </exec>
+        <exec executable="mysql" passthru="true">
+          <arg line="${mysqlconnectionargs} -e &quot;DROP USER IF EXISTS '${vufinddbuser}'@'%'&quot;" />
+        </exec>
+      </else>
+    </if>
+  </target>
+
   <target name="setup_database" description="setup demo database">
+    <phingcall target="teardown_database" />
     <if>
       <equals arg1="${dbtype}" arg2="pgsql" />
       <then>
@@ -825,12 +861,6 @@ return [
         <if>
           <equals arg1="${psql_needs_sudo}" arg2="false" />
           <then>
-            <exec executable="psql">
-              <arg line="-c &quot;DROP DATABASE ${vufinddb};&quot; ${pgsqlrootuser}" />
-            </exec>
-            <exec executable="psql">
-              <arg line="-c &quot;DROP USER ${vufinddbuser};&quot; ${pgsqlrootuser}" />
-            </exec>
             <exec executable="psql" passthru="true" checkreturn="true">
               <arg line="-f ${pgsqldatabaseprecommands} ${pgsqlrootuser}" />
             </exec>
@@ -839,12 +869,6 @@ return [
             </exec>
           </then>
           <else>
-            <exec executable="sudo">
-              <arg line="su -c &quot;psql -c 'DROP DATABASE ${vufinddb};'&quot; ${pgsqlrootuser}" />
-            </exec>
-            <exec executable="sudo">
-              <arg line="su -c &quot;psql -c 'DROP USER ${vufinddbuser};'&quot; ${pgsqlrootuser}" />
-            </exec>
             <exec executable="sudo" checkreturn="true">
               <arg line="su -c &quot;psql -f ${pgsqldatabaseprecommands}&quot; ${pgsqlrootuser}" />
             </exec>
@@ -858,12 +882,6 @@ return [
       </then>
       <else>
         <!-- build database -->
-        <exec executable="mysql" passthru="true">
-          <arg line="${mysqlconnectionargs} -e &quot;DROP DATABASE IF EXISTS ${vufinddb}&quot;" />
-        </exec>
-        <exec executable="mysql" passthru="true">
-          <arg line="${mysqlconnectionargs} -e &quot;DROP USER IF EXISTS '${vufinddbuser}'@'%'&quot;" />
-        </exec>
         <exec executable="php" passthru="true" checkreturn="true">
           <arg line="${srcdir}/public/index.php generate/database --dbHost=${mysqlhost}:${mysqlport} --vufindHost=% --rootUser=${mysqlrootuser} --rootPass=${mysqlrootpass} ${vufinddb} ${vufinddbuser} ${vufinddbpass}" />
         </exec>
@@ -993,25 +1011,7 @@ ${git_status}
     </if>
 
     <!-- drop database -->
-    <if>
-      <equals arg1="${dbtype}" arg2="pgsql" />
-      <then>
-        <exec executable="sudo" checkreturn="true">
-          <arg line="su -c &quot;psql -c 'DROP DATABASE ${vufinddb};'&quot; ${pgsqlrootuser}" />
-        </exec>
-        <exec executable="sudo" checkreturn="true">
-          <arg line="su -c &quot;psql -c 'DROP USER ${vufinddbuser};'&quot; ${pgsqlrootuser}" />
-        </exec>
-      </then>
-      <else>
-        <exec executable="mysql">
-          <arg line="${mysqlconnectionargs} -e &quot;DROP USER IF EXISTS '${vufinddbuser}'@'%'&quot;" />
-        </exec>
-        <exec executable="mysql">
-          <arg line="${mysqlconnectionargs} -e &quot;DROP DATABASE IF EXISTS ${vufinddb}&quot;" />
-        </exec>
-      </else>
-    </if>
+    <phingcall target="teardown_database" />
 
     <!-- stop Solr -->
     <if>
