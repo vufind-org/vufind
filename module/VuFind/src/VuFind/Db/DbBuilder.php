@@ -32,6 +32,7 @@ namespace VuFind\Db;
 use Doctrine\DBAL\Exception as DBALException;
 use Exception;
 
+use function in_array;
 use function strlen;
 
 /**
@@ -121,17 +122,34 @@ class DbBuilder
     }
 
     /**
+     * Load the main blob of SQL to initialize the database.
+     *
+     * @param string $driver Database driver to use
+     *
+     * @return string
+     */
+    protected function getMainSql(string $driver): string
+    {
+        // We use the same file to initialize the MariaDB and MySQL databases:
+        $sqlFilename = $driver === 'mariadb' ? 'mysql' : $driver;
+        return file_get_contents(
+            APPLICATION_PATH . "/module/VuFind/sql/{$sqlFilename}.sql"
+        );
+    }
+
+    /**
      * Build the database. Return the SQL used for the operation. Throw an exception on error.
      *
-     * @param string $driver     Database driver to use
-     * @param string $dbHost     Name of database host
-     * @param string $vufindHost Name of VuFind host (for use in creating users)
-     * @param string $rootUser   Root username for connecting to database
-     * @param string $rootPass   Root password for connecting to database
-     * @param string $newName    Name of database to create
-     * @param string $newUser    Username for connecting to new database (will be created)
-     * @param string $newPass    Password for new user
-     * @param bool   $skip       Set to true to return SQL without actually manipulating the database
+     * @param string   $driver        Database driver to use
+     * @param string   $dbHost        Name of database host
+     * @param string   $vufindHost    Name of VuFind host (for use in creating users)
+     * @param string   $rootUser      Root username for connecting to database
+     * @param string   $rootPass      Root password for connecting to database
+     * @param string   $newName       Name of database to create
+     * @param string   $newUser       Username for connecting to new database (will be created)
+     * @param string   $newPass       Password for new user
+     * @param bool     $returnSqlOnly Set to true to return SQL without actually manipulating the database
+     * @param string[] $skip          Array of steps to skip (legal values: pre, main, post)
      *
      * @return string
      * @throws Exception
@@ -146,7 +164,8 @@ class DbBuilder
         string $newName,
         string $newUser,
         string $newPass,
-        bool $skip = false
+        bool $returnSqlOnly = false,
+        array $skip = []
     ): string {
         try {
             // We need a default database name to use to establish a connection:
@@ -170,40 +189,40 @@ class DbBuilder
             );
         }
         // Get SQL together
-        $escapedPass = $skip
+        $escapedPass = $returnSqlOnly
             ? "'" . addslashes($newPass) . "'"
             : $db->quote($newPass);
-        $preCommands = $this->getPreCommands($driver, $newName, $vufindHost, $newUser, $escapedPass);
-        $postCommands = $this->getPostCommands($driver, $newUser);
-        // We use the same file to initialize the MariaDB and MySQL databases:
-        $sqlFilename = $driver === 'mariadb' ? 'mysql' : $driver;
-        $sql = file_get_contents(
-            APPLICATION_PATH . "/module/VuFind/sql/{$sqlFilename}.sql"
-        );
+        $preCommands = in_array('pre', $skip)
+            ? [] : $this->getPreCommands($driver, $newName, $vufindHost, $newUser, $escapedPass);
+        $sql = in_array('main', $skip) ? '' : $this->getMainSql($driver);
+        $postCommands = in_array('post', $skip)
+            ? [] : $this->getPostCommands($driver, $newUser);
         $omnisql = '';
         foreach ($preCommands as $query) {
             $omnisql .= $query . ";\n";
-            if (!$skip) {
+            if (!$returnSqlOnly) {
                 $db->executeQuery($query);
             }
         }
-        $omnisql .= "\n" . $sql . "\n";
-        if (!$skip) {
-            $db = $this->dbFactory->getConnectionFromOptions(
-                $connectionParams + ['dbname' => $newName]
-            );
-            $statements = explode(';', $sql);
-            foreach ($statements as $current) {
-                // Skip empty sections:
-                if (strlen(trim($current)) == 0) {
-                    continue;
+        if ($sql) {
+            $omnisql .= "\n" . $sql . "\n";
+            if (!$returnSqlOnly) {
+                $db = $this->dbFactory->getConnectionFromOptions(
+                    $connectionParams + ['dbname' => $newName]
+                );
+                $statements = explode(';', $sql);
+                foreach ($statements as $current) {
+                    // Skip empty sections:
+                    if (strlen(trim($current)) == 0) {
+                        continue;
+                    }
+                    $db->executeQuery($current);
                 }
-                $db->executeQuery($current);
             }
         }
         foreach ($postCommands as $query) {
             $omnisql .= $query . ";\n";
-            if (!$skip) {
+            if (!$returnSqlOnly) {
                 $db->executeQuery($query);
             }
         }

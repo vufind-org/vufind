@@ -122,6 +122,12 @@ class DatabaseCommand extends Command
                 InputOption::VALUE_OPTIONAL,
                 'password for root user',
                 ''
+            )->addOption(
+                'skip',
+                null,
+                InputOption::VALUE_OPTIONAL,
+                'comma-separated list of steps to skip (legal options: pre, main, post)',
+                ''
             );
     }
 
@@ -139,6 +145,7 @@ class DatabaseCommand extends Command
         $driver = $input->getOption('driver');
         $dbHost = $input->getOption('dbHost');
         $vufindHost = $input->getOption('vufindHost');
+        $skip = array_filter(array_map('trim', explode(',', $input->getOption('skip'))));
         $rootUser = $input->getOption('rootUser');
         $rootPass = $input->getOption('rootPass');
         $newName = $input->getArgument('newName');
@@ -146,8 +153,18 @@ class DatabaseCommand extends Command
         $newPass = $input->getArgument('newPass');
         // Try to import the document if successful:
         try {
-            $result = $this->builder
-                ->build($driver, $dbHost, $vufindHost, $rootUser, $rootPass, $newName, $newUser, $newPass, $testMode);
+            $result = $this->builder->build(
+                $driver,
+                $dbHost,
+                $vufindHost,
+                $rootUser,
+                $rootPass,
+                $newName,
+                $newUser,
+                $newPass,
+                $testMode,
+                $skip
+            );
             if ($testMode) {
                 $output->writeln($result);
             }
