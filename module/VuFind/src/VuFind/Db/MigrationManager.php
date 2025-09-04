@@ -172,6 +172,11 @@ class MigrationManager
      */
     protected function logMigrationEvent(?Connection $connection, string $name, string $status): string
     {
+        // Special case: if it's the migration to add the migration table and it hasn't succeeded yet, we can't
+        // log information, so we should stop early.
+        if ($name === '11.0/000-add-migrations-table.sql' && $status !== 'success') {
+            return '';
+        }
         $queryBuilder = $connection ? $connection->createQueryBuilder() : $this->connection->createQueryBuilder();
         $queryBuilder->insert('migrations')
             ->values(
@@ -225,9 +230,7 @@ class MigrationManager
     {
         $output = '';
         $shortMigrationName = str_replace($this->migrationPath . '/', '', $migration);
-        if ($shortMigrationName !== '11.0/000-add-migrations-table.sql') {
-            $output .= $this->logMigrationEvent($connection, $shortMigrationName, 'start');
-        }
+        $output .= $this->logMigrationEvent($connection, $shortMigrationName, 'start');
         $sql = file_get_contents($migration);
         foreach (preg_split('/;\s*([\r\n]|$)/', $sql) as $i => $sqlLine) {
             $trimmedLine = trim($sqlLine);
