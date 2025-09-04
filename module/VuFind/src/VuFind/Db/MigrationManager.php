@@ -135,6 +135,28 @@ class MigrationManager
     }
 
     /**
+     * Get a list of failed migrations.
+     *
+     * @return string[]
+     */
+    public function getFailedMigrations(): array
+    {
+        $queryBuilder = $this->connection->createQueryBuilder();
+        $queryBuilder->select('name')
+            ->from('migrations')
+            ->where('status != ?')
+            ->orderBy('id', 'ASC');
+        try {
+            $result = $this->connection->executeQuery($queryBuilder, ['success']);
+        } catch (TableNotFoundException $e) {
+            // If the migrations table doesn't exist yet, there can't be any failed migrations.
+            return [];
+        }
+        $rows = $result->fetchAllAssociative();
+        return array_unique(array_column($rows, 'name'));
+    }
+
+    /**
      * Given a database platform and an old version, return a list of migrations that should be applied.
      *
      * @param string $oldVersion Version we're upgrading from

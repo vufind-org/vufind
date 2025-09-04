@@ -320,6 +320,13 @@ class UpgradeController extends AbstractBase
     {
         $migrationManager = $this->getService(MigrationManager::class);
         $migrations = $migrationManager->getMigrations($this->cookie->oldVersion);
+        $failedMigrations = $migrationManager->getFailedMigrations();
+        if (!empty($failedMigrations)) {
+            $this->flashMessenger()->addErrorMessage(
+                'Failed migration(s) detected: ' . implode(' ', $failedMigrations)
+                . ' -- see migrations table in database for details; manual intervention may be needed.'
+            );
+        }
         if (!empty($migrations) && !$this->logsql) {
             if (!$this->hasDatabaseRootCredentials()) {
                 return $this->forwardTo('Upgrade', 'GetDbCredentials');
