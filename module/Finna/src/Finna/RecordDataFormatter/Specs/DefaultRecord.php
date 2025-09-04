@@ -333,7 +333,7 @@ class DefaultRecord extends \VuFind\RecordDataFormatter\Specs\DefaultRecord
                 [
                     'context' => [
                         'class' => 'recordAdditionalInformation',
-                        'title' => 'AdditionalInformation',
+                        'title' => 'Additional Information',
                     ],
                 ],
             ],
@@ -343,7 +343,7 @@ class DefaultRecord extends \VuFind\RecordDataFormatter\Specs\DefaultRecord
                 [
                     'context' => [
                         'class' => 'recordTitleStatement',
-                        'title' => 'AdditionalInformation',
+                        'title' => 'Additional Information',
                     ],
                 ],
             ],
@@ -827,7 +827,7 @@ class DefaultRecord extends \VuFind\RecordDataFormatter\Specs\DefaultRecord
                 [
                     'context' => [
                         'class' => 'extendedFindingAids',
-                        'title' => 'FindingAid',
+                        'title' => 'Finding Aid',
                     ],
                 ],
             ],
