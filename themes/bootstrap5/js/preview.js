@@ -45,6 +45,9 @@ function applyPreviewUrl($link, url) {
   // Update associated record thumbnail, if any:
   $link.parents('.result,.record')
     .find('.recordcover[data-linkpreview="true"]').parents('a').attr('href', url)
+    .off('click') // disable custom click handling
+    .attr('data-lightbox-image', null) // disable opening in lightbox
+    .attr('target', '_blank') // open consistently with preview button
     .attr('rel', 'noopener');
 }
 

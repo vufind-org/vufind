@@ -59,9 +59,8 @@ trait IniReaderTrait
     protected function getIniReader()
     {
         if (null == $this->iniReader) {
-            // Use ASCII 0 as a nest separator; otherwise some of the unusual key names
-            // we have (i.e. in WorldCat.ini search options) will get parsed in
-            // unexpected ways.
+            // Use ASCII 0 as a nest separator; otherwise some of our unusual key names
+            // (e.g. strings containing . characters) will get parsed in unexpected ways.
             $this->iniReader = new IniReader();
             $this->iniReader->setNestSeparator(chr(0));
         }

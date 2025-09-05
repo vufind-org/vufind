@@ -22,7 +22,7 @@
     <a<?=$this->htmlAttributes($prevParams)?>><?=$this->transEsc('prev_ellipsis') ?></a>
   <?php endif; ?>
   <?php foreach ($this->data as $item): ?>
-    <li>
+    <li class="facet__list__item">
       <?=$this->render('Recommend/SideFacets/single-facet.phtml', [
         'exclude' => $this->exclude,
         'facet' => $item,

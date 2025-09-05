@@ -689,7 +689,7 @@ $cc-footer-links-gap: 1.3rem !default;
             max-width: none!important;
             min-width: auto!important;
             border-left: none!important;
-            border-top: 1px solid var(--cc-separator-border-color !important);
+            border-top: 1px solid var(--cc-separator-border-color)!important;
         }
 
         .cm__btn + .cm__btn,

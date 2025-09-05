@@ -984,7 +984,7 @@ class User extends RowGateway implements
      */
     public function getCatPassEnc(): ?string
     {
-        return $this->cat_pass_enc;
+        return $this->cat_pass_enc ?? null;
     }
 
     /**

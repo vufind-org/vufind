@@ -357,6 +357,7 @@ class AbstractSearch extends AbstractBase
         $view = $this->createViewModel();
         $config = $this->getConfig($this->getOptionsForClass()->getFacetsIni());
         $view->multiFacetsSelection = (bool)($config->Results_Settings->multiFacetsSelection ?? false);
+        $extraErrors = [];
 
         // Handle saved search requests:
         $savedId = $this->params()->fromQuery('saved', false);
@@ -427,7 +428,14 @@ class AbstractSearch extends AbstractBase
             }
 
             foreach ($results->getErrors() as $error) {
-                $this->flashMessenger()->addErrorMessage($error);
+                try {
+                    $this->flashMessenger()->addErrorMessage($error);
+                } catch (\Exception $e) {
+                    // The flash messenger will throw an exception if session writes are disabled,
+                    // which will happen in combined search AJAX requests. For that situation, we'll
+                    // pass error messages through the view model so they can still be displayed.
+                    $extraErrors[] = $error;
+                }
             }
         }
 
@@ -439,6 +447,11 @@ class AbstractSearch extends AbstractBase
         // Schedule options for footer tools
         $view->scheduleOptions = $this->getService(\VuFind\Search\History::class)->getScheduleOptions();
         $view->saveToHistory = $this->saveToHistory;
+
+        // Add extra errors, if necessary:
+        if (count($extraErrors) > 0) {
+            $view->extraErrors = $extraErrors;
+        }
         return $view;
     }
 

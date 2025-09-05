@@ -168,7 +168,6 @@ class Upgrade
         $this->upgradeSms();
         $this->upgradeSummon();
         $this->upgradePrimo();
-        $this->upgradeWorldCat();
 
         // The previous upgrade routines may have added values to permissions.ini,
         // so we should save it last. It doesn't have its own upgrade routine.
@@ -621,23 +620,12 @@ class Upgrade
         }
 
         // Warn the user about deprecated WorldCat settings:
-        if (isset($newConfig['WorldCat']['LimitCodes'])) {
-            unset($newConfig['WorldCat']['LimitCodes']);
+        if (isset($newConfig['WorldCat'])) {
+            unset($newConfig['WorldCat']);
             $this->addWarning(
-                'The [WorldCat] LimitCodes setting never had any effect and has been'
-                . ' removed.'
+                'The [WorldCat] section of config.ini has been removed following'
+                . ' the shutdown of the v1 WorldCat search API; use WorldCat2.ini instead.'
             );
-        }
-        $badKeys
-            = ['id', 'xISBN_token', 'xISBN_secret', 'xISSN_token', 'xISSN_secret'];
-        foreach ($badKeys as $key) {
-            if (isset($newConfig['WorldCat'][$key])) {
-                unset($newConfig['WorldCat'][$key]);
-                $this->addWarning(
-                    'The [WorldCat] ' . $key . ' setting is no longer used and'
-                    . ' has been removed.'
-                );
-            }
         }
         if (
             isset($newConfig['Record']['related'])
@@ -1230,59 +1218,6 @@ class Upgrade
             unset($config['General']['apiId']);
             unset($config['General']['port']);
         }
-    }
-
-    /**
-     * Upgrade WorldCat.ini.
-     *
-     * @throws FileAccessException
-     * @return void
-     */
-    protected function upgradeWorldCat()
-    {
-        // If WorldCat is disabled in our current configuration, we don't need to
-        // load any WorldCat-specific settings:
-        if (!isset($this->newConfigs['config.ini']['WorldCat']['apiKey'])) {
-            return;
-        }
-
-        // we want to retain the old installation's search settings exactly as-is
-        $groups = [
-            'Basic_Searches', 'Advanced_Searches', 'Sorting',
-        ];
-        $this->applyOldSettings('WorldCat.ini', $groups);
-
-        // we need to fix an obsolete search setting for authors
-        foreach (['Basic_Searches', 'Advanced_Searches'] as $section) {
-            $new = [];
-            foreach ($this->newConfigs['WorldCat.ini'][$section] as $k => $v) {
-                if ($k == 'srw.au:srw.pn:srw.cn') {
-                    $k = 'srw.au';
-                }
-                $new[$k] = $v;
-            }
-            $this->newConfigs['WorldCat.ini'][$section] = $new;
-        }
-
-        // Deal with deprecated related record module.
-        $newConfig = & $this->newConfigs['WorldCat.ini'];
-        if (
-            isset($newConfig['Record']['related'])
-            && in_array('WorldCatEditions', $newConfig['Record']['related'])
-        ) {
-            $newConfig['Record']['related'] = array_diff(
-                $newConfig['Record']['related'],
-                ['WorldCatEditions']
-            );
-            $this->addWarning(
-                'The WorldCatEditions related record module is no longer '
-                . 'supported due to OCLC\'s xID API shutdown.'
-                . ' It has been removed from your settings.'
-            );
-        }
-
-        // save the file
-        $this->saveModifiedConfig('WorldCat.ini');
     }
 
     /**

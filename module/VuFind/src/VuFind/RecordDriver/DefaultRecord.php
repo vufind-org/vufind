@@ -676,14 +676,6 @@ class DefaultRecord extends AbstractBase
     }
 
     /**
-    * Get the uniform title from the 130a field
-    */
-    public function getUniformTitle()
-    {
-        return $this->fields['uniform_title_str_mv'] ?? [];
-    }
-
-    /**
      * Get a raw, unnormalized LCCN. (See getLCCN for normalization).
      *
      * @return string

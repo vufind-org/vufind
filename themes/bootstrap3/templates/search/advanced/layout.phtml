@@ -186,7 +186,8 @@
         </div>
 
         <?php if ($checkboxFilters): ?>
-          <div class="checkboxFilter">
+          <?php // checkboxFilter class remains only for back-compatibility: ?>
+          <div class="checkbox-filters checkboxFilter">
             <?php foreach ($checkboxFilters as $data): ?>
               <div class="checkbox-filter">
                 <label class="facet checkbox"><input class="checkbox-select-item" type="checkbox" checked="checked" name="filter[]" value="<?=$this->escapeHtmlAttr($data['filter'])?>"> <?=$this->transEsc($data['desc'])?></label>
