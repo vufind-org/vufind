@@ -65,6 +65,7 @@ function compileTheme(themeName) {
       style: "expanded",
       sourceMap: generateSourceMaps,
       embedSources: true,
+      quietDeps: true,
     }
   );
 
