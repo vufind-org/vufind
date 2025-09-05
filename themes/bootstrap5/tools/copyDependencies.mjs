@@ -11,7 +11,7 @@ process.argv.forEach(arg => {
 console.log('Copying dependencies...');
 
 // Bootstrap 5
-await cp('node_modules/bootstrap/scss/.', 'scss/vendor/bootstrap/', { recursive: true });
+await cp('node_modules/bootstrap/scss/.', 'scss/vendor/bootstrap/scss/', { recursive: true });
 
 if (buildDepsOnly) {
     console.log('Done copying build dependencies.');

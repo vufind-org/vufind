@@ -12,19 +12,21 @@
   "scripts": {
     "build": "npm run build:css",
     "watch": "npm run watch:css",
-
-    "build:css": "npm run build:scss",
+    "build:css": "node tools/build-css.js",
     "watch:css": "npm run watch:scss",
-
     "install:scss-dependencies": "cd themes/bootstrap5 && npm run installBuildDeps",
     "build:scss": "npm run install:scss-dependencies && grunt scss",
     "check:scss": "npm run install:scss-dependencies && grunt check:scss",
     "watch:scss": "npm run install:scss-dependencies && grunt watch:scss"
   },
   "dependencies": {
+    "clean-css": "^5.3.3",
+    "commander": "^14.0.0",
     "grunt": "^1.0.4",
     "grunt-dart-sass": "^2.0.1",
     "jit-grunt": "^0.10.0",
+    "nodemon": "^3.1.10",
+    "npm-run-all2": "^8.0.4",
     "sass": "1.72.0"
   },
   "devDependencies": {
