@@ -27,7 +27,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFindConsole\Command\Generate;
+namespace VuFindConsole\Command\Install;
 
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
@@ -49,7 +49,7 @@ use function is_callable;
  * @link     https://vufind.org/wiki/development Wiki
  */
 #[AsCommand(
-    name: 'generate/database',
+    name: 'install/database',
     description: 'Database builder'
 )]
 class DatabaseCommand extends Command

@@ -27,7 +27,7 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFindConsole\Command\Generate;
+namespace VuFindConsole\Command\Install;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;

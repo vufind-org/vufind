@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Generate/Database command test.
+ * Install/Database command test.
  *
  * PHP version 8
  *
@@ -27,14 +27,14 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 
-namespace VuFindTest\Command\Generate;
+namespace VuFindTest\Command\Install;
 
 use Symfony\Component\Console\Tester\CommandTester;
 use VuFind\Db\DbBuilder;
-use VuFindConsole\Command\Generate\DatabaseCommand;
+use VuFindConsole\Command\Install\DatabaseCommand;
 
 /**
- * Generate/Database command test.
+ * Install/Database command test.
  *
  * @category VuFind
  * @package  Tests

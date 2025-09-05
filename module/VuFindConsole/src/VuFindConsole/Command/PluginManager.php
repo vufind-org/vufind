@@ -49,7 +49,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         'compile/theme' => Compile\ThemeCommand::class,
-        'generate/database' => Generate\DatabaseCommand::class,
         'generate/dynamicroute' => Generate\DynamicRouteCommand::class,
         'generate/extendclass' => Generate\ExtendClassCommand::class,
         'generate/extendservice' => Generate\ExtendServiceCommand::class,
@@ -64,6 +63,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'import/import-csv' => Import\ImportCsvCommand::class,
         'import/import-xsl' => Import\ImportXslCommand::class,
         'import/webcrawl' => Import\WebCrawlCommand::class,
+        'install/database' => Install\DatabaseCommand::class,
         'install/install' => Install\InstallCommand::class,
         'language/addusingtemplate' => Language\AddUsingTemplateCommand::class,
         'language/copystring' => Language\CopyStringCommand::class,
@@ -103,7 +103,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $factories = [
         Compile\ThemeCommand::class => Compile\ThemeCommandFactory::class,
-        Generate\DatabaseCommand::class => Generate\DatabaseCommandFactory::class,
         Generate\DynamicRouteCommand::class => Generate\AbstractRouteCommandFactory::class,
         Generate\ExtendClassCommand::class => Generate\AbstractContainerAwareCommandFactory::class,
         Generate\ExtendServiceCommand::class => Generate\AbstractCommandFactory::class,
@@ -118,6 +117,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Import\ImportCsvCommand::class => Import\ImportCsvCommandFactory::class,
         Import\ImportXslCommand::class => Import\ImportXslCommandFactory::class,
         Import\WebCrawlCommand::class => Import\WebCrawlCommandFactory::class,
+        Install\DatabaseCommand::class => Install\DatabaseCommandFactory::class,
         Install\InstallCommand::class => InvokableFactory::class,
         Language\AddUsingTemplateCommand::class => Language\AbstractCommandFactory::class,
         Language\CopyStringCommand::class => Language\AbstractCommandFactory::class,
