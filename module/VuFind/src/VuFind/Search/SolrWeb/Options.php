@@ -29,6 +29,8 @@
 
 namespace VuFind\Search\SolrWeb;
 
+use VuFind\Config\ConfigManager;
+
 /**
  * Solr Web Search Options
  *
@@ -43,12 +45,12 @@ class Options extends \VuFind\Search\Solr\Options
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManager $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(ConfigManager $configManager)
     {
         $this->facetsIni = $this->searchIni = 'website';
-        parent::__construct($configLoader);
+        parent::__construct($configManager);
     }
 
     /**

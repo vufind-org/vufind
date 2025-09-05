@@ -34,6 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\ConfigManager;
 
 /**
  * Generic factory for search options objects.
@@ -66,7 +67,7 @@ class OptionsFactory implements FactoryInterface
         ?array $options = null
     ) {
         return new $requestedName(
-            $container->get(\VuFind\Config\PluginManager::class),
+            $container->get(ConfigManager::class),
             ...($options ?: [])
         );
     }

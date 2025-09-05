@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Search;
 
+use VuFind\Config\ConfigManager;
 use VuFind\Search\Factory\UrlQueryHelperFactory;
 use VuFind\Search\UrlQueryHelper;
 use VuFindSearch\Query\Query;
@@ -219,7 +220,7 @@ class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
     public function testFactory()
     {
         $factory = new UrlQueryHelperFactory();
-        $config = $this->createMock(\VuFind\Config\PluginManager::class);
+        $config = $this->createMock(ConfigManager::class);
         $params = new \VuFindTest\Search\TestHarness\Params(
             new \VuFindTest\Search\TestHarness\Options($config),
             $config

@@ -30,6 +30,8 @@
 
 namespace VuFind\Search\EIT;
 
+use VuFind\Config\ConfigManager;
+
 /**
  * EBSCO EIT Search Options
  * Largely copied from WorldCat Search Options
@@ -46,12 +48,12 @@ class Options extends \VuFind\Search\Base\Options
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManager $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(ConfigManager $configManager)
     {
         $this->searchIni = $this->facetsIni = 'EIT';
-        parent::__construct($configLoader);
+        parent::__construct($configManager);
     }
 
     /**

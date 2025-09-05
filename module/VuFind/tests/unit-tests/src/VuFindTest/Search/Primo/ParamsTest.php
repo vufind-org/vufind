@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Search\Primo;
 
+use VuFind\Config\ConfigManager;
 use VuFind\Search\Primo\Options;
 use VuFind\Search\Primo\Params;
 
@@ -206,10 +207,10 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      */
     protected function getParams(): Params
     {
-        $configMock = $this->createMock(\VuFind\Config\PluginManager::class);
+        $mockConfigManager = $this->createMock(ConfigManager::class);
         return new Params(
-            new Options($configMock),
-            $configMock
+            new Options($mockConfigManager),
+            $mockConfigManager
         );
     }
 }

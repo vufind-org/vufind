@@ -34,6 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\ConfigManager;
 use VuFind\I18n\Locale\LocaleSettings;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
 
@@ -93,7 +94,7 @@ class FacetCacheFactory implements FactoryInterface
         $cacheManager = $container->get(\VuFind\Cache\Manager::class);
         $language = $container->get(LocaleSettings::class)->getUserLocale();
         $hierarchicalFacetHelper = $container->get(HierarchicalFacetHelper::class);
-        $configManager = $container->get(\VuFind\Config\PluginManager::class);
+        $configManager = $container->get(ConfigManager::class);
         return new $requestedName($results, $cacheManager, $language, $hierarchicalFacetHelper, $configManager);
     }
 }

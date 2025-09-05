@@ -29,6 +29,8 @@
 
 namespace VuFind\Search\Solr;
 
+use VuFind\Config\ConfigManager;
+
 /**
  * Solr Search Options
  *
@@ -75,11 +77,11 @@ class Options extends \VuFind\Search\Base\Options
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManager $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(ConfigManager $configManager)
     {
-        parent::__construct($configLoader);
+        parent::__construct($configManager);
 
         $this->sortTieBreaker = $this->searchSettings['General']['tie_breaker_sort'] ?? null;
         $this->emptySearchRelevanceOverride
