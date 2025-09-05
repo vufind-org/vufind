@@ -84,7 +84,7 @@ class DbBuilder
             $cuser = 'CREATE USER ' . $newUser
                 . " WITH PASSWORD {$escapedPass}";
             $grant = 'GRANT ALL PRIVILEGES ON DATABASE '
-                . "{$newName} TO {$newUser} ";
+                . "{$newName} TO {$newUser}";
             return [$create, $escape, $cuser, $grant];
         }
         // Default: MySQL:
@@ -112,9 +112,9 @@ class DbBuilder
         // Special case: PostgreSQL:
         if ($driver == 'pgsql') {
             $grantTables = 'GRANT ALL PRIVILEGES ON ALL TABLES IN '
-                . "SCHEMA public TO {$newUser} ";
+                . "SCHEMA public TO {$newUser}";
             $grantSequences = 'GRANT ALL PRIVILEGES ON ALL SEQUENCES'
-                . " IN SCHEMA public TO {$newUser} ";
+                . " IN SCHEMA public TO {$newUser}";
             return [$grantTables, $grantSequences];
         }
         // Default: MySQL:
