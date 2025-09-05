@@ -43,10 +43,9 @@ use Finna\RecordDataFormatter\Specs\DefaultRecord;
  */
 class RecordSpecsTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
     use \VuFindTest\Feature\FixtureTrait;
     use \VuFindTest\Feature\ViewTrait;
-    use \VuFindTest\Feature\PathResolverTrait;
 
     /**
      * Default record field keys in order to be displayed

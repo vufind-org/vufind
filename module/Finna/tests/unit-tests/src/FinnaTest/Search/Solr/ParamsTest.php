@@ -47,7 +47,7 @@ use VuFind\Date\Converter as DateConverter;
  */
 class ParamsTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Data provider for testSort

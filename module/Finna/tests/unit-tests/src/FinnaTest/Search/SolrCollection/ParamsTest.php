@@ -45,7 +45,7 @@ use VuFind\Config\PluginManager;
  */
 class ParamsTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Get Params object
@@ -59,7 +59,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         ?Options $options = null,
         ?PluginManager $mockConfig = null
     ): Params {
-        $mockConfig ??= $this->createMock(PluginManager::class);
+        $mockConfig ??= $this->getMockConfigPluginManager([]);
         return new Params(
             $options ?? new Options($mockConfig),
             $mockConfig,
