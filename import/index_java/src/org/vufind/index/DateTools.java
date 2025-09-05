@@ -35,7 +35,7 @@ import java.util.regex.Pattern;
 public class DateTools
 {
     private final static Pattern YEAR_PATTERN = Pattern.compile("-?\\d{1,4}");
-    private final static Pattern BC_YEAR_PATTERN = Pattern.compile("([0-9]+) [Bb][.]?[Cc][.]?");
+    private final static Pattern BC_YEAR_PATTERN = Pattern.compile("([0-9]+) [Bb][.]?\\s?[Cc][.]?");
 
     /**
      * Get all available dates from the record.
