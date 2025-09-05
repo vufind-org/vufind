@@ -87,9 +87,9 @@ class ConfigManager
      *
      * The path consists of a base configuration name and a path to a subsection of that configuration.
      *
-     * @param string  $configPath     Config path
-     * @param boolean $forceReload    If cache should be ignored
-     * @param bool    $useLocalConfig Use local configuration if available
+     * @param string $configPath     Config path
+     * @param bool   $forceReload    If cache should be ignored
+     * @param bool   $useLocalConfig Use local configuration if available
      *
      * @return mixed
      */
@@ -111,9 +111,9 @@ class ConfigManager
     /**
      * Get config as array by path.
      *
-     * @param string  $configPath     Config path
-     * @param boolean $forceReload    If cache should be ignored
-     * @param bool    $useLocalConfig Use local configuration if available
+     * @param string $configPath     Config path
+     * @param bool   $forceReload    If cache should be ignored
+     * @param bool   $useLocalConfig Use local configuration if available
      *
      * @return array
      */
@@ -129,9 +129,9 @@ class ConfigManager
     /**
      * Get config as object by path.
      *
-     * @param string  $configPath     Config path
-     * @param boolean $forceReload    If cache should be ignored
-     * @param bool    $useLocalConfig Use local configuration if available
+     * @param string $configPath     Config path
+     * @param bool   $forceReload    If cache should be ignored
+     * @param bool   $useLocalConfig Use local configuration if available
      *
      * @return Config
      */

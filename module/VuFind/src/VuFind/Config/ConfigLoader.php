@@ -4,7 +4,7 @@
  * Configuration loader
  * Note: This class supports the ConfigManager but should not be called directly except in rare situations
  * where the ConfigManager must be bypassed to avoid circular dependencies (as when setting up the
- * Cache Manager). Unless you have a very good reason, always use CacheManager instead.
+ * Cache Manager). Unless you have a very good reason, always use the ConfigManager instead.
  *
  * PHP version 8
  *
@@ -44,8 +44,9 @@ use function is_string;
 
 /**
  * Configuration loader
- * Note: This is only used to load the caching configuration in the config.ini without file caching and should
- * not be used otherwise. Use the ConfigManager instead.
+ * Note: This class supports the ConfigManager but should not be called directly except in rare situations
+ * where the ConfigManager must be bypassed to avoid circular dependencies (as when setting up the
+ * Cache Manager). Unless you have a very good reason, always use the ConfigManager instead.
  *
  * @category VuFind
  * @package  Config
