@@ -67,6 +67,8 @@ class DbBuilderTest extends \PHPUnit\Framework\TestCase
             'GRANT ALL PRIVILEGES ON DATABASE name TO user;',
         ];
         return [
+            'mariadb, sql-only' => ['mariadb', $expectedMySql, true],
+            'mariadb, not sql-only' => ['mariadb', $expectedMySql, false],
             'mysql, sql-only' => ['mysql', $expectedMySql, true],
             'mysql, not sql-only' => ['mysql', $expectedMySql, false],
             'pgsql, sql-only' => ['pgsql', $expectedPgSql, true],
@@ -145,6 +147,8 @@ class DbBuilderTest extends \PHPUnit\Framework\TestCase
             'GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO user;',
         ];
         return [
+            'mariadb, sql-only' => ['mariadb', $expectedMySql, true],
+            'mariadb, not sql-only' => ['mariadb', $expectedMySql, false],
             'mysql, sql-only' => ['mysql', $expectedMySql, true],
             'mysql, not sql-only' => ['mysql', $expectedMySql, false],
             'pgsql, sql-only' => ['pgsql', $expectedPgSql, true],
