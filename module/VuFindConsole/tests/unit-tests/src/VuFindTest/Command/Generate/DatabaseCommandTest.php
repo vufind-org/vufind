@@ -49,7 +49,7 @@ class DatabaseCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSimpleSuccess()
+    public function testSimpleSuccess(): void
     {
         $builder = $this->createMock(DbBuilder::class);
         $builder->expects($this->atLeast(0))->method('build')->with(
@@ -79,7 +79,7 @@ class DatabaseCommandTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSqlOnly()
+    public function testSqlOnly(): void
     {
         $builder = $this->createMock(DbBuilder::class);
         $builder->expects($this->atLeast(0))->method('build')->with(
