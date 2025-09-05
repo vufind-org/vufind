@@ -225,7 +225,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Support method for changeConfig; act on a single file.
      *
-     * @param string $configName Configuration to modify.
+     * @param string $configName Configuration to modify. Use 'Source:Target" to copy from Source.ini to Target.ini.
      * @param array  $settings   Settings to change.
      * @param bool   $replace    Should we replace the existing config entirely
      * (as opposed to extending it with new settings)?
@@ -234,20 +234,28 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function changeConfigFile(string $configName, array $settings, bool $replace = false): void
     {
-        $file = $configName . '.ini';
-        $local = $this->pathResolver->getLocalConfigPath($file, null, true);
-        if (!in_array($configName, $this->modifiedConfigs)) {
-            if (file_exists($local)) {
+        $parts = explode(':', $configName);
+        if (isset($parts[1])) {
+            $sourceConfig = $parts[0];
+            $destConfig = $parts[1];
+        } else {
+            $sourceConfig = $destConfig = $configName;
+        }
+        $sourceFile = $sourceConfig . '.ini';
+        $destFile = $destConfig . '.ini';
+        $localFile = $this->pathResolver->getLocalConfigPath($destFile, null, true);
+        if (!in_array($destConfig, $this->modifiedConfigs)) {
+            if (file_exists($localFile)) {
                 // File exists? Make a backup!
-                copy($local, $local . '.bak');
+                copy($localFile, $localFile . '.bak');
             } else {
                 // File doesn't exist? Make a baseline version.
-                copy($this->pathResolver->getBaseConfigPath($file), $local);
+                copy($this->pathResolver->getBaseConfigPath($sourceFile), $localFile);
             }
 
-            $this->modifiedConfigs[] = $configName;
+            $this->modifiedConfigs[] = $destConfig;
         }
-        $this->writeConfigFile($local, $settings, $replace);
+        $this->writeConfigFile($localFile, $settings, $replace);
     }
 
     /**
