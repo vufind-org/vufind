@@ -154,14 +154,14 @@ class DatabaseCommand extends Command
         // Try to import the document if successful:
         try {
             $result = $this->builder->build(
+                $newName,
+                $newUser,
+                $newPass,
                 $driver,
                 $dbHost,
                 $vufindHost,
                 $rootUser,
                 $rootPass,
-                $newName,
-                $newUser,
-                $newPass,
                 $sqlOnly,
                 $steps
             );

@@ -140,14 +140,14 @@ class DbBuilder
     /**
      * Build the database. Return the SQL used for the operation. Throw an exception on error.
      *
+     * @param string   $newName       Name of database to create
+     * @param string   $newUser       Username for connecting to new database (will be created)
+     * @param string   $newPass       Password for new user
      * @param string   $driver        Database driver to use
      * @param string   $dbHost        Name of database host
      * @param string   $vufindHost    Name of VuFind host (for use in creating users)
      * @param string   $rootUser      Root username for connecting to database
      * @param string   $rootPass      Root password for connecting to database
-     * @param string   $newName       Name of database to create
-     * @param string   $newUser       Username for connecting to new database (will be created)
-     * @param string   $newPass       Password for new user
      * @param bool     $returnSqlOnly Set to true to return SQL without actually manipulating the database
      * @param string[] $steps         Array of steps to run (legal values: pre, main, post); omit for all steps
      *
@@ -156,14 +156,14 @@ class DbBuilder
      * @throws DBALException
      */
     public function build(
-        string $driver,
-        string $dbHost,
-        string $vufindHost,
-        string $rootUser,
-        string $rootPass,
         string $newName,
         string $newUser,
         string $newPass,
+        string $driver = 'mysql',
+        string $dbHost = 'localhost',
+        string $vufindHost = 'localhost',
+        string $rootUser = 'root',
+        string $rootPass = '',
         bool $returnSqlOnly = false,
         array $steps = []
     ): string {

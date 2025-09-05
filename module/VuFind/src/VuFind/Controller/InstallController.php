@@ -418,14 +418,14 @@ class InstallController extends AbstractBase
                     $builder = $this->serviceLocator->get(DbBuilder::class);
                     $rootpass = $this->params()->fromPost('dbrootpass');
                     $omnisql = $builder->build(
+                        $dbSettings['dbname'],
+                        $dbSettings['dbuser'],
+                        $newpass,
                         $dbSettings['driver'],
                         $dbSettings['dbhost'],
                         $dbSettings['vufindhost'],
                         $dbSettings['dbrootuser'],
                         $rootpass,
-                        $dbSettings['dbname'],
-                        $dbSettings['dbuser'],
-                        $newpass,
                         $skip
                     );
                     if ($skip) {
