@@ -32,15 +32,23 @@ program
   .option(
     "-S, --no-sourcemaps",
     "do not generate sourcemaps (faster compilation)"
+  )
+  .option(
+    "-c, --check-only",
+    "compile but do not write result"
   );
 
 program.parse(process.argv);
-const cliOptions = program.opts();
-console.log(cliOptions);
+const CLI_OPTIONS = program.opts();
+
+const generateSourceMaps = CLI_OPTIONS.checkOnly ? false : CLI_OPTIONS.sourcemaps ?? CLI_OPTIONS.minify;
+console.log(`CHECK-ONLY: ${String(CLI_OPTIONS.checkOnly ?? false)}`);
+console.log(`MINIFY: ${String(CLI_OPTIONS.minify ?? false)}`);
+console.log(`SOURCEMAPS: ${String(generateSourceMaps)}`);
 
 // Main
 
-for (const theme of cliOptions.themes) {
+for (const theme of CLI_OPTIONS.themes) {
   try {
     if (fs.existsSync(themePath(theme, "scss"))) {
       compileTheme(theme);
@@ -51,15 +59,15 @@ for (const theme of cliOptions.themes) {
 }
 
 function compileTheme(themeName) {
-  console.log(`\n${themeName}:`);
+  const start = performance.now();
+  console.log(`\n${underline(themeName)}`);
 
   console.log("- compiling SCSS to CSS...");
 
   // @link https://github.com/twbs/bootstrap/blob/main/package.json
-  // css-compile: sass --style expanded --source-map --embed-sources --no-error-css scss/:dist/css/
-  const generateSourceMaps = cliOptions.sourcemaps ?? cliOptions.minify;
+  // sass --style expanded --source-map --embed-sources --no-error-css scss/:dist/css/
   const compiled = sass.compile(
-    themePath(themeName, `scss/${cliOptions.entry}`),
+    themePath(themeName, `scss/${CLI_OPTIONS.entry}`),
     {
       loadPaths: getLoadPaths(themeName),
       style: "expanded",
@@ -76,11 +84,11 @@ function compileTheme(themeName) {
     sourceMapContent = JSON.stringify(compiled.sourceMap);
   }
 
-  if (cliOptions.minify) {
+  if (CLI_OPTIONS.minify) {
     console.log("- minifying...");
 
     // @link https://github.com/twbs/bootstrap/blob/main/package.json
-    // css-minify-main: cleancss -O1 --format breakWith=lf --with-rebase --source-map --source-map-inline-sources
+    // cleancss -O1 --format breakWith=lf --with-rebase --source-map --source-map-inline-sources
     // rebasing breaks Font Awesome icons
     const compressor = new CleanCSS({
       level: 1,
@@ -102,20 +110,30 @@ function compileTheme(themeName) {
 
   if (sourceMapContent) {
     // add sourceMappingURL to CSS
-    const sourceMapName = `${cliOptions.outname}.map`;
+    const sourceMapName = `${CLI_OPTIONS.outname}.map`;
     cssContent = `${cssContent}\n/*# sourceMappingURL=${sourceMapName} */`;
 
-    console.log(`- writing source map to theme/${themeName}/css/${sourceMapName}`);
-    const sourceMapPath = themePath(themeName, `css/${sourceMapName}`);
-    fs.writeFileSync(sourceMapPath, sourceMapContent, "utf8");
+    if (!CLI_OPTIONS.checkOnly) {
+      console.log(`- writing source map to theme/${themeName}/css/${sourceMapName}`);
+      const sourceMapPath = themePath(themeName, `css/${sourceMapName}`);
+      fs.writeFileSync(sourceMapPath, sourceMapContent, "utf8");
+    }
   }
 
-  console.log(`- writing css to theme/${themeName}/css/${cliOptions.outname}`);
-  const outCSSPath = themePath(themeName, `css/${cliOptions.outname}`);
-  fs.writeFileSync(outCSSPath, cssContent, "utf8");
+  if (!CLI_OPTIONS.checkOnly) {
+    console.log(`- writing css to theme/${themeName}/css/${CLI_OPTIONS.outname}`);
+    const outCSSPath = themePath(themeName, `css/${CLI_OPTIONS.outname}`);
+    fs.writeFileSync(outCSSPath, cssContent, "utf8");
+  }
+
+  console.log(`- done (${Math.ceil(performance.now() - start)}ms)`);
 }
 
 // Functions
+
+function underline(str) {
+  return `\x1b[4m${str}\x1b[0m`;
+}
 
 function themePath(name, subdir = "") {
   const subpath = subdir.split("/").filter(Boolean);

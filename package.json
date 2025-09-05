@@ -10,10 +10,12 @@
     "url": "https://vufind.org/jira"
   },
   "scripts": {
-    "build": "npm run build:css",
-    "watch": "npm run watch:css",
+    "build": "npm-run-all \"build:* -- {@}\"",
+    "watch": "npm-run-all \"watch:* -- {@}\"",
+
     "build:css": "node tools/build-css.js",
-    "watch:css": "npm run watch:scss",
+    "watch:css": "nodemon --watch tools/ --watch themes/ --ext scss,js --exec \"node tools/build-css.js\"",
+
     "install:scss-dependencies": "cd themes/bootstrap5 && npm run installBuildDeps",
     "build:scss": "npm run install:scss-dependencies && grunt scss",
     "check:scss": "npm run install:scss-dependencies && grunt check:scss",
