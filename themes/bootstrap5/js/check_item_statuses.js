@@ -198,15 +198,18 @@ VuFind.register('itemStatuses', function ItemStatuses() {
    */
   function checkItemStatus(el) {
     let hiddenIdEl = el.querySelector(".hiddenId");
-    const hiddenRTACIdEl = el.querySelector(".hiddenRTACId");
+    // hiddenoverrideId is an ID provided by a search backend, when 
+    // the ID required for item status lookup is different from the
+    // record ID.
+    const hiddenOverrideIdEl = el.querySelector(".hiddenOverrideId");
 
-    if (hiddenRTACIdEl != null) {
-      hiddenIdEl = hiddenRTACIdEl;
+    if (hiddenOverrideIdEl != null) {
+      hiddenIdEl = hiddenOverrideIdEl;
     }
 
     if (
       hiddenIdEl === null ||
-      hiddenIdEl.value === "no_rtac" ||
+      hiddenIdEl.value === "" ||
       el.classList.contains("js-item-pending") ||
       el.classList.contains("js-item-done")
     ) {

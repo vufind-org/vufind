@@ -27,9 +27,9 @@
     <?php ob_end_clean(); ?>
   <?php endif; ?>
   <?php if ($supportsRtac): ?>
-    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueIDOverrideForRequest())?>" class="hiddenRTACId">
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueIDOverrideForRequest())?>" class="hiddenOverrideId">
   <?php else: ?>
-    <input type="hidden" value="no_rtac" class="hiddenRTACId">
+    <input type="hidden" value="" class="hiddenOverrideId">
   <?php endif; ?>
   <input type="hidden" value="<?=$this->escapeHtmlAttr($id) ?>" class="hiddenId">
   <input type="hidden" value="<?=$this->escapeHtmlAttr($source) ?>" class="hiddenSource">
