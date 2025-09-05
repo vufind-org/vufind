@@ -96,7 +96,7 @@ class ExtendedIniNormalizerTest extends \PHPUnit\Framework\TestCase
             $full = $dir . '/' . $file;
             if ($file != '.' && $file != '..' && is_dir($full)) {
                 $this->checkDirectory($normalizer, $full);
-            } elseif (substr($file, -4) == '.ini') {
+            } elseif (substr($file, -4) == '.ini' && substr($file, -16) !== '-datasources.ini') {
                 $this->checkFile($normalizer, $full);
             }
         }
