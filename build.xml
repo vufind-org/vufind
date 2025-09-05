@@ -852,11 +852,11 @@ return [
         <!-- build database -->
         <property name="pgsqldatabaseprecommands" value="${tmp}/create-pgsql1.sql" />
         <exec executable="php" passthru="true" checkreturn="true">
-          <arg line="${srcdir}/public/index.php generate/database --skip=main,post --driver=pgsql --sql-only ${vufinddb} ${vufinddbuser} ${vufinddbpass} > ${pgsqldatabaseprecommands}" />
+          <arg line="${srcdir}/public/index.php generate/database --steps=pre --driver=pgsql --sql-only ${vufinddb} ${vufinddbuser} ${vufinddbpass} > ${pgsqldatabaseprecommands}" />
         </exec>
         <property name="pgsqldatabasemainpostcommands" value="${tmp}/create-pgsql2.sql" />
         <exec executable="php" passthru="true" checkreturn="true">
-          <arg line="${srcdir}/public/index.php generate/database --skip=pre --driver=pgsql --sql-only ${vufinddb} ${vufinddbuser} ${vufinddbpass} > ${pgsqldatabasemainpostcommands}" />
+          <arg line="${srcdir}/public/index.php generate/database --steps=main,post --driver=pgsql --sql-only ${vufinddb} ${vufinddbuser} ${vufinddbpass} > ${pgsqldatabasemainpostcommands}" />
         </exec>
         <if>
           <equals arg1="${psql_needs_sudo}" arg2="false" />

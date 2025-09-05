@@ -149,7 +149,7 @@ class DbBuilder
      * @param string   $newUser       Username for connecting to new database (will be created)
      * @param string   $newPass       Password for new user
      * @param bool     $returnSqlOnly Set to true to return SQL without actually manipulating the database
-     * @param string[] $skip          Array of steps to skip (legal values: pre, main, post)
+     * @param string[] $steps         Array of steps to run (legal values: pre, main, post); omit for all steps
      *
      * @return string
      * @throws Exception
@@ -165,7 +165,7 @@ class DbBuilder
         string $newUser,
         string $newPass,
         bool $returnSqlOnly = false,
-        array $skip = []
+        array $steps = []
     ): string {
         try {
             // We need a default database name to use to establish a connection:
@@ -188,6 +188,10 @@ class DbBuilder
                 $e
             );
         }
+        // Invert the steps list into a list of steps we should skip (no skipping if empty list):
+        $allSteps = ['pre', 'main', 'post'];
+        $skip = $steps ? array_diff($allSteps, $steps) : [];
+
         // Get SQL together
         $escapedPass = $returnSqlOnly
             ? "'" . addslashes($newPass) . "'"

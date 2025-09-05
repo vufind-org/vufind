@@ -123,10 +123,10 @@ class DatabaseCommand extends Command
                 'password for root user',
                 ''
             )->addOption(
-                'skip',
+                'steps',
                 null,
                 InputOption::VALUE_OPTIONAL,
-                'comma-separated list of steps to skip (legal options: pre, main, post)',
+                'comma-separated list of steps to run (legal options: pre, main, post); omit for all steps',
                 ''
             );
     }
@@ -145,7 +145,7 @@ class DatabaseCommand extends Command
         $driver = $input->getOption('driver');
         $dbHost = $input->getOption('dbHost');
         $vufindHost = $input->getOption('vufindHost');
-        $skip = array_filter(array_map('trim', explode(',', $input->getOption('skip'))));
+        $steps = array_filter(array_map('trim', explode(',', $input->getOption('steps'))));
         $rootUser = $input->getOption('rootUser');
         $rootPass = $input->getOption('rootPass');
         $newName = $input->getArgument('newName');
@@ -163,7 +163,7 @@ class DatabaseCommand extends Command
                 $newUser,
                 $newPass,
                 $sqlOnly,
-                $skip
+                $steps
             );
             if ($sqlOnly) {
                 $output->writeln($result);
