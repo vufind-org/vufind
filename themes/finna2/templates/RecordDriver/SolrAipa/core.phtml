@@ -120,7 +120,7 @@
         <div class="truncate-field recordAuthors">
           <strong><?= $this->transEsc('Aipa::Curated By') ?>:</strong>
           <span>
-          <?php foreach($results as $index => $author): ?>
+          <?php foreach ($results as $index => $author): ?>
             <?=($index > 0 ? '; ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author['name'])?>"><?=$this->escapeHtml($author['name'])?></a><?php if (!empty($author['date'])): ?><span class="author-date">, <?=$this->escapeHtml($author['date']) ?></span><?php endif; ?><?php if (!empty($author['role'])): ?><span class="author-role">, <?=$this->escapeHtml($author['role']) ?></span><?php endif; ?>
           <?php endforeach; ?>
           </span>

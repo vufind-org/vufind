@@ -1,6 +1,6 @@
 <!-- START of: finna - Helpers/login-helper.phtml -->
 <?php $account = $this->auth()->getManager(); ?>
-<?php if(!$account->getUserObject()): ?>
+<?php if (!$account->getUserObject()): ?>
     <p><?=$this->transEsc('login_information_text'); ?>
     <a href="<?=$this->url('myresearch-userlogin')?>" data-lightbox><?=$this->transEsc('logging_in_text'); ?></a></p>
 <?php endif; ?>

@@ -35,7 +35,7 @@
 
         <div class="record-core-metadata">
           <?=$this->record($this->driver)->getFormatList() ?><br>
-          <?php if($this->driver->isCollection()): ?>
+          <?php if ($this->driver->isCollection()): ?>
             <?=implode('<br>', array_map([$this, 'escapeHtml'], $this->driver->getSummary())); ?>
           <?php else: ?>
             <?php
@@ -136,8 +136,8 @@
         <div class="saved-lists">
           <strong><?=$this->transEsc('Saved in')?>:</strong>
           <?php $i = 0;
-          foreach($this->lists as $current): ?>
-            <a href="<?=$this->url('userList', ['id' => $current->getId()])?>"><?=$this->escapeHtml($current->getTitle())?></a><?php if($i++ < count($this->lists) - 1): ?>,<?php endif; ?>
+          foreach ($this->lists as $current): ?>
+            <a href="<?=$this->url('userList', ['id' => $current->getId()])?>"><?=$this->escapeHtml($current->getTitle())?></a><?php if ($i++ < count($this->lists) - 1): ?>,<?php endif; ?>
           <?php endforeach; ?>
           <br>
         </div>

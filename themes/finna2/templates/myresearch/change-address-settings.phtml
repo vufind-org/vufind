@@ -60,7 +60,7 @@
           <label class="form-label" for="<?=$this->escapeHtmlAttr($field)?>"><?=$this->transEsc($data['label']) ?>:</label>
           <select id="<?=$this->escapeHtmlAttr($field)?>" name="<?=$this->escapeHtmlAttr($field)?>" class="form-select">
             <option value=""><?=$this->transEsc('choose_from_list')?></option>
-            <?php foreach($data['options'] as $optionId => $option): ?>
+            <?php foreach ($data['options'] as $optionId => $option): ?>
               <?php $name = is_string($option) ? $option : ($option['name'] ?? $optionId); ?>
               <option value="<?=$this->escapeHtmlAttr($optionId)?>"<?php if ($optionId == $value): ?> selected<?php endif; ?>><?=$this->transEsc($name)?></option>
             <?php endforeach; ?>
@@ -68,7 +68,7 @@
         <?php elseif ('multiselect' === $data['type']): ?>
           <fieldset>
             <legend class="form-field"><?=$this->transEsc($data['label']) ?>:</legend>
-            <?php foreach($data['options'] as $optionId => $option): ?>
+            <?php foreach ($data['options'] as $optionId => $option): ?>
               <?php $name = is_string($option) ? $option : ($option['name'] ?? $optionId); ?>
               <label>
                 <input type="checkbox" name="<?=$this->escapeHtmlAttr($field)?>[]" value="<?=$this->escapeHtmlAttr($optionId)?>"<?php if (in_array($optionId, (array)$value)): ?> checked<?php endif; ?>> <?=$this->transEsc($name)?>
@@ -79,7 +79,7 @@
         <?php elseif ('radio' === $data['type']): ?>
           <fieldset id="<?=$this->escapeHtmlAttr($field)?>">
             <legend class="form-label radio-label"><?=$this->transEsc($data['label']) ?>:</legend>
-            <?php foreach($data['options'] as $optionId => $option): ?>
+            <?php foreach ($data['options'] as $optionId => $option): ?>
               <?php $name = is_string($option) ? $option : ($option['name'] ?? $optionId); ?>
               <input type="radio" name="<?=$this->escapeHtmlAttr($field)?>" id="<?=$this->escapeHtmlAttr($field . '_' . $optionId) ?>" class="form-control" value="<?=$this->escapeHtmlAttr($optionId)?>"<?=$optionId == $value ? ' checked' : ''?><?=$data['required'] ?? false ? ' required aria-required="true"' : ''?><?=$data['readonly'] ?? false ? ' readonly' : ''?>>
               <label class="form-label" for="<?=$this->escapeHtmlAttr($field . '_' . $optionId) ?>"><?=$this->transEsc($name) ?></label>

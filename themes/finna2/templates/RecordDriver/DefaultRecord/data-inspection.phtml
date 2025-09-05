@@ -5,8 +5,8 @@ $fields = [
   'taxclass', 'agerestriction', 'inspectiontype', 'part', 'office', 'additional', 'subject', 'copy_count',
 ];
 ?>
-<?php if(!empty($data)): ?>
-  <?php foreach($data as $d): ?>
+<?php if (!empty($data)): ?>
+  <?php foreach ($data as $d): ?>
     <dl class="switcher-line-xxxs">
       <?php foreach ($fields as $key): ?>
         <?php if (empty($d[$key])) {

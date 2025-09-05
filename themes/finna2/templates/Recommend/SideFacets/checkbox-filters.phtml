@@ -6,7 +6,7 @@
       $classes .= " $classes-" . preg_replace('/\W/', 'x', $parts[1]);
     }
   ?>
-  <div class="checkbox <?=$current['selected'] ? 'checked' : ''?><?=!empty($current['disabled']) ? ' disabled' : ''?> <?=$this->escapeHtmlAttr($classes)?><?php if(!($results->getResultTotal() > 0 || $current['selected'] || $current['alwaysVisible'])): ?> hidden<?php endif; ?> checkbox-filter" data-facet="<?=$this->escapeHtmlAttr($current['filter'])?>"<?=!$current['selected'] && empty($current['disabled']) && isset($counts) && false === $counts ? '' : ' data-loaded="true"'?>>
+  <div class="checkbox <?=$current['selected'] ? 'checked' : ''?><?=!empty($current['disabled']) ? ' disabled' : ''?> <?=$this->escapeHtmlAttr($classes)?><?php if (!($results->getResultTotal() > 0 || $current['selected'] || $current['alwaysVisible'])): ?> hidden<?php endif; ?> checkbox-filter" data-facet="<?=$this->escapeHtmlAttr($current['filter'])?>"<?=!$current['selected'] && empty($current['disabled']) && isset($counts) && false === $counts ? '' : ' data-loaded="true"'?>>
     <label>
       <span class="badge cb-facet avail-count"></span>
       <input class="checkbox-filter" type="checkbox" name="filter[]" value="<?=$this->escapeHtmlAttr($current['filter'])?>" <?=($current['selected'] ? 'checked="checked"' : '')?>

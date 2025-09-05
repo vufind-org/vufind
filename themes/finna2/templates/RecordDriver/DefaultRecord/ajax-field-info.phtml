@@ -38,7 +38,7 @@
   <div class="alt-labels">
     <h3><?=$this->transEsc('field_info_alt_labels')?></h3>
     <ul>
-      <?php foreach($this->enrichmentData['altLabels'] as $label): ?>
+      <?php foreach ($this->enrichmentData['altLabels'] as $label): ?>
         <li>
           <?=$this->record($this->driver)->getLinkedFieldElement($this->type ?? 'subject', $label, ['name' => $label], ['class' => ['backlink']])?>
         </li>
@@ -51,7 +51,7 @@
   <div class="alt-labels">
     <h3><?=$this->transEsc('field_info_other_language_alt_labels')?></h3>
     <ul>
-      <?php foreach([...array_values($this->enrichmentData['otherLanguageLabels'] ?? []), ...array_values($this->enrichmentData['otherLanguageAltLabels'] ?? [])] as $labels): ?>
+      <?php foreach ([...array_values($this->enrichmentData['otherLanguageLabels'] ?? []), ...array_values($this->enrichmentData['otherLanguageAltLabels'] ?? [])] as $labels): ?>
         <?php foreach ($labels as $label): ?>
           <li>
             <?=$this->record($this->driver)->getLinkedFieldElement($this->type ?? 'subject', $label, ['name' => $label], ['class' => ['backlink']])?>

@@ -37,7 +37,7 @@ if ($otherTitles):?>
     <?php else: ?>
       <?php if ($results = $this->driver->getNonPresenterAuthors()): ?>
         <div class="truncate-field">
-        <?php foreach($results as $index => $author): ?>
+        <?php foreach ($results as $index => $author): ?>
           <?=($index > 0 ? '; ' : '')?><?=$this->escapeHtml($author['name'])?><?php if (!empty($author['role'])): ?>, <?=$this->escapeHtml($author['role'])?><?php endif; ?>
         <?php endforeach; ?>
         <?php if ($dates = $this->driver->getResultDateRange()): ?>

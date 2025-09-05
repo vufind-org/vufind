@@ -15,7 +15,7 @@
   <?php endif; ?>
     <li><a class="nav-link mail-record" role="button" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Email')) ?>" title="<?=$this->transEsc('Email this')?>" rel="nofollow"><?=$this->icon('email') ?><span class="hidden-xs"> <?=$this->transEsc('Email this')?></span></a></li>
   <?php $exportFormats = $this->export()->getFormatsForRecord($this->driver); ?>
-  <?php if(count($exportFormats) > 0): ?>
+  <?php if (count($exportFormats) > 0): ?>
     <li class="dropdown">
       <a class="nav-link export-toggle toolbar-btn dropdown-toggle" role="button" data-bs-toggle="dropdown" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Export', [], '', ['excludeSearchId' => true]))?>" rel="nofollow" aria-expanded="false" aria-controls="export-options">
         <?=$this->icon('export') ?>
@@ -37,7 +37,7 @@
   <?php endif; ?>
   <li class="hidden-xs hidden-sm"><a class="nav-link print-record" role="button" href="#" data-trigger-print><?=$this->icon('print') ?> <?=$this->transEsc('Print')?></a></li>
   <?php $QRCode = $this->record($this->driver)->getQRCode('core'); ?>
-  <?php if($QRCode): ?>
+  <?php if ($QRCode): ?>
   <li class="dropdown">
     <a class="nav-link dropdown-toggle qrcodeLink" role="button" data-bs-toggle="dropdown" href="<?=$this->escapeHtmlAttr($QRCode);?>" rel="nofollow" aria-expanded="false"><?=$this->icon('qrcode') ?><span class="hidden-xs"> <?=$this->transEsc('QR Code') ?></span></a>
     <ul class="dropdown-menu qrcode" role="presentation">

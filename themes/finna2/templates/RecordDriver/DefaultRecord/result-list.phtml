@@ -79,7 +79,7 @@
             <?php $authors = $this->driver->tryMethod('getPrimaryAuthorsExtended');
             if (!empty($authors)): ?>
               <div class="truncate-field" data-rows="1" tabindex="-1">
-                <?php foreach($authors as $index => $author): ?>
+                <?php foreach ($authors as $index => $author): ?>
                   <?=($index > 0 ? '; ' : '')?><?=$this->record($this->driver)->getLinkedFieldElement('author', $author['name'], $author, ['date' => true, 'role' => true, 'authorityType' => $author['type'] ?? null])?>
                 <?php endforeach; ?>
               </div>
@@ -141,7 +141,7 @@
           <?php endif; ?>
         </div>
 
-        <?php if(!$this->driver->isCollection()): ?>
+        <?php if (!$this->driver->isCollection()): ?>
           <?php if ($snippet = $this->driver->getHighlightedSnippet()): ?>
             <?php if (!empty($snippet['caption'])): ?>
               <strong><?=$this->transEsc($snippet['caption']) ?>:</strong>

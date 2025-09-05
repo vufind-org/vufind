@@ -52,7 +52,7 @@
 
           <?php $exportFormats = $this->export()->getFormatsForRecord($this->driver); ?>
 
-          <?php if(count($exportFormats) > 0): ?>
+          <?php if (count($exportFormats) > 0): ?>
             <li class="dropdown dropup">
               <a class="export-toggle toolbar-btn dropdown-toggle" role="button" data-bs-toggle="dropdown" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Export', [], '', ['excludeSearchId' => true]))?>" rel="nofollow" aria-expanded="false" aria-controls="export-options-mobile">
                 <?=$this->icon('export') ?>
@@ -76,11 +76,11 @@
           <?php if ($cart->isActive()): ?>
             <?php $cartId = $this->driver->getSourceIdentifier() . '|' . $this->driver->getUniqueId(); ?>
             <li class="btn-bookbag-toggle" data-cart-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" data-cart-source="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
-              <a class="cart-add-mobile cart-add<?php if(!$cart->contains($cartId)): ?> correct<?php endif ?>" role="button" title="<?=$this->transEsc('Add to Book Bag')?>" rel="nofollow" href="#">
+              <a class="cart-add-mobile cart-add<?php if (!$cart->contains($cartId)): ?> correct<?php endif ?>" role="button" title="<?=$this->transEsc('Add to Book Bag')?>" rel="nofollow" href="#">
                 <?=$this->icon('cart') ?>
                 <span class="visually-hidden"><?=$this->transEsc('Add to Book Bag')?></span>
               </a>
-              <a class="cart-remove-mobile cart-remove<?php if($cart->contains($cartId)): ?> correct<?php endif ?>" role="button" title="<?=$this->transEsc('Remove from Book Bag')?>" rel="nofollow" href="#">
+              <a class="cart-remove-mobile cart-remove<?php if ($cart->contains($cartId)): ?> correct<?php endif ?>" role="button" title="<?=$this->transEsc('Remove from Book Bag')?>" rel="nofollow" href="#">
                 <?=$this->icon('cart') ?>
                 <?=$this->icon('cart-remove', 'cart-remove-mobile-icon') ?>
                 <span class="visually-hidden"><?=$this->transEsc('Remove from Book Bag')?></span>

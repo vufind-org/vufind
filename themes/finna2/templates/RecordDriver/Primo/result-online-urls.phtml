@@ -9,7 +9,7 @@ $fulltextAvailable = $this->driver->getFulltextAvailable();
 <div class="primo-available-online<?= $fulltextAvailable ? ' fulltext-available' : ''?>">
   <?php if ($openUrlActive || !empty($urls)): ?>
     <div class="heading <?=!empty($urls) ? '' : 'hidden'?>"><strong><?=$this->transEsc('Available Online')?></strong></div>
-    <?php if(!$this->driver->isCollection()): ?>
+    <?php if (!$this->driver->isCollection()): ?>
     <?=$this->partial('RecordDriver/Primo/online-url-list.phtml', ['driver' => $this->driver, 'urls' => $urls])?>
     <?php endif; ?>
   <?php endif; ?>

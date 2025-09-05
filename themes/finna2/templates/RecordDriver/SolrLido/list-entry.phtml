@@ -23,7 +23,7 @@
   <?php ob_end_clean(); ?>
 <?php endif; ?>
 <!-- start list-entry -->
-<div class="result record-container<?php if($this->driver->supportsAjaxStatus()): ?> ajaxItem<?php endif ?> myresearch-row">
+<div class="result record-container<?php if ($this->driver->supportsAjaxStatus()): ?> ajaxItem<?php endif ?> myresearch-row">
     <div class="checkbox-container">
       <div class="checkbox">
         <?php // Request a checkbox with a label (can't add the label here as checkbox template contains more than one field): ?>
@@ -62,13 +62,13 @@
           <?php $authors = $this->driver->tryMethod('getAuthorsWithRoles');
           if (!empty($authors)): ?>
             <div class="truncate-field" data-rows="1">
-              <?php foreach($authors as $index => $author): ?>
+              <?php foreach ($authors as $index => $author): ?>
                 <?=($index > 0 ? '; ' : '')?><?=$this->record($this->driver)->getLinkedFieldElement('author', $author['name'], $author, ['date' => true, 'role' => true, 'authorityType' => $author['type'] ?? null])?>
               <?php endforeach; ?>
             </div>
           <?php elseif ($authors = $this->driver->getPrimaryAuthors()): ?>
             <div class="truncate-field" data-rows="1">
-              <?php foreach($authors as $index => $author): ?>
+              <?php foreach ($authors as $index => $author): ?>
                 <?=($index > 0 ? '; ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author)?>"><?=$this->escapeHtml($author)?></a>
               <?php endforeach; ?>
             </div>
@@ -156,7 +156,7 @@
           <div class="saved-lists">
             <strong><?=$this->transEsc('Saved in')?>:</strong>
             <?php $i = 0;
-            foreach($this->lists as $current): ?>
+            foreach ($this->lists as $current): ?>
               <a href="<?=$this->url('userList', ['id' => $current->getId()])?>"><?=$this->escapeHtml($current->getTitle())?></a><?php if ($i++ < count($this->lists) - 1): ?>,<?php endif; ?>
             <?php endforeach; ?>
             <br>

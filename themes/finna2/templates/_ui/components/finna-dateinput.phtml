@@ -14,7 +14,7 @@
 ?>
 <span class="finna-dateinput<?php if ($dateinputPicker === 'single'): ?> finna-datepicker<?php endif; ?>">
   <label for="<?=$dateinputId ?>"><?=$dateinputLabel ?> <span class="dateformat-hint">(<?=$dateinputDateFormatHint ?>)</span></label>
-  <?php if($dateinputPicker === 'single'): ?>
+  <?php if ($dateinputPicker === 'single'): ?>
     <span class="input-group">
       <input type="text" class="input-field form-control <?=$dateinputClass ?>" id="<?=$dateinputId ?>" <?php if (isset($dateinputName)): ?>name="<?=$dateinputName ?>"<?php endif; ?> value="<?=$dateinputValue ?>" placeholder="<?=$dateinputPlaceholder ?>" size="<?=$dateinputSize ?>" maxlength="<?=$dateinputMaxlength ?>" <?php if ($dateinputRequired): ?>required<?php endif; ?> autocomplete="<?=$dateinputAutocomplete ?>">
       <button type="button" class="btn btn-default datepicker-toggle">

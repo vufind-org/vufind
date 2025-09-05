@@ -57,7 +57,7 @@ if ($img):
           <?php $authors = $this->driver->tryMethod('getAuthorsWithRoles');
           if (!empty($authors)): ?>
             <div class="truncate-field" data-rows="1">
-              <?php foreach($authors as $index => $author): ?>
+              <?php foreach ($authors as $index => $author): ?>
                 <?=($index > 0 ? '; ' : '')?><?=$this->record($this->driver)->getLinkedFieldElement('author', $author['name'], $author, ['date' => true, 'role' => true, 'authorityType' => $author['type'] ?? null])?>
               <?php endforeach; ?>
             </div>
@@ -84,7 +84,7 @@ if ($img):
               <?php endif; ?>
               <?php if (!$this->driver->isCollection()): ?>
                 <br><span class="archive-label"><?=$this->transEsc($typeIsArchive ? 'Archive' : 'Parent Collection')?>:</span>
-                <?php foreach($topIds as $index => $parentId): ?>
+                <?php foreach ($topIds as $index => $parentId): ?>
                   <a href="<?=$this->escapeHtmlAttr($recordLinker->getUrl("$parentSource|$parentId"))?>"><?=isset($topTitles[$index]) ? $this->truncate($topTitles[$index], 180) : ''?></a>
                 <?php endforeach; ?>
               <?php endif; ?>
@@ -115,7 +115,7 @@ if ($img):
           </div>
         </div>
 
-        <?php if(!$this->driver->isCollection()): ?>
+        <?php if (!$this->driver->isCollection()): ?>
           <?php if ($snippet = $this->driver->getHighlightedSnippet()): ?>
             <?php if (!empty($snippet['caption'])): ?>
               <strong><?=$this->transEsc($snippet['caption']) ?>:</strong>

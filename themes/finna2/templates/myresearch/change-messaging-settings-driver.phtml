@@ -38,7 +38,7 @@
                 </label>
               </div>
             <?php elseif ('multiselect' == $setting['type']): ?>
-                <?php foreach($setting['options'] as $optionId => $option): ?>
+                <?php foreach ($setting['options'] as $optionId => $option): ?>
                   <?php $fullId = $serviceId . '_' . $settingId . '_' . $optionId; ?>
                   <div class="checkbox">
                     <label>
@@ -51,7 +51,7 @@
               </div>
             <?php elseif ('select' == $setting['type']): ?>
               <select name="<?=$this->escapeHtmlAttr($serviceId . '_' . $settingId)?>" class="form-select" <?php if (!empty($setting['readonly'])): ?> readonly<?php endif; ?>>
-                <?php foreach($setting['options'] as $optionId => $option): ?>
+                <?php foreach ($setting['options'] as $optionId => $option): ?>
                   <?php $name = $option['name'] ?? $optionId; ?>
                   <option value="<?=$this->escapeHtmlAttr($optionId)?>"<?php if ($optionId == $setting['value']): ?> selected<?php endif; ?>><?=$this->transEsc("messaging_settings_option_$name", null, $name)?></option>
                 <?php endforeach; ?>

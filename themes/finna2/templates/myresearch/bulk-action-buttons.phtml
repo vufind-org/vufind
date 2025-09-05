@@ -23,16 +23,16 @@
     <div class="mylist-functions btn-group">
       <span class="visually-hidden"><?=$this->transEsc('bulk_noitems_advice')?></span>
       <?php if ($email): ?>
-        <button id="button_email" class="btn btn-primary" type="submit" name="email" value="<?=$this->transEscAttr('Email')?>" title="<?=$this->transEscAttr('bulk_email')?>" disabled<?php if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>><?=$this->transEsc('Email')?></button>
+        <button id="button_email" class="btn btn-primary" type="submit" name="email" value="<?=$this->transEscAttr('Email')?>" title="<?=$this->transEscAttr('bulk_email')?>" disabled<?php if ($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>><?=$this->transEsc('Email')?></button>
       <?php endif; ?>
       <?php if ($export): ?>
-        <button class="btn btn-primary" type="submit" name="export" value="<?=$this->transEscAttr('Export')?>" title="<?=$this->transEscAttr('bulk_export')?>" disabled<?php if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>><?=$this->transEsc('Export')?></button>
+        <button class="btn btn-primary" type="submit" name="export" value="<?=$this->transEscAttr('Export')?>" title="<?=$this->transEscAttr('bulk_export')?>" disabled<?php if ($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>><?=$this->transEsc('Export')?></button>
       <?php endif; ?>
       <?php if ($canDelete): ?>
         <button class="btn btn-primary" id="<?=$this->idPrefix?>delete_list_items_<?=null !== $this->list ? $this->escapeHtmlAttr($this->list->getId()) : ''?>" type="submit" name="delete" value="<?=$this->transEscAttr('Delete')?>" title="<?=$this->transEsc('delete_selected')?>" disabled<?php if ($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>><?=$this->transEsc('Delete')?></button>
       <?php endif; ?>
       <?php if ($lists): ?>
-        <select id="add-to-list" class="btn btn-primary form-select" autocomplete="off" aria-label="<?= $this->translate('Add to List'); ?>" disabled<?php if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>>
+        <select id="add-to-list" class="btn btn-primary form-select" autocomplete="off" aria-label="<?= $this->translate('Add to List'); ?>" disabled<?php if ($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>>
           <option value=""><?= $this->translate('Add to List'); ?>&hellip;</option>
           <?php foreach ($lists as $current): ?>
             <?php $l = $current['list_entity']; ?>
@@ -45,7 +45,7 @@
         </select>
       <?php endif; ?>
       <?php if ($cartEnabled): ?>
-        <button class="btn btn-primary" id="<?=$this->idPrefix?>updateCart" type="submit" name="add" title="<?=$this->transEsc('Add to Book Bag')?>" disabled<?php if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>><?=$this->transEsc('Bag') ?></button>
+        <button class="btn btn-primary" id="<?=$this->idPrefix?>updateCart" type="submit" name="add" title="<?=$this->transEsc('Add to Book Bag')?>" disabled<?php if ($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>><?=$this->transEsc('Bag') ?></button>
       <?php endif; ?>
     </div>
     <?php if ($lists): ?>

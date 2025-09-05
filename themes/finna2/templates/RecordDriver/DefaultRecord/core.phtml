@@ -209,11 +209,11 @@
       <?php if ($results): ?>
         <div class="recordAuthors">
           <div class="truncate-field">
-            <?php foreach($results as $index => $author): ?>
+            <?php foreach ($results as $index => $author): ?>
               <?=($index > 0 ? '; ' : '')?><?=$this->record($this->driver)->getLinkedFieldElement('author', $author['name'], $author, ['date' => true, 'role' => true, 'authorityType' => $author['type'] ?? null])?>
             <?php endforeach; ?>
             <?php $altScriptFound = false; ?>
-            <?php foreach($results as $index => $author): ?>
+            <?php foreach ($results as $index => $author): ?>
               <?php if (!empty($author['name_alt'])): ?>
                 <?php if (!$altScriptFound): ?><br><?php else: ?>; <?php endif; ?>
                 <?=$this->escapeHtml($author['name_alt'])?><?php if (!empty($author['date'])): ?><span class="author-date">, <?=$this->escapeHtml($author['date']) ?></span><?php endif; ?><?php if (!empty($author['role'])): ?><span class="author-role">, <?=mb_strtolower($this->transEsc('CreatorRoles::' . $author['role']), 'UTF-8') ?></span><?php endif; ?>

@@ -12,7 +12,7 @@
     <div class="visible-print inline-block">
       <?php /* Display qrcode if appropriate: */ ?>
       <?php $QRCode = $this->record($this->driver)->getQRCode('core'); ?>
-      <?php if($QRCode): ?>
+      <?php if ($QRCode): ?>
         <span class="record-qrcode">
           <br><img alt="<?=$this->transEsc('QR Code')?>" class="qrcode" src="<?=$this->escapeHtmlAttr($QRCode);?>">
         </span>

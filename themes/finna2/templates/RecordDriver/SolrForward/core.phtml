@@ -14,7 +14,7 @@
     $videoUrls = [];
     $otherUrls = [];
     foreach ($urls as $url) {
-      if(!empty($url['videoSources']) || !empty($url['embed']) && $url['embed'] == 'video' || $this->recordLinker()->getEmbeddedVideo($url['url']) == 'data-embed-iframe') {
+      if (!empty($url['videoSources']) || !empty($url['embed']) && $url['embed'] == 'video' || $this->recordLinker()->getEmbeddedVideo($url['url']) == 'data-embed-iframe') {
         array_push($videoUrls, $url);
         $renderedURLs[] = $url['url'];
       } else {
@@ -101,7 +101,7 @@
 
       <div class="recordURLs local-available-online-record">
         <div class="truncate-field">
-          <?php if(!empty($otherUrls)): ?>
+          <?php if (!empty($otherUrls)): ?>
             <?php foreach ($otherUrls as $url): ?>
               <?php
                 $renderedURLs[] = $url['url'];

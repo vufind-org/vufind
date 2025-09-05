@@ -9,9 +9,9 @@
   <?php
     if (!empty($field['rights'])):
       echo $this->escapeHtml($field['rights']);
-    elseif (!empty($field['source'])):
+      elseif (!empty($field['source'])):
       echo $this->escapeHtml($field['source']);
-    else:
+      else:
       echo $this->truncateUrl($field['url']);
     endif;
   ?>

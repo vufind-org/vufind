@@ -26,7 +26,7 @@
         <?php if ('radio' === $data['type']): ?>
           <fieldset id="<?=$this->escapeHtmlAttr($field)?>">
             <legend><?=$this->transEsc($data['label']) ?>:</legend>
-            <?php foreach($data['options'] as $optionId => $option): ?>
+            <?php foreach ($data['options'] as $optionId => $option): ?>
               <input type="radio" name="<?=$this->escapeHtmlAttr($field)?>" id="<?=$this->escapeHtmlAttr($field . '_' . $optionId) ?>" class="form-control" value="<?=$this->escapeHtmlAttr($optionId)?>"<?=$optionId == $data['value'] ? ' checked' : ''?><?=$data['required'] ?? false ? ' required aria-required="true"' : ''?><?=$data['readonly'] ?? false ? ' readonly' : ''?>>
               <label for="<?=$this->escapeHtmlAttr($field . '_' . $optionId) ?>"><?=$this->transEsc($option['name'] ?? $optionId) ?></label>
               <br>

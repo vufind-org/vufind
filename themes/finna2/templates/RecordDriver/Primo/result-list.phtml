@@ -48,7 +48,7 @@
             <?=$this->record($this->driver)->getFormatList() ?>
             <?=$this->record($this->driver)->getLabelList() ?>
           </div>
-          <?php if($this->driver->isCollection()): ?>
+          <?php if ($this->driver->isCollection()): ?>
             <?=implode('<br>', $this->driver->getSummary()); ?>
           <?php else: ?>
             <?php
@@ -97,7 +97,7 @@
           <?php endif; ?>
         </div>
 
-        <?php if(!$this->driver->isCollection()): ?>
+        <?php if (!$this->driver->isCollection()): ?>
           <?php if ($snippet = $this->driver->getHighlightedSnippet()): ?>
             <?php if (!empty($snippet['caption'])): ?>
               <strong><?=$this->transEsc($snippet['caption']) ?>:</strong>

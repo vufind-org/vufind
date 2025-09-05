@@ -8,24 +8,24 @@
       <fieldset>
         <legend class="visually-hidden"><?=$this->transEsc('select_all_on_page')?></legend>
         <label>
-          <input type="checkbox" class="checkbox-select-all" name="selectAll" id="<?=$this->idPrefix?>addFormCheckboxSelectAll"<?php if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>> <?=$this->transEsc('select_all_on_page')?>
+          <input type="checkbox" class="checkbox-select-all" name="selectAll" id="<?=$this->idPrefix?>addFormCheckboxSelectAll"<?php if ($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>> <?=$this->transEsc('select_all_on_page')?>
         </label>
       </fieldset>
     </div>
     <div class="btn-group">
       <?php if ($searchSettings->bulkOptionsEnabled()): ?>
-        <input id="<?=$this->idPrefix?>ribbon-email" class="btn btn-primary" type="submit" name="email" title="<?=$this->transEscAttr('bulk_email')?>" value="<?=$this->transEscAttr('Email')?>"<?php if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>>
+        <input id="<?=$this->idPrefix?>ribbon-email" class="btn btn-primary" type="submit" name="email" title="<?=$this->transEscAttr('bulk_email')?>" value="<?=$this->transEscAttr('Email')?>"<?php if ($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>>
         <?php $exportOptions = $this->export()->getActiveFormats('bulk');
         if (count($exportOptions) > 0): ?>
-          <input id="<?=$this->idPrefix?>ribbon-export" class="btn btn-primary" type="submit" name="export" title="<?=$this->transEscAttr('bulk_export')?>" value="<?=$this->transEscAttr('Export')?>"<?php if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>>
+          <input id="<?=$this->idPrefix?>ribbon-export" class="btn btn-primary" type="submit" name="export" title="<?=$this->transEscAttr('bulk_export')?>" value="<?=$this->transEscAttr('Export')?>"<?php if ($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>>
         <?php endif; ?>
-        <input id="<?=$this->idPrefix?>ribbon-print" class="btn btn-primary" type="submit" name="print" title="<?=$this->transEscAttr('bulk_print')?>" value="<?=$this->transEscAttr('Print')?>"<?php if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>>
+        <input id="<?=$this->idPrefix?>ribbon-print" class="btn btn-primary" type="submit" name="print" title="<?=$this->transEscAttr('bulk_print')?>" value="<?=$this->transEscAttr('Print')?>"<?php if ($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>>
         <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
-          <input id="<?=$this->idPrefix?>ribbon-save" class="btn btn-primary" type="submit" name="saveCart" title="<?=$this->transEscAttr('bulk_save')?>" value="<?=$this->transEscAttr('bulk_save_button')?>"<?php if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>>
+          <input id="<?=$this->idPrefix?>ribbon-save" class="btn btn-primary" type="submit" name="saveCart" title="<?=$this->transEscAttr('bulk_save')?>" value="<?=$this->transEscAttr('bulk_save_button')?>"<?php if ($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>>
         <?php endif; ?>
       <?php endif; ?>
       <?php if ($searchSettings->cartControlsEnabled()): ?>
-        <input id="<?=$this->idPrefix?>updateCart" type="submit" class="btn btn-primary" name="add" value="<?=$this->transEscAttr('Add to Book Bag')?>"<?php if($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>>
+        <input id="<?=$this->idPrefix?>updateCart" type="submit" class="btn btn-primary" name="add" value="<?=$this->transEscAttr('Add to Book Bag')?>"<?php if ($this->formAttr):?> form="<?=$this->escapeHtmlAttr($this->formAttr) ?>"<?php endif; ?>>
       <?php endif; ?>
     </div>
   </div>

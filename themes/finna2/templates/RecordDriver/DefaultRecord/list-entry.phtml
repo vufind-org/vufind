@@ -64,19 +64,19 @@
             <span class="iconlabel label-binding"><span class="label-punctuation">, </span><?=$this->transEsc($binding)?></span>
           <?php endif; ?>
           <br>
-          <?php if($this->driver->isCollection()): ?>
+          <?php if ($this->driver->isCollection()): ?>
             <?=implode('<br>', array_map([$this, 'escapeHtml'], $this->driver->getSummary())); ?>
           <?php else: ?>
             <?php $authors = $this->driver->tryMethod('getPrimaryAuthorsExtended') ?? $this->driver->tryMethod('getAuthorsWithRoles');
             if (!empty($authors)): ?>
               <div class="truncate-field" data-rows="1">
-                <?php foreach($authors as $index => $author): ?>
+                <?php foreach ($authors as $index => $author): ?>
                   <?=($index > 0 ? '; ' : '')?><?=$this->record($this->driver)->getLinkedFieldElement('author', $author['name'], $author, ['date' => true, 'role' => true, 'authorityType' => $author['type'] ?? null])?>
                 <?php endforeach; ?>
               </div>
             <?php elseif ($authors = $this->driver->getPrimaryAuthors()): ?>
               <div class="truncate-field" data-rows="1">
-                <?php foreach($authors as $index => $author): ?>
+                <?php foreach ($authors as $index => $author): ?>
                   <?=($index > 0 ? '; ' : '')?><a href="<?=$this->record($this->driver)->getLink('author', $author)?>"><?=$this->escapeHtml($author)?></a>
                 <?php endforeach; ?>
               </div>
@@ -112,7 +112,7 @@
         </div>
 
         <div class="last">
-          <?php if(!$this->driver->isCollection()) {
+          <?php if (!$this->driver->isCollection()) {
               if ($snippet = $this->driver->getHighlightedSnippet()) {
                 if (!empty($snippet['caption'])) {
                   echo '<strong>' . $this->transEsc($snippet['caption']) . ':</strong> ';
@@ -166,7 +166,7 @@
           <div class="saved-lists">
             <strong><?=$this->transEsc('Saved in')?>:</strong>
             <?php $i = 0;
-            foreach($this->lists as $current): ?>
+            foreach ($this->lists as $current): ?>
               <a href="<?=$this->url('userList', ['id' => $current->getId()])?>"><?=$this->escapeHtml($current->getTitle())?></a><?php if ($i++ < count($this->lists) - 1): ?>,<?php endif; ?>
             <?php endforeach; ?>
             <br>

@@ -7,10 +7,10 @@
     <label for="<?=$this->escapeHtmlAttr($safeId) ?>" class="record-checkbox">
     <span class="visually-hidden"><?=$this->transEsc('Select');?></span>
   <?php endif; ?>
-    <input id="<?=$this->escapeHtmlAttr($safeId) ?>" class="checkbox-select-item" type="checkbox" name="ids[]" value="<?=$this->escapeHtmlAttr($this->id) ?>"<?php if(isset($this->formAttr)): ?> form="<?=$this->formAttr ?>"<?php endif; ?> aria-label="<?=$this->transEsc('Select')?>">
+    <input id="<?=$this->escapeHtmlAttr($safeId) ?>" class="checkbox-select-item" type="checkbox" name="ids[]" value="<?=$this->escapeHtmlAttr($this->id) ?>"<?php if (isset($this->formAttr)): ?> form="<?=$this->formAttr ?>"<?php endif; ?> aria-label="<?=$this->transEsc('Select')?>">
   <?php if ($this->label): ?>
     </label>
   <?php endif; ?>
-  <input type="hidden" name="idsAll[]" value="<?=$this->escapeHtmlAttr($this->id) ?>"<?php if(isset($this->formAttr)): ?> form="<?=$this->formAttr ?>"<?php endif; ?>>
+  <input type="hidden" name="idsAll[]" value="<?=$this->escapeHtmlAttr($this->id) ?>"<?php if (isset($this->formAttr)): ?> form="<?=$this->formAttr ?>"<?php endif; ?>>
 </fieldset>
 <!-- END of: finna - record/checkbox.phtml -->

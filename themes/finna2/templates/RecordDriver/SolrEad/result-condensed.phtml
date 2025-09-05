@@ -123,7 +123,7 @@
             <br>
           <?php endif; ?>
         <div class="summary">
-        <?php if($this->driver->isCollection()): ?>
+        <?php if ($this->driver->isCollection()): ?>
           <?=implode('<br>', array_map([$this, 'escapeHtml'], $this->driver->getSummary())); ?>
         <?php else: ?>
           <?php $authors = $this->driver->tryMethod('getAuthorsWithRoles');
