@@ -27,7 +27,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 
-namespace VuFindTest\Db\Service;
+namespace VuFindTest\Db;
 
 use VuFind\Db\Connection;
 use VuFind\Db\ConnectionFactory;
