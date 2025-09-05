@@ -21,12 +21,12 @@ program
   )
   .option(
     "-e, --entry <string>",
-    "SCSS to compile in theme/scss (default 'compiled.scss')",
+    "SCSS to compile in theme/scss",
     "compiled.scss"
   )
   .option(
     "-o, --outname <string>",
-    "CSS file to output in theme/css (default 'compiled.css')",
+    "CSS file to output in theme/css",
     "compiled.css"
   )
   .option(
@@ -135,7 +135,10 @@ function getThemeList() {
 
     const entries = fs.readdirSync(themesDir);
     for (const dir of entries) {
-      if (fs.existsSync(themePath(dir, "theme.config.php"))) {
+      if (
+        fs.existsSync(themePath(dir, "theme.config.php")) &&
+        fs.existsSync(themePath(dir, "scss"))
+      ) {
         themes.push(dir);
       }
     }
