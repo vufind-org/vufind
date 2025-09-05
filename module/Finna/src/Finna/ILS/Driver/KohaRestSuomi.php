@@ -805,14 +805,28 @@ class KohaRestSuomi extends KohaRestSuomiVuFind
     }
 
     /**
-     * Get a password recovery token for a user
+     * Get a password recovery data for a user
      *
      * @param array $params Required params such as cat_username and email
      *
      * @return array Associative array of the results
      */
-    public function getPasswordRecoveryToken($params)
+    public function getPasswordRecoveryData($params)
     {
+        // We need a username and an email address to find the account:
+        if (empty($params['cat_username'])) {
+            return [
+                'success' => false,
+                'error' => 'Username cannot be blank',
+            ];
+        }
+        if (empty($params['email'])) {
+            return [
+                'success' => false,
+                'error' => 'no_email_address',
+            ];
+        }
+
         $request = [
             'cardnumber' => $params['cat_username'],
             'email' => $params['email'],
@@ -852,14 +866,15 @@ class KohaRestSuomi extends KohaRestSuomiVuFind
     }
 
     /**
-     * Recover user's password with a token from getPasswordRecoveryToken
+     * Reset a user's password using password recovery data.
      *
-     * @param array $params Required params such as cat_username, token and new
-     * password
+     * @param array $details Driver-specific account recovery details.
+     * @param array $params  User-entered form parameters.
      *
-     * @return array Associative array of the results
+     * @throws AuthException
+     * @return array Status
      */
-    public function recoverPassword($params)
+    public function resetPassword(array $details, array $params)
     {
         $request = [
             'uuid' => $params['token'],
@@ -909,8 +924,8 @@ class KohaRestSuomi extends KohaRestSuomiVuFind
     public function getConfig($function, $params = null)
     {
         if (
-            'getPasswordRecoveryToken' === $function
-            || 'recoverPassword' === $function
+            'getPasswordRecoveryData' === $function
+            || 'resetPassword' === $function
         ) {
             return !empty($this->config['PasswordRecovery']['enabled'])
                 ? $this->config['PasswordRecovery'] : false;

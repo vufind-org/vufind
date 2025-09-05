@@ -74,14 +74,12 @@ class Manager extends \VuFind\Auth\Manager
      * @param string $target Login target (only for MultiILS)
      *
      * @return string|false
+     *
+     * @deprecated Exists for back-compatibility with old implementation only
      */
     public function ilsSupportsPasswordRecovery($target = '')
     {
-        $auth = $this->getAuth();
-        if (is_callable([$auth, 'ilsSupportsPasswordRecovery'])) {
-            return $auth->ilsSupportsPasswordRecovery($target);
-        }
-        return false;
+        return $this->supportsRecovery('MultiILS', $target);
     }
 
     /**

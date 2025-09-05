@@ -743,84 +743,6 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
     }
 
     /**
-     * Get a password recovery token for a user
-     *
-     * @param array $params Required params such as cat_username and email
-     *
-     * @return array Associative array of the results
-     */
-    public function getPasswordRecoveryToken($params)
-    {
-        $result = $this->makeRequest(
-            [
-                'path' => 'v1/patrons',
-                'query' => [
-                    '_match' => 'exact',
-                    'cardnumber' => $params['cat_username'],
-                    'email' => $params['email'],
-                ],
-                'errors' => true,
-            ]
-        );
-
-        if (200 === $result['code']) {
-            if (!empty($result['data'][0])) {
-                return [
-                    'success' => true,
-                    'token' => $result['data'][0]['patron_id'],
-                ];
-            } else {
-                return [
-                    'success' => false,
-                    'error' => 'recovery_user_not_found',
-                ];
-            }
-        }
-
-        if (404 !== $result['code']) {
-            throw new ILSException('Problem with Koha REST API.');
-        }
-        return [
-            'success' => false,
-            'error' => 'recovery_user_not_found',
-        ];
-    }
-
-    /**
-     * Recover user's password with a token from getPasswordRecoveryToken
-     *
-     * @param array $params Required params such as cat_username, token and new
-     * password
-     *
-     * @return array Associative array of the results
-     */
-    public function recoverPassword($params)
-    {
-        $request = [
-            'password' => $params['password'],
-            'password_2' => $params['password'],
-        ];
-
-        $result = $this->makeRequest(
-            [
-                'path' => ['v1', 'patrons', $params['token'], 'password'],
-                'json' => $request,
-                'method' => 'POST',
-                'errors' => true,
-            ]
-        );
-        if ($result['code'] >= 300) {
-            return [
-                'success' => false,
-                'error' => $result['data']['error'] ?? $result['code'],
-            ];
-        }
-        return [
-            'success' => true,
-        ];
-    }
-
-    /**
      * Check if patron belongs to staff.
      *
      * @param array $patron The patron array from patronLogin
@@ -977,13 +899,7 @@ class KohaRest extends \VuFind\ILS\Driver\KohaRest
      */
     public function getConfig($function, $params = null)
     {
-        if (
-            'getPasswordRecoveryToken' === $function
-            || 'recoverPassword' === $function
-        ) {
-            return !empty($this->config['PasswordRecovery']['enabled'])
-                ? $this->config['PasswordRecovery'] : false;
-        } elseif ('getPatronStaffAuthorizationStatus' === $function) {
+        if ('getPatronStaffAuthorizationStatus' === $function) {
             return ['enabled' => true];
         }
         $functionConfig = parent::getConfig($function, $params);

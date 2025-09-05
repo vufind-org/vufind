@@ -22,18 +22,11 @@
       <input class="btn btn-primary" type="submit" name="processLogin" value="<?=$this->transEscAttr('Login')?>">
     </div>
     <div class="form-group">
-      <?php if ($account->supportsCreation()): ?>
-        <a class="btn btn-link createAccountLink" href="<?=$this->url('myresearch-account') ?>?auth_method=<?=$account->getAuthMethod()?>"><?=$this->transEsc('Create New Account')?></a>
-      <?php endif; ?>
-      <?php if ($account->supportsRecovery()): ?>
-        <br>
-        <a class="btn btn-link" href="<?=$this->url('myresearch-recover') ?>?auth_method=<?=$account->getAuthMethod()?>"><?=$this->transEsc('Forgot Password')?></a>
-      <?php endif; ?>
       <p>
         <a id="login_library_card_register" class="btn btn-link" href="<?=$this->url('librarycards-register') ?>"><?=$this->transEsc('new_ils_account')?></a>
       </p>
       <p>
-        <a id="login_library_card_recovery" class="btn btn-link" href="<?=$this->url('librarycards-recover') ?>"><?=$this->transEsc('Forgot Password')?></a>
+        <a id="recovery_link" class="btn btn-link recover-account-link hidden" href="#"><?=$this->transEsc('Forgot Password')?></a>
       </p>
     </div>
   </form>
@@ -63,8 +56,9 @@
   $recovery = [];
   $register = [];
   foreach ($account->getLoginTargets() as $target) {
-    $recovery[$target] = $account->ilsSupportsPasswordRecovery($target)
-      ? $this->url('librarycards-recover') . "?target=$target" : false;
+    $recovery[$target] = $account->supportsRecovery(target: $target)
+      ? $this->url('myresearch-recover', [], ['query' => ['auth_method' => $account->getAuthMethod(), 'target' => $target]])
+      : false;
     $register[$target] = $account->ilsSupportsSelfRegistration($target)
       ? $this->url('librarycards-register') . "?target=$target" : false;
   }
@@ -72,7 +66,7 @@
   $recovery = json_encode($recovery);
   $register = json_encode($register);
   $script = <<<EOT
-        finna.layout.initILSPasswordRecoveryLink($recovery, 'login_{$topClass}_');
+        VuFind.displayILSPasswordRecoveryLink($recovery, 'login_{$topClass}_');
         finna.layout.initILSSelfRegistrationLink($register, 'login_{$topClass}_');
       EOT;
 

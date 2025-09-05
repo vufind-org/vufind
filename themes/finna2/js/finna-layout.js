@@ -649,17 +649,10 @@ finna.layout = (function finnaLayout() {
    * Initialize ILS password recovery link
    * @param {object} links Object containing identifier and url for link href
    * @param {string} idPrefix Prepend selector with idPrefix
+   * @deprecated Exists for back-compatibility with old implementation only
    */
   function initILSPasswordRecoveryLink(links, idPrefix) {
-    var searchPrefix = idPrefix ? '#' + idPrefix : '#';
-    $(searchPrefix + 'target').on('change', function onChangeLoginTargetLink() {
-      var target = $(searchPrefix + 'target').val();
-      if (links[target]) {
-        $('#login_library_card_recovery').attr('href', links[target]).show();
-      } else {
-        $('#login_library_card_recovery').hide();
-      }
-    }).trigger("change");
+    VuFind.displayILSPasswordRecoveryLink(links, idPrefix);
   }
 
   /**
