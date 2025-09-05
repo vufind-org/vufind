@@ -31,7 +31,6 @@
 
 namespace Finna\Controller;
 
-use Finna\Db\Service\FinnaCacheServiceInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container as SessionContainer;
 use VuFind\Db\Entity\UserCardEntityInterface;
@@ -488,7 +487,6 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
 
         return $this->createViewModel(compact('target', 'organisationInfoId'));
     }
-
 
     /**
      * Process the "edit library card" submission.
