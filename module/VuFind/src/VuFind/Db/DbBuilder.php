@@ -214,7 +214,7 @@ class DbBuilder
                 $db = $this->dbFactory->getConnectionFromOptions(
                     $connectionParams + ['dbname' => $newName]
                 );
-                $statements = explode(';', $sql);
+                $statements = preg_split('/;\s*([\r\n]|$)/', $sql);
                 foreach ($statements as $current) {
                     // Skip empty sections:
                     if (strlen(trim($current)) == 0) {
