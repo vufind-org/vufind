@@ -89,13 +89,16 @@ class DbBuilderTest extends \PHPUnit\Framework\TestCase
      */
     public function testPreCommands(string $driver, array $expectedCommands, bool $sqlOnly): void
     {
-        $mockConnection = $this->createMock(Connection::class);
-        $expectedConnectionCalls = $sqlOnly ? 0 : count($expectedCommands);
-        $mockConnection->expects($this->exactly($expectedConnectionCalls))->method('executeQuery');
-        $mockConnection->expects($this->exactly($sqlOnly ? 0 : 1))->method('quote')
-            ->willReturnCallback(fn ($str) => "'$str'");
         $factory = $this->createMock(ConnectionFactory::class);
-        $factory->expects($this->exactly(1))->method('getConnectionFromOptions')->willReturn($mockConnection);
+        if ($sqlOnly) {
+            $factory->expects($this->never())->method('getConnectionFromOptions');
+        } else {
+            $mockConnection = $this->createMock(Connection::class);
+            $mockConnection->expects($this->exactly(count($expectedCommands)))->method('executeQuery');
+            $mockConnection->expects($this->exactly(1))->method('quote')
+                ->willReturnCallback(fn ($str) => "'$str'");
+            $factory->expects($this->exactly(1))->method('getConnectionFromOptions')->willReturn($mockConnection);
+        }
         $builder = new DbBuilder($factory);
         $result = $builder->build('name', 'user', 'pass', $driver, returnSqlOnly: $sqlOnly, steps: ['pre']);
         $this->assertEquals(implode("\n", $expectedCommands), trim($result));
@@ -125,10 +128,8 @@ class DbBuilderTest extends \PHPUnit\Framework\TestCase
      */
     public function testMainCommands(string $driver, string $expectedFile): void
     {
-        $mockConnection = $this->createMock(Connection::class);
-        $mockConnection->expects($this->exactly(0))->method('executeQuery');
         $factory = $this->createMock(ConnectionFactory::class);
-        $factory->expects($this->exactly(1))->method('getConnectionFromOptions')->willReturn($mockConnection);
+        $factory->expects($this->never())->method('getConnectionFromOptions');
         $builder = new DbBuilder($factory);
         $result = $builder->build('name', 'user', 'pass', $driver, returnSqlOnly: true, steps: ['main']);
         $this->assertEquals(trim(file_get_contents($expectedFile)), trim($result));
@@ -169,11 +170,14 @@ class DbBuilderTest extends \PHPUnit\Framework\TestCase
      */
     public function testPostCommands(string $driver, array $expectedCommands, bool $sqlOnly): void
     {
-        $mockConnection = $this->createMock(Connection::class);
-        $expectedConnectionCalls = $sqlOnly ? 0 : count($expectedCommands);
-        $mockConnection->expects($this->exactly($expectedConnectionCalls))->method('executeQuery');
         $factory = $this->createMock(ConnectionFactory::class);
-        $factory->expects($this->exactly(1))->method('getConnectionFromOptions')->willReturn($mockConnection);
+        if ($sqlOnly) {
+            $factory->expects($this->never())->method('getConnectionFromOptions');
+        } else {
+            $mockConnection = $this->createMock(Connection::class);
+            $mockConnection->expects($this->exactly(count($expectedCommands)))->method('executeQuery');
+            $factory->expects($this->exactly(1))->method('getConnectionFromOptions')->willReturn($mockConnection);
+        }
         $builder = new DbBuilder($factory);
         $result = $builder->build('name', 'user', 'pass', $driver, returnSqlOnly: $sqlOnly, steps: ['post']);
         $this->assertEquals(implode("\n", $expectedCommands), trim($result));

@@ -29,6 +29,7 @@
 
 namespace VuFind\Db;
 
+use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception as DBALException;
 use Exception;
 
@@ -138,6 +139,38 @@ class DbBuilder
     }
 
     /**
+     * Get a database connection using the provided root credentials.
+     *
+     * @param string  $driver   Database driver to use
+     * @param string  $dbHost   Name of database host
+     * @param string  $rootUser Root username for connecting to database
+     * @param string  $rootPass Root password for connecting to database
+     * @param ?string $dbName   Database to connect to (null = default)
+     *
+     * @return Connection
+     * @throws Exception
+     */
+    protected function getRootDatabaseConnection(
+        string $driver,
+        string $dbHost,
+        string $rootUser,
+        string $rootPass,
+        ?string $dbName = null
+    ): Connection {
+        // We need a default database name to use to establish a connection:
+        $dbName ??= ($driver == 'pgsql') ? 'template1' : 'mysql';
+        return $this->dbFactory->getConnectionFromOptions(
+            [
+                'driver' => $this->dbFactory->getDriverName($driver),
+                'host' => $dbHost,
+                'user' => $rootUser,
+                'password' => $rootPass,
+                'dbname' => $dbName,
+            ]
+        );
+    }
+
+    /**
      * Build the database. Return the SQL used for the operation. Throw an exception on error.
      *
      * @param string   $newName       Name of database to create
@@ -168,17 +201,7 @@ class DbBuilder
         array $steps = []
     ): string {
         try {
-            // We need a default database name to use to establish a connection:
-            $dbName = ($driver == 'pgsql') ? 'template1' : 'mysql';
-            $connectionParams = [
-                'driver' => $this->dbFactory->getDriverName($driver),
-                'host' => $dbHost,
-                'user' => $rootUser,
-                'password' => $rootPass,
-            ];
-            $db = $this->dbFactory->getConnectionFromOptions(
-                $connectionParams + ['dbname' => $dbName]
-            );
+            $db = $returnSqlOnly ? null : $this->getRootDatabaseConnection($driver, $dbHost, $rootUser, $rootPass);
         } catch (\Exception $e) {
             throw new \Exception(
                 'Problem initializing database adapter; '
@@ -188,14 +211,15 @@ class DbBuilder
                 $e
             );
         }
+
         // Invert the steps list into a list of steps we should skip (no skipping if empty list):
         $allSteps = ['pre', 'main', 'post'];
         $skip = $steps ? array_diff($allSteps, $steps) : [];
 
         // Get SQL together
-        $escapedPass = $returnSqlOnly
-            ? "'" . addslashes($newPass) . "'"
-            : $db->quote($newPass);
+        $escapedPass = $db
+            ? $db->quote($newPass)
+            : "'" . addslashes($newPass) . "'";
         $preCommands = in_array('pre', $skip)
             ? [] : $this->getPreCommands($driver, $newName, $vufindHost, $newUser, $escapedPass);
         $sql = in_array('main', $skip) ? '' : $this->getMainSql($driver);
@@ -204,16 +228,16 @@ class DbBuilder
         $omnisql = '';
         foreach ($preCommands as $query) {
             $omnisql .= $query . ";\n";
-            if (!$returnSqlOnly) {
+            if ($db) {
                 $db->executeQuery($query);
             }
         }
         if ($sql) {
             $omnisql .= "\n" . $sql . "\n";
-            if (!$returnSqlOnly) {
-                $db = $this->dbFactory->getConnectionFromOptions(
-                    $connectionParams + ['dbname' => $newName]
-                );
+            if ($db) {
+                // If we're already connected to the database, we should reconnect now using the name of
+                // the newly created database.
+                $db = $this->getRootDatabaseConnection($driver, $dbHost, $rootUser, $rootPass, $newName);
                 $statements = preg_split('/;\s*([\r\n]|$)/', $sql);
                 foreach ($statements as $current) {
                     // Skip empty sections:
@@ -226,7 +250,7 @@ class DbBuilder
         }
         foreach ($postCommands as $query) {
             $omnisql .= $query . ";\n";
-            if (!$returnSqlOnly) {
+            if ($db) {
                 $db->executeQuery($query);
             }
         }
