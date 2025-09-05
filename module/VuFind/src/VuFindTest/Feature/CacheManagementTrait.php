@@ -81,7 +81,7 @@ trait CacheManagementTrait
     protected function clearCache(string $name): void
     {
         $http = new HttpService();
-        $client = $http->createClient($this->getVuFindUrl('/api/v1/admin/cache?id=' . $name), Request::METHOD_DELETE);
+        $client = $http->createClient($this->getVuFindUrl('/api/v1/admin/cache?id=' . urlencode($name)), Request::METHOD_DELETE);
         $response = $client->send();
         if (200 !== $response->getStatusCode()) {
             throw new \Exception('Could not clear object cache: ' . $response->getBody());
