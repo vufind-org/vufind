@@ -41,36 +41,45 @@ namespace VuFind\View\Helper\Root;
 class MethodTimedBlocks extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Get TimedBlocks settings from driver configuration
+     * Returns a display string of timed blocks from driver configuration
      *
-     * @param string $methodName Method to check
+     * @param string $methodName        Method to check
+     * @param string $methodDisplayName Method display name translation key (Defaults to "This feature")
      *
-     * @return array
+     * @return string
      */
-    public function __invoke(string $methodName): array
-    {
+    public function __invoke(
+        string $methodName,
+        string $methodDisplayName = '',
+    ): string {
         $ils = $this->getView()->plugin('ils');
-        $functionConfig = $ils()->checkCapability('getConfig', ['TimedBlocks'])
-            ? $ils()->getDriver()->getConfig('TimedBlocks')
-            : [];
-
-        if (!isset($functionConfig[$methodName])) {
-            return [];
-        }
-
-        $methodBlocks = $functionConfig[$methodName];
-        if (isset($methodBlocks['startDate']) || isset($methodBlocks['endDate'])) {
-            return [
-                'start' => $methodBlocks['startDate'] ?? '',
-                'end' => $methodBlocks['endDate'] ?? '',
+        if ($ils()->isMethodBlocked($methodName)) {
+            $methodBlocks = $ils()->getMethodTimedBlocks($methodName);
+            $transEsc = $this->getView()->plugin('transEsc');
+            $dateTime = $this->getView()->plugin('dateTime');
+            $transParams = [
+                '%%service%%' => $methodDisplayName
+                    ? $transEsc($methodDisplayName)
+                    : $transEsc('This feature'),
             ];
+
+            if (!$methodBlocks['recurring']) {
+                $end = $methodBlocks['end']
+                    ? $dateTime->convertToDisplayDate('U', $methodBlocks['end'])
+                    : '';
+                $transParams['%%end%%'] = $end;
+
+                if ($end) {
+                    return $transEsc('method_blocked_until', $transParams);
+                } else {
+                    return $transEsc('method_blocked', $transParams);
+                }
+            } else {
+                $end = $dateTime->convertToDisplayTime('U', $methodBlocks['end']);
+                $transParams['%%end%%'] = $end;
+                return $transEsc('method_blocked_until', $transParams);
+            }
         }
-        if (isset($methodBlocks['recurringStart']) && isset($methodBlocks['recurringEnd'])) {
-            return [
-                'start' => $methodBlocks['recurringStart'],
-                'end' => $methodBlocks['recurringEnd'],
-            ];
-        }
-        return [];
+        return '';
     }
 }

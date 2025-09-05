@@ -1336,7 +1336,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * @return array Array with keys 'start', 'end', 'recurring'
      *               or empty array if no blocks are found
      */
-    protected function getMethodTimedBlocks(string $methodName): array
+    public function getMethodTimedBlocks(string $methodName): array
     {
         $functionConfig = $this->checkCapability('getConfig', ['TimedBlocks'])
             ? $this->getDriver()->getConfig('TimedBlocks')
