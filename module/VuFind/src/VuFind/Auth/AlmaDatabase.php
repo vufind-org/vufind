@@ -35,7 +35,7 @@ use VuFind\Exception\Auth as AuthException;
 
 /**
  * Authentication class for Alma. The VuFind database and the Alma API are
- * combined for authentication by this classe.
+ * combined for authentication by this class.
  *
  * @category VuFind
  * @package  Authentication
