@@ -418,6 +418,8 @@ $config = [
             'NatLibFi\FinnaCodeSets\FinnaCodeSets' => 'Finna\RecordDriver\CodeSetsFactory',
 
             // Factory overrides for non-Finna classes:
+            'VuFind\Config\PathResolver' => 'Finna\Config\PathResolverFactory',
+
             \Laminas\Session\SessionManager::class => \Finna\Session\ManagerFactory::class,
 
             'League\CommonMark\ConverterInterface' => 'Finna\Service\MarkdownFactory',
