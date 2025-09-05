@@ -88,10 +88,10 @@ class DatabaseCommand extends Command
                 InputArgument::REQUIRED,
                 'Password for newly-created user'
             )->addOption(
-                'test-only',
+                'sql-only',
                 null,
                 InputOption::VALUE_NONE,
-                'activates test mode, which displays SQL without creating anything'
+                'output SQL without any actual database interactions'
             )->addOption(
                 'driver',
                 null,
@@ -141,7 +141,7 @@ class DatabaseCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $testMode = $input->getOption('test-only') ? true : false;
+        $sqlOnly = $input->getOption('sql-only') ? true : false;
         $driver = $input->getOption('driver');
         $dbHost = $input->getOption('dbHost');
         $vufindHost = $input->getOption('vufindHost');
@@ -162,10 +162,10 @@ class DatabaseCommand extends Command
                 $newName,
                 $newUser,
                 $newPass,
-                $testMode,
+                $sqlOnly,
                 $skip
             );
-            if ($testMode) {
+            if ($sqlOnly) {
                 $output->writeln($result);
             }
         } catch (\Exception $e) {
@@ -178,7 +178,7 @@ class DatabaseCommand extends Command
             }
             return 1;
         }
-        if (!$testMode) {
+        if (!$sqlOnly) {
             $output->writeln('Successfully created database.');
         }
         return 0;
