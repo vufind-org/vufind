@@ -113,6 +113,19 @@ class ConfigLoader
     }
 
     /**
+     * Set cached config for config location.
+     *
+     * @param ConfigLocationInterface $configLocation Config location
+     * @param mixed                   $config         Config
+     *
+     * @return void
+     */
+    public function setCachedConfigForLocation(ConfigLocationInterface $configLocation, mixed $config): void
+    {
+        $this->configCache[$configLocation->getCacheKey()] = $config;
+    }
+
+    /**
      * Load config from a specific location.
      *
      * @param ConfigLocationInterface $configLocation     Config location

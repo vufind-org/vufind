@@ -61,13 +61,6 @@ class ConfigManager
     protected StorageInterface $cache;
 
     /**
-     * Simple cache to avoid accessing the advanced cache multiple times per request.
-     *
-     * @var array
-     */
-    protected array $loadedConfig = [];
-
-    /**
      * Constructor
      *
      * @param ConfigLoader         $configLoader         Config loader
@@ -95,16 +88,11 @@ class ConfigManager
      */
     public function getConfig(string $configPath, bool $forceReload = false, bool $useLocalConfig = true): mixed
     {
-        $cacheKey =  ($useLocalConfig ? 'local_' : 'base_') . $configPath;
-        if (!$forceReload && isset($this->loadedConfig[$cacheKey])) {
-            return $this->loadedConfig[$cacheKey];
-        }
         $configLocation = $this->configLoader->getConfigLocation($configPath, $useLocalConfig);
         if (!$configLocation) {
             return [];
         }
         $config = $this->loadConfigFromLocation($configLocation, forceReload: $forceReload);
-        $this->loadedConfig[$cacheKey] = $config;
         return $config;
     }
 
@@ -177,6 +165,7 @@ class ConfigManager
         if ($config === null && $useAdvancedCache && !$forceReload) {
             $config = $advancedCache->getItem($cacheKey);
             if ($config !== null) {
+                $this->configLoader->setCachedConfigForLocation($configLocation, $config);
                 return $config;
             }
         }
