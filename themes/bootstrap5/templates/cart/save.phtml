@@ -62,18 +62,18 @@
 
 <?php
   $script = <<<JS
-    $('button.btn.hidden').removeClass('hidden');
-    $('#itemhide').removeClass('show');
+      $('button.btn.hidden').removeClass('hidden');
+      $('#itemhide').removeClass('show');
 
-    const form = document.querySelector(".form-cart-save");
-    form.addEventListener("keypress", function cartSaveEnter(event) {
-      // Prevent Enter key from submitting "create new list" form, which is unexpected behavior:
-      if (event.key === "Enter") {
-        form.querySelector('.btn[value="Save"]').click();
-        event.preventDefault();
-        return false;
-      }
-    });
-    JS;
+      const form = document.querySelector(".form-cart-save");
+      form.addEventListener("keypress", function cartSaveEnter(event) {
+        // Prevent Enter key from submitting "create new list" form, which is unexpected behavior:
+        if (event.key === "Enter") {
+          form.querySelector('.btn[value="Save"]').click();
+          event.preventDefault();
+          return false;
+        }
+      });
+      JS;
 ?>
 <?=$this->assetManager()->outputInlineScriptString($script) ?>
