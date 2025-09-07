@@ -67,8 +67,9 @@
 
       const form = document.querySelector(".form-cart-save");
       form.addEventListener("keypress", function cartSaveEnter(event) {
-        // Prevent Enter key from submitting "create new list" form, which is unexpected behavior:
-        if (event.key === "Enter") {
+        // Make Enter key submit save form unless a button is the target (prevents unexpected/undesired
+        // "create list" default behavior):
+        if (event.key === "Enter" && event.target.nodeName !== 'BUTTON') {
           form.querySelector('.btn[value="Save"]').click();
           event.preventDefault();
           return false;
