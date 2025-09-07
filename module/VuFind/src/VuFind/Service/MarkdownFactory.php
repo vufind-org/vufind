@@ -122,8 +122,7 @@ class MarkdownFactory implements FactoryInterface
         $requestedName,
         ?array $options = null
     ) {
-        $this->config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('markdown')->toArray();
+        $this->config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('markdown');
         $this->extensions = isset($this->config['Markdown']['extensions'])
             ? array_map(
                 'trim',

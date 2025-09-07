@@ -4,6 +4,8 @@ require __DIR__ . '/constants.config.php';
 
 // Set up modules:
 $modules = [
+    'DoctrineModule',
+    'DoctrineORMModule',
     'Laminas\Cache',
     'Laminas\Cache\Storage\Adapter\BlackHole',
     'Laminas\Cache\Storage\Adapter\Filesystem',
@@ -32,9 +34,6 @@ if (APPLICATION_ENV === 'development' || APPLICATION_ENV === 'testing') {
     if (!isset($_SERVER['HTTP_X_VUFIND_DISABLE_WHOOPS'])) {
         $modules[] = 'WhoopsErrorHandler';
     }
-    $modules[] = 'VuFindDevTools';
-}
-if (APPLICATION_ENV === 'development') {
     $modules[] = 'VuFindDevTools';
 }
 if ($localModules = getenv('VUFIND_LOCAL_MODULES')) {

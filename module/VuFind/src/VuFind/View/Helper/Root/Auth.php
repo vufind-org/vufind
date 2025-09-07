@@ -109,19 +109,6 @@ class Auth extends \Laminas\View\Helper\AbstractHelper implements DbServiceAware
     /**
      * Checks whether the user is logged in.
      *
-     * @return UserEntityInterface|bool Object if user is logged in, false
-     * otherwise.
-     *
-     * @deprecated Use getIdentity() or getUserObject() instead.
-     */
-    public function isLoggedIn()
-    {
-        return $this->getManager()->isLoggedIn();
-    }
-
-    /**
-     * Checks whether the user is logged in.
-     *
      * @return ?UserEntityInterface Object if user is logged in, null otherwise.
      */
     public function getUserObject(): ?UserEntityInterface

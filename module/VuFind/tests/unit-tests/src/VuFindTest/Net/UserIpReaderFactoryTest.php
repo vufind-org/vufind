@@ -59,8 +59,8 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
     {
         $container = new \VuFindTest\Container\MockContainer($this);
         $container->set(
-            \VuFind\Config\PluginManager::class,
-            $this->getMockConfigPluginManager(compact('config'), [], $this->once())
+            \VuFind\Config\ConfigManager::class,
+            $this->getMockConfigManager(compact('config'), [], $this->once())
         );
         $mockRequest = $this
             ->getMockBuilder(\Laminas\Http\PhpEnvironment\Request::class)

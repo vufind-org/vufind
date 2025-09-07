@@ -52,11 +52,11 @@ interface ChangeTrackerEntityInterface extends EntityInterface
     public function setId(string $id): static;
 
     /**
-     * Getter for identifier.
+     * Get identifier (returns null for an uninitialized or non-persisted object).
      *
-     * @return string
+     * @return ?string
      */
-    public function getId(): string;
+    public function getId(): ?string;
 
     /**
      * Setter for index name (formerly core).

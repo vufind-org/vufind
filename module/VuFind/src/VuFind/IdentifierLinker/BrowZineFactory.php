@@ -107,7 +107,7 @@ class BrowZineFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
             throw new \Exception('Unexpected options passed to factory.');
         }
         $search = $container->get(\VuFindSearch\Service::class);
-        $fullConfig = $container->get(\VuFind\Config\PluginManager::class)->get('BrowZine')->toArray();
+        $fullConfig = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('BrowZine');
         // DOI config section is supported as a fallback for legacy back-compatibility:
         $config = $fullConfig['IdentifierLinks'] ?? $fullConfig['DOI'] ?? [];
 

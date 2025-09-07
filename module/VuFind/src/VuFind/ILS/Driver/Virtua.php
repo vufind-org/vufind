@@ -36,7 +36,6 @@ use function count;
 use function in_array;
 use function is_array;
 use function sprintf;
-use function strlen;
 
 /**
  * VTLS Virtua Driver
@@ -1168,38 +1167,25 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             ')';
 
         $fields = ['barcode:string' => $barcode];
-        $result = $this->db->simpleSelect($sql, $fields);
-
-        if (count($result) > 0) {
-            // Valid Password
-            if ($result[0]['PASSWORD'] == $password) {
-                $user = [];
-                $split      = strpos($result[0]['NAME'], ',');
-                $last_name  = trim(substr($result[0]['NAME'], 0, $split));
-                $first_name = trim(substr($result[0]['NAME'], $split + 1));
-                $split      = strpos($first_name, ' ');
-                if ($split !== false) {
-                    $first_name = trim(substr($first_name, 0, $split));
-                }
-
-                $user['id']           = trim($result[0]['ID']);
-                $user['firstname']    = trim($first_name);
-                $user['lastname']     = trim($last_name);
-                $user['cat_username'] = strtoupper(trim($result[0]['BARCODE']));
-                $user['cat_password'] = trim($result[0]['PASSWORD']);
-                $user['email']        = trim($result[0]['E_MAIL_ADDRESS_PRIMARY']);
-                $user['major']        = trim($result[0]['DEPARTMENT']);
-                $user['college']      = null;
-
-                return $user;
-            } else {
-                // Invalid Password
-                return null;
-            }
-        } else {
-            // User not found
+        $result = $this->db->simpleSelect($sql, $fields)[0] ?? false;
+        if (!$result || $result['PASSWORD'] !== $password) {
             return null;
         }
+
+        [$last_name, $first_name] = $this->getLastAndFirstName($result['NAME']);
+        $split      = strpos($first_name, ' ');
+        if ($split !== false) {
+            $first_name = trim(substr($first_name, 0, $split));
+        }
+        return $this->createPatronArray(
+            id: $result['ID'],
+            firstname: $first_name,
+            lastname: $last_name,
+            cat_username: strtoupper($result['BARCODE']),
+            cat_password: $result['PASSWORD'],
+            email: $result['E_MAIL_ADDRESS_PRIMARY'],
+            major: $result['DEPARTMENT']
+        );
     }
 
     /**
@@ -1223,39 +1209,31 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             'AND   p.patron_id      = :patron_id';
 
         $fields = ['patron_id:string' => $patron['id']];
-        $result = $this->db->simpleSelect($sql, $fields);
 
-        if (count($result) > 0) {
-            $split      = strpos($result[0]['NAME'], ',');
-            $last_name  = substr($result[0]['NAME'], 0, $split);
-            $first_name = substr($result[0]['NAME'], $split + 1);
-            $split      = strpos($result[0]['NAME'], ' ');
-            if ($split !== false) {
-                $first_name = substr($first_name, 0, $split);
-            }
-
-            $patron = [
-                'firstname' => trim($first_name),
-                'lastname'  => trim($last_name),
-                'address1'  => trim($result[0]['STREET_ADDRESS_1']),
-                'address2'  => trim($result[0]['STREET_ADDRESS_2']),
-                'zip'       => trim($result[0]['POSTAL_CODE']),
-                'phone'     => trim($result[0]['TELEPHONE_PRIMARY']),
-                'group'     => trim($result[0]['PATRON_TYPE']),
-                ];
-
-            if ($result[0]['CITY'] != null) {
-                if (strlen($patron['address2']) > 0) {
-                    $patron['address2'] .= ', ' . trim($result[0]['CITY']);
-                } else {
-                    $patron['address2'] = trim($result[0]['CITY']);
-                }
-            }
-
-            return $patron;
-        } else {
+        $result = $this->db->simpleSelect($sql, $fields)[0] ?? null;
+        if (!$result) {
             return null;
         }
+        [$last_name, $first_name] = $this->getLastAndFirstName($result['NAME']);
+        $split = strpos($first_name, ' ');
+        if ($split !== false) {
+            $first_name = substr($first_name, 0, $split);
+        }
+
+        $address2 = trim($result['STREET_ADDRESS_2'] ?? '');
+        if ($addressCity = $result['CITY'] ?? null) {
+            $address2 = trim("$address2, $addressCity", " ,\n\r\t\v\0");
+        }
+
+        return $this->createProfileArray(
+            firstname: $first_name,
+            lastname: $last_name,
+            address1: $result['STREET_ADDRESS_1'] ?? null,
+            address2: $address2,
+            zip: $result['POSTAL_CODE'] ?? null,
+            phone: $result['TELEPHONE_PRIMARY'] ?? null,
+            group: $result['PATRON_TYPE'] ?? null
+        );
     }
 
     /**

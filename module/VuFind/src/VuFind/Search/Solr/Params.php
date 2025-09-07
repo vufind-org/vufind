@@ -231,6 +231,7 @@ class Params extends \VuFind\Search\Base\Params
         $facetSet = [];
 
         if (!empty($this->facetConfig)) {
+            $dateRangeTypes = $this->getOptions()->getDateRangeFieldTypes();
             $facetSet['limit'] = $this->facetLimit;
             foreach (array_keys($this->facetConfig) as $facetField) {
                 $fieldLimit = $this->getFacetLimitForField($facetField);
@@ -245,10 +246,23 @@ class Params extends \VuFind\Search\Base\Params
                 if (!empty($fieldMatches)) {
                     $facetSet["f.{$facetField}.facet.matches"] = $fieldMatches;
                 }
-                if ($this->getFacetOperator($facetField) == 'OR') {
-                    $facetField = '{!ex=' . $facetField . '_filter}' . $facetField;
+                if ('DateRangeField' === ($dateRangeTypes[$facetField] ?? null)) {
+                    $startYear = $this->getOptions()->getDateRangeSliderMinValue($facetField)
+                        ?? VUFIND_DEFAULT_EARLIEST_YEAR;
+                    $endYear = $this->getOptions()->getDateRangeSliderMinValue($facetField)
+                        ?? ((int)date('Y') + VUFIND_DEFAULT_LATEST_YEAR_OFFSET);
+                    $facetSet["f.{$facetField}.facet.range.start"]
+                        = sprintf('%s%04d-01-01T00:00:00Z', $startYear < 0 ? '-' : '', $startYear);
+                    $facetSet["f.{$facetField}.facet.range.end"]
+                        = sprintf('%s%04d-12-31T23:59:59Z', $endYear < 0 ? '-' : '', $endYear);
+                    $facetSet["f.{$facetField}.facet.range.gap"] = '+1YEAR';
+                    $facetSet['range'][] = $facetField;
+                } else {
+                    if ($this->getFacetOperator($facetField) == 'OR') {
+                        $facetField = '{!ex=' . $facetField . '_filter}' . $facetField;
+                    }
+                    $facetSet['field'][] = $facetField;
                 }
-                $facetSet['field'][] = $facetField;
             }
             if ($this->facetContains != null) {
                 $facetSet['contains'] = $this->facetContains;

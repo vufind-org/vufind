@@ -223,7 +223,7 @@ class PathResolver
         ?string $path = null,
     ): ?ConfigLocationInterface {
         return $this->getLocalConfigLocation($configName, $path)
-            ?? $this->getConfigLocationFromSpec($configName, $this->baseDirectorySpec, $path);
+            ?? $this->getBaseConfigLocation($configName, $path);
     }
 
     /**
@@ -248,6 +248,22 @@ class PathResolver
             }
         }
         return $currentLocation;
+    }
+
+    /**
+     * Get the base config location based on the config name.
+     *
+     * @param string  $configName Config name
+     * @param ?string $path       path relative to VuFind base (optional; use null for
+     * default)
+     *
+     * @return ?ConfigLocationInterface
+     */
+    public function getBaseConfigLocation(
+        string $configName,
+        ?string $path = null,
+    ): ?ConfigLocationInterface {
+        return $this->getConfigLocationFromSpec($configName, $this->baseDirectorySpec, $path);
     }
 
     /**

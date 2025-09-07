@@ -1,1 +1,10 @@
+<?php
+  /**
+   * Wrapper around show-sidebar-button component designed specifically for the account menu sidebar.
+   *
+   * @param ?string $title    Title for link (will be translated; defaults to sidebar_expand)
+   * @param string  $targetId HTML element ID to link to (default = 'myresearch-sidebar')
+   * @param string  $linkText Text to display within link (default = 'Your Account')
+   */
+?>
 <?=$this->component('show-sidebar-button', $this->vars()->getArrayCopy() + ['targetId' => 'myresearch-sidebar', 'linkText' => 'Your Account']);

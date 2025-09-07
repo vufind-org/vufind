@@ -670,10 +670,8 @@ class AbstractSearch extends AbstractBase
      */
     protected function getRangeFieldList($config, $section, $filter)
     {
-        $config = $this->getService(\VuFind\Config\PluginManager::class)
-            ->get($config);
-        $fields = isset($config->SpecialFacets->$section)
-            ? $config->SpecialFacets->$section->toArray() : [];
+        $config = $this->getService(\VuFind\Config\ConfigManager::class)->getConfigArray($config);
+        $fields = $config['SpecialFacets'][$section] ?? [];
 
         if (!empty($filter)) {
             $fields = array_intersect($fields, $filter);
@@ -842,8 +840,7 @@ class AbstractSearch extends AbstractBase
         $section = $params[1] ?? 'CheckboxFacets';
 
         // Load config file:
-        $config = $this->getService(\VuFind\Config\PluginManager::class)
-            ->get($config);
+        $config = $this->getService(\VuFind\Config\ConfigManager::class)->getConfigArray($config);
 
         // Process checkbox settings in config:
         $flipCheckboxes = false;
@@ -851,8 +848,7 @@ class AbstractSearch extends AbstractBase
             $section = substr($section, 1);
             $flipCheckboxes = true;
         }
-        $checkboxFacets = ($section && isset($config->$section))
-            ? $config->$section->toArray() : [];
+        $checkboxFacets = ($section && isset($config[$section])) ? $config[$section] : [];
         if ($flipCheckboxes) {
             $checkboxFacets = array_flip($checkboxFacets);
         }
@@ -913,8 +909,8 @@ class AbstractSearch extends AbstractBase
                 ? 'count'
                 : current(array_keys($facetSortOptions));
         }
-        $config = $this->getService(\VuFind\Config\PluginManager::class)
-            ->get($options->getFacetsIni());
+        $config = $this->getService(\VuFind\Config\ConfigManager::class)
+            ->getConfigObject($options->getFacetsIni());
         $limit = $config->Results_Settings->lightboxLimit ?? 50;
         $limit = $this->params()->fromQuery('facetlimit', $limit);
         if (!empty($contains)) {

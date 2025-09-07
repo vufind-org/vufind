@@ -74,8 +74,7 @@ class CachingProxyFactory implements FactoryInterface
             ->getCache('cover')->getOptions();
         $cacheDir = is_callable([$cacheOptions, 'getCacheDir'])
             ? $cacheOptions->getCacheDir() : null;
-        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config')
-            ->toArray();
+        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config');
         $allowedHosts = isset($config['Content']['coverproxyCache'])
             ? (array)$config['Content']['coverproxyCache'] : [];
         return new $requestedName(
