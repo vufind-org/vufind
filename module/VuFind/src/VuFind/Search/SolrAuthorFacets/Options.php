@@ -29,7 +29,7 @@
 
 namespace VuFind\Search\SolrAuthorFacets;
 
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface as ConfigManager;
 
 /**
  * AuthorFacets Search Options

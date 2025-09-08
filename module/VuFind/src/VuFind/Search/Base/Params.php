@@ -31,7 +31,7 @@
 
 namespace VuFind\Search\Base;
 
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface as ConfigManager;
 use VuFind\I18n\TranslatableString;
 use VuFind\Search\Minified;
 use VuFind\Search\QueryAdapter;

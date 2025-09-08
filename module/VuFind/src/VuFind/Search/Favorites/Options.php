@@ -29,7 +29,7 @@
 
 namespace VuFind\Search\Favorites;
 
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface as ConfigManager;
 
 /**
  * Search Favorites Options

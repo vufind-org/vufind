@@ -51,7 +51,7 @@ use function strval;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ConfigManager
+class ConfigManager implements ConfigManagerInterface
 {
     use KeyGeneratorTrait;
 
@@ -122,10 +122,30 @@ class ConfigManager
      * @param bool   $useLocalConfig Use local configuration if available
      *
      * @return Config
+     *
+     * @deprecated Use getConfigArray or getConfig instead
      */
     public function getConfigObject(string $configPath, bool $forceReload = false, bool $useLocalConfig = true): Config
     {
         return new Config($this->getConfigArray($configPath, $forceReload, $useLocalConfig));
+    }
+
+    /**
+     * Get config in PluginManager style.
+     *
+     * @param string $name    Service name of plugin to retrieve.
+     * @param ?array $options Options to use when creating the instance.
+     *
+     * @return mixed
+     *
+     * @deprecated Use getConfigArray or getConfig instead
+     */
+    public function get($name, ?array $options = null)
+    {
+        return $this->getConfigObject(
+            $name,
+            forceReload: $options['forceReload'] ?? false
+        );
     }
 
     /**

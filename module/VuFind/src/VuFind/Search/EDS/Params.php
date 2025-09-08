@@ -31,7 +31,7 @@
 
 namespace VuFind\Search\EDS;
 
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface as ConfigManager;
 use VuFindSearch\ParamBag;
 
 /**

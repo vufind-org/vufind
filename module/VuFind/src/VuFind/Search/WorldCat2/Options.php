@@ -29,7 +29,7 @@
 
 namespace VuFind\Search\WorldCat2;
 
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface as ConfigManager;
 
 /**
  * WorldCat v2 Search Options

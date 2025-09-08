@@ -29,7 +29,7 @@
 
 namespace VuFind\Search\Summon;
 
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface as ConfigManager;
 
 /**
  * Summon Search Options

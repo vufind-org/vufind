@@ -30,7 +30,7 @@
 
 namespace VuFind\Search\Base;
 
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface as ConfigManager;
 use VuFindSearch\Service as SearchService;
 
 /**

@@ -30,7 +30,7 @@
 namespace VuFind\Search\Base;
 
 use VuFind\Cache\Manager as CacheManager;
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface as ConfigManager;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
 
 use function in_array;

@@ -32,7 +32,7 @@
 
 namespace VuFind\Search\EPF;
 
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface as ConfigManager;
 use VuFind\Search\EDS\AbstractEDSOptions;
 
 /**

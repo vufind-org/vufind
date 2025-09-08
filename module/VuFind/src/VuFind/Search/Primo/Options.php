@@ -29,7 +29,7 @@
 
 namespace VuFind\Search\Primo;
 
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface as ConfigManager;
 
 /**
  * Primo Search Options

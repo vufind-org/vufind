@@ -30,7 +30,7 @@
 
 namespace VuFind\Search\SolrReserves;
 
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface as ConfigManager;
 
 /**
  * Solr Reserves Search Options

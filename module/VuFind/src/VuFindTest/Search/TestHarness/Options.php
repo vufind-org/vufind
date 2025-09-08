@@ -29,7 +29,7 @@
 
 namespace VuFindTest\Search\TestHarness;
 
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface as ConfigManager;
 
 /**
  * Test options search model.

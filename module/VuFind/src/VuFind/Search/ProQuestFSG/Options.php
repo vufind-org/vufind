@@ -30,7 +30,7 @@
 
 namespace VuFind\Search\ProQuestFSG;
 
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface as ConfigManager;
 
 /**
  * ProQuest Federated Search Gateway Search Options

@@ -29,7 +29,7 @@
 
 namespace VuFind\Search\Pazpar2;
 
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface as ConfigManager;
 
 use function is_array;
 

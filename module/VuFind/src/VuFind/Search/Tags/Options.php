@@ -29,7 +29,7 @@
 
 namespace VuFind\Search\Tags;
 
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface as ConfigManager;
 
 /**
  * Search Tags Options

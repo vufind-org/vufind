@@ -29,7 +29,7 @@
 
 namespace VuFind\Search\LibGuides;
 
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface as ConfigManager;
 
 /**
  * LibGuides Search Options

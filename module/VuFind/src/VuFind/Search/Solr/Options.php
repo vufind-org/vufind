@@ -29,8 +29,7 @@
 
 namespace VuFind\Search\Solr;
 
-use VuFind\Config\ConfigManager;
-
+use VuFind\Config\ConfigManagerInterface as ConfigManager;
 use VuFind\Search\Base\DateRangeOptionsInterface;
 
 /**

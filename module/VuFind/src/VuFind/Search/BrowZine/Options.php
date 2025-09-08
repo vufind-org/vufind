@@ -29,7 +29,7 @@
 
 namespace VuFind\Search\BrowZine;
 
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface as ConfigManager;
 
 /**
  * BrowZine Search Options

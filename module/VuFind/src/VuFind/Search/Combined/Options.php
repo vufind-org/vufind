@@ -31,7 +31,7 @@
 
 namespace VuFind\Search\Combined;
 
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface as ConfigManager;
 
 /**
  * Combined search model.

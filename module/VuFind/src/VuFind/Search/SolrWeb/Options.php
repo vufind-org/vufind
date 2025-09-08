@@ -29,7 +29,7 @@
 
 namespace VuFind\Search\SolrWeb;
 
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface as ConfigManager;
 
 /**
  * Solr Web Search Options

@@ -31,7 +31,7 @@
 namespace VuFind\Search\Solr;
 
 use VuFind\Config\Config;
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface as ConfigManager;
 use VuFindSearch\ParamBag;
 
 use function count;

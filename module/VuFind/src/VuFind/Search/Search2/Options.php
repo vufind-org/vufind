@@ -29,7 +29,7 @@
 
 namespace VuFind\Search\Search2;
 
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface as ConfigManager;
 
 /**
  * Search Options for second Solr index

@@ -29,7 +29,7 @@
 
 namespace VuFind\Search\SolrAuth;
 
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface as ConfigManager;
 
 /**
  * Solr Authority Search Options

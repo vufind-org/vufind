@@ -30,7 +30,7 @@
 
 namespace VuFind\Search\EIT;
 
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface as ConfigManager;
 
 /**
  * EBSCO EIT Search Options
