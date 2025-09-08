@@ -29,6 +29,8 @@
 
 namespace Finna;
 
+use VuFind\RecordDriver\AbstractBase as RecordDriver;
+
 /**
  * Export support class
  *
@@ -43,12 +45,12 @@ class Export extends \VuFind\Export
     /**
      * Does the specified record support the specified export format?
      *
-     * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
-     * @param string                            $format Format to check
+     * @param RecordDriver $driver Record driver
+     * @param string       $format Format to check
      *
      * @return bool
      */
-    public function recordSupportsFormat($driver, $format)
+    public function recordSupportsFormat(RecordDriver $driver, string $format): bool
     {
         if ('Finna' === $format) {
             return true;
@@ -63,7 +65,7 @@ class Export extends \VuFind\Export
      *
      * @return array
      */
-    public function getHeaders($format)
+    public function getHeaders(string $format): array
     {
         if ('Finna' === $format) {
             return ['Content-type: application/json'];

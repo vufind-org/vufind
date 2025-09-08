@@ -87,10 +87,11 @@ class SearchBox extends \VuFind\View\Helper\Root\SearchBox
      *
      * @param string $activeSearchClass Active search class ID
      * @param string $activeHandler     Active search handler
+     * @param array  $hiddenFilters     Currently applied hidden filters (if any)
      *
      * @return array
      */
-    protected function getCombinedHandlers($activeSearchClass, $activeHandler)
+    protected function getCombinedHandlers($activeSearchClass, $activeHandler, array $hiddenFilters = [])
     {
         if (isset($this->config['CombinedHandlers'])) {
             $handlers = [];
@@ -104,7 +105,7 @@ class SearchBox extends \VuFind\View\Helper\Root\SearchBox
             }
             return $handlers;
         }
-        return parent::getCombinedHandlers($activeSearchClass, $activeHandler);
+        return parent::getCombinedHandlers($activeSearchClass, $activeHandler, $hiddenFilters);
     }
 
     /**
