@@ -68,23 +68,14 @@ class SearchTabsHelperFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $tabConfig = isset($config->SearchTabs)
-            ? $config->SearchTabs->toArray() : [];
-        $filterConfig = isset($config->SearchTabsFilters)
-            ? $config->SearchTabsFilters->toArray() : [];
-        $permissionConfig = isset($config->SearchTabsPermissions)
-            ? $config->SearchTabsPermissions->toArray() : [];
-        $settings = isset($config->SearchTabsSettings)
-            ? $config->SearchTabsSettings->toArray() : [];
+        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config');
         return new $requestedName(
             $container->get(\VuFind\Search\Results\PluginManager::class),
-            $tabConfig,
-            $filterConfig,
+            $config['SearchTabs'] ?? [],
+            $config['SearchTabsFilters'] ?? [],
             $container->get('Application')->getRequest(),
-            $permissionConfig,
-            $settings
+            $config['SearchTabsPermissions'] ?? [],
+            $config['SearchTabsSettings'] ?? []
         );
     }
 }

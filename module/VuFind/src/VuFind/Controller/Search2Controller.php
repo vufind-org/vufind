@@ -52,4 +52,24 @@ class Search2Controller extends AbstractSolrSearch
         $this->searchClassId = 'Search2';
         parent::__construct($sm);
     }
+
+    /**
+     * Results action.
+     *
+     * @return mixed
+     */
+    public function resultsAction()
+    {
+        // Special case -- redirect tag searches.
+        if ($this->params()->fromQuery('type') == 'tag') {
+            // Because we're coming in from a search, we want to do a fuzzy
+            // tag search, not an exact search like we would when linking to a
+            // specific tag name.
+            $query = $this->getRequest()->getQuery()->set('fuzzy', 'true');
+            return $this->forwardTo('Tag', 'Home');
+        }
+
+        // Default case -- standard behavior.
+        return parent::resultsAction();
+    }
 }

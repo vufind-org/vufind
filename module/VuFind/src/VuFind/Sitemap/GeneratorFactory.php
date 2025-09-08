@@ -68,14 +68,14 @@ class GeneratorFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $configLoader = $container->get(\VuFind\Config\PluginManager::class);
+        $configManager = $container->get(\VuFind\Config\ConfigManager::class);
         $enabledLocales = array_keys(
             $container->get(\VuFind\I18n\Locale\LocaleSettings::class)
                 ->getEnabledLocales()
         );
         return new $requestedName(
-            $configLoader->get('config')->Site->url ?? '',
-            $configLoader->get('sitemap'),
+            $configManager->getConfigArray('config')['Site']['url'] ?? '',
+            $configManager->getConfigObject('sitemap'),
             $enabledLocales,
             $container->get(\VuFind\Sitemap\PluginManager::class)
         );

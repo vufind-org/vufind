@@ -68,9 +68,9 @@ class HoldSettingsFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $configManager = $container->get(\VuFind\Config\PluginManager::class);
+        $configManager = $container->get(\VuFind\Config\ConfigManager::class);
         return new $requestedName(
-            $configManager->get('config')->Catalog
+            $configManager->getConfigObject('config')->Catalog
         );
     }
 }

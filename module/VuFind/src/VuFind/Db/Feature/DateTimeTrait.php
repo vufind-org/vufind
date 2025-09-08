@@ -53,7 +53,8 @@ trait DateTimeTrait
     protected function getNullableDateTimeFromNonNullable(DateTime $date): ?DateTime
     {
         // Compare strings to avoid trouble with time zones:
-        return $date->format('Y-m-d H:i:s') !== $this->getUnassignedDefaultDateTime()->format('Y-m-d H:i:s')
+        return $date->format(VUFIND_DATABASE_DATETIME_FORMAT)
+            !== $this->getUnassignedDefaultDateTime()->format(VUFIND_DATABASE_DATETIME_FORMAT)
             ? $date
             : null;
     }

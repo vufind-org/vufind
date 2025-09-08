@@ -152,6 +152,14 @@ class RecordCollection extends AbstractRecordCollection
                 }
                 $this->facetFields[$field] = $values;
             }
+            $facetRangeData = $this->response['facet_counts']['facet_ranges'] ?? [];
+            foreach ($facetRangeData as $field => $facetData) {
+                $values = [];
+                foreach ($facetData['counts'] as $value) {
+                    $values[$value[0]] = $value[1];
+                }
+                $this->facetFields[$field] = $values;
+            }
         }
         return $this->facetFields;
     }

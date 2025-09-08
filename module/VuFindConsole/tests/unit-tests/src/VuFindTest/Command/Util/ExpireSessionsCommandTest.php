@@ -66,14 +66,14 @@ class ExpireSessionsCommandTest extends AbstractExpireCommandTest
     /**
      * Age parameter to use when testing illegal age input.
      *
-     * @var int
+     * @var float
      */
     protected $illegalAge = 0.01;
 
     /**
      * Expected minimum age in error message.
      *
-     * @var int
+     * @var float
      */
     protected $expectedMinAge = 0.1;
 }

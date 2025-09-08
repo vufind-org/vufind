@@ -49,6 +49,8 @@ use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserResourceServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
+use VuFind\Db\Type\AuditEventSubtype;
+use VuFind\Db\Type\AuditEventType;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
 use VuFind\Exception\AuthInProgress as AuthInProgressException;
@@ -489,6 +491,14 @@ class MyResearchController extends AbstractBase
         }
         $row->setUser($user);
         $this->getDbService(SearchServiceInterface::class)->persistEntity($row);
+        $this->getAuditEventService()->addEvent(
+            AuditEventType::User,
+            $saved ? AuditEventSubtype::SaveSearch : AuditEventSubtype::UnSaveSearch,
+            $user,
+            data: [
+                'search_id' => $searchId,
+            ]
+        );
     }
 
     /**
@@ -552,6 +562,18 @@ class MyResearchController extends AbstractBase
         $savedRow->setNotificationFrequency($schedule);
         $savedRow->setNotificationBaseUrl($baseurl);
         $this->getDbService(SearchServiceInterface::class)->persistEntity($savedRow);
+
+        $this->getAuditEventService()->addEvent(
+            AuditEventType::User,
+            AuditEventSubtype::ScheduleSearch,
+            $user,
+            data: [
+                'search_id' => $sid,
+                'notification_frequency' => $schedule,
+                'base_url' => $baseurl,
+            ]
+        );
+
         return $this->redirect()->toRoute('search-history');
     }
 
@@ -1539,6 +1561,18 @@ class MyResearchController extends AbstractBase
             )
             : [];
 
+        if ($renewResult) {
+            $this->getAuditEventService()->addEvent(
+                AuditEventType::ILS,
+                AuditEventSubtype::RenewLoans,
+                $this->getUser(),
+                data: [
+                    'username' => $patron['cat_username'],
+                    'result' => $renewResult,
+                ]
+            );
+        }
+
         // By default, assume we will not need to display a renewal form:
         $renewForm = false;
 
@@ -1770,6 +1804,13 @@ class MyResearchController extends AbstractBase
             );
 
             $this->flashMessenger()->addSuccessMessage('recovery_email_sent');
+
+            $this->getAuditEventService()->addEvent(
+                AuditEventType::User,
+                AuditEventSubtype::SendEmailRecoveryLink,
+                $this->getUser(),
+                data: ['email' => $recoveryData['email']]
+            );
         } catch (MailException $e) {
             $this->flashMessenger()->addErrorMessage($e->getDisplayMessage());
         }
@@ -1886,6 +1927,17 @@ class MyResearchController extends AbstractBase
                     if ($change) {
                         $this->sendChangeNotificationEmail($user, $to);
                     }
+
+                    $this->getAuditEventService()->addEvent(
+                        AuditEventType::User,
+                        AuditEventSubtype::SendAddressVerificationEmail,
+                        $user,
+                        data: [
+                            'email' => $user->getEmail(),
+                            'pending_email' => $user->getPendingEmail(),
+                            'change' => $change,
+                        ]
+                    );
                 } catch (MailException $e) {
                     $this->flashMessenger()->addMessage($e->getDisplayMessage(), 'error');
                 }
@@ -1929,6 +1981,13 @@ class MyResearchController extends AbstractBase
                     $view->passwordPolicy = $this->getAuthManager()
                         ->getPasswordPolicy();
                     $view->setTemplate('myresearch/newpassword');
+
+                    $this->getAuditEventService()->addEvent(
+                        AuditEventType::User,
+                        AuditEventSubtype::VerifyEmailHash,
+                        $user,
+                    );
+
                     return $view;
                 }
             }
@@ -2026,6 +2085,13 @@ class MyResearchController extends AbstractBase
                     $this->getDbService(UserServiceInterface::class)->persistEntity($user);
 
                     $this->flashMessenger()->addMessage('verification_done', 'info');
+
+                    $this->getAuditEventService()->addEvent(
+                        AuditEventType::User,
+                        AuditEventSubtype::VerifyEmail,
+                        $user,
+                    );
+
                     return $this->redirect()->toRoute('myresearch-profile');
                 }
             }
@@ -2124,6 +2190,13 @@ class MyResearchController extends AbstractBase
         $this->getAuthManager()->login($this->request);
         // Return to account home
         $this->flashMessenger()->addMessage('new_password_success', 'success');
+
+        $this->getAuditEventService()->addEvent(
+            AuditEventType::User,
+            AuditEventSubtype::PasswordChanged,
+            $user,
+        );
+
         return $this->redirect()->toRoute('myresearch-home');
     }
 
@@ -2235,6 +2308,14 @@ class MyResearchController extends AbstractBase
         }
         $series = $this->params()->fromPost('series', '');
         $this->getAuthManager()->deleteToken($series);
+
+        $this->getAuditEventService()->addEvent(
+            AuditEventType::User,
+            AuditEventSubtype::DeleteLoginToken,
+            $this->getUser(),
+            data: compact('series')
+        );
+
         return $this->redirect()->toRoute('myresearch-profile');
     }
 
@@ -2255,6 +2336,13 @@ class MyResearchController extends AbstractBase
             );
         }
         $this->getAuthManager()->deleteUserLoginTokens($this->getUser()->id);
+
+        $this->getAuditEventService()->addEvent(
+            AuditEventType::User,
+            AuditEventSubtype::DeleteLoginTokens,
+            $this->getUser()
+        );
+
         return $this->redirect()->toRoute('myresearch-profile');
     }
 
@@ -2316,6 +2404,17 @@ class MyResearchController extends AbstractBase
                 // After successful token verification, clear list to shrink session:
                 $csrf->trimTokenList(0);
             }
+
+            $user = $this->getUser();
+            $this->getAuditEventService()->addEvent(
+                AuditEventType::User,
+                AuditEventSubtype::Delete,
+                $user,
+                data: [
+                    'user_id' => $user->getId(),
+                ]
+            );
+
             $this->getService(UserAccountService::class)->purgeUserData(
                 $user,
                 $config->Authentication->delete_comments_with_user ?? true,
@@ -2358,6 +2457,17 @@ class MyResearchController extends AbstractBase
                 }
                 $search->setNotificationFrequency(0);
                 $searchService->persistEntity($search);
+
+                $this->getAuditEventService()->addEvent(
+                    AuditEventType::User,
+                    AuditEventSubtype::SaveSearch,
+                    $search->getUser(),
+                    data: [
+                        'search_id' => $search->getId(),
+                        'notification_frequency' => 0,
+                    ]
+                );
+
                 $view->success = true;
             }
         } else {

@@ -134,7 +134,7 @@ class AccessTokenService extends AbstractDbService implements
         $subQueryBuilder->select('CONCAT(a.id, a.type)')
             ->from(AccessTokenEntityInterface::class, 'a')
             ->where('a.created < :latestCreated')
-            ->setParameter('latestCreated', $dateLimit->format('Y-m-d H:i:s'));
+            ->setParameter('latestCreated', $dateLimit->format(VUFIND_DATABASE_DATETIME_FORMAT));
         if ($limit) {
             $subQueryBuilder->setMaxResults($limit);
         }

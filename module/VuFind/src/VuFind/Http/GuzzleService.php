@@ -189,12 +189,13 @@ class GuzzleService
     /**
      * Check if given URL is a local address
      *
-     * @param ?string $host Host to check
+     * @param ?string $url URL to check
      *
      * @return bool
      */
-    protected function isLocal(?string $host): bool
+    protected function isLocal(?string $url): bool
     {
+        $host = $url ? parse_url($url, PHP_URL_HOST) : null;
         return $host && preg_match($this->localAddressesRegEx, $host);
     }
 }
