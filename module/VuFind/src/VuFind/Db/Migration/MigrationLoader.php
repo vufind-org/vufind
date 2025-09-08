@@ -96,4 +96,16 @@ class MigrationLoader
             )
         );
     }
+
+    /**
+     * Given a block of SQL code, split it into an array of distinct statements.
+     *
+     * @param string $sql SQL to split
+     *
+     * @return string[]
+     */
+    public function splitSqlIntoStatements(string $sql): array
+    {
+        return preg_split('/;\s*([\r\n]|$)/', $sql);
+    }
 }

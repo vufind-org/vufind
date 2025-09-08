@@ -248,7 +248,7 @@ class MigrationManager
         $shortMigrationName = str_replace($this->migrationPath . '/', '', $migration);
         $output .= $this->logMigrationEvent($connection, $shortMigrationName, 'start');
         $sql = file_get_contents($migration);
-        foreach (preg_split('/;\s*([\r\n]|$)/', $sql) as $i => $sqlLine) {
+        foreach ($this->loader->splitSqlIntoStatements($sql) as $i => $sqlLine) {
             $trimmedLine = trim($sqlLine);
             if (!empty($trimmedLine)) {
                 $output .= $this->logMigrationEvent($connection, $shortMigrationName, "writing line $i");

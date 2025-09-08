@@ -262,7 +262,7 @@ class DbBuilder
                 // If we're already connected to the database, we should reconnect now using the name of
                 // the newly created database.
                 $db = $this->getRootDatabaseConnection($driver, $dbHost, $rootUser, $rootPass, $newName);
-                $statements = preg_split('/;\s*([\r\n]|$)/', $sql);
+                $statements = $this->migrationLoader->splitSqlIntoStatements($sql);
                 foreach ($statements as $current) {
                     // Skip empty sections:
                     if (strlen(trim($current)) == 0) {

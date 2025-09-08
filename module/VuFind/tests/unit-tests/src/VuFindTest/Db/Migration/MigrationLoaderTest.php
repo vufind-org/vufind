@@ -127,4 +127,24 @@ class MigrationLoaderTest extends \PHPUnit\Framework\TestCase
             $loader->getMigrationsFromDir($baseDir)
         );
     }
+
+    /**
+     * Test splitSqlIntoStatements().
+     *
+     * @return void
+     */
+    public function testSplitSqlIntoStatements(): void
+    {
+        $loader = new MigrationLoader();
+        $statement1 = "select * from table where field='has;semicolon';";
+        $statement2 = 'drop table foo;';
+        $sql = "$statement1\n$statement2\r$statement1     \n$statement2";
+        $this->assertEquals(
+            [$statement1, $statement2, $statement1, $statement2, ';'],
+            array_map(
+                fn ($line) => "$line;", // restore semicolons for easier assertion
+                $loader->splitSqlIntoStatements($sql)
+            )
+        );
+    }
 }
