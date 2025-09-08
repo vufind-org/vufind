@@ -29,8 +29,7 @@ return [
              * You can include a set to borrow aliases from other icon sets:
              * - Unicode:cites (see root theme.config.php)
              *
-             * To add extra classes, use .class notation:
-             * - fa-solid fa-spinner.animation-spin-1s
+             * To add extra classes, add an additional : divider:
              * - FontAwesome6:ui-trash.color-red
              */
             'addthis-bookmark' => 'fa-solid fa-circle-plus',
@@ -200,7 +199,7 @@ return [
             'send-sms' => 'fa-solid fa-mobile',
             'sign-in' => 'fa-solid fa-circle-user',
             'sign-out' => 'fa-solid fa-door-closed',
-            'spinner' => 'fa-solid fa-spinner.icon--spin',
+            'spinner' => 'FontAwesome6:fa-solid fa-spinner:icon--spin',
             'status-available' => 'fa-solid fa-check',
             'status-pending' => 'fa-regular fa-clock',
             'status-ready' => 'fa-solid fa-bell',

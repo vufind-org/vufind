@@ -322,8 +322,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
     {
         $plugins = ['imageLink' => $this->getMockImageLink('icons/baz.png')];
         $helper = $this->getIconHelper(null, null, $plugins);
-        $expected = '<img class="icon icon--img" src="baz.png" aria-hidden="true"'
-            . ' alt="">';
+        $expected = '<img class="icon icon--img" src="baz.png" aria-hidden="true" alt="">';
         $this->assertEquals($expected, $helper('bar'));
     }
 

@@ -140,21 +140,20 @@ class Icon extends AbstractHelper
         $rtl = $this->rtl ? '-rtl' : '';
         $icon = $this->iconMap[$name . $rtl] ?? $this->iconMap[$name] ?? $name;
         $set = $this->defaultSet;
-        $className = null;
 
         // Override set from config (ie. FontAwesome:icon)
         if (str_contains($icon, ':')) {
-            $parts = explode(':', $icon, 3);
+            $parts = explode(':', $icon, 2);
             $set = $parts[0];
             $icon = $parts[1];
-            $className = $parts[2] ?? null;
         }
 
 		// Special case classes
-        if (str_contains($icon, '.')) {
-            $parts = explode('.', $icon, 2);
+        $class = null;
+        if (str_contains($icon, ':')) {
+            $parts = explode(':', $icon, 2);
             $icon = $parts[0];
-            $className = str_replace('.', ' ', $parts[1]);
+            $class = str_replace('.', ' ', $parts[1]);
         }
 
         // Special case: aliases:
@@ -171,7 +170,7 @@ class Icon extends AbstractHelper
         $template = $setConfig['template'] ?? $this->defaultTemplate;
         $prefix = $setConfig['prefix'] ?? '';
 
-        return [$prefix . $icon, $set, $template, $className];
+        return [$prefix . $icon, $set, $template, $class];
     }
 
     /**
@@ -224,15 +223,15 @@ class Icon extends AbstractHelper
     {
         // Class name shortcut
         if (is_string($attrs)) {
-            $attrs = ['className' => $attrs];
+            $attrs = ['class' => $attrs];
         }
 
         $cacheKey = $this->cacheKey($name, $attrs);
         $cached = $this->cache->getItem($cacheKey);
 
         if ($cached == null) {
-            [$icon, $set, $template, $className] = $this->mapIcon($name);
-            $attrs['className'] = trim(($attrs['className'] ?? '') . ' ' . $className);
+            [$icon, $set, $template, $class] = $this->mapIcon($name);
+            $attrs['class'] = trim(($attrs['class'] ?? '') . ' ' . $class);
 
             // Surface set config and add icon and attrs
             $cached = trim(
