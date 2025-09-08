@@ -25,7 +25,7 @@
             <div class="comment-rating">
               <?=$this->transEsc('Rating by stars')?>:
               <?php $ratingData = $this->ratings()->getRatingData($this->driver, $user->getId()); ?>
-              <?=$this->render('Helpers/star-rating.phtml', ['ratingData' => $ratingData, 'allowClear' => 0 === $ratingData['count'] || $this->accountCapabilities()->isRatingRemovalAllowed()]);?>
+              <?=$this->component('star-rating', ['ratingData' => $ratingData, 'allowClear' => 0 === $ratingData['count'] || $this->accountCapabilities()->isRatingRemovalAllowed()]);?>
             </div>
           <?php endif; ?>
           <?php if ($nickname = $this->escapeHtml(trim($this->userPublicName($user)))): ?>
@@ -54,7 +54,7 @@
   </div>
 <?php else: ?>
   <div>
-    <?php $singleSignOn = $this->auth()->getManager()->getSessionInitiator($this->serverUrl(true)); ?>
+    <?php $singleSignOn = $this->auth()->hasSessionInitiator(); ?>
     <a href="?login=true&amp;catalogLogin=true" class="btn btn-primary login-link"<?php if (!$singleSignOn): ?> data-lightbox<?php endif; ?> title="<?=$this->transEscAttr('Login')?>"><?= $this->transEsc('Login'); ?></a> <?= $this->transEsc(($ratings ? 'rating' : 'comment') . '_login') ?>
   </div>
 <?php endif; ?>

@@ -24,7 +24,7 @@
       <ul class="dropdown-menu" id="export-options">
         <?php foreach ($exportFormats as $exportFormat): ?>
           <li>
-            <a class="dropdown-item" <?php if ($this->export()->needsRedirect($exportFormat)): ?> target="<?=$this->escapeHtmlAttr($exportFormat)?>Main" <?php endif; ?>href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Export', [], '', ['excludeSearchId' => true]))?>?style=<?=$this->escapeHtmlAttr($exportFormat)?>" rel="nofollow">
+            <a class="dropdown-item" <?php if ($this->export()->needsRedirect($exportFormat)): ?> target="<?=$this->escapeHtmlAttr($this->export()->getTargetWindow($exportFormat))?>" <?php endif; ?>href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($this->driver, 'Export', [], '', ['excludeSearchId' => true]))?>?style=<?=$this->escapeHtmlAttr($exportFormat)?>" rel="nofollow">
               <?=$this->transEsc('export_to', ['%%target%%' => $this->translate($this->export()->getLabelForFormat($exportFormat))])?>
             </a>
           </li>
