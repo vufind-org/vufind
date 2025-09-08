@@ -28,7 +28,7 @@ fi
 
 if [ -z "$SOLR_HOME" ]
 then
-  SOLR_HOME="$VUFIND_HOME/solr/vufind"
+  SOLR_HOME="/opt/solr/server/solr"
 fi
 
 # This can point to an external Solr in e.g. a Docker container
@@ -47,7 +47,7 @@ then
   echo "Error: more than one solrmarc_core*.jar in import/; exiting."
   exit 1
 fi
-CLASSPATH="browse-indexing.jar:${SOLRMARC_CLASSPATH}:${VUFIND_HOME}/import/lib/*:${SOLR_HOME}/jars/*:${SOLR_JAR_PATH}/modules/analysis-extras/lib/*:${SOLR_JAR_PATH}/server/solr-webapp/webapp/WEB-INF/lib/*"
+CLASSPATH="browse-indexing.jar:${VUFIND_HOME}/import/lib/*:${SOLR_HOME}/jars/*:/usr/local/vufind/solr/vendor/contrib/analysis-extras/lib/*:/usr/local/vufind/solr/vendor/server/solr-webapp/webapp/WEB-INF/lib/*"
 
 # make index work with replicated index
 # current index is stored in the last line of index.properties
@@ -71,9 +71,9 @@ function locate_index
     eval $targetVar="$indexDir/$subDir"
 }
 
-locate_index "bib_index" "${SOLR_HOME}/biblio"
-locate_index "auth_index" "${SOLR_HOME}/authority"
-index_dir="${SOLR_HOME}/alphabetical_browse"
+locate_index "bib_index" "${SOLR_HOME}/mycores/biblio"
+locate_index "auth_index" "${SOLR_HOME}/mycores/authority"
+index_dir="${SOLR_HOME}/mycores/alphabetical_browse"
 
 mkdir -p "$index_dir"
 
