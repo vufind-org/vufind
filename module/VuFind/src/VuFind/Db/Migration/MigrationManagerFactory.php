@@ -27,7 +27,7 @@
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Db;
+namespace VuFind\Db\Migration;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -35,6 +35,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use VuFind\Config\Version;
+use VuFind\Db\Connection;
 
 /**
  * Factory for the migration manager.
@@ -68,6 +69,7 @@ class MigrationManagerFactory implements FactoryInterface
     ) {
         return new $requestedName(
             $container->get(Connection::class),
+            $container->get(MigrationLoader::class),
             Version::getBuildVersion(),
             ...($options ?? [])
         );

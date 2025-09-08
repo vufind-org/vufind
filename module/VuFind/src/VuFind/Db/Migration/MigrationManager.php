@@ -27,9 +27,8 @@
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Db;
+namespace VuFind\Db\Migration;
 
-use Composer\Semver\Comparator;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Exception\TableNotFoundException;
@@ -57,17 +56,19 @@ class MigrationManager
     /**
      * Constructor
      *
-     * @param Connection $connection    A database connection (with read rights)
-     * @param string     $targetVersion The VuFind version we are migrating to
+     * @param Connection      $connection    A database connection (with read rights)
+     * @param MigrationLoader $loader        Helper object to find/load migration files
+     * @param string          $targetVersion The VuFind version we are migrating to
      *
      * @return void
      * @throws Exception
      */
-    public function __construct(protected Connection $connection, protected string $targetVersion)
-    {
-        $rawPlatform = strtolower(get_class($connection->getDatabasePlatform()));
-        $platform = str_contains($rawPlatform, 'postgres') ? 'pgsql' : 'mysql';
-        $this->migrationPath = APPLICATION_PATH . '/module/VuFind/sql/migrations/' . $platform;
+    public function __construct(
+        protected Connection $connection,
+        protected MigrationLoader $loader,
+        protected string $targetVersion
+    ) {
+        $this->migrationPath = $loader->getMigrationDirForPlatform(get_class($connection->getDatabasePlatform()));
     }
 
     /**
@@ -94,19 +95,19 @@ class MigrationManager
     }
 
     /**
-     * Given a directory, retrieve a list of .sql migration files within it.
+     * Given a directory, retrieve a list of .sql migration files within it, filtered to
+     * exclude migrations that are already applied.
      *
      * @param string $path Directory path
      *
      * @return string[]
      */
-    protected function getMigrationsFromDir(string $path): array
+    protected function getNeededMigrationsFromDir(string $path): array
     {
         $parts = explode('/', $path);
         $lastPart = array_pop($parts);
         $appliedMigrations = $this->getAppliedMigrations($lastPart);
-        $migrations = glob("$path/*.sql");
-        return array_diff($migrations, $appliedMigrations);
+        return array_diff($this->loader->getMigrationsFromDir($path), $appliedMigrations);
     }
 
     /**
@@ -157,7 +158,7 @@ class MigrationManager
     }
 
     /**
-     * Given a database platform and an old version, return a list of migrations that should be applied.
+     * Given an old version, return a list of migrations that should be applied.
      *
      * @param string $oldVersion Version we're upgrading from
      *
@@ -166,17 +167,10 @@ class MigrationManager
     public function getMigrations(string $oldVersion): array
     {
         $matches = [];
-        $dir = opendir($this->migrationPath);
-        // Make sure version number at least includes a ".0" on the end:
-        if (!str_contains($oldVersion, '.')) {
-            $oldVersion .= '.0';
+        $subDirectories = $this->loader->getMigrationSubdirectoriesMatchingVersion($oldVersion, $this->migrationPath);
+        foreach ($subDirectories as $next) {
+            $matches = array_merge($matches, $this->getNeededMigrationsFromDir($next));
         }
-        while ($next = readdir($dir)) {
-            if (preg_match('/^\d/', $next) && Comparator::greaterThanOrEqualTo($next, $oldVersion)) {
-                $matches = array_merge($matches, $this->getMigrationsFromDir($this->migrationPath . '/' . $next));
-            }
-        }
-        closedir($dir);
         natsort($matches);
         return $matches;
     }

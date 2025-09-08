@@ -48,7 +48,7 @@ use VuFind\Crypt\Base62;
 use VuFind\Crypt\BlockCipher;
 use VuFind\Db\Connection;
 use VuFind\Db\ConnectionFactory;
-use VuFind\Db\MigrationManager;
+use VuFind\Db\Migration\MigrationManager;
 use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\SearchServiceInterface;
