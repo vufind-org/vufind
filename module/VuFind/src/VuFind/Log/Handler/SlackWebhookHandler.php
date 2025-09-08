@@ -23,6 +23,7 @@
  * @category VuFind
  * @package  Error_Logging
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Sambhav Pokharel <sambhav.pokharel@gmail.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
@@ -37,6 +38,7 @@ use Monolog\LogRecord;
  *
  * @category VuFind
  * @package  Error_Logging
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Sambhav Pokharel <sambhav.pokharel@gmail.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site

@@ -22,6 +22,7 @@
  *
  * @category VuFind
  * @package  Error_Logging
+ * @author   Chris Hallberg <challber@villanova.edu>
  * @author   Sambhav Pokharel <sambhav.pokharel@gmail.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
@@ -39,12 +40,15 @@ use Monolog\LogRecord;
  * @category VuFind
  * @package  Error_Logging
  * @author   Chris Hallberg <challber@villanova.edu>
+ * @author   Sambhav Pokharel <sambhav.pokharel@gmail.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 class StreamHandler extends MonologStreamHandler
 {
     use VerbosityTrait;
+
+    protected LineFormatter $standardFileFormatter;
 
     /**
      * Writes the record down to the log
@@ -77,11 +81,14 @@ class StreamHandler extends MonologStreamHandler
      */
     protected function getStandardFileFormatter(): LineFormatter
     {
-        return new LineFormatter(
-            "[%datetime%] %channel%.%level_name%: %message%\n %extra%\n",
-            'c',
-            true,
-            true
-        );
+        if (!$this->standardFileFormatter) {
+            $this->standardFileFormatter = LineFormatter(
+                "[%datetime%] %channel%.%level_name%: %message%\n %extra%\n",
+                'c',
+                true,
+                true
+            );
+        }
+        return $this->standardFileFormatter;
     }
 }

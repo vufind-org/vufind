@@ -32,7 +32,6 @@ namespace VuFindTest\Log;
 use VuFind\Log\Logger;
 
 use function count;
-use function func_get_args;
 use function is_array;
 
 /**
@@ -54,8 +53,6 @@ class LoggerTest extends \PHPUnit\Framework\TestCase
     public function testLogException()
     {
         $callback = function ($level, $message, $context = []): bool {
-            $capturedArgs = func_get_args();
-
             $expectedContext = <<<CONTEXT
                 Server Context:
                 Array
@@ -108,8 +105,6 @@ class LoggerTest extends \PHPUnit\Framework\TestCase
                 && str_contains($targetDetails[5], 'class =')
                 && str_contains($targetDetails[5], 'function =');
         };
-
-        $capturedArgs = [];
         $mockIpReader = $this->getMockBuilder(\VuFind\Net\UserIpReader::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['getUserIp'])

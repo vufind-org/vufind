@@ -22,6 +22,7 @@
  *
  * @category VuFind
  * @package  Error_Logging
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Sambhav Pokharel <sambhav.pokharel@gmail.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
@@ -40,6 +41,7 @@ use Monolog\LogRecord;
  * @category VuFind
  * @package  Error_Logging
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Sambhav Pokharel <sambhav.pokharel@gmail.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
@@ -104,17 +106,17 @@ class DatabaseHandler extends AbstractProcessingHandler
         $recordData = $record->toArray();
         $modifiedRecordData = $this->applyVerbosity($recordData);
         $data = [];
-        if (isset($this->columnMapping['priority'])) {
-            $data[$this->columnMapping['priority']] = $this->levelToPriority($record->level);
+        if ($column = $this->columnMapping['priority'] ?? null) {
+            $data[$column] = $this->levelToPriority($record->level);
         }
-        if (isset($this->columnMapping['message'])) {
-            $data[$this->columnMapping['message']] = $modifiedRecordData['message'];
+        if ($column = $this->columnMapping['message'] ?? null) {
+            $data[$column] = $modifiedRecordData['message'];
         }
-        if (isset($this->columnMapping['logtime'])) {
-            $data[$this->columnMapping['logtime']] = $record->datetime->format(VUFIND_DATABASE_DATETIME_FORMAT);
+        if ($column = $this->columnMapping['logtime'] ?? null) {
+            $data[$column] = $record->datetime->format(VUFIND_DATABASE_DATETIME_FORMAT);
         }
-        if (isset($this->columnMapping['ident'])) {
-            $data[$this->columnMapping['ident']] = $record->channel;
+        if ($column = $this->columnMapping['ident'] ?? null) {
+            $data[$column] = $record->channel;
         }
         return $data;
     }
