@@ -34,7 +34,7 @@
   $this->layout()->finnaMainTabs = $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $searchTabs['tabs'], 'hiddenFilters' => $hiddenFilters]);
 
   // Step 1: Load the javascript
-  $this->headScript()->appendFile(
+  $this->assetManager()->appendScriptLink(
       $this->advancedSearchJsOverride ?? 'advanced_search.js'
   );
   $this->assetManager()->appendScriptLink('finna-daterange-vis.js');

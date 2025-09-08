@@ -172,7 +172,6 @@ return [
             'proxyurl' => 'proxyUrl',
             'searchtabs' => 'searchTabs',
             'transesc' => 'transEsc',
-            'inlinescript' => 'inlineScript',
         ],
     ],
     'css' => [
