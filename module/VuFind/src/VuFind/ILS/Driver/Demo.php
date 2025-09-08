@@ -2784,11 +2784,14 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @param array $details Driver-specific account recovery details.
      * @param array $params  User-entered form parameters.
      *
-     * @throws AuthException
+     * @throws ILSException
      * @return array Status
      */
     public function resetPassword(array $details, array $params)
     {
+        if (!($this->config['PasswordRecovery']['enabled'] ?? false)) {
+            throw new ILSException('Recovery disabled');
+        }
         if (empty($details['cat_username']) || empty($details['email']) || empty($params['password'])) {
             return [
                 'success' => false,

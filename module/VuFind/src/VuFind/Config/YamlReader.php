@@ -122,11 +122,19 @@ class YamlReader
         $cache = (null !== $this->cacheManager)
             ? $this->cacheManager->getCache($this->cacheName) : false;
 
+        $cacheConfig = (null !== $this->cacheManager) ? $this->cacheManager->getConfig() : [];
+        $cacheOptions = array_merge(
+            $cacheConfig['ConfigCache'] ?? [],
+            $cacheConfig['CacheConfigName_' . $this->cacheName] ?? [],
+        );
+        $reloadOnFileChange = $cacheOptions['reloadOnFileChange'] ?? true;
+
         // Generate cache key:
-        $cacheKey = $defaultFile . '-'
-            . (file_exists($defaultFile) ? filemtime($defaultFile) : 0);
+        $cacheKey = $defaultFile .
+            (($reloadOnFileChange && file_exists($defaultFile)) ? '-' . filemtime($defaultFile) : '');
         if (!empty($customFile)) {
-            $cacheKey .= '-local-' . filemtime($customFile);
+            $cacheKey .= '-local-'
+                . (($reloadOnFileChange && file_exists($customFile)) ? '-' . filemtime($customFile) : '');
         }
         $cacheKey = md5($cacheKey);
 

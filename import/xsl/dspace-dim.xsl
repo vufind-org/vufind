@@ -131,6 +131,9 @@
                     <field name="publishDate">
                         <xsl:value-of select="dim:field[@element='date' and @qualifier='issued']"/>
                     </field>
+                    <field name="publishDateRange">
+                        <xsl:value-of select="dim:field[@element='date' and @qualifier='issued']"/>
+                    </field>
                     <field name="publishDateSort">
                         <xsl:value-of select="substring(dim:field[@element='date' and @qualifier='issued'], 1, 4)" />
                     </field>

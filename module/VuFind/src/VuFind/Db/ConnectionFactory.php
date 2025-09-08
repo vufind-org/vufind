@@ -169,6 +169,7 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
     public function getDriverName($type)
     {
         switch (strtolower($type)) {
+            case 'mariadb':
             case 'mysql':
                 return 'pdo_mysql';
             case 'pgsql':

@@ -152,6 +152,7 @@ class Upgrade implements LoggerAwareInterface
         // Upgrade them one by one and write the results to disk; order is
         // important since in some cases, settings may migrate out of config.ini
         // and into other files.
+        $this->applyOldSettings('searches');
         $this->upgradeConfig($newVersion);
         $this->upgradeFacetsAndCollection();
         $this->upgradeSearches();
@@ -624,6 +625,14 @@ class Upgrade implements LoggerAwareInterface
             $newConfig['Mail']['email_action'] = $require_login ? 'require_login' : 'enabled';
         }
 
+        // Update searchspecs cache config
+        if (isset($this->newConfigs['searches']['Cache'])) {
+            if (!($this->newConfigs['searches']['Cache']['type'] ?? false)) {
+                $newConfig['CacheConfigName_searchspecs']['disabled'] = true;
+            }
+            unset($this->newConfigs['searches']['Cache']);
+        }
+
         // Translate obsolete permission settings:
         $this->upgradeAdminPermissions();
 
@@ -756,10 +765,6 @@ class Upgrade implements LoggerAwareInterface
      */
     protected function upgradeSearches(): void
     {
-        // we want to retain the old installation's Basic/Advanced search settings
-        // and sort settings exactly as-is
-        $this->applyOldSettings('searches');
-
         // fix call number sort settings:
         $newConfig = & $this->newConfigs['searches'];
         if (isset($newConfig['Sorting']['callnumber'])) {
