@@ -119,22 +119,22 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
     public static function paymentProvider(): array
     {
         return [
-            [
+            'payment with receipt enabled, single ILS' => [
                 [],
                 true,
                 false,
             ],
-            [
+            'payment with receipt disabled, single ILS' => [
                 ['receipt' => false],
                 false,
                 false,
             ],
-            [
+            'payment with receipt enabled, MultiBackend' => [
                 [],
                 true,
                 true,
             ],
-            [
+            'payment with receipt disabled, MultiBackend' => [
                 ['receipt' => false],
                 false,
                 true,
@@ -431,25 +431,25 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
     {
         $blockMsg = 'You have fees that cannot be paid online. Please contact the library customer service.';
         return [
-            [
+            'overdue fee blocks payment' => [
                 [
                     'blockingNonPayableTypes' => ['Overdue'],
                 ],
                 $blockMsg,
             ],
-            [
+            'lost card fee blocks payment' => [
                 [
                     'blockingNonPayableDescriptions' => ['Lost card replacement'],
                 ],
                 $blockMsg,
             ],
-            [
+            'lost card fee blocks payment (regex)' => [
                 [
                     'blockingNonPayableDescriptions' => ['/Lost.*replacement/'],
                 ],
                 $blockMsg,
             ],
-            [
+            'minimum payable amount blocks payment' => [
                 [
                     'minimumFee' => '5000',
                 ],
