@@ -238,7 +238,7 @@ return [
              * Icons assigned without set will use the defaultSet.
              * In order to specify extra CSS classes, you must also specify a set.
              *
-             * All of the items below have been specified with FontAwesome to allow
+             * All of the items below have been specified with Unicode to allow
              * for a strong inheritance safety net but this is not required.
              */
             'cites' => 'Unicode:275D',
