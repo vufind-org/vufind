@@ -1,6 +1,7 @@
-import { copyFile, cp, readFile, writeFile } from 'node:fs/promises';
+import { copyFile, cp, mkdir, readFile, writeFile } from 'node:fs/promises';
 
 console.log('Copying dependencies...');
+await mkdir('css/vendor/fontawesome-free-6', { recursive: true });
 
 // FontAwesome 7 css
 await cp(
