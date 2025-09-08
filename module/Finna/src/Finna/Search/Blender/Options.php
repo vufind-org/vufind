@@ -56,17 +56,16 @@ class Options extends \VuFind\Search\Blender\Options
     {
         parent::__construct($configLoader);
 
-        $facetSettings = $this->configLoader->get($this->facetsIni);
-        $this->dateRangeVis = $facetSettings->SpecialFacets->dateRangeVis ?? '';
+        $this->dateRangeVis = $this->facetSettings['SpecialFacets']['dateRangeVis'] ?? '';
 
         // Back-compatibility for hierarchical facet filters:
         $this->hierarchicalExcludeFilters
-            = $facetSettings?->HierarchicalExcludeFilters?->toArray()
-            ?? $facetSettings?->ExcludeFilters?->toArray()
+            = $this->facetSettings['HierarchicalExcludeFilters']
+            ?? $this->facetSettings['ExcludeFilters']
             ?? [];
         $this->hierarchicalFacetFilters
-            = $facetSettings?->HierarchicalFacetFilters?->toArray()
-            ?? $facetSettings?->FacetFilters?->toArray()
+            = $this->facetSettings['HierarchicalFacetFilters']
+            ?? $this->facetSettings['FacetFilters']
             ?? [];
     }
 

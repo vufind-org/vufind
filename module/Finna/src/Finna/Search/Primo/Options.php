@@ -49,7 +49,7 @@ class Options extends \VuFind\Search\Primo\Options
      *
      * @var string
      */
-    protected $dateRangeVis = '';
+    protected $dateRangeVis;
 
     /**
      * Constructor
@@ -60,17 +60,11 @@ class Options extends \VuFind\Search\Primo\Options
     {
         parent::__construct($configLoader);
 
-        $searchSettings = $configLoader->get($this->searchIni);
         // Load autocomplete preference:
-        if (isset($searchSettings->Autocomplete->enabled)) {
-            $this->autocompleteEnabled = $searchSettings->Autocomplete->enabled;
-        }
+        $this->configureAutocomplete($this->searchSettings);
 
         // Date range facet:
-        $facetSettings = $configLoader->get($this->facetsIni);
-        if (isset($facetSettings->SpecialFacets->dateRangeVis)) {
-            $this->dateRangeVis = $facetSettings->SpecialFacets->dateRangeVis;
-        }
+        $this->dateRangeVis = $this->facetSettings['SpecialFacets']['dateRangeVis'] ?? '';
     }
 
     /**

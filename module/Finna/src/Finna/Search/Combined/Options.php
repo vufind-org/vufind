@@ -53,19 +53,11 @@ class Options extends \VuFind\Search\Combined\Options
         \VuFind\Search\Options\PluginManager $optionsManager
     ) {
         parent::__construct($configLoader, $optionsManager);
-        // Load the search configuration file:
-        $searchSettings = $configLoader->get($this->searchIni);
-
-        // Load search preferences:
-        if (isset($searchSettings->General->retain_filters_by_default)) {
-            $this->retainFiltersByDefault
-                = $searchSettings->General->retain_filters_by_default;
-        }
 
         // Use Solr preference for autocomplete setting
-        $searchSettings = $configLoader->get('searches');
-        if (isset($searchSettings->Autocomplete->enabled)) {
-            $this->autocompleteEnabled = $searchSettings->Autocomplete->enabled;
+        $searchSettings = $configLoader->get('searches')->toArray();
+        if (null !== ($enabled = $searchSettings['Autocomplete']['enabled'] ?? null)) {
+            $this->autocompleteEnabled = $enabled;
         }
     }
 

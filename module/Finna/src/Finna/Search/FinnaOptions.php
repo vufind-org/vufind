@@ -49,20 +49,18 @@ trait FinnaOptions
      */
     public function getDefaultLimitByView($view = null)
     {
-        $searchSettings = $this->configLoader->get($this->searchIni);
-
-        if ($view == 'grid' && $searchSettings->General->default_limit_grid) {
-            $defaultLimit = $searchSettings->General->default_limit_grid;
+        if ($view == 'grid' && ($limit = $this->searchSettings['General']['default_limit_grid'] ?? null)) {
+            $defaultLimit = $limit;
         } elseif (
             $view == 'condensed'
-            && $searchSettings->General->default_limit_condensed
+            && ($limit = $this->searchSettings['General']['default_limit_condensed'] ?? null)
         ) {
-            $defaultLimit = $searchSettings->General->default_limit_condensed;
+            $defaultLimit = $limit;
         } elseif (
             $view == 'compact'
-            && $searchSettings->General->default_limit_compact
+            && ($limit = $this->searchSettings['General']['default_limit_compact'] ?? null)
         ) {
-            $defaultLimit = $searchSettings->General->default_limit_compact;
+            $defaultLimit = $limit;
         } else {
             $defaultLimit = $this->getDefaultLimit();
         }
@@ -76,8 +74,7 @@ trait FinnaOptions
      */
     public function getViewOptionListType()
     {
-        $searchSettings = $this->configLoader->get($this->searchIni);
-        $viewOptionsIcons = $searchSettings->General->view_options_icons ?? false;
+        $viewOptionsIcons = $this->searchSettings['General']['view_options_icons'] ?? false;
         return $viewOptionsIcons ? true : false;
     }
 
@@ -92,21 +89,13 @@ trait FinnaOptions
     {
         $recommend = parent::getRecommendationSettings($handler);
 
-        // Load the necessary settings to determine the appropriate recommendations
-        // module:
-        $searchSettings = $this->configLoader->get($this->getSearchIni());
-
         if (
             null !== $handler
-            && isset($searchSettings->ResultsTopRecommendations->$handler)
+            && ($handler = $this->searchSettings['ResultsTopRecommendations'][$handler] ?? null)
         ) {
-            $recommend['results_top'] = $searchSettings->ResultsTopRecommendations
-                ->$handler->toArray();
+            $recommend['results_top'] = $handler;
         } else {
-            $recommend['results_top']
-                = isset($searchSettings->General->default_results_top_recommend)
-                ? $searchSettings->General->default_results_top_recommend->toArray()
-                : false;
+            $recommend['results_top'] = $this->searchSettings['General']['default_results_top_recommend'] ?? false;
         }
 
         return $recommend;

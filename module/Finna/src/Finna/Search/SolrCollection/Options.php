@@ -60,27 +60,24 @@ class Options extends \VuFind\Search\SolrCollection\Options
     {
         parent::__construct($configLoader);
 
-        $facetSettings = $this->configLoader->get($this->facetsIni);
-        $this->dateRangeVis = $facetSettings->SpecialFacets->dateRangeVis ?? '';
+        $this->dateRangeVis = $this->facetSettings['SpecialFacets']['dateRangeVis'] ?? '';
 
         // Back-compatibility for display_versions setting in config.ini:
-        $searchSettings = $configLoader->get($this->searchIni);
-        if (!isset($searchSettings->General->display_versions)) {
-            $config = $configLoader->get($this->mainIni);
-            if (isset($config->Record->display_versions)) {
-                $this->displayRecordVersions
-                    = (bool)$config->Record->display_versions;
-            }
+        if (
+            !isset($this->searchSettings['General']['display_versions'])
+            && (null !== ($setting = $this->mainConfig['Record']['display_versions'] ?? null))
+        ) {
+            $this->displayRecordVersions = (bool)$setting;
         }
 
         // Back-compatibility for hierarchical facet filters:
         $this->hierarchicalExcludeFilters
-            = $facetSettings?->HierarchicalExcludeFilters?->toArray()
-            ?? $facetSettings?->ExcludeFilters?->toArray()
+            = $this->facetSettings['HierarchicalExcludeFilters']
+            ?? $this->facetSettings['ExcludeFilters']
             ?? [];
         $this->hierarchicalFacetFilters
-            = $facetSettings?->HierarchicalFacetFilters?->toArray()
-            ?? $facetSettings?->FacetFilters?->toArray()
+            = $this->facetSettings['HierarchicalFacetFilters']
+            ?? $this->facetSettings['FacetFilters']
             ?? [];
     }
 

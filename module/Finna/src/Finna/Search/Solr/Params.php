@@ -115,14 +115,12 @@ class Params extends \VuFind\Search\Solr\Params
         parent::__construct($options, $configLoader, $facetHelper);
 
         $this->dateConverter = $dateConverter;
-        $config = $configLoader->get($options->getFacetsIni());
+        $this->authorityHelper = $authorityHelper;
 
         // New items facets
-        if (isset($config->SpecialFacets->newItems)) {
-            $this->newItemsFacets = $config->SpecialFacets->newItems->toArray();
+        if ($newItems = $this->facetConfig['SpecialFacets']['newItems'] ?? null) {
+            $this->newItemsFacets = $newItems;
         }
-
-        $this->authorityHelper = $authorityHelper;
     }
 
     /**

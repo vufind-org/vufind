@@ -53,20 +53,18 @@ class Options extends \VuFind\Search\Favorites\Options
     public function __construct(\VuFind\Config\PluginManager $configLoader)
     {
         parent::__construct($configLoader);
-        $searchSettings = $configLoader->get($this->searchIni);
-        if (isset($searchSettings->General->default_limit)) {
-            $this->defaultLimit = $searchSettings->General->default_limit;
+
+        if ($limit = $this->searchSettings['General']['default_limit'] ?? null) {
+            $this->defaultLimit = $limit;
         }
-        if (isset($searchSettings->General->limit_options)) {
-            $this->limitOptions = $this->explodeListSetting($searchSettings->General->limit_options);
+        if ($options = $this->searchSettings['General']['limit_options'] ?? null) {
+            $this->limitOptions = $this->explodeListSetting($options);
         }
         // Load view preferences (or defaults if none in .ini file):
-        if (isset($searchSettings->Views)) {
-            foreach ($searchSettings->Views as $key => $value) {
-                $this->viewOptions[$key] = $value;
-            }
-        } elseif (isset($searchSettings->General->default_view)) {
-            $this->viewOptions = [$this->defaultView => $this->defaultView];
+        if ($viewOptions = $this->searchSettings['Views'] ?? []) {
+            $this->viewOptions = $viewOptions;
+        } elseif ($defaultView = $this->getConfiguredDefaultView()) {
+            $this->viewOptions = [$defaultView => $defaultView];
         } else {
             $this->viewOptions = ['list' => 'List'];
         }
