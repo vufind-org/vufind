@@ -181,7 +181,7 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
                 'Cannot retrieve reservation lists without logged in user.'
             );
         }
-        if (!$this->user || $list->user_id !== $this->user->id) {
+        if (!$this->user || $list->getUser()?->getId() !== $this->user->getId()) {
             throw new ListPermissionException(
                 $this->translate('list_access_denied')
             );

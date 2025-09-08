@@ -109,7 +109,7 @@ class CommentRecord extends \VuFind\AjaxHandler\CommentRecord
         $resource = $this->resourcePopulator->getOrCreateResourceForRecordId($id, $source);
         if ($commentId = $params->fromPost('commentId')) {
             // Edit existing comment
-            $this->commentsService->editComment($this->user->id, $commentId, $comment);
+            $this->commentsService->editComment($this->user->getId(), $commentId, $comment);
         } else {
             // Add new comment
             if (!$this->checkCaptcha()) {
