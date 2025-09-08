@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Cache Manager factory.
+ * Factory for ConfigLoader.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,33 +21,32 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Cache
+ * @package  Config
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Cache;
+namespace VuFind\Config;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\Exception\ConfigException;
-
-use function is_array;
 
 /**
- * Cache Manager factory.
+ * Factory for ConfigLoader.
  *
  * @category VuFind
- * @package  Cache
+ * @package  Config
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ManagerFactory implements FactoryInterface
+class ConfigLoaderFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -71,23 +70,9 @@ class ManagerFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $configLoader = $container->get(\VuFind\Config\ConfigLoader::class);
-        $configLocation = $configLoader->getConfigLocation('config');
-        $config = ($configLocation !== null) ? $configLoader->loadConfigFromLocation($configLocation) : null;
-        if (!is_array($config)) {
-            throw new ConfigException('Failed to load cache configuration.');
-        }
-        // Load legacy configuration if new configuration is not present yet.
-        if (!isset($config['CacheConfigPath_searchspecs'])) {
-            $searchConfigLocation = $configLoader->getConfigLocation('searches');
-            $searchConfig = $configLoader->loadConfigFromLocation($searchConfigLocation);
-            $config['CacheConfigPath_searchspecs'] = [
-                'disabled' => ($searchConfig['Cache']['type'] ?? false) === false,
-            ];
-        }
         return new $requestedName(
-            $config,
-            $container->get(\Laminas\Cache\Service\StorageAdapterFactory::class)
+            $container->get(\VuFind\Config\Handler\PluginManager::class),
+            $container->get(PathResolver::class),
         );
     }
 }

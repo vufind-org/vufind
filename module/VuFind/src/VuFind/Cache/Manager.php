@@ -38,7 +38,6 @@ use Laminas\Cache\Storage\Capabilities;
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\Log\LoggerAwareInterface;
 use stdClass;
-use VuFind\Config\Config;
 use VuFind\Log\LoggerAwareTrait;
 
 use function dirname;
@@ -61,6 +60,13 @@ use function strlen;
 class Manager implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
+
+    /**
+     * Uncached config that contains cache settings.
+     *
+     * @var array
+     */
+    protected $config = [];
 
     /**
      * Default configuration settings.
@@ -147,33 +153,20 @@ class Manager implements LoggerAwareInterface
     /**
      * Constructor
      *
-     * @param Config                $config       Main VuFind configuration
-     * @param Config                $searchConfig Search configuration
-     * @param StorageAdapterFactory $factory      Cache storage adapter factory
+     * @param array                 $config  Main VuFind configuration
+     * @param StorageAdapterFactory $factory Cache storage adapter factory
      */
     public function __construct(
-        Config $config,
-        Config $searchConfig,
+        array $config,
         StorageAdapterFactory $factory
     ) {
         $this->factory = $factory;
+        $this->config = $config;
+        $this->defaults = $config['Cache'] ?? [];
 
-        // $config and $config->Cache are VuFind\Config\Config objects
-        // $cache is created immutable, so get the array, it will be modified
-        // downstream.
-        $this->defaults = $config->Cache?->toArray() ?? [];
-
-        // Configure search specs cache based on config settings:
-        $searchCacheType = $searchConfig->Cache->type ?? false;
-        switch ($searchCacheType) {
-            case 'File':
-                // Default
-                break;
-            case false:
-                $this->cacheSpecs['searchspecs']['options']['disabled'] = true;
-                break;
-            default:
-                throw new \Exception("Unsupported cache setting: $searchCacheType");
+        // Configure search specs cache:
+        if ($config['CacheConfigName_searchspecs']['disabled'] ?? true) {
+            $this->cacheSpecs['searchspecs']['options']['disabled'] = true;
         }
     }
 
@@ -317,6 +310,16 @@ class Manager implements LoggerAwareInterface
             $this->getCacheDir() . 'languages/' . $themeName
         );
         return $cacheName;
+    }
+
+    /**
+     * Get uncached config.
+     *
+     * @return array
+     */
+    public function getConfig(): array
+    {
+        return $this->config;
     }
 
     /**

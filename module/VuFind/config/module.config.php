@@ -435,6 +435,7 @@ $config = [
             'VuFind\Config\ConfigManager' => 'VuFind\Config\ConfigManagerFactory',
             'VuFind\Config\Upgrade' => 'VuFind\Config\UpgradeFactory',
             'VuFind\Config\Handler\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\Config\ConfigLoader' => 'VuFind\Config\ConfigLoaderFactory',
             'VuFind\Config\PathResolver' => 'VuFind\Config\PathResolverFactory',
             'VuFind\Config\PluginManager' => 'VuFind\Config\PluginManagerFactory',
             'VuFind\Config\SearchSpecsReader' => 'VuFind\Config\YamlReaderFactory',

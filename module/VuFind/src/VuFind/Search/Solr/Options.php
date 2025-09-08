@@ -31,6 +31,8 @@ namespace VuFind\Search\Solr;
 
 use VuFind\Config\ConfigManager;
 
+use VuFind\Search\Base\DateRangeOptionsInterface;
+
 /**
  * Solr Search Options
  *
@@ -40,7 +42,7 @@ use VuFind\Config\ConfigManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Options extends \VuFind\Search\Base\Options
+class Options extends \VuFind\Search\Base\Options implements DateRangeOptionsInterface
 {
     use \VuFind\Search\Options\ViewOptionsTrait;
 
@@ -224,5 +226,35 @@ class Options extends \VuFind\Search\Base\Options
     {
         // Solr supports this!
         return true;
+    }
+
+    /**
+     * Get date range facets.
+     *
+     * @return array
+     */
+    public function getDateRangeFacets(): array
+    {
+        return (array)($this->facetSettings['SpecialFacets']['dateRange'] ?? []);
+    }
+
+    /**
+     * Get full date range facets.
+     *
+     * @return array
+     */
+    public function getFullDateRangeFacets(): array
+    {
+        return (array)($this->facetSettings['SpecialFacets']['fullDateRange'] ?? []);
+    }
+
+    /**
+     * Get date range field types in the search index.
+     *
+     * @return array
+     */
+    public function getDateRangeFieldTypes(): array
+    {
+        return (array)($this->facetSettings['SpecialFacets']['dateRangeFieldType'] ?? []);
     }
 }
