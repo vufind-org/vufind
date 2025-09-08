@@ -33,6 +33,7 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception as DBALException;
 use Exception;
 use VuFind\Config\Version;
+use VuFind\Db\Migration\MigrationLoader;
 
 use function in_array;
 use function strlen;
@@ -51,11 +52,12 @@ class DbBuilder
     /**
      * Constructor
      *
-     * @param ConnectionFactory $dbFactory Database connection factory
+     * @param ConnectionFactory $dbFactory       Database connection factory
+     * @param MigrationLoader   $migrationLoader Migration file loader
      *
      * @return void
      */
-    public function __construct(protected ConnectionFactory $dbFactory)
+    public function __construct(protected ConnectionFactory $dbFactory, protected MigrationLoader $migrationLoader)
     {
     }
 
@@ -123,10 +125,24 @@ class DbBuilder
         // Default: track setup state for future migrations.
         // Version should always consist of digits and dots, but strip out anything
         // unexpected just to be on the safe side -- don't want any weird SQL injection.
-        $version = preg_replace('/[^\d.]/', '', Version::getBuildVersion());
+        $version = Version::getBuildVersion();
+        $safeVersion = preg_replace('/[^\d.]/', '', $version);
         $filename = $driver === 'pgsql' ? 'pgsql' : 'mysql';
         $postCommands[] = 'INSERT INTO migrations(name, status, target_version) VALUES '
-            . "('{$filename}.sql', 'success', '$version')";
+            . "('{$filename}.sql', 'success', '$safeVersion')";
+        // Let's also treat any migrations for the current version as applied. Since we only
+        // change the version number when we make an actual release, users tracking the "bleeding
+        // edge" dev branch may apply SOME migrations for a release before ALL migrations have
+        // been created. This helps ensure that nothing gets missed or repeated.
+        $migrationDir = $this->migrationLoader->getMigrationDirForPlatform($driver);
+        $dirs = $this->migrationLoader->getMigrationSubdirectoriesMatchingVersion($version, $migrationDir);
+        foreach ($dirs as $dir) {
+            foreach ($this->migrationLoader->getMigrationsFromDir($dir) as $migration) {
+                $shortMigration = str_replace("$migrationDir/", '', $migration);
+                $postCommands[] = 'INSERT INTO migrations(name, status, target_version) VALUES '
+                    . "('{$shortMigration}', 'success', '$safeVersion')";
+            }
+        }
         return $postCommands;
     }
 
