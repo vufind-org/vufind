@@ -30,7 +30,6 @@
 namespace VuFind\Controller;
 
 use Laminas\Mvc\MvcEvent;
-use VuFind\Config\Version;
 use VuFind\Config\Writer as ConfigWriter;
 use VuFind\Crypt\PasswordHasher;
 use VuFind\Db\DbBuilder;
