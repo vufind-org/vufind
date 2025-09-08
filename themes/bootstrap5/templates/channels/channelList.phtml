@@ -113,7 +113,7 @@
       <?php $disabled = count($channel['contents']) < 6; ?>
       <a
         class="channel-load-more-btn btn btn-default<?=$disabled ? ' disabled' : ''?>"
-        href="<?=$channelRoot ?>&channelProvider=<?=urlencode($channel['providerId']) ?>&channelToken=<?=urlencode($channel['token']) ?>&page=1&limit=6"
+        href="<?=$channelRoot ?>&channelProvider=<?=urlencode($channel['providerId']) ?><?=isset($channel['token']) ? '&channelToken=' . urlencode($channel['token']) : '' ?>&page=1&limit=6"
         <?=$disabled ? 'aria-disabled="true"' : ''?>
       >
         <?=$this->translate('channel_more_items') ?>
