@@ -245,7 +245,7 @@ return [
             'cited-by' => 'Unicode:275E',
 
             'collapse' => 'Collapse:_',
-			'collapse-close' => 'Unicode:2303',
+            'collapse-close' => 'Unicode:2303',
             'collapse-open' => 'Unicode:2304',
         ],
     ],

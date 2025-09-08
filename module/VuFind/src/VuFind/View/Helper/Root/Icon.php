@@ -148,7 +148,7 @@ class Icon extends AbstractHelper
             $icon = $parts[1];
         }
 
-		// Special case classes
+        // Special case classes
         $class = null;
         if (str_contains($icon, ':')) {
             $parts = explode(':', $icon, 2);
