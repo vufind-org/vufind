@@ -67,6 +67,9 @@ $fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts" !default;
 @import "../../bootstrap5/scss/components/sliders";
 @import "../../bootstrap5/scss/components/trees";
 
+// Bootstrap5 theme mixins
+@import "../../bootstrap5/scss/mixins/mixins";
+
 @import 'global';
 @import 'finna-other';
 @import 'components';
