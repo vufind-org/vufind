@@ -1147,9 +1147,8 @@ class MultiBackend extends AbstractMultiDriver
         }
         if ($checkFields = $this->sourceCheckFields[$method] ?? null) {
             return $this->getSourceFromParams($params, (array)$checkFields);
-        } else {
-            return $this->getSourceFromParams($params);
         }
+        return $this->getSourceFromParams($params);
     }
 
     /**
