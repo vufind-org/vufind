@@ -50,6 +50,7 @@ use VuFind\View\Helper\Root\Translate;
 class MethodTimedBlocksTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\ViewTrait;
+    use \VuFindTest\Feature\TranslatorTrait;
 
     /**
      * Data provider for testMethodTimedBlocks
@@ -126,24 +127,16 @@ class MethodTimedBlocksTest extends \PHPUnit\Framework\TestCase
      */
     protected function getViewHelpers(array $timedBlocks, bool $blocked)
     {
-        $getTranslation = function ($str, $tokens = []) {
-            $strings = [
-                'method_blocked_until' => '%%service%% is unavailable until %%end%%',
-                'method_blocked' => '%%service%% is unavailable',
-            ];
-            $translated = $strings[$str] ?? $str;
-            return str_replace(
-                array_keys($tokens),
-                array_values($tokens),
-                $translated
-            );
-        };
-
-        $translate = $this->createMock(Translate::class);
-        $translate->expects($this->any())
-            ->method('__invoke')
-            ->will($this->returnCallback($getTranslation));
-
+        $translations = [
+            'default' => [
+                'service_blocked_until' => '%%service%% is unavailable until %%end%%',
+                'service_blocked' => '%%service%% is unavailable',
+                'default_service_description' => 'This feature',
+            ],
+        ];
+        $translator = $this->getMockTranslator($translations);
+        $translate = new Translate();
+        $translate->setTranslator($translator);
         $transEsc = new TransEsc();
         $transEsc->setView(
             $this->getPhpRenderer(

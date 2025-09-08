@@ -60,7 +60,7 @@ class MethodTimedBlocks extends \Laminas\View\Helper\AbstractHelper
             $transParams = [
                 '%%service%%' => $methodDisplayName
                     ? $transEsc($methodDisplayName)
-                    : $transEsc('This feature'),
+                    : $transEsc('default_service_description'),
             ];
 
             if (!$methodBlocks['recurring']) {
@@ -70,14 +70,14 @@ class MethodTimedBlocks extends \Laminas\View\Helper\AbstractHelper
                 $transParams['%%end%%'] = $end;
 
                 if ($end) {
-                    return $transEsc('method_blocked_until', $transParams);
+                    return $transEsc('service_blocked_until', $transParams);
                 } else {
-                    return $transEsc('method_blocked', $transParams);
+                    return $transEsc('service_blocked', $transParams);
                 }
             } else {
                 $end = $dateTime->convertToDisplayTime('U', $methodBlocks['end']);
                 $transParams['%%end%%'] = $end;
-                return $transEsc('method_blocked_until', $transParams);
+                return $transEsc('service_blocked_until', $transParams);
             }
         }
         return '';
