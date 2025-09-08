@@ -77,6 +77,22 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Standard setup method.
+     *
+     * @return void
+     */
+    public function setUp(): void
+    {
+        parent::setUp();
+
+        // Skip tests if we're not running in development or testing mode:
+        if (!in_array(APPLICATION_ENV, ['development', 'testing'])) {
+            $this->markTestSkipped('Online payment tests require development or testing mode.');
+            return;
+        }
+    }
+
+    /**
      * Data provider for testPaymentDisabled
      *
      * @return array
