@@ -41,10 +41,12 @@ program
 program.parse(process.argv);
 const CLI_OPTIONS = program.opts();
 
-const generateSourceMaps = CLI_OPTIONS.checkOnly ? false : CLI_OPTIONS.sourcemaps ?? CLI_OPTIONS.minify;
+const DO_MINIFY = CLI_OPTIONS.minify ? true : CLI_OPTIONS.checkOnly !== true;
+const DO_SOURCEMAPS = CLI_OPTIONS.checkOnly ? false : CLI_OPTIONS.sourcemaps ?? CLI_OPTIONS.minify;
+
 console.log(`CHECK-ONLY: ${String(CLI_OPTIONS.checkOnly ?? false)}`);
-console.log(`MINIFY: ${String(CLI_OPTIONS.minify ?? false)}`);
-console.log(`SOURCEMAPS: ${String(generateSourceMaps)}`);
+console.log(`MINIFY: ${String(DO_MINIFY)}`);
+console.log(`SOURCEMAPS: ${String(DO_SOURCEMAPS)}`);
 
 // Main
 
@@ -71,7 +73,7 @@ function compileTheme(themeName) {
     {
       loadPaths: getLoadPaths(themeName),
       style: "expanded",
-      sourceMap: generateSourceMaps,
+      sourceMap: DO_SOURCEMAPS,
       embedSources: true,
       quietDeps: true,
     }
@@ -80,11 +82,11 @@ function compileTheme(themeName) {
   let cssContent = compiled.css;
   let sourceMapContent = null;
 
-  if (generateSourceMaps) {
+  if (DO_SOURCEMAPS) {
     sourceMapContent = JSON.stringify(compiled.sourceMap);
   }
 
-  if (CLI_OPTIONS.minify) {
+  if (DO_MINIFY) {
     console.log("- minifying...");
 
     // @link https://github.com/twbs/bootstrap/blob/main/package.json
@@ -93,14 +95,14 @@ function compileTheme(themeName) {
     const compressor = new CleanCSS({
       level: 1,
       format: { breakWith: 'lf' },
-      sourceMap: generateSourceMaps,
+      sourceMap: DO_SOURCEMAPS,
       sourceMapInlineSources: true,
     });
 
     const output = compressor.minify(compiled.css, compiled.sourceMap ?? null);
 
     cssContent = output.styles;
-    sourceMapContent = generateSourceMaps ? output.sourceMap.toString() : null;
+    sourceMapContent = DO_SOURCEMAPS ? output.sourceMap.toString() : null;
 
     const reduction = (100 * output.stats.efficiency).toFixed(1);
     console.log(`  - ${output.stats.timeSpent}ms (${reduction}% smaller)`);

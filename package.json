@@ -10,19 +10,18 @@
     "url": "https://vufind.org/jira"
   },
   "scripts": {
-    "build": "npm-run-all \"build:* -- {@}\"",
-    "watch": "npm-run-all \"watch:* -- {@}\"",
+    "build": "npm-run-all install:scss-dependencies build:scss",
+    "watch": "npm-run-all install:scss-dependencies watch:scss",
 
-    "build:css": "node tools/build-css.js",
-    "watch:css": "nodemon --watch tools/ --watch themes/ --ext scss,js --exec \"node tools/build-css.js\"",
+    "build:scss": "node tools/build-css.js --minify",
+    "check:scss": "node tools/build-css.js --check-only",
+    "watch:scss": "nodemon --watch tools/ --watch themes/ --ext scss,js --exec \"node tools/build-css.js\" --",
 
-    "install:scss-dependencies": "cd themes/bootstrap5 && npm run installBuildDeps",
-    "build:scss": "npm run install:scss-dependencies && grunt scss",
-    "check:scss": "npm run install:scss-dependencies && grunt check:scss",
-    "watch:scss": "npm run install:scss-dependencies && grunt watch:scss"
+    "install:scss-dependencies": "cd themes/bootstrap5 && npm run installBuildDeps"
   },
   "dependencies": {
     "clean-css": "^5.3.3",
+    "clean-css-cli": "^5.6.3",
     "commander": "^14.0.0",
     "nodemon": "^3.1.10",
     "npm-run-all2": "^8.0.4",
