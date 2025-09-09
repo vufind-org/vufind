@@ -234,7 +234,7 @@ class MigrationManager
     }
 
     /**
-     * Apply a single database migration string.
+     * Apply a single database migration file.
      *
      * @param string      $migration  Migration file to apply
      * @param ?Connection $connection Database connection to use for applying migrations
