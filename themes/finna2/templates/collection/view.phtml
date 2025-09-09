@@ -45,6 +45,12 @@
   // LIDO records are displayed like on the record page:
   $displayAsFullRecord = $this->driver instanceof \Finna\RecordDriver\SolrLido;
   $largeImageLayout = $displayAsFullRecord && $this->record($this->driver)->hasLargeImageLayout();
+
+  if ($oldRecordId = $this->driver->getExtraDetail('redirectedFromId')) {
+    echo $this->assetManager()->outputInlineScriptString(
+        'finna.record.handleRedirect(' . json_encode($oldRecordId) . ', ' . json_encode($this->driver->getUniqueID()) . ');'
+    );
+  }
 ?>
 <?php if (!empty($this->searchMemory()->getLastSearchUrl())) : ?>
 </div>
