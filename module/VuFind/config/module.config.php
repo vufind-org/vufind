@@ -467,6 +467,7 @@ $config = [
             'VuFind\Date\Converter' => 'VuFind\Service\DateConverterFactory',
             'VuFind\Db\ConnectionFactory' => 'VuFind\Db\ConnectionFactoryFactory',
             'VuFind\Db\Connection' => 'VuFind\Db\ConnectionFactory',
+            'VuFind\Db\DbBuilder' => 'VuFind\Db\DbBuilderFactory',
             'VuFind\Db\Entity\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Db\PersistenceManager' => 'VuFind\Db\PersistenceManagerFactory',
             'VuFind\Db\Service\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
