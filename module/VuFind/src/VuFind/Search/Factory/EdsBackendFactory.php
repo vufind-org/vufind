@@ -101,8 +101,8 @@ class EdsBackendFactory extends AbstractBackendFactory
     public function __invoke(ContainerInterface $sm, $name, ?array $options = null)
     {
         $this->setup($sm);
-        $this->edsConfig = $this->getService(\VuFind\Config\PluginManager::class)
-            ->get($this->getServiceName());
+        $this->edsConfig = $this->getService(\VuFind\Config\ConfigManager::class)
+            ->getConfigObject($this->getServiceName());
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
             $this->logger = $this->getService(\VuFind\Log\Logger::class);
         }

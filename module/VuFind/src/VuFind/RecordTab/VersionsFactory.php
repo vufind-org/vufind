@@ -73,7 +73,7 @@ class VersionsFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
             throw new \Exception('Unexpected options passed to factory.');
         }
         return new $requestedName(
-            $container->get(\VuFind\Config\PluginManager::class)->get('config'),
+            $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config'),
             $container->get(\VuFind\Search\Options\PluginManager::class)
         );
     }

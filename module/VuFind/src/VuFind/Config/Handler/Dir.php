@@ -81,25 +81,53 @@ class Dir extends AbstractBase
             $path = $path . DIRECTORY_SEPARATOR . $subsectionPart;
         }
 
-        $config = [];
+        $data = [];
         if (!empty($subsection)) {
             $configName = array_shift($subsection);
             $location = $this->pathResolver->getMatchingConfigLocation($path, $configName);
-            if ($subsection !== null) {
+            if ($location !== null && $subsection !== null) {
                 $location->setSubsection($subsection);
             }
-            $config[$configName] = $this->configManager->loadConfigFromLocation($location, $handleParentConfig);
+            $data[$configName] = ($location !== null)
+                ? $this->configManager->loadConfigFromLocation($location, $handleParentConfig)
+                : [];
         } else {
             foreach ($this->pathResolver->getConfigLocationsInPath($path) as $location) {
-                $config[$location->getConfigName()] = $this->configManager
+                $data[$location->getConfigName()] = $this->configManager
                     ->loadConfigFromLocation($location, $handleParentConfig);
             }
         }
 
         foreach (array_reverse($dirSubsection) as $subsectionPart) {
-            $config = [$subsectionPart => $config];
+            $data = [$subsectionPart => $data];
         }
-        return ['data' => $config];
+
+        $config = ['data' => $data];
+
+        if ($handleParentConfig && $parentLocation = $this->getParentLocation($configLocation)) {
+            $config['parentLocation'] = $parentLocation;
+        }
+
+        return $config;
+    }
+
+    /**
+     * Get parent location for current location.
+     *
+     * @param ConfigLocationInterface $configLocation Config location
+     *
+     * @return ?ConfigLocationInterface
+     */
+    protected function getParentLocation(ConfigLocationInterface $configLocation): ?ConfigLocationInterface
+    {
+        if ($dirLocationsParent = $configLocation->getDirLocationsParent()) {
+            return (clone $dirLocationsParent)->setSubsection($configLocation->getSubsection());
+        }
+        $baseLocation = $this->pathResolver->getBaseConfigLocation($configLocation->getConfigName());
+        if ($baseLocation !== null && realpath($baseLocation->getPath()) !== realpath($configLocation->getPath())) {
+            return $baseLocation->setSubsection($configLocation->getSubsection());
+        }
+        return null;
     }
 
     /**

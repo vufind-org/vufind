@@ -83,9 +83,9 @@ class SummonBackendFactory extends AbstractBackendFactory
     public function __invoke(ContainerInterface $sm, $name, ?array $options = null)
     {
         $this->setup($sm);
-        $configReader = $this->getService(\VuFind\Config\PluginManager::class);
-        $this->config = $configReader->get('config');
-        $this->summonConfig = $configReader->get('Summon');
+        $configManager = $this->getService(\VuFind\Config\ConfigManager::class);
+        $this->config = $configManager->getConfigObject('config');
+        $this->summonConfig = $configManager->getConfigObject('Summon');
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
             $this->logger = $this->getService(\VuFind\Log\Logger::class);
         }

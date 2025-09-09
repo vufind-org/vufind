@@ -153,6 +153,105 @@ class AlephTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
+     * Data provider for testing getMyProfile
+     *
+     * @return Generator
+     */
+    public static function getTestGetMyProfileData(): \Generator
+    {
+        yield 'Test fixture 2' => [
+            'fixture' => 'profile2.xml',
+            'xserver_enabled' => false,
+            'expected' => [
+                'firstname' => 'First',
+                'lastname' => 'Tester',
+                'birthdate' => '',
+                'address1' => 'Teststreet',
+                'address2' => '',
+                'city' => 'Test City',
+                'country' => null,
+                'zip' => '',
+                'phone' => '',
+                'mobile_phone' => null,
+                'expiration_date' => '19990101',
+                'group' => 'Test',
+                'email' => 'test@email.t',
+                'home_library' => null,
+                'fullname' => 'Tester,First',
+                'cat_username' => '1111',
+                'id' => '1111',
+            ],
+        ];
+
+        yield 'Test fixture 1' => [
+            'fixture' => 'profile1.xml',
+            'xserver_enabled' => true,
+            'expected' => [
+                'firstname' => 'Arcanis',
+                'lastname' => 'The',
+                'birthdate' => '',
+                'address1' => 'Teststreet',
+                'address2' => '',
+                'city' => null,
+                'country' => null,
+                'zip' => '',
+                'phone' => '0123456789',
+                'mobile_phone' => null,
+                'expiration_date' => null,
+                'group' => 'Omnipotent',
+                'barcode' => 'barcode',
+                'expire' => '20220120',
+                'credit_sum' => '9999',
+                'credit_sign' => 'E',
+                'cat_username' => '1111',
+                'email' => null,
+                'home_library' => null,
+                'id' => '1',
+                'credit' => '20220120',
+            ],
+        ];
+    }
+
+    /**
+     * Test getMyProfile
+     *
+     * @param string $fixture         Fixture file name located in aleph fixtures folder
+     * @param bool   $xserver_enabled Use xserver
+     * @param array  $expected        Expected results for the test
+     *
+     * @return       void
+     * @dataProvider getTestGetMyProfileData
+     */
+    public function testGetMyProfile(string $fixture, bool $xserver_enabled, array $expected): void
+    {
+        $mockRequest = $xserver_enabled ? 'doXRequest' : 'doRestDLFRequest';
+        $driver = $this->getMockBuilder(Aleph::class)->disableOriginalConstructor()
+            ->onlyMethods([$mockRequest, 'parseDate'])->getMock();
+        $driver->expects($this->any())->method('parseDate')->willReturnCallback(fn ($date) => $date);
+        $fixture = $this->getFixture('aleph/' . $fixture);
+        $driver->expects($this->any())->method($mockRequest)->willReturn(simplexml_load_string($fixture));
+        $config = [
+            'Catalog' => [
+                'host' => 'test.test',
+                'bib' => '123',
+                'useradm' => 'ad',
+                'admlib' => 'ad',
+                'dlfport' => 1111,
+                'available_statuses' => '1',
+            ],
+            'sublibadm' => 'sadm',
+        ];
+        if ($xserver_enabled) {
+            $config['Catalog']['wwwuser'] = 'usr';
+            $config['Catalog']['wwwpasswd'] = 'passwd';
+        }
+        $driver->setConfig($config);
+        $driver->init();
+        $result = $driver->getMyProfile(['id' => '1111']);
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
      * Mock fixture as HTTP client response
      *
      * @param string|array|null $fixture Fixture file

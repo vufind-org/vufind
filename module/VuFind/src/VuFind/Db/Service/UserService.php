@@ -29,14 +29,14 @@
 
 namespace VuFind\Db\Service;
 
-use Laminas\Log\LoggerAwareInterface;
+use DateTime;
+use Doctrine\ORM\EntityManager;
 use Laminas\Session\Container as SessionContainer;
 use VuFind\Auth\UserSessionPersistenceInterface;
+use VuFind\Db\Entity\PluginManager as EntityPluginManager;
+use VuFind\Db\Entity\User;
 use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Row\User as UserRow;
-use VuFind\Db\Table\DbTableAwareInterface;
-use VuFind\Db\Table\DbTableAwareTrait;
-use VuFind\Log\LoggerAwareTrait;
+use VuFind\Db\PersistenceManager;
 
 /**
  * Database service for user.
@@ -48,21 +48,34 @@ use VuFind\Log\LoggerAwareTrait;
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 class UserService extends AbstractDbService implements
-    DbTableAwareInterface,
-    LoggerAwareInterface,
     UserServiceInterface,
     UserSessionPersistenceInterface
 {
-    use DbTableAwareTrait;
-    use LoggerAwareTrait;
-
     /**
      * Constructor
      *
-     * @param SessionContainer $userSessionContainer Session container for user data
+     * @param EntityManager       $entityManager        Doctrine ORM entity manager
+     * @param EntityPluginManager $entityPluginManager  VuFind entity plugin manager
+     * @param PersistenceManager  $persistenceManager   Entity persistence manager
+     * @param SessionContainer    $userSessionContainer Session container for user data
      */
-    public function __construct(protected SessionContainer $userSessionContainer)
+    public function __construct(
+        EntityManager $entityManager,
+        EntityPluginManager $entityPluginManager,
+        PersistenceManager $persistenceManager,
+        protected SessionContainer $userSessionContainer
+    ) {
+        parent::__construct($entityManager, $entityPluginManager, $persistenceManager);
+    }
+
+    /**
+     * Create an access_token entity object.
+     *
+     * @return UserEntityInterface
+     */
+    public function createEntity(): UserEntityInterface
     {
+        return $this->entityPluginManager->get(UserEntityInterface::class);
     }
 
     /**
@@ -74,7 +87,11 @@ class UserService extends AbstractDbService implements
      */
     public function createEntityForUsername(string $username): UserEntityInterface
     {
-        return $this->getDbTable('User')->createRowForUsername($username);
+        $user = $this->createEntity()
+            ->setUsername($username)
+            ->setCreated(new DateTime())
+            ->setHasUserProvidedEmail(false);
+        return $user;
     }
 
     /**
@@ -87,19 +104,29 @@ class UserService extends AbstractDbService implements
     public function deleteUser(UserEntityInterface|int $userOrId): void
     {
         $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
-        $this->getDbTable('User')->delete(['id' => $userId]);
+        $dql = 'DELETE FROM ' . UserEntityInterface::class . ' u'
+            . ' WHERE u.id = :id';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameter('id', $userId);
+        $query->execute();
     }
 
     /**
      * Retrieve a user object from the database based on ID.
      *
-     * @param int $id ID.
+     * @param int $id ID value.
      *
      * @return ?UserEntityInterface
      */
     public function getUserById(int $id): ?UserEntityInterface
     {
-        return $this->getDbTable('User')->getById($id);
+        $dql = 'SELECT u '
+                . 'FROM ' . UserEntityInterface::class . ' u '
+                . 'WHERE u.id = :id';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameter('id', $id);
+        $result = $query->getOneOrNullResult();
+        return $result;
     }
 
     /**
@@ -113,17 +140,31 @@ class UserService extends AbstractDbService implements
      */
     public function getUserByField(string $fieldName, int|string|null $fieldValue): ?UserEntityInterface
     {
-        switch ($fieldName) {
-            case 'email':
-                return $this->getDbTable('User')->getByEmail($fieldValue);
-            case 'id':
-                return $this->getDbTable('User')->getById($fieldValue);
-            case 'username':
-                return $this->getDbTable('User')->getByUsername($fieldValue, false);
-            case 'verify_hash':
-                return $this->getDbTable('User')->getByVerifyHash($fieldValue);
-            case 'cat_id':
-                return $this->getDbTable('User')->getByCatalogId($fieldValue);
+        // Null ID lookups cannot possibly retrieve a value:
+        if ($fieldName === 'id' && $fieldValue === null) {
+            return null;
+        }
+        // Map expected incoming values (actual database columns) to legal values (Doctrine properties)
+        $legalFieldMap = [
+            'id' => 'id',
+            'username' => 'username',
+            'email' => 'email',
+            'cat_id' => 'catId',
+            'verify_hash' => 'verifyHash',
+        ];
+        // For now, only username lookups are case-insensitive:
+        $caseInsensitive = $fieldName === 'username';
+        if (isset($legalFieldMap[$fieldName])) {
+            $where = $caseInsensitive
+                ? 'LOWER(U.' . $legalFieldMap[$fieldName] . ') = LOWER(:fieldValue)'
+                : 'U.' . $legalFieldMap[$fieldName] . ' = :fieldValue';
+            $dql = 'SELECT U FROM ' . UserEntityInterface::class . ' U '
+                . 'WHERE ' . $where;
+            $parameters = compact('fieldValue');
+            $query = $this->entityManager->createQuery($dql);
+            $query->setParameters($parameters);
+            $result = current($query->getResult());
+            return $result ?: null;
         }
         throw new \InvalidArgumentException('Field name must be id, username, email or cat_id');
     }
@@ -212,11 +253,7 @@ class UserService extends AbstractDbService implements
      */
     public function addUserDataToSession(UserEntityInterface $user): void
     {
-        if ($user instanceof UserRow) {
-            $this->userSessionContainer->userDetails = $user->toArray();
-        } else {
-            throw new \Exception($user::class . ' not supported by addUserDataToSession()');
-        }
+        $this->userSessionContainer->userDetails = $user->toArray();
     }
 
     /**
@@ -280,10 +317,12 @@ class UserService extends AbstractDbService implements
      */
     public function getAllUsersWithCatUsernames(): array
     {
-        $callback = function ($select) {
-            $select->where->isNotNull('cat_username');
-        };
-        return iterator_to_array($this->getDbTable('User')->select($callback));
+        $dql = 'SELECT u '
+                . 'FROM ' . UserEntityInterface::class . ' u '
+                . 'WHERE u.catUsername IS NOT NULL';
+        $query = $this->entityManager->createQuery($dql);
+        $result = $query->getResult();
+        return $result;
     }
 
     /**
@@ -293,16 +332,12 @@ class UserService extends AbstractDbService implements
      */
     public function getInsecureRows(): array
     {
-        return iterator_to_array($this->getDbTable('User')->getInsecureRows());
-    }
-
-    /**
-     * Create a new user entity.
-     *
-     * @return UserEntityInterface
-     */
-    public function createEntity(): UserEntityInterface
-    {
-        return $this->getDbTable('User')->createRow();
+        $dql = 'SELECT u '
+                . 'FROM ' . UserEntityInterface::class . ' u '
+                . "WHERE u.password != '' "
+                . 'AND u.catPassword IS NOT NULL';
+        $query = $this->entityManager->createQuery($dql);
+        $result = $query->getResult();
+        return $result;
     }
 }

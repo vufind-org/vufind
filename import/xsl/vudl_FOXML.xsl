@@ -506,6 +506,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
                         <field name="publishDate">
                             <xsl:value-of select="substring($DC//dc:date[1], 1, 4)"/>
                         </field>
+                        <field name="publishDateRange">
+                            <xsl:value-of select="substring($DC//dc:date[1], 1, 4)"/>
+                        </field>
                         <field name="publishDateSort">
                             <xsl:value-of select="substring($DC//dc:date[1], 1, 4)"/>
                         </field>

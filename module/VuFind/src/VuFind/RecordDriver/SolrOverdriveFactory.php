@@ -70,9 +70,9 @@ class SolrOverdriveFactory
         if ($options !== null) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $configManager = $container->get(\VuFind\Config\PluginManager::class);
-        $config = $configManager->get('config');
-        $odConfig = $configManager->get('Overdrive');
+        $configManager = $container->get(\VuFind\Config\ConfigManager::class);
+        $config = $configManager->getConfigObject('config');
+        $odConfig = $configManager->getConfigObject('Overdrive');
         $connector = $container->get(OverdriveConnector::class);
         return new $requestedName($config, $odConfig, $connector);
     }

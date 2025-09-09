@@ -22,12 +22,6 @@ form {
             margin-top: 5px;
         }
     }
-    .form-group label.required::before,
-    .form-group .radio-label.required::before,
-    .form-group .radio-label.require-one::before
-    {
-        content: '* ';
-    }
 
     input[type=checkbox],
     input[type=radio] {
@@ -46,13 +40,9 @@ form {
             display: table;
             margin: 7px 0;
             input {
-                width: auto;
                 margin-right: 10px;
                 margin-top: 3px;
             }
-        }
-        .radio-label {
-            font-weight: 700;
         }
     }
 
@@ -64,6 +54,10 @@ form {
         input[type=date] {
             padding-top: 0;
         }
+    }
+    .required-notice {
+        font-size: $small-font-size;
+        color: $text-muted;
     }
 }
 

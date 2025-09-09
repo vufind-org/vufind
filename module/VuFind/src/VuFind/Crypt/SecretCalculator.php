@@ -67,7 +67,7 @@ class SecretCalculator
         $data = [
             'id' => $search->getId(),
             'user_id' => $user->getId(),
-            'created' => $user->getCreated()->format('Y-m-d H:i:s'),
+            'created' => $user->getCreated()->format(VUFIND_DATABASE_DATETIME_FORMAT),
         ];
         return $this->hmac->generate(array_keys($data), $data);
     }

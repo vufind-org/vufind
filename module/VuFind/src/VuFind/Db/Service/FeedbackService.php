@@ -23,33 +23,44 @@
  * @category VuFind
  * @package  Database
  * @author   Sudharma Kellampalli <skellamp@villanova.edu>
- * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
 namespace VuFind\Db\Service;
 
+use Doctrine\ORM\Tools\Pagination\Paginator as DoctrinePaginator;
+use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as DoctrinePaginatorAdapter;
 use Laminas\Paginator\Paginator;
+use VuFind\Db\Entity\Feedback;
 use VuFind\Db\Entity\FeedbackEntityInterface;
-use VuFind\Db\Table\DbTableAwareInterface;
-use VuFind\Db\Table\DbTableAwareTrait;
 
 use function count;
+use function intval;
 
 /**
  * Database service for feedback.
  *
  * @category VuFind
  * @package  Database
- * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class FeedbackService extends AbstractDbService implements DbTableAwareInterface, FeedbackServiceInterface
+class FeedbackService extends AbstractDbService implements FeedbackServiceInterface
 {
-    use DbTableAwareTrait;
+    /**
+     * Db column name to Doctrine entity field mapper
+     *
+     * @var array
+     */
+    protected $fieldMap = [
+        'form_data' => 'formData',
+        'form_name' => 'formName',
+        'site_url' => 'siteUrl',
+        'user_id' => 'user',
+        'updated_by' => 'updatedBy',
+    ];
 
     /**
      * Create a feedback entity object.
@@ -58,7 +69,7 @@ class FeedbackService extends AbstractDbService implements DbTableAwareInterface
      */
     public function createEntity(): FeedbackEntityInterface
     {
-        return $this->getDbTable('feedback')->createRow();
+        return $this->entityPluginManager->get(FeedbackEntityInterface::class);
     }
 
     /**
@@ -70,7 +81,7 @@ class FeedbackService extends AbstractDbService implements DbTableAwareInterface
      */
     public function getFeedbackById(int $id): ?FeedbackEntityInterface
     {
-        return $this->getDbTable('feedback')->select(['id' => $id])->current();
+        return $this->entityManager->find(FeedbackEntityInterface::class, $id);
     }
 
     /**
@@ -91,25 +102,39 @@ class FeedbackService extends AbstractDbService implements DbTableAwareInterface
         ?int $page = null,
         int $limit = 20
     ): Paginator {
-        // The template expects a different format than what is returned by Laminas\Db; we need to do
-        // some data conversion and then populate a new paginator with the remapped results. We'll use
-        // a padded array and the array adapter to make this work. Probably not the most robust solution,
-        // but good enough for the current needs of the software; this will go away in a future database
-        // layer migration.
-        $feedbackTable = $this->getDbTable('feedback');
-        $paginator = $feedbackTable->getFeedbackByFilter($formName, $siteUrl, $status, $page, $limit);
-        $results = array_fill(0, count($paginator->getAdapter()), []);
-        $index = (($page ?? 1) - 1) * $limit;
-        foreach ($paginator as $current) {
-            $row = (array)$current;
-            $row['feedback_entity'] = $feedbackTable->createRow()->populate($row);
-            $results[$index] = $row;
-            $index++;
+        $dql = 'SELECT f AS feedback_entity FROM ' . FeedbackEntityInterface::class . ' f';
+        $parameters = $dqlWhere = [];
+
+        if (null !== $formName) {
+            $dqlWhere[] = 'f.formName = :formName';
+            $parameters['formName'] = $formName;
         }
-        $newPaginator = new Paginator(new \Laminas\Paginator\Adapter\ArrayAdapter($results));
-        $newPaginator->setCurrentPageNumber($page ?? 1);
-        $newPaginator->setItemCountPerPage($limit);
-        return $newPaginator;
+        if (null !== $siteUrl) {
+            $dqlWhere[] = 'f.siteUrl = :siteUrl';
+            $parameters['siteUrl'] = $siteUrl;
+        }
+        if (null !== $status) {
+            $dqlWhere[] = 'f.status = :status';
+            $parameters['status'] = $status;
+        }
+        if (!empty($dqlWhere)) {
+            $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);
+        }
+        $dql .= ' ORDER BY f.created DESC';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+
+        $page = null === $page ? null : intval($page);
+        if (null !== $page) {
+            $query->setMaxResults($limit);
+            $query->setFirstResult($limit * ($page - 1));
+        }
+        $paginator = new Paginator(new DoctrinePaginatorAdapter(new DoctrinePaginator($query)));
+        if (null !== $page) {
+            $paginator->setCurrentPageNumber($page);
+            $paginator->setItemCountPerPage($limit);
+        }
+        return $paginator;
     }
 
     /**
@@ -121,7 +146,44 @@ class FeedbackService extends AbstractDbService implements DbTableAwareInterface
      */
     public function deleteByIdArray(array $ids): int
     {
-        return $this->getDbTable('feedback')->deleteByIdArray($ids);
+        // Do nothing if we have no IDs to delete!
+        if (empty($ids)) {
+            return 0;
+        }
+        $dql = 'DELETE FROM ' . FeedbackEntityInterface::class . ' fb '
+            . 'WHERE fb.id IN (:ids)';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters(compact('ids'));
+        $query->execute();
+        return count($ids);
+    }
+
+    /**
+     * Get values for a column
+     *
+     * @param string $column Column name
+     *
+     * @return array
+     */
+    public function getColumn(string $column): array
+    {
+        $dql = 'SELECT f.id, f.' . $this->mapField($column)
+            . ' FROM ' . FeedbackEntityInterface::class . ' f '
+            . 'ORDER BY f.' . $this->mapField($column);
+        $query = $this->entityManager->createQuery($dql);
+        return $query->getResult();
+    }
+
+    /**
+     * Column mapper
+     *
+     * @param string $column Column name
+     *
+     * @return string
+     */
+    protected function mapField($column)
+    {
+        return $this->fieldMap[$column] ?? $column;
     }
 
     /**
@@ -133,14 +195,6 @@ class FeedbackService extends AbstractDbService implements DbTableAwareInterface
      */
     public function getUniqueColumn(string $column): array
     {
-        $feedbackTable = $this->getDbTable('feedback');
-        $feedback = $feedbackTable->select(
-            function ($select) use ($column) {
-                $select->columns(['id', $column]);
-                $select->order($column);
-            }
-        );
-        $feedbackArray = $feedback->toArray();
-        return array_unique(array_column($feedbackArray, $column));
+        return array_unique(array_column($this->getColumn($column), $this->mapField($column)));
     }
 }

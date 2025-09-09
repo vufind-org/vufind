@@ -29,6 +29,8 @@
 
 namespace VuFind\Cache;
 
+use Laminas\Cache\Storage\StorageInterface;
+
 use function get_class;
 
 /**
@@ -47,20 +49,23 @@ trait KeyGeneratorTrait
     /**
      * Method to ensure uniform cache keys for cached VuFind objects.
      *
-     * @param string|null $suffix Optional suffix that will get appended to the
+     * @param ?string           $suffix Optional suffix that will get appended to the
      * object class name calling getCacheKey()
+     * @param ?StorageInterface $cache  Optional non-default cache
      *
      * @return string
      */
-    protected function getCacheKey($suffix = null)
+    protected function getCacheKey(?string $suffix = null, ?StorageInterface $cache = null): string
     {
+        $cache ??= $this->cache;
+
         // Build the raw key combining the calling classname with an optional suffix
         $key = get_class($this) . (!empty($suffix) ? '_' . $suffix : '');
 
         // Test the build key
         if (
-            $this->cache
-            && ($keyPattern = $this->cache->getOptions()->getKeyPattern())
+            $cache
+            && ($keyPattern = $cache->getOptions()->getKeyPattern())
             && !preg_match($keyPattern, $key)
         ) {
             // The key violates the currently set StorageAdapter key_pattern. Our

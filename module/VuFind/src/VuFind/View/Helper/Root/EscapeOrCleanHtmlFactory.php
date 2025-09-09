@@ -71,7 +71,7 @@ class EscapeOrCleanHtmlFactory implements FactoryInterface
         }
 
         $helpers = $container->get('ViewHelperManager');
-        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
+        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config');
         return new $requestedName(new Escaper(), $helpers->get('cleanHtml'), $config->toArray());
     }
 }

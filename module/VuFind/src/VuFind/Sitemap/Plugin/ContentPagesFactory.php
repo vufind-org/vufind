@@ -68,11 +68,11 @@ class ContentPagesFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $configLoader = $container->get(\VuFind\Config\PluginManager::class);
+        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config');
         return new $requestedName(
             $container->get(\VuFindTheme\ThemeInfo::class),
             $container->get('HttpRouter'),
-            $configLoader->get('config')
+            $config
         );
     }
 }

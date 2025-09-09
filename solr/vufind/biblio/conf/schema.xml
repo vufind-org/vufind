@@ -108,6 +108,7 @@
       </analyzer>
     </fieldType>
     <fieldType name="date" class="solr.DatePointField" sortMissingLast="true" omitNorms="true"/>
+    <fieldType name="dateRange" class="solr.DateRangeField" sortMissingLast="true" uninvertible="false"/>
     <fieldType name="random" class="solr.RandomSortField" indexed="true" />
     <fieldType name="boolean" class="solr.BoolField" sortMissingLast="true" omitNorms="true"/>
     <!-- add geo field to handle geographic search and display capabilities -->
@@ -150,6 +151,7 @@
    <field name="publisher" type="textProper" indexed="true" stored="true" multiValued="true"/>
    <field name="publisherStr" type="string" indexed="true" stored="false" multiValued="true"/>
    <field name="publishDate" type="string" indexed="true" stored="true" multiValued="true"/>
+   <field name="publishDateRange" type="dateRange" indexed="true" stored="true" multiValued="true"/>
    <field name="publishDateSort" type="string" indexed="true" stored="false"/>
    <field name="edition" type="string" indexed="true" stored="true"/>
    <field name="description" type="text" indexed="true" stored="true"/>
@@ -228,6 +230,8 @@
    <!-- Dynamic fields for customization without schema modification -->
    <dynamicField name="*_date" type="date" indexed="true" stored="true" docValues="true"/>
    <dynamicField name="*_date_mv" type="date" indexed="true" stored="true" multiValued="true" docValues="true"/>
+   <dynamicField name="*_dateRange" type="dateRange" indexed="true" stored="true" multiValued="false"/>
+   <dynamicField name="*_dateRange_mv" type="dateRange" indexed="true" stored="true" multiValued="true"/>
    <dynamicField name="*_isn" type="isn" indexed="true" stored="true"/>
    <dynamicField name="*_isn_mv" type="isn" indexed="true" stored="true" multiValued="true"/>
    <dynamicField name="*_str" type="string" indexed="true" stored="true"/>

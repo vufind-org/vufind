@@ -43,11 +43,11 @@ use DateTime;
 interface LoginTokenEntityInterface extends EntityInterface
 {
     /**
-     * Getter for ID.
+     * Get identifier (returns null for an uninitialized or non-persisted object).
      *
-     * @return int
+     * @return ?int
      */
-    public function getId(): int;
+    public function getId(): ?int;
 
     /**
      * Setter for User.
