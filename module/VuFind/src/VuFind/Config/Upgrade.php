@@ -109,12 +109,12 @@ class Upgrade implements LoggerAwareInterface
     /**
      * Constructor
      *
-     * @param PathResolver  $pathResolver  Path Resolver
-     * @param ConfigManager $configManager Config Manager
+     * @param PathResolver           $pathResolver  Path Resolver
+     * @param ConfigManagerInterface $configManager Config Manager
      */
     public function __construct(
         protected PathResolver $pathResolver,
-        protected ConfigManager $configManager,
+        protected ConfigManagerInterface $configManager,
     ) {
     }
 
