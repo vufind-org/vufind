@@ -14,11 +14,8 @@
       <div class="home-facet <?=$this->escapeHtmlAttr($field) ?><?=$isHierarchy ? ' facet-tree' : ''?>">
         <h2><?=$labelHeading?></h2>
         <div class="home-facet-container">
-          <?php
-            // Special case: two columns for LC call numbers ...
-            $cssColumnClass = $field == 'callnumber-first' ? 'two-columns' : 'one-column'; // Add the CSS class logic here
-          ?>
-          <ul class="home-facet-list <?php echo $cssColumnClass; ?>">
+          <?php /* removed the 'callnumber-first' coding here because 'callnumber-first' is set on the 'home-facet' container, so columns can be set using SCSS */ ?>
+          <ul class="home-facet-list">
             <?php if ($isHierarchy): ?>
               <?=$this->render('Recommend/SideFacets/hierarchical-facet-level.phtml', [
                 'exclude' => false,
