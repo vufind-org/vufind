@@ -2,15 +2,19 @@ const { copyFile, cp, stat } = require('node:fs/promises');
 const path = require('node:path');
 
 async function copy(fromRelPath, toRelPath) {
-	const fromPath = path.join(process.env.VUFIND_HOME, fromRelPath);
-	const toPath = path.join(__dirname, "..", toRelPath);
-	console.log(`> ${toRelPath}`);
+	try {
+		const fromPath = path.join(process.env.VUFIND_HOME, fromRelPath);
+		const toPath = path.join(__dirname, "..", toRelPath);
+		console.log(`> ${toRelPath}`);
 
-	const stats = await stat(fromPath);
-	if (stats.isDirectory()) {
-		await cp(fromPath, toPath, { recursive: true });
-	} else {
-		await copyFile(fromPath, toPath);
+		const stats = await stat(fromPath);
+		if (stats.isDirectory()) {
+			await cp(fromPath, toPath, { recursive: true });
+		} else {
+			await copyFile(fromPath, toPath);
+		}
+	} catch (e) {
+		console.log(`X ${toRelPath} (${e})`);
 	}
 }
 
