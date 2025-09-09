@@ -57,28 +57,6 @@ trait OnlinePaymentTrait
     use OnlinePaymentEventTrait;
 
     /**
-     * Return online payment handler.
-     *
-     * @param string $sourceIls Patron ILS source
-     *
-     * @return ?HandlerInterface Handler, or null on failure.
-     */
-    protected function getOnlinePaymentHandler(string $sourceIls): ?HandlerInterface
-    {
-        $onlinePaymentManager = $this->serviceLocator->get(\VuFind\OnlinePayment\OnlinePaymentManager::class);
-        if (!$onlinePaymentManager->isEnabled($sourceIls)) {
-            return null;
-        }
-
-        try {
-            return $onlinePaymentManager->getHandler($sourceIls);
-        } catch (\Exception $e) {
-            $this->handleError("Error retrieving online payment handler for source $sourceIls: " . (string)$e);
-            return null;
-        }
-    }
-
-    /**
      * Support method for handling online payments.
      *
      * @param array     $patron Patron
