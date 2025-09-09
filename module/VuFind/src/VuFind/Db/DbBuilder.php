@@ -265,7 +265,7 @@ class DbBuilder
                 $statements = $this->migrationLoader->splitSqlIntoStatements($sql);
                 foreach ($statements as $current) {
                     // Skip empty sections:
-                    if (strlen(trim($current)) == 0) {
+                    if (strlen($current) == 0) {
                         continue;
                     }
                     $db->executeQuery($current);

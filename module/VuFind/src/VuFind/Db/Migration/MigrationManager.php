@@ -251,14 +251,13 @@ class MigrationManager
         $shortMigrationName = str_replace($this->migrationPath . '/', '', $migration);
         $output .= $this->logMigrationEvent($connection, $shortMigrationName, 'start');
         $sql = file_get_contents($migration);
-        foreach ($this->loader->splitSqlIntoStatements($sql) as $i => $sqlLine) {
-            $trimmedLine = trim($sqlLine);
-            if (!empty($trimmedLine)) {
-                $output .= $this->logMigrationEvent($connection, $shortMigrationName, "writing line $i");
+        foreach ($this->loader->splitSqlIntoStatements($sql) as $i => $sqlChunk) {
+            if (!empty($sqlChunk)) {
+                $output .= $this->logMigrationEvent($connection, $shortMigrationName, "writing chunk $i");
                 if ($connection) {
-                    $connection->executeQuery($trimmedLine);
+                    $connection->executeQuery($sqlChunk);
                 }
-                $output .= "$trimmedLine;\n";
+                $output .= "$sqlChunk;\n";
             }
         }
         $output .= $this->logMigrationEvent($connection, $shortMigrationName, 'success');

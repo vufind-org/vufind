@@ -106,6 +106,6 @@ class MigrationLoader
      */
     public function splitSqlIntoStatements(string $sql): array
     {
-        return preg_split('/;\s*([\r\n]|$)/', $sql);
+        return array_map('trim', preg_split('/;\s*([\r\n]|$)/', $sql));
     }
 }
