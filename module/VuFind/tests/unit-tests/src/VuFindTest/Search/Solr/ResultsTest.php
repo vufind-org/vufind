@@ -131,7 +131,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                 ],
             ]
         );
-        $mockConfig = $this->createMock(ConfigManager::class);
+        $mockConfig = $this->createMock(ConfigManagerInterface::class);
         $options = new Options($mockConfig);
         $options->setTranslator($mockTranslator);
         $options->setTranslatedFacets(
@@ -519,7 +519,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         ?Options $options = null,
         ?ConfigManagerInterface $mockConfig = null
     ): Params {
-        $mockConfig ??= $this->createMock(ConfigManager::class);
+        $mockConfig ??= $this->createMock(ConfigManagerInterface::class);
         return new Params(
             $options ?? new Options($mockConfig),
             $mockConfig

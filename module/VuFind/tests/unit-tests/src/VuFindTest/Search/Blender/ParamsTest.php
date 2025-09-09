@@ -31,7 +31,7 @@ namespace VuFindTest\Search\Blender;
 
 use Laminas\Stdlib\Parameters;
 use VuFind\Config\Config;
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Blender\Options;
 use VuFind\Search\Blender\Params;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
@@ -1036,7 +1036,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      */
     public function testInvalidBackend(): void
     {
-        $mockConfigManager = $this->createMock(ConfigManager::class);
+        $mockConfigManager = $this->createMock(ConfigManagerInterface::class);
         $baseParams = new \VuFind\Search\EmptySet\Params(
             new \VuFind\Search\EmptySet\Options($mockConfigManager),
             $mockConfigManager
@@ -1098,7 +1098,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      */
     protected function getParams($config = null, $mappings = null): Params
     {
-        $mockConfigManager = $this->createMock(ConfigManager::class);
+        $mockConfigManager = $this->createMock(ConfigManagerInterface::class);
         return new Params(
             new Options($mockConfigManager),
             $mockConfigManager,

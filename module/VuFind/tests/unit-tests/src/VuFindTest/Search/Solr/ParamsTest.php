@@ -440,7 +440,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         ?Options $options = null,
         ?ConfigManagerInterface $mockConfigManager = null
     ): Params {
-        $mockConfigManager ??= $this->createMock(ConfigManager::class);
+        $mockConfigManager ??= $this->createMock(ConfigManagerInterface::class);
         return new Params(
             $options ?? new Options($mockConfigManager),
             $mockConfigManager

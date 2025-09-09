@@ -30,7 +30,7 @@
 namespace VuFindTest\Search\Summon;
 
 use VuFind\Config\Config;
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Summon\Options;
 use VuFindTest\Feature\ReflectionTrait;
 
@@ -225,7 +225,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
      */
     protected function getOptions(array $config = []): Options
     {
-        $mockConfigManager = $this->createMock(ConfigManager::class);
+        $mockConfigManager = $this->createMock(ConfigManagerInterface::class);
         $configObj = new Config($config);
         $mockConfigManager->method('getConfigObject')->willReturn($configObj);
         $mockConfigManager->method('getConfigArray')->willReturn($config);

@@ -29,7 +29,7 @@
 
 namespace VuFindTest\Formatter;
 
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFindTest\Search\TestHarness\Options;
 use VuFindTest\Search\TestHarness\Params;
 use VuFindTest\Search\TestHarness\Results;
@@ -157,7 +157,7 @@ class FacetFormatterTest extends \PHPUnit\Framework\TestCase
 
         $results = [];
         $helper = new \VuFind\Search\Solr\HierarchicalFacetHelper();
-        $configManager = $this->createMock(ConfigManager::class);
+        $configManager = $this->createMock(ConfigManagerInterface::class);
         $params = new Params(new Options($configManager), $configManager);
         $requestParams = new \Laminas\Stdlib\Parameters($request);
         $params->initFromRequest($requestParams);
@@ -185,7 +185,7 @@ class FacetFormatterTest extends \PHPUnit\Framework\TestCase
      */
     protected function getFakeResults($request, $facetData)
     {
-        $configManager = $this->createMock(ConfigManager::class);
+        $configManager = $this->createMock(ConfigManagerInterface::class);
         $params = new Params(new Options($configManager), $configManager);
         $params->initFromRequest(new \Laminas\Stdlib\Parameters($request));
         $ss = $this->getMockBuilder(\VuFindSearch\Service::class)

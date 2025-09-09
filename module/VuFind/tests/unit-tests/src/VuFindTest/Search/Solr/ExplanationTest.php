@@ -30,7 +30,7 @@
 
 namespace VuFindTest\Search\Solr;
 
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Solr\Explanation;
 use VuFind\Search\Solr\Options;
 use VuFind\Search\Solr\Params;
@@ -782,7 +782,7 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
      */
     protected function getExplanation($result, $config = null)
     {
-        $mockConfig = $this->createMock(ConfigManager::class);
+        $mockConfig = $this->createMock(ConfigManagerInterface::class);
         $paramsObj = new Params(
             new Options($mockConfig),
             $mockConfig
