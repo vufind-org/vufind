@@ -2014,13 +2014,25 @@ class Alma extends AbstractBase implements
     /**
      * Get list of funds
      *
-     * @return array with key = course ID, value = course name
+     * @return array with key = fund ID, value = fund name
      */
     public function getFunds()
     {
-        // TODO: implement me!
         // https://developers.exlibrisgroup.com/alma/apis/acq
         // GET /almaws/v1/acq/funds
-        return [];
+        try {
+            $xml = $this->makeRequest('/acq/funds');
+        } catch (ILSException $e) {
+            // API key not defined or not configured to allow this API.
+            // Required permission: Acquisition Read.
+            $xml = [];
+        }
+        $result = [];
+        foreach ($xml->fund ?? [] as $fund) {
+            $fundId = (string)$fund->id;
+            $fundName = (string)$fund->name;
+            $result[$fundId] = $fundName;
+        }
+        return $result;
     }
 }
