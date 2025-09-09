@@ -104,9 +104,10 @@ class MigrationManager
      */
     protected function getNeededMigrationsFromDir(string $path): array
     {
+        // We expect the last subdirectory of $path to be a version number; let's extract it:
         $parts = explode('/', $path);
-        $lastPart = array_pop($parts);
-        $appliedMigrations = $this->getAppliedMigrations($lastPart);
+        $version = array_pop($parts);
+        $appliedMigrations = $this->getAppliedMigrations($version);
         return array_diff($this->loader->getMigrationsFromDir($path), $appliedMigrations);
     }
 
