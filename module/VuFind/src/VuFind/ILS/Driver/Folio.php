@@ -523,7 +523,20 @@ class Folio extends AbstractAPI implements
         if (count($ids) == 0) {
             return;
         }
-        foreach (array_chunk($ids, self::QUERY_BY_IDS_BATCH_SIZE) as $idsInBatch) {
+        $idToKey = fn($id) => $endpoint . '[' . $idField . '=' . $id . ']';
+        $idsToLookFor = [];
+        foreach ($ids as $id) {
+            $items = $this->getCachedData($idToKey($id));
+            if ($items == null) {
+                $idsToLookFor[] = $id;
+            } else {
+                foreach ($items as $item) {
+                    yield $item;
+                }
+            }
+        }
+        $resultsToCache = [];
+        foreach (array_chunk($idsToLookFor, self::QUERY_BY_IDS_BATCH_SIZE) as $idsInBatch) {
             $idsWithQuotes = array_map(fn ($id) => '"' . $this->escapeCql($id) . '"', $idsInBatch);
             $query = [
                 'query' => $idField . ' == (' . implode(' OR ', $idsWithQuotes) . ')' . $querySuffix,
@@ -535,8 +548,17 @@ class Folio extends AbstractAPI implements
                     $query
                 ) as $item
             ) {
+                $key = $idToKey($item->$idField);
+                if (isset($resultsToCache[$key])) {
+                    $resultsToCache[$key][] = $item;
+                } else {
+                    $resultsToCache[$key] = [ $item ];
+                }
                 yield $item;
             }
+        }
+        foreach ($resultsToCache as $key => $items) {
+            $this->putCachedData($key, $items);
         }
     }
 
