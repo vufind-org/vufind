@@ -32,7 +32,7 @@
 
 namespace VuFind\Search\EPF;
 
-use VuFind\Config\ConfigManagerInterface as ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\EDS\AbstractEDSOptions;
 
 /**
@@ -51,10 +51,10 @@ class Options extends AbstractEDSOptions
     /**
      * Constructor
      *
-     * @param ConfigManager $configManager Config manager
+     * @param ConfigManagerInterface $configManager Config manager
      */
     public function __construct(
-        ConfigManager $configManager
+        ConfigManagerInterface $configManager
     ) {
         $this->searchIni = $this->facetsIni = 'EPF';
 

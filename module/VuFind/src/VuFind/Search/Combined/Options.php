@@ -31,7 +31,7 @@
 
 namespace VuFind\Search\Combined;
 
-use VuFind\Config\ConfigManagerInterface as ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 
 /**
  * Combined search model.
@@ -48,11 +48,11 @@ class Options extends \VuFind\Search\Base\Options
     /**
      * Constructor
      *
-     * @param ConfigManager                        $configManager  Config loader
+     * @param ConfigManagerInterface               $configManager  Config loader
      * @param \VuFind\Search\Options\PluginManager $optionsManager Options plugin manager
      */
     public function __construct(
-        ConfigManager $configManager,
+        ConfigManagerInterface $configManager,
         protected \VuFind\Search\Options\PluginManager $optionsManager
     ) {
         parent::__construct($configManager);

@@ -2,8 +2,6 @@
 
 /**
  * Configuration manager interface.
- * Note: Used to smoothen the transition from \VuFind\Config\PluginManager to \VuFind\Config\ConfigManager.
- * Use ConfigManger if possible.
  *
  * PHP version 8
  *
@@ -32,10 +30,10 @@
 
 namespace VuFind\Config;
 
+use VuFind\Config\Location\ConfigLocationInterface;
+
 /**
  * Configuration manager interface.
- * Note: Used to smoothen the transition from \VuFind\Config\PluginManager to \VuFind\Config\ConfigManager.
- * Use ConfigManger if possible.
  *
  * @category VuFind
  * @package  Config
@@ -43,8 +41,6 @@ namespace VuFind\Config;
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
- *
- * @deprecated Use \VuFind\Config\ConfigManager instead
  */
 interface ConfigManagerInterface
 {
@@ -94,4 +90,35 @@ interface ConfigManagerInterface
      * @deprecated Use getConfigArray or getConfig instead
      */
     public function get($name, ?array $options = null);
+
+    /**
+     * Load config from a specific location.
+     *
+     * @param ConfigLocationInterface $configLocation     Config location
+     * @param bool                    $handleParentConfig If parent configuration should be handled
+     * @param bool                    $forceReload        If cache should be ignored
+     *
+     * @return mixed
+     */
+    public function loadConfigFromLocation(
+        ConfigLocationInterface $configLocation,
+        bool $handleParentConfig = true,
+        bool $forceReload = false
+    ): mixed;
+
+    /**
+     * Write config to a specific location.
+     *
+     * @param ConfigLocationInterface  $destinationLocation Destination location
+     * @param array|string             $config              Configuration
+     * @param ?ConfigLocationInterface $baseLocation        Optional base location that can provide additional
+     * structure (e.g. comments)
+     *
+     * @return void
+     */
+    public function writeConfig(
+        ConfigLocationInterface $destinationLocation,
+        array|string $config,
+        ?ConfigLocationInterface $baseLocation
+    ): void;
 }

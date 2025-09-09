@@ -29,7 +29,7 @@
 
 namespace VuFindTest\Search\Solr;
 
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Solr\Options;
 
 /**
@@ -48,14 +48,14 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get Options object
      *
-     * @param ?ConfigManager $configManager Config manager for Options object (null
+     * @param ?ConfigManagerInterface $configManager Config manager for Options object (null
      * for new mock)
      *
      * @return Options
      */
-    protected function getOptions(?ConfigManager $configManager = null): Options
+    protected function getOptions(?ConfigManagerInterface $configManager = null): Options
     {
-        return new Options($configManager ?? $this->getMockConfigManager([]));
+        return new Options($configManager ?? $this->getMockConfigManager());
     }
 
     /**

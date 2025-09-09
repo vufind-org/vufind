@@ -32,7 +32,7 @@
 namespace VuFindTest\Search\Solr;
 
 use VuFind\Config\ConfigManager;
-use VuFind\Config\PluginManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\I18n\Sorter;
 use VuFind\Record\Loader;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
@@ -510,14 +510,14 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get Params object
      *
-     * @param ?Options       $options    Options object (null to create)
-     * @param ?PluginManager $mockConfig Mock ConfigManager (null to create)
+     * @param ?Options                $options    Options object (null to create)
+     * @param ?ConfigManagerInterface $mockConfig Mock ConfigManager (null to create)
      *
      * @return Params
      */
     protected function getParams(
         ?Options $options = null,
-        ?ConfigManager $mockConfig = null
+        ?ConfigManagerInterface $mockConfig = null
     ): Params {
         $mockConfig ??= $this->createMock(ConfigManager::class);
         return new Params(

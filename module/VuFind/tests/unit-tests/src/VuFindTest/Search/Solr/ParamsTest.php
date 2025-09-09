@@ -30,6 +30,7 @@
 namespace VuFindTest\Search\Solr;
 
 use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Solr\Options;
 use VuFind\Search\Solr\Params;
 
@@ -430,14 +431,14 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get Params object
      *
-     * @param ?Options       $options           Options object (null to create)
-     * @param ?ConfigManager $mockConfigManager Mock ConfigManager (null to create)
+     * @param ?Options                $options           Options object (null to create)
+     * @param ?ConfigManagerInterface $mockConfigManager Mock ConfigManager (null to create)
      *
      * @return Params
      */
     protected function getParams(
         ?Options $options = null,
-        ?ConfigManager $mockConfigManager = null
+        ?ConfigManagerInterface $mockConfigManager = null
     ): Params {
         $mockConfigManager ??= $this->createMock(ConfigManager::class);
         return new Params(

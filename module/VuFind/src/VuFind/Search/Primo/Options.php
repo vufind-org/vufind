@@ -29,7 +29,7 @@
 
 namespace VuFind\Search\Primo;
 
-use VuFind\Config\ConfigManagerInterface as ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 
 /**
  * Primo Search Options
@@ -52,9 +52,9 @@ class Options extends \VuFind\Search\Base\Options
     /**
      * Constructor
      *
-     * @param ConfigManager $configManager Config manager
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(ConfigManager $configManager)
+    public function __construct(ConfigManagerInterface $configManager)
     {
         $this->searchIni = $this->facetsIni = 'Primo';
         $this->advancedFacetSettingsSection = 'Advanced_Facet_Settings';

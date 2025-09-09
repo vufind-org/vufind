@@ -29,7 +29,7 @@
 
 namespace VuFind\Search\Blender;
 
-use VuFind\Config\ConfigManagerInterface as ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Base\Params as BaseParams;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
 use VuFindSearch\ParamBag;
@@ -84,7 +84,7 @@ class Params extends \VuFind\Search\Solr\Params
      * Constructor
      *
      * @param \VuFind\Search\Base\Options $options       Options to use
-     * @param ConfigManager               $configManager Config manager
+     * @param ConfigManagerInterface      $configManager Config manager
      * @param HierarchicalFacetHelper     $facetHelper   Hierarchical facet helper
      * @param array                       $searchParams  Search params for backends
      * @param \VuFind\Config\Config       $blenderConfig Blender configuration
@@ -92,7 +92,7 @@ class Params extends \VuFind\Search\Solr\Params
      */
     public function __construct(
         \VuFind\Search\Base\Options $options,
-        ConfigManager $configManager,
+        ConfigManagerInterface $configManager,
         HierarchicalFacetHelper $facetHelper,
         array $searchParams,
         \VuFind\Config\Config $blenderConfig,

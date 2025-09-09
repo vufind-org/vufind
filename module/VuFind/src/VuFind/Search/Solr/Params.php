@@ -31,7 +31,7 @@
 namespace VuFind\Search\Solr;
 
 use VuFind\Config\Config;
-use VuFind\Config\ConfigManagerInterface as ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFindSearch\ParamBag;
 
 use function count;
@@ -147,12 +147,12 @@ class Params extends \VuFind\Search\Base\Params
      * Constructor
      *
      * @param \VuFind\Search\Base\Options $options       Options to use
-     * @param ConfigManager               $configManager Config manager
+     * @param ConfigManagerInterface      $configManager Config manager
      * @param ?HierarchicalFacetHelper    $facetHelper   Hierarchical facet helper
      */
     public function __construct(
         $options,
-        ConfigManager $configManager,
+        ConfigManagerInterface $configManager,
         ?HierarchicalFacetHelper $facetHelper = null
     ) {
         parent::__construct($options, $configManager);

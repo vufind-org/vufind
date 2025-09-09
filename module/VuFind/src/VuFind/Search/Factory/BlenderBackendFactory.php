@@ -33,6 +33,7 @@ use Laminas\EventManager\EventManager;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
 use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFindSearch\Backend\Blender\Backend;
 
 /**
@@ -56,9 +57,9 @@ class BlenderBackendFactory implements FactoryInterface
     /**
      * VuFind configuration reader
      *
-     * @var ConfigManager
+     * @var ConfigManagerInterface
      */
-    protected $configManager;
+    protected ConfigManagerInterface $configManager;
 
     /**
      * Search configuration file identifier.

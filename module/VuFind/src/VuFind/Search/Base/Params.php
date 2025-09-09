@@ -31,7 +31,7 @@
 
 namespace VuFind\Search\Base;
 
-use VuFind\Config\ConfigManagerInterface as ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\I18n\TranslatableString;
 use VuFind\Search\Minified;
 use VuFind\Search\QueryAdapter;
@@ -253,9 +253,9 @@ class Params
      * Constructor
      *
      * @param \VuFind\Search\Base\Options $options       Options to use
-     * @param ConfigManager               $configManager Config manager
+     * @param ConfigManagerInterface      $configManager Config manager
      */
-    public function __construct($options, protected ConfigManager $configManager)
+    public function __construct($options, protected ConfigManagerInterface $configManager)
     {
         $this->setOptions($options);
 

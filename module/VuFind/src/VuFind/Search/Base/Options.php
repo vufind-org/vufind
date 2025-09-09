@@ -32,7 +32,7 @@ namespace VuFind\Search\Base;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Config\Config;
-use VuFind\Config\ConfigManagerInterface as ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 use function count;
@@ -457,9 +457,9 @@ abstract class Options implements TranslatorAwareInterface
     /**
      * Constructor
      *
-     * @param ConfigManager $configManager Config manager
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(protected ConfigManager $configManager)
+    public function __construct(protected ConfigManagerInterface $configManager)
     {
         $this->mainConfig = $configManager->getConfigArray($this->mainIni);
         $this->searchSettings = $configManager->getConfigArray($this->searchIni);

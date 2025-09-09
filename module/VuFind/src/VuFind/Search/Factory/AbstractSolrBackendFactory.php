@@ -32,6 +32,7 @@ namespace VuFind\Search\Factory;
 use Psr\Container\ContainerInterface;
 use VuFind\Config\Config;
 use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Solr\CustomFilterListener;
 use VuFind\Search\Solr\DeduplicationListener;
 use VuFind\Search\Solr\DefaultParametersListener;
@@ -108,9 +109,9 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     /**
      * VuFind configuration reader
      *
-     * @var ConfigManager
+     * @var ConfigManagerInterface
      */
-    protected $configManager;
+    protected ConfigManagerInterface $configManager;
 
     /**
      * Name of index configuration setting to use to retrieve Solr index name

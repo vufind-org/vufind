@@ -31,7 +31,7 @@ namespace VuFind\Search\Summon;
 
 use SerialsSolutions_Summon_Query as SummonQuery;
 use VuFind\Config\Config;
-use VuFind\Config\ConfigManagerInterface as ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Solr\Utils as SolrUtils;
 use VuFindSearch\ParamBag;
 
@@ -83,9 +83,9 @@ class Params extends \VuFind\Search\Base\Params
      * Constructor
      *
      * @param \VuFind\Search\Base\Options $options       Options to use
-     * @param ConfigManager               $configManager Config manager
+     * @param ConfigManagerInterface      $configManager Config manager
      */
-    public function __construct($options, ConfigManager $configManager)
+    public function __construct($options, ConfigManagerInterface $configManager)
     {
         parent::__construct($options, $configManager);
         $facetConfigName = $options->getFacetsIni();

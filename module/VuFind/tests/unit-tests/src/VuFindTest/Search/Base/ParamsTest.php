@@ -33,7 +33,7 @@
 namespace VuFindTest\Search\Base;
 
 use minSO;
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Base\Options;
 use VuFind\Search\Base\Params;
 use VuFind\Search\QueryAdapter;
@@ -58,12 +58,12 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get mock Options object
      *
-     * @param ?Configmanager $configManager Config manager for Options object (null
+     * @param ?ConfigManagerInterface $configManager Config manager for Options object (null
      * for new mock)
      *
      * @return Options
      */
-    protected function getMockOptions(?Configmanager $configManager = null): Options
+    protected function getMockOptions(?ConfigManagerInterface $configManager = null): Options
     {
         return new class ($configManager) extends Options {
             /**
@@ -91,16 +91,16 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get mock Params object
      *
-     * @param Options       $options       Options object to send to Params
-     * constructor (null for new mock)
-     * @param ConfigManager $configManager Config manager for Params object (null
+     * @param Options                $options       Options object to send to Params
+     *                                              constructor (null for new mock)
+     * @param ConfigManagerInterface $configManager Config manager for Params object (null
      * for new mock)
      *
      * @return Params
      */
     protected function getMockParams(
         ?Options $options = null,
-        ?ConfigManager $configManager = null
+        ?ConfigManagerInterface $configManager = null
     ): Params {
         $configManager ??= $this->getMockConfigManager();
         return new class ($options ?? $this->getMockOptions($configManager), $configManager) extends Params {

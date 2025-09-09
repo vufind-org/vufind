@@ -30,7 +30,7 @@
 namespace VuFind\Search\Base;
 
 use VuFind\Cache\Manager as CacheManager;
-use VuFind\Config\ConfigManagerInterface as ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
 
 use function in_array;
@@ -55,14 +55,14 @@ abstract class FacetCache
      * @param CacheManager             $cacheManager            Cache manager
      * @param string                   $language                Active UI language
      * @param ?HierarchicalFacetHelper $hierarchicalFacetHelper Hierarchical facet helper
-     * @param ?ConfigManager           $configManager           Config manager
+     * @param ?ConfigManagerInterface  $configManager           Config manager
      */
     public function __construct(
         protected Results $results,
         protected CacheManager $cacheManager,
         protected $language = 'en',
         protected ?HierarchicalFacetHelper $hierarchicalFacetHelper = null,
-        protected ?ConfigManager $configManager = null
+        protected ?ConfigManagerInterface $configManager = null
     ) {
     }
 

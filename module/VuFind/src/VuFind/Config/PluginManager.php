@@ -31,6 +31,7 @@ namespace VuFind\Config;
 
 use Laminas\ServiceManager\AbstractPluginManager as Base;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\Location\ConfigLocationInterface;
 
 /**
  * VuFind Config Manager
@@ -169,5 +170,40 @@ class PluginManager extends Base implements ConfigManagerInterface
     public function get($name, ?array $options = null)
     {
         return parent::get($name, $options);
+    }
+
+    /**
+     * Load config from a specific location.
+     *
+     * @param ConfigLocationInterface $configLocation     Config location
+     * @param bool                    $handleParentConfig If parent configuration should be handled
+     * @param bool                    $forceReload        If cache should be ignored
+     *
+     * @return mixed
+     */
+    public function loadConfigFromLocation(
+        ConfigLocationInterface $configLocation,
+        bool $handleParentConfig = true,
+        bool $forceReload = false
+    ): mixed {
+        return $this->configManager->loadConfigFromLocation($configLocation, $handleParentConfig, $forceReload);
+    }
+
+    /**
+     * Write config to a specific location.
+     *
+     * @param ConfigLocationInterface  $destinationLocation Destination location
+     * @param array|string             $config              Configuration
+     * @param ?ConfigLocationInterface $baseLocation        Optional base location that can provide additional
+     * structure (e.g. comments)
+     *
+     * @return void
+     */
+    public function writeConfig(
+        ConfigLocationInterface $destinationLocation,
+        array|string $config,
+        ?ConfigLocationInterface $baseLocation
+    ): void {
+        $this->configManager->writeConfig($destinationLocation, $config, $baseLocation);
     }
 }

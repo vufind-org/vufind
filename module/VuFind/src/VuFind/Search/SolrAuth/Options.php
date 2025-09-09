@@ -29,7 +29,7 @@
 
 namespace VuFind\Search\SolrAuth;
 
-use VuFind\Config\ConfigManagerInterface as ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 
 /**
  * Solr Authority Search Options
@@ -45,9 +45,9 @@ class Options extends \VuFind\Search\Solr\Options
     /**
      * Constructor
      *
-     * @param ConfigManager $configManager Config manager
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(ConfigManager $configManager)
+    public function __construct(ConfigManagerInterface $configManager)
     {
         $this->facetsIni = $this->searchIni = 'authority';
         parent::__construct($configManager);

@@ -31,7 +31,7 @@
 
 namespace VuFind\Search\EDS;
 
-use VuFind\Config\ConfigManagerInterface as ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 
 use function in_array;
 use function is_callable;
@@ -144,11 +144,11 @@ class Options extends AbstractEDSOptions
     /**
      * Constructor
      *
-     * @param ConfigManager  $configManager Config manager
-     * @param array|callable $apiInfo       API information or callback to retrieve it
+     * @param ConfigManagerInterface $configManager Config manager
+     * @param array|callable         $apiInfo       API information or callback to retrieve it
      */
     public function __construct(
-        ConfigManager $configManager,
+        ConfigManagerInterface $configManager,
         $apiInfo = null
     ) {
         $this->searchIni = $this->facetsIni = 'EDS';

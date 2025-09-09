@@ -29,7 +29,7 @@
 
 namespace VuFind\Search\Search2;
 
-use VuFind\Config\ConfigManagerInterface as ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 
 /**
  * Search Options for second Solr index
@@ -45,9 +45,9 @@ class Options extends \VuFind\Search\Solr\Options
     /**
      * Constructor
      *
-     * @param ConfigManager $configManager Config manager
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(ConfigManager $configManager)
+    public function __construct(ConfigManagerInterface $configManager)
     {
         $this->mainIni = $this->searchIni = $this->facetsIni = 'Search2';
         parent::__construct($configManager);
