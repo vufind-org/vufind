@@ -736,6 +736,8 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
      * Check for blocked payment due to missing VuFindDevTools module
      *
      * @param Element $page Page
+     *
+     * @return void
      */
     protected function checkForMissingDevTools(Element $page): void
     {

@@ -36,7 +36,6 @@ use Laminas\View\Model\ViewModel;
 use VuFind\Db\Type\AuditEventSubtype;
 use VuFind\Exception\PaymentException;
 use VuFind\OnlinePayment\Handler\AbstractBase as BaseHandler;
-use VuFind\OnlinePayment\Handler\HandlerInterface;
 use VuFind\OnlinePayment\OnlinePaymentEventTrait;
 use VuFind\OnlinePayment\OnlinePaymentManager;
 

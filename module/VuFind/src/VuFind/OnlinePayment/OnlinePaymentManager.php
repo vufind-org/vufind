@@ -50,7 +50,8 @@ use VuFind\Log\LoggerAwareTrait;
 use VuFind\OnlinePayment\Handler\AbstractBase as BaseHandler;
 use VuFind\OnlinePayment\Handler\HandlerInterface;
 use VuFind\OnlinePayment\Handler\PluginManager as HandlerPluginManager;
-use VuFindDevTools\Controller\PaymentServiceController;
+
+use function in_array;
 
 /**
  * Online payment manager
