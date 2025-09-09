@@ -22,7 +22,6 @@ import/solrmarc.log*
 lessphp_*.list
 module/VuFind/tests/.phpunit*
 node_modules
-package-lock.json
 
 # OS Created Files
 .DS_Store
