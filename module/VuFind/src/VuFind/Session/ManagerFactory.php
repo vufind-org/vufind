@@ -91,14 +91,13 @@ class ManagerFactory implements FactoryInterface
     protected function getHandler(ContainerInterface $container)
     {
         // Load and validate session configuration:
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        if (!isset($config->Session->type)) {
+        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config');
+        if (!isset($config['Session']['type'])) {
             throw new \Exception('Cannot initialize session; configuration missing');
         }
 
         return $container->get(\VuFind\Session\PluginManager::class)
-            ->get($config->Session->type);
+            ->get($config['Session']['type']);
     }
 
     /**

@@ -33,6 +33,8 @@ namespace VuFind\Controller;
 
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFind\Db\Type\AuditEventSubtype;
+use VuFind\Db\Type\AuditEventType;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Validator\CsrfInterface;
 
@@ -103,6 +105,18 @@ class HoldsController extends AbstractBase
         // If we need to confirm
         if (!is_array($view->cancelResults)) {
             return $view->cancelResults;
+        }
+
+        if ($view->cancelResults) {
+            $this->getAuditEventService()->addEvent(
+                AuditEventType::ILS,
+                AuditEventSubtype::CancelHolds,
+                $this->getUser(),
+                data: [
+                    'username' => $patron['cat_username'],
+                    'results' => $view->cancelResults,
+                ]
+            );
         }
 
         // Process any update request results stored in the session:
@@ -279,6 +293,17 @@ class HoldsController extends AbstractBase
                     );
                     $this->flashMessenger()->addErrorMessage($msg);
                 }
+
+                $this->getAuditEventService()->addEvent(
+                    AuditEventType::ILS,
+                    AuditEventSubtype::UpdateHolds,
+                    $this->getUser(),
+                    data: [
+                        'username' => $patron['cat_username'],
+                        'results' => $results,
+                    ]
+                );
+
                 return $this->inLightbox()
                     ? $this->getRefreshResponse(true)
                     : $this->redirect()->toRoute('holds-list');

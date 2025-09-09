@@ -71,7 +71,7 @@ class GetItemStatusesFactory implements \Laminas\ServiceManager\Factory\FactoryI
         }
         $handler = new $requestedName(
             $container->get(\VuFind\Session\Settings::class),
-            $container->get(\VuFind\Config\PluginManager::class)->get('config'),
+            $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config'),
             $container->get(\VuFind\ILS\Connection::class),
             $container->get('ViewRenderer'),
             $container->get(\VuFind\ILS\Logic\Holds::class),

@@ -1028,21 +1028,18 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     {
         $this->checkIntermittentFailure();
 
-        $user = [
-            'id'           => trim($username),
-            'firstname'    => 'Lib',
-            'lastname'     => 'Rarian',
-            'cat_username' => trim($username),
-            'cat_password' => trim($password),
-            'email'        => 'Lib.Rarian@library.not',
-            'major'        => null,
-            'college'      => null,
-        ];
-
         $loginMethod = $this->config['Catalog']['loginMethod'] ?? 'password';
-        if ('email' === $loginMethod) {
-            $user['email'] = $username;
-            $user['cat_password'] = '';
+        $isEmailLogin = $loginMethod === 'email';
+
+        $user = $this->createPatronArray(
+            id: $username,
+            firstname: 'Lib',
+            lastname: 'Rarian',
+            cat_username: $username,
+            cat_password: $isEmailLogin ? '' : $password,
+            email: $isEmailLogin ? $username : 'Lib.Rarian@library.not'
+        );
+        if ($isEmailLogin) {
             return $user;
         }
 
@@ -1073,21 +1070,20 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         $age = rand(13, 113);
         $birthDate = new \DateTime();
         $birthDate->sub(new \DateInterval("P{$age}Y"));
-        $patron = [
-            'firstname'       => 'Lib-' . $patron['cat_username'],
-            'lastname'        => 'Rarian',
-            'address1'        => 'Somewhere...',
-            'address2'        => 'Over the Rainbow',
-            'zip'             => '12345',
-            'city'            => 'City',
-            'country'         => 'Country',
-            'phone'           => '1900 CALL ME',
-            'mobile_phone'    => '1234567890',
-            'group'           => 'Library Staff',
-            'expiration_date' => 'Someday',
-            'birthdate'       => $birthDate->format('Y-m-d'),
-        ];
-        return $patron;
+        return $this->createProfileArray(
+            firstname: 'Lib-' . $patron['cat_username'],
+            lastname: 'Rarian',
+            address1: 'Somewhere...',
+            address2: 'Over the Rainbow',
+            zip: '12345',
+            city: 'City',
+            country: 'Country',
+            phone: '1900 CALL ME',
+            mobile_phone: '1234567890',
+            group: 'Library Staff',
+            expiration_date: 'Someday',
+            birthdate: $birthDate->format('Y-m-d')
+        );
     }
 
     /**
@@ -2788,11 +2784,14 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @param array $details Driver-specific account recovery details.
      * @param array $params  User-entered form parameters.
      *
-     * @throws AuthException
+     * @throws ILSException
      * @return array Status
      */
     public function resetPassword(array $details, array $params)
     {
+        if (!($this->config['PasswordRecovery']['enabled'] ?? false)) {
+            throw new ILSException('Recovery disabled');
+        }
         if (empty($details['cat_username']) || empty($details['email']) || empty($params['password'])) {
             return [
                 'success' => false,

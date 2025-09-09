@@ -67,18 +67,27 @@ trait SearchSortTrait
     /**
      * Check that first and last record of the results are correct
      *
-     * @param Element $page  Current page
-     * @param int     $count Expected total result count
-     * @param string  $first Expected first title
-     * @param string  $last  Expected last title
+     * @param Element $page   Current page
+     * @param int     $count  Expected total result count
+     * @param string  $first  Expected first title
+     * @param string  $last   Expected last title
+     * @param ?string $second Expected second title, if any
      *
      * @return void
      */
-    protected function assertResultTitles(Element $page, int $count, string $first, string $last): void
-    {
+    protected function assertResultTitles(
+        Element $page,
+        int $count,
+        string $first,
+        string $last,
+        ?string $second = null
+    ): void {
         $titles = $page->findAll('css', '.result a.title');
         $this->assertCount($count, $titles);
         $this->assertEquals($first, $titles[0]->getText());
+        if (null !== $second) {
+            $this->assertEquals($second, $titles[1]->getText());
+        }
         $this->assertEquals($last, $titles[$count - 1]->getText());
         // Check that record links contain sid parameter:
         $url = $titles[0]->getAttribute('href');

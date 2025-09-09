@@ -196,10 +196,12 @@ public class FormatCalculator
                         char formatCode5 = formatString.length() > 4
                             ? formatString.charAt(4) : ' ';
                         switch(formatCode5) {
-                            case 's':
-                                return "BRDisc";
                             case 'g':
                                 return "LaserDisc";
+                            case 's':
+                                return "BRDisc";
+                            case 'v':
+                                return "DVD";
                         }
                         return "VideoDisc";
                     case 'f':

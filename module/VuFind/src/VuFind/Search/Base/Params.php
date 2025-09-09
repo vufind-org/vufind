@@ -49,7 +49,6 @@ use function intval;
 use function is_array;
 use function is_callable;
 use function is_object;
-use function strlen;
 
 /**
  * Abstract parameters search model.
@@ -1423,18 +1422,7 @@ class Params
     protected function formatYearForDateRange($year, $rangeEnd = false)
     {
         // Make sure parameter is set and numeric; default to wildcard otherwise:
-        $year = preg_match('/^-?\d+$/', $year ?? '') ? $year : '*';
-
-        // Pad two or three character positive range to four digits:
-        if (!str_starts_with($year, '-')) {
-            if (strlen($year) == 2) {
-                $year = '19' . $year;
-            } elseif (strlen($year) == 3) {
-                $year = '0' . $year;
-            }
-        }
-
-        return $year;
+        return preg_match('/^-?\d+$/', $year ?? '') ? $year : '*';
     }
 
     /**

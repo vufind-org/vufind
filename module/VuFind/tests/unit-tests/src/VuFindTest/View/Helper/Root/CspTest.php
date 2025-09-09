@@ -68,7 +68,7 @@ class CspTest extends \PHPUnit\Framework\TestCase
 
         $response = new \Laminas\Http\Response();
         $headers = $response->getHeaders();
-        $header = $cspHeaderGenerator->getHeader();
+        $header = $cspHeaderGenerator->getCspHeader();
         $this->assertInstanceOf(
             \Laminas\Http\Header\ContentSecurityPolicy::class,
             $header
@@ -110,7 +110,7 @@ class CspTest extends \PHPUnit\Framework\TestCase
 
         $response = new \Laminas\Http\Response();
         $headers = $response->getHeaders();
-        $header = $cspHeaderGenerator->getHeader();
+        $header = $cspHeaderGenerator->getCspHeader();
         $this->assertInstanceOf(
             \Laminas\Http\Header\ContentSecurityPolicyReportOnly::class,
             $header
@@ -151,7 +151,7 @@ class CspTest extends \PHPUnit\Framework\TestCase
             = new \VuFind\Security\CspHeaderGenerator($config, $nonceGenerator);
 
         $response = new \Laminas\Http\Response();
-        $header = $cspHeaderGenerator->getHeader();
+        $header = $cspHeaderGenerator->getCspHeader();
         $this->assertNull($header);
 
         $csp = new \VuFind\View\Helper\Root\Csp($response, $nonceGenerator->getNonce());

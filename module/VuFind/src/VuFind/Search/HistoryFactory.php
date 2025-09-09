@@ -74,7 +74,7 @@ class HistoryFactory implements FactoryInterface
             ->get(\VuFind\Search\Results\PluginManager::class);
         $sessionId = $container->get(\Laminas\Session\SessionManager::class)
             ->getId();
-        $cfg = $container->get(\VuFind\Config\PluginManager::class)->get('config');
+        $cfg = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config');
         return new $requestedName($searchService, $sessionId, $resultsManager, $cfg);
     }
 }

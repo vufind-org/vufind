@@ -135,7 +135,7 @@ class Results extends BaseResults
 
         // Retrieve record drivers for the selected items.
         $callback = function ($row) {
-            return ['id' => $row['record_id'], 'source' => $row['source']];
+            return ['id' => $row[0]->getRecordId(), 'source' => $row[0]->getSource()];
         };
         $this->results = $this->recordLoader
             ->loadBatch(array_map($callback, $results), true);

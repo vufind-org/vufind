@@ -34,6 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Exception\BadConfig;
 
 /**
  * HMAC factory.
@@ -68,8 +69,10 @@ class HMACFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        return new $requestedName($config->Security->HMACkey);
+        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config');
+        if (!isset($config['Security']['HMACkey'])) {
+            throw new BadConfig('Security HMACkey is not set.');
+        }
+        return new $requestedName($config['Security']['HMACkey']);
     }
 }

@@ -75,7 +75,7 @@ class SystemStatusFactory implements \Laminas\ServiceManager\Factory\FactoryInte
         return new $requestedName(
             $container->get(\Laminas\Session\SessionManager::class),
             $container->get(\VuFind\Search\Results\PluginManager::class),
-            $container->get(\VuFind\Config\PluginManager::class)->get('config'),
+            $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config'),
             $servicePluginManager->get(\VuFind\Db\Service\SessionServiceInterface::class)
         );
     }
