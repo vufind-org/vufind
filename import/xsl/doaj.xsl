@@ -137,6 +137,9 @@
                     <field name="publishDate">
                         <xsl:value-of select="oai_doaj:publicationDate"/>
                     </field>
+                    <field name="publishDateRange">
+                        <xsl:value-of select="oai_doaj:publicationDate"/>
+                    </field>
                     <field name="publishDateSort">
                         <xsl:value-of select="oai_doaj:publicationDate"/>
                     </field>

@@ -71,8 +71,9 @@ class ConfigManagerFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
+            $container->get(\VuFind\Config\ConfigLoader::class),
             $container->get(\VuFind\Config\Handler\PluginManager::class),
-            $container->get(PathResolver::class),
+            $container->get(\VuFind\Cache\Manager::class)
         );
     }
 }
