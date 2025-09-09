@@ -1,0 +1,38 @@
+
+<?php
+    // Set up breadcrumbs:
+    $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
+      ->add($this->translate('Profile'), active: true);
+?>
+
+<?=$this->component('show-account-menu-button')?>
+<div class="<?=$this->layoutClass('mainbody')?>">
+    <?=$this->component('page-title', ['title' => $this->translate('Developer::settings'), 'headTitle' => $this->translate('Developer::settings')]);?>
+    <?=$this->flashmessages();?>
+
+    <div id="developer-settings">
+        <table class="table table-striped">
+            <?php if (isset($this->apiKey)): ?>
+            <tr>
+                <th class="vertical-center"><?=$this->transEsc('Developer::api_key')?></th>
+                <td class="flex align-center justify-end">
+                    <div>
+                        <?php if (false !== $this->apiKey && $this->apiKey->isRevoked()): ?>
+                            <span><?=$this->transEsc('Developer::api_key_locked');?></span>
+                        <?php else: ?>
+                            <a class="btn btn-primary" href="<?=$this->url('developersettings-generateapikey')?>"><?=$this->transEsc('Developer::api_key_generate')?></a>
+                            <?php if ($this->apiKey): ?>
+                                <a class="btn btn-secondary" href="<?=$this->url('developersettings-deleteapikey')?>"><?=$this->transEsc('Developer::api_key_delete')?></a>
+                            <?php endif; ?>
+                        <?php endif; ?>
+                    </div>
+                </td>
+            </tr>
+            <?php endif; ?>
+        </table>
+    </div>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
+  <?=$this->accountMenu()->render('profile')?>
+</div>

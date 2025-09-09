@@ -168,7 +168,7 @@ $config = [
             'VuFind\Controller\AjaxController' => 'VuFind\Controller\AjaxControllerFactory',
             'VuFind\Controller\AlmaController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\AlphabrowseController' => 'VuFind\Controller\AbstractBaseFactory',
-            'VuFind\Controller\ApiKeyController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFind\Controller\DeveloperSettingsController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\AuthorController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\AuthorityController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\AuthorityRecordController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -244,8 +244,8 @@ $config = [
             'alma' => 'VuFind\Controller\AlmaController',
             'Alphabrowse' => 'VuFind\Controller\AlphabrowseController',
             'alphabrowse' => 'VuFind\Controller\AlphabrowseController',
-            'ApiKey' => 'VuFind\Controller\ApiKeyController',
-            'apikey' => 'VuFind\Controller\ApiKeyController',
+            'DeveloperSettings' => 'VuFind\Controller\DeveloperSettingsController',
+            'developersettings' => 'VuFind\Controller\DeveloperSettingsController',
             'Author' => 'VuFind\Controller\AuthorController',
             'author' => 'VuFind\Controller\AuthorController',
             'Authority' => 'VuFind\Controller\AuthorityController',
@@ -820,8 +820,8 @@ $dynamicRoutes = [
 
 // Define static routes -- Controller/Action strings
 $staticRoutes = [
-    'Alphabrowse/Home', 'ApiKey/Delete', 'ApiKey/DisplaySettings',
-    'ApiKey/Generate', 'Author/FacetList',
+    'Alphabrowse/Home', 'DeveloperSettings/DeleteAPIKey', 'DeveloperSettings/DisplaySettings',
+    'DeveloperSettings/GenerateAPIKey', 'Author/FacetList',
     'Author/Home', 'Author/Search',
     'Authority/FacetList', 'Authority/Home', 'Authority/Search',
     'Blender/Advanced', 'Blender/Home', 'Blender/Results',

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Developer Permission Assertion
+ * Asserts that user has a verified email
  *
  * PHP version 8
  *
@@ -29,11 +29,12 @@
 
 namespace VuFind\Role\Assertion;
 
+use LmcRbacMvc\Assertion\AssertionInterface;
 use LmcRbacMvc\Service\AuthorizationService;
 use VuFind\Db\Entity\UserEntityInterface;
 
 /**
- * Developer Permission Assertion
+ * Asserts that user has a verified email
  *
  * @category VuFind
  * @package  Authorization
@@ -41,7 +42,7 @@ use VuFind\Db\Entity\UserEntityInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/ Wiki
  */
-class DeveloperPermissionAssertion implements \LmcRbacMvc\Assertion\AssertionInterface
+class HasVerifiedEmailAssertion implements AssertionInterface
 {
     /**
      * Check if user has verified email to display developer settings

@@ -34,7 +34,6 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\Role\Assertion\DeveloperPermissionAssertion;
 
 /**
  * Permission manager factory.
@@ -71,7 +70,17 @@ class PermissionManagerFactory implements FactoryInterface
         }
         $permissions = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('permissions');
         $authorizationService = $container->get(\LmcRbacMvc\Service\AuthorizationService::class);
-        $authorizationService->setAssertion('feature.Developer', new DeveloperPermissionAssertion());
+        foreach ($permissions as $settings) {
+            $sectionPermissions = (array)($settings['permission'] ?? []);
+            $assertions = (array)($settings['assertion'] ?? []);
+            if ($sectionPermissions && $assertions) {
+                foreach ($sectionPermissions as $permission) {
+                    foreach ($assertions as $assertion) {
+                        $authorizationService->setAssertion($permission, new $assertion());
+                    }
+                }
+            }
+        }
         $permManager = new $requestedName($permissions);
         $permManager->setAuthorizationService($authorizationService);
         return $permManager;

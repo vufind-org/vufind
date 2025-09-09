@@ -80,19 +80,4 @@ class Developer extends AbstractHelper
     {
         return $this->getView()->plugin('config')->apiKeysEnabled();
     }
-
-    /**
-     * Render developer settings template
-     *
-     * @return string
-     */
-    public function render(): string
-    {
-        return $this->getView()->render(
-            'myresearch/developer-settings.phtml',
-            [
-                'apiKey' => $this->user ? $this->apiKeyService->getApiKeyForUser($this->user) : null,
-            ]
-        );
-    }
 }

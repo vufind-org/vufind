@@ -159,10 +159,11 @@ class DynamicRoleProvider implements RoleProviderInterface
             $mode = 'ALL';
         }
 
-        // Extract permission setting:
+        // Extract permission and assertion setting:
         $permissions = isset($settings['permission'])
             ? (array)$settings['permission'] : [];
         unset($settings['permission']);
+        unset($settings['assertion']);
 
         // Process everything:
         $roles = null;
