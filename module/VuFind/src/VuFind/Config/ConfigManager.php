@@ -136,7 +136,7 @@ class ConfigManager implements ConfigManagerInterface
      *
      * @return mixed
      *
-     * @deprecated Use getConfigArray or getConfig instead
+     * @deprecated Use getConfigArray, getConfigObject or getConfig instead
      */
     public function get($name, ?array $options = null)
     {
