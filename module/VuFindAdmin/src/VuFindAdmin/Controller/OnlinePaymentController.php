@@ -124,7 +124,7 @@ class OnlinePaymentController extends AbstractAdmin
                 throw new \VuFind\Exception\BadRequest('error_inconsistent_parameters');
             }
 
-            $paymentEntity->setRegistrationResolved();
+            $paymentEntity->applyRegistrationResolvedStatus();
             $paymentService->persistEntity($paymentEntity);
             $this->addPaymentEvent($paymentEntity, 'Payment marked as resolved');
 

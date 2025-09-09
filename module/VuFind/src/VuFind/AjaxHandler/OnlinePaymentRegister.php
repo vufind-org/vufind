@@ -65,7 +65,7 @@ class OnlinePaymentRegister extends AbstractOnlinePaymentAction
             // Already registered, return success:
             return $this->formatResponse('');
         }
-        if (!$payment->needsRegistration()) {
+        if (!$payment->isRegistrationNeeded()) {
             // Bad status, return error:
             return $this->formatResponse('', self::STATUS_HTTP_ERROR);
         }

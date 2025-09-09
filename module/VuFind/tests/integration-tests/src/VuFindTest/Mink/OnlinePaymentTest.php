@@ -350,7 +350,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         // Resolve the payment so that it doesn't block further tests:
-        $payment->setRegistrationResolved();
+        $payment->applyRegistrationResolvedStatus();
         $paymentService->persistEntity($payment);
 
         return true;

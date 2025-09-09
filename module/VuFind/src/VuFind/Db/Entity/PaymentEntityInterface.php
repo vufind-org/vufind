@@ -238,6 +238,8 @@ interface PaymentEntityInterface extends EntityInterface
     /**
      * Set status.
      *
+     * Note that some other methods override the status, so ensure that this is called last if required!
+     *
      * @param PaymentStatus $status Status
      *
      * @return static
@@ -293,55 +295,11 @@ interface PaymentEntityInterface extends EntityInterface
     public function isRegistered(): bool;
 
     /**
-     * Set payment canceled.
-     *
-     * @return static
-     */
-    public function setCanceled(): static;
-
-    /**
-     * Set payment failed.
-     *
-     * @return static
-     */
-    public function setPaymentFailed(): static;
-
-    /**
      * Check if the payment is paid and needs registration with the ILS.
      *
      * @return bool
      */
-    public function needsRegistration(): bool;
-
-    /**
-     * Set payment paid.
-     *
-     * @return static
-     */
-    public function setPaid(): static;
-
-    /**
-     * Set payment registered.
-     *
-     * @return static
-     */
-    public function setRegistered(): static;
-
-    /**
-     * Set payment status to "registration failed".
-     *
-     * @param string $msg Message
-     *
-     * @return static
-     */
-    public function setRegistrationFailed(string $msg): static;
-
-    /**
-     * Set registration start timestamp.
-     *
-     * @return static
-     */
-    public function setRegistrationStarted(): static;
+    public function isRegistrationNeeded(): bool;
 
     /**
      * Check if registration is in progress (i.e. started within 120 seconds).
@@ -351,30 +309,74 @@ interface PaymentEntityInterface extends EntityInterface
     public function isRegistrationInProgress(): bool;
 
     /**
+     * Set payment canceled.
+     *
+     * @return static
+     */
+    public function applyCanceledStatus(): static;
+
+    /**
+     * Set payment failed.
+     *
+     * @return static
+     */
+    public function applyPaymentFailedStatus(): static;
+
+    /**
+     * Set payment paid.
+     *
+     * @return static
+     */
+    public function applyPaymentPaidStatus(): static;
+
+    /**
+     * Set payment registered.
+     *
+     * @return static
+     */
+    public function applyRegisteredStatus(): static;
+
+    /**
+     * Set payment status to "registration failed".
+     *
+     * @param string $msg Message
+     *
+     * @return static
+     */
+    public function applyRegistrationFailedStatus(string $msg): static;
+
+    /**
+     * Set registration start timestamp.
+     *
+     * @return static
+     */
+    public function applyRegistrationStartedStatus(): static;
+
+    /**
      * Set payment status to "registration expired".
      *
      * @return static
      */
-    public function setExpired(): static;
+    public function applyRegistrationExpiredStatus(): static;
 
     /**
      * Set payment reported.
      *
      * @return static
      */
-    public function setReported(): static;
+    public function applyReportedStatus(): static;
 
     /**
      * Set payment status to "fines updated".
      *
      * @return static
      */
-    public function setFinesUpdated(): static;
+    public function applyFinesUpdatedStatus(): static;
 
     /**
      * Set payment registration issues resolved.
      *
      * @return static
      */
-    public function setRegistrationResolved(): static;
+    public function applyRegistrationResolvedStatus(): static;
 }

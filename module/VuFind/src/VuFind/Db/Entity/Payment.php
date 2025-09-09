@@ -58,6 +58,13 @@ class Payment implements PaymentEntityInterface
     use DateTimeTrait;
 
     /**
+     * Timeout (in seconds) before a previously started ILS registration request is considered a failure.
+     *
+     * @var int
+     */
+    public const ILS_REGISTRATION_TIMEOUT = 120;
+
+    /**
      * Unique ID.
      *
      * @var int
@@ -482,6 +489,8 @@ class Payment implements PaymentEntityInterface
     /**
      * Set status.
      *
+     * Note that some other methods override the status, so ensure that this is called last if required!
+     *
      * @param PaymentStatus $status Status
      *
      * @return static
@@ -561,35 +570,11 @@ class Payment implements PaymentEntityInterface
     }
 
     /**
-     * Set payment canceled.
-     *
-     * @return static
-     */
-    public function setCanceled(): static
-    {
-        $this->status = PaymentStatus::Canceled->value;
-        $this->statusMessage = '';
-        return $this;
-    }
-
-    /**
-     * Set payment failed.
-     *
-     * @return static
-     */
-    public function setPaymentFailed(): static
-    {
-        $this->status = PaymentStatus::PaymentFailed->value;
-        $this->statusMessage = '';
-        return $this;
-    }
-
-    /**
      * Check if the payment is paid and needs registration with the ILS.
      *
      * @return bool
      */
-    public function needsRegistration(): bool
+    public function isRegistrationNeeded(): bool
     {
         return in_array(
             $this->status,
@@ -601,11 +586,46 @@ class Payment implements PaymentEntityInterface
     }
 
     /**
+     * Check if registration is in progress (i.e. started within 120 seconds).
+     *
+     * @return bool
+     */
+    public function isRegistrationInProgress(): bool
+    {
+        $startDate = $this->getRegistrationStartDate();
+        return $startDate && (time() - $startDate->getTimestamp() < static::ILS_REGISTRATION_TIMEOUT);
+    }
+
+    /**
+     * Set payment canceled.
+     *
+     * @return static
+     */
+    public function applyCanceledStatus(): static
+    {
+        $this->status = PaymentStatus::Canceled->value;
+        $this->statusMessage = '';
+        return $this;
+    }
+
+    /**
+     * Set payment failed.
+     *
+     * @return static
+     */
+    public function applyPaymentFailedStatus(): static
+    {
+        $this->status = PaymentStatus::PaymentFailed->value;
+        $this->statusMessage = '';
+        return $this;
+    }
+
+    /**
      * Set payment paid.
      *
      * @return static
      */
-    public function setPaid(): static
+    public function applyPaymentPaidStatus(): static
     {
         $this->paid = new DateTime();
         $this->status = PaymentStatus::Paid->value;
@@ -618,7 +638,7 @@ class Payment implements PaymentEntityInterface
      *
      * @return static
      */
-    public function setRegistered(): static
+    public function applyRegisteredStatus(): static
     {
         $this->registered = new DateTime();
         $this->status = PaymentStatus::Completed->value;
@@ -633,7 +653,7 @@ class Payment implements PaymentEntityInterface
      *
      * @return static
      */
-    public function setRegistrationFailed(string $msg): static
+    public function applyRegistrationFailedStatus(string $msg): static
     {
         $this->status = PaymentStatus::RegistrationFailed->value;
         $this->statusMessage = $msg;
@@ -646,21 +666,10 @@ class Payment implements PaymentEntityInterface
      *
      * @return static
      */
-    public function setRegistrationStarted(): static
+    public function applyRegistrationStartedStatus(): static
     {
         $this->registrationStarted = new DateTime();
         return $this;
-    }
-
-    /**
-     * Check if registration is in progress (i.e. started within 120 seconds).
-     *
-     * @return bool
-     */
-    public function isRegistrationInProgress(): bool
-    {
-        $startDate = $this->getRegistrationStartDate();
-        return $startDate && (time() - $startDate->getTimestamp() < 120);
     }
 
     /**
@@ -668,7 +677,7 @@ class Payment implements PaymentEntityInterface
      *
      * @return static
      */
-    public function setExpired(): static
+    public function applyRegistrationExpiredStatus(): static
     {
         $this->status = PaymentStatus::RegistrationExpired->value;
         $this->statusMessage = '';
@@ -680,7 +689,7 @@ class Payment implements PaymentEntityInterface
      *
      * @return static
      */
-    public function setReported(): static
+    public function applyReportedStatus(): static
     {
         $this->reported = new DateTime();
         return $this;
@@ -691,7 +700,7 @@ class Payment implements PaymentEntityInterface
      *
      * @return static
      */
-    public function setFinesUpdated(): static
+    public function applyFinesUpdatedStatus(): static
     {
         $this->status = PaymentStatus::FinesUpdated->value;
         $this->statusMessage = '';
@@ -703,7 +712,7 @@ class Payment implements PaymentEntityInterface
      *
      * @return static
      */
-    public function setRegistrationResolved(): static
+    public function applyRegistrationResolvedStatus(): static
     {
         $this->registered = new DateTime();
         $this->status = PaymentStatus::RegistrationResolved->value;

@@ -214,21 +214,21 @@ class OnlinePaymentManager implements LoggerAwareInterface
         switch ($resultCode) {
             case BaseHandler::PAYMENT_SUCCESS:
                 if ($markedAsPaid = $payment->isInProgress()) {
-                    $payment->setPaid();
+                    $payment->applyPaymentPaidStatus();
                     $this->paymentService->persistEntity($payment);
                     $this->addPaymentEvent($payment, AuditEventSubtype::Payment, 'Payment marked as paid');
                 }
                 break;
             case BaseHandler::PAYMENT_CANCEL:
                 if (PaymentStatus::InProgress === $payment->getStatus()) {
-                    $payment->setCanceled();
+                    $payment->applyCanceledStatus();
                     $this->paymentService->persistEntity($payment);
                     $this->addPaymentEvent($payment, AuditEventSubtype::Payment, 'Payment marked as canceled');
                 }
                 break;
             case BaseHandler::PAYMENT_FAILURE:
                 if (PaymentStatus::InProgress === $payment->getStatus()) {
-                    $payment->setPaymentFailed();
+                    $payment->applyPaymentFailedStatus();
                     $this->paymentService->persistEntity($payment);
                     $this->addPaymentEvent($payment, AuditEventSubtype::Payment, 'Payment marked as failed');
                 }
@@ -337,7 +337,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
                 . ', user id: ' . $payment->getUser()->getId() . ')'
             );
 
-            $payment->setRegistrationFailed('patron login error');
+            $payment->applyRegistrationFailedStatus('patron login error');
             $this->paymentService->persistEntity($payment);
             $this->addPaymentEvent($payment, AuditEventSubtype::PaymentRegistration, 'Patron login failed');
             return false;
@@ -421,7 +421,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
             return false;
         }
 
-        $payment->setRegistrationStarted();
+        $payment->applyRegistrationStartedStatus();
         $this->paymentService->persistEntity($payment);
         $this->addPaymentEvent($payment, AuditEventSubtype::PaymentRegistration, 'Started registration');
 
@@ -442,7 +442,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
                 );
             } catch (\Exception $e) {
                 $this->logException($e);
-                $payment->setRegistrationFailed('Failed to process fine details');
+                $payment->applyRegistrationFailedStatus('Failed to process fine details');
                 $this->paymentService->persistEntity($payment);
                 $this->addPaymentEvent(
                     $payment,
@@ -468,7 +468,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
                     . ' Paid amount: ' . $payment->getAmount() . ', payable: '
                     . var_export($paymentDetails, true)
                 );
-                $payment->setFinesUpdated();
+                $payment->applyFinesUpdatedStatus();
                 $this->paymentService->persistEntity($payment);
                 $this->addPaymentEvent(
                     $payment,
@@ -499,7 +499,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
                     . 'registerPayment failed: ' . ($res['reason'] ?? 'no error information')
                 );
                 if ('Payment::error_fines_changed' === $res['reason']) {
-                    $payment->setFinesUpdated();
+                    $payment->applyFinesUpdatedStatus();
                     $this->paymentService->persistEntity($payment);
                     $this->addPaymentEvent(
                         $payment,
@@ -507,7 +507,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
                         'Registration failed: fines updated'
                     );
                 } else {
-                    $payment->setRegistrationFailed('Failed to mark fees paid: ' . ($res ?: 'no error information'));
+                    $payment->applyRegistrationFailedStatus('Failed to mark fees paid: ' . ($res ?: 'no error information'));
                     $this->paymentService->persistEntity($payment);
                     $this->addPaymentEvent(
                         $payment,
@@ -517,7 +517,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
                 }
                 return false;
             }
-            $payment->setRegistered();
+            $payment->applyRegisteredStatus();
             $this->paymentService->persistEntity($payment);
             $this->debug("Registration of payment {$payment->getLocalIdentifier()} successful");
             $this->addPaymentEvent(
@@ -528,7 +528,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
         } catch (\Exception $e) {
             $this->logError('Payment registration error (patron ' . $patron['id'] . '): ' . $e->getMessage());
             $this->logException($e);
-            $payment->setRegistrationFailed($e->getMessage());
+            $payment->applyRegistrationFailedStatus($e->getMessage());
             $this->paymentService->persistEntity($payment);
             $this->addPaymentEvent(
                 $payment,
@@ -627,7 +627,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
         $session = $this->getOnlinePaymentSession();
         if (!$session) {
             $this->logError('PaymentSessionError: Session empty for patron: ' . json_encode($patron));
-            return true;
+            return -1;
         }
         if ($session->catUsername !== $patron['cat_username']) {
             $this->logError(

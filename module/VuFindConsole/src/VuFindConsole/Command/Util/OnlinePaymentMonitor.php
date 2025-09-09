@@ -249,7 +249,7 @@ class OnlinePaymentMonitor extends Command
         // Check if the payment has remained unregistered for too long
         if (time() - $payment->getPaidDate()->getTimestamp() > $this->retryMinutes * 60) {
             // Payment has expired
-            $payment->setExpired();
+            $payment->applyRegistrationExpiredStatus();
             $this->paymentService->persistEntity($payment);
             $this->addPaymentEvent($payment, AuditEventSubtype::PaymentRegistration, 'Marked as expired');
             $this->msg('Payment ' . $payment->getLocalIdentifier() . ' marked as expired.');
@@ -314,7 +314,7 @@ class OnlinePaymentMonitor extends Command
                         $message
                     );
                     foreach ($sourcePayments as $payment) {
-                        $payment->setReported();
+                        $payment->applyReportedStatus();
                         $this->paymentService->persistEntity($payment);
                     }
                 } catch (\Exception $e) {

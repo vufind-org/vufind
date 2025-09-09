@@ -208,7 +208,7 @@ trait OnlinePaymentTrait
                     if (BaseHandler::PAYMENT_SUCCESS === $result['resultCode']) {
                         // Reload payment and check if registration is still pending:
                         $payment = $paymentService->getPaymentByLocalIdentifier($localIdentifier);
-                        if ($payment?->needsRegistration()) {
+                        if ($payment?->isRegistrationNeeded()) {
                             // Display page with success message and register payment with ILS asynchronously:
                             $this->flashMessenger()->addSuccessMessage('Payment::Payment Successful');
                             $view->registerPaymentLocalIdentifier = $payment->getLocalIdentifier();
