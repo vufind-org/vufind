@@ -14,9 +14,12 @@
 	"installDeps": "npm run installDeps --workspaces --if-present --ignore-scripts",
 	"updateDeps": "npm run updateDeps --workspaces --if-present --ignore-scripts",
 
-    "build": "node tools/build-css.js --minify",
-    "check": "node tools/build-css.js --check-only",
-    "watch": "nodemon --watch tools/ --watch themes/ --ext scss,js --exec \"node tools/build-css.js\""
+	"build": "npm run build:scss",
+	"watch": "npm run watch:scss",
+
+    "build:scss": "node tools/build-css.js --minify",
+    "check:scss": "node tools/build-css.js --check-only",
+    "watch:scss": "nodemon --watch tools/ --watch themes/ --ext scss,js --exec \"node tools/build-css.js\""
   },
   "workspaces": [
 	"themes/bootstrap5"
