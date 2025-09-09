@@ -173,7 +173,7 @@ class MigrationManager
             $matches = array_merge($matches, $this->getNeededMigrationsFromDir($next));
         }
         natsort($matches);
-        return $matches;
+        return array_values($matches);
     }
 
     /**
