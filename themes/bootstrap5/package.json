@@ -2,8 +2,8 @@
   "name": "vufind-bootstrap5",
   "description": "Dependencies for the bootstrap5 theme",
   "scripts": {
-    "installBuildDeps": "npm install --no-audit && node tools/copyDependencies.mjs --only-build-deps",
-    "updateDeps": "npm update && node tools/copyDependencies.mjs"
+    "installDeps": "npm install --no-audit && node tools/copyDependencies.js",
+    "updateDeps": "npm update && node tools/copyDependencies.js"
   },
   "dependencies": {
     "@popperjs/core": "2.11.8",

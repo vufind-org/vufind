@@ -1,52 +1,54 @@
-import { cp } from 'node:fs/promises';
-import { copyFile } from 'node:fs/promises';
+const { copyFile, cp, stat } = require('node:fs/promises');
+const path = require('node:path');
 
-let buildDepsOnly = false;
-process.argv.forEach(arg => {
-    if (arg === '--only-build-deps') {
-        buildDepsOnly = true;
-    }
-});
+async function copy(fromRelPath, toRelPath) {
+	const fromPath = path.join(process.env.VUFIND_HOME, fromRelPath);
+	const toPath = path.join(__dirname, "..", toRelPath);
+	console.log(`> ${toRelPath}`);
 
-console.log('Copying dependencies...');
-
-// Bootstrap 5
-await cp('node_modules/bootstrap/scss/.', 'scss/vendor/bootstrap/scss/', { recursive: true });
-
-if (buildDepsOnly) {
-    console.log('Done copying build dependencies.');
-    process.exit();
+	const stats = await stat(fromPath);
+	if (stats.isDirectory()) {
+		await cp(fromPath, toPath, { recursive: true });
+	} else {
+		await copyFile(fromPath, toPath);
+	}
 }
 
-await copyFile('node_modules/bootstrap/dist/js/bootstrap.min.js', 'js/vendor/bootstrap.min.js');
+console.log('Copying bootstrap5 dependencies...');
 
-// Popper (Bootstrap 5 dependency)
-await copyFile('node_modules/@popperjs/core/dist/umd/popper.min.js', 'js/vendor/popper.min.js');
+Promise.all([
+	// Bootstrap 5
+	copy('node_modules/bootstrap/scss/.', 'scss/vendor/bootstrap/scss/'),
+	copy('node_modules/bootstrap/dist/js/bootstrap.min.js', 'js/vendor/bootstrap.min.js'),
 
-// autocomplete.js
-await copyFile('node_modules/autocomplete.js/autocomplete.js', 'js/vendor/autocomplete.js');
+	// Popper (Bootstrap 5 dependency)
+	copy('node_modules/@popperjs/core/dist/umd/popper.min.js', 'js/vendor/popper.min.js'),
 
-// chart.js
-await copyFile('node_modules/chart.js/dist/chart.umd.js', 'js/vendor/chart.js');
+	// autocomplete.js
+	copy('node_modules/autocomplete.js/autocomplete.js', 'js/vendor/autocomplete.js'),
 
-// jQuery
-await copyFile('node_modules/jquery/dist/jquery.min.js', 'js/vendor/jquery.min.js');
+	// chart.js
+	copy('node_modules/chart.js/dist/chart.umd.js', 'js/vendor/chart.js'),
 
-// libphonenumber-js
-await copyFile('node_modules/libphonenumber-js/bundle/libphonenumber-js.min.js', 'js/vendor/libphonenumber.js');
-await copyFile('node_modules/libphonenumber-js/LICENSE', 'js/vendor/libphonenumber-js_LICENSE');
+	// jQuery
+	copy('node_modules/jquery/dist/jquery.min.js', 'js/vendor/jquery.min.js'),
 
-// nouislider
-await copyFile('node_modules/nouislider/LICENSE.md', 'js/vendor/nouislider_LICENSE.md');
-await copyFile('node_modules/nouislider/dist/nouislider.min.js', 'js/vendor/nouislider.min.js');
-await copyFile('node_modules/nouislider/dist/nouislider.min.css', 'css/vendor/nouislider.min.css');
+	// libphonenumber-js
+	copy('node_modules/libphonenumber-js/bundle/libphonenumber-js.min.js', 'js/vendor/libphonenumber.js'),
+	copy('node_modules/libphonenumber-js/LICENSE', 'js/vendor/libphonenumber-js_LICENSE'),
 
-// simple-keyboard
-await copyFile('node_modules/simple-keyboard/build/index.js', 'js/vendor/simple-keyboard/index.js');
-await copyFile('node_modules/simple-keyboard/build/css/index.css', 'css/vendor/simple-keyboard/index.css');
-await copyFile('node_modules/simple-keyboard-layouts/build/index.js', 'js/vendor/simple-keyboard-layouts/index.js');
+	// nouislider
+	copy('node_modules/nouislider/LICENSE.md', 'js/vendor/nouislider_LICENSE.md'),
+	copy('node_modules/nouislider/dist/nouislider.min.js', 'js/vendor/nouislider.min.js'),
+	copy('node_modules/nouislider/dist/nouislider.min.css', 'css/vendor/nouislider.min.css'),
 
-// vanilla-cookieconsent
-await copyFile('node_modules/vanilla-cookieconsent/dist/cookieconsent.umd.js', 'js/vendor/cookieconsent.umd.js');
+	// simple-keyboard
+	copy('node_modules/simple-keyboard/build/index.js', 'js/vendor/simple-keyboard/index.js'),
+	copy('node_modules/simple-keyboard/build/css/index.css', 'css/vendor/simple-keyboard/index.css'),
+	copy('node_modules/simple-keyboard-layouts/build/index.js', 'js/vendor/simple-keyboard-layouts/index.js'),
 
-console.log('Done copying dependencies.');
+	// vanilla-cookieconsent
+	copy('node_modules/vanilla-cookieconsent/dist/cookieconsent.umd.js', 'js/vendor/cookieconsent.umd.js'),
+]).then(() => {
+	console.log('= Done copying dependencies.');
+});

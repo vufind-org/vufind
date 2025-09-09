@@ -10,21 +10,21 @@
     "url": "https://vufind.org/jira"
   },
   "scripts": {
-    "build": "npm-run-all install:scss-dependencies build:scss",
-    "watch": "npm-run-all install:scss-dependencies watch:scss",
+	"postinstall": "npm run installDeps",
+	"installDeps": "npm run installDeps --workspaces --if-present --ignore-scripts",
+	"updateDeps": "npm run updateDeps --workspaces --if-present --ignore-scripts",
 
-    "build:scss": "node tools/build-css.js --minify",
-    "check:scss": "node tools/build-css.js --check-only",
-    "watch:scss": "nodemon --watch tools/ --watch themes/ --ext scss,js --exec \"node tools/build-css.js\" --",
-
-    "install:scss-dependencies": "cd themes/bootstrap5 && npm run installBuildDeps"
+    "build": "node tools/build-css.js --minify",
+    "check": "node tools/build-css.js --check-only",
+    "watch": "nodemon --watch tools/ --watch themes/ --ext scss,js --exec \"node tools/build-css.js\""
   },
+  "workspaces": [
+	"themes/bootstrap5"
+  ],
   "dependencies": {
     "clean-css": "^5.3.3",
-    "clean-css-cli": "^5.6.3",
     "commander": "^14.0.0",
     "nodemon": "^3.1.10",
-    "npm-run-all2": "^8.0.4",
     "sass": "1.72.0"
   },
   "devDependencies": {
