@@ -455,12 +455,6 @@ class AbstractRecord extends AbstractBase
             return $response;
         }
 
-        if ($this->formWasSubmitted('newList')) {
-            // Remove submit now from parameters
-            $this->getRequest()->getPost()->set('newList', null)->set('submitButton', null);
-            return $this->forwardTo('MyResearch', 'editList', ['id' => 'NEW']);
-        }
-
         // Process form submission:
         if ($this->formWasSubmitted()) {
             return $this->processSave();
