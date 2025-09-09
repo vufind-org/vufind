@@ -9,7 +9,7 @@
     ->add($this->translate('ReservationList::All Lists'), $this->url('reservationlist-displaylists'))
     ->add($pageTitle, $this->url('reservationlist-displaylist', ['listId' => $this->listEntity->getId()]), active: true);
 
-  $user = $this->auth()->isLoggedIn();
+  $user = $this->auth()->getUserObject();
   $recordTotal = $this->results->getResultTotal();
 ?>
 
