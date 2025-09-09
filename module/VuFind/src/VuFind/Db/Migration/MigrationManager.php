@@ -194,17 +194,19 @@ class MigrationManager
         if ($name === '11.0/000-add-migrations-table.sql' && $status !== 'success') {
             return '';
         }
-        $queryBuilder = $connection ? $connection->createQueryBuilder() : $this->connection->createQueryBuilder();
+        $writeToDatabase = $connection !== null;
+        $connection ??= $this->connection;
+        $queryBuilder = $connection->createQueryBuilder();
         $queryBuilder->insert('migrations')
             ->values(
                 [
-                    'name' => $this->connection->quote($name),
-                    'status' => $this->connection->quote($status),
-                    'target_version' => $this->connection->quote($this->targetVersion),
+                    'name' => $connection->quote($name),
+                    'status' => $connection->quote($status),
+                    'target_version' => $connection->quote($this->targetVersion),
                 ]
             );
         $sql = (string)$queryBuilder;
-        if ($connection) {
+        if ($writeToDatabase) {
             $connection->executeQuery($queryBuilder);
         }
         return "$sql;\n";
