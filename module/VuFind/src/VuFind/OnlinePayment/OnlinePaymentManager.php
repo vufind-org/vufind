@@ -50,6 +50,7 @@ use VuFind\Log\LoggerAwareTrait;
 use VuFind\OnlinePayment\Handler\AbstractBase as BaseHandler;
 use VuFind\OnlinePayment\Handler\HandlerInterface;
 use VuFind\OnlinePayment\Handler\PluginManager as HandlerPluginManager;
+use VuFindDevTools\Controller\PaymentServiceController;
 
 /**
  * Online payment manager
@@ -373,12 +374,21 @@ class OnlinePaymentManager implements LoggerAwareInterface
         $details = $this->ils->getOnlinePaymentDetails($patron, $fines, $selectedFineIds);
         // Check minimum payment:
         if ($details['payable']) {
-            $paymentConfig = $this->getOnlinePaymentConfig($this->getSourceIls($patron));
+            $sourceIls = $this->getSourceIls($patron);
+            $paymentConfig = $this->getOnlinePaymentConfig($sourceIls);
             $serviceFee = $paymentConfig['serviceFee'] ?? 0;
             $minimumFee = $paymentConfig['minimumFee'] ?? 0;
             if ($details['amount'] + $serviceFee < $minimumFee) {
                 $details['payable'] = false;
                 $details['reason'] = 'Payment::minimum_payment';
+            }
+            // Check that DevTools module is available when using the Test handler:
+            if ($this->getHandlerName($sourceIls) === 'Test') {
+                global $modules;
+                if (!in_array('VuFindDevTools', $modules)) {
+                    $details['payable'] = false;
+                    $details['reason'] = 'Test handler not available (VuFindDevTools module not loaded)';
+                }
             }
         }
         return $details;

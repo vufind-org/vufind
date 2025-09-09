@@ -47,7 +47,6 @@ use VuFindTest\Feature\UserCreationTrait;
 
 use function assert;
 use function count;
-use function in_array;
 
 /**
  * Mink online payment actions test class.
@@ -75,22 +74,6 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
     public static function setUpBeforeClass(): void
     {
         static::failIfDataExists();
-    }
-
-    /**
-     * Standard setup method.
-     *
-     * @return void
-     */
-    public function setUp(): void
-    {
-        parent::setUp();
-
-        // Skip tests if we're not running in development or testing mode:
-        if (!in_array(APPLICATION_ENV, ['development', 'testing'])) {
-            $this->markTestSkipped('Online payment tests require development or testing mode.');
-            return;
-        }
     }
 
     /**
@@ -177,6 +160,8 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
         $this->resetEmailLog();
 
         $page = $this->goToFines(false, $multibackend);
+
+        $this->checkForMissingDevTools($page);
 
         $this->findCss($page, '.online-payment');
         $this->clickCss($page, '.checkbox-select-all');
@@ -315,15 +300,17 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test payment without returning to VuFind.
      *
-     * @return void
+     * @return bool
      *
      * @depends testPayment
      */
-    public function testNotify(): void
+    public function testNotify(): bool
     {
         $this->changeConfigs($this->getConfigs(false, []));
 
         $page = $this->goToFines(false, false);
+
+        $this->checkForMissingDevTools($page);
 
         $this->findCss($page, '.online-payment');
         $this->clickCss($page, '.checkbox-select-all');
@@ -365,17 +352,24 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
         // Resolve the payment so that it doesn't block further tests:
         $payment->setRegistrationResolved();
         $paymentService->persistEntity($payment);
+
+        return true;
     }
 
     /**
      * Test last payment info when there are no fines.
      *
+     * @param bool $status Status from testNotify
+     *
      * @return void
      *
-     * @depends testPayment
+     * @depends testNotify
      */
-    public function testLastPaymentInfo(): void
+    public function testLastPaymentInfo(bool $status): void
     {
+        if (true !== $status) {
+            $this->markTestSkipped('Dependent test skipped');
+        }
         $demoConfig = $this->getDemoIniOverrides() + $this->getDemoIniOverridesForPayment();
         $demoConfig['Records']['fines'] = json_encode([]);
         $this->changeConfigs(
@@ -386,6 +380,9 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         $page = $this->goToFines(false, false);
+
+        $this->checkForMissingDevTools($page);
+
         $this->assertStringStartsWith(
             'Last Paid: $15.00',
             $this->findCssAndGetText($page, '.last-payment-information')
@@ -409,6 +406,9 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         $page = $this->goToFines(false, false);
+
+        $this->checkForMissingDevTools($page);
+
         $session = $this->getMinkSession();
         $windowNames = $session->getWindowNames();
         $windowCount = count($windowNames);
@@ -495,6 +495,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         $page = $this->goToFines(false, false);
+        $this->checkForMissingDevTools($page);
         $this->assertEquals(
             $expectedMsg,
             $this->findCssAndGetText($page, '.fines-info-area__blocked')
@@ -729,5 +730,20 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
     protected function getPaymentFromReturnUrl(Element $page): PaymentEntityInterface
     {
         return $this->getPaymentByLocalIdentifier($this->getLocalIdentifierFromReturnUrl($page));
+    }
+
+    /**
+     * Check for blocked payment due to missing VuFindDevTools module
+     *
+     * @param Element $page Page
+     */
+    protected function checkForMissingDevTools(Element $page): void
+    {
+        if (
+            ($paymentBlock = $page->find('css', '.fines-info-area__blocked'))
+            && $paymentBlock->getText() === 'Test handler not available (VuFindDevTools module not loaded)'
+        ) {
+            $this->markTestIncomplete('Cannot test payment; VuFindDevTools module not loaded');
+        }
     }
 }
