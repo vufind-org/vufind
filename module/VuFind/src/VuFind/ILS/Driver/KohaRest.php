@@ -1705,53 +1705,6 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Return details on fees payable online.
-     *
-     * @param array  $patron          Patron
-     * @param array  $fines           Patron's fines
-     * @param ?array $selectedFineIds Selected fines
-     *
-     * @throws ILSException
-     * @return array Associative array of payment details
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
-     */
-    public function getOnlinePaymentDetails(array $patron, array $fines, ?array $selectedFineIds): array
-    {
-        $amount = 0;
-        $payableFines = [];
-        $config = $this->config['OnlinePayment'] ?? [];
-        foreach ($fines as $fine) {
-            // Nothing can be paid if there are blocking fine types:
-            $code = $fine['chargeType']['code'] ?? 0;
-            if (in_array($code, $config['blockingNonPayableTypes'] ?? [])) {
-                return [
-                    'payable' => false,
-                    'amount' => 0,
-                    'fines' => [],
-                    'reason' => 'Payment::fines_contain_nonpayable_fees',
-                ];
-            }
-            if (
-                null !== $selectedFineIds
-                && !in_array($fine['fine_id'], $selectedFineIds)
-            ) {
-                continue;
-            }
-            if ($fine['payable_online']) {
-                $amount += $fine['balance'];
-                $payableFines[] = $fine;
-            }
-        }
-
-        return [
-            'payable' => true,
-            'amount' => $amount,
-            'fines' => $payableFines,
-        ];
-    }
-
-    /**
      * Register a payment.
      *
      * This is called after a successful online payment.
