@@ -58,9 +58,7 @@ class Options extends \VuFind\Search\Base\Options
 
         // Load source settings
         $searchSettings = $configManager->getConfigArray($this->searchIni);
-        if (
-            !empty($searchSettings['IndexSources'])
-        ) {
+        if (!empty($searchSettings['IndexSources'])) {
             foreach ($searchSettings['IndexSources'] as $k => $v) {
                 $this->shards[$k] = $v;
             }
