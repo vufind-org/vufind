@@ -33,13 +33,12 @@ namespace VuFind\OnlinePayment;
 
 use Laminas\Router\RouteInterface;
 use Laminas\View\Renderer\PhpRenderer;
+use Mpdf\Mpdf;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Part\DataPart;
-use TCPDF;
 use VuFind\Config\Feature\EmailSettingsTrait;
 use VuFind\Date\Converter as DateConverter;
 use VuFind\Db\Entity\PaymentEntityInterface;
-use VuFind\Db\Entity\PaymentFeeEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\PaymentFeeServiceInterface;
 use VuFind\I18n\Locale\LocaleSettings;
@@ -147,104 +146,44 @@ class Receipt implements TranslatorAwareInterface
             }
         }
         // Check if we have recipient organizations:
-        $hasFineOrgs = false;
-        $fines = $this->paymentFeeService->getFinesForPayment($payment);
-        foreach ($fines as $fine) {
-            $fineOrg = $fine->getOrganization();
-            if ($fineOrg && ($organizationBusinessIdMappings[$fineOrg] ?? false)) {
-                $hasFineOrgs = true;
+        $feeSpecificOrganizations = false;
+        $fees = $this->paymentFeeService->getFeesForPayment($payment);
+        foreach ($fees as $fee) {
+            $feeOrg = $fee->getOrganization();
+            if ($feeOrg && ($organizationBusinessIdMappings[$feeOrg] ?? false)) {
+                $feeSpecificOrganizations = true;
                 break;
             }
         }
+        $creator = $this->config->Site->generator ?? 'VuFind';
 
-        $heading = $this->translate('Payment::breakdown_title') . " - $sourceName";
-        $locale = $this->localeSettings->getUserLocale();
-        [$language] = explode('-', $locale, 2);
-        $rtl = $this->localeSettings->isRightToLeftLocale($locale);
-        $languageConfig = [
-            'a_meta_charset' => 'utf-8',
-            'a_meta_dir' => $rtl ? 'rtl' : 'ltr',
-            'a_meta_language' => $language,
-            'w_page' => 'page',
-        ];
-        $format = $this->paymentConfig['receiptFormat'] ?? 'A4';
-        $pdf = new TCPDF(format: $format);
-        $pdf->setLanguageArray($languageConfig);
-        $pdf->SetCreator($this->config->Site->generator ?? 'VuFind');
-        $pdf->SetLanguageArray(
-            [
-                'a_meta_charset' => 'UTF-8',
-                'a_meta_dir' => 'ltr',
-                'a_meta_language' => $this->getTranslatorLocale(),
-                'w_page' => $this->translate('page_num', ['%%page%%' => '']),
-            ]
-        );
-        $pdf->SetTitle($heading . ' - ' . $paidDate);
-        $pdf->SetMargins($this->left, 18);
-        $pdf->SetHeaderMargin(10);
-        $pdf->SetHeaderData('', 0, $heading);
-        $pdf->SetFooterMargin(10);
-        $pdf->SetAutoPageBreak(false);
-        $pdf->AddPage();
-
-        // Print information array:
-        $pdf->setY(25);
-        if (!$hasFineOrgs) {
-            $this->addInfo($pdf, 'Payment::Recipient', $sourceName . ($businessId ? " ($businessId)" : ''));
-        }
-        $this->addInfo($pdf, 'Payment::Date', $paidDate);
-        $this->addInfo($pdf, 'Payment::Identifier', $payment->getLocalIdentifier());
-        if ($contactInfo) {
-            $this->addInfo($pdf, 'Payment::Contact Information', $contactInfo);
-        }
-
-        // Print lines:
-        $pdf->SetY($pdf->GetY() + 10);
-        $this->addHeaders($pdf, $hasFineOrgs);
-        // Account for the "Total" line:
-        $linesBottom = $this->bottom - 7;
-        foreach ($fines as $fine) {
-            $savePDF = clone $pdf;
-
-            $fineOrg = $fine->getOrganization();
-            $lineBusinessId = $fineOrg ? ($organizationBusinessIdMappings[$fineOrg] ?? '') : '';
-            $this->addLine($pdf, $fine, $sourceIls, $sourceName, $businessId, $lineBusinessId, $hasFineOrgs);
-            // If we exceed bottom, revert and add a new page:
-            if ($pdf->GetY() > $linesBottom) {
-                $pdf = $savePDF;
-                $pdf->AddPage();
-                $pdf->SetY(25);
-                $this->addHeaders($pdf, $hasFineOrgs);
-                $this->addLine($pdf, $fine, $sourceIls, $sourceName, $businessId, $lineBusinessId, $hasFineOrgs);
-            }
-        }
-        $pdf->SetY($pdf->GetY() + 1);
-        $pdf->SetFont('helvetica', 'B', 10);
-        $amount = $this->currencyFormatter->convertToDisplayFormat(
-            $payment->getAmount() / 100.00,
-            $payment->getCurrency()
-        );
-        $pdf->Cell(
-            190,
-            0,
-            $this->translate('Payment::Total') . " $amount",
-            0,
-            1,
-            'R'
+        $pdfHtml = $this->renderer->partial(
+            'OnlinePayment/receipt.phtml',
+            compact(
+                'payment',
+                'paidDate',
+                'sourceIls',
+                'businessId',
+                'contactInfo',
+                'creator',
+                'fees',
+                'feeSpecificOrganizations',
+                'organizationBusinessIdMappings'
+            )
         );
 
-        // Print VAT summary:
-        $savePDF = clone $pdf;
-        $this->addVATSummary($pdf, $payment);
-        if ($pdf->GetY() > $this->bottom) {
-            $pdf = $savePDF;
-            $pdf->AddPage();
-            $this->addVATSummary($pdf, $payment);
-        }
+        $mpdf = new Mpdf([
+            'mode' => 'utf-8',
+            'format' => $this->paymentConfig['receiptFormat'] ?? 'A4',
+        ]);
+        $mpdf->setCreator($this->config->Site->generator ?? 'VuFind');
+        $mpdf->WriteHTML($pdfHtml);
 
         return [
-            'pdf' => $pdf->getPDFData(),
-            'filename' => $heading . ' - ' . $payment->getPaidDate()->format('Y-m-d H-i'),
+            'pdf' => $mpdf->OutputBinaryData(),
+            'html' => $pdfHtml,
+            'filename' => $this->translate('Payment::breakdown_title') . " - $sourceName - "
+                . $payment->getPaidDate()->format('Y-m-d H-i') . '.pdf',
         ];
     }
 
@@ -324,159 +263,6 @@ class Receipt implements TranslatorAwareInterface
     }
 
     /**
-     * Add info row
-     *
-     * @param TCPDF  $pdf     PDF
-     * @param string $heading Heading
-     * @param string $value   Value
-     *
-     * @return void
-     */
-    protected function addInfo($pdf, $heading, $value): void
-    {
-        $pdf->SetFont('helvetica', 'B', 10);
-        $pdf->Cell(60, 0, $this->translate($heading));
-        $pdf->SetFont('helvetica', '', 10);
-        if (preg_match('/^https?:\/\/([^\s]+)$/', $value, $matches)) {
-            // Create link:
-            $pdf->Write(0, $matches[1], $value);
-        } else {
-            $pdf->Cell(120, 0, $value);
-        }
-        $pdf->Ln();
-    }
-
-    /**
-     * Add item table headers
-     *
-     * @param TCPDF $pdf       PDF
-     * @param bool  $recipient Whether to add recipient column
-     *
-     * @return void
-     */
-    protected function addHeaders(TCPDF $pdf, bool $recipient): void
-    {
-        $pdf->SetFont('helvetica', 'B', 10);
-        $pdf->Cell(30, 0, $this->translate('Payment::Identifier'), 0, 0);
-        $pdf->Cell(40, 0, $this->translate('Payment::Type'), 0, 0);
-        $pdf->Cell($recipient ? 50 : 100, 0, $this->translate('Payment::Details'), 0, 0);
-        if ($recipient) {
-            $pdf->Cell(50, 0, $this->translate('Payment::Recipient'), 0, 0);
-        }
-        $pdf->Cell(20, 0, $this->translate('Payment::Fee'), 0, 1, 'R');
-        $pdf->SetFont('helvetica', '', 10);
-        $y = $pdf->GetY() + 1;
-        $pdf->Line($this->left, $y, $this->right, $y);
-        $pdf->SetY($y + 1);
-    }
-
-    /**
-     * Add item table line
-     *
-     * @param TCPDF                     $pdf            PDF
-     * @param PaymentFeeEntityInterface $fine           Fee or fine
-     * @param string                    $sourceIls      Source ILS
-     * @param string                    $sourceName     Source name
-     * @param string                    $businessId     Source business ID
-     * @param string                    $lineBusinessId Line business ID
-     * @param bool                      $recipient      Whether to add recipient column
-     *
-     * @return void
-     */
-    protected function addLine(
-        TCPDF $pdf,
-        PaymentFeeEntityInterface $fine,
-        string $sourceIls,
-        string $sourceName,
-        string $businessId,
-        string $lineBusinessId,
-        bool $recipient
-    ): void {
-        $type = $fine->getType();
-        $type = $this->translate("fine_status_$type", [], $this->translate("status_$type", [], $type));
-
-        $descriptions = [];
-        if ($desc = $fine->getDescription()) {
-            $descriptions[] = $desc;
-        }
-        if ($title = $fine->getTitle()) {
-            $descriptions[] = $title;
-        }
-
-        $curY = $pdf->GetY();
-
-        $pdf->MultiCell(28, 0, $fine->getFineId(), 0, 'L');
-        $nextY = $pdf->GetY();
-
-        $pdf->SetXY($this->left + 30, $curY);
-        $pdf->MultiCell(38, 0, $type, 0, 'L');
-        $nextY = max($nextY, $pdf->GetY());
-
-        $pdf->SetXY($this->left + 70, $curY);
-        $pdf->MultiCell($recipient ? 48 : 98, 0, implode(' - ', $descriptions), 0, 'L');
-        $nextY = max($nextY, $pdf->GetY());
-
-        if ($recipient) {
-            if (($fineOrg = $fine->getOrganization()) && $lineBusinessId) {
-                $recipient = $this->translate("Payment::organisation_{$sourceIls}_{$fineOrg}", [], $fineOrg)
-                    . " ($lineBusinessId)";
-            } else {
-                $recipient = $sourceName . ($businessId ? " ($businessId)" : '');
-            }
-            $pdf->SetXY($this->left + 120, $curY);
-            $pdf->MultiCell(48, 0, $recipient, 0, 'L');
-            $nextY = max($nextY, $pdf->GetY());
-        }
-
-        $pdf->SetXY($this->left + 170, $curY);
-        $pdf->Cell(
-            20,
-            0,
-            $this->currencyFormatter->convertToDisplayFormat($fine->getAmount() / 100.00, $fine->getCurrency()),
-            0,
-            0,
-            'R'
-        );
-        $pdf->setY($nextY + 2);
-    }
-
-    /**
-     * Add VAT summary
-     *
-     * @param TCPDF                  $pdf     PDF
-     * @param PaymentEntityInterface $payment Payment
-     *
-     * @return void
-     */
-    protected function addVATSummary(TCPDF $pdf, PaymentEntityInterface $payment): void
-    {
-        $amount = $this->currencyFormatter->convertToDisplayFormat(
-            $payment->getAmount() / 100.00,
-            $payment->getCurrency()
-        );
-
-        $pdf->SetY($pdf->GetY() + 15);
-        $pdf->SetFont('helvetica', 'B', 10);
-        $vatLeft = $this->left + 50;
-        $pdf->SetX($vatLeft);
-        $pdf->Cell(30, 0, $this->translate('Payment::VAT Breakdown'), 0, 0, 'L');
-        $pdf->Cell(20, 0, $this->translate('Payment::VAT Percent'));
-        $pdf->Cell(30, 0, $this->translate('Payment::Excluding VAT'), 0, 0, 'R');
-        $pdf->Cell(30, 0, $this->translate('Payment::VAT'), 0, 0, 'R');
-        $pdf->Cell(30, 0, $this->translate('Payment::Including VAT'), 0, 1, 'R');
-        $pdf->SetFont('helvetica', '', 10);
-        $pdf->SetX($vatLeft);
-        $y = $pdf->GetY() + 1;
-        $pdf->Line($vatLeft, $y, $vatLeft + 30, $y, ['dash' => '1,2']);
-        $pdf->Line($vatLeft + 30, $y, $this->right, $y, ['dash' => 0]);
-        $pdf->SetXY($vatLeft + 30, $y + 1);
-        $pdf->Cell(20, 0, '0 %');
-        $pdf->Cell(30, 0, $amount, 0, 0, 'R');
-        $pdf->Cell(30, 0, $this->currencyFormatter->convertToDisplayFormat(0, $payment->getCurrency()), 0, 0, 'R');
-        $pdf->Cell(30, 0, $amount, 0, 1, 'R');
-    }
-
-    /**
      * Get source name from payment
      *
      * @param PaymentEntityInterface $payment Payment
@@ -495,6 +281,8 @@ class Receipt implements TranslatorAwareInterface
      * @param string $source Source ID
      *
      * @return string
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function getContactInfo(string $source): string
     {
