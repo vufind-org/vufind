@@ -29,7 +29,6 @@
 
 namespace VuFindTest\Search\Summon;
 
-use VuFind\Config\ConfigManager;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Summon\Options;
 use VuFind\Search\Summon\Params;
