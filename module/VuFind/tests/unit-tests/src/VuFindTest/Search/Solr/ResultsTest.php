@@ -31,7 +31,6 @@
 
 namespace VuFindTest\Search\Solr;
 
-use VuFind\Config\ConfigManager;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\I18n\Sorter;
 use VuFind\Record\Loader;
