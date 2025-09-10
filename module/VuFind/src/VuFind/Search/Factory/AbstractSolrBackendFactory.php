@@ -250,8 +250,8 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     protected function getFlatIndexConfig(): array
     {
         $configList = $this->getPrioritizedConfigsForIndexSettings();
-        $configObj = $this->configManager->getConfigArray($configList[0]);
-        return $configObj['Index'] ?? [];
+        $configArray = $this->configManager->getConfigArray($configList[0]);
+        return $configArray['Index'] ?? [];
     }
 
     /**
