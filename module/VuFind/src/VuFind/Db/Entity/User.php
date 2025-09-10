@@ -31,7 +31,6 @@ namespace VuFind\Db\Entity;
 
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
-use Traversable;
 use VuFind\Db\Feature\DateTimeTrait;
 
 /**
