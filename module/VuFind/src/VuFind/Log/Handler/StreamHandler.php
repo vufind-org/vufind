@@ -48,7 +48,7 @@ class StreamHandler extends MonologStreamHandler
 {
     use VerbosityTrait;
 
-    protected LineFormatter $standardFileFormatter;
+    protected ?LineFormatter $standardFileFormatter = null;
 
     /**
      * Writes the record down to the log
