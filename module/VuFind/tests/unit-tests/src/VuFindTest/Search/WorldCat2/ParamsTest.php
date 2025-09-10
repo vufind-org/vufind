@@ -29,7 +29,6 @@
 
 namespace VuFindTest\Search\WorldCat2;
 
-use VuFind\Config\ConfigManager;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\WorldCat2\Options;
 use VuFind\Search\WorldCat2\Params;
