@@ -99,6 +99,14 @@ class PaymentFee implements PaymentFeeEntityInterface
     protected $amount;
 
     /**
+     * Tax Percent.
+     *
+     * @var int
+     */
+    #[ORM\Column(name: 'tax_percent', type: 'integer', nullable: false, options: ['default' => 0])]
+    protected $taxPercent;
+
+    /**
      * Currency.
      *
      * @var string
@@ -225,7 +233,7 @@ class PaymentFee implements PaymentFeeEntityInterface
     }
 
     /**
-     * Get amount.
+     * Get amount (in pennies, including any tax).
      *
      * @return int
      */
@@ -235,7 +243,7 @@ class PaymentFee implements PaymentFeeEntityInterface
     }
 
     /**
-     * Set amount.
+     * Set amount (in pennies, including any tax).
      *
      * @param int $amount Amount
      *
@@ -244,6 +252,29 @@ class PaymentFee implements PaymentFeeEntityInterface
     public function setAmount(int $amount): static
     {
         $this->amount = $amount;
+        return $this;
+    }
+
+    /**
+     * Get tax percent (in 1/100ths or a percent).
+     *
+     * @return int
+     */
+    public function getTaxPercent(): int
+    {
+        return $this->taxPercent;
+    }
+
+    /**
+     * Set tax percent (in 1/100ths or a percent).
+     *
+     * @param int $taxPercent Tax percent
+     *
+     * @return static
+     */
+    public function setTaxPercent(int $taxPercent): static
+    {
+        $this->taxPercent = $taxPercent;
         return $this;
     }
 
@@ -315,5 +346,25 @@ class PaymentFee implements PaymentFeeEntityInterface
     {
         $this->organization = mb_substr($organization, 0, 255, 'UTF-8');
         return $this;
+    }
+
+    /**
+     * Get amount excluding any tax (in pennies).
+     *
+     * @return int
+     */
+    public function calculateAmountExcludingTax(): int
+    {
+        return (int)round($this->amount / (1 + $this->getTaxPercent()));
+    }
+
+    /**
+     * Get tax included in amount.
+     *
+     * @return int
+     */
+    public function calculateTax(): int
+    {
+        return $this->getAmount() - $this->calculateAmountExcludingTax();
     }
 }

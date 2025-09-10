@@ -62,7 +62,7 @@ class PaymentFeeService extends AbstractDbService implements PaymentFeeServiceIn
      *
      * @return PaymentFeeEntityInterface[]
      */
-    public function getFinesForPayment(PaymentEntityInterface $payment): array
+    public function getFeesForPayment(PaymentEntityInterface $payment): array
     {
         $dql = 'SELECT pf FROM ' . PaymentFeeEntityInterface::class
             . ' pf WHERE pf.payment = :payment';

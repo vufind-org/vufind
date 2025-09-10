@@ -316,7 +316,7 @@ class Payment implements PaymentEntityInterface
     }
 
     /**
-     * Get amount.
+     * Get amount (in pennies, including any tax).
      *
      * @return int
      */
@@ -326,7 +326,7 @@ class Payment implements PaymentEntityInterface
     }
 
     /**
-     * Set amount.
+     * Set amount (in pennies, including any tax).
      *
      * @param int $amount Amount
      *
@@ -362,7 +362,7 @@ class Payment implements PaymentEntityInterface
     }
 
     /**
-     * Get service fee.
+     * Get service fee (in pennies).
      *
      * @return int
      */
@@ -372,7 +372,7 @@ class Payment implements PaymentEntityInterface
     }
 
     /**
-     * Set service fee.
+     * Set service fee (in pennies).
      *
      * @param int $amount Amount
      *

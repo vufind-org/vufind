@@ -114,20 +114,36 @@ interface PaymentFeeEntityInterface extends EntityInterface
     public function setDescription(string $description): static;
 
     /**
-     * Get amount.
+     * Get amount (in pennies, including any tax).
      *
      * @return int
      */
     public function getAmount(): int;
 
     /**
-     * Set amount.
+     * Set amount (in pennies, including any tax).
      *
      * @param int $amount Amount
      *
      * @return static
      */
     public function setAmount(int $amount): static;
+
+    /**
+     * Get tax percent (in 1/100ths or a percent).
+     *
+     * @return int
+     */
+    public function getTaxPercent(): int;
+
+    /**
+     * Set tax percent (in 1/100ths or a percent).
+     *
+     * @param int $taxPercent Tax percent
+     *
+     * @return static
+     */
+    public function setTaxPercent(int $taxPercent): static;
 
     /**
      * Get currency.
@@ -176,4 +192,18 @@ interface PaymentFeeEntityInterface extends EntityInterface
      * @return static
      */
     public function setOrganization(string $organization): static;
+
+    /**
+     * Get amount excluding any tax (in pennies).
+     *
+     * @return int
+     */
+    public function calculateAmountExcludingTax(): int;
+
+    /**
+     * Get tax included in amount.
+     *
+     * @return int
+     */
+    public function calculateTax(): int;
 }

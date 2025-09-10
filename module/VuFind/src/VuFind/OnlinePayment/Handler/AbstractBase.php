@@ -91,11 +91,18 @@ abstract class AbstractBase implements
     protected array $productCodeMappings = [];
 
     /**
+     * Mappings from fine tax percentages to tax rates
+     *
+     * @var array
+     */
+    protected array $taxPercentToTaxRateRateMappings = [];
+
+    /**
      * Mappings from fine types to tax rates
      *
      * @var array
      */
-    protected array $taxRateMappings = [];
+    protected array $typeToTaxRateMappings = [];
 
     /**
      * Fine organization-specific mappings from fine types to product codes
@@ -137,7 +144,9 @@ abstract class AbstractBase implements
         $this->paymentConfig = $paymentConfig;
 
         $this->productCodeMappings = $this->parseMappings($this->paymentConfig['productCodeMappings'] ?? '');
-        $this->taxRateMappings = $this->parseMappings($this->paymentConfig['taxRateMappings'] ?? '');
+        $this->taxPercentToTaxRateRateMappings
+            = $this->parseMappings($this->paymentConfig['taxPercentToTaxRateRateMappings'] ?? '');
+        $this->typeToTaxRateMappings = $this->parseMappings($this->paymentConfig['typeToTaxRateMappings'] ?? '');
         $this->organizationProductCodePrefixMappings
             = $this->parseMappings($this->paymentConfig['organizationProductCodePrefixMappings'] ?? '');
     }
@@ -215,6 +224,7 @@ abstract class AbstractBase implements
             $fee = $this->paymentFeeService->createEntity()
                 ->setPayment($payment)
                 ->setAmount($fine['balance'])
+                ->setTaxPercent($fine['taxPercent'] ?? 0)
                 ->setCurrency($this->getCurrencyCode())
                 ->setType(iconv('UTF-8', 'UTF-8//IGNORE', $fine['fine'] ?? ''))
                 ->setDescription(iconv('UTF-8', 'UTF-8//IGNORE', $fine['description'] ?? ''))
@@ -425,9 +435,10 @@ abstract class AbstractBase implements
     /**
      * Get the service fee tax rate
      *
-     * @return ?string
+     * @return int|string|null Tax rate percent (1/100ths of a percent) or code depending on payment handler, or null
+     * if not defined
      */
-    protected function getServiceFeeTaxRate(): ?string
+    protected function getServiceFeeTaxRate(): int|string|null
     {
         return $this->paymentConfig['serviceFeeTaxRate'] ?? null;
     }
@@ -491,12 +502,18 @@ abstract class AbstractBase implements
      *
      * @param array $fine Fine
      *
-     * @return mixed Tax rate percent or code depending on payment handler, or null if not defined
+     * @return int|string|null Tax rate percent (1/100ths of a percent) or code depending on payment handler, or null
+     * if not defined
      */
-    protected function getFineTaxRate(array $fine)
+    protected function getFineTaxRate(array $fine): int|string|null
     {
         $fineType = $fine['fine'] ?? '';
-        return $fine['tax_rate'] ?? $this->taxRateMappings[$fineType] ?? null;
+        $fineTaxPercent = $fine['taxPercent'] ?? '';
+        return $fine['tax_rate']
+            ?? $this->taxPercentToTaxRateRateMappings[$fineTaxPercent]
+            ?? $this->typeToTaxRateMappings[$fineType]
+            ?? $fine['taxPercent']
+            ?? null;
     }
 
     /**

@@ -482,6 +482,7 @@ CREATE TABLE `payment_fee` (
   `type` varchar(255) NOT NULL DEFAULT '',
   `description` varchar(255) NOT NULL DEFAULT '',
   `amount` int NOT NULL DEFAULT '0',
+  `tax_percent` int NOT NULL DEFAULT '0',
   `currency` varchar(3) NOT NULL,
   `fine_id` varchar(1024) NOT NULL DEFAULT '',
   `organization` varchar(255) NOT NULL DEFAULT '',

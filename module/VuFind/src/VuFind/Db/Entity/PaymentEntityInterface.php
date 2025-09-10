@@ -117,14 +117,14 @@ interface PaymentEntityInterface extends EntityInterface
     public function setSourceIls(string $sourceIls): static;
 
     /**
-     * Get amount.
+     * Get amount (in pennies, including any tax).
      *
      * @return int
      */
     public function getAmount(): int;
 
     /**
-     * Set amount.
+     * Set amount (in pennies, including any tax).
      *
      * @param int $amount Amount
      *
@@ -149,14 +149,14 @@ interface PaymentEntityInterface extends EntityInterface
     public function setCurrency(string $currency): static;
 
     /**
-     * Get service fee.
+     * Get service fee (in pennies).
      *
      * @return int
      */
     public function getServiceFee(): int;
 
     /**
-     * Set service fee.
+     * Set service fee (in pennies).
      *
      * @param int $amount Amount
      *
