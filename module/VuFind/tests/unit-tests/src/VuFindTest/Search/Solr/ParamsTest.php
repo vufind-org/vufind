@@ -29,7 +29,6 @@
 
 namespace VuFindTest\Search\Solr;
 
-use VuFind\Config\ConfigManager;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Solr\Options;
 use VuFind\Search\Solr\Params;
