@@ -5,7 +5,7 @@
     $updateEmail = $this->ils()->checkFunction('updateEmail', compact('patron'));
     $updateAddress = $this->ils()->checkFunction('updateAddress', compact('patron'));
     $needsApproval = $updateAddress['needsApproval'] ?? true;
-    // Set up page title:
+    // If user can update contact information separately then display title for address change
     $title = $this->translate(($updatePhone || $updateEmail) ? 'request_address_change' : 'request_contact_information_change');
     $this->headTitle($title);
 
