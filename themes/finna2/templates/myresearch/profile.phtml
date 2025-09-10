@@ -70,14 +70,12 @@
       <?php endif; ?>
       <?=$this->partial('myresearch/profile-messages.phtml', ['messages' => $this->profile['messages'] ?? []]); ?>
       <div class="logged-in-as">
-        <div class="display-name">
-          <?=$this->icon('profile', 'profile-icon') ?><span class="visually-hidden"><?=$this->transEsc('logged_in_as')?>: </span><?=$this->escapeHtml($user->getDisplayName()) ?>
-        </div>
         <div>
-          <?php if ($user->getDisplayName() !== $user->getUsername()): ?>
-            <div><span class="profile-title"><?=$this->transEsc('account_username')?>: </span><span><?=$this->escapeHtml($user->getUsername())?></span></div>
-          <?php endif; ?>
+          <div><span class="profile-title"><?=$this->transEsc('account_username')?>: </span><span><?=$this->escapeHtml($user->getDisplayableUsername())?></span></div>
           <div><span class="profile-title"><?=$this->transEsc('account_login_method')?>: </span><span><?=$this->transEscWithPrefix('login_method_', $user->getAuthMethod())?></span></div>
+          <?php if ($user->email): ?>
+            <div><span class="profile-title"><?=$this->transEsc('account_email')?>: </span><span><?=$this->escapeHtml($user->email)?></span></div>
+          <?php endif; ?>
           <div><span class="profile-title"><?=$this->transEsc('account_creation_date')?>: </span><span><?=$user->getCreated()->format($this->config()->dateFormat())?></span></div>
         </div>
       </div>

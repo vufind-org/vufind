@@ -294,6 +294,26 @@ trait FinnaUserTrait
     }
 
     /**
+     * Get a displayable version of username
+     *
+     * @return string
+     */
+    public function getDisplayableUsername(): string
+    {
+        if (strpos($this->username, ':')) {
+            [$view, $username] = explode(':', $this->username, 2);
+        } else {
+            $username = $this->username;
+        }
+        $parts = explode('.', $username, 2);
+        $displayedName = $parts[1] ?? $parts[0];
+        if (isset($view)) {
+            $displayedName .= ' (' . $view . ')';
+        }
+        return $displayedName;
+    }
+
+    /**
      * Due date reminder setting setter
      *
      * @param int $remind New due date reminder setting.

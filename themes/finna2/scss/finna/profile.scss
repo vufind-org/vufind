@@ -15,14 +15,6 @@
             flex-direction: column;
           }
         }
-        &.display-name {
-          font-size: $font-size-large;
-          margin: 0 10px 10px 0;
-          .profile-icon {
-            color: $primary;
-            padding-right: 5px;
-          }
-        }
       }
       > div div {
         padding-right: 20px;
