@@ -26,7 +26,7 @@
         "phpoffice/phpspreadsheet": "^2.0",
         "picqer/php-barcode-generator": "2.0.1",
         "swen100/geophp": "^1.0.8",
-        "tecnickcom/tcpdf": "6.7.7"
+        "tecnickcom/tcpdf": "6.8.2"
     },
     "scripts": {
         "create-translation-files": "touch local/languages/finna/fi-datasources.ini; touch local/languages/finna/sv-datasources.ini; touch local/languages/finna/en-gb-datasources.ini; touch local/languages/finna/se-datasources.ini;",
