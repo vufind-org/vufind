@@ -32,6 +32,7 @@
 namespace Finna\RecordTab;
 
 use Laminas\ServiceManager\ServiceManager;
+use VuFind\Config\PathResolver;
 
 /**
  * Record Tab Factory Class
@@ -81,7 +82,9 @@ class Factory
         $basemapConfig = $sm->get(\VuFind\GeoFeatures\BasemapConfig::class);
         $basemapOptions = $basemapConfig->getBasemap('MapTab');
 
-        return new Map($mapTabDisplay, $basemapOptions, $mapTabOptions);
+        $pathResolver = $sm->get(PathResolver::class);
+
+        return new Map($pathResolver, $mapTabDisplay, $basemapOptions, $mapTabOptions);
     }
 
     /**
