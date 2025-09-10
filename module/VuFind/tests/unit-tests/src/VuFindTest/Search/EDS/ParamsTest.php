@@ -29,7 +29,6 @@
 
 namespace VuFindTest\Search\EDS;
 
-use VuFind\Config\ConfigManager;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\EDS\Options;
 use VuFind\Search\EDS\Params;
