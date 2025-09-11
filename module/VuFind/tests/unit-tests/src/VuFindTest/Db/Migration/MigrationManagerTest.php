@@ -29,7 +29,7 @@
 
 namespace VuFindTest\Db\Migration;
 
-use Doctrine\DBAL\Connection;
+use VuFind\Db\Connection;
 use VuFind\Db\Migration\MigrationLoader;
 use VuFind\Db\Migration\MigrationManager;
 
