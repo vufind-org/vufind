@@ -84,7 +84,8 @@ class OnlinePaymentManagerFactory implements FactoryInterface
             $dbServiceManager->get(UserCardServiceInterface::class),
             $dbServiceManager->get(AuditEventServiceInterface::class),
             $container->get(\VuFind\OnlinePayment\Receipt::class),
-            $container->get(\Laminas\Session\SessionManager::class)
+            $container->get(\Laminas\Session\SessionManager::class),
+            $container->get('ModuleManager')
         );
     }
 }

@@ -32,6 +32,7 @@ declare(strict_types=1);
 namespace VuFind\OnlinePayment;
 
 use Laminas\Log\LoggerAwareInterface;
+use Laminas\ModuleManager\ModuleManager;
 use Laminas\Session\Container as SessionContainer;
 use Laminas\Session\SessionManager;
 use Laminas\Stdlib\RequestInterface;
@@ -89,7 +90,8 @@ class OnlinePaymentManager implements LoggerAwareInterface
         protected UserCardServiceInterface $userCardService,
         AuditEventServiceInterface $auditEventService,
         protected Receipt $receipt,
-        protected SessionManager $sessionManager
+        protected SessionManager $sessionManager,
+        protected ModuleManager $moduleManager
     ) {
         $this->auditEventService = $auditEventService;
     }
@@ -385,8 +387,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
             }
             // Check that DevTools module is available when using the Test handler:
             if ($this->getHandlerName($sourceIls) === 'Test') {
-                global $modules;
-                if (!in_array('VuFindDevTools', $modules)) {
+                if (!in_array('VuFindDevTools', $this->moduleManager->getModules())) {
                     $details['payable'] = false;
                     $details['reason'] = 'Test handler not available (VuFindDevTools module not loaded)';
                 }
