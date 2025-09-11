@@ -32,7 +32,6 @@ declare(strict_types=1);
 namespace VuFind\OnlinePayment;
 
 use Laminas\Log\LoggerAwareInterface;
-use Laminas\ModuleManager\ModuleManager;
 use Laminas\Session\Container as SessionContainer;
 use Laminas\Session\SessionManager;
 use Laminas\Stdlib\RequestInterface;
@@ -51,8 +50,6 @@ use VuFind\Log\LoggerAwareTrait;
 use VuFind\OnlinePayment\Handler\AbstractBase as BaseHandler;
 use VuFind\OnlinePayment\Handler\HandlerInterface;
 use VuFind\OnlinePayment\Handler\PluginManager as HandlerPluginManager;
-
-use function in_array;
 
 /**
  * Online payment manager

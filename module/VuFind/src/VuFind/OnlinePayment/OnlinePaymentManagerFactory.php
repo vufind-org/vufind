@@ -41,6 +41,8 @@ use VuFind\Db\Service\PaymentFeeServiceInterface;
 use VuFind\Db\Service\PaymentServiceInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
 
+use function in_array;
+
 /**
  * Online payment factory.
  *
