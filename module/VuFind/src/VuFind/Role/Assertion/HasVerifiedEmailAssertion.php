@@ -29,8 +29,8 @@
 
 namespace VuFind\Role\Assertion;
 
-use LmcRbacMvc\Assertion\AssertionInterface;
-use LmcRbacMvc\Service\AuthorizationService;
+use Lmc\Rbac\Assertion\AssertionInterface;
+use Lmc\Rbac\Identity\IdentityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 
 /**
@@ -47,13 +47,17 @@ class HasVerifiedEmailAssertion implements AssertionInterface
     /**
      * Check if user has verified email to display developer settings
      *
-     * @param AuthorizationService $authorizationService Authorization service
+     * @param string             $permission Permission
+     * @param ?IdentityInterface $identity   Identity to check
+     * @param mixed              $context    Permission context
      *
      * @return bool
      */
-    public function assert(AuthorizationService $authorizationService)
-    {
-        $identity = $authorizationService->getIdentity();
+    public function assert(
+        string $permission,
+        ?IdentityInterface $identity = null,
+        mixed $context = null
+    ): bool {
         if ($identity instanceof UserEntityInterface) {
             return (bool)$identity->getEmailVerified();
         }
