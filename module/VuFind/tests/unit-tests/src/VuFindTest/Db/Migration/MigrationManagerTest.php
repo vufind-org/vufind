@@ -33,6 +33,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Db\Connection;
 use VuFind\Db\Migration\MigrationLoader;
 use VuFind\Db\Migration\MigrationManager;
+use VuFindTest\Feature\FixtureTrait;
 
 /**
  * Database Migration Loader Test Class
@@ -45,6 +46,8 @@ use VuFind\Db\Migration\MigrationManager;
  */
 class MigrationManagerTest extends \PHPUnit\Framework\TestCase
 {
+    use FixtureTrait;
+
     /**
      * Get a default mock Connection for use in getMockMigrationManager.
      *
@@ -137,5 +140,44 @@ class MigrationManagerTest extends \PHPUnit\Framework\TestCase
             }
         );
         $this->assertEquals('123', $manager->applyMigrations(['1', '2', '3'], $connection));
+    }
+
+    /**
+     * Test flow of applyMigration() while mocking all database interactions.
+     *
+     * @return void
+     */
+    public function testApplyMigration(): void
+    {
+        $connection = $this->createMock(Connection::class);
+        $connection->expects($this->exactly(2))->method('executeQuery');
+        $basePath = $this->getFixturePath('db-migrations');
+        $loader = $this->createMock(MigrationLoader::class);
+        $loader->expects($this->once())->method('getMigrationDirForPlatform')->willReturn($basePath);
+        $loader->expects($this->once())->method('splitSqlIntoStatements')->with('')
+            ->willReturn(['execute chunk 1', 'execute chunk 2']);
+        $manager = $this->getMockMigrationManager(['logMigrationEvent', 'cleanUpMigrationEvents'], loader: $loader);
+        $manager->expects($this->exactly(4))->method('logMigrationEvent')->willReturnCallback(
+            function ($incomingConnection, $name, $msg) use ($connection) {
+                $this->assertEquals($connection, $incomingConnection);
+                return "log $name : $msg\n";
+            }
+        );
+        $shortName = '10.1/001-dummy.sql';
+        $manager->expects($this->once())->method('cleanUpMigrationEvents')->with($connection, $shortName)
+            ->willReturn('cleanup');
+        $result = $manager->applyMigration($basePath . '/' . $shortName, $connection);
+        $this->assertEquals(
+            <<<EXPECTED_RESULT
+                log 10.1/001-dummy.sql : start
+                log 10.1/001-dummy.sql : writing chunk 0
+                execute chunk 1;
+                log 10.1/001-dummy.sql : writing chunk 1
+                execute chunk 2;
+                log 10.1/001-dummy.sql : success
+                cleanup
+                EXPECTED_RESULT,
+            $result
+        );
     }
 }
