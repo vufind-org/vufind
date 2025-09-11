@@ -256,7 +256,7 @@ class PaymentFee implements PaymentFeeEntityInterface
     }
 
     /**
-     * Get tax percent (in 1/100ths or a percent).
+     * Get tax percent (in 1/100ths of a percent).
      *
      * @return int
      */
@@ -266,7 +266,7 @@ class PaymentFee implements PaymentFeeEntityInterface
     }
 
     /**
-     * Set tax percent (in 1/100ths or a percent).
+     * Set tax percent (in 1/100ths of a percent).
      *
      * @param int $taxPercent Tax percent
      *
@@ -355,7 +355,7 @@ class PaymentFee implements PaymentFeeEntityInterface
      */
     public function calculateAmountExcludingTax(): int
     {
-        return (int)round($this->amount / (1 + $this->getTaxPercent()));
+        return (int)round($this->amount / (1 + $this->getTaxPercent() / 10000.0));
     }
 
     /**

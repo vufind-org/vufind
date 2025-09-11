@@ -130,14 +130,14 @@ interface PaymentFeeEntityInterface extends EntityInterface
     public function setAmount(int $amount): static;
 
     /**
-     * Get tax percent (in 1/100ths or a percent).
+     * Get tax percent (in 1/100ths of a percent).
      *
      * @return int
      */
     public function getTaxPercent(): int;
 
     /**
-     * Set tax percent (in 1/100ths or a percent).
+     * Set tax percent (in 1/100ths of a percent).
      *
      * @param int $taxPercent Tax percent
      *
