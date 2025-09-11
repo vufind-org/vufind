@@ -1206,15 +1206,13 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
 
         $session = $this->getSession($patron['id'] ?? null);
         $paid = 0;
-        if (isset($session->fines)) {
-            foreach ($session->fines as $key => $fine) {
-                if (
-                    ($fine['payable_online'] ?? false)
-                    && (!$fineIds || in_array($fine['fine_id'] ?? '', $fineIds))
-                ) {
-                    unset($session->fines[$key]);
-                    $paid += $fine['balance'];
-                }
+        foreach ($session->fines ?? [] as $key => $fine) {
+            if (
+                ($fine['payable_online'] ?? false)
+                && (!$fineIds || in_array($fine['fine_id'] ?? '', $fineIds))
+            ) {
+                unset($session->fines[$key]);
+                $paid += $fine['balance'];
             }
         }
         if ($paid < $amount) {
