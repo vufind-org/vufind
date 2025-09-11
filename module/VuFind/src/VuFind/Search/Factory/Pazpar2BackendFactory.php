@@ -74,7 +74,7 @@ class Pazpar2BackendFactory extends AbstractBackendFactory
     public function __invoke(ContainerInterface $sm, $name, ?array $options = null)
     {
         $this->setup($sm);
-        $this->config = $this->getService(\VuFind\Config\ConfigManager::class)
+        $this->config = $this->getService(\VuFind\Config\ConfigManagerInterface::class)
             ->getConfigObject('Pazpar2');
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
             $this->logger = $this->getService(\VuFind\Log\Logger::class);

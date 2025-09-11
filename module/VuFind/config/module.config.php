@@ -583,6 +583,7 @@ $config = [
             'VuFind\ChannelProviderPluginManager' => 'VuFind\ChannelProvider\PluginManager',
             'VuFind\Config' => 'VuFind\Config\PluginManager',
             'VuFind\ContentPluginManager' => 'VuFind\Content\PluginManager',
+            'VuFind\Config\ConfigManagerInterface' => 'VuFind\Config\ConfigManager',
             'VuFind\ContentAuthorNotesPluginManager' => 'VuFind\Content\AuthorNotes\PluginManager',
             'VuFind\ContentCoversPluginManager' => 'VuFind\Content\Covers\PluginManager',
             'VuFind\ContentExcerptsPluginManager' => 'VuFind\Content\Excerpts\PluginManager',

@@ -69,7 +69,7 @@ class UserIpReaderFactory implements \Laminas\ServiceManager\Factory\FactoryInte
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         $allowForwardedIps = $config['Proxy']['allow_forwarded_ips'] ?? false;
         $ipFilter = $config['Proxy']['forwarded_ip_filter'] ?? [];
         return new $requestedName(

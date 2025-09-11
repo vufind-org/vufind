@@ -31,7 +31,6 @@ namespace VuFind\Search\Factory;
 
 use Psr\Container\ContainerInterface;
 use VuFind\Config\Config;
-use VuFind\Config\ConfigManager;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Solr\CustomFilterListener;
 use VuFind\Search\Solr\DeduplicationListener;
@@ -202,7 +201,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     public function __invoke(ContainerInterface $sm, $name, ?array $options = null)
     {
         $this->setup($sm);
-        $this->configManager = $this->getService(ConfigManager::class);
+        $this->configManager = $this->getService(ConfigManagerInterface::class);
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
             $this->logger = $this->getService(\VuFind\Log\Logger::class);
         }

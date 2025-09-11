@@ -74,7 +74,7 @@ class LoaderFactory implements FactoryInterface
             ->getCache('cover')->getOptions();
         $cacheDir = is_callable([$cacheOptions, 'getCacheDir'])
             ? $cacheOptions->getCacheDir() : null;
-        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
         $loader = new $requestedName(
             $config,
             $container->get(\VuFind\Content\Covers\PluginManager::class),

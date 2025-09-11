@@ -69,7 +69,7 @@ class AbstractBaseFactory implements \Laminas\ServiceManager\Factory\FactoryInte
         if ($options !== null) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         $treeDataFormatter = new $requestedName($config['Hierarchy']['validateHierarchySequences'] ?? true);
         $treeDataFormatter->setSorter($container->get(\VuFind\I18n\Sorter::class));
         return $treeDataFormatter;

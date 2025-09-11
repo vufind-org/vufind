@@ -69,7 +69,7 @@ class AccountCapabilitiesFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config'),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config'),
             // Pass a callback to return the auth manager to prevent circular dependencies
             // (we need the auth manager to determine some capabilities, but some of its
             // dependencies may need to make capability checks as well).

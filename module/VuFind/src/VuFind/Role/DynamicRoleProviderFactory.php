@@ -83,7 +83,7 @@ class DynamicRoleProviderFactory implements FactoryInterface
 
         // Load the permissions:
         $configLoader = $container->get(\VuFind\Config\PluginManager::class);
-        $permissions = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('permissions');
+        $permissions = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('permissions');
 
         // If we're configured to map legacy settings, do so now:
         if (

@@ -30,7 +30,7 @@
 namespace VuFind\Search\Params;
 
 use Psr\Container\ContainerInterface;
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 
 /**
  * Search params plugin factory
@@ -72,7 +72,7 @@ class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
         $options = $container->get(\VuFind\Search\Options\PluginManager::class)
             ->get($optionsService);
         $class = $this->getClassName($requestedName);
-        $configManager = $container->get(ConfigManager::class);
+        $configManager = $container->get(ConfigManagerInterface::class);
         // Clone the options instance in case caller modifies it:
         return new $class(clone $options, $configManager, ...($extras ?: []));
     }
