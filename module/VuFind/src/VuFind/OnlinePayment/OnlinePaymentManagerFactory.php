@@ -75,6 +75,7 @@ class OnlinePaymentManagerFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
         $dbServiceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
+        $devToolsAvailable = in_array('VuFindDevTools', $container->get('ModuleManager')->getModules());
         return new $requestedName(
             $container->get(\VuFind\OnlinePayment\Handler\PluginManager::class),
             $container->get(\VuFind\ILS\Connection::class),
@@ -85,7 +86,7 @@ class OnlinePaymentManagerFactory implements FactoryInterface
             $dbServiceManager->get(AuditEventServiceInterface::class),
             $container->get(\VuFind\OnlinePayment\Receipt::class),
             $container->get(\Laminas\Session\SessionManager::class),
-            $container->get('ModuleManager')
+            $devToolsAvailable
         );
     }
 }

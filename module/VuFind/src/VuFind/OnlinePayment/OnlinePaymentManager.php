@@ -80,7 +80,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
      * @param AuditEventServiceInterface $auditEventService Audit event database service
      * @param Receipt                    $receipt           Receipt handler
      * @param SessionManager             $sessionManager    Session manager
-     * @param ModuleManager              $moduleManager     Module manager
+     * @param bool                       $devToolsAvailable Is the VuFindDevTools module loaded?
      */
     public function __construct(
         protected HandlerPluginManager $handlerManager,
@@ -92,7 +92,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
         AuditEventServiceInterface $auditEventService,
         protected Receipt $receipt,
         protected SessionManager $sessionManager,
-        protected ModuleManager $moduleManager
+        protected bool $devToolsAvailable
     ) {
         $this->auditEventService = $auditEventService;
     }
@@ -388,7 +388,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
             }
             // Check that DevTools module is available when using the Test handler:
             if ($this->getHandlerName($sourceIls) === 'Test') {
-                if (!in_array('VuFindDevTools', $this->moduleManager->getModules())) {
+                if (!$this->devToolsAvailable) {
                     $details['payable'] = false;
                     $details['reason'] = 'Test handler not available (VuFindDevTools module not loaded)';
                 }
