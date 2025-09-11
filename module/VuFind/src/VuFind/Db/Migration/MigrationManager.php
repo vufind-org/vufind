@@ -29,7 +29,7 @@
 
 namespace VuFind\Db\Migration;
 
-use Doctrine\DBAL\Connection;
+use VuFind\Db\Connection;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Exception\TableNotFoundException;
 
