@@ -1,7 +1,11 @@
 <?php
 
 /**
- * Trait for handling online payment.
+ * Trait for handling online payment in ILS drivers.
+ *
+ * Prerequisites:
+ *
+ * - Driver configuration as an array in $this->config
  *
  * PHP version 8
  *
@@ -32,7 +36,7 @@ namespace VuFind\ILS\Logic;
 use function in_array;
 
 /**
- * Trait for handling online payment.
+ * Trait for handling online payment in ILS drivers.
  *
  * @category VuFind
  * @package  ILS
