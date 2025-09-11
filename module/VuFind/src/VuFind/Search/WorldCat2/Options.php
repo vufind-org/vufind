@@ -29,6 +29,8 @@
 
 namespace VuFind\Search\WorldCat2;
 
+use VuFind\Config\ConfigManagerInterface;
+
 /**
  * WorldCat v2 Search Options
  *
@@ -50,13 +52,13 @@ class Options extends \VuFind\Search\Base\Options
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(ConfigManagerInterface $configManager)
     {
         $this->searchIni = $this->facetsIni = 'WorldCat2';
         $this->advancedFacetSettingsSection = 'Advanced_Facet_Settings';
-        parent::__construct($configLoader);
+        parent::__construct($configManager);
 
         // Term limit setup:
         $this->termsLimit = $this->searchSettings['General']['terms_limit'] ?? 30;

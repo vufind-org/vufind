@@ -34,6 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\ConfigManager;
 
 /**
  * Generic factory for search params objects.
@@ -79,11 +80,11 @@ class ParamsFactory implements FactoryInterface
         }
         $optionsObj = $container->get(\VuFind\Search\Options\PluginManager::class)
             ->get($optionsService);
-        $configLoader = $container->get(\VuFind\Config\PluginManager::class);
+        $configManager = $container->get(ConfigManager::class);
         // Clone the options instance in case caller modifies it:
         return new $requestedName(
             clone $optionsObj,
-            $configLoader,
+            $configManager,
             ...($options ?: [])
         );
     }

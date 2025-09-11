@@ -29,8 +29,9 @@
 
 namespace VuFind\Role;
 
-use LmcRbacMvc\Role\RoleProviderInterface;
-use Rbac\Role\Role;
+use Laminas\Permissions\Rbac\Role;
+use Laminas\Permissions\Rbac\RoleInterface;
+use Lmc\Rbac\Role\RoleProviderInterface;
 
 /**
  * VuFind dynamic role provider.
@@ -68,9 +69,9 @@ class DynamicRoleProvider implements RoleProviderInterface
      *
      * @param string[] $roleNames Role(s) to look up.
      *
-     * @return \Rbac\Role\RoleInterface[]
+     * @return RoleInterface[]
      */
-    public function getRoles(array $roleNames)
+    public function getRoles(iterable $roleNames): iterable
     {
         return array_map([$this, 'getRole'], $roleNames);
     }

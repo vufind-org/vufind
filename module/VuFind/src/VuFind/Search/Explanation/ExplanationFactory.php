@@ -36,6 +36,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\ConfigManager;
 
 /**
  * Generic factory for explanation objects.
@@ -82,7 +83,7 @@ class ExplanationFactory implements FactoryInterface
         return new $requestedName(
             $params,
             $container->get(\VuFindSearch\Service::class),
-            $container->get(\VuFind\Config\PluginManager::class),
+            $container->get(ConfigManager::class),
             ...($options ?: [])
         );
     }

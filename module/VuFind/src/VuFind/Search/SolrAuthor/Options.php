@@ -29,6 +29,8 @@
 
 namespace VuFind\Search\SolrAuthor;
 
+use VuFind\Config\ConfigManagerInterface;
+
 /**
  * Author Search Options
  *
@@ -43,11 +45,11 @@ class Options extends \VuFind\Search\Solr\Options
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(ConfigManagerInterface $configManager)
     {
-        parent::__construct($configLoader);
+        parent::__construct($configManager);
 
         // No spell check needed in author module:
         $this->spellcheck = false;
@@ -88,13 +90,13 @@ class Options extends \VuFind\Search\Solr\Options
     {
         // Load the necessary settings to determine the appropriate recommendations
         // module:
-        $ss = $this->configLoader->get($this->getSearchIni());
+        $ss = $this->configManager->getConfigArray($this->getSearchIni());
 
         // Load the AuthorModuleRecommendations configuration if available, use
         // standard defaults otherwise:
-        if (isset($ss->AuthorModuleRecommendations)) {
+        if (isset($ss['AuthorModuleRecommendations'])) {
             $recommend = [];
-            foreach ($ss->AuthorModuleRecommendations as $section => $content) {
+            foreach ($ss['AuthorModuleRecommendations'] as $section => $content) {
                 $recommend[$section] = [];
                 foreach ($content as $current) {
                     $recommend[$section][] = $current;

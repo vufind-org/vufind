@@ -121,7 +121,7 @@ class EdsBackendFactory extends AbstractBackendFactory
      */
     protected function createBackend(Connector $connector)
     {
-        $auth = $this->getService(\LmcRbacMvc\Service\AuthorizationService::class);
+        $auth = $this->getService(\Lmc\Rbac\Mvc\Service\AuthorizationService::class);
         $isGuest = !$auth->isGranted('access.EDSExtendedResults');
         $session = new \Laminas\Session\Container(
             'EBSCO',
@@ -178,7 +178,7 @@ class EdsBackendFactory extends AbstractBackendFactory
      */
     protected function createConnectorOptions()
     {
-        $auth = $this->getService(\LmcRbacMvc\Service\AuthorizationService::class);
+        $auth = $this->getService(\Lmc\Rbac\Mvc\Service\AuthorizationService::class);
         $options = [
             'search_http_method' => $this->edsConfig->General->search_http_method
                 ?? 'POST',

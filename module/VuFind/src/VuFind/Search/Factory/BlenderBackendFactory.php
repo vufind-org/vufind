@@ -32,6 +32,8 @@ namespace VuFind\Search\Factory;
 use Laminas\EventManager\EventManager;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFindSearch\Backend\Blender\Backend;
 
 /**
@@ -55,9 +57,9 @@ class BlenderBackendFactory implements FactoryInterface
     /**
      * VuFind configuration reader
      *
-     * @var \VuFind\Config\PluginManager
+     * @var ConfigManagerInterface
      */
-    protected $config;
+    protected ConfigManagerInterface $configManager;
 
     /**
      * Search configuration file identifier.
@@ -94,9 +96,9 @@ class BlenderBackendFactory implements FactoryInterface
     public function __invoke(ContainerInterface $sm, $name, ?array $options = null)
     {
         $this->container = $sm;
-        $this->config = $sm->get(\VuFind\Config\PluginManager::class);
+        $this->configManager = $sm->get(ConfigManager::class);
         $yamlReader = $sm->get(\VuFind\Config\YamlReader::class);
-        $blenderConfig = $this->config->get($this->searchConfig);
+        $blenderConfig = $this->configManager->getConfigObject($this->searchConfig);
         $backendConfig = $blenderConfig->Backends
             ? $blenderConfig->Backends->toArray() : [];
         if (!$backendConfig) {
