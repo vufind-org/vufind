@@ -67,7 +67,7 @@ class PaymentFee implements PaymentFeeEntityInterface
     protected $payment;
 
     /**
-     * Title
+     * Title.
      *
      * @var string
      */
