@@ -29,6 +29,8 @@
 
 namespace VuFind\Search\BrowZine;
 
+use VuFind\Config\ConfigManagerInterface;
+
 /**
  * BrowZine Search Options
  *
@@ -45,12 +47,12 @@ class Options extends \VuFind\Search\Base\Options
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(ConfigManagerInterface $configManager)
     {
         $this->facetsIni = $this->searchIni = 'BrowZine';
-        parent::__construct($configLoader);
+        parent::__construct($configManager);
 
         // BrowZine only supports relevance sorting:
         $this->sortOptions = ['relevance' => 'Relevance'];

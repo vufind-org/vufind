@@ -29,7 +29,7 @@
 
 namespace VuFindTest\Search;
 
-use VuFind\Search\SearchTabsHelper;
+use VuFind\Config\ConfigManagerInterface;
 
 /**
  * SearchTabsHelper unit tests.
@@ -220,7 +220,7 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo('hiddenFilters'))
             ->willReturn($filters);
 
-        $configManager = $this->createMock(\VuFind\Config\PluginManager::class);
+        $configManager = $this->createMock(ConfigManagerInterface::class);
 
         $mockSolrOptions = $this->getMockBuilder(\VuFind\Search\Solr\Options::class)
             ->disableOriginalConstructor()->getMock();

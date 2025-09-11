@@ -184,7 +184,7 @@ trait ConfigRelatedServicesTrait
      * @return MockObject&ConfigManager
      */
     protected function getMockConfigManager(
-        array $configs,
+        array $configs = [],
         array $default = [],
         ?InvocationOrder $getConfigArrayExpect = null
     ): ConfigManager {

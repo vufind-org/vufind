@@ -739,7 +739,7 @@ class User implements UserEntityInterface
      *
      * @return string[]|\Rbac\Role\RoleInterface[]
      */
-    public function getRoles()
+    public function getRoles(): iterable
     {
         return ['loggedin'];
     }

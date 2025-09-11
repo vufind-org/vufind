@@ -29,6 +29,8 @@
 
 namespace VuFind\Search\Summon;
 
+use VuFind\Config\ConfigManagerInterface;
+
 /**
  * Summon Search Options
  *
@@ -59,9 +61,9 @@ class Options extends \VuFind\Search\Base\Options
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(ConfigManagerInterface $configManager)
     {
         $this->searchIni = $this->facetsIni = 'Summon';
         $this->advancedFacetSettingsSection = 'Advanced_Facet_Settings';
@@ -69,7 +71,7 @@ class Options extends \VuFind\Search\Base\Options
         // Override the default result limit with a value that we can always support:
         $this->defaultResultLimit = 400;
 
-        parent::__construct($configLoader);
+        parent::__construct($configManager);
 
         // Set up highlighting preference
         if (null !== ($highlighting = $this->searchSettings['General']['highlighting'] ?? null)) {

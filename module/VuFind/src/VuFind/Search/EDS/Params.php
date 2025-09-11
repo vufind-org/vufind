@@ -31,6 +31,7 @@
 
 namespace VuFind\Search\EDS;
 
+use VuFind\Config\ConfigManagerInterface;
 use VuFindSearch\ParamBag;
 
 /**
@@ -112,12 +113,12 @@ class Params extends AbstractEDSParams
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Base\Options  $options      Options to use
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param \VuFind\Search\Base\Options $options       Options to use
+     * @param ConfigManagerInterface      $configManager Config manager
      */
-    public function __construct($options, \VuFind\Config\PluginManager $configLoader)
+    public function __construct($options, ConfigManagerInterface $configManager)
     {
-        parent::__construct($options, $configLoader);
+        parent::__construct($options, $configManager);
     }
 
     /**

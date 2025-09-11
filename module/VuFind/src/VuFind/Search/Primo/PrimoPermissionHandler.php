@@ -29,7 +29,7 @@
 
 namespace VuFind\Search\Primo;
 
-use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
+use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareTrait;
 
 use function in_array;
 use function is_array;
@@ -312,7 +312,7 @@ class PrimoPermissionHandler
         $onCampusRule = $this->getOnCampusRule($code);
         $authService = $this->getAuthorizationService();
 
-        // if no authorization service is available, the user can't get permission
-        return $authService && $authService->isGranted($onCampusRule);
+        // if no authorization service is available, or if no rule is defined, the user can't get permission
+        return $authService && $onCampusRule && $authService->isGranted($onCampusRule);
     }
 }

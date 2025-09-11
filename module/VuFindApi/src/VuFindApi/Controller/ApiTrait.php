@@ -141,7 +141,7 @@ trait ApiTrait
      */
     protected function isAccessDenied($permission)
     {
-        $auth = $this->getService(\LmcRbacMvc\Service\AuthorizationService::class);
+        $auth = $this->getService(\Lmc\Rbac\Mvc\Service\AuthorizationService::class);
         if (!$auth->isGranted($permission)) {
             return $this->output(
                 [],
