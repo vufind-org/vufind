@@ -56,13 +56,23 @@ class PaymentService extends AbstractDbService implements PaymentServiceInterfac
     use DateTimeTrait;
 
     /**
+     * Create a Payment entity object.
+     *
+     * @return PaymentEntityInterface
+     */
+    public function createEntity(): PaymentEntityInterface
+    {
+        return $this->entityPluginManager->get(PaymentEntityInterface::class);
+    }
+
+    /**
      * Create a Payment entity object with "in progress" status.
      *
      * @return PaymentEntityInterface
      */
     public function createInProgressPayment(): PaymentEntityInterface
     {
-        $entity = $this->entityPluginManager->get(PaymentEntityInterface::class);
+        $entity = $this->createEntity();
         $entity->setCreated(new DateTime());
         $entity->setStatus(PaymentStatus::InProgress);
         return $entity;
