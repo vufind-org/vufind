@@ -71,7 +71,7 @@ class PermissionManagerFactory implements FactoryInterface
         $permissions = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('permissions');
         $permManager = new $requestedName($permissions);
         $permManager->setAuthorizationService(
-            $container->get(\LmcRbacMvc\Service\AuthorizationService::class)
+            $container->get(\Lmc\Rbac\Mvc\Service\AuthorizationService::class)
         );
         return $permManager;
     }

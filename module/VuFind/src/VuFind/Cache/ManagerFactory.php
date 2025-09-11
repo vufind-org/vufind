@@ -34,6 +34,9 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Exception\ConfigException;
+
+use function is_array;
 
 /**
  * Cache Manager factory.
@@ -68,10 +71,22 @@ class ManagerFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $configManager = $container->get(\VuFind\Config\ConfigManager::class);
+        $configLoader = $container->get(\VuFind\Config\ConfigLoader::class);
+        $configLocation = $configLoader->getConfigLocation('config');
+        $config = ($configLocation !== null) ? $configLoader->loadConfigFromLocation($configLocation) : null;
+        if (!is_array($config)) {
+            throw new ConfigException('Failed to load cache configuration.');
+        }
+        // Load legacy configuration if new configuration is not present yet.
+        if (!isset($config['CacheConfigPath_searchspecs'])) {
+            $searchConfigLocation = $configLoader->getConfigLocation('searches');
+            $searchConfig = $configLoader->loadConfigFromLocation($searchConfigLocation);
+            $config['CacheConfigPath_searchspecs'] = [
+                'disabled' => ($searchConfig['Cache']['type'] ?? false) === false,
+            ];
+        }
         return new $requestedName(
-            $configManager->getConfigObject('config'),
-            $configManager->getConfigObject('searches'),
+            $config,
             $container->get(\Laminas\Cache\Service\StorageAdapterFactory::class)
         );
     }

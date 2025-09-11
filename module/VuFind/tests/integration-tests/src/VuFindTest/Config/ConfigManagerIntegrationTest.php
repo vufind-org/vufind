@@ -43,11 +43,11 @@ use VuFindTest\Integration\ConfigTestCase;
 class ConfigManagerIntegrationTest extends ConfigTestCase
 {
     /**
-     * Test caching.
+     * Test simple caching.
      *
      * @return void
      */
-    public function testCaching(): void
+    public function testSimpleCaching(): void
     {
         $container = $this->getContainerWithConfigRelatedServices();
         $configManager = $container->get(\VuFind\Config\ConfigManager::class);

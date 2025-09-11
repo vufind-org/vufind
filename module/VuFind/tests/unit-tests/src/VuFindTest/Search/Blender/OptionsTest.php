@@ -80,12 +80,12 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
      */
     public function testOptions(array $config, $advAction): void
     {
-        $configMgr = $this->getMockConfigPluginManager(
+        $mockConfigManager = $this->getMockConfigManager(
             [
                 'Blender' => $config,
             ]
         );
-        $options = new Options($configMgr);
+        $options = new Options($mockConfigManager);
         $this->assertEquals('blender-results', $options->getSearchAction());
         $this->assertEquals($advAction, $options->getAdvancedSearchAction());
         $this->assertFalse($options->getFacetListAction());
