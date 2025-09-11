@@ -225,12 +225,14 @@ class MigrationManager
      */
     protected function cleanUpMigrationEvents(?Connection $connection, string $name): string
     {
-        $queryBuilder = $connection ? $connection->createQueryBuilder() : $this->connection->createQueryBuilder();
+        $writeToDatabase = $connection !== null;
+        $connection ??= $this->connection;
+        $queryBuilder = $connection->createQueryBuilder();
         $queryBuilder->delete('migrations')
-            ->where('name = ' . $this->connection->quote($name))
-            ->andWhere('status != ' . $this->connection->quote('success'));
+            ->where('name = ' . $connection->quote($name))
+            ->andWhere('status != ' . $connection->quote('success'));
         $sql = (string)$queryBuilder;
-        if ($connection) {
+        if ($writeToDatabase) {
             $connection->executeQuery($queryBuilder);
         }
         return "$sql;\n";
