@@ -36,7 +36,6 @@ use VuFind\Config\Version;
 use VuFind\Db\Migration\MigrationLoader;
 
 use function in_array;
-use function strlen;
 
 /**
  * Database builder (for creating the database required by the system).
@@ -264,10 +263,6 @@ class DbBuilder
                 $db = $this->getRootDatabaseConnection($driver, $dbHost, $rootUser, $rootPass, $newName);
                 $statements = $this->migrationLoader->splitSqlIntoStatements($sql);
                 foreach ($statements as $current) {
-                    // Skip empty sections:
-                    if (strlen($current) == 0) {
-                        continue;
-                    }
                     $db->executeQuery($current);
                 }
             }

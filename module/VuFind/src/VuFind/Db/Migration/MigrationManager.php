@@ -29,9 +29,9 @@
 
 namespace VuFind\Db\Migration;
 
-use VuFind\Db\Connection;
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Exception\TableNotFoundException;
+use VuFind\Db\Connection;
 
 use function get_class;
 
@@ -252,13 +252,11 @@ class MigrationManager
         $output .= $this->logMigrationEvent($connection, $shortMigrationName, 'start');
         $sql = file_get_contents($migration);
         foreach ($this->loader->splitSqlIntoStatements($sql) as $i => $sqlChunk) {
-            if (!empty($sqlChunk)) {
-                $output .= $this->logMigrationEvent($connection, $shortMigrationName, "writing chunk $i");
-                if ($connection) {
-                    $connection->executeQuery($sqlChunk);
-                }
-                $output .= "$sqlChunk;\n";
+            $output .= $this->logMigrationEvent($connection, $shortMigrationName, "writing chunk $i");
+            if ($connection) {
+                $connection->executeQuery($sqlChunk);
             }
+            $output .= "$sqlChunk;\n";
         }
         $output .= $this->logMigrationEvent($connection, $shortMigrationName, 'success');
         $output .= $this->cleanUpMigrationEvents($connection, $shortMigrationName);
