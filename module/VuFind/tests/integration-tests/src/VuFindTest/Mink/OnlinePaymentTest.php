@@ -466,6 +466,12 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
                 ],
                 $blockMsg,
             ],
+            'lost card fee blocks payment (regex with modifier)' => [
+                [
+                    'blockingNonPayableDescriptions' => ['/Lost.*replacement/u'],
+                ],
+                $blockMsg,
+            ],
             'minimum payable amount blocks payment' => [
                 [
                     'minimumFee' => '5000',

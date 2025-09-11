@@ -129,7 +129,7 @@ trait OnlinePaymentTrait
             return true;
         }
         foreach ((array)($paymentConfig['blockingNonPayableDescriptions'] ?? []) as $pattern) {
-            if (str_starts_with($pattern, '/') && str_ends_with($pattern, '/')) {
+            if (str_starts_with($pattern, '/') && preg_match('{/\w?$}', $pattern)) {
                 if (preg_match($pattern, $fine['description'] ?? '')) {
                     return true;
                 }

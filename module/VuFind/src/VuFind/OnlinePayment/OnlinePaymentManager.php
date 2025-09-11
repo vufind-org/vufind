@@ -80,6 +80,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
      * @param AuditEventServiceInterface $auditEventService Audit event database service
      * @param Receipt                    $receipt           Receipt handler
      * @param SessionManager             $sessionManager    Session manager
+     * @param ModuleManager              $moduleManager     Module manager
      */
     public function __construct(
         protected HandlerPluginManager $handlerManager,

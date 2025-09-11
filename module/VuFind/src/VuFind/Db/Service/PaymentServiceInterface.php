@@ -122,15 +122,6 @@ interface PaymentServiceInterface extends DbServiceInterface
     public function getUnresolvedPaymentsToReport(int $interval): array;
 
     /**
-     * Refresh an entity from the database.
-     *
-     * @param PaymentEntityInterface $entity Entity to refresh.
-     *
-     * @return void
-     */
-    public function refreshEntity(PaymentEntityInterface $entity): void;
-
-    /**
      * Get a filtered list of payments
      *
      * @param PaymentStatus[] $statuses         Payment statuses (optional filter)
@@ -167,4 +158,13 @@ interface PaymentServiceInterface extends DbServiceInterface
      * @return array
      */
     public function getUniqueSourceIlsList(): array;
+
+    /**
+     * Refresh an entity from the database.
+     *
+     * @param PaymentEntityInterface $entity Entity to refresh.
+     *
+     * @return void
+     */
+    public function refreshEntity(PaymentEntityInterface $entity): void;
 }

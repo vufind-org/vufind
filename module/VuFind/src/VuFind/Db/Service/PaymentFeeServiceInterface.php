@@ -66,7 +66,7 @@ interface PaymentFeeServiceInterface extends DbServiceInterface
      *
      * @param PaymentEntityInterface $payment Payment
      *
-     * @return array
+     * @return string[]
      */
     public function getFineIdsForPayment(PaymentEntityInterface $payment): array;
 }

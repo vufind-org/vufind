@@ -78,13 +78,7 @@ class PaymentService extends AbstractDbService implements PaymentServiceInterfac
      */
     public function getPaymentById(int $id): ?PaymentEntityInterface
     {
-        $dql = 'SELECT p '
-                . 'FROM ' . PaymentEntityInterface::class . ' p '
-                . 'WHERE p.id = :id';
-        $parameters = compact('id');
-        $query = $this->entityManager->createQuery($dql);
-        $query->setParameters($parameters);
-        return $query->getOneOrNullResult();
+        return $this->entityManager->find(PaymentEntityInterface::class, $id);
     }
 
     /**
@@ -124,9 +118,9 @@ class PaymentService extends AbstractDbService implements PaymentServiceInterfac
         ];
 
         $dql = 'SELECT p FROM ' . PaymentEntityInterface::class . ' p'
-            . ' WHERE p.catUsername = :catUsername AND p.status IN (' . implode(',', $statuses) . ')'
+            . ' WHERE p.catUsername = :catUsername AND p.status IN (:statuses)'
             . ' ORDER BY p.paid DESC';
-        $parameters = compact('catUsername');
+        $parameters = compact('catUsername', 'statuses');
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
         $query->setMaxResults(1);
@@ -150,9 +144,9 @@ class PaymentService extends AbstractDbService implements PaymentServiceInterfac
         ];
 
         $dql = 'SELECT p FROM ' . PaymentEntityInterface::class . ' p'
-            . ' WHERE p.catUsername = :catUsername AND p.status IN (' . implode(',', $statuses) . ')'
+            . ' WHERE p.catUsername = :catUsername AND p.status IN (:statuses)'
             . ' ORDER BY p.created DESC';
-        $parameters = compact('catUsername');
+        $parameters = compact('catUsername', 'statuses');
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
         $query->setMaxResults(1);
@@ -230,15 +224,15 @@ class PaymentService extends AbstractDbService implements PaymentServiceInterfac
      */
     public function getUnresolvedPaymentsToReport(int $interval): array
     {
-        $statuses = implode(',', [PaymentStatus::FinesUpdated->value, PaymentStatus::RegistrationExpired->value]);
         $dql = <<<DQL
             SELECT p FROM {PaymentEntityInterface::class} p
-              WHERE p.status IN ($statuses)
+              WHERE p.status IN (:statuses)
                 AND p.paid > :emptyDate
                 AND p.reported < :reportedLimit
               ORDER BY p.created
             DQL;
         $parameters = [
+            'statuses' => [PaymentStatus::FinesUpdated->value, PaymentStatus::RegistrationExpired->value],
             'emptyDate' => $this->getUnassignedDefaultDateTime()->format('Y-m-d H:i:s'),
             'reportedLimit' => date('Y-m-d H:i:s', time() - $interval * 60),
         ];
@@ -281,7 +275,8 @@ class PaymentService extends AbstractDbService implements PaymentServiceInterfac
         $parameters = $dqlWhere = [];
 
         if ($statuses) {
-            $dqlWhere[] = 'p.status IN (' . implode(',', array_map(fn ($s) => $s->value, $statuses)) . ')';
+            $dqlWhere[] = 'p.status IN (:statuses)';
+            $parameters['statuses'] = array_map(fn ($s) => $s->value, $statuses);
         }
         if (null !== $localIdentifier) {
             $dqlWhere[] = 'p.localIdentifier LIKE :localIdentifier';
