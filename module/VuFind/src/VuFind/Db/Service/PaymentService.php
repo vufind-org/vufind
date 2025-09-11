@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Database service for payment table.
+ * Database service for payment transactions.
  *
  * PHP version 8
  *
@@ -56,16 +56,15 @@ class PaymentService extends AbstractDbService implements PaymentServiceInterfac
     use DateTimeTrait;
 
     /**
-     * Create a Payment entity object.
+     * Create a Payment entity object with "in progress" status.
      *
      * @return PaymentEntityInterface
      */
-    public function createEntity(): PaymentEntityInterface
+    public function createInProgressPayment(): PaymentEntityInterface
     {
         $entity = $this->entityPluginManager->get(PaymentEntityInterface::class);
         $entity->setCreated(new DateTime());
         $entity->setStatus(PaymentStatus::InProgress);
-        $entity->setStatusMessage('');
         return $entity;
     }
 

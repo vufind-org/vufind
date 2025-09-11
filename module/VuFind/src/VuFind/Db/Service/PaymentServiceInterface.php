@@ -48,11 +48,11 @@ use VuFind\Db\Type\PaymentStatus;
 interface PaymentServiceInterface extends DbServiceInterface
 {
     /**
-     * Create a Payment entity object.
+     * Create a Payment entity object with "in progress" status.
      *
      * @return PaymentEntityInterface
      */
-    public function createEntity(): PaymentEntityInterface;
+    public function createInProgressPayment(): PaymentEntityInterface;
 
     /**
      * Retrieve a payment object.

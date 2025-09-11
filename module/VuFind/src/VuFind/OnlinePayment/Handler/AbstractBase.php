@@ -208,7 +208,7 @@ abstract class AbstractBase implements
         int $amount,
         array $fines
     ): PaymentEntityInterface {
-        $payment = $this->paymentService->createEntity()
+        $payment = $this->paymentService->createInProgressPayment()
             ->setLocalIdentifier($localIdentifier)
             ->setRemoteIdentifier($remoteIdentifier)
             ->setSourceIls($this->getSourceIls($patron))
