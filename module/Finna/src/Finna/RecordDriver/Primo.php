@@ -111,10 +111,13 @@ class Primo extends \VuFind\RecordDriver\Primo
         // Try to take the part after the title. Account for any 'The' etc. in the
         // beginning.
         if ($containerTitle && ($p = strpos($partOf, $containerTitle)) !== false) {
-            return trim(
-                substr($partOf, $p + strlen($containerTitle) + 1),
-                " \t\n\r,"
+            $arrRef = explode(
+                ',',
+                trim(substr($partOf, $p + strlen($containerTitle) + 1), " \t\n\r,")
             );
+            // Remove month & day from date
+            $arrRef[0] = preg_replace('/\b(\d{4})(?:-\d{2}){0,2}\b/', '$1', $arrRef[0]);
+            return implode(',', $arrRef);
         }
         return $partOf;
     }
@@ -272,7 +275,12 @@ class Primo extends \VuFind\RecordDriver\Primo
      */
     public function getPublicationDates()
     {
-        return $this->fields['date'] ?? [];
+        $result = [];
+        $dates = (array)($this->fields['date'] ?? []);
+        foreach ($dates as $date) {
+            $result[] = preg_replace('/\b(\d{4})(?:-\d{2}){0,2}\b/', '$1', $date);
+        }
+        return $result;
     }
 
     /**
