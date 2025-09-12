@@ -35,6 +35,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use VuFind\Config\ConfigManager;
+use VuFind\Db\Service\PluginManager;
 
 /**
  * Database API key service factory
@@ -69,6 +70,9 @@ class ApiKeyServiceFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        return new $requestedName($container->get(ConfigManager::class)->getConfigArray('config/API_Keys'));
+        return new $requestedName(
+            $container->get(PluginManager::class)->get(ApiKeyService::class),
+            $container->get(ConfigManager::class)->getConfigArray('config/API_Keys')
+        );
     }
 }

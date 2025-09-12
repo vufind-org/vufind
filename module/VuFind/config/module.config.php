@@ -818,8 +818,7 @@ $dynamicRoutes = [
 
 // Define static routes -- Controller/Action strings
 $staticRoutes = [
-    'Alphabrowse/Home', 'DeveloperSettings/DeleteAPIKey', 'DeveloperSettings/DisplaySettings',
-    'DeveloperSettings/GenerateAPIKey', 'Author/FacetList',
+    'Alphabrowse/Home', 'Author/FacetList',
     'Author/Home', 'Author/Search',
     'Authority/FacetList', 'Authority/Home', 'Authority/Search',
     'Blender/Advanced', 'Blender/Home', 'Blender/Results',
@@ -834,6 +833,8 @@ $staticRoutes = [
     'Collections/ByTitle',
     'Collections/Home', 'Combined/Home', 'Combined/Results', 'Combined/SearchBox',
     'Confirm/Confirm', 'Cover/Show', 'Cover/Unavailable',
+    'DeveloperSettings/DeleteAPIKey', 'DeveloperSettings/DisplaySettings',
+    'DeveloperSettings/GenerateAPIKey',
     'EDS/Advanced', 'EDS/Home', 'EDS/Search',
     'EIT/Advanced', 'EIT/Home', 'EIT/Search',
     'EPF/Home', 'EPF/Search',

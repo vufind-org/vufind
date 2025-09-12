@@ -60,9 +60,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements
     use ApiTrait;
     use \VuFind\ResumptionToken\ResumptionTokenTrait;
     use \VuFind\ApiKey\ApiKeyTrait;
-    use \VuFind\Log\LoggerAwareTrait {
-        logError as error;
-    }
+    use \VuFind\Log\LoggerAwareTrait;
 
     /**
      * Default record fields to return if a request does not define the fields

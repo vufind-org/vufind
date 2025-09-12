@@ -32,8 +32,6 @@ namespace VuFind\ApiKey;
 use VuFind\Db\Entity\AccessTokenEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\AccessTokenService;
-use VuFind\Db\Service\DbServiceAwareInterface;
-use VuFind\Db\Service\DbServiceAwareTrait;
 
 /**
  * Service for managing API keys
@@ -44,16 +42,16 @@ use VuFind\Db\Service\DbServiceAwareTrait;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class ApiKeyService implements DbServiceAwareInterface
+class ApiKeyService
 {
-    use DbServiceAwareTrait;
-
     /**
      * Constructor.
      *
-     * @param array $apiKeySettings Section API_Keys from main configuration.
+     * @param AccessTokenService $accessTokenService Access token service
+     * @param array              $apiKeySettings     Section API_Keys from main configuration.
      */
     public function __construct(
+        protected AccessTokenService $accessTokenService,
         protected array $apiKeySettings
     ) {
     }
@@ -91,7 +89,7 @@ class ApiKeyService implements DbServiceAwareInterface
      */
     public function getApiKeyForUser(UserEntityInterface $user): ?AccessTokenEntityInterface
     {
-        return $this->getDbService(AccessTokenService::class)->getByIdAndType(
+        return $this->accessTokenService->getByIdAndType(
             (string)$user->getId(),
             AccessTokenService::TYPE_API_KEY,
             false
@@ -107,7 +105,7 @@ class ApiKeyService implements DbServiceAwareInterface
      */
     public function isTokenValid(string $token): bool
     {
-        $token = $this->getDbService(AccessTokenService::class)->getByDataAndType(
+        $token = $this->accessTokenService->getByDataAndType(
             $token,
             AccessTokenService::TYPE_API_KEY
         );
@@ -124,7 +122,7 @@ class ApiKeyService implements DbServiceAwareInterface
     public function generateApiKeyForUser(UserEntityInterface $user): string|false
     {
         // Check if the user has an existing token and the token has not been revoked.
-        $token = $this->getDbService(AccessTokenService::class)->getByIdAndType(
+        $token = $this->accessTokenService->getByIdAndType(
             (string)$user->getId(),
             AccessTokenService::TYPE_API_KEY
         );
@@ -134,7 +132,7 @@ class ApiKeyService implements DbServiceAwareInterface
         $tokenHash = $this->createRandomToken($user);
         $token->setData($tokenHash);
         $token->setUser($user);
-        $this->getDbService(AccessTokenService::class)->persistEntity($token);
+        $this->accessTokenService->persistEntity($token);
         return $tokenHash;
     }
 
@@ -147,12 +145,12 @@ class ApiKeyService implements DbServiceAwareInterface
      */
     public function deleteApiKeyForUser(UserEntityInterface $user): bool
     {
-        $token = $this->getDbService(AccessTokenService::class)->getByIdAndType(
+        $token = $this->accessTokenService->getByIdAndType(
             (string)$user->getId(),
             AccessTokenService::TYPE_API_KEY
         );
         if ($token && !$token->isRevoked()) {
-            $this->getDbService(AccessTokenService::class)->deleteEntity($token);
+            $this->accessTokenService->deleteEntity($token);
             return true;
         }
         return false;
