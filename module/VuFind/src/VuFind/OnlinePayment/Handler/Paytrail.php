@@ -32,6 +32,7 @@ declare(strict_types=1);
 
 namespace VuFind\OnlinePayment\Handler;
 
+use Laminas\Http\PhpEnvironment\Response;
 use Paytrail\SDK\Client;
 use Paytrail\SDK\Model\CallbackUrl;
 use Paytrail\SDK\Model\Customer;
@@ -41,6 +42,7 @@ use Paytrail\SDK\Request\ShopInShopPaymentRequest;
 use Paytrail\SDK\Util\Signature;
 use VuFind\Db\Entity\PaymentEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Type\AuditEventSubtype;
 use VuFind\Exception\PaymentException;
 
 /**
@@ -100,7 +102,7 @@ class Paytrail extends AbstractBase
      * @param array               $fines         Fines data
      * @param string              $paymentParam  Payment status URL parameter
      *
-     * @return void
+     * @return Response
      *
      * @throws PaymentException
      */
@@ -112,7 +114,7 @@ class Paytrail extends AbstractBase
         int $amount,
         array $fines,
         string $paymentParam
-    ): void {
+    ): Response {
         $email = $user->getEmail() ?? $patron['email'] ?? null;
         if (!$email) {
             throw new PaymentException('email_address_missing');
@@ -214,7 +216,7 @@ class Paytrail extends AbstractBase
             $amount,
             $fines
         );
-        $this->redirectToPayment($paymentResponse->getHref(), $payment);
+        return $this->redirectToPayment($paymentResponse->getHref(), $payment);
     }
 
     /**

@@ -175,7 +175,7 @@ trait OnlinePaymentTrait
 
             // Start payment
             try {
-                $onlinePaymentManager->startPayment(
+                return $onlinePaymentManager->startPayment(
                     $returnUrl,
                     $notifyUrl,
                     $user,

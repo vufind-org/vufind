@@ -31,6 +31,7 @@ declare(strict_types=1);
 
 namespace VuFind\OnlinePayment\Handler;
 
+use Laminas\Http\PhpEnvironment\Response;
 use VuFind\Db\Entity\PaymentEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\PaymentException;
@@ -68,7 +69,7 @@ interface HandlerInterface
      * @param array               $fines         Fines data
      * @param string              $paymentParam  Payment status URL parameter
      *
-     * @return void
+     * @return Response
      *
      * @throws PaymentException
      */
@@ -80,7 +81,7 @@ interface HandlerInterface
         int $amount,
         array $fines,
         string $paymentParam
-    ): void;
+    ): Response;
 
     /**
      * Process the response from payment service.

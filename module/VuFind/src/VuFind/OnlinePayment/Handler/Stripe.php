@@ -32,6 +32,7 @@ declare(strict_types=1);
 
 namespace VuFind\OnlinePayment\Handler;
 
+use Laminas\Http\PhpEnvironment\Response;
 use Laminas\Log\LoggerAwareInterface;
 use Stripe\Checkout\Session;
 use Stripe\Exception\ApiErrorException;
@@ -94,7 +95,7 @@ class Stripe extends AbstractBase implements
      * @param array               $fines         Fines data
      * @param string              $paymentParam  Payment status URL parameter
      *
-     * @return void
+     * @return Response
      *
      * @throws PaymentException
      */
@@ -106,7 +107,7 @@ class Stripe extends AbstractBase implements
         int $amount,
         array $fines,
         string $paymentParam
-    ): void {
+    ): Response {
         if (!($apiKey = $this->paymentConfig['apiKey'] ?? null)) {
             throw new PaymentException('Configuration missing: apiKey');
         }
@@ -202,7 +203,7 @@ class Stripe extends AbstractBase implements
             $amount,
             $fines
         );
-        $this->redirectToPayment($stripeSession->url, $payment);
+        return $this->redirectToPayment($stripeSession->url, $payment);
     }
 
     /**

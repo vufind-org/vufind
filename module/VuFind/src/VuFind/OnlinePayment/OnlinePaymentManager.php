@@ -31,6 +31,7 @@ declare(strict_types=1);
 
 namespace VuFind\OnlinePayment;
 
+use Laminas\Http\PhpEnvironment\Response;
 use Laminas\Log\LoggerAwareInterface;
 use Laminas\Session\Container as SessionContainer;
 use Laminas\Session\SessionManager;
@@ -158,7 +159,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
      * @param array               $fines         Fines data
      * @param string              $paymentParam  Payment status URL parameter
      *
-     * @return void
+     * @return Response
      *
      * @throws PaymentException
      */
@@ -170,7 +171,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
         int $amount,
         array $fines,
         string $paymentParam
-    ) {
+    ): Response {
         $sourceIls = $this->getSourceIls($patron);
         $paymentHandler = $this->getHandler($sourceIls);
 
@@ -179,7 +180,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
             $this->ils->getMyProfile($patron)
         );
 
-        $paymentHandler->startPayment(
+        return $paymentHandler->startPayment(
             $returnBaseUrl,
             $notifyBaseUrl,
             $user,

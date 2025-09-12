@@ -32,6 +32,7 @@ declare(strict_types=1);
 
 namespace VuFind\OnlinePayment\Handler;
 
+use Laminas\Http\PhpEnvironment\Response;
 use Laminas\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\PaymentEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
@@ -228,13 +229,15 @@ abstract class AbstractBase implements
      * @param string                 $url     URL
      * @param PaymentEntityInterface $payment Payment
      *
-     * @return void
+     * @return Response
      */
-    protected function redirectToPayment(string $url, PaymentEntityInterface $payment): void
+    protected function redirectToPayment(string $url, PaymentEntityInterface $payment): Response
     {
-        header("Location: $url", true, 302);
+        $response = new Response();
+        $response->getHeaders()->addHeaderLine('Location', $url);
+        $response->setStatusCode(302);
         $this->addPaymentEvent($payment, AuditEventSubtype::Payment, 'Redirected to payment gateway');
-        exit();
+        return $response;
     }
 
     /**

@@ -32,6 +32,7 @@ declare(strict_types=1);
 
 namespace VuFind\OnlinePayment\Handler;
 
+use Laminas\Http\PhpEnvironment\Response;
 use Paytrail\SDK\Util\Signature;
 use VuFind\Db\Entity\PaymentEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
@@ -64,7 +65,7 @@ class Test extends AbstractBase
      * @param array               $fines         Fines data
      * @param string              $paymentParam  Payment status URL parameter
      *
-     * @return void
+     * @return Response
      *
      * @throws PaymentException
      */
@@ -76,7 +77,7 @@ class Test extends AbstractBase
         int $amount,
         array $fines,
         string $paymentParam
-    ): void {
+    ): Response {
         $localIdentifier = $this->generateLocalIdentifier($patron);
 
         $returnUrl = $this->addQueryParams(
@@ -112,7 +113,7 @@ class Test extends AbstractBase
             $amount,
             $fines
         );
-        $this->redirectToPayment($result['data']['paymentUrl'], $payment);
+        return $this->redirectToPayment($result['data']['paymentUrl'], $payment);
     }
 
     /**
