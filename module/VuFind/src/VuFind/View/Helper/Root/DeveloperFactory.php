@@ -72,7 +72,7 @@ class DeveloperFactory implements FactoryInterface
 
         return new $requestedName(
             $container->get(ApiKeyService::class),
-            $container->get(\VuFind\Auth\Manager::class)->getIdentity()
+            $container->get(\VuFind\Auth\Manager::class)->getUserObject()
         );
     }
 }
