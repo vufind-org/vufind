@@ -45,7 +45,7 @@
               <?php endif; ?>
             <?php endforeach; ?>
           <?php endif; ?>
-          <?php if($this->driver->isCollection()): ?>
+          <?php if ($this->driver->isCollection()): ?>
             <?=implode('<br>', $this->driver->getSummary()); ?>
           <?php else: ?>
             <?php $summAuthor = $this->driver->getPrimaryAuthor();
