@@ -92,6 +92,10 @@ retain_filters_by_default = false
 ; in CheckboxFacets section of facets.ini for user-selectable options.
 hide_component_parts = true
 
+; Filter for hidden component parts to be included in results, regardless of exclusion.
+; Includes results with the specified conditions.
+;displayable_component_part_filter = "(format:1/Book/eBook/ OR format:1/Journal/Serial/)"
+
 ; Maximum result to display
 result_limit = 100000
 

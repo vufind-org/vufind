@@ -392,16 +392,23 @@ class SolrExtensionsListener
             }
         }
 
+        // Check for config:
+        $configManager = $this->serviceLocator->get(\VuFind\Config\PluginManager::class);
+        $searchConfig = $configManager->get($this->searchConfig);
         if (null === $hideHiddenComponentsPart) {
-            // Check for config:
-            $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class);
-            $searchConfig = $config->get($this->searchConfig);
             $hideHiddenComponentsPart = $searchConfig->General->hide_component_parts ?? false;
         }
 
         // Add the parameter if needed:
         if ($hideHiddenComponentsPart) {
-            $params->add('fq', '-hidden_component_boolean:true');
+            if ($componentPartFilter = $searchConfig->General->displayable_component_part_filter ?? null) {
+                $params->add(
+                    'fq',
+                    $componentPartFilter . ' OR (*:* -hidden_component_boolean:true)'
+                );
+            } else {
+                $params->add('fq', '-hidden_component_boolean:true');
+            }
         }
     }
 
