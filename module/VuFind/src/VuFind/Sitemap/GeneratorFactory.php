@@ -68,7 +68,7 @@ class GeneratorFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $configManager = $container->get(\VuFind\Config\ConfigManager::class);
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
         $enabledLocales = array_keys(
             $container->get(\VuFind\I18n\Locale\LocaleSettings::class)
                 ->getEnabledLocales()

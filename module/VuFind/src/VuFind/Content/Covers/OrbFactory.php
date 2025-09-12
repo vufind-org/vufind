@@ -69,7 +69,7 @@ class OrbFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         $url = $config['Orb']['url'] ?? 'api.base-orb.fr/v1';
         if (!isset($config['Orb']['user'])) {
             throw new \Exception("Orb 'user' not set in VuFind config");

@@ -68,7 +68,7 @@ class PermissionManagerFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $permissions = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('permissions');
+        $permissions = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('permissions');
         $authorizationService = $container->get(\Lmc\Rbac\Mvc\Service\AuthorizationService::class);
         foreach ($permissions as $settings) {
             $sectionPermissions = (array)($settings['permission'] ?? []);

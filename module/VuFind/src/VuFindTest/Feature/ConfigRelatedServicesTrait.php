@@ -35,6 +35,7 @@ use PHPUnit\Framework\MockObject\Rule\InvocationOrder;
 use VuFind\Config\Config;
 use VuFind\Config\ConfigLoader;
 use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Config\Handler\PluginManager as ConfigHandlerPluginManager;
 use VuFind\Config\PathResolver;
 use VuFind\Config\PluginManager as ConfigPluginManager;
@@ -163,7 +164,7 @@ trait ConfigRelatedServicesTrait
         $cacheManager->expects($this->any())->method('getCache')->willReturn($storage);
 
         $configManager = new ConfigManager($configLoader, $configHandlerPluginManager, $cacheManager);
-        $container->set(ConfigManager::class, $configManager);
+        $container->set(ConfigManagerInterface::class, $configManager);
 
         $configPluginManager = new ConfigPluginManager($container, $moduleConfig['vufind']['config_reader']);
         $container->set(ConfigPluginManager::class, $configPluginManager);
@@ -181,14 +182,14 @@ trait ConfigRelatedServicesTrait
      * @param ?InvocationOrder $getConfigArrayExpect The expected invocation order for the getConfigArray()
      * method (null for any)
      *
-     * @return MockObject&ConfigManager
+     * @return MockObject&ConfigManagerInterface
      */
     protected function getMockConfigManager(
         array $configs = [],
         array $default = [],
         ?InvocationOrder $getConfigArrayExpect = null
-    ): ConfigManager {
-        $manager = $this->createMock(ConfigManager::class);
+    ): ConfigManagerInterface {
+        $manager = $this->createMock(ConfigManagerInterface::class);
         $manager->expects($getConfigArrayExpect ?? $this->any())
             ->method('getConfigArray')
             ->with($this->isType('string'))
@@ -217,12 +218,12 @@ trait ConfigRelatedServicesTrait
      *
      * @param \Throwable $exception Exception to throw
      *
-     * @return MockObject&ConfigManager
+     * @return MockObject&ConfigManagerInterface
      */
     protected function getMockFailingConfigManager(
         \Throwable $exception
-    ): ConfigManager {
-        $manager = $this->createMock(ConfigManager::class);
+    ): ConfigManagerInterface {
+        $manager = $this->createMock(ConfigManagerInterface::class);
         $manager->expects($this->any())
             ->method('getConfig')
             ->with($this->isType('string'))

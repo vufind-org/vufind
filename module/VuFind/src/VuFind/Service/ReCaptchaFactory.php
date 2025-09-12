@@ -81,7 +81,8 @@ class ReCaptchaFactory implements FactoryInterface
             'theme' => 'recaptcha_theme',
         ];
 
-        $recaptchaConfig = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config')['Captcha'];
+        $recaptchaConfig = $container->get(\VuFind\Config\ConfigManagerInterface::class)
+            ->getConfigArray('config')['Captcha'];
         foreach ($legacySettingsMap as $old => $new) {
             if (isset($recaptchaConfig[$old])) {
                 error_log(

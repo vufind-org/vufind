@@ -73,7 +73,7 @@ class GetResolverLinksFactory implements \Laminas\ServiceManager\Factory\Factory
             $container->get(\VuFind\Session\Settings::class),
             $container->get(\VuFind\Resolver\Driver\PluginManager::class),
             $container->get('ViewRenderer'),
-            $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config')
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config')
         );
     }
 }
