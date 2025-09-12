@@ -39,6 +39,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\ApiKey\ApiKeyService;
 use VuFind\Config\Config;
 use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Db\Service\OaiResumptionService;
 use VuFind\Db\Service\OaiResumptionServiceInterface;
 use VuFind\Db\Service\PluginManager as DbPluginManager;
@@ -232,7 +233,7 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
             ->onlyMethods(['debug'])->getMock();
         $this->setProperty($logger, 'writers', []);
         $serviceLocatorMap = [
-            [ConfigManager::class, $configPluginManager],
+            [ConfigManagerInterface::class, $configPluginManager],
             [SearchPluginManager::class, $optionsPluginManager],
             [DbPluginManager::class, $dbPluginManager],
             [Loader::class, $recordLoader],
