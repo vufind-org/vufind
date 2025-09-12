@@ -91,7 +91,7 @@
         "league/commonmark": "2.7.0",
         "league/oauth2-client": "^2.7",
         "league/oauth2-server": "^9.2",
-        "lm-commons/lmc-rbac-mvc": "3.5.0",
+        "lm-commons/lmc-rbac-mvc": "4.1.1",
         "matthiasmullie/minify": "1.3.75",
         "pear/archive_tar": "^1.4",
         "pear/http_request2": "2.7.0",

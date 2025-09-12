@@ -29,7 +29,7 @@
 
 namespace VuFind\View\Helper\Root;
 
-use LmcRbacMvc\Identity\IdentityInterface;
+use Lmc\Rbac\Identity\IdentityInterface;
 use RuntimeException;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\DbServiceAwareInterface;

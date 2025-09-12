@@ -69,7 +69,7 @@ class RecordFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
         $helper = new $requestedName($container->get(TagsService::class), $config);
         $helper->setCoverRouter($container->get(\VuFind\Cover\Router::class));
         $helper->setSearchMemory($container->get(\VuFind\Search\Memory::class));

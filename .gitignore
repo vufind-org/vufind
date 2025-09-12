@@ -23,7 +23,6 @@ import/solrmarc.log*
 lessphp_*.list
 module/VuFind/tests/.phpunit*
 node_modules
-package-lock.json
 public/swagger-ui
 tests/phpcs.cache.json
 themes/bootstrap5/scss/vendor/bootstrap

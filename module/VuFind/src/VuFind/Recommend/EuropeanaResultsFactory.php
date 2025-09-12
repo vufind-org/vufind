@@ -69,7 +69,7 @@ class EuropeanaResultsFactory implements \Laminas\ServiceManager\Factory\Factory
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         if (!isset($config['Content']['europeanaAPI'])) {
             throw new \Exception('Europeana API key missing from configuration.');
         }

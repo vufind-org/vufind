@@ -70,7 +70,7 @@ class NotifyCommandFactory implements FactoryInterface
         $scheduleOptions = $container
             ->get(\VuFind\Search\History::class)
             ->getScheduleOptions();
-        $mainConfig = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config');
+        $mainConfig = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
 
         // We need to initialize the theme so that the view renderer works:
         $theme = new \VuFindTheme\Initializer($mainConfig->Site, $container);

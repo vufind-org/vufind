@@ -112,7 +112,8 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $this->config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject($this->configName);
+        $this->config = $container->get(\VuFind\Config\ConfigManagerInterface::class)
+            ->getConfigObject($this->configName);
         $this->container = $container;
         return $this->getConnection();
     }
@@ -169,6 +170,7 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
     public function getDriverName($type)
     {
         switch (strtolower($type)) {
+            case 'mariadb':
             case 'mysql':
                 return 'pdo_mysql';
             case 'pgsql':

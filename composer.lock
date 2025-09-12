@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "36e3b97daa823a56a801d895dc271a73",
+    "content-hash": "823952d81557afb0277f29d2ffd567d8",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -1159,16 +1159,16 @@
         },
         {
             "name": "doctrine/dbal",
-            "version": "3.10.1",
+            "version": "3.10.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/dbal.git",
-                "reference": "3626601014388095d3af9de7e9e958623b7ef005"
+                "reference": "c6c16cf787eaba3112203dfcd715fa2059c62282"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/dbal/zipball/3626601014388095d3af9de7e9e958623b7ef005",
-                "reference": "3626601014388095d3af9de7e9e958623b7ef005",
+                "url": "https://api.github.com/repos/doctrine/dbal/zipball/c6c16cf787eaba3112203dfcd715fa2059c62282",
+                "reference": "c6c16cf787eaba3112203dfcd715fa2059c62282",
                 "shasum": ""
             },
             "require": {
@@ -1184,10 +1184,10 @@
             },
             "require-dev": {
                 "doctrine/cache": "^1.11|^2.0",
-                "doctrine/coding-standard": "13.0.0",
+                "doctrine/coding-standard": "13.0.1",
                 "fig/log-test": "^1",
                 "jetbrains/phpstorm-stubs": "2023.1",
-                "phpstan/phpstan": "2.1.17",
+                "phpstan/phpstan": "2.1.22",
                 "phpstan/phpstan-strict-rules": "^2",
                 "phpunit/phpunit": "9.6.23",
                 "slevomat/coding-standard": "8.16.2",
@@ -1253,7 +1253,7 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/dbal/issues",
-                "source": "https://github.com/doctrine/dbal/tree/3.10.1"
+                "source": "https://github.com/doctrine/dbal/tree/3.10.2"
             },
             "funding": [
                 {
@@ -1269,7 +1269,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-08-05T12:18:06+00:00"
+            "time": "2025-09-04T23:51:27+00:00"
         },
         {
             "name": "doctrine/deprecations",
@@ -2580,16 +2580,16 @@
         },
         {
             "name": "guzzlehttp/promises",
-            "version": "2.2.0",
+            "version": "2.3.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/promises.git",
-                "reference": "7c69f28996b0a6920945dd20b3857e499d9ca96c"
+                "reference": "481557b130ef3790cf82b713667b43030dc9c957"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/promises/zipball/7c69f28996b0a6920945dd20b3857e499d9ca96c",
-                "reference": "7c69f28996b0a6920945dd20b3857e499d9ca96c",
+                "url": "https://api.github.com/repos/guzzle/promises/zipball/481557b130ef3790cf82b713667b43030dc9c957",
+                "reference": "481557b130ef3790cf82b713667b43030dc9c957",
                 "shasum": ""
             },
             "require": {
@@ -2597,7 +2597,7 @@
             },
             "require-dev": {
                 "bamarni/composer-bin-plugin": "^1.8.2",
-                "phpunit/phpunit": "^8.5.39 || ^9.6.20"
+                "phpunit/phpunit": "^8.5.44 || ^9.6.25"
             },
             "type": "library",
             "extra": {
@@ -2643,7 +2643,7 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/promises/issues",
-                "source": "https://github.com/guzzle/promises/tree/2.2.0"
+                "source": "https://github.com/guzzle/promises/tree/2.3.0"
             },
             "funding": [
                 {
@@ -2659,20 +2659,20 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-03-27T13:27:01+00:00"
+            "time": "2025-08-22T14:34:08+00:00"
         },
         {
             "name": "guzzlehttp/psr7",
-            "version": "2.7.1",
+            "version": "2.8.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/guzzle/psr7.git",
-                "reference": "c2270caaabe631b3b44c85f99e5a04bbb8060d16"
+                "reference": "21dc724a0583619cd1652f673303492272778051"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/guzzle/psr7/zipball/c2270caaabe631b3b44c85f99e5a04bbb8060d16",
-                "reference": "c2270caaabe631b3b44c85f99e5a04bbb8060d16",
+                "url": "https://api.github.com/repos/guzzle/psr7/zipball/21dc724a0583619cd1652f673303492272778051",
+                "reference": "21dc724a0583619cd1652f673303492272778051",
                 "shasum": ""
             },
             "require": {
@@ -2688,7 +2688,7 @@
             "require-dev": {
                 "bamarni/composer-bin-plugin": "^1.8.2",
                 "http-interop/http-factory-tests": "0.9.0",
-                "phpunit/phpunit": "^8.5.39 || ^9.6.20"
+                "phpunit/phpunit": "^8.5.44 || ^9.6.25"
             },
             "suggest": {
                 "laminas/laminas-httphandlerrunner": "Emit PSR-7 responses"
@@ -2759,7 +2759,7 @@
             ],
             "support": {
                 "issues": "https://github.com/guzzle/psr7/issues",
-                "source": "https://github.com/guzzle/psr7/tree/2.7.1"
+                "source": "https://github.com/guzzle/psr7/tree/2.8.0"
             },
             "funding": [
                 {
@@ -2775,7 +2775,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-03-27T12:30:47+00:00"
+            "time": "2025-08-23T21:21:41+00:00"
         },
         {
             "name": "jaybizzle/crawler-detect",
@@ -4842,6 +4842,66 @@
             "time": "2024-10-16T13:10:19+00:00"
         },
         {
+            "name": "laminas/laminas-permissions-rbac",
+            "version": "3.7.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/laminas/laminas-permissions-rbac.git",
+                "reference": "0fbde38f0cc2b462856e8a5edeaa26eb97dd23be"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/laminas/laminas-permissions-rbac/zipball/0fbde38f0cc2b462856e8a5edeaa26eb97dd23be",
+                "reference": "0fbde38f0cc2b462856e8a5edeaa26eb97dd23be",
+                "shasum": ""
+            },
+            "require": {
+                "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0"
+            },
+            "conflict": {
+                "zendframework/zend-permissions-rbac": "*"
+            },
+            "require-dev": {
+                "laminas/laminas-coding-standard": "~3.0.0",
+                "phpunit/phpunit": "^10.5.38",
+                "psalm/plugin-phpunit": "^0.19.0",
+                "vimeo/psalm": "^5.26.1"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Laminas\\Permissions\\Rbac\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "BSD-3-Clause"
+            ],
+            "description": "Provides a role-based access control management",
+            "homepage": "https://laminas.dev",
+            "keywords": [
+                "authorization",
+                "laminas",
+                "laminas-permissions-rbac",
+                "rbac"
+            ],
+            "support": {
+                "chat": "https://laminas.dev/chat",
+                "docs": "https://docs.laminas.dev/laminas-permissions-rbac/",
+                "forum": "https://discourse.laminas.dev",
+                "issues": "https://github.com/laminas/laminas-permissions-rbac/issues",
+                "rss": "https://github.com/laminas/laminas-permissions-rbac/releases.atom",
+                "source": "https://github.com/laminas/laminas-permissions-rbac"
+            },
+            "funding": [
+                {
+                    "url": "https://funding.communitybridge.org/projects/laminas-project",
+                    "type": "community_bridge"
+                }
+            ],
+            "time": "2024-11-21T21:46:24+00:00"
+        },
+        {
             "name": "laminas/laminas-psr7bridge",
             "version": "1.12.0",
             "source": {
@@ -6605,57 +6665,139 @@
             "time": "2024-12-08T08:18:47+00:00"
         },
         {
-            "name": "lm-commons/lmc-rbac-mvc",
-            "version": "3.5.0",
+            "name": "lm-commons/lmc-rbac",
+            "version": "2.1.1",
             "source": {
                 "type": "git",
-                "url": "https://github.com/LM-Commons/LmcRbacMvc.git",
-                "reference": "48f9e5564f661a388fb482e418e65dc216051c23"
+                "url": "https://github.com/LM-Commons/LmcRbac.git",
+                "reference": "2110f500b6316e24fcf916dedd8bd64b74aeff44"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/LM-Commons/LmcRbacMvc/zipball/48f9e5564f661a388fb482e418e65dc216051c23",
-                "reference": "48f9e5564f661a388fb482e418e65dc216051c23",
+                "url": "https://api.github.com/repos/LM-Commons/LmcRbac/zipball/2110f500b6316e24fcf916dedd8bd64b74aeff44",
+                "reference": "2110f500b6316e24fcf916dedd8bd64b74aeff44",
                 "shasum": ""
             },
             "require": {
-                "doctrine/persistence": "^2.1 || ^3.0",
-                "laminas/laminas-config": "^3.1",
-                "laminas/laminas-eventmanager": "^3.0",
-                "laminas/laminas-mvc": "^3.0",
-                "laminas/laminas-servicemanager": "^3.0",
-                "lm-commons/rbac": "^1.2",
+                "doctrine/persistence": "^2.0 || ^3.0",
+                "laminas/laminas-permissions-rbac": "^3.1",
+                "laminas/laminas-servicemanager": "^3.15",
+                "laminas/laminas-stdlib": "^3.1",
                 "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0"
-            },
-            "replace": {
-                "laminas-commons/lmc-rbac-mvc": "3.0.1"
             },
             "require-dev": {
                 "doctrine/orm": "^3.0",
-                "laminas/laminas-authentication": "^2.2",
-                "laminas/laminas-developer-tools": "^2.1",
-                "laminas/laminas-http": "^2.2",
-                "laminas/laminas-i18n": "^2.7",
-                "laminas/laminas-view": "^2.12",
-                "php-coveralls/php-coveralls": "^2.2",
+                "laminas/laminas-coding-standard": "^3.0",
+                "phpspec/prophecy": "^1.10",
                 "phpspec/prophecy-phpunit": "^2.0",
-                "phpunit/phpunit": "9.6.20",
-                "squizlabs/php_codesniffer": "^3.5.5",
-                "symfony/cache": "^6.3"
-            },
-            "suggest": {
-                "doctrine/doctrine-module": "if you want to use Doctrine role provider",
-                "laminas/laminas-developer-tools": "if you want to show information about the roles"
+                "phpunit/phpunit": "^10.0 || ^11.0",
+                "psalm/plugin-phpunit": "^0.19.0",
+                "symfony/cache": "^6.3",
+                "vimeo/psalm": "^5.26"
             },
             "type": "library",
             "extra": {
                 "laminas": {
-                    "component": "LmcRbacMvc"
+                    "component": "Lmc\\Rbac",
+                    "config-provider": "Lmc\\Rbac\\ConfigProvider"
+                },
+                "branch-alias": {
+                    "dev-master": "1.1-dev"
                 }
             },
             "autoload": {
                 "psr-4": {
-                    "LmcRbacMvc\\": "src"
+                    "Lmc\\Rbac\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Kyle Spraggs",
+                    "email": "theman@spiffyjr.me",
+                    "homepage": "http://www.spiffyjr.me/"
+                },
+                {
+                    "name": "Michaël Gallego",
+                    "email": "mic.gallego@gmail.com",
+                    "homepage": "http://www.michaelgallego.fr"
+                },
+                {
+                    "name": "Jean-Marie Leroux",
+                    "email": "jmleroux.pro@gmail.com"
+                },
+                {
+                    "name": "Florent Blaison",
+                    "email": "florent.blaison@gmail.com"
+                },
+                {
+                    "name": "Bas Kamer",
+                    "email": "baskamer@gmail.com"
+                },
+                {
+                    "name": "Eric Richer",
+                    "email": "eric.richer@vistoconsulting.com"
+                }
+            ],
+            "description": "Laminas Module that provides a layer of features of Laminas\\Permissions\\Rbac",
+            "homepage": "http://www.github.com/LM-Commons/lmc-rbac",
+            "keywords": [
+                "laminas",
+                "module",
+                "permissions",
+                "rbac"
+            ],
+            "support": {
+                "issues": "https://github.com/LM-Commons/LmcRbac/issues",
+                "source": "https://github.com/LM-Commons/LmcRbac/tree/2.1.1"
+            },
+            "time": "2025-01-04T16:25:38+00:00"
+        },
+        {
+            "name": "lm-commons/lmc-rbac-mvc",
+            "version": "4.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/LM-Commons/LmcRbacMvc.git",
+                "reference": "75ba3600cb6c8d34155e9e8fc7c62c9217879d76"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/LM-Commons/LmcRbacMvc/zipball/75ba3600cb6c8d34155e9e8fc7c62c9217879d76",
+                "reference": "75ba3600cb6c8d34155e9e8fc7c62c9217879d76",
+                "shasum": ""
+            },
+            "require": {
+                "laminas/laminas-eventmanager": "^3.0",
+                "laminas/laminas-mvc": "^3.2",
+                "laminas/laminas-servicemanager": "^3.15",
+                "lm-commons/lmc-rbac": "^2.1",
+                "php": "~8.1.0 || ~8.2.0 || ~8.3.0 || ~8.4.0"
+            },
+            "require-dev": {
+                "laminas/laminas-authentication": "^2.2",
+                "laminas/laminas-coding-standard": "^3.0",
+                "phpspec/prophecy-phpunit": "^2.0",
+                "phpunit/phpunit": "^10.5.38",
+                "psalm/plugin-phpunit": "^0.19.0",
+                "vimeo/psalm": "^5.26"
+            },
+            "suggest": {
+                "lm-commons/lmc-rbac-mvc-devtools": "if you want to collect and show information about roles and guards in Laminas Developer Tools"
+            },
+            "type": "library",
+            "extra": {
+                "laminas": {
+                    "module": "Lmc\\Rbac\\Mvc",
+                    "config-provider": "Lmc\\Rbac\\Mvc\\ConfigProvider"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Lmc\\Rbac\\Mvc\\": "src"
                 }
             },
             "notification-url": "https://packagist.org/downloads/",
@@ -6683,80 +6825,18 @@
                 }
             ],
             "description": "Laminas Framework MVC Module that provides a layer of features of Laminas\\Permissions\\Rbac",
-            "homepage": "http://www.github.com/Laminas-Commons/LmcRbacMvc",
+            "homepage": "https://www.github.com/Lm-Commons/LmcRbacMvc",
             "keywords": [
                 "laminas",
                 "module",
                 "permissions",
-                "rbac",
-                "zfr"
+                "rbac"
             ],
             "support": {
                 "issues": "https://github.com/LM-Commons/LmcRbacMvc/issues",
-                "source": "https://github.com/LM-Commons/LmcRbacMvc/tree/3.5.0"
+                "source": "https://github.com/LM-Commons/LmcRbacMvc/tree/4.1.1"
             },
-            "time": "2025-01-02T20:29:21+00:00"
-        },
-        {
-            "name": "lm-commons/rbac",
-            "version": "v1.2.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/LM-Commons/rbac.git",
-                "reference": "fcf69dbc10c1d54595cc837b1525ea1e3252dc95"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/LM-Commons/rbac/zipball/fcf69dbc10c1d54595cc837b1525ea1e3252dc95",
-                "reference": "fcf69dbc10c1d54595cc837b1525ea1e3252dc95",
-                "shasum": ""
-            },
-            "require": {
-                "php": "^8.0"
-            },
-            "replace": {
-                "zfr/rbac": "1.2.0"
-            },
-            "require-dev": {
-                "php-coveralls/php-coveralls": "^2.2",
-                "phpspec/prophecy-phpunit": "^2.0",
-                "phpunit/phpunit": "^10.0 || ^11.0",
-                "squizlabs/php_codesniffer": "^3.5.5"
-            },
-            "type": "library",
-            "autoload": {
-                "psr-4": {
-                    "Rbac\\": "src/Rbac"
-                }
-            },
-            "notification-url": "https://packagist.org/downloads/",
-            "license": [
-                "MIT"
-            ],
-            "authors": [
-                {
-                    "name": "Michaël Gallego",
-                    "email": "mic.gallego@gmail.com"
-                },
-                {
-                    "name": "Eric Richer",
-                    "email": "eric.richer@vistoconsulting.com"
-                }
-            ],
-            "description": "Clone of zfr/rbac v1.2.0 for PHP 8 support",
-            "homepage": "https://github.com/lm-commons/rbac",
-            "keywords": [
-                "laminas",
-                "rbac",
-                "security",
-                "zf2",
-                "zf3"
-            ],
-            "support": {
-                "issues": "https://github.com/LM-Commons/rbac/issues",
-                "source": "https://github.com/LM-Commons/rbac/tree/v1.2.1"
-            },
-            "time": "2024-08-09T13:21:49+00:00"
+            "time": "2025-01-27T22:42:12+00:00"
         },
         {
             "name": "matthiasmullie/minify",
@@ -9012,20 +9092,20 @@
         },
         {
             "name": "ramsey/uuid",
-            "version": "4.9.0",
+            "version": "4.9.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/ramsey/uuid.git",
-                "reference": "4e0e23cc785f0724a0e838279a9eb03f28b092a0"
+                "reference": "81f941f6f729b1e3ceea61d9d014f8b6c6800440"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/ramsey/uuid/zipball/4e0e23cc785f0724a0e838279a9eb03f28b092a0",
-                "reference": "4e0e23cc785f0724a0e838279a9eb03f28b092a0",
+                "url": "https://api.github.com/repos/ramsey/uuid/zipball/81f941f6f729b1e3ceea61d9d014f8b6c6800440",
+                "reference": "81f941f6f729b1e3ceea61d9d014f8b6c6800440",
                 "shasum": ""
             },
             "require": {
-                "brick/math": "^0.8.8 || ^0.9 || ^0.10 || ^0.11 || ^0.12 || ^0.13",
+                "brick/math": "^0.8.8 || ^0.9 || ^0.10 || ^0.11 || ^0.12 || ^0.13 || ^0.14",
                 "php": "^8.0",
                 "ramsey/collection": "^1.2 || ^2.0"
             },
@@ -9084,9 +9164,9 @@
             ],
             "support": {
                 "issues": "https://github.com/ramsey/uuid/issues",
-                "source": "https://github.com/ramsey/uuid/tree/4.9.0"
+                "source": "https://github.com/ramsey/uuid/tree/4.9.1"
             },
-            "time": "2025-06-25T14:20:11+00:00"
+            "time": "2025-09-04T20:59:21+00:00"
         },
         {
             "name": "sebastian/version",
@@ -9515,16 +9595,16 @@
         },
         {
             "name": "symfony/event-dispatcher",
-            "version": "v6.4.24",
+            "version": "v6.4.25",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/event-dispatcher.git",
-                "reference": "307a09d8d7228d14a05e5e05b95fffdacab032b2"
+                "reference": "b0cf3162020603587363f0551cd3be43958611ff"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/event-dispatcher/zipball/307a09d8d7228d14a05e5e05b95fffdacab032b2",
-                "reference": "307a09d8d7228d14a05e5e05b95fffdacab032b2",
+                "url": "https://api.github.com/repos/symfony/event-dispatcher/zipball/b0cf3162020603587363f0551cd3be43958611ff",
+                "reference": "b0cf3162020603587363f0551cd3be43958611ff",
                 "shasum": ""
             },
             "require": {
@@ -9575,7 +9655,7 @@
             "description": "Provides tools that allow your application components to communicate with each other by dispatching events and listening to them",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/event-dispatcher/tree/v6.4.24"
+                "source": "https://github.com/symfony/event-dispatcher/tree/v6.4.25"
             },
             "funding": [
                 {
@@ -9595,7 +9675,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-07-10T08:14:14+00:00"
+            "time": "2025-08-13T09:41:44+00:00"
         },
         {
             "name": "symfony/event-dispatcher-contracts",
@@ -9914,16 +9994,16 @@
         },
         {
             "name": "symfony/options-resolver",
-            "version": "v6.4.24",
+            "version": "v6.4.25",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/options-resolver.git",
-                "reference": "baee5736ddf7a0486dd68ca05aa4fd7e64458d3d"
+                "reference": "d28e7e2db8a73e9511df892d36445f61314bbebe"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/options-resolver/zipball/baee5736ddf7a0486dd68ca05aa4fd7e64458d3d",
-                "reference": "baee5736ddf7a0486dd68ca05aa4fd7e64458d3d",
+                "url": "https://api.github.com/repos/symfony/options-resolver/zipball/d28e7e2db8a73e9511df892d36445f61314bbebe",
+                "reference": "d28e7e2db8a73e9511df892d36445f61314bbebe",
                 "shasum": ""
             },
             "require": {
@@ -9961,7 +10041,7 @@
                 "options"
             ],
             "support": {
-                "source": "https://github.com/symfony/options-resolver/tree/v6.4.24"
+                "source": "https://github.com/symfony/options-resolver/tree/v6.4.25"
             },
             "funding": [
                 {
@@ -9981,7 +10061,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-07-14T16:38:25+00:00"
+            "time": "2025-08-04T17:06:28+00:00"
         },
         {
             "name": "symfony/polyfill-ctype",
@@ -10794,16 +10874,16 @@
         },
         {
             "name": "symfony/string",
-            "version": "v6.4.24",
+            "version": "v6.4.25",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/string.git",
-                "reference": "f0ce0bd36a3accb4a225435be077b4b4875587f4"
+                "reference": "7cdec7edfaf2cdd9c18901e35bcf9653d6209ff1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/string/zipball/f0ce0bd36a3accb4a225435be077b4b4875587f4",
-                "reference": "f0ce0bd36a3accb4a225435be077b4b4875587f4",
+                "url": "https://api.github.com/repos/symfony/string/zipball/7cdec7edfaf2cdd9c18901e35bcf9653d6209ff1",
+                "reference": "7cdec7edfaf2cdd9c18901e35bcf9653d6209ff1",
                 "shasum": ""
             },
             "require": {
@@ -10860,7 +10940,7 @@
                 "utf8"
             ],
             "support": {
-                "source": "https://github.com/symfony/string/tree/v6.4.24"
+                "source": "https://github.com/symfony/string/tree/v6.4.25"
             },
             "funding": [
                 {
@@ -10880,7 +10960,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-07-10T08:14:14+00:00"
+            "time": "2025-08-22T12:33:20+00:00"
         },
         {
             "name": "symfony/var-dumper",
@@ -14224,16 +14304,16 @@
         },
         {
             "name": "sebastian/comparator",
-            "version": "5.0.3",
+            "version": "5.0.4",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/comparator.git",
-                "reference": "a18251eb0b7a2dcd2f7aa3d6078b18545ef0558e"
+                "reference": "e8e53097718d2b53cfb2aa859b06a41abf58c62e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/comparator/zipball/a18251eb0b7a2dcd2f7aa3d6078b18545ef0558e",
-                "reference": "a18251eb0b7a2dcd2f7aa3d6078b18545ef0558e",
+                "url": "https://api.github.com/repos/sebastianbergmann/comparator/zipball/e8e53097718d2b53cfb2aa859b06a41abf58c62e",
+                "reference": "e8e53097718d2b53cfb2aa859b06a41abf58c62e",
                 "shasum": ""
             },
             "require": {
@@ -14289,15 +14369,27 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/comparator/issues",
                 "security": "https://github.com/sebastianbergmann/comparator/security/policy",
-                "source": "https://github.com/sebastianbergmann/comparator/tree/5.0.3"
+                "source": "https://github.com/sebastianbergmann/comparator/tree/5.0.4"
             },
             "funding": [
                 {
                     "url": "https://github.com/sebastianbergmann",
                     "type": "github"
+                },
+                {
+                    "url": "https://liberapay.com/sebastianbergmann",
+                    "type": "liberapay"
+                },
+                {
+                    "url": "https://thanks.dev/u/gh/sebastianbergmann",
+                    "type": "thanks_dev"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/sebastian/comparator",
+                    "type": "tidelift"
                 }
             ],
-            "time": "2024-10-18T14:56:07+00:00"
+            "time": "2025-09-07T05:25:07+00:00"
         },
         {
             "name": "sebastian/complexity",
@@ -15164,16 +15256,16 @@
         },
         {
             "name": "symfony/dependency-injection",
-            "version": "v6.4.24",
+            "version": "v6.4.25",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/dependency-injection.git",
-                "reference": "929ab73b93247a15166ee79e807ccee4f930322d"
+                "reference": "900da8a42eceeb4a13a0ec34caa7db49328daff3"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/dependency-injection/zipball/929ab73b93247a15166ee79e807ccee4f930322d",
-                "reference": "929ab73b93247a15166ee79e807ccee4f930322d",
+                "url": "https://api.github.com/repos/symfony/dependency-injection/zipball/900da8a42eceeb4a13a0ec34caa7db49328daff3",
+                "reference": "900da8a42eceeb4a13a0ec34caa7db49328daff3",
                 "shasum": ""
             },
             "require": {
@@ -15225,7 +15317,7 @@
             "description": "Allows you to standardize and centralize the way objects are constructed in your application",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/dependency-injection/tree/v6.4.24"
+                "source": "https://github.com/symfony/dependency-injection/tree/v6.4.25"
             },
             "funding": [
                 {
@@ -15245,7 +15337,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-07-30T17:30:48+00:00"
+            "time": "2025-08-13T09:41:44+00:00"
         },
         {
             "name": "symfony/finder",
@@ -15397,16 +15489,16 @@
         },
         {
             "name": "symfony/process",
-            "version": "v6.4.24",
+            "version": "v6.4.25",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/process.git",
-                "reference": "8eb6dc555bfb49b2703438d5de65cc9f138ff50b"
+                "reference": "6be2f0c9ab3428587c07bed03aa9e3d1b823c6c8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/process/zipball/8eb6dc555bfb49b2703438d5de65cc9f138ff50b",
-                "reference": "8eb6dc555bfb49b2703438d5de65cc9f138ff50b",
+                "url": "https://api.github.com/repos/symfony/process/zipball/6be2f0c9ab3428587c07bed03aa9e3d1b823c6c8",
+                "reference": "6be2f0c9ab3428587c07bed03aa9e3d1b823c6c8",
                 "shasum": ""
             },
             "require": {
@@ -15438,7 +15530,7 @@
             "description": "Executes commands in sub-processes",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/process/tree/v6.4.24"
+                "source": "https://github.com/symfony/process/tree/v6.4.25"
             },
             "funding": [
                 {
@@ -15458,7 +15550,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-07-10T08:14:14+00:00"
+            "time": "2025-08-14T06:23:17+00:00"
         },
         {
             "name": "symfony/stopwatch",
@@ -15528,16 +15620,16 @@
         },
         {
             "name": "symfony/var-exporter",
-            "version": "v6.4.24",
+            "version": "v6.4.25",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/var-exporter.git",
-                "reference": "1e742d559fe5b19d0cdc281b1bf0b1fcc243bd35"
+                "reference": "4ff50a1b7c75d1d596aca50899d0c8c7e3de8358"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/var-exporter/zipball/1e742d559fe5b19d0cdc281b1bf0b1fcc243bd35",
-                "reference": "1e742d559fe5b19d0cdc281b1bf0b1fcc243bd35",
+                "url": "https://api.github.com/repos/symfony/var-exporter/zipball/4ff50a1b7c75d1d596aca50899d0c8c7e3de8358",
+                "reference": "4ff50a1b7c75d1d596aca50899d0c8c7e3de8358",
                 "shasum": ""
             },
             "require": {
@@ -15585,7 +15677,7 @@
                 "serialize"
             ],
             "support": {
-                "source": "https://github.com/symfony/var-exporter/tree/v6.4.24"
+                "source": "https://github.com/symfony/var-exporter/tree/v6.4.25"
             },
             "funding": [
                 {
@@ -15605,7 +15697,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-07-10T08:14:14+00:00"
+            "time": "2025-08-18T13:06:32+00:00"
         },
         {
             "name": "theseer/tokenizer",

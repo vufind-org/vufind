@@ -67,7 +67,7 @@ class AlmaFactory extends DriverWithHttpClientFactory
         $requestedName,
         ?array $options = null
     ) {
-        $configs = [$container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config')['OpenURL']];
+        $configs = [$container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config')['OpenURL']];
         if ($options) {
             array_unshift($options, $configs);
         } else {

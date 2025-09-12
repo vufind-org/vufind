@@ -99,7 +99,7 @@ class AssetPipelineFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         return new $requestedName(
             $container->get(\VuFindTheme\ThemeInfo::class),
             $container->get('ViewHelperManager')->get('url'),

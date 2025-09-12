@@ -30,6 +30,7 @@
 
 namespace VuFind\Search\Base;
 
+use VuFind\Config\ConfigManagerInterface;
 use VuFindSearch\Service as SearchService;
 
 /**
@@ -91,15 +92,15 @@ abstract class Explanation
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Base\Params   $params        Search Parameter
-     * @param SearchService                $searchService Search Service
-     * @param \VuFind\Config\PluginManager $configLoader  Config Loader
+     * @param \VuFind\Search\Base\Params $params        Search Parameter
+     * @param SearchService              $searchService Search Service
+     * @param ConfigManagerInterface     $configManager Config manager
      */
-    public function __construct($params, $searchService, $configLoader)
+    public function __construct($params, $searchService, $configManager)
     {
         $this->params = $params;
         $this->searchService = $searchService;
-        $this->config = $configLoader->get($this->searchIni);
+        $this->config = $configManager->getConfigObject($this->searchIni);
     }
 
     /**

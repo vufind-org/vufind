@@ -70,7 +70,7 @@ class CachingDownloaderFactory implements FactoryInterface
         }
 
         $configManager = $container->get(\VuFind\Config\PluginManager::class);
-        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         return new $requestedName(
             $container->get(\VuFind\Cache\Manager::class),
             $configManager,

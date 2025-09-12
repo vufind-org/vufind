@@ -69,7 +69,7 @@ class IlsRecordsFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config'),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config'),
             $container->get(\VuFind\Record\Loader::class)
         );
     }

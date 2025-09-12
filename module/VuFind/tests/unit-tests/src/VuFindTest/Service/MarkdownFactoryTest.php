@@ -375,7 +375,7 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
             new \VuFindTest\Markdown\ExampleExtension()
         );
         $container->set(
-            \VuFind\Config\ConfigManager::class,
+            \VuFind\Config\ConfigManagerInterface::class,
             $this->getMockConfigManager(['markdown' => $config])
         );
         $markdownFactory = new MarkdownFactory();

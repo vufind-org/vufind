@@ -31,7 +31,7 @@
 
 namespace VuFindTest\Search\Solr;
 
-use VuFind\Config\PluginManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\I18n\Sorter;
 use VuFind\Record\Loader;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
@@ -130,7 +130,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                 ],
             ]
         );
-        $mockConfig = $this->createMock(PluginManager::class);
+        $mockConfig = $this->createMock(ConfigManagerInterface::class);
         $options = new Options($mockConfig);
         $options->setTranslator($mockTranslator);
         $options->setTranslatedFacets(
@@ -483,7 +483,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         $response ??= $this->searchResponse;
         $params ??= $this->getParams(
             null,
-            $this->getMockConfigPluginManager($this->searchConfig)
+            $this->getMockConfigManager($this->searchConfig)
         );
 
         $collection = new RecordCollection($response);
@@ -509,16 +509,16 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get Params object
      *
-     * @param ?Options       $options    Options object (null to create)
-     * @param ?PluginManager $mockConfig Mock config plugin manager (null to create)
+     * @param ?Options                $options    Options object (null to create)
+     * @param ?ConfigManagerInterface $mockConfig Mock ConfigManager (null to create)
      *
      * @return Params
      */
     protected function getParams(
         ?Options $options = null,
-        ?PluginManager $mockConfig = null
+        ?ConfigManagerInterface $mockConfig = null
     ): Params {
-        $mockConfig ??= $this->createMock(PluginManager::class);
+        $mockConfig ??= $this->createMock(ConfigManagerInterface::class);
         return new Params(
             $options ?? new Options($mockConfig),
             $mockConfig

@@ -29,7 +29,9 @@
 
 namespace VuFind\Search\Pazpar2;
 
-use function is_object;
+use VuFind\Config\ConfigManagerInterface;
+
+use function is_array;
 
 /**
  * Pazpar2 Search Options
@@ -45,33 +47,30 @@ class Options extends \VuFind\Search\Base\Options
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(ConfigManagerInterface $configManager)
     {
-        parent::__construct($configLoader);
+        parent::__construct($configManager);
         $this->searchIni = $this->facetsIni = 'Pazpar2';
 
         $this->limitOptions = [$this->defaultLimit];
 
         // Load source settings
-        $searchSettings = $configLoader->get($this->searchIni);
-        if (
-            isset($searchSettings->IndexSources)
-            && !empty($searchSettings->IndexSources)
-        ) {
-            foreach ($searchSettings->IndexSources as $k => $v) {
+        $searchSettings = $configManager->getConfigArray($this->searchIni);
+        if (!empty($searchSettings['IndexSources'])) {
+            foreach ($searchSettings['IndexSources'] as $k => $v) {
                 $this->shards[$k] = $v;
             }
             // If we have a default from the configuration, use that...
             if (
-                isset($searchSettings->SourcePreferences->defaultChecked)
-                && !empty($searchSettings->SourcePreferences->defaultChecked)
+                isset($searchSettings['SourcePreferences']['defaultChecked'])
+                && !empty($searchSettings['SourcePreferences']['defaultChecked'])
             ) {
                 $defaultChecked
-                    = is_object($searchSettings->SourcePreferences->defaultChecked)
-                    ? $searchSettings->SourcePreferences->defaultChecked->toArray()
-                    : [$searchSettings->SourcePreferences->defaultChecked];
+                    = is_array($searchSettings['SourcePreferences']['defaultChecked'])
+                    ? $searchSettings['SourcePreferences']['defaultChecked']
+                    : [$searchSettings['SourcePreferences']['defaultChecked']];
                 foreach ($defaultChecked as $current) {
                     $this->defaultSelectedShards[] = $current;
                 }
@@ -80,9 +79,9 @@ class Options extends \VuFind\Search\Base\Options
                 $this->defaultSelectedShards = array_keys($this->shards);
             }
             // Apply checkbox visibility setting if applicable:
-            if (isset($searchSettings->SourcePreferences->showCheckboxes)) {
+            if (isset($searchSettings['SourcePreferences']['showCheckboxes'])) {
                 $this->visibleShardCheckboxes
-                    = $searchSettings->SourcePreferences->showCheckboxes;
+                    = $searchSettings['SourcePreferences']['showCheckboxes'];
             }
         }
     }

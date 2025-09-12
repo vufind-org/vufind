@@ -66,7 +66,7 @@ class DatabaseFactory
         $baseUrl = $serverUrl($router->assemble([], ['name' => 'home']));
         $service = $container->get(\VuFind\Db\Service\PluginManager::class)
             ->get(ShortlinksServiceInterface::class);
-        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         $salt = $config['Security']['HMACkey'] ?? '';
         if (empty($salt)) {
             throw new Exception('HMACkey missing from configuration.');

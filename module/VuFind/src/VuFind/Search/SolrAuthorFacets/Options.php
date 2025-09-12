@@ -29,6 +29,8 @@
 
 namespace VuFind\Search\SolrAuthorFacets;
 
+use VuFind\Config\ConfigManagerInterface;
+
 /**
  * AuthorFacets Search Options
  *
@@ -43,11 +45,11 @@ class Options extends \VuFind\Search\Solr\Options
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(ConfigManagerInterface $configManager)
     {
-        parent::__construct($configLoader);
+        parent::__construct($configManager);
 
         // Special sort options...
         // It's important to remember here we are talking about on-screen

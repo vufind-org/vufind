@@ -29,7 +29,7 @@
 
 namespace VuFindTest\Config;
 
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Config\PathResolver;
 use VuFind\Config\Upgrade;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
@@ -74,7 +74,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         );
         return new Upgrade(
             $container->get(PathResolver::class),
-            $container->get(ConfigManager::class),
+            $container->get(ConfigManagerInterface::class),
         );
     }
 
@@ -191,6 +191,24 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             'Custom Generator',
             $results['config']['Site']['generator']
         );
+    }
+
+    /**
+     * Test searches cache setting migration.
+     *
+     * @return void
+     */
+    public function testSearchCacheUpgrade(): void
+    {
+        $upgrader = $this->runAndGetConfigUpgrader('search-cache-disabled');
+        $results = $upgrader->getNewConfigs();
+        $this->assertNull($results['searches']['Cache'] ?? null);
+        $this->assertTrue((bool)$results['config']['CacheConfigName_searchspecs']['disabled']);
+
+        $upgrader = $this->runAndGetConfigUpgrader('search-cache-enabled');
+        $results = $upgrader->getNewConfigs();
+        $this->assertNull($results['searches']['Cache'] ?? null);
+        $this->assertFalse((bool)$results['config']['CacheConfigName_searchspecs']['disabled']);
     }
 
     /**

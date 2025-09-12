@@ -82,7 +82,7 @@ class ProQuestFSGBackendFactory extends AbstractBackendFactory
     public function __invoke(ContainerInterface $sm, $name, ?array $options = null)
     {
         $this->setup($sm);
-        $configManager = $this->getService(\VuFind\Config\ConfigManager::class);
+        $configManager = $this->getService(\VuFind\Config\ConfigManagerInterface::class);
         $this->config = $configManager->getConfigObject('config');
         $this->proQuestFSGConfig = $configManager->getConfigObject('ProQuestFSG');
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {

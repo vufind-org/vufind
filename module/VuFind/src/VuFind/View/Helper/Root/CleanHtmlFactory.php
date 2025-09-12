@@ -96,7 +96,7 @@ class CleanHtmlFactory implements FactoryInterface
         }
 
         // Modify default context settings per configuration
-        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         $this->allowedElements = ($config['HTML_Rendering_Contexts']['allowed_elements'] ?? [])
             + $this->allowedElements;
 
