@@ -48,9 +48,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
-        'Paytrail' => Paytrail::class,
-        'Stripe' => Stripe::class,
-        'Test' => Test::class,
+        'paytrail' => Paytrail::class,
+        'stripe' => Stripe::class,
+        'test' => Test::class,
     ];
 
     /**
