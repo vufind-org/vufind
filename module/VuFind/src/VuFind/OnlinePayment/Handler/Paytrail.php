@@ -138,10 +138,9 @@ class Paytrail extends AbstractBase
             ->setSuccess($notifyUrl)
             ->setCancel($notifyUrl);
 
-        $names = $this->extractUserNames($user);
         $customer = (new Customer())
-            ->setFirstName($names['firstname'] ?: 'ei tietoa')
-            ->setLastName($names['lastname'] ?: 'ei tietoa')
+            ->setFirstName($user->getFirstname() ?: null)
+            ->setLastName($user->getLastname() ?: null)
             ->setEmail(trim($user->getEmail()));
 
         $language = $this->languageMap[$this->getCurrentLanguageCode()] ?? 'EN';

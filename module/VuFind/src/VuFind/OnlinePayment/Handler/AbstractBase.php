@@ -285,39 +285,6 @@ abstract class AbstractBase implements
     }
 
     /**
-     * Extract first name and last name from user
-     *
-     * @param UserEntityInterface $user User
-     *
-     * @return array Associative array with 'firstname' and 'lastname'
-     */
-    protected function extractUserNames(UserEntityInterface $user): array
-    {
-        $lastname = trim($user->getLastname());
-        if (!empty($user->getFirstname())) {
-            $firstname = trim($user->getFirstname());
-        } else {
-            // We don't have both names separately, try to extract first name from
-            // last name.
-            if (strpos($lastname, ',') > 0) {
-                // Lastname, Firstname
-                [$lastname, $firstname] = explode(',', $lastname, 2);
-            } else {
-                // First Middle Last
-                if (preg_match('/^(.*) (.*?)$/', $lastname, $matches)) {
-                    $firstname = $matches[1];
-                    $lastname = $matches[2];
-                } else {
-                    $firstname = '';
-                }
-            }
-            $lastname = trim($lastname);
-            $firstname = trim($firstname);
-        }
-        return compact('firstname', 'lastname');
-    }
-
-    /**
      * Dump a data array with mixed content
      *
      * @param array $data  Data array
