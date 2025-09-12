@@ -166,6 +166,13 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     ];
 
     /**
+     * Mappings from fee types to tax percents (1/100ths of a percent)
+     *
+     * @var array
+     */
+    protected $feeTypeToTaxRateMappings = [];
+
+    /**
      * Mappings from renewal block reasons
      *
      * @var array
@@ -330,6 +337,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 $this->config['FeeTypeMappings']
             );
         }
+        $this->feeTypeToTaxRateMappings = $this->config['OnlinePayment']['feeTypeToTaxRateMappings'] ?? [];
 
         if (!empty($this->config['PatronStatusMappings'])) {
             $this->patronStatusMappings = array_merge(
@@ -1685,7 +1693,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             $type = $this->feeTypeMappings[$debitType] ?? $debitType;
             $description = trim($entry['description']);
             $fine = [
-                'fine_id' => $entry['account_line_id'],
+                'fineId' => $entry['account_line_id'],
                 'amount' => (int)round($entry['amount'] * 100),
                 'balance' => (int)round($entry['amount_outstanding'] * 100),
                 'fine' => $type,
@@ -1698,7 +1706,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             if (null !== $bibId) {
                 $fine['id'] = $bibId;
             }
-            $fine['payable_online'] = $this->fineIsPayable($fine);
+            $fine['payableOnline'] = $this->fineIsPayable($fine);
+            $fine['taxPercent'] = $this->getFineTaxRate($fine, $entry);
             $fines[] = $fine;
         }
         return $fines;
@@ -3144,5 +3153,21 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             return true;
         }
         return false;
+    }
+
+    /**
+     * Get tax rate for a fine.
+     *
+     * @param array $fine     Fine
+     * @param array $kohaFine Koha fine entry
+     *
+     * @return int 1/100ths of a percent
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function getFineTaxRate(array $fine, array $kohaFine): int
+    {
+        $code = trim($kohaFine['debit_type']) ?? '';
+        return $this->feeTypeToTaxRateMappings[$code] ?? 0;
     }
 }

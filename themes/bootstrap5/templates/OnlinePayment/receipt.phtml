@@ -5,6 +5,7 @@
 $sourceNameEsc = $this->transEscWithPrefix('source_', $this->sourceIls);
 $titleHtml = $this->transEsc('Payment::breakdown_title') . ' - ' . $sourceNameEsc;
 ?>
+<!DOCTYPE html>
 <html lang="<?=$this->layout()->userLang?>"<?php if ($this->layout()->rtl): ?> dir="rtl"<?php endif; ?>>
   <head>
     <title><?=$titleHtml?> - <?=$this->payment->getPaidDate()->format('Y-m-d H-i')?></title>
@@ -188,7 +189,7 @@ $titleHtml = $this->transEsc('Payment::breakdown_title') . ' - ' . $sourceNameEs
         $entry[1] += $fee->calculateTax();
         $entry[2] += $fee->getAmount();
         $vatTable[$vat] = $entry;
-        if ($vat - floor($vat) !== 0.0) {
+        if ($vat % 100 !== 0) {
           $percentDecimals = 1;
         }
       }
@@ -207,7 +208,7 @@ $titleHtml = $this->transEsc('Payment::breakdown_title') . ' - ' . $sourceNameEs
         <?php foreach ($vatTable as $vat => $amounts): ?>
           <tr>
             <td></td>
-            <td><?=$this->localizedNumber($vat, $percentDecimals)?> %</td>
+            <td><?=$this->localizedNumber($vat / 100.0, $percentDecimals)?>%</td>
             <td><?=$this->safeMoneyFormat($amounts[0] / 100.0)?></td>
             <td><?=$this->safeMoneyFormat($amounts[1] / 100.0)?></td>
             <td><?=$this->safeMoneyFormat($amounts[2] / 100.0)?></td>

@@ -121,11 +121,15 @@ trait OnlinePaymentTrait
             $receipt = $this->serviceLocator->get(\VuFind\OnlinePayment\Receipt::class);
             $data = $receipt->createReceiptPDF($lastPayment, $paymentConfig);
             $response = $this->getResponse();
-            $response->getHeaders()->addHeaders([
-                'Content-Type' => 'application/pdf',
-                'Content-disposition' => 'inline; filename="' . addcslashes($data['filename'], '"') . '"',
-            ]);
-            $response->setContent($data['pdf']);
+            if ($this->params()->fromQuery('html') === 'true') {
+                $response->setContent($data['html']);
+            } else {
+                $response->getHeaders()->addHeaders([
+                    'Content-Type' => 'application/pdf',
+                    'Content-disposition' => 'inline; filename="' . addcslashes($data['filename'], '"') . '"',
+                ]);
+                $response->setContent($data['pdf']);
+            }
             return $response;
         }
         $view->lastPayment = $lastPayment;

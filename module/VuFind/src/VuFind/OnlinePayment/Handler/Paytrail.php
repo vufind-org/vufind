@@ -168,13 +168,13 @@ class Paytrail extends AbstractBase
             $code = mb_substr($code, 0, 100, 'UTF-8');
 
             $fineDesc = $this->getFineDescription($fine, 100);
-            $itemId = $fine['fine_id'] ?? $fine['id'] ?? null;
+            $itemId = $fine['fineId'] ?? $fine['id'] ?? null;
             $item = (new Item())
                 ->setDescription($fineDesc)
                 ->setProductCode($code)
                 ->setUnitPrice((int)round($fine['balance']))
                 ->setUnits(1)
-                ->setTaxPercentage((float)$this->getFineTaxRate($fine) / 100.0)
+                ->setVatPercentage((float)($fine['taxPercent'] ?? 0) / 100.0)
                 ->setStamp(mb_substr("$localIdentifier $itemId", 0, 200, 'UTF-8'))
                 ->setReference(mb_substr($itemId, 0, 200, 'UTF-8'));
 
@@ -190,7 +190,7 @@ class Paytrail extends AbstractBase
                 ->setProductCode($this->getServiceFeeProductCode())
                 ->setUnitPrice($serviceFee)
                 ->setUnits(1)
-                ->setTaxPercentage($this->getServiceFeeTaxRate());
+                ->setVatPercentage((float)($this->getServiceFeeTaxRate() ?? 0) / 100.0);
             $items[] = $item;
         }
         $paymentRequest->setItems($items);

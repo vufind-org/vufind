@@ -433,7 +433,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
         ) {
             try {
                 $fines = $this->ils->getMyFines($patron);
-                // Filter by fines selected for the payment if fine_id field is available:
+                // Filter by fines selected for the payment if fineId field is available:
                 $paymentDetails = $this->getAndCheckOnlinePaymentDetails(
                     $patron,
                     $fines,

@@ -437,6 +437,11 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
         );
         $this->assertEquals(200, $session->getStatusCode());
         */
+
+        // Check contents of HTML version of the receipt:
+        $session->visit($this->getVuFindUrl('/MyResearch/Fines?paymentReceipt=true&html=true'));
+        $vatBreakdown = $this->findCss($page, '.vat-breakdown tbody');
+        $this->assertEquals('0.0% $1.50 $0.00 $1.50 25.5% $10.76 $2.74 $13.50', $vatBreakdown->getText());
     }
 
     /**
@@ -665,34 +670,35 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
             ],
             // Payable:
             [
-                'fine_id' => 'demo1',
+                'fineId' => 'demo1',
                 'amount' => 150,
                 'balance' => 150,
                 'checkout' => date('Y-m-d', strtotime('now -30 days')),
                 'createdate' => date('Y-m-d', strtotime('now -2 days')),
                 'fine' => 'Overdue',
                 'description' => 'Overdue description',
-                'payable_online' => true,
+                'payableOnline' => true,
             ],
             [
-                'fine_id' => 'demo2',
+                'fineId' => 'demo2',
                 'amount' => 1350,
                 'balance' => 1350,
                 'checkout' => date('Y-m-d', strtotime('now -60 days')),
                 'createdate' => date('Y-m-d', strtotime('now -4 days')),
                 'fine' => 'Overdue',
                 'description' => 'Overdue description',
-                'payable_online' => true,
+                'payableOnline' => true,
+                'taxPercent' => 2550,
             ],
             // Potentially unpayable:
             [
-                'fine_id' => 'demo3',
+                'fineId' => 'demo3',
                 'amount' => 350,
                 'balance' => 350,
                 'createdate' => date('Y-m-d', strtotime('now -2 days')),
                 'fine' => 'Manual',
                 'description' => 'Lost card replacement',
-                'payable_online' => false,
+                'payableOnline' => false,
             ],
         ]);
     }

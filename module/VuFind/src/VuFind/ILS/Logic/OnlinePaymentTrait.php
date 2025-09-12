@@ -74,11 +74,11 @@ trait OnlinePaymentTrait
             }
             if (
                 null !== $selectedFineIds
-                && !in_array($fine['fine_id'] ?? '', $selectedFineIds)
+                && !in_array($fine['fineId'] ?? '', $selectedFineIds)
             ) {
                 continue;
             }
-            if ($fine['payable_online'] ?? false) {
+            if ($fine['payableOnline'] ?? false) {
                 $amount += $fine['balance'];
                 $payableFines[] = $fine;
             }

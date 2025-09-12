@@ -1120,7 +1120,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             $balance = (rand() % 100 > 49 ? $amount / 2 : $amount);
 
             $fine = [
-                'fine_id'  => $firstId + $i,
+                'fineId'  => $firstId + $i,
                 'amount'   => (int)round($amount * 100),
                 'checkout' => $this->dateConverter->convertToDisplayDate('U', $checkout),
                 'createdate' => $this->dateConverter->convertToDisplayDate('U', time()),
@@ -1134,7 +1134,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 ),
             ];
 
-            $fine['payable_online'] = $this->fineIsPayable($fine);
+            $fine['payableOnline'] = $this->fineIsPayable($fine);
 
             // Some fines will have no id or title:
             if (rand() % 3 != 1) {
@@ -1208,8 +1208,8 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         $paid = 0;
         foreach ($session->fines ?? [] as $key => $fine) {
             if (
-                ($fine['payable_online'] ?? false)
-                && (!$fineIds || in_array($fine['fine_id'] ?? '', $fineIds))
+                ($fine['payableOnline'] ?? false)
+                && (!$fineIds || in_array($fine['fineId'] ?? '', $fineIds))
             ) {
                 unset($session->fines[$key]);
                 $paid += $fine['balance'];

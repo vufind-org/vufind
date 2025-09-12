@@ -62,7 +62,7 @@
           // Handle online payment fine selection and balance check:
           $select = '';
           if ($this->onlinePaymentEnabled && $this->selectFees) {
-            if ($record['payable_online'] ?? false) {
+            if ($record['payableOnline'] ?? false) {
               ob_start();
               ?>
                 <div class="checkbox">
@@ -73,7 +73,7 @@
                       <?=isset($fine) ? ('(' . $this->transEsc($fine) . ')') : ''?>
                       <?=$this->safeMoneyFormat($record['balance'] / 100.00)?>
                     </span>
-                    <input class="checkbox-select-item js-select-item" type="checkbox" name="selectedIDS[]" value="<?=$this->escapeHtmlAttr($record['fine_id'])?>" data-amount="<?=$this->escapeHtmlAttr($record['balance'])?>">
+                    <input class="checkbox-select-item js-select-item" type="checkbox" name="selectedIDS[]" value="<?=$this->escapeHtmlAttr($record['fineId'])?>" data-amount="<?=$this->escapeHtmlAttr($record['balance'])?>">
                   </label>
                 </div>
               <?php
@@ -81,7 +81,7 @@
             }
           }
           $balance = isset($record['balance']) ? $this->safeMoneyFormat($record['balance'] / 100.00) : '';
-          if ($this->onlinePayment && !($record['payable_online'] ?? false)) {
+          if ($this->onlinePayment && !($record['payableOnline'] ?? false)) {
             $balance = '<span class="online-payment-nonpayable">' . $balance
               . '<br><span class="online-payment-status-note"> ' . $this->transEsc('Payment::nonpayable_fee') . '</span></span>';
           }

@@ -266,6 +266,13 @@ class SierraRest extends AbstractBase implements
     protected $onlinePayableFineTypes = [2, 4, 5, 6];
 
     /**
+     * Mappings from fine types to tax percents (1/100ths of a percent)
+     *
+     * @var array
+     */
+    protected $feeTypeToTaxRateMappings = [];
+
+    /**
      * Product code mappings for fines
      *
      * @var array
@@ -515,6 +522,7 @@ class SierraRest extends AbstractBase implements
                 ];
             }
         }
+        $this->feeTypeToTaxRateMappings = $this->config['OnlinePayment']['feeTypeToTaxRateMappings'] ?? [];
 
         if (isset($this->config['Catalog']['api_version'])) {
             $this->apiVersion = $this->config['Catalog']['api_version'];
@@ -1655,12 +1663,13 @@ class SierraRest extends AbstractBase implements
                 'checkout' => '',
                 'id' => $this->formatBibId($bibId),
                 'title' => $title,
-                'fine_id' => $this->extractId($entry['id']),
+                'fineId' => $this->extractId($entry['id']),
                 'organization' => substr($entry['location']['code'] ?? '', 0, 1),
-                'product_code' => $this->getFineProductCode($entry),
+                'productCode' => $this->getFineProductCode($entry),
                 '__invoice_number' => $entry['invoiceNumber'], // Internal invoice number required for payment
             ];
-            $fine['payable_online'] = $this->fineIsPayable($fine, $entry);
+            $fine['payableOnline'] = $this->fineIsPayable($fine, $entry);
+            $fine['taxPercent'] = $this->getFineTaxRate($fine, $entry);
             $fines[] = $fine;
         }
         return $fines;
@@ -1709,8 +1718,8 @@ class SierraRest extends AbstractBase implements
         $payments = [];
         foreach ($fines as $fine) {
             if (
-                in_array($fine['fine_id'], $fineIds)
-                && $fine['payable_online'] && $fine['balance'] > 0
+                in_array($fine['fineId'], $fineIds)
+                && $fine['payableOnline'] && $fine['balance'] > 0
             ) {
                 $pay = (int)round(min($fine['balance'], $amountRemaining));
                 $payments[] = [
@@ -3989,5 +3998,21 @@ WHERE
             }
         }
         return null;
+    }
+
+    /**
+     * Get tax rate for a fine.
+     *
+     * @param array $fine       Fine
+     * @param array $sierraFine Sierra fine entry
+     *
+     * @return int 1/100ths of a percent
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function getFineTaxRate(array $fine, array $sierraFine): int
+    {
+        $code = $sierraFine['chargeType']['code'] ?? 0;
+        return $this->feeTypeToTaxRateMappings[$code] ?? 0;
     }
 }

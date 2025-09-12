@@ -61,6 +61,27 @@ class Stripe extends AbstractBase implements
     use \VuFind\OnlinePayment\OnlinePaymentEventTrait;
 
     /**
+     * Mappings from fine tax percentages to tax codes
+     *
+     * @var array
+     */
+    protected array $taxPercentToTaxCodeMappings = [];
+
+    /**
+     * Initialize the handler
+     *
+     * @param array $paymentConfig Online payment configuration
+     *
+     * @return void
+     */
+    public function init(array $paymentConfig): void
+    {
+        parent::init($paymentConfig);
+        $this->taxPercentToTaxCodeMappings
+            = $this->parseMappings($this->paymentConfig['taxPercentToTaxCodeMappings'] ?? '');
+    }
+
+    /**
      * Start payment.
      *
      * Starts payment with the payment service and redirects the user to the service.
@@ -112,7 +133,7 @@ class Stripe extends AbstractBase implements
             $code = mb_substr($code, 0, 100, 'UTF-8');
 
             $description = $this->getFineDescription($fine, 255);
-            $taxCode = $this->getFineTaxRate($fine);
+            $taxCode = $this->getTaxCode($fine['taxPercent'] ?? 0);
 
             $item = [
                 'price_data' => [
@@ -143,7 +164,7 @@ class Stripe extends AbstractBase implements
                 ],
                 'quantity' => 1,
             ];
-            if (null !== ($taxCode = $this->getServiceFeeTaxRate())) {
+            if (null !== ($taxCode = $this->getTaxCode($this->getServiceFeeTaxRate() ?? 0))) {
                 $item['price_data']['product_data']['tax_code'] = $taxCode;
             }
             $lineItems[] = $item;
@@ -211,5 +232,17 @@ class Stripe extends AbstractBase implements
             return self::PAYMENT_FAILURE;
         }
         return $stripeSession->payment_status === 'paid' ? self::PAYMENT_SUCCESS : self::PAYMENT_CANCEL;
+    }
+
+    /**
+     * Get tax code for a tax percent
+     *
+     * @param int $taxPercent Tax percent in 1/100ths of a percent
+     *
+     * @return ?string Tax code, or null if not defined
+     */
+    protected function getTaxCode(int $taxPercent): ?string
+    {
+        return $this->taxPercentToTaxCodeMappings[$taxPercent] ?? null;
     }
 }
