@@ -360,8 +360,6 @@ class OnlinePaymentManager implements LoggerAwareInterface
      *
      * @throws ILSException
      * @return array Associative array of payment details
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getAndCheckOnlinePaymentDetails(array $patron, array $fines, ?array $selectedFineIds): array
     {

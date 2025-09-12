@@ -31,7 +31,7 @@ declare(strict_types=1);
 
 namespace VuFind\OnlinePayment;
 
-use VuFind\Controller\AbstractBase;
+use VuFind\Controller\AbstractBase as AbstractController;
 use VuFind\Db\Entity\PaymentEntityInterface;
 use VuFind\Db\Service\AuditEventServiceInterface;
 use VuFind\Db\Type\AuditEventSubtype;
@@ -71,7 +71,7 @@ trait OnlinePaymentEventTrait
         array $data = []
     ): void {
         if (null === $this->auditEventService) {
-            if ($this instanceof AbstractBase) {
+            if ($this instanceof AbstractController) {
                 $this->auditEventService = $this->getDbService(AuditEventServiceInterface::class);
             } else {
                 throw new \Exception('Event log service not set');
