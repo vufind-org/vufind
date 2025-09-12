@@ -494,7 +494,9 @@ h2 {
   .record-type-lrmi,
   .record-type-aipa {
     .material-rights,
-    .targeted-information {
+    .targeted-information,
+    .targeted-information + .more-link,
+    .targeted-information + .less-link {
       display: none;
     }
   }
