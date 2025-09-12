@@ -30,8 +30,8 @@
 namespace Finna\View\Helper\Root;
 
 use Finna\RecordDriver\AipaLrmi;
+use Finna\RecordDriver\CuratedRecordList;
 use Finna\RecordDriver\SolrAipa;
-use Finna\RecordDriver\SolrQdc;
 use Laminas\View\Helper\AbstractHelper;
 use NatLibFi\FinnaCodeSets\FinnaCodeSets;
 use NatLibFi\FinnaCodeSets\Model\EducationalLevel\EducationalLevelInterface;
@@ -144,7 +144,7 @@ class Aipa extends AbstractHelper
         $className = match ($this->driver->getType()) {
             'aipa:education' => AipaLrmi::class, // For BC, to be removed later.
             SolrAipa::AIPA_TYPE_EDUCATION => AipaLrmi::class,
-            default => SolrQdc::class,
+            default => CuratedRecordList::class,
         };
         return $this->renderClassTemplate(
             $template,

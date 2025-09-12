@@ -1,0 +1,216 @@
+<!-- START of: finna - RecordDriver/CuratedRecordList/result-list.phtml -->
+<?php
+  $combinedView = !$this->layout()->templateDir || $this->layout()->templateDir === 'combined';
+  $img = $this->recordImage($this->record($this->driver));
+  $thumbnail = false;
+  $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
+  $recordLinker = $this->recordLinker($this->results);
+  $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $recordLinker->getUrl($this->driver));
+  if ($img) {
+    $thumbnail = $img->render('list', ['small' => ['w' => 100, 'h' => 100], 'medium' => ['w' => 250, 'h' => 250]]);
+  }
+?>
+<div class="record-container list-view <?=$this->record($this->driver)->getContainerJsClasses()?>">
+  <div class="media">
+    <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
+      <div class="media-<?=$thumbnailAlignment ?> <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
+        <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId">
+        <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource">
+            <?=$thumbnail ?>
+      </div>
+    <?php endif; ?>
+    <div class="media-body">
+      <div class="result-body">
+        <div class="title-container">
+          <h2 class="search-title">
+            <a class="title" href="<?=$this->escapeHtmlAttr($recordLinker->getUrl($this->driver))?>" data-view="<?=isset($this->params) ? $this->params->getOptions()->getListViewOption() : 'list' ?>" title="<?=$this->escapeHtmlAttr($this->driver->getTitle())?>">
+              <?=$this->record($this->driver)->getTitleHtml()?><span class="visually-hidden"> <?=$this->transEsc('To the record')?></span>
+            </a>
+          </h2>
+          <?php if ($altTitles = $this->driver->tryMethod('getAlternativeTitles')): ?>
+            <div class="result-alt-titles truncate-field" data-rows="5">
+              <?=implode('<br>', array_map([$this, 'escapeHtml'], $altTitles))?>
+            </div>
+          <?php endif; ?>
+          <?php if ($uniformTitles = $this->driver->tryMethod('getUniformTitles')): ?>
+            <div class="result-uniform-titles">
+              <?php foreach ($uniformTitles as $uniformTitle): ?>
+                <?=$this->escapeHtml($uniformTitle) ?><br>
+              <?php endforeach; ?>
+            </div>
+          <?php endif; ?>
+        </div>
+        <?php foreach ($this->driver->tryMethod('getFullTitlesAltScript', [], []) as $altTitle): ?>
+          <div class="title-alt-script">
+            <?=$this->escapeHtml($altTitle)?>
+          </div>
+        <?php endforeach; ?>
+
+        <div class="dateyeartype">
+          <div class="resultItemFormat">
+            <?=$this->record($this->driver)->getFormatList() ?>
+            <?=$this->record($this->driver)->getLabelList() ?>
+          </div>
+
+          <?php if ($results = $this->driver->tryMethod('getOtherLinks')): ?>
+            <div class="resultOtherLinks">
+              <?php $prevOtherLinkHeading = ''; ?>
+              <?php foreach ($results as $result): ?>
+                <?=$prevOtherLinkHeading != $result['heading'] ? $this->transEsc('default::link_' . $result['heading'], null, $result['heading']) : '&nbsp;' ?>
+                <?php if (!empty($result['isn'])): ?>
+                  <?php $otherLinkTitle = !empty($result['title']) ? $result['title'] : $result['isn']; ?>
+                  <a title="<?=$this->escapeHtmlAttr($otherLinkTitle) ?>" href="<?=$this->record($this->driver)->getLink('isn', $result['isn']) ?>">
+                    <?=$this->escapeHtml($otherLinkTitle); ?>
+                  </a>
+                <?php elseif (!empty($result['title'])): ?>
+                  <a title="<?=$this->escapeHtmlAttr($result['title']) ?>" href="<?=$this->record($this->driver)->getLink('title', $result['title']) ?>">
+                    <?=$this->escapeHtml($result['title']); ?>
+                  </a>
+                <?php endif; ?>
+                <?php if (!empty($result['author'])): ?>
+                  (<?=$this->escapeHtml($result['author']); ?>)
+                <?php endif; ?>
+              <?php endforeach; ?>
+            </div>
+          <?php endif; ?>
+
+          <?php if ($this->driver->isCollection()): ?>
+            <?=implode('<br>', $this->driver->getSummary()); ?>
+          <?php else: ?>
+            <?php $authors = $this->driver->tryMethod('getAuthorsWithRoles');
+            if (!empty($authors)): ?>
+              <div class="truncate-field" data-rows="1">
+                <?php foreach($authors as $index => $author): ?>
+                  <?=($index > 0 ? '; ' : '')?><?=$this->record($this->driver)->getLinkedFieldElement('author', $author['name'], $author, ['date' => true, 'role' => true, 'authorityType' => $author['type'] ?? null])?>
+                <?php endforeach; ?>
+              </div>
+            <?php endif; ?>
+            <?php $containerTitle = $this->driver->getContainerTitle();
+            $summDate = $this->driver->getPublicationDateRange(); ?>
+            <?php if (!empty($containerTitle)): ?>
+              <div class="truncate-field" data-rows="1">
+                <?=$this->transEsc('Published in')?>
+                <?php
+                  $containerSource = $this->driver->getSourceIdentifier();
+                  $containerID = $this->driver->getContainerRecordID();
+                  $hostRecords = $this->driver->tryMethod('getHostRecords');
+                ?>
+                <?php if ($hostRecords): ?>
+                  <?= $this->record($this->driver)->renderTemplate('host-records.phtml', compact('hostRecords', 'driver')); ?>
+                <?php else: ?>
+                  <?php $link = $containerID ? $recordLinker->getUrl($containerSource . '|' . $containerID) : $this->record($this->driver)->getLink('title', $containerTitle); ?>
+                  <a href="<?=$this->escapeHtmlAttr($link)?>"><?=$this->escapeHtml($containerTitle)?></a>
+                  <?php $ref = $this->driver->getContainerReference(); ?>
+                  <?php if (!empty($ref)): ?>
+                    <?=$this->escapeHtml($ref); ?>
+                  <?php else: ?>
+                    <?=!empty($summDate) ? ' (' . implode('&ndash;', array_map($this->escapeHtml, $summDate)) . ')' : ''?>
+                  <?php endif; ?>
+                <?php endif; ?>
+              </div>
+            <?php elseif (!empty($summDate)): ?>
+              <?=!empty($summAuthor) ? '' : ' '?>
+              <span class="publish-year"><?=implode('&ndash;', array_map($this->escapeHtml, $summDate));?></span>
+            <?php endif; ?>
+            <?php if ($classifications = $this->driver->tryMethod('getClassifications')): ?>
+              <div class="resultClassification">
+                <?php foreach ($classifications as $class => $field): ?>
+                  <?php if (!empty($field[0])): ?>
+                    <?php
+                      $result = $class . ' ' . $field[0];
+                      $classForTranslation = 'classification::' . str_replace('::', ' ', $result);
+                      if (!$this->translationEmpty($classForTranslation)):
+                    ?>
+                      <a title="<?=$this->escapeHtmlAttr($result)?>" href="<?=$this->record($this->driver)->getLink('classification', $result)?>"><?=$this->transEsc($classForTranslation) . '<span class="classification-detail"> (' . $this->escapeHtml($result) . ')</span>';?></a><br>
+                    <?php endif; ?>
+                  <?php endif; ?>
+                <?php endforeach; ?>
+              </div>
+            <?php endif; ?>
+
+            <?php $summInCollection = $this->driver->getContainingCollections();
+            if (!empty($summInCollection)): ?>
+              <?php foreach ($summInCollection as $collId => $collText): ?>
+                <div>
+                  <b><?=$this->transEsc('in_collection_label')?></b>
+                  <a class="collectionLinkText" href="<?=$this->url('collection', ['id' => $collId])?>?recordID=<?=urlencode($this->driver->getUniqueID())?>">
+                    <?=$this->escapeHtml($collText)?>
+                  </a>
+                </div>
+              <?php endforeach; ?>
+            <?php endif; ?>
+          <?php endif; ?>
+        </div>
+        <?php if (!$this->driver->isCollection()): ?>
+          <?php if ($snippet = $this->driver->getHighlightedSnippet()): ?>
+            <?php if (!empty($snippet['caption'])): ?>
+              <strong><?=$this->transEsc($snippet['caption']) ?>:</strong>
+            <?php endif; ?>
+            <?php if (!empty($snippet['snippet'])): ?>
+              <?=$this->translate('highlight_snippet_html', ['%%snippet%%' => $this->highlight($snippet['snippet'])]) ?><br>
+            <?php endif; ?>
+          <?php endif; ?>
+        <?php endif; ?>
+
+        <?php if ($this->driver->tryMethod('getWorkKeys') && $this->searchOptions($this->driver->getSourceIdentifier())->getVersionsAction()): ?>
+          <div class="record-versions ajax hidden-print"></div>
+        <?php endif; ?>
+
+        <?php $recordHelper = $this->record($this->driver); ?>
+        <?=$recordHelper->getOnlineUrls('results');?>
+        <?=$recordHelper->getPreviews();?>
+        <?=$this->render('list/list-notes.phtml')?>
+
+        <div class="clearfix"></div>
+        <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
+            <?php /* Saved lists */ ?>
+          <div class="savedLists">
+            <strong><?=$this->transEsc('Saved in')?>:</strong>
+          </div>
+        <?php endif; ?>
+
+        <?php /* Hierarchy tree link */ ?>
+        <?php $trees = $this->driver->tryMethod('getHierarchyTrees');
+        if (!empty($trees)): ?>
+            <?php foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
+            <div class="hierarchyTreeLink">
+              <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId">
+              <?=$this->icon('hierarchy-tree') ?>
+              <a class="hierarchyTreeLinkText" role="button" data-lightbox href="<?=$this->escapeHtmlAttr($recordLinker->getTabUrl($this->driver, 'HierarchyTree', ['hierarchy' => $hierarchyID]))?>#tabnav" title="<?=$this->transEsc('hierarchy_tree')?>">
+                  <?=$this->transEsc('hierarchy_view_context')?><?php if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><?php endif; ?>
+              </a>
+            </div>
+            <?php endforeach; ?>
+        <?php endif; ?>
+
+        <div class="hidden-print add-to-favorite-col">
+          <?php
+            // Display qrcode if appropriate:
+            echo $this->record($this->driver)->renderTemplate('result-qrcode.phtml', ['driver' => $this->driver]);
+          ?>
+
+            <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
+                <?php /* Add to favorites */ ?>
+              <div>
+                <a href="<?=$this->escapeHtmlAttr($recordLinker->getActionUrl($this->driver, 'Save'))?>" class="save-record" role="button" data-lightbox data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>" title="<?=$this->transEsc('Add to favorites')?>" rel="nofollow"><?=$this->icon('favorite') ?><span class="hidden-sm hidden-md hidden-lg"> <?=$this->transEsc('Add to favorites')?></span><span class="visually-hidden hidden-xs"> <?=$this->transEsc('Add to favorites')?></span></a>
+              </div>
+            <?php endif; ?>
+
+            <?php if (isset($this->params) && $this->cart()->isActiveInSearch() && $this->params->getOptions()->supportsCart() && $this->cart()->isActive()): ?>
+                <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?><br>
+            <?php endif; ?>
+
+            <?=$this->driver->supportsCoinsOpenUrl() ? '<span class="Z3988" aria-hidden="true" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>' : ''?>
+        </div>
+      </div>
+    </div>
+    <?php if ($thumbnail && $thumbnailAlignment == 'right'): ?>
+      <div class="media-<?=$thumbnailAlignment ?> <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
+        <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId">
+        <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource">
+          <?=$thumbnail ?>
+      </div>
+    <?php endif; ?>
+  </div>
+</div>
+<!-- END of: finna - RecordDriver/CuratedRecordList/result-list.phtml -->

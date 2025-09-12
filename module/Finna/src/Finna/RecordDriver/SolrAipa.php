@@ -69,6 +69,21 @@ class SolrAipa extends SolrQdc implements ContainerFormatInterface
     protected $excludedDescriptions = [];
 
     /**
+     * Get an array of summary strings for the record.
+     *
+     * @return array
+     */
+    public function getSummary()
+    {
+        $summary = parent::getSummary();
+        if (isset($summary[0])) {
+            // Only return the first paragraph, as AIPA summaries can be very long.
+            $summary = [explode("\n\n", $summary[0])[0]];
+        }
+        return $summary;
+    }
+
+    /**
      * Return an array of image URLs associated with this record with keys:
      * - url         Image URL
      * - description Description text
