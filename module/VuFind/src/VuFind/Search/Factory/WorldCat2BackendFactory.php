@@ -57,21 +57,21 @@ class WorldCat2BackendFactory extends AbstractBackendFactory
      *
      * @var \Laminas\Log\LoggerInterface
      */
-    protected $logger;
+    protected \Laminas\Log\LoggerInterface $logger;
 
     /**
      * VuFind configuration
      *
      * @var \VuFind\Config\Config
      */
-    protected $config;
+    protected \VuFind\Config\Config $config;
 
     /**
      * WorldCat v2 configuration
      *
      * @var \VuFind\Config\Config
      */
-    protected $wcConfig;
+    protected \VuFind\Config\Config $wcConfig;
 
     /**
      * Create service
@@ -105,7 +105,7 @@ class WorldCat2BackendFactory extends AbstractBackendFactory
      *
      * @return Backend
      */
-    protected function createBackend(Connector $connector)
+    protected function createBackend(Connector $connector): Backend
     {
         $backend = new Backend($connector, $this->createRecordCollectionFactory());
         $backend->setLogger($this->logger);
@@ -147,7 +147,7 @@ class WorldCat2BackendFactory extends AbstractBackendFactory
      *
      * @return Connector
      */
-    protected function createConnector()
+    protected function createConnector(): Connector
     {
         $connectorOptions = $this?->wcConfig?->Connector?->toArray() ?? [];
         $connector = new Connector(
@@ -165,7 +165,7 @@ class WorldCat2BackendFactory extends AbstractBackendFactory
      *
      * @return QueryBuilder
      */
-    protected function createQueryBuilder()
+    protected function createQueryBuilder(): QueryBuilder
     {
         $exclude = $this->wcConfig->General->exclude_code ?? null;
         return new QueryBuilder($exclude);
@@ -176,7 +176,7 @@ class WorldCat2BackendFactory extends AbstractBackendFactory
      *
      * @return RecordCollectionFactory
      */
-    protected function createRecordCollectionFactory()
+    protected function createRecordCollectionFactory(): RecordCollectionFactory
     {
         $manager = $this->getService(\VuFind\RecordDriver\PluginManager::class);
         $callback = function ($data) use ($manager) {

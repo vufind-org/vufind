@@ -68,7 +68,7 @@ class Options extends AbstractEDSOptions
      *
      * @return string
      */
-    public function getSearchAction()
+    public function getSearchAction(): string
     {
         return 'epf-search';
     }
@@ -79,7 +79,7 @@ class Options extends AbstractEDSOptions
      *
      * @return string|bool
      */
-    public function getAdvancedSearchAction()
+    public function getAdvancedSearchAction(): string|bool
     {
         return false;
     }
@@ -89,7 +89,7 @@ class Options extends AbstractEDSOptions
      *
      * @return void
      */
-    protected function setOptionsFromConfig()
+    protected function setOptionsFromConfig(): void
     {
         // View preferences
         $this->initViewOptions($this->searchSettings);

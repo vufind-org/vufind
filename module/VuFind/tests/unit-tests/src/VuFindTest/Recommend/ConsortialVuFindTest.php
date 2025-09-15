@@ -179,8 +179,7 @@ class ConsortialVuFindTest extends \PHPUnit\Framework\TestCase
             $this->getMockBuilder(\VuFind\Record\Loader::class)
                 ->disableOriginalConstructor()
                 ->getMock(),
-            null,
-            $facets
+            facets: $facets
         );
         return $queryResults;
     }

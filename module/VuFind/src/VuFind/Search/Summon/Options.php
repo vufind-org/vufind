@@ -49,14 +49,14 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @var int|bool
      */
-    protected $maxTopicRecommendations = false;
+    protected int|bool $maxTopicRecommendations = false;
 
     /**
      * Relevance sort override for empty searches
      *
-     * @var string
+     * @var ?string
      */
-    protected $emptySearchRelevanceOverride = null;
+    protected ?string $emptySearchRelevanceOverride = null;
 
     /**
      * Constructor
@@ -98,7 +98,7 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @return string
      */
-    public function getSearchAction()
+    public function getSearchAction(): string
     {
         return 'summon-search';
     }
@@ -109,7 +109,7 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @return string|bool
      */
-    public function getAdvancedSearchAction()
+    public function getAdvancedSearchAction(): string|bool
     {
         return 'summon-advanced';
     }
@@ -120,7 +120,7 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @return string|bool
      */
-    public function getFacetListAction()
+    public function getFacetListAction(): string|bool
     {
         return 'summon-facetlist';
     }
@@ -128,9 +128,9 @@ class Options extends \VuFind\Search\Base\Options
     /**
      * Get the relevance sort override for empty searches.
      *
-     * @return string Sort field or null if not set
+     * @return ?string Sort field or null if not set
      */
-    public function getEmptySearchRelevanceOverride()
+    public function getEmptySearchRelevanceOverride(): ?string
     {
         return $this->emptySearchRelevanceOverride;
     }
@@ -140,7 +140,7 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @return bool|int
      */
-    public function getMaxTopicRecommendations()
+    public function getMaxTopicRecommendations(): bool|int
     {
         return $this->maxTopicRecommendations;
     }
@@ -152,7 +152,7 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @return void
      */
-    public function setMaxTopicRecommendations($max)
+    public function setMaxTopicRecommendations(bool|int $max): void
     {
         $this->maxTopicRecommendations = $max;
     }

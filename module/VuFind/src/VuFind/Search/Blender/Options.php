@@ -67,7 +67,7 @@ class Options extends \VuFind\Search\Solr\Options
      *
      * @return string
      */
-    public function getSearchAction()
+    public function getSearchAction(): string
     {
         return 'blender-results';
     }
@@ -78,7 +78,7 @@ class Options extends \VuFind\Search\Solr\Options
      *
      * @return string|bool
      */
-    public function getAdvancedSearchAction()
+    public function getAdvancedSearchAction(): string|bool
     {
         return $this->advancedHandlers ? 'blender-advanced' : false;
     }
@@ -89,7 +89,7 @@ class Options extends \VuFind\Search\Solr\Options
      *
      * @return string|bool
      */
-    public function getFacetListAction()
+    public function getFacetListAction(): string|bool
     {
         return false;
     }

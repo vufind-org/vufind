@@ -71,7 +71,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
              *
              * @return string
              */
-            public function getSearchAction()
+            public function getSearchAction(): string
             {
                 return '';
             }
@@ -81,7 +81,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
              *
              * @return string
              */
-            public function getSearchClassId()
+            public function getSearchClassId(): string
             {
                 return 'Mock';
             }

@@ -142,8 +142,8 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      */
     public function testWithoutConfig()
     {
-        $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('No institutionCode found.');
+        $this->expectException(\TypeError::class);
+        $this->expectExceptionMessageMatches('/ Argument #1 \(.*\) must be of type .*, null given/');
 
         new PrimoPermissionHandler(null);
     }

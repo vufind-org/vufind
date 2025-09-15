@@ -51,7 +51,7 @@ class LibGuidesBackendFactory extends AbstractBackendFactory
      *
      * @return string
      */
-    protected function getServiceName()
+    protected function getServiceName(): string
     {
         return 'LibGuides';
     }
@@ -61,14 +61,14 @@ class LibGuidesBackendFactory extends AbstractBackendFactory
      *
      * @var \Laminas\Log\LoggerInterface
      */
-    protected $logger;
+    protected \Laminas\Log\LoggerInterface $logger;
 
     /**
      * LibGuides configuration
      *
      * @var \VuFind\Config\Config
      */
-    protected $libGuidesConfig;
+    protected \VuFind\Config\Config $libGuidesConfig;
 
     /**
      * Create service
@@ -101,7 +101,7 @@ class LibGuidesBackendFactory extends AbstractBackendFactory
      *
      * @return Backend
      */
-    protected function createBackend(Connector $connector)
+    protected function createBackend(Connector $connector): Backend
     {
         $defaultSearch = $this->libGuidesConfig->General->defaultSearch ?? null;
         $backend = new Backend(
@@ -119,7 +119,7 @@ class LibGuidesBackendFactory extends AbstractBackendFactory
      *
      * @return Connector
      */
-    protected function createConnector()
+    protected function createConnector(): Connector
     {
         // Load credentials:
         $iid = $this->libGuidesConfig->General->iid ?? null;
@@ -150,10 +150,9 @@ class LibGuidesBackendFactory extends AbstractBackendFactory
      *
      * @return QueryBuilder
      */
-    protected function createQueryBuilder()
+    protected function createQueryBuilder(): QueryBuilder
     {
-        $builder = new QueryBuilder();
-        return $builder;
+        return new QueryBuilder();
     }
 
     /**
@@ -161,7 +160,7 @@ class LibGuidesBackendFactory extends AbstractBackendFactory
      *
      * @return RecordCollectionFactory
      */
-    protected function createRecordCollectionFactory()
+    protected function createRecordCollectionFactory(): RecordCollectionFactory
     {
         $manager = $this->getService(\VuFind\RecordDriver\PluginManager::class);
         $callback = function ($data) use ($manager) {

@@ -52,21 +52,21 @@ class ProQuestFSGBackendFactory extends AbstractBackendFactory
      *
      * @var \Laminas\Log\LoggerInterface
      */
-    protected $logger;
+    protected \Laminas\Log\LoggerInterface $logger;
 
     /**
      * VuFind configuration
      *
      * @var \VuFind\Config\Config
      */
-    protected $config;
+    protected \VuFind\Config\Config $config;
 
     /**
      * ProQuestFSG configuration
      *
      * @var \VuFind\Config\Config
      */
-    protected $proQuestFSGConfig;
+    protected \VuFind\Config\Config $proQuestFSGConfig;
 
     /**
      * Create service
@@ -100,7 +100,7 @@ class ProQuestFSGBackendFactory extends AbstractBackendFactory
      *
      * @return Backend
      */
-    protected function createBackend(Connector $connector)
+    protected function createBackend(Connector $connector): Backend
     {
         $backend = new Backend($connector, $this->createRecordCollectionFactory());
         $backend->setLogger($this->logger);
@@ -112,7 +112,7 @@ class ProQuestFSGBackendFactory extends AbstractBackendFactory
      *
      * @return Connector
      */
-    protected function createConnector()
+    protected function createConnector(): Connector
     {
         $connector = new Connector($this->createHttpClient(), $this->proQuestFSGConfig->toArray());
         $connector->setLogger($this->logger);
@@ -127,7 +127,7 @@ class ProQuestFSGBackendFactory extends AbstractBackendFactory
      *
      * @return RecordCollectionFactory
      */
-    protected function createRecordCollectionFactory()
+    protected function createRecordCollectionFactory(): RecordCollectionFactory
     {
         $manager = $this->getService(\VuFind\RecordDriver\PluginManager::class);
         $callback = function ($data) use ($manager) {

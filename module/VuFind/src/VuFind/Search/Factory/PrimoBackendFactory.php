@@ -59,35 +59,35 @@ class PrimoBackendFactory extends AbstractBackendFactory
      *
      * @var \Laminas\Log\LoggerInterface
      */
-    protected $logger;
+    protected \Laminas\Log\LoggerInterface $logger;
 
     /**
      * Primo configuration
      *
      * @var \VuFind\Config\Config
      */
-    protected $primoConfig;
+    protected \VuFind\Config\Config $primoConfig;
 
     /**
      * Primo backend class
      *
      * @var string
      */
-    protected $backendClass = Backend::class;
+    protected string $backendClass = Backend::class;
 
     /**
      * Primo REST API connector class
      *
      * @var string
      */
-    protected $restConnectorClass = RestConnector::class;
+    protected string $restConnectorClass = RestConnector::class;
 
     /**
      * CDI attribute mappings
      *
      * @var array
      */
-    protected $attributeLabelTypeMappings = [
+    protected array $attributeLabelTypeMappings = [
         'review_article' => [
             'display' => 'RecordAttribute::Review Article',
             'type' => 'notice',
@@ -152,7 +152,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
      *
      * @return Backend
      */
-    protected function createBackend(ConnectorInterface $connector)
+    protected function createBackend(ConnectorInterface $connector): Backend
     {
         $backend = new $this->backendClass(
             $connector,
@@ -170,7 +170,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
      *
      * @return void
      */
-    protected function createListeners(Backend $backend)
+    protected function createListeners(Backend $backend): void
     {
         $events = $this->getService('SharedEventManager');
 
@@ -189,7 +189,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
      *
      * @return RestConnector
      */
-    protected function createRestConnector()
+    protected function createRestConnector(): RestConnector
     {
         // Get the PermissionHandler
         $permHandler = $this->getPermissionHandler();
@@ -234,10 +234,9 @@ class PrimoBackendFactory extends AbstractBackendFactory
      *
      * @return QueryBuilder
      */
-    protected function createQueryBuilder()
+    protected function createQueryBuilder(): QueryBuilder
     {
-        $builder = new QueryBuilder();
-        return $builder;
+        return new QueryBuilder();
     }
 
     /**
@@ -245,7 +244,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
      *
      * @return RecordCollectionFactory
      */
-    protected function createRecordCollectionFactory()
+    protected function createRecordCollectionFactory(): RecordCollectionFactory
     {
         $manager = $this->getService(\VuFind\RecordDriver\PluginManager::class);
         $callback = function ($data) use ($manager) {
@@ -268,7 +267,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
      *
      * @return InjectOnCampusListener
      */
-    protected function getInjectOnCampusListener()
+    protected function getInjectOnCampusListener(): InjectOnCampusListener
     {
         $listener = new InjectOnCampusListener($this->getPermissionHandler());
         return $listener;

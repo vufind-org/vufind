@@ -62,7 +62,7 @@ abstract class AbstractBackendFactory implements FactoryInterface
      *
      * @return void
      */
-    public function setup(ContainerInterface $sm)
+    public function setup(ContainerInterface $sm): void
     {
         $this->serviceLocator = $sm;
     }
@@ -70,9 +70,9 @@ abstract class AbstractBackendFactory implements FactoryInterface
     /**
      * Create HTTP Client
      *
-     * @param int    $timeout Request timeout
-     * @param array  $options Other options
-     * @param string $url     Request URL (needed for proper local address check when
+     * @param ?int    $timeout Request timeout
+     * @param array   $options Other options
+     * @param ?string $url     Request URL (needed for proper local address check when
      * the client is being proxified)
      *
      * @return \Laminas\Http\Client

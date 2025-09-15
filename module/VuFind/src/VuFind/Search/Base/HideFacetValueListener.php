@@ -48,44 +48,19 @@ use function is_callable;
 class HideFacetValueListener
 {
     /**
-     * Backend.
-     *
-     * @var BackendInterface
-     */
-    protected $backend;
-
-    /**
-     * List of facet values to show, indexed by facet field. All other facets are
-     * hidden.
-     *
-     * @var array
-     */
-    protected $showFacets = [];
-
-    /**
-     * List of facet values to hide, indexed by facet field.
-     *
-     * @var array
-     */
-    protected $hideFacets = [];
-
-    /**
      * Constructor.
      *
-     * @param BackendInterface $backend         Search backend
-     * @param array            $hideFacetValues Assoc. array of field
+     * @param BackendInterface $backend    Search backend
+     * @param array            $hideFacets Assoc. array of field
      * name => values to exclude from display.
-     * @param array            $showFacetValues Assoc. array of field
+     * @param array            $showFacets Assoc. array of field
      * name => values to exclusively show in display.
      */
     public function __construct(
-        BackendInterface $backend,
-        array $hideFacetValues,
-        array $showFacetValues = []
+        protected BackendInterface $backend,
+        protected array $hideFacets,
+        protected array $showFacets = []
     ) {
-        $this->backend = $backend;
-        $this->hideFacets = $hideFacetValues;
-        $this->showFacets = $showFacetValues;
     }
 
     /**
@@ -97,7 +72,7 @@ class HideFacetValueListener
      */
     public function attach(
         SharedEventManagerInterface $manager
-    ) {
+    ): void {
         $manager->attach(
             Service::class,
             Service::EVENT_POST,
@@ -112,7 +87,7 @@ class HideFacetValueListener
      *
      * @return EventInterface
      */
-    public function onSearchPost(EventInterface $event)
+    public function onSearchPost(EventInterface $event): EventInterface
     {
         $command = $event->getParam('command');
 
@@ -133,7 +108,7 @@ class HideFacetValueListener
      *
      * @return void
      */
-    protected function processHideFacetValue($event)
+    protected function processHideFacetValue(EventInterface $event): void
     {
         $result = $event->getParam('command')->getResult();
         if (!$result) {

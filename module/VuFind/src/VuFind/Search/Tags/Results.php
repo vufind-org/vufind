@@ -72,7 +72,7 @@ class Results extends BaseResults
      *
      * @return string
      */
-    protected function formatFuzzyQuery($q)
+    protected function formatFuzzyQuery(string $q): string
     {
         // Change unescaped asterisks to percent signs to translate more common
         // wildcard character into format used by database.
@@ -86,7 +86,7 @@ class Results extends BaseResults
      *
      * @return array
      */
-    protected function performTagSearch($fuzzy)
+    protected function performTagSearch(bool $fuzzy): array
     {
         $query = $fuzzy
             ? $this->formatFuzzyQuery($this->getParams()->getDisplayQuery())
@@ -125,7 +125,7 @@ class Results extends BaseResults
      *
      * @return void
      */
-    protected function performSearch()
+    protected function performSearch(): void
     {
         // There are two possibilities here: either we are in "fuzzy" mode because
         // we are coming in from a search, in which case we want to do a fuzzy
@@ -144,12 +144,12 @@ class Results extends BaseResults
     /**
      * Returns the stored list of facets for the last search
      *
-     * @param array $filter Array of field => on-screen description listing
+     * @param ?array $filter Array of field => on-screen description listing
      * all of the desired facet fields; set to null to get all configured values.
      *
      * @return array        Facets data arrays
      */
-    public function getFacetList($filter = null)
+    public function getFacetList(?array $filter = null): array
     {
         // Facets not supported:
         return [];

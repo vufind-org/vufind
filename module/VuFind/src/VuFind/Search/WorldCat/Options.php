@@ -47,7 +47,7 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @return string
      */
-    public function getSearchAction()
+    public function getSearchAction(): string
     {
         return 'worldcat-search';
     }
@@ -58,7 +58,7 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @return string|bool
      */
-    public function getAdvancedSearchAction()
+    public function getAdvancedSearchAction(): string|bool
     {
         return 'worldcat-advanced';
     }

@@ -47,7 +47,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @var array
      */
-    protected $recordsToRequest;
+    protected array $recordsToRequest;
 
     /**
      * Initialize the object's search settings from a request object.
@@ -57,7 +57,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return void
      */
-    protected function initSearch($request)
+    protected function initSearch(\Laminas\Stdlib\Parameters $request): void
     {
         // Convert special 'id' parameter into a standard hidden filter:
         $idParam = $request->get('id', []);
@@ -73,7 +73,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return void
      */
-    protected function setRecordIdsFromFilter($filterValue)
+    protected function setRecordIdsFromFilter(string $filterValue): void
     {
         $this->recordsToRequest = explode("\t", $filterValue);
         $this->setLimit(count($this->recordsToRequest));
@@ -89,7 +89,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return void
      */
-    public function addHiddenFilter($newFilter)
+    public function addHiddenFilter(string $newFilter): void
     {
         [$field, $value] = $this->parseFilter($newFilter);
         if ($field == 'ids') {
@@ -106,7 +106,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return void
      */
-    public function deminify($minified)
+    public function deminify(\VuFind\Search\Minified $minified): void
     {
         parent::deminify($minified);
         if (isset($this->hiddenFilters['ids'][0])) {
@@ -120,7 +120,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return string
      */
-    public function getDisplayQuery()
+    public function getDisplayQuery(): string
     {
         return $this->translate(
             'result_count',
@@ -134,7 +134,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return array
      */
-    public function getHiddenFilters()
+    public function getHiddenFilters(): array
     {
         $filters = parent::getHiddenFilters();
         $filters['ids'] = [implode("\t", $this->recordsToRequest)];
@@ -146,7 +146,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return array
      */
-    public function getRecordsToRequest()
+    public function getRecordsToRequest(): array
     {
         return $this->recordsToRequest;
     }

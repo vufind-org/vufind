@@ -30,12 +30,12 @@
 namespace VuFind\Search\Base;
 
 use Laminas\Paginator\Paginator;
+use VuFind\Db\Entity\SearchEntityInterface;
 use VuFind\Record\Loader;
 use VuFind\Search\Factory\UrlQueryHelperFactory;
 use VuFindSearch\Service as SearchService;
 
 use function call_user_func_array;
-use function count;
 use function func_get_args;
 use function get_class;
 use function in_array;
@@ -58,136 +58,122 @@ abstract class Results
     /**
      * Search parameters
      *
-     * @var Params
+     * @var \VuFind\Search\Base\Params
      */
-    protected $params;
+    protected \VuFind\Search\Base\Params $params;
 
     /**
      * Total number of results available
      *
-     * @var int
+     * @var ?int
      */
-    protected $resultTotal = null;
+    protected ?int $resultTotal = null;
 
     /**
      * Search backend identifier.
      *
      * @var string
      */
-    protected $backendId;
+    protected string $backendId;
 
     /**
      * Override (only for use in very rare cases)
      *
      * @var ?int
      */
-    protected $startRecordOverride = null;
+    protected ?int $startRecordOverride = null;
 
     /**
      * Array of results (represented as Record Driver objects) retrieved on latest
      * search
      *
-     * @var array
+     * @var ?array
      */
-    protected $results = null;
+    protected ?array $results = null;
 
     /**
      * Any errors reported by the search backend
      *
-     * @var array
+     * @var ?array
      */
-    protected $errors = null;
+    protected ?array $errors = null;
 
     /**
      * An ID number for saving/retrieving search
      *
-     * @var int
+     * @var ?int
      */
-    protected $searchId = null;
+    protected ?int $searchId = null;
 
     /**
      * Is this a user-saved search?
      *
      * @var bool
      */
-    protected $savedSearch = null;
+    protected ?bool $savedSearch = null;
 
     /**
      * How frequently will a user be notified about this search (0 = never)?
      *
-     * @var int
+     * @var ?int
      */
-    protected $notificationFrequency = null;
+    protected ?int $notificationFrequency = null;
 
     /**
      * Query start time
      *
-     * @var float
+     * @var ?float
      */
-    protected $queryStartTime = null;
+    protected ?float $queryStartTime = null;
 
     /**
      * Query end time
      *
-     * @var float
+     * @var ?float
      */
-    protected $queryEndTime = null;
+    protected ?float $queryEndTime = null;
 
     /**
      * Query time (total)
      *
-     * @var float
+     * @var ?float
      */
-    protected $queryTime = null;
+    protected ?float $queryTime = null;
 
     /**
      * Helper objects
      *
      * @var array
      */
-    protected $helpers = [];
+    protected array $helpers = [];
 
     /**
      * Spelling suggestions
      *
-     * @var array
+     * @var ?array
      */
-    protected $suggestions = null;
+    protected ?array $suggestions = null;
 
     /**
      * Recommendations
      *
      * @var array
      */
-    protected $recommend = [];
-
-    /**
-     * Search service.
-     *
-     * @var SearchService
-     */
-    protected $searchService;
-
-    /**
-     * Record loader
-     *
-     * @var Loader
-     */
-    protected $recordLoader;
+    protected array $recommend = [];
 
     /**
      * URL query helper factory
      *
-     * @var UrlQueryHelperFactory
+     * @var ?UrlQueryHelperFactory
      */
-    protected $urlQueryHelperFactory = null;
+    protected ?UrlQueryHelperFactory $urlQueryHelperFactory = null;
 
     /**
      * Hierarchical facet helper
      *
-     * @var HierarchicalFacetHelperInterface
+     * @var ?HierarchicalFacetHelperInterface
      */
-    protected $hierarchicalFacetHelper = null;
+    protected ?HierarchicalFacetHelperInterface $hierarchicalFacetHelper = null;
 
     /**
      * If the results provide only a restricted view.
@@ -201,7 +187,7 @@ abstract class Results
      *
      * @var ?array
      */
-    protected $extraSearchBackendDetails = null;
+    protected ?array $extraSearchBackendDetails = null;
 
     /**
      * Constructor
@@ -212,13 +198,11 @@ abstract class Results
      * @param Loader                     $recordLoader  Record loader
      */
     public function __construct(
-        Params $params,
-        SearchService $searchService,
-        Loader $recordLoader
+        \VuFind\Search\Base\Params $params,
+        protected SearchService $searchService,
+        protected Loader $recordLoader
     ) {
         $this->setParams($params);
-        $this->searchService = $searchService;
-        $this->recordLoader = $recordLoader;
     }
 
     /**
@@ -226,7 +210,7 @@ abstract class Results
      *
      * @return void
      */
-    public function __clone()
+    public function __clone(): void
     {
         if (is_object($this->params)) {
             $this->params = clone $this->params;
@@ -239,7 +223,7 @@ abstract class Results
      *
      * @return \VuFind\Search\Base\Params
      */
-    public function getParams()
+    public function getParams(): \VuFind\Search\Base\Params
     {
         return $this->params;
     }
@@ -251,7 +235,7 @@ abstract class Results
      *
      * @return void
      */
-    public function setParams($params)
+    public function setParams(\VuFind\Search\Base\Params $params): void
     {
         $this->params = $params;
     }
@@ -261,7 +245,7 @@ abstract class Results
      *
      * @return \VuFind\Search\Base\Options
      */
-    public function getOptions()
+    public function getOptions(): \VuFind\Search\Base\Options
     {
         return $this->getParams()->getOptions();
     }
@@ -271,7 +255,7 @@ abstract class Results
      *
      * @return array
      */
-    protected function getUrlQueryHelperOptions()
+    protected function getUrlQueryHelperOptions(): array
     {
         return [];
     }
@@ -281,7 +265,7 @@ abstract class Results
      *
      * @return \VuFind\Search\UrlQueryHelper
      */
-    public function getUrlQuery()
+    public function getUrlQuery(): \VuFind\Search\UrlQueryHelper
     {
         // Set up URL helper:
         if (!isset($this->helpers['urlQuery'])) {
@@ -302,7 +286,7 @@ abstract class Results
      *
      * @return void
      */
-    public function setHelper($key, $value)
+    public function setHelper(string $key, object $value): void
     {
         $this->helpers[$key] = $value;
     }
@@ -326,7 +310,7 @@ abstract class Results
      *
      * @return void
      */
-    public function performAndProcessSearch()
+    public function performAndProcessSearch(): void
     {
         // Initialize variables to defaults (to ensure they don't stay null
         // and cause unnecessary repeat processing):
@@ -345,12 +329,12 @@ abstract class Results
     /**
      * Returns the stored list of facets for the last search
      *
-     * @param array $filter Array of field => on-screen description listing
+     * @param ?array $filter Array of field => on-screen description listing
      * all of the desired facet fields; set to null to get all configured values.
      *
      * @return array        Facets data arrays
      */
-    abstract public function getFacetList($filter = null);
+    abstract public function getFacetList(?array $filter = null): array;
 
     /**
      * Abstract support method for performAndProcessSearch -- perform a search based
@@ -359,14 +343,14 @@ abstract class Results
      *
      * @return void
      */
-    abstract protected function performSearch();
+    abstract protected function performSearch(): void;
 
     /**
      * Get spelling suggestion information.
      *
      * @return array
      */
-    public function getSpellingSuggestions()
+    public function getSpellingSuggestions(): array
     {
         // Not supported by default:
         return [];
@@ -377,7 +361,7 @@ abstract class Results
      *
      * @return int
      */
-    public function getResultTotal()
+    public function getResultTotal(): int
     {
         if (null === $this->resultTotal) {
             $this->performAndProcessSearch();
@@ -392,7 +376,7 @@ abstract class Results
      *
      * @return void
      */
-    public function overrideStartRecord($rec)
+    public function overrideStartRecord(?int $rec): void
     {
         $this->startRecordOverride = $rec;
     }
@@ -402,7 +386,7 @@ abstract class Results
      *
      * @return int
      */
-    public function getStartRecord()
+    public function getStartRecord(): int
     {
         if (null !== $this->startRecordOverride) {
             return $this->startRecordOverride;
@@ -422,7 +406,7 @@ abstract class Results
      *
      * @return int
      */
-    public function getEndRecord()
+    public function getEndRecord(): int
     {
         $total = $this->getResultTotal();
         $params = $this->getParams();
@@ -445,7 +429,7 @@ abstract class Results
      *
      * @return array
      */
-    public function getResults()
+    public function getResults(): array
     {
         if (null === $this->results) {
             $this->performAndProcessSearch();
@@ -458,7 +442,7 @@ abstract class Results
      *
      * @return array
      */
-    public function getErrors()
+    public function getErrors(): array
     {
         if (null === $this->errors) {
             $this->performAndProcessSearch();
@@ -471,7 +455,7 @@ abstract class Results
      *
      * @return string
      */
-    public function getBackendId()
+    public function getBackendId(): string
     {
         return $this->backendId;
     }
@@ -479,9 +463,9 @@ abstract class Results
     /**
      * Basic 'getter' for ID of saved search.
      *
-     * @return int
+     * @return ?int
      */
-    public function getSearchId()
+    public function getSearchId(): ?int
     {
         return $this->searchId;
     }
@@ -491,7 +475,7 @@ abstract class Results
      *
      * @return bool
      */
-    public function isSavedSearch()
+    public function isSavedSearch(): bool
     {
         // This data is not available until the search has been saved; blow up if somebody
         // tries to get data that is not yet available.
@@ -530,7 +514,7 @@ abstract class Results
      *
      * @return void
      */
-    public function updateSaveStatus($row)
+    public function updateSaveStatus(SearchEntityInterface $row): void
     {
         $this->searchId = $row->getId();
         foreach ($this->results as $driver) {
@@ -546,11 +530,11 @@ abstract class Results
      *
      * @return void
      */
-    protected function startQueryTimer()
+    protected function startQueryTimer(): void
     {
         // Get time before the query
         $time = explode(' ', microtime());
-        $this->queryStartTime = $time[1] + $time[0];
+        $this->queryStartTime = ((float)$time[1]) + ((float)$time[0]);
     }
 
     /**
@@ -559,10 +543,10 @@ abstract class Results
      *
      * @return void
      */
-    protected function stopQueryTimer()
+    protected function stopQueryTimer(): void
     {
         $time = explode(' ', microtime());
-        $this->queryEndTime = $time[1] + $time[0];
+        $this->queryEndTime = ((float)$time[1]) + ((float)$time[0]);
         $this->queryTime = $this->queryEndTime - $this->queryStartTime;
     }
 
@@ -571,7 +555,7 @@ abstract class Results
      *
      * @return float
      */
-    public function getQuerySpeed()
+    public function getQuerySpeed(): float
     {
         if (null === $this->queryTime) {
             $this->performAndProcessSearch();
@@ -584,7 +568,7 @@ abstract class Results
      *
      * @return float
      */
-    public function getStartTime()
+    public function getStartTime(): float
     {
         if (null === $this->queryStartTime) {
             $this->performAndProcessSearch();
@@ -597,7 +581,7 @@ abstract class Results
      *
      * @return Paginator
      */
-    public function getPaginator()
+    public function getPaginator(): Paginator
     {
         // If there is a limit on how many pages are accessible,
         // apply that limit now:
@@ -621,7 +605,7 @@ abstract class Results
      *
      * @return array
      */
-    public function getRawSuggestions()
+    public function getRawSuggestions(): array
     {
         if (null === $this->suggestions) {
             $this->performAndProcessSearch();
@@ -634,7 +618,7 @@ abstract class Results
      *
      * @return array
      */
-    public function getScores()
+    public function getScores(): array
     {
         // Not implemented in the base class
         return [];
@@ -645,7 +629,7 @@ abstract class Results
      *
      * @return ?float
      */
-    public function getMaxScore()
+    public function getMaxScore(): ?float
     {
         // Not implemented in the base class
         return null;
@@ -688,7 +672,7 @@ abstract class Results
      *
      * @return void
      */
-    public function minify(&$minified): void
+    public function minify(\VuFind\Search\Minified &$minified): void
     {
         $minified->id = $this->getSearchId();
         $minified->i  = $this->getStartTime();
@@ -706,7 +690,7 @@ abstract class Results
      *
      * @return void
      */
-    public function deminify($minified)
+    public function deminify(\VuFind\Search\Minified $minified): void
     {
         $this->searchId = $minified->id;
         $this->queryStartTime = $minified->i;
@@ -725,7 +709,7 @@ abstract class Results
      *
      * @return array
      */
-    public function getRecommendations($location = 'top')
+    public function getRecommendations(string $location = 'top'): array
     {
         if (null === $location) {
             return $this->recommend;
@@ -740,7 +724,7 @@ abstract class Results
      *
      * @return void
      */
-    public function setRecommendations($recommend)
+    public function setRecommendations(array $recommend): void
     {
         $this->recommend = $recommend;
     }
@@ -753,7 +737,7 @@ abstract class Results
      * @todo May better error handling, throw a custom exception if search service
      * not present
      */
-    protected function getSearchService()
+    protected function getSearchService(): SearchService
     {
         return $this->searchService;
     }
@@ -763,7 +747,7 @@ abstract class Results
      *
      * @return string
      */
-    public function translate()
+    public function translate(): string
     {
         return call_user_func_array(
             [$this->getOptions(), 'translate'],
@@ -776,7 +760,7 @@ abstract class Results
      *
      * @return UrlQueryHelperFactory
      */
-    protected function getUrlQueryHelperFactory()
+    protected function getUrlQueryHelperFactory(): UrlQueryHelperFactory
     {
         if (null === $this->urlQueryHelperFactory) {
             $this->urlQueryHelperFactory = new UrlQueryHelperFactory();
@@ -791,7 +775,7 @@ abstract class Results
      *
      * @return void
      */
-    public function setUrlQueryHelperFactory(UrlQueryHelperFactory $factory)
+    public function setUrlQueryHelperFactory(UrlQueryHelperFactory $factory): void
     {
         $this->urlQueryHelperFactory = $factory;
     }
@@ -805,29 +789,29 @@ abstract class Results
      */
     public function setHierarchicalFacetHelper(
         HierarchicalFacetHelperInterface $helper
-    ) {
+    ): void {
         $this->hierarchicalFacetHelper = $helper;
     }
 
     /**
      * Get complete facet counts for several index fields
      *
-     * @param array  $facetfields  name of the Solr fields to return facets for
-     * @param bool   $removeFilter Clear existing filters from selected fields (true)
+     * @param array   $facetfields  name of the Solr fields to return facets for
+     * @param bool    $removeFilter Clear existing filters from selected fields (true)
      * or retain them (false)?
-     * @param int    $limit        A limit for the number of facets returned, this
+     * @param int     $limit        A limit for the number of facets returned, this
      * may be useful for very large amounts of facets that can break the JSON parse
      * method because of PHP out of memory exceptions (default = -1, no limit).
-     * @param string $facetSort    A facet sort value to use (null to retain current)
+     * @param ?string $facetSort    A facet sort value to use (null to retain current)
      *
      * @return array an array with the facet values for each index field
      */
     public function getFullFieldFacets(
-        $facetfields,
-        $removeFilter = true,
-        $limit = -1,
-        $facetSort = null
-    ) {
+        array $facetfields,
+        bool $removeFilter = true,
+        int $limit = -1,
+        ?string $facetSort = null
+    ): array {
         if (!method_exists($this, 'getPartialFieldFacets')) {
             throw new \Exception('getPartialFieldFacets not implemented');
         }
@@ -869,7 +853,7 @@ abstract class Results
      *
      * @return bool
      */
-    public function isRestrictedView()
+    public function isRestrictedView(): bool
     {
         return $this->restrictedView;
     }
@@ -879,7 +863,7 @@ abstract class Results
      *
      * @return ?array
      */
-    public function getExtraSearchBackendDetails()
+    public function getExtraSearchBackendDetails(): ?array
     {
         return $this->extraSearchBackendDetails;
     }

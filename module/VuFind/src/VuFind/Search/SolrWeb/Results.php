@@ -45,5 +45,5 @@ class Results extends \VuFind\Search\Solr\Results
      *
      * @var string
      */
-    protected $backendId = 'SolrWeb';
+    protected string $backendId = 'SolrWeb';
 }

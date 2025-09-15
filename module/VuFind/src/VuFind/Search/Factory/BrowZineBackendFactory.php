@@ -54,14 +54,14 @@ class BrowZineBackendFactory extends AbstractBackendFactory
      *
      * @var \Laminas\Log\LoggerInterface
      */
-    protected $logger;
+    protected \Laminas\Log\LoggerInterface $logger;
 
     /**
      * BrowZine configuration
      *
      * @var \VuFind\Config\Config
      */
-    protected $browzineConfig;
+    protected \VuFind\Config\Config $browzineConfig;
 
     /**
      * Create service
@@ -95,7 +95,7 @@ class BrowZineBackendFactory extends AbstractBackendFactory
      *
      * @return Backend
      */
-    protected function createBackend(Connector $connector)
+    protected function createBackend(Connector $connector): Backend
     {
         $backend = new Backend($connector, $this->createRecordCollectionFactory());
         $backend->setLogger($this->logger);
@@ -108,7 +108,7 @@ class BrowZineBackendFactory extends AbstractBackendFactory
      *
      * @return Connector
      */
-    protected function createConnector()
+    protected function createConnector(): Connector
     {
         $token = $this->getSecretFromConfig($this->browzineConfig?->General, 'access_token');
         // Validate configuration:
@@ -134,10 +134,9 @@ class BrowZineBackendFactory extends AbstractBackendFactory
      *
      * @return QueryBuilder
      */
-    protected function createQueryBuilder()
+    protected function createQueryBuilder(): QueryBuilder
     {
-        $builder = new QueryBuilder();
-        return $builder;
+        return new QueryBuilder();
     }
 
     /**
@@ -145,7 +144,7 @@ class BrowZineBackendFactory extends AbstractBackendFactory
      *
      * @return RecordCollectionFactory
      */
-    protected function createRecordCollectionFactory()
+    protected function createRecordCollectionFactory(): RecordCollectionFactory
     {
         $manager = $this->getService(\VuFind\RecordDriver\PluginManager::class);
         $callback = function ($data) use ($manager) {

@@ -53,21 +53,21 @@ class SummonBackendFactory extends AbstractBackendFactory
      *
      * @var \Laminas\Log\LoggerInterface
      */
-    protected $logger;
+    protected \Laminas\Log\LoggerInterface $logger;
 
     /**
      * VuFind configuration
      *
      * @var \VuFind\Config\Config
      */
-    protected $config;
+    protected \VuFind\Config\Config $config;
 
     /**
      * Summon configuration
      *
      * @var \VuFind\Config\Config
      */
-    protected $summonConfig;
+    protected \VuFind\Config\Config $summonConfig;
 
     /**
      * Create service
@@ -101,7 +101,7 @@ class SummonBackendFactory extends AbstractBackendFactory
      *
      * @return Backend
      */
-    protected function createBackend(Connector $connector)
+    protected function createBackend(Connector $connector): Backend
     {
         $backend = new Backend($connector, $this->createRecordCollectionFactory());
         $backend->setLogger($this->logger);
@@ -114,7 +114,7 @@ class SummonBackendFactory extends AbstractBackendFactory
      *
      * @return Connector
      */
-    protected function createConnector()
+    protected function createConnector(): Connector
     {
         // Load credentials:
         $id = $this->config->Summon->apiId ?? null;
@@ -137,7 +137,7 @@ class SummonBackendFactory extends AbstractBackendFactory
      *
      * @return bool
      */
-    protected function isAuthed()
+    protected function isAuthed(): bool
     {
         return $this->getService(\Lmc\Rbac\Mvc\Service\AuthorizationService::class)
             ->isGranted('access.SummonExtendedResults');
@@ -148,7 +148,7 @@ class SummonBackendFactory extends AbstractBackendFactory
      *
      * @return QueryBuilder
      */
-    protected function createQueryBuilder()
+    protected function createQueryBuilder(): QueryBuilder
     {
         $builder = new QueryBuilder();
         $caseSensitiveBooleans
@@ -163,7 +163,7 @@ class SummonBackendFactory extends AbstractBackendFactory
      *
      * @return RecordCollectionFactory
      */
-    protected function createRecordCollectionFactory()
+    protected function createRecordCollectionFactory(): RecordCollectionFactory
     {
         $manager = $this->getService(\VuFind\RecordDriver\PluginManager::class);
         $stripSnippets = !($this->summonConfig->General->snippets ?? false);

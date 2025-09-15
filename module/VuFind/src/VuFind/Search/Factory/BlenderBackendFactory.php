@@ -52,7 +52,7 @@ class BlenderBackendFactory implements FactoryInterface
      *
      * @var ContainerInterface
      */
-    protected $container;
+    protected ContainerInterface $container;
 
     /**
      * VuFind configuration reader
@@ -66,21 +66,21 @@ class BlenderBackendFactory implements FactoryInterface
      *
      * @var string
      */
-    protected $searchConfig = 'Blender';
+    protected string $searchConfig = 'Blender';
 
     /**
      * Facet configuration file identifier.
      *
      * @var string
      */
-    protected $facetConfig = 'Blender';
+    protected string $facetConfig = 'Blender';
 
     /**
      * Mappings YAML configuration file identifier.
      *
      * @var string
      */
-    protected $mappingsConfig = 'BlenderMappings.yaml';
+    protected string $mappingsConfig = 'BlenderMappings.yaml';
 
     /**
      * Create service
@@ -127,7 +127,7 @@ class BlenderBackendFactory implements FactoryInterface
      *
      * @return void
      */
-    protected function attachEvents(Backend $backend)
+    protected function attachEvents(Backend $backend): void
     {
         $manager = $this->container->get('SharedEventManager');
 

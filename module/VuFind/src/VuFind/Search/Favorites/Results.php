@@ -63,28 +63,28 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
      *
      * @var ?UserEntityInterface
      */
-    protected $user = null;
+    protected ?UserEntityInterface $user = null;
 
     /**
      * Active user list (false if we haven't tried to load yet; null if inapplicable).
      *
      * @var UserListEntityInterface|null|false
      */
-    protected $list = false;
+    protected UserListEntityInterface|null|false $list = false;
 
     /**
      * Facet list
      *
      * @var array
      */
-    protected $facets;
+    protected array $facets;
 
     /**
      * All ids
      *
      * @var array
      */
-    protected $allIds;
+    protected array $allIds;
 
     /**
      * Constructor
@@ -110,12 +110,12 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
     /**
      * Returns the stored list of facets for the last search
      *
-     * @param array $filter Array of field => on-screen description listing
+     * @param ?array $filter Array of field => on-screen description listing
      * all of the desired facet fields; set to null to get all configured values.
      *
      * @return array        Facets data arrays
      */
-    public function getFacetList($filter = null)
+    public function getFacetList(?array $filter = null): array
     {
         // Make sure we have processed the search before proceeding:
         if (null === $this->results) {
@@ -170,7 +170,7 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
      *
      * @return void
      */
-    protected function performSearch()
+    protected function performSearch(): void
     {
         $list = $this->getListObject();
         $this->user = $this->getAuthorizationService()?->getIdentity();
@@ -231,7 +231,7 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
      *
      * @return array
      */
-    protected function getTagFilters()
+    protected function getTagFilters(): array
     {
         $filters = $this->getParams()->getRawFilters();
         return $filters['tags'] ?? [];
@@ -261,7 +261,7 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
      *
      * @return array
      */
-    public function getAllIds()
+    public function getAllIds(): array
     {
         return $this->allIds;
     }

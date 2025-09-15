@@ -51,38 +51,38 @@ class EdsBackendFactory extends AbstractBackendFactory
     /**
      * Logger.
      *
-     * @var \Laminas\Log\LoggerInterface
+     * @var ?\Laminas\Log\LoggerInterface
      */
-    protected $logger = null;
+    protected ?\Laminas\Log\LoggerInterface $logger = null;
 
     /**
      * EDS configuration
      *
      * @var \VuFind\Config\Config
      */
-    protected $edsConfig;
+    protected \VuFind\Config\Config $edsConfig;
 
     /**
      * EDS Account data
      *
      * @var array
      */
-    protected $accountData;
+    protected array $accountData;
 
     /**
      * Default URL for the EDS Backend.  Set here for the EDS API.
      *
-     * @var str
+     * @var string
      */
-    protected $defaultApiUrl = 'https://eds-api.ebscohost.com/edsapi/rest';
+    protected string $defaultApiUrl = 'https://eds-api.ebscohost.com/edsapi/rest';
 
     /**
      * Get the service name. This is used for both configuration
      * and record driver retrieval.
      *
-     * @return str
+     * @return string
      */
-    protected function getServiceName()
+    protected function getServiceName(): string
     {
         return 'EDS';
     }
@@ -119,7 +119,7 @@ class EdsBackendFactory extends AbstractBackendFactory
      *
      * @return Backend
      */
-    protected function createBackend(Connector $connector)
+    protected function createBackend(Connector $connector): Backend
     {
         $auth = $this->getService(\Lmc\Rbac\Mvc\Service\AuthorizationService::class);
         $isGuest = !$auth->isGranted('access.EDSExtendedResults');
@@ -150,7 +150,7 @@ class EdsBackendFactory extends AbstractBackendFactory
      *
      * @return Connector
      */
-    protected function createConnector()
+    protected function createConnector(): Connector
     {
         $options = $this->createConnectorOptions();
         $httpOptions = [
@@ -176,7 +176,7 @@ class EdsBackendFactory extends AbstractBackendFactory
      *
      * @return array
      */
-    protected function createConnectorOptions()
+    protected function createConnectorOptions(): array
     {
         $auth = $this->getService(\Lmc\Rbac\Mvc\Service\AuthorizationService::class);
         $options = [
@@ -215,10 +215,9 @@ class EdsBackendFactory extends AbstractBackendFactory
      *
      * @return QueryBuilder
      */
-    protected function createQueryBuilder()
+    protected function createQueryBuilder(): QueryBuilder
     {
-        $builder = new QueryBuilder();
-        return $builder;
+        return new QueryBuilder();
     }
 
     /**
@@ -226,7 +225,7 @@ class EdsBackendFactory extends AbstractBackendFactory
      *
      * @return RecordCollectionFactory
      */
-    protected function createRecordCollectionFactory()
+    protected function createRecordCollectionFactory(): RecordCollectionFactory
     {
         $manager = $this->getService(\VuFind\RecordDriver\PluginManager::class);
         $callback = function ($data) use ($manager) {
@@ -244,7 +243,7 @@ class EdsBackendFactory extends AbstractBackendFactory
      *
      * @return void
      */
-    protected function createListeners(Backend $backend)
+    protected function createListeners(Backend $backend): void
     {
         $events = $this->getService('SharedEventManager');
 

@@ -50,7 +50,7 @@ class Options extends \VuFind\Search\Base\Options implements DateRangeOptionsInt
      *
      * @var array
      */
-    protected $facetSortOptions = [
+    protected array $facetSortOptions = [
         '*' => ['count' => 'sort_count', 'index' => 'sort_alphabetic'],
     ];
 
@@ -59,21 +59,21 @@ class Options extends \VuFind\Search\Base\Options implements DateRangeOptionsInt
      *
      * @var ?string
      */
-    protected $emptySearchRelevanceOverride;
+    protected ?string $emptySearchRelevanceOverride;
 
     /**
      * Whether to display record versions
      *
      * @var bool
      */
-    protected $displayRecordVersions;
+    protected bool $displayRecordVersions;
 
     /**
      * Solr field to be used as a tie-breaker.
      *
      * @var ?string
      */
-    protected $sortTieBreaker;
+    protected ?string $sortTieBreaker;
 
     /**
      * Constructor
@@ -159,7 +159,7 @@ class Options extends \VuFind\Search\Base\Options implements DateRangeOptionsInt
      *
      * @return string
      */
-    public function getSearchAction()
+    public function getSearchAction(): string
     {
         return 'search-results';
     }
@@ -170,7 +170,7 @@ class Options extends \VuFind\Search\Base\Options implements DateRangeOptionsInt
      *
      * @return string|bool
      */
-    public function getAdvancedSearchAction()
+    public function getAdvancedSearchAction(): string|bool
     {
         return 'search-advanced';
     }
@@ -181,7 +181,7 @@ class Options extends \VuFind\Search\Base\Options implements DateRangeOptionsInt
      *
      * @return string|bool
      */
-    public function getFacetListAction()
+    public function getFacetListAction(): string|bool
     {
         return 'search-facetlist';
     }
@@ -191,7 +191,7 @@ class Options extends \VuFind\Search\Base\Options implements DateRangeOptionsInt
      *
      * @return string|bool
      */
-    public function getVersionsAction()
+    public function getVersionsAction(): string|bool
     {
         return $this->displayRecordVersions ? 'search-versions' : false;
     }
@@ -199,9 +199,9 @@ class Options extends \VuFind\Search\Base\Options implements DateRangeOptionsInt
     /**
      * Get the relevance sort override for empty searches.
      *
-     * @return string Sort field or null if not set
+     * @return ?string Sort field or null if not set
      */
-    public function getEmptySearchRelevanceOverride()
+    public function getEmptySearchRelevanceOverride(): ?string
     {
         return $this->emptySearchRelevanceOverride;
     }
@@ -211,7 +211,7 @@ class Options extends \VuFind\Search\Base\Options implements DateRangeOptionsInt
      *
      * @return ?string Sort field or null if not set
      */
-    public function getSortTieBreaker()
+    public function getSortTieBreaker(): ?string
     {
         return $this->sortTieBreaker;
     }
@@ -221,7 +221,7 @@ class Options extends \VuFind\Search\Base\Options implements DateRangeOptionsInt
      *
      * @return bool
      */
-    public function supportsScheduledSearch()
+    public function supportsScheduledSearch(): bool
     {
         // Solr supports this!
         return true;

@@ -48,14 +48,14 @@ trait FacetRestrictionsTrait
      *
      * @var array
      */
-    protected $facetPrefixByField = [];
+    protected array $facetPrefixByField = [];
 
     /**
      * Per-field facet matches
      *
      * @var array
      */
-    protected $facetMatchesByField = [];
+    protected array $facetMatchesByField = [];
 
     /**
      * Initialize facet prefix and matches from a Config object.
@@ -64,7 +64,7 @@ trait FacetRestrictionsTrait
      *
      * @return void
      */
-    protected function initFacetRestrictionsFromConfig(?Config $config = null)
+    protected function initFacetRestrictionsFromConfig(?Config $config = null): void
     {
         foreach ($config->facet_prefix_by_field ?? [] as $k => $v) {
             $this->facetPrefixByField[$k] = $v;
@@ -81,7 +81,7 @@ trait FacetRestrictionsTrait
      *
      * @return void
      */
-    public function setFacetPrefixByField(array $new)
+    public function setFacetPrefixByField(array $new): void
     {
         $this->facetPrefixByField = $new;
     }
@@ -93,7 +93,7 @@ trait FacetRestrictionsTrait
      *
      * @return void
      */
-    public function setFacetMatchesByField(array $new)
+    public function setFacetMatchesByField(array $new): void
     {
         $this->facetMatchesByField = $new;
     }
@@ -105,7 +105,7 @@ trait FacetRestrictionsTrait
      *
      * @return string
      */
-    protected function getFacetPrefixForField($field)
+    protected function getFacetPrefixForField(string $field): string
     {
         $prefix = $this->facetPrefixByField[$field] ?? '';
         return $prefix;
@@ -118,7 +118,7 @@ trait FacetRestrictionsTrait
      *
      * @return string
      */
-    protected function getFacetMatchesForField($field)
+    protected function getFacetMatchesForField(string $field): string
     {
         $matches = $this->facetMatchesByField[$field] ?? '';
         return $matches;

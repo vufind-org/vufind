@@ -59,7 +59,7 @@ class Options extends \VuFind\Search\Solr\Options
      *
      * @return string|bool
      */
-    public function getFacetListAction()
+    public function getFacetListAction(): string|bool
     {
         return 'search2-facetlist';
     }
@@ -69,7 +69,7 @@ class Options extends \VuFind\Search\Solr\Options
      *
      * @return string|bool
      */
-    public function getVersionsAction()
+    public function getVersionsAction(): string|bool
     {
         return $this->displayRecordVersions ? 'search2-versions' : false;
     }
@@ -79,7 +79,7 @@ class Options extends \VuFind\Search\Solr\Options
      *
      * @return string
      */
-    public function getSearchAction()
+    public function getSearchAction(): string
     {
         return 'search2-results';
     }
@@ -90,7 +90,7 @@ class Options extends \VuFind\Search\Solr\Options
      *
      * @return string|bool
      */
-    public function getAdvancedSearchAction()
+    public function getAdvancedSearchAction(): string|bool
     {
         return 'search2-advanced';
     }

@@ -58,34 +58,6 @@ class DeduplicationListener
     use GetServiceTrait;
 
     /**
-     * Backend.
-     *
-     * @var Backend
-     */
-    protected $backend;
-
-    /**
-     * Search configuration file identifier.
-     *
-     * @var string
-     */
-    protected $searchConfig;
-
-    /**
-     * Data source configuration file identifier.
-     *
-     * @var string
-     */
-    protected $dataSourceConfig;
-
-    /**
-     * Whether deduplication is enabled.
-     *
-     * @var bool
-     */
-    protected $enabled;
-
-    /**
      * Constructor.
      *
      * @param Backend            $backend          Search backend
@@ -98,17 +70,13 @@ class DeduplicationListener
      * @return void
      */
     public function __construct(
-        Backend $backend,
+        protected Backend $backend,
         ContainerInterface $serviceLocator,
-        $searchConfig,
-        $dataSourceConfig = 'datasources',
-        $enabled = true
+        protected string $searchConfig,
+        protected string $dataSourceConfig = 'datasources',
+        protected bool $enabled = true
     ) {
-        $this->backend = $backend;
         $this->serviceLocator = $serviceLocator;
-        $this->searchConfig = $searchConfig;
-        $this->dataSourceConfig = $dataSourceConfig;
-        $this->enabled = $enabled;
     }
 
     /**
@@ -120,7 +88,7 @@ class DeduplicationListener
      */
     public function attach(
         SharedEventManagerInterface $manager
-    ) {
+    ): void {
         $manager->attach(
             Service::class,
             Service::EVENT_PRE,
@@ -140,7 +108,7 @@ class DeduplicationListener
      *
      * @return EventInterface
      */
-    public function onSearchPre(EventInterface $event)
+    public function onSearchPre(EventInterface $event): EventInterface
     {
         $command = $event->getParam('command');
         if ($command->getTargetIdentifier() === $this->backend->getIdentifier()) {
@@ -175,7 +143,7 @@ class DeduplicationListener
      *
      * @return bool
      */
-    public function hasChildFilter($params)
+    public function hasChildFilter(\VuFindSearch\ParamBag $params): bool
     {
         $filters = $params->get('fq');
         return $filters != null && in_array('merged_child_boolean:true', $filters);
@@ -188,7 +156,7 @@ class DeduplicationListener
      *
      * @return EventInterface
      */
-    public function onSearchPost(EventInterface $event)
+    public function onSearchPost(EventInterface $event): EventInterface
     {
         // Inject deduplication details into record objects:
         $command = $event->getParam('command');
@@ -211,7 +179,7 @@ class DeduplicationListener
      *
      * @return void
      */
-    protected function fetchLocalRecords($event)
+    protected function fetchLocalRecords(EventInterface $event): void
     {
         $dataSourceConfig = $this->getService(\VuFind\Config\ConfigManager::class)
             ->getConfigArray($this->dataSourceConfig);
@@ -337,7 +305,7 @@ class DeduplicationListener
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function getActiveRecordSources($event): array
+    protected function getActiveRecordSources(EventInterface $event): array
     {
         $searchConfig = $this->getService(\VuFind\Config\ConfigManager::class)->getConfigObject($this->searchConfig);
         return !empty($searchConfig->Records->sources)
@@ -360,11 +328,11 @@ class DeduplicationListener
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function appendDedupRecordFields(
-        $localRecordData,
-        $dedupRecordData,
-        $recordSources,
-        $sourcePriority
-    ) {
+        array $localRecordData,
+        array $dedupRecordData,
+        array $recordSources,
+        array $sourcePriority
+    ): array {
         $localRecordData['local_ids_str_mv'] = $dedupRecordData['local_ids_str_mv'];
         return $localRecordData;
     }
@@ -376,7 +344,7 @@ class DeduplicationListener
      *
      * @return array Array keyed by source with priority as the value
      */
-    protected function determineSourcePriority($recordSources)
+    protected function determineSourcePriority(array $recordSources): array
     {
         if (empty($recordSources)) {
             return [];
@@ -391,7 +359,7 @@ class DeduplicationListener
      *
      * @return array Array keyed by building with priority as the value
      */
-    protected function determineBuildingPriority($params)
+    protected function determineBuildingPriority(\VuFindSearch\ParamBag $params): array
     {
         $result = [];
         foreach ($params->get('fq') as $fq) {

@@ -52,42 +52,28 @@ abstract class Explanation
      *
      * @var \VuFind\Config\Config
      */
-    protected $config;
+    protected \VuFind\Config\Config $config;
 
     /**
      * Configuration file to read search settings from
      *
      * @var string
      */
-    protected $searchIni = 'searches';
-
-    /**
-     * Search Service
-     *
-     * @var SearchService
-     */
-    protected $searchService;
+    protected string $searchIni = 'searches';
 
     /**
      * Search string used for query.
      *
      * @var string
      */
-    protected $lookfor;
+    protected string $lookfor;
 
     /**
      * RecordId of title the explanation is built for.
      *
      * @var string
      */
-    protected $recordId;
-
-    /**
-     * Search parameters object
-     *
-     * @var \VuFind\Search\Base\Params
-     */
-    protected $params;
+    protected string $recordId;
 
     /**
      * Constructor
@@ -96,10 +82,11 @@ abstract class Explanation
      * @param SearchService              $searchService Search Service
      * @param ConfigManagerInterface     $configManager Config manager
      */
-    public function __construct($params, $searchService, $configManager)
-    {
-        $this->params = $params;
-        $this->searchService = $searchService;
+    public function __construct(
+        protected \VuFind\Search\Base\Params $params,
+        protected SearchService $searchService,
+        ConfigManagerInterface $configManager
+    ) {
         $this->config = $configManager->getConfigObject($this->searchIni);
     }
 
@@ -111,14 +98,14 @@ abstract class Explanation
      * @throws \VuFindSearch\Backend\Exception\BackendException
      * @return void
      */
-    abstract public function performRequest($recordId);
+    abstract public function performRequest(string $recordId): void;
 
     /**
      * Get the search string used for query.
      *
      * @return string
      */
-    public function getLookfor()
+    public function getLookfor(): string
     {
         return $this->lookfor;
     }
@@ -128,7 +115,7 @@ abstract class Explanation
      *
      * @return string
      */
-    public function getRecordId()
+    public function getRecordId(): string
     {
         return $this->recordId;
     }
@@ -138,7 +125,7 @@ abstract class Explanation
      *
      * @return \VuFind\Search\Base\Params
      */
-    public function getParams()
+    public function getParams(): \VuFind\Search\Base\Params
     {
         return $this->params;
     }

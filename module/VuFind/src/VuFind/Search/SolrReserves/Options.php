@@ -62,7 +62,7 @@ class Options extends \VuFind\Search\Solr\Options
      *
      * @return string|bool
      */
-    public function getFacetListAction()
+    public function getFacetListAction(): string|bool
     {
         return 'search-reservesfacetlist';
     }
@@ -72,7 +72,7 @@ class Options extends \VuFind\Search\Solr\Options
      *
      * @return string
      */
-    public function getSearchAction()
+    public function getSearchAction(): string
     {
         return 'search-reserves';
     }
@@ -83,7 +83,7 @@ class Options extends \VuFind\Search\Solr\Options
      *
      * @return string|bool
      */
-    public function getAdvancedSearchAction()
+    public function getAdvancedSearchAction(): string|bool
     {
         // Not currently supported:
         return false;

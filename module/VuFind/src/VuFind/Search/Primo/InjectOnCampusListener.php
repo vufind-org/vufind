@@ -51,25 +51,25 @@ class InjectOnCampusListener
     /**
      * Primo Permission Handler.
      *
-     * @var PrimoPermissionHandler
+     * @var ?PrimoPermissionHandler
      */
-    protected $permissionHandler;
+    protected ?PrimoPermissionHandler $permissionHandler;
 
     /**
      * Is user on campus or not?
      *
-     * @var bool
+     * @var ?bool
      */
-    protected $isOnCampus;
+    protected ?bool $isOnCampus;
 
     /**
      * Constructor.
      *
-     * @param PrimoPermissionHandler $pph Primo Permission Handler
+     * @param ?PrimoPermissionHandler $pph Primo Permission Handler
      *
      * @return void
      */
-    public function __construct($pph = null)
+    public function __construct(?PrimoPermissionHandler $pph = null)
     {
         $this->setPermissionHandler($pph);
     }
@@ -77,11 +77,11 @@ class InjectOnCampusListener
     /**
      * Constructor.
      *
-     * @param PrimoPermissionHandler $pph Primo Permission Handler
+     * @param ?PrimoPermissionHandler $pph Primo Permission Handler
      *
      * @return void
      */
-    public function setPermissionHandler($pph)
+    public function setPermissionHandler(?PrimoPermissionHandler $pph): void
     {
         $this->permissionHandler = $pph;
         $this->isOnCampus = null; // clear cache
@@ -94,7 +94,7 @@ class InjectOnCampusListener
      *
      * @return void
      */
-    public function attach(SharedEventManagerInterface $manager)
+    public function attach(SharedEventManagerInterface $manager): void
     {
         $manager->attach(
             Service::class,
@@ -108,7 +108,7 @@ class InjectOnCampusListener
      *
      * @return bool
      */
-    protected function getOnCampus()
+    protected function getOnCampus(): bool
     {
         if (null === $this->isOnCampus) {
             $this->isOnCampus = $this->permissionHandler
@@ -124,7 +124,7 @@ class InjectOnCampusListener
      *
      * @return EventInterface
      */
-    public function onSearchPre(EventInterface $event)
+    public function onSearchPre(EventInterface $event): EventInterface
     {
         $params = $event->getParam('command')->getSearchParameters();
         $params->set('onCampus', $this->getOnCampus());

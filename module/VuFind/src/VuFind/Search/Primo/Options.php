@@ -47,7 +47,7 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @var array
      */
-    protected $advancedOperators = [];
+    protected array $advancedOperators = [];
 
     /**
      * Constructor
@@ -75,7 +75,7 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @return string
      */
-    public function getSearchAction()
+    public function getSearchAction(): string
     {
         return 'primo-search';
     }
@@ -86,7 +86,7 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @return string|bool
      */
-    public function getAdvancedSearchAction()
+    public function getAdvancedSearchAction(): string|bool
     {
         return 'primo-advanced';
     }
@@ -97,7 +97,7 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @return string|bool
      */
-    public function getCitesAction()
+    public function getCitesAction(): string|bool
     {
         return 'primo-cites';
     }
@@ -108,7 +108,7 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @return string|bool
      */
-    public function getCitedByAction()
+    public function getCitedByAction(): string|bool
     {
         return 'primo-citedby';
     }
@@ -118,7 +118,7 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @return array
      */
-    public function getAdvancedOperators()
+    public function getAdvancedOperators(): array
     {
         return $this->advancedOperators;
     }

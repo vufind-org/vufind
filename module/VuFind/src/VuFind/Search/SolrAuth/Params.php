@@ -46,5 +46,5 @@ class Params extends \VuFind\Search\Solr\Params
      *
      * @var array
      */
-    protected $defaultFacetLabelSections = ['Facets'];
+    protected array $defaultFacetLabelSections = ['Facets'];
 }

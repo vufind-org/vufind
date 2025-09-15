@@ -48,7 +48,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @var array
      */
-    protected $facetToFilterFieldMap = [
+    protected array $facetToFilterFieldMap = [
         'language' => 'inLanguage',
     ];
 
@@ -57,7 +57,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return ParamBag
      */
-    public function getBackendParameters()
+    public function getBackendParameters(): ParamBag
     {
         $backendParams = new ParamBag();
 

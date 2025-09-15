@@ -58,7 +58,7 @@ class Options extends \VuFind\Search\Solr\Options
      *
      * @return string
      */
-    public function getSearchAction()
+    public function getSearchAction(): string
     {
         return 'web-results';
     }
@@ -69,7 +69,7 @@ class Options extends \VuFind\Search\Solr\Options
      *
      * @return string|bool
      */
-    public function getAdvancedSearchAction()
+    public function getAdvancedSearchAction(): string|bool
     {
         // Not currently supported:
         return false;
@@ -81,7 +81,7 @@ class Options extends \VuFind\Search\Solr\Options
      *
      * @return string|bool
      */
-    public function getFacetListAction()
+    public function getFacetListAction(): string|bool
     {
         return 'web-facetlist';
     }
@@ -91,7 +91,7 @@ class Options extends \VuFind\Search\Solr\Options
      *
      * @return bool
      */
-    public function supportsCart()
+    public function supportsCart(): bool
     {
         // Not currently supported
         return false;

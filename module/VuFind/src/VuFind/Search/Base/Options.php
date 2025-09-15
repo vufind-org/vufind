@@ -31,7 +31,6 @@
 namespace VuFind\Search\Base;
 
 use PHPUnit\Framework\MockObject\MockObject;
-use VuFind\Config\Config;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 
@@ -63,105 +62,105 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @var array
      */
-    protected $sortOptions;
+    protected array $sortOptions;
 
     /**
      * Allowed hidden sort options
      *
      * @var array
      */
-    protected $hiddenSortOptions = [];
+    protected array $hiddenSortOptions = [];
 
     /**
      * Available sort options for facets
      *
      * @var array
      */
-    protected $facetSortOptions = [];
+    protected array $facetSortOptions = [];
 
     /**
      * Overall default sort option
      *
      * @var string
      */
-    protected $defaultSort;
+    protected string $defaultSort;
 
     /**
      * Handler-specific defaults
      *
      * @var array
      */
-    protected $defaultSortByHandler;
+    protected array $defaultSortByHandler;
 
     /**
      * RSS-specific sort option
      *
      * @var ?string
      */
-    protected $rssSort;
+    protected ?string $rssSort;
 
     /**
      * Default search handler
      *
      * @var ?string
      */
-    protected $defaultHandler;
+    protected ?string $defaultHandler;
 
     /**
      * Advanced search handlers
      *
      * @var array
      */
-    protected $advancedHandlers;
+    protected array $advancedHandlers;
 
     /**
      * Basic search handlers
      *
      * @var array
      */
-    protected $basicHandlers;
+    protected array $basicHandlers;
 
     /**
      * Special advanced facet settings
      *
      * @var string
      */
-    protected $specialAdvancedFacets = '';
+    protected string $specialAdvancedFacets = '';
 
     /**
      * Should we retain filters by default?
      *
      * @var bool
      */
-    protected $retainFiltersByDefault;
+    protected bool $retainFiltersByDefault;
 
     /**
      * Should we display a "Reset Filters" link regardless of retainFiltersByDefault?
      *
      * @var bool
      */
-    protected $alwaysDisplayResetFilters;
+    protected bool $alwaysDisplayResetFilters;
 
     /**
      * Default filters to apply to new searches
      *
      * @var array
      */
-    protected $defaultFilters;
+    protected array $defaultFilters;
 
     /**
      * Default limit option
      *
-     * @var int
+     * @var ?int
      */
-    protected $defaultLimit;
+    protected ?int $defaultLimit;
 
     /**
      * Available limit options
      *
      * @var array
      */
-    protected $limitOptions;
+    protected array $limitOptions;
 
     /**
      * If result scroller is used.
@@ -175,133 +174,133 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @var string
      */
-    protected $defaultView = 'list';
+    protected string $defaultView = 'list';
 
     /**
      * Available view options
      *
      * @var array
      */
-    protected $viewOptions = [];
+    protected array $viewOptions = [];
 
     /**
      * Default delimiter used for delimited facets
      *
      * @var string
      */
-    protected $defaultFacetDelimiter;
+    protected string $defaultFacetDelimiter = '{{{_:::_}}}';
 
     /**
      * Facet settings
      *
      * @var array
      */
-    protected $delimitedFacets = [];
+    protected array $delimitedFacets = [];
 
     /**
      * Convenient field => delimiter lookup array derived from $delimitedFacets.
      *
      * @var ?array
      */
-    protected $processedDelimitedFacets = null;
+    protected ?array $processedDelimitedFacets = null;
 
     /**
      * Facet settings
      *
      * @var array
      */
-    protected $translatedFacets = [];
+    protected array $translatedFacets = [];
 
     /**
      * Text domains for translated facets
      *
      * @var array
      */
-    protected $translatedFacetsTextDomains = [];
+    protected array $translatedFacetsTextDomains = [];
 
     /**
      * Formats for translated facets
      *
      * @var array
      */
-    protected $translatedFacetsFormats = [];
+    protected array $translatedFacetsFormats = [];
 
     /**
      * Hierarchical facets
      *
      * @var array
      */
-    protected $hierarchicalFacets = [];
+    protected array $hierarchicalFacets = [];
 
     /**
      * Hierarchical facet separators
      *
      * @var array
      */
-    protected $hierarchicalFacetSeparators = [];
+    protected array $hierarchicalFacetSeparators = [];
 
     /**
      * Hierarchical facet sort settings
      *
      * @var array
      */
-    protected $hierarchicalFacetSortSettings = [];
+    protected array $hierarchicalFacetSortSettings = [];
 
     /**
      * Spelling setting
      *
      * @var bool
      */
-    protected $spellcheck = true;
+    protected bool $spellcheck = true;
 
     /**
      * Available shards
      *
      * @var array
      */
-    protected $shards = [];
+    protected array $shards = [];
 
     /**
      * Default selected shards
      *
      * @var array
      */
-    protected $defaultSelectedShards = [];
+    protected array $defaultSelectedShards = [];
 
     /**
      * Should we present shard checkboxes to the user?
      *
      * @var bool
      */
-    protected $visibleShardCheckboxes = false;
+    protected bool $visibleShardCheckboxes = false;
 
     /**
      * Highlighting setting
      *
      * @var bool
      */
-    protected $highlight = false;
+    protected bool $highlight = false;
 
     /**
      * Autocomplete setting
      *
      * @var bool
      */
-    protected $autocompleteEnabled = false;
+    protected bool $autocompleteEnabled = false;
 
     /**
      * Autocomplete auto submit setting
      *
      * @var bool
      */
-    protected $autocompleteAutoSubmit = true;
+    protected bool $autocompleteAutoSubmit = true;
 
     /**
      * Autocomplete query formatting rules
      *
      * @var array
      */
-    protected $autocompleteFormattingRules = [];
+    protected array $autocompleteFormattingRules = [];
 
     /**
      * Configuration file to read global settings from
@@ -310,7 +309,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @var string
      */
-    protected $mainIni = 'config';
+    protected string $mainIni = 'config';
 
     /**
      * Configuration file to read search settings from
@@ -319,7 +318,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @var string
      */
-    protected $searchIni = 'searches';
+    protected string $searchIni = 'searches';
 
     /**
      * Configuration file to read facet settings from
@@ -328,21 +327,21 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @var string
      */
-    protected $facetsIni = 'facets';
+    protected string $facetsIni = 'facets';
 
     /**
      * Active list view option (see [List] in searches.ini).
      *
      * @var string
      */
-    protected $listviewOption;
+    protected string $listviewOption;
 
     /**
      * Maximum number of results (-1 = unlimited)
      *
      * @var int
      */
-    protected $resultLimit;
+    protected int $resultLimit;
 
     /**
      * Default result limit if not set in configuration.
@@ -367,14 +366,14 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @var bool
      */
-    protected $firstLastNavigationSupported = true;
+    protected bool $firstLastNavigationSupported = true;
 
     /**
      * Is the record page first/last navigation scroller enabled?
      *
      * @var bool
      */
-    protected $recordPageFirstLastNavigation = false;
+    protected bool $recordPageFirstLastNavigation = false;
 
     /**
      * Should hierarchicalFacetFilters and hierarchicalExcludeFilters
@@ -382,42 +381,42 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @var bool
      */
-    protected $filterHierarchicalFacetsInAdvanced;
+    protected bool $filterHierarchicalFacetsInAdvanced;
 
     /**
      * Hierarchical exclude filters
      *
      * @var array
      */
-    protected $hierarchicalExcludeFilters;
+    protected array $hierarchicalExcludeFilters;
 
     /**
      * Hierarchical facet filters
      *
      * @var array
      */
-    protected $hierarchicalFacetFilters;
+    protected array $hierarchicalFacetFilters;
 
     /**
      * Top pagination control style (none, simple or full)
      *
      * @var string
      */
-    protected $topPaginatorStyle;
+    protected string $topPaginatorStyle;
 
     /**
      * Is loading of results with JavaScript enabled?
      *
      * @var bool
      */
-    protected $loadResultsWithJs;
+    protected bool $loadResultsWithJs;
 
     /**
      * Should we display citation search links in results?
      *
      * @var bool
      */
-    protected $displayCitationLinksInResults;
+    protected bool $displayCitationLinksInResults;
 
     /**
      * Should we display a warning in restricted views?
@@ -536,7 +535,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return string
      */
-    public function getSpecialAdvancedFacets()
+    public function getSpecialAdvancedFacets(): string
     {
         return $this->specialAdvancedFacets;
     }
@@ -546,7 +545,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return array
      */
-    public function getAdvancedHandlers()
+    public function getAdvancedHandlers(): array
     {
         return $this->advancedHandlers;
     }
@@ -556,7 +555,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return array
      */
-    public function getBasicHandlers()
+    public function getBasicHandlers(): array
     {
         return $this->basicHandlers;
     }
@@ -566,11 +565,11 @@ abstract class Options implements TranslatorAwareInterface
      * handler (basic checked first, then advanced); return the default handler
      * if no match is found.
      *
-     * @param string $label Label to search for
+     * @param ?string $label Label to search for
      *
      * @return string
      */
-    public function getHandlerForLabel($label)
+    public function getHandlerForLabel(?string $label): string
     {
         $label = empty($label) ? false : $this->translate($label);
 
@@ -591,11 +590,11 @@ abstract class Options implements TranslatorAwareInterface
      * Given a basic handler name, return the corresponding label (or false
      * if none found):
      *
-     * @param string $handler Handler name to look up.
+     * @param ?string $handler Handler name to look up.
      *
      * @return string
      */
-    public function getLabelForBasicHandler($handler)
+    public function getLabelForBasicHandler(?string $handler): string
     {
         $handlers = $this->getBasicHandlers();
         return $handlers[$handler] ?? false;
@@ -606,7 +605,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return string
      */
-    public function getDefaultHandler()
+    public function getDefaultHandler(): string
     {
         if (!empty($this->defaultHandler)) {
             return $this->defaultHandler;
@@ -619,7 +618,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return int
      */
-    public function getDefaultLimit()
+    public function getDefaultLimit(): int
     {
         return $this->defaultLimit;
     }
@@ -629,7 +628,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return array
      */
-    public function getLimitOptions()
+    public function getLimitOptions(): array
     {
         if (empty($this->limitOptions)) {
             $this->limitOptions = [$this->getDefaultLimit()];
@@ -653,7 +652,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return string
      */
-    public function getFacetsIni()
+    public function getFacetsIni(): string
     {
         return $this->facetsIni;
     }
@@ -664,7 +663,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return string
      */
-    public function getMainIni()
+    public function getMainIni(): string
     {
         return $this->mainIni;
     }
@@ -675,7 +674,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return string
      */
-    public function getSearchIni()
+    public function getSearchIni(): string
     {
         return $this->searchIni;
     }
@@ -687,9 +686,9 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return void
      */
-    public function setLimitOptions($options)
+    public function setLimitOptions(array $options): void
     {
-        if (is_array($options) && !empty($options)) {
+        if (!empty($options)) {
             $this->limitOptions = $options;
 
             // If the current default limit is no longer legal, pick the
@@ -705,7 +704,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return array
      */
-    public function getSortOptions()
+    public function getSortOptions(): array
     {
         return $this->sortOptions;
     }
@@ -715,7 +714,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return array An array of associative arrays with keys 'label' and 'pattern'
      */
-    public function getHiddenSortOptions()
+    public function getHiddenSortOptions(): array
     {
         return $this->hiddenSortOptions;
     }
@@ -727,7 +726,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return array
      */
-    public function getFacetSortOptions($facet = '*')
+    public function getFacetSortOptions(string $facet = '*'): array
     {
         return $this->facetSortOptions[$facet] ?? $this->facetSortOptions['*'] ?? [];
     }
@@ -735,11 +734,11 @@ abstract class Options implements TranslatorAwareInterface
     /**
      * Get the default sort option for the specified search handler.
      *
-     * @param string $handler Search handler being used
+     * @param ?string $handler Search handler being used
      *
      * @return string
      */
-    public function getDefaultSortByHandler($handler = null)
+    public function getDefaultSortByHandler(?string $handler = null): string
     {
         // Use default handler if none specified:
         if (empty($handler)) {
@@ -760,7 +759,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return string
      */
-    public function getRssSort($sort)
+    public function getRssSort(string $sort): string
     {
         if (empty($this->rssSort)) {
             return $sort;
@@ -798,9 +797,9 @@ abstract class Options implements TranslatorAwareInterface
      *
      * This determines how the results are presented (e.g. as list or grid)
      *
-     * @return int
+     * @return string
      */
-    public function getDefaultView()
+    public function getDefaultView(): string
     {
         return $this->getConfiguredDefaultView();
     }
@@ -810,7 +809,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return array
      */
-    public function getViewOptions()
+    public function getViewOptions(): array
     {
         return $this->viewOptions;
     }
@@ -820,7 +819,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return string
      */
-    public function getDefaultFacetDelimiter()
+    public function getDefaultFacetDelimiter(): string
     {
         return $this->defaultFacetDelimiter;
     }
@@ -833,7 +832,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return void
      */
-    public function setDefaultFacetDelimiter($defaultFacetDelimiter)
+    public function setDefaultFacetDelimiter(string $defaultFacetDelimiter): void
     {
         $this->defaultFacetDelimiter = $defaultFacetDelimiter;
         $this->processedDelimitedFacets = null; // clear processed value cache
@@ -847,7 +846,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return array
      */
-    public function getDelimitedFacets($processed = false)
+    public function getDelimitedFacets(bool $processed = false): array
     {
         if (!$processed) {
             return $this->delimitedFacets;
@@ -874,7 +873,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return void
      */
-    public function setDelimitedFacets($delimitedFacets)
+    public function setDelimitedFacets(array $delimitedFacets): void
     {
         $this->delimitedFacets = $delimitedFacets;
         $this->processedDelimitedFacets = null; // clear processed value cache
@@ -885,7 +884,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return array
      */
-    public function getTranslatedFacets()
+    public function getTranslatedFacets(): array
     {
         return $this->translatedFacets;
     }
@@ -898,7 +897,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return void
      */
-    public function setTranslatedFacets($facets)
+    public function setTranslatedFacets(array $facets): void
     {
         // Reset properties:
         $this->translatedFacets = $this->translatedFacetsTextDomains
@@ -925,7 +924,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return string
      */
-    public function getTextDomainForTranslatedFacet($field)
+    public function getTextDomainForTranslatedFacet(string $field): string
     {
         return $this->translatedFacetsTextDomains[$field] ?? 'default';
     }
@@ -936,9 +935,9 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @param string $field Field name being translated
      *
-     * @return string
+     * @return ?string
      */
-    public function getFormatForTranslatedFacet($field)
+    public function getFormatForTranslatedFacet(string $field): ?string
     {
         return $this->translatedFacetsFormats[$field] ?? null;
     }
@@ -948,7 +947,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return array
      */
-    public function getHierarchicalFacets()
+    public function getHierarchicalFacets(): array
     {
         return $this->hierarchicalFacets;
     }
@@ -958,7 +957,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return array
      */
-    public function getHierarchicalFacetSeparators()
+    public function getHierarchicalFacetSeparators(): array
     {
         return $this->hierarchicalFacetSeparators;
     }
@@ -968,7 +967,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return array
      */
-    public function getHierarchicalFacetSortSettings()
+    public function getHierarchicalFacetSortSettings(): array
     {
         return $this->hierarchicalFacetSortSettings;
     }
@@ -976,11 +975,11 @@ abstract class Options implements TranslatorAwareInterface
     /**
      * Get current spellcheck setting and (optionally) change it.
      *
-     * @param bool $bool True to enable, false to disable, null to leave alone
+     * @param ?bool $bool True to enable, false to disable, null to leave alone
      *
      * @return bool
      */
-    public function spellcheckEnabled($bool = null)
+    public function spellcheckEnabled(?bool $bool = null): bool
     {
         if (null !== $bool) {
             $this->spellcheck = $bool;
@@ -993,7 +992,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return bool
      */
-    public function highlightEnabled()
+    public function highlightEnabled(): bool
     {
         return $this->highlight;
     }
@@ -1006,7 +1005,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return string       Human-readable version of field name.
      */
-    public function getHumanReadableFieldName($field)
+    public function getHumanReadableFieldName(string $field): string
     {
         if (isset($this->basicHandlers[$field])) {
             return $this->translate($this->basicHandlers[$field]);
@@ -1022,7 +1021,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return void
      */
-    public function disableHighlighting()
+    public function disableHighlighting(): void
     {
         $this->highlight = false;
     }
@@ -1032,7 +1031,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return bool
      */
-    public function autocompleteEnabled()
+    public function autocompleteEnabled(): bool
     {
         return $this->autocompleteEnabled;
     }
@@ -1042,7 +1041,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return bool
      */
-    public function autocompleteAutoSubmit()
+    public function autocompleteAutoSubmit(): bool
     {
         return $this->autocompleteAutoSubmit;
     }
@@ -1062,7 +1061,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return string
      */
-    public function getListViewOption()
+    public function getListViewOption(): string
     {
         return $this->listviewOption;
     }
@@ -1072,14 +1071,14 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return string
      */
-    abstract public function getSearchAction();
+    abstract public function getSearchAction(): string;
 
     /**
      * Return the route name for the search home action.
      *
      * @return string
      */
-    public function getSearchHomeAction()
+    public function getSearchHomeAction(): string
     {
         // Assume the home action is the same as the search action, only with
         // a "-home" suffix in place of the search action.
@@ -1093,7 +1092,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return string|bool
      */
-    public function getAdvancedSearchAction()
+    public function getAdvancedSearchAction(): string|bool
     {
         // Assume unsupported by default:
         return false;
@@ -1105,7 +1104,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return string|bool
      */
-    public function getFacetListAction()
+    public function getFacetListAction(): string|bool
     {
         return false;
     }
@@ -1116,7 +1115,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return string|bool
      */
-    public function getVersionsAction()
+    public function getVersionsAction(): string|bool
     {
         return false;
     }
@@ -1127,7 +1126,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return string|bool
      */
-    public function getCitesAction()
+    public function getCitesAction(): string|bool
     {
         return false;
     }
@@ -1138,7 +1137,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return string|bool
      */
-    public function getCitedByAction()
+    public function getCitedByAction(): string|bool
     {
         return false;
     }
@@ -1148,7 +1147,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return bool
      */
-    public function supportsCart()
+    public function supportsCart(): bool
     {
         // Assume true by default.
         return true;
@@ -1159,7 +1158,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return array
      */
-    public function getDefaultFilters()
+    public function getDefaultFilters(): array
     {
         return $this->defaultFilters;
     }
@@ -1169,7 +1168,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return bool
      */
-    public function getRetainFilterSetting()
+    public function getRetainFilterSetting(): bool
     {
         return $this->retainFiltersByDefault;
     }
@@ -1179,7 +1178,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return bool
      */
-    public function shouldDisplayResetFilters()
+    public function shouldDisplayResetFilters(): bool
     {
         return $this->alwaysDisplayResetFilters || $this->getRetainFilterSetting();
     }
@@ -1195,7 +1194,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return array
      */
-    public function getShards()
+    public function getShards(): array
     {
         return $this->shards;
     }
@@ -1206,7 +1205,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return array
      */
-    public function getDefaultSelectedShards()
+    public function getDefaultSelectedShards(): array
     {
         return $this->defaultSelectedShards;
     }
@@ -1216,7 +1215,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return bool
      */
-    public function showShardCheckboxes()
+    public function showShardCheckboxes(): bool
     {
         return $this->visibleShardCheckboxes;
     }
@@ -1227,7 +1226,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return int
      */
-    public function getVisibleSearchResultLimit()
+    public function getVisibleSearchResultLimit(): int
     {
         return intval($this->resultLimit);
     }
@@ -1237,7 +1236,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return array
      */
-    public function getAPISettings()
+    public function getAPISettings(): array
     {
         // Inherit defaults from searches.ini (if that is not already the
         // configured search settings file):
@@ -1254,11 +1253,11 @@ abstract class Options implements TranslatorAwareInterface
      * or side) and the value is the settings found in the file (which may be either
      * a single string or an array of strings).
      *
-     * @param string $handler Name of handler for which to load specific settings.
+     * @param ?string $handler Name of handler for which to load specific settings.
      *
      * @return array associative: location (top/side/etc.) => search settings
      */
-    public function getRecommendationSettings($handler = null)
+    public function getRecommendationSettings(?string $handler = null): array
     {
         // Load the necessary settings to determine the appropriate recommendations
         // module:
@@ -1301,7 +1300,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return string
      */
-    public function getSearchClassId()
+    public function getSearchClassId(): string
     {
         // Parse identifier out of class name of format VuFind\Search\[id]\Options:
         $className = get_class($this);
@@ -1339,7 +1338,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @deprecated Use recordFirstLastNavigationEnabled instead
      */
-    public function supportsFirstLastNavigation()
+    public function supportsFirstLastNavigation(): bool
     {
         return $this->recordFirstLastNavigationEnabled();
     }
@@ -1349,7 +1348,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return bool
      */
-    public function firstLastNavigationSupported()
+    public function firstLastNavigationSupported(): bool
     {
         return $this->firstLastNavigationSupported;
     }
@@ -1359,7 +1358,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return bool
      */
-    public function recordFirstLastNavigationEnabled()
+    public function recordFirstLastNavigationEnabled(): bool
     {
         return $this->firstLastNavigationSupported() && $this->recordPageFirstLastNavigation;
     }
@@ -1369,7 +1368,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return bool
      */
-    public function supportsScheduledSearch()
+    public function supportsScheduledSearch(): bool
     {
         // Unsupported by default!
         return false;
@@ -1412,7 +1411,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return callable
      */
-    public function getSpellingNormalizer()
+    public function getSpellingNormalizer(): callable
     {
         return new \VuFind\Normalizer\DefaultSpellingNormalizer();
     }
@@ -1435,7 +1434,7 @@ abstract class Options implements TranslatorAwareInterface
      *
      * @return array
      */
-    public function limitOrderOverride($limit)
+    public function limitOrderOverride(string $limit): array
     {
         $limits = $this->facetSettings['Advanced_Settings']['limitOrderOverride'] ?? [];
         $delimiter = $this->facetSettings['Advanced_Settings']['limitDelimiter'] ?? '::';
@@ -1522,11 +1521,11 @@ abstract class Options implements TranslatorAwareInterface
     /**
      * Configure autocomplete preferences from an .ini file.
      *
-     * @param ?Config $searchSettings Object representation of .ini file
+     * @param ?array $searchSettings Object representation of .ini file
      *
      * @return void
      */
-    protected function configureAutocomplete(?array $searchSettings = null)
+    protected function configureAutocomplete(?array $searchSettings = null): void
     {
         // Only change settings from current values if they are defined in .ini:
         $autocompleteSettings = $searchSettings['Autocomplete'] ?? [];

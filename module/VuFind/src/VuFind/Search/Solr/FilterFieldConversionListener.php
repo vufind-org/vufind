@@ -47,22 +47,14 @@ use function is_array;
 class FilterFieldConversionListener
 {
     /**
-     * Map of old field => new field.
-     *
-     * @var array
-     */
-    protected $map;
-
-    /**
      * Constructor.
      *
      * @param array $map Map of old field => new field.
      *
      * @return void
      */
-    public function __construct(array $map)
+    public function __construct(protected array $map)
     {
-        $this->map = $map;
     }
 
     /**
@@ -72,7 +64,7 @@ class FilterFieldConversionListener
      *
      * @return void
      */
-    public function attach(SharedEventManagerInterface $manager)
+    public function attach(SharedEventManagerInterface $manager): void
     {
         $manager->attach(
             Service::class,
@@ -88,7 +80,7 @@ class FilterFieldConversionListener
      *
      * @return EventInterface
      */
-    public function onSearchPre(EventInterface $event)
+    public function onSearchPre(EventInterface $event): EventInterface
     {
         $params = $event->getParam('command')->getSearchParameters();
         $fq = $params->get('fq');

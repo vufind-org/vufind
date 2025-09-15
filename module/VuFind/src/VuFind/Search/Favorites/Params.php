@@ -48,7 +48,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return void
      */
-    protected function initFilters($request)
+    protected function initFilters(\Laminas\Stdlib\Parameters $request): void
     {
         // Special filter -- if the "id" parameter is set, limit to a specific list:
         $id = $request->get('id');

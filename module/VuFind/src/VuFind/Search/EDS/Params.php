@@ -51,7 +51,7 @@ class Params extends AbstractEDSParams
      *
      * @var array
      */
-    protected $forcedOrFields = [
+    protected array $forcedOrFields = [
         'ContentProvider',
         'SourceType',
     ];
@@ -61,14 +61,14 @@ class Params extends AbstractEDSParams
      *
      * @var array
      */
-    protected $dateFacetSettings = [];
+    protected array $dateFacetSettings = [];
 
     /**
      * Additional filters to display as side facets
      *
      * @var array
      */
-    protected $extraFilterList = [];
+    protected array $extraFilterList = [];
 
     /**
      * Config sections to search for facet labels if no override configuration
@@ -76,7 +76,7 @@ class Params extends AbstractEDSParams
      *
      * @var array
      */
-    protected $defaultFacetLabelSections
+    protected array $defaultFacetLabelSections
         = ['FacetsTop', 'Facets'];
 
     /**
@@ -85,14 +85,14 @@ class Params extends AbstractEDSParams
      *
      * @var array
      */
-    protected $defaultFacetLabelCheckboxSections = ['CheckboxFacets'];
+    protected array $defaultFacetLabelCheckboxSections = ['CheckboxFacets'];
 
     /**
      * Facet settings
      *
      * @var array
      */
-    protected $fullFacetSettings = [];
+    protected array $fullFacetSettings = [];
 
     /**
      * A flag indicating whether limiters and expanders have been added to the
@@ -101,14 +101,14 @@ class Params extends AbstractEDSParams
      *
      * @var bool
      */
-    protected $checkboxFacetsAugmented = false;
+    protected bool $checkboxFacetsAugmented = false;
 
     /**
      * Default query adapter class (override to use EDS version)
      *
      * @var string
      */
-    protected $queryAdapterClass = QueryAdapter::class;
+    protected string $queryAdapterClass = QueryAdapter::class;
 
     /**
      * Constructor
@@ -116,7 +116,7 @@ class Params extends AbstractEDSParams
      * @param \VuFind\Search\Base\Options $options       Options to use
      * @param ConfigManagerInterface      $configManager Config manager
      */
-    public function __construct($options, ConfigManagerInterface $configManager)
+    public function __construct(\VuFind\Search\Base\Options $options, ConfigManagerInterface $configManager)
     {
         parent::__construct($options, $configManager);
     }
@@ -129,7 +129,7 @@ class Params extends AbstractEDSParams
      *
      * @return void
      */
-    public function initFromRequest($request)
+    public function initFromRequest(\Laminas\Stdlib\Parameters $request): void
     {
         parent::initFromRequest($request);
 
@@ -149,7 +149,7 @@ class Params extends AbstractEDSParams
      *
      * @return ParamBag
      */
-    public function getBackendParameters()
+    public function getBackendParameters(): ParamBag
     {
         $backendParams = new ParamBag();
 
@@ -169,7 +169,7 @@ class Params extends AbstractEDSParams
         $backendParams->set('view', $view);
 
         $mode = $options->getSearchMode();
-        if (isset($mode)) {
+        if ($mode !== null) {
             $backendParams->set('searchMode', $mode);
         }
 
@@ -181,13 +181,13 @@ class Params extends AbstractEDSParams
     /**
      * Add a field to facet on.
      *
-     * @param string $newField Field name
-     * @param string $newAlias Optional on-screen display label
-     * @param bool   $ored     Should we treat this as an ORed facet?
+     * @param string  $newField Field name
+     * @param ?string $newAlias Optional on-screen display label
+     * @param bool    $ored     Should we treat this as an ORed facet?
      *
      * @return void
      */
-    public function addFacet($newField, $newAlias = null, $ored = false)
+    public function addFacet(string $newField, ?string $newAlias = null, bool $ored = false): void
     {
         // Save the full field name (which may include extra parameters);
         // we'll need these to do the proper search using the EDS class:
@@ -211,7 +211,7 @@ class Params extends AbstractEDSParams
      *
      * @return array
      */
-    public function getFullFacetSettings()
+    public function getFullFacetSettings(): array
     {
         return $this->fullFacetSettings;
     }
@@ -219,15 +219,19 @@ class Params extends AbstractEDSParams
     /**
      * Get a user-friendly string to describe the provided facet field.
      *
-     * @param string $field               Facet field name.
-     * @param string $value               Facet value.
-     * @param string $default             Default field name (null for default behavior).
-     * @param bool   $allowCheckboxFacets Should checkbox facet labels be allowed too?
+     * @param string  $field               Facet field name.
+     * @param ?string $value               Facet value.
+     * @param ?string $default             Default field name (null for default behavior).
+     * @param bool    $allowCheckboxFacets Should checkbox facet labels be allowed too?
      *
      * @return string Human-readable description of field.
      */
-    public function getFacetLabel($field, $value = null, $default = null, $allowCheckboxFacets = true)
-    {
+    public function getFacetLabel(
+        string $field,
+        ?string $value = null,
+        ?string $default = null,
+        bool $allowCheckboxFacets = true
+    ): string {
         // Also store Limiter/Search Mode IDs/Values in the config file
         if (str_starts_with($field, 'LIMIT|')) {
             $facetId = substr($field, 6);
@@ -244,7 +248,7 @@ class Params extends AbstractEDSParams
      *
      * @return array
      */
-    public function getDateFacetSettings()
+    public function getDateFacetSettings(): array
     {
         return $this->dateFacetSettings;
     }
@@ -256,7 +260,7 @@ class Params extends AbstractEDSParams
      *
      * @return void
      */
-    public function addLimitersAsCheckboxFacets(Options $options)
+    public function addLimitersAsCheckboxFacets(Options $options): void
     {
         $ssLimiters = $options->getSearchScreenLimiters();
         foreach ($ssLimiters as $ssLimiter) {
@@ -275,7 +279,7 @@ class Params extends AbstractEDSParams
      *
      * @return void
      */
-    public function addExpandersAsCheckboxFacets(Options $options)
+    public function addExpandersAsCheckboxFacets(Options $options): void
     {
         $availableExpanders = $options->getSearchScreenExpanders();
         foreach ($availableExpanders as $expander) {
@@ -294,7 +298,7 @@ class Params extends AbstractEDSParams
      *
      * @return string user friendly version of 'query'
      */
-    public function getDisplayQuery()
+    public function getDisplayQuery(): string
     {
         // Set up callbacks:
         $translate = [$this, 'translate'];
