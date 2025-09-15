@@ -410,8 +410,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
         $this->checkForMissingDevTools($page);
 
         $session = $this->getMinkSession();
-        $windowNames = $session->getWindowNames();
-        $windowCount = count($windowNames);
+        $windowCount = count($session->getWindowNames());
         $this->clickCss($page, '.last-payment-information a');
         $this->assertEqualsWithTimeout(
             $windowCount + 1,
@@ -419,26 +418,8 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
                 return count($session->getWindowNames());
             }
         );
-        $newWindows = array_diff($session->getWindowNames(), $windowNames);
-        $this->assertCount(1, $newWindows);
-        /*
 
-        TODO: This isn't working properly with chrome-headless-shell but results in "Page not loaded" exception
-        from $session->reload()
-
-        $session->switchToWindow(reset($newWindows));
-        // Reload is needed for headers to be updated:
-        $session->reload();
-        $this->assertEqualsWithTimeout(
-            'application/pdf',
-            function () use ($session) {
-                return $session->getResponseHeaders()['Content-Type'] ?? '';
-            }
-        );
-        $this->assertEquals(200, $session->getStatusCode());
-        */
-
-        // Check contents of HTML version of the receipt:
+        // Check contents of HTML version of the receipt (the PDF version can't be loaded in chrome-headless-shell):
         $session->visit($this->getVuFindUrl('/MyResearch/Fines?paymentReceipt=true&html=true'));
         $vatBreakdown = $this->findCss($page, '.vat-breakdown tbody');
         $this->assertEquals('0.0% $1.50 $0.00 $1.50 25.5% $10.76 $2.74 $13.50', $vatBreakdown->getText());
