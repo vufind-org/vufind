@@ -153,8 +153,9 @@ VuFind.register('fines', function fines() {
       .then(() => {
         // Clear account notification cache and reload current page without parameters
         VuFind.account.clearCache();
-        location.href = window.location.href.split('?')[0];
       }).catch(() => {
+        // Any actual error message will be displayed on reload (see below)
+      }).finally(() => {
         // Reload current page without parameters
         location.href = window.location.href.split('?')[0];
       });
