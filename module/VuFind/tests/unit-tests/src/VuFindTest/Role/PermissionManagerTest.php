@@ -119,7 +119,7 @@ class PermissionManagerTest extends \PHPUnit\Framework\TestCase
     public function testGrantedPermission(): void
     {
         $pm = new PermissionManager($this->permissionConfig);
-        $mockAuth = $this->createMock(\LmcRbacMvc\Service\AuthorizationService::class);
+        $mockAuth = $this->createMock(\Lmc\Rbac\Mvc\Service\AuthorizationService::class);
         $mockAuth->expects($this->any())->method('isGranted')->willReturn(true);
         $pm->setAuthorizationService($mockAuth);
 
@@ -134,7 +134,7 @@ class PermissionManagerTest extends \PHPUnit\Framework\TestCase
     public function testDeniedPermission()
     {
         $pm = new PermissionManager($this->permissionConfig);
-        $mockAuth = $this->createMock(\LmcRbacMvc\Service\AuthorizationService::class);
+        $mockAuth = $this->createMock(\Lmc\Rbac\Mvc\Service\AuthorizationService::class);
         $mockAuth->expects($this->any())->method('isGranted')->willReturn(false);
         $pm->setAuthorizationService($mockAuth);
 

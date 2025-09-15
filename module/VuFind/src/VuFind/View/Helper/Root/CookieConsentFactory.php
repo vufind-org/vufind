@@ -68,7 +68,7 @@ class CookieConsentFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
         $consentConfig = $container->get(\VuFind\Config\YamlReader::class)
             ->get('CookieConsent.yaml');
         return new $requestedName(

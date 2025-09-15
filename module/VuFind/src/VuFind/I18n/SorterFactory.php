@@ -73,7 +73,7 @@ class SorterFactory implements FactoryInterface
         }
         $localeSettings = $container->get(LocaleSettings::class);
         $collator = new \Collator($localeSettings->getUserLocale());
-        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         $collator->setStrength(\Collator::SECONDARY);
         return new $requestedName(
             $collator,

@@ -29,6 +29,8 @@
 
 namespace VuFind\Search\Primo;
 
+use VuFind\Config\ConfigManagerInterface;
+
 /**
  * Primo Search Options
  *
@@ -50,9 +52,9 @@ class Options extends \VuFind\Search\Base\Options
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(ConfigManagerInterface $configManager)
     {
         $this->searchIni = $this->facetsIni = 'Primo';
         $this->advancedFacetSettingsSection = 'Advanced_Facet_Settings';
@@ -60,7 +62,7 @@ class Options extends \VuFind\Search\Base\Options
         // Override the default result limit with a value that we can support also with blending enabled in Primo:
         $this->defaultResultLimit = 3980;
 
-        parent::__construct($configLoader);
+        parent::__construct($configManager);
 
         $this->highlight = !empty($this->searchSettings->General->highlighting);
 

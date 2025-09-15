@@ -211,6 +211,22 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
+     * Testing getFunds
+     *
+     * @return void
+     */
+    public function testGetFunds()
+    {
+        $this->createConnector('get-funds');
+        $result = $this->driver->getFunds();
+        $expected = [
+            'FUND-01' => 'VuFind Community',
+            'FUND-02' => 'VuFind Sponsors',
+        ];
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
      * Test getHolding
      *
      * @return void

@@ -62,7 +62,7 @@ class Factory implements FactoryInterface
         ?array $options = null
     ) {
         // Load configurations:
-        $configManager = $container->get(\VuFind\Config\ConfigManager::class);
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
         $mainConfig = $configManager->getConfigArray('config');
         $smsConfig = $configManager->getConfigObject('sms');
 

@@ -302,7 +302,7 @@ class TagsService
      *
      * @param string $text Tag text to match
      *
-     * @return TagsEntityInterface[]
+     * @return ?TagsEntityInterface
      */
     public function getTagByText(string $text): ?TagsEntityInterface
     {

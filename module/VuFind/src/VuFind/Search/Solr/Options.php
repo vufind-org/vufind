@@ -29,6 +29,7 @@
 
 namespace VuFind\Search\Solr;
 
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Base\DateRangeOptionsInterface;
 
 /**
@@ -77,11 +78,11 @@ class Options extends \VuFind\Search\Base\Options implements DateRangeOptionsInt
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(ConfigManagerInterface $configManager)
     {
-        parent::__construct($configLoader);
+        parent::__construct($configManager);
 
         $this->sortTieBreaker = $this->searchSettings['General']['tie_breaker_sort'] ?? null;
         $this->emptySearchRelevanceOverride

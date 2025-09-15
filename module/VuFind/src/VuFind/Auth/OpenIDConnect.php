@@ -355,7 +355,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
             'client_id' => $this->getConfig('client_id'),
             'nonce' => $this->session->oidc_nonce,
             'state' => $this->session->oidc_state,
-            'scope' => 'openid profile email',
+            'scope' => $this->getConfig('scope') ?? 'openid profile email',
         ];
         return $this->getProvider()->authorization_endpoint . '?' . http_build_query($params);
     }

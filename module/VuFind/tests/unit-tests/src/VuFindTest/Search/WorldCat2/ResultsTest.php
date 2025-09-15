@@ -29,7 +29,7 @@
 
 namespace VuFindTest\Search\WorldCat2;
 
-use VuFind\Config\PluginManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Record\Loader;
 use VuFind\Search\WorldCat2\Options;
 use VuFind\Search\WorldCat2\Params;
@@ -124,19 +124,19 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get Params object
      *
-     * @param ?Options       $options    Options object (null to create)
-     * @param ?PluginManager $mockConfig Mock config plugin manager (null to create)
+     * @param ?Options                $options           Options object (null to create)
+     * @param ?ConfigManagerInterface $mockConfigManager Mock ConfigManager (null to create)
      *
      * @return Params
      */
     protected function getParams(
         ?Options $options = null,
-        ?PluginManager $mockConfig = null
+        ?ConfigManagerInterface $mockConfigManager = null
     ): Params {
-        $mockConfig ??= $this->createMock(PluginManager::class);
+        $mockConfigManager ??= $this->createMock(ConfigManagerInterface::class);
         return new Params(
-            $options ?? new Options($mockConfig),
-            $mockConfig
+            $options ?? new Options($mockConfigManager),
+            $mockConfigManager
         );
     }
 

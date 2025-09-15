@@ -77,7 +77,8 @@ class BrowZineBackendFactory extends AbstractBackendFactory
     public function __invoke(ContainerInterface $sm, $name, ?array $options = null)
     {
         $this->setup($sm);
-        $this->browzineConfig = $this->getService(\VuFind\Config\ConfigManager::class)->getConfigObject('BrowZine');
+        $this->browzineConfig = $this->getService(\VuFind\Config\ConfigManagerInterface::class)
+            ->getConfigObject('BrowZine');
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
             $this->logger = $this->getService(\VuFind\Log\Logger::class);
         }

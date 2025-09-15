@@ -66,7 +66,7 @@ class HoldingsFactory implements FactoryInterface
         ?array $options = null
     ) {
         return new $requestedName(
-            $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config')
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config')
         );
     }
 }

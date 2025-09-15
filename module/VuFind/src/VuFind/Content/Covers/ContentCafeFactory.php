@@ -69,7 +69,7 @@ class ContentCafeFactory implements \Laminas\ServiceManager\Factory\FactoryInter
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
         $finalConfig = $config->Contentcafe ?? new \VuFind\Config\Config([]);
         return new $requestedName($finalConfig);
     }

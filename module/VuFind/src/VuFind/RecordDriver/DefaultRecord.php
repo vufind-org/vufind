@@ -816,12 +816,20 @@ class DefaultRecord extends AbstractBase
         $pubDate = $this->getPublicationDates();
         $pubDate = empty($pubDate) ? '' : $pubDate[0];
 
+        // Add DOI to rft_id (if available)
+        $rftId = [];
+        $doi = (string)$this->getCleanDOI();
+        if ($doi !== '') {
+            $rftId[] = 'info:doi/' . $doi;
+        }
+
         // Start an array of OpenURL parameters:
         return [
             'url_ver' => 'Z39.88-2004',
             'ctx_ver' => 'Z39.88-2004',
             'ctx_enc' => 'info:ofi/enc:UTF-8',
             'rfr_id' => 'info:sid/' . $this->getCoinsID() . ':generator',
+            'rft_id' => $rftId,
             'rft.title' => $this->getTitle(),
             'rft.date' => $pubDate,
         ];

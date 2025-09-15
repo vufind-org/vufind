@@ -30,6 +30,8 @@
 
 namespace VuFind\Search\Blender;
 
+use VuFind\Config\ConfigManagerInterface;
+
 /**
  * Blender Search Options
  *
@@ -45,16 +47,16 @@ class Options extends \VuFind\Search\Solr\Options
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(ConfigManagerInterface $configManager)
     {
         $this->facetsIni = $this->searchIni = 'Blender';
 
         // Override the default result limit with a value that we can always support:
         $this->defaultResultLimit = 400;
 
-        parent::__construct($configLoader);
+        parent::__construct($configManager);
 
         // Make sure first-last navigation is never enabled since we cannot support it:
         $this->firstLastNavigationSupported = false;

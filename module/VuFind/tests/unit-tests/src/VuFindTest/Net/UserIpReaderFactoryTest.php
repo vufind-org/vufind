@@ -59,7 +59,7 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
     {
         $container = new \VuFindTest\Container\MockContainer($this);
         $container->set(
-            \VuFind\Config\ConfigManager::class,
+            \VuFind\Config\ConfigManagerInterface::class,
             $this->getMockConfigManager(compact('config'), [], $this->once())
         );
         $mockRequest = $this
