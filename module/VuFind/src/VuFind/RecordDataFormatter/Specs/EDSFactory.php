@@ -74,8 +74,8 @@ class EDSFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $configManager = $container->get(\VuFind\Config\PluginManager::class);
-        $config = $configManager->get('RecordDataFormatter/EDS')->toArray();
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
+        $config = $configManager->getConfigArray('RecordDataFormatter/EDS');
         $schemaOrgHelper = $container->get('ViewHelperManager')->get('schemaOrg');
         return new $requestedName($config, $schemaOrgHelper);
     }
