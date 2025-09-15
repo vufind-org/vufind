@@ -9,35 +9,35 @@ $this->headTitle($this->translate('VuFind Administration - Online Payment Manage
 </div>
 
 <div class="admin-payments">
-  <h2><?=$this->transEsc('Online Payment Management')?></h2>
+  <h2><?=$this->transEsc('Payment::Online Payment Management')?></h2>
 
   <?=$this->flashmessages()?>
 
   <form class="form-payment-search" action="<?=$this->url('admin/payment')?>" method="get">
     <div class="payment-controls">
       <label class="multiselect">
-        <?=$this->transEsc('Statuses')?>
+        <?=$this->transEsc('Payment::Statuses')?>
         <select name="statuses[]" class="form-select" multiple>
           <?php foreach ($this->statuses as $value => $desc): ?>
             <option value="<?=$this->escapeHtmlAttr($value)?>"<?=in_array($value, (array)($this->params['statuses'] ?? $this->defaultStatuses)) ? ' selected="selected"' : ''?>>
-              <?=$this->transEsc($desc) ?>
+              <?=$this->transEsc("Payment::$desc") ?>
             </option>
           <?php endforeach;?>
         </select>
       </label>
 
       <label>
-        <?=$this->transEsc('Local Identifier')?>
+        <?=$this->transEsc('Payment::Local Identifier')?>
         <input name="local_identifier" class="form-control" value="<?=$this->escapeHtmlAttr($this->params['local_identifier'] ?? '')?>">
       </label>
 
       <label>
-        <?=$this->transEsc('Remote Identifier')?>
+        <?=$this->transEsc('Payment::Remote Identifier')?>
         <input name="remote_identifier" class="form-control" value="<?=$this->escapeHtmlAttr($this->params['remote_identifier'] ?? '')?>">
       </label>
 
       <label class="multiselect">
-        <?=$this->transEsc('ILS')?>
+        <?=$this->transEsc('Payment::ILS')?>
         <select name="source_ils" class="form-select">
           <option value=""><?=$this->transEsc('All')?></option>
           <?php foreach ($this->sourceIlsList as $value): ?>
@@ -49,13 +49,13 @@ $this->headTitle($this->translate('VuFind Administration - Online Payment Manage
       </label>
 
       <label>
-        <?=$this->transEsc('Username')?>
+        <?=$this->transEsc('Payment::Username')?>
         <input name="cat_username" class="form-control" value="<?=$this->escapeHtmlAttr($this->params['cat_username'] ?? '')?>">
       </label>
 
       <div class="date-range">
         <label for="created_from">
-          <?=$this->transEsc('Created')?>
+          <?=$this->transEsc('Payment::Created')?>
         </label>
         <input type="date" id="created_from" name="created_from" class="form-control" value="<?=$this->escapeHtmlAttr($this->params['created_from'] ?? '')?>">
         &ndash;
@@ -64,7 +64,7 @@ $this->headTitle($this->translate('VuFind Administration - Online Payment Manage
 
       <div class="date-range">
         <label for="paid_from">
-          <?=$this->transEsc('Paid')?>
+          <?=$this->transEsc('Payment::Paid')?>
         </label>
         <input type="date" id="paid_from" name="paid_from" class="form-control" value="<?=$this->escapeHtmlAttr($this->params['paid_from'] ?? '')?>">
         &ndash;
@@ -84,56 +84,56 @@ $this->headTitle($this->translate('VuFind Administration - Online Payment Manage
     <table class="payment-table">
       <thead>
         <tr>
-          <th scope="col"><?=$this->transEsc('ID')?></th>
-          <th scope="col"><?=$this->transEsc('Local Identifier')?></th>
-          <th scope="col"><?=$this->transEsc('Remote Identifier')?></th>
-          <th scope="col"><?=$this->transEsc('ILS')?></th>
-          <th scope="col"><?=$this->transEsc('Username')?></th>
-          <th scope="col"><?=$this->transEsc('Created')?></th>
-          <th scope="col"><?=$this->transEsc('Paid')?></th>
-          <th scope="col"><?=$this->transEsc('Status')?></th>
-          <th scope="col"><?=$this->transEsc('Message')?></th>
-          <th scope="col"><?=$this->transEsc('Actions')?></th>
+          <th scope="col"><?=$this->transEsc('Payment::ID')?></th>
+          <th scope="col"><?=$this->transEsc('Payment::Local Identifier')?></th>
+          <th scope="col"><?=$this->transEsc('Payment::Remote Identifier')?></th>
+          <th scope="col"><?=$this->transEsc('Payment::ILS')?></th>
+          <th scope="col"><?=$this->transEsc('Payment::Username')?></th>
+          <th scope="col"><?=$this->transEsc('Payment::Created')?></th>
+          <th scope="col"><?=$this->transEsc('Payment::Paid')?></th>
+          <th scope="col"><?=$this->transEsc('Payment::Status')?></th>
+          <th scope="col"><?=$this->transEsc('Payment::Message')?></th>
+          <th scope="col"><?=$this->transEsc('Payment::Actions')?></th>
         </tr>
       </thead>
       <tbody>
         <?php foreach ($this->payments as $paymentEntity): ?>
           <tr>
-            <td data-label="<?=$this->transEscAttr('ID')?>">
+            <td data-label="<?=$this->transEscAttr('Payment::ID')?>">
               <?=$this->escapeHtml($paymentEntity->getId())?>
             </td>
-            <td data-label="<?=$this->transEscAttr('Local Identifier')?>">
+            <td data-label="<?=$this->transEscAttr('Payment::Local Identifier')?>">
               <?=$this->escapeHtml($paymentEntity->getLocalIdentifier())?>
             </td>
-            <td data-label="<?=$this->transEscAttr('Remote Identifier')?>">
+            <td data-label="<?=$this->transEscAttr('Payment::Remote Identifier')?>">
               <?=$this->escapeHtml($paymentEntity->getRemoteIdentifier())?>
             </td>
-            <td data-label="<?=$this->transEscAttr('ILS')?>">
+            <td data-label="<?=$this->transEscAttr('Payment::ILS')?>">
               <?=$this->escapeHtml($paymentEntity->getSourceIls())?>
             </td>
-            <td data-label="<?=$this->transEscAttr('Username')?>">
+            <td data-label="<?=$this->transEscAttr('Payment::Username')?>">
               <?=$this->escapeHtml($paymentEntity->getCatUsername())?>
             </td>
-            <td class="date-time" data-label="<?=$this->transEscAttr('Created')?>">
+            <td class="date-time" data-label="<?=$this->transEscAttr('Payment::Created')?>">
               <?=$this->dateTime()->convertToDisplayDateAndTime('U', $paymentEntity->getCreated()->getTimestamp())?>
             </td>
-            <td class="date-time" data-label="<?=$this->transEscAttr('Paid')?>">
+            <td class="date-time" data-label="<?=$this->transEscAttr('Payment::Paid')?>">
               <?=$paymentEntity->getPaidDate() ? $this->dateTime()->convertToDisplayDateAndTime('U', $paymentEntity->getPaidDate()->getTimestamp()) : '-'?>
             </td>
-            <td data-label="<?=$this->transEscAttr('Status')?>">
+            <td data-label="<?=$this->transEscAttr('Payment::Status')?>">
               <?=$this->escapeHtml($this->statuses[$paymentEntity->getStatus()->value] ?? '-')?>
             </td>
-            <td data-label="<?=$this->transEscAttr('Message')?>">
-              <?=$this->transEsc($paymentEntity->getStatusMessage())?>
+            <td data-label="<?=$this->transEscAttr('Payment::Message')?>">
+              <?=$this->transEsc('Payment::' . $paymentEntity->getStatusMessage())?>
             </td>
-            <td class="actions" data-label="<?=$this->transEscAttr('Actions')?>">
+            <td class="actions" data-label="<?=$this->transEscAttr('Payment::Actions')?>">
               <div class="action-buttons">
                 <a class="btn btn-default" href="<?=$this->url('admin/payment-details', ['id' => $paymentEntity->getId()]); ?>" data-lightbox>
                   <?=$this->transEsc('Payment::Details')?>
                 </a>
                 <?php if (in_array($paymentEntity->getStatus()->value, $this->resolvableStatuses)): ?>
                   <a class="btn btn-default" href="<?=$this->url('admin/payment-resolve', ['id' => $paymentEntity->getId()]); ?>" data-lightbox>
-                    <?=$this->transEsc('Resolve')?>
+                    <?=$this->transEsc('Payment::Resolve')?>
                   </a>
                 <?php endif; ?>
               </div>

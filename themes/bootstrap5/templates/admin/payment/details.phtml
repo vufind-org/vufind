@@ -2,17 +2,17 @@
 
 <?=$this->paymentEntity ? $this->render('admin/payment/details-table.phtml') : $this->transEsc('An error has occurred')?>
 
-<h2><?=$this->transEsc('Events')?></h2>
+<h2><?=$this->transEsc('Payment::Events')?></h2>
 
 <table class="table table-striped">
   <thead>
     <tr>
-      <th><?=$this->transEsc('Date')?></th>
-      <th><?=$this->transEsc('Server IP')?></th>
-      <th><?=$this->transEsc('Server Name')?></th>
-      <th><?=$this->transEsc('Request')?></th>
-      <th><?=$this->transEsc('Message')?></th>
-      <th><?=$this->transEsc('Added Details')?></th>
+      <th><?=$this->transEsc('Payment::Date')?></th>
+      <th><?=$this->transEsc('Payment::Server IP')?></th>
+      <th><?=$this->transEsc('Payment::Server Name')?></th>
+      <th><?=$this->transEsc('Payment::Request')?></th>
+      <th><?=$this->transEsc('Payment::Message')?></th>
+      <th><?=$this->transEsc('Payment::Details')?></th>
   </thead>
   <tbody>
     <?php foreach ($this->paymentEvents as $event): ?>
@@ -32,14 +32,14 @@
           <?=$this->escapeHtml(json_decode($event->getData(), true)['__request_uri'] ?? '')?>
         </td>
         <td>
-          <?=$this->transEsc($event->getMessage())?>
+          <?=$this->transEsc('Payment::' . $event->getMessage())?>
         </td>
         <td>
           <?php
             if ($data = $event->getData()) {
               $details = json_decode($data, true);
               if ($error = $details['error'] ?? null) {
-                echo $this->transEsc($error);
+                echo $this->transEsc("Payment::$error");
               }
             }
           ?>
