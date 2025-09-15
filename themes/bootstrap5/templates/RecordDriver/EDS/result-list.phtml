@@ -120,13 +120,11 @@
       <?php if ($identifierLinksHtml): ?>
         <div><?=$identifierLinksHtml?></div>
       <?php endif; ?>
-      <div class="result-formats">
-        <?php if (empty($urls) && $supportsRtac): ?>
-          <span class="status ajax-availability hidden">
-            <span class="label label-default"><?=$this->transEsc('loading_ellipsis')?></span>
-          </span>
-        <?php endif; ?>
-      </div>
+      <?php if (empty($urls) && $supportsRtac): ?>
+        <span class="status ajax-availability hidden">
+          <span class="label label-default"><?=$this->transEsc('loading_ellipsis')?></span>
+        </span>
+      <?php endif; ?>
       <?php /* More Detailed RTAC */ ?>
       <div class="callnumAndLocation ajax-availability hidden">
         <?php if ($supportsRtac): ?>
