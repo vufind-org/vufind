@@ -212,7 +212,7 @@ abstract class AbstractBase implements
                 ->setCurrency($this->getCurrencyCode())
                 ->setType(iconv('UTF-8', 'UTF-8//IGNORE', $fine['fine'] ?? ''))
                 ->setDescription(iconv('UTF-8', 'UTF-8//IGNORE', $fine['description'] ?? ''))
-                ->setFineId($fine['fineId'])
+                ->setFineId((string)$fine['fineId'])
                 ->setOrganization(iconv('UTF-8', 'UTF-8//IGNORE', $fine['organization'] ?? ''))
                 ->setTitle(iconv('UTF-8', 'UTF-8//IGNORE', $fine['title'] ?? ''));
             $this->paymentFeeService->persistEntity($fee);

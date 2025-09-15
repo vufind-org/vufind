@@ -1120,7 +1120,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             $balance = (rand() % 100 > 49 ? $amount / 2 : $amount);
 
             $fine = [
-                'fineId'  => $firstId + $i,
+                'fineId'  => (string)($firstId + $i),
                 'amount'   => (int)round($amount * 100),
                 'checkout' => $this->dateConverter->convertToDisplayDate('U', $checkout),
                 'createdate' => $this->dateConverter->convertToDisplayDate('U', time()),
