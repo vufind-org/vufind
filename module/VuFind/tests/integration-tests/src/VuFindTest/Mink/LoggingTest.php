@@ -60,7 +60,6 @@ class LoggingTest extends MinkTestCase
                     '/404 Not Found/',
                     '/RequestErrorException/',
                     '/VuFindSearch\\\\Backend\\\\Exception/',
-                    // More flexible URL pattern
                     '/Search\/Results.*lookfor.*test/',
                 ],
                 'unexpected_patterns' => [
