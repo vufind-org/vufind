@@ -48,6 +48,11 @@ class StreamHandler extends MonologStreamHandler
 {
     use VerbosityTrait;
 
+    /**
+     * Standard LineFormatter for file logging (used/initialized by getStandardFileFormatter())
+     *
+     * @var ?LineFormatter
+     */
     protected ?LineFormatter $standardFileFormatter = null;
 
     /**

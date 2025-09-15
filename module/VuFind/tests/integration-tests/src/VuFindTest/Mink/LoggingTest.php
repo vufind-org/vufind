@@ -49,7 +49,7 @@ class LoggingTest extends MinkTestCase
      *
      * @return array
      */
-    public static function loggingScenarioProvider(): array
+    public static function emailLoggingScenarioProvider(): array
     {
         return [
             'error_and_alert_logging' => [
@@ -76,6 +76,7 @@ class LoggingTest extends MinkTestCase
                     '/DEBUG:/',
                 ],
                 'unexpected_patterns' => [
+                    '/CRITICAL:/',
                 ],
                 'min_emails'          => 1,
                 'description'         => 'Should capture debug messages when debug logging is enabled',
@@ -124,9 +125,9 @@ class LoggingTest extends MinkTestCase
      *
      * @return void
      *
-     * @dataProvider loggingScenarioProvider
+     * @dataProvider emailLoggingScenarioProvider
      */
-    public function testLogging(
+    public function testEmailLogging(
         string $emailConfig,
         array $expectedPatterns,
         array $unexpectedPatterns,
@@ -225,7 +226,7 @@ class LoggingTest extends MinkTestCase
      *
      * @return void
      */
-    public function testNoLoggingWhenDisabled(): void
+    public function testNoEmailLoggingWhenDisabled(): void
     {
         $this->changeConfigs([
             'config' => [
