@@ -79,7 +79,7 @@ abstract class AbstractContentFactory implements \Laminas\ServiceManager\Factory
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
         // Only instantiate the loader if the feature is enabled:
         $loader = isset($config->Content->{$this->tabName})
             ? $container->get(ContentManager::class)->get($this->tabName)

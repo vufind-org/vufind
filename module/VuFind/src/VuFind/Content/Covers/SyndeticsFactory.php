@@ -69,7 +69,7 @@ class SyndeticsFactory implements \Laminas\ServiceManager\Factory\FactoryInterfa
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
         $syndetics = new $requestedName($config->Syndetics ?? null);
         $cachingDownloader = $container->get(\VuFind\Http\CachingDownloader::class);
         $syndetics->setCachingDownloader($cachingDownloader);

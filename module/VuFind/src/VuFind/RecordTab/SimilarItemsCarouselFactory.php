@@ -71,7 +71,7 @@ class SimilarItemsCarouselFactory implements \Laminas\ServiceManager\Factory\Fac
         }
         return new $requestedName(
             $container->get(\VuFindSearch\Service::class),
-            $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config')
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config')
         );
     }
 }

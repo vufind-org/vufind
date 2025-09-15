@@ -30,6 +30,8 @@
 namespace VuFind\Search\Summon;
 
 use SerialsSolutions_Summon_Query as SummonQuery;
+use VuFind\Config\Config;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Solr\Utils as SolrUtils;
 use VuFindSearch\ParamBag;
 
@@ -80,13 +82,16 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Base\Options  $options      Options to use
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param \VuFind\Search\Base\Options $options       Options to use
+     * @param ConfigManagerInterface      $configManager Config manager
      */
-    public function __construct($options, \VuFind\Config\PluginManager $configLoader)
+    public function __construct($options, ConfigManagerInterface $configManager)
     {
-        parent::__construct($options, $configLoader);
-        $config = $configLoader->get($options->getFacetsIni());
+        parent::__construct($options, $configManager);
+        $facetConfigName = $options->getFacetsIni();
+        $config = ($facetConfigName !== null)
+            ? $configManager->getConfigObject($facetConfigName)
+            : new Config([]);
         $this->initFacetLimitsFromConfig($config->Facet_Settings ?? null);
     }
 
@@ -394,8 +399,8 @@ class Params extends \VuFind\Search\Base\Params
      */
     protected function initFacetList($facetList, $facetSettings, $cfgFile = null)
     {
-        $config = $this->configLoader
-            ->get($cfgFile ?? $this->getOptions()->getFacetsIni());
+        $facetConfigName = $cfgFile ?? $this->getOptions()->getFacetsIni();
+        $config = ($facetConfigName !== null) ? $this->configManager->getConfigObject($facetConfigName) : [];
         // Special case -- when most settings are in Results_Settings, the limits
         // can be found in Facet_Settings.
         $limitSection = ($facetSettings === 'Results_Settings')

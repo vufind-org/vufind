@@ -69,7 +69,7 @@ class SwitchDbHashCommandFactory implements FactoryInterface
         $requestedName,
         ?array $options = null
     ) {
-        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
         $serviceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         return new $requestedName(
             $config,

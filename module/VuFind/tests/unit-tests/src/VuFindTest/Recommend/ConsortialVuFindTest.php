@@ -31,7 +31,7 @@
 namespace VuFindTest\Recommend;
 
 use VuFind\Config\Config;
-use VuFind\Config\PluginManager as ConfigPluginManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Connection\ExternalVuFind;
 use VuFind\Recommend\ConsortialVuFind;
 use VuFind\Search\Base\Options;
@@ -168,7 +168,7 @@ class ConsortialVuFindTest extends \PHPUnit\Framework\TestCase
         // Build query Params
         $queryParams = new Params(
             $this->createStub(Options::class),
-            $this->createStub(ConfigPluginManager::class)
+            $this->createStub(ConfigManagerInterface::class)
         );
         $queryParams->getQuery()->setString($queryString);
 

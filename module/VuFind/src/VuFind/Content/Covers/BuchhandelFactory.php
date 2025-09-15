@@ -69,7 +69,7 @@ class BuchhandelFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         $url = isset($config['Buchhandel']['url'])
             ? trim($config['Buchhandel']['url'], '/') . '/'
             : 'https://api.vlb.de/api/v1/cover/';

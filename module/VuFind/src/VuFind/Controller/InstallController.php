@@ -32,7 +32,7 @@ namespace VuFind\Controller;
 use Laminas\Mvc\MvcEvent;
 use VuFind\Config\Writer as ConfigWriter;
 use VuFind\Crypt\PasswordHasher;
-use VuFind\Db\ConnectionFactory;
+use VuFind\Db\DbBuilder;
 use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
@@ -45,7 +45,6 @@ use function function_exists;
 use function in_array;
 use function is_callable;
 use function sprintf;
-use function strlen;
 
 /**
  * Class controls VuFind auto-configuration.
@@ -386,13 +385,15 @@ class InstallController extends AbstractBase
      */
     public function fixdatabaseAction()
     {
-        $view = $this->createViewModel();
-        $view->dbname = $this->params()->fromPost('dbname', 'vufind');
-        $view->dbuser = $this->params()->fromPost('dbuser', 'vufind');
-        $view->dbhost = $this->params()->fromPost('dbhost', 'localhost');
-        $view->vufindhost = $this->params()->fromPost('vufindhost', 'localhost');
-        $view->dbrootuser = $this->params()->fromPost('dbrootuser', 'root');
-        $view->driver = $this->params()->fromPost('driver', 'mysql');
+        $dbSettings = [
+            'dbname' => $this->params()->fromPost('dbname', 'vufind'),
+            'dbuser' => $this->params()->fromPost('dbuser', 'vufind'),
+            'dbhost' => $this->params()->fromPost('dbhost', 'localhost'),
+            'vufindhost' => $this->params()->fromPost('vufindhost', 'localhost'),
+            'dbrootuser' => $this->params()->fromPost('dbrootuser', 'root'),
+            'driver' => $this->params()->fromPost('driver', 'mysql'),
+        ];
+        $view = $this->createViewModel($dbSettings);
 
         $skip = $this->params()->fromPost('printsql', 'nope') == 'Skip';
 
@@ -414,69 +415,23 @@ class InstallController extends AbstractBase
             } else {
                 // Connect to database:
                 try {
-                    // We need a default database name to use to establish a connection:
-                    $dbName = ($view->driver == 'pgsql') ? 'template1' : 'mysql';
-                    $dbFactory = $this->serviceLocator->get(ConnectionFactory::class);
-                    $connectionParams = [
-                        'driver' => $dbFactory->getDriverName($view->driver),
-                        'host' => $view->dbhost,
-                        'user' => $view->dbrootuser,
-                        'password' => $this->params()->fromPost('dbrootpass'),
-                    ];
-                    $db = $dbFactory->getConnectionFromOptions(
-                        $connectionParams + ['dbname' => $dbName]
-                    );
-                } catch (\Exception $e) {
-                    $this->flashMessenger()
-                        ->addMessage(
-                            'Problem initializing database adapter; '
-                            . 'check for missing ' . $view->driver
-                            . ' library. Details: ' . $e->getMessage(),
-                            'error'
-                        );
-                    return $view;
-                }
-                try {
-                    // Get SQL together
-                    $escapedPass = $skip
-                        ? "'" . addslashes($newpass) . "'"
-                        : $db->quote($newpass);
-                    $preCommands = $this->getPreCommands($view, $escapedPass);
-                    $postCommands = $this->getPostCommands($view);
-                    // We use the same file to initialize the MariaDB and MySQL databases:
-                    $sqlFilename = $view->driver === 'mariadb' ? 'mysql' : $view->driver;
-                    $sql = file_get_contents(
-                        APPLICATION_PATH . "/module/VuFind/sql/{$sqlFilename}.sql"
+                    $builder = $this->serviceLocator->get(DbBuilder::class);
+                    $rootpass = $this->params()->fromPost('dbrootpass');
+                    $omnisql = $builder->build(
+                        $dbSettings['dbname'],
+                        $dbSettings['dbuser'],
+                        $newpass,
+                        $dbSettings['driver'],
+                        $dbSettings['dbhost'],
+                        $dbSettings['vufindhost'],
+                        $dbSettings['dbrootuser'],
+                        $rootpass,
+                        $skip
                     );
                     if ($skip) {
-                        $omnisql = '';
-                        foreach ($preCommands as $query) {
-                            $omnisql .= $query . ";\n";
-                        }
-                        $omnisql .= "\n" . $sql . "\n";
-                        foreach ($postCommands as $query) {
-                            $omnisql .= $query . ";\n";
-                        }
                         $this->getRequest()->getQuery()->set('sql', $omnisql);
                         return $this->forwardTo('Install', 'showsql');
                     } else {
-                        foreach ($preCommands as $query) {
-                            $db->executeQuery($query);
-                        }
-                        $db = $dbFactory->getConnectionFromOptions(
-                            $connectionParams + ['dbname' => $view->dbname]
-                        );
-                        $statements = explode(';', $sql);
-                        foreach ($statements as $current) {
-                            // Skip empty sections:
-                            if (strlen(trim($current)) == 0) {
-                                continue;
-                            }
-                            $db->executeQuery($current);
-                        }
-                        foreach ($postCommands as $query) {
-                            $db->executeQuery($query);
-                        }
                         // If we made it this far, we can update the config file and
                         // forward back to the home action!
                         $string = "{$view->driver}://{$view->dbuser}:{$newpass}@"
@@ -495,62 +450,6 @@ class InstallController extends AbstractBase
             }
         }
         return $view;
-    }
-
-    /**
-     * Get SQL commands needed to set up a particular database before
-     * loading the main SQL file of table definitions.
-     *
-     * @param \Laminas\View\Model $view        View object containing DB settings.
-     * @param string              $escapedPass Password to set for new DB (escaped
-     * appropriately for target database).
-     *
-     * @return array
-     */
-    protected function getPreCommands($view, $escapedPass)
-    {
-        $create = 'CREATE DATABASE ' . $view->dbname;
-        // Special case: PostgreSQL:
-        if ($view->driver == 'pgsql') {
-            $escape = 'ALTER DATABASE ' . $view->dbname
-                . " SET bytea_output='escape'";
-            $cuser = 'CREATE USER ' . $view->dbuser
-                . " WITH PASSWORD {$escapedPass}";
-            $grant = 'GRANT ALL PRIVILEGES ON DATABASE '
-                . "{$view->dbname} TO {$view->dbuser} ";
-            return [$create, $escape, $cuser, $grant];
-        }
-        // Default: MySQL:
-        $user = "CREATE USER '{$view->dbuser}'@'{$view->vufindhost}' "
-            . "IDENTIFIED BY {$escapedPass}";
-        $grant = 'GRANT SELECT,INSERT,UPDATE,DELETE ON '
-            . $view->dbname
-            . ".* TO '{$view->dbuser}'@'{$view->vufindhost}' "
-            . 'WITH GRANT OPTION';
-        $use = "USE {$view->dbname}";
-        return [$create, $user, $grant, 'FLUSH PRIVILEGES', $use];
-    }
-
-    /**
-     * Get SQL commands needed to set up a particular database after
-     * loading the main SQL file of table definitions.
-     *
-     * @param \Laminas\View\Model $view View object containing DB settings.
-     *
-     * @return array
-     */
-    protected function getPostCommands($view)
-    {
-        // Special case: PostgreSQL:
-        if ($view->driver == 'pgsql') {
-            $grantTables = 'GRANT ALL PRIVILEGES ON ALL TABLES IN '
-                . "SCHEMA public TO {$view->dbuser} ";
-            $grantSequences = 'GRANT ALL PRIVILEGES ON ALL SEQUENCES'
-                . " IN SCHEMA public TO {$view->dbuser} ";
-            return [$grantTables, $grantSequences];
-        }
-        // Default: MySQL:
-        return [];
     }
 
     /**

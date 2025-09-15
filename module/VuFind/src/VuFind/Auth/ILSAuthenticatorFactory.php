@@ -87,7 +87,7 @@ class ILSAuthenticatorFactory implements FactoryInterface
             ),
             $container->get(\VuFind\ILS\Connection::class),
             $container->get(\VuFind\Auth\EmailAuthenticator::class),
-            $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config')
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config')
         );
         $dbServiceManager = $container->get(DatabaseServiceManager::class);
         $service->setAuditEventService($dbServiceManager->get(AuditEventServiceInterface::class));

@@ -165,4 +165,11 @@ interface ConfigLocationInterface
      * @return string
      */
     public function getHandler(): string;
+
+    /**
+     * Get cache key.
+     *
+     * @return string
+     */
+    public function getCacheKey(): string;
 }

@@ -33,7 +33,7 @@ namespace VuFindTest\Recommend;
 use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Config\Config;
-use VuFind\Config\PluginManager as ConfigPluginManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Connection\LibGuides;
 use VuFind\Recommend\LibGuidesProfile;
 use VuFind\Search\Base\Options;
@@ -221,7 +221,7 @@ class LibGuidesProfileTest extends \PHPUnit\Framework\TestCase
         // Build query Params
         $queryParams = new Params(
             $this->createStub(Options::class),
-            $this->createStub(ConfigPluginManager::class)
+            $this->createStub(ConfigManagerInterface::class)
         );
         $queryParams->getQuery()->setString($queryString);
 

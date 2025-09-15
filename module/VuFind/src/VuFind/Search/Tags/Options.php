@@ -29,6 +29,8 @@
 
 namespace VuFind\Search\Tags;
 
+use VuFind\Config\ConfigManagerInterface;
+
 /**
  * Search Tags Options
  *
@@ -51,11 +53,11 @@ class Options extends \VuFind\Search\Base\Options
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(ConfigManagerInterface $configManager)
     {
-        parent::__construct($configLoader);
+        parent::__construct($configManager);
 
         $this->useSolrSearchOptions = (bool)($this->mainConfig['Social']['show_solr_options_in_tag_search'] ?? false);
         if (!$this->useSolrSearchOptions) {

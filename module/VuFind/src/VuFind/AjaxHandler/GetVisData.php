@@ -34,6 +34,7 @@ namespace VuFind\AjaxHandler;
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Stdlib\Parameters;
 use VuFind\Recommend\DateFacetTrait;
+use VuFind\Search\Base\DateRangeOptionsInterface;
 use VuFind\Search\Solr\Results;
 use VuFind\Session\Settings as SessionSettings;
 
@@ -84,8 +85,15 @@ class GetVisData extends AbstractBase
     protected function processFacetValues($filters, $fields)
     {
         $facets = $this->results->getFullFieldFacets(array_keys($fields));
+        $options = $this->results->getOptions();
+        $dateRangeTypes = $options instanceof DateRangeOptionsInterface
+            ? $options->getDateRangeFieldTypes()
+            : [];
         $retVal = [];
         foreach ($facets as $field => $values) {
+            $dateRangeField = 'DateRangeField' === ($dateRangeTypes[$field] ?? null);
+            // Extract year from DateRangeField, or check for numeric value with other field types:
+            $pattern = $dateRangeField ? '/^(-?[0-9]+)/' : '/^(-?[0-9]+)$/';
             $filter = $filters[$field][0] ?? null;
             $newValues = [
                 'data' => [],
@@ -96,9 +104,8 @@ class GetVisData extends AbstractBase
                 $newValues['selectionMax'] = $fields[$field]['to'] ?? 0;
             }
             foreach ($values['data']['list'] as $current) {
-                // Only retain numeric values!
-                if (preg_match('/^[0-9]+$/', $current['value'])) {
-                    $newValues['data'][] = [$current['value'], $current['count']];
+                if (preg_match($pattern, $current['value'], $matches)) {
+                    $newValues['data'][] = [(int)$matches[1], $current['count']];
                 }
             }
             $retVal[$field] = $newValues;

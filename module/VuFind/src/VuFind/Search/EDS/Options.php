@@ -31,6 +31,8 @@
 
 namespace VuFind\Search\EDS;
 
+use VuFind\Config\ConfigManagerInterface;
+
 use function in_array;
 use function is_callable;
 
@@ -142,17 +144,16 @@ class Options extends AbstractEDSOptions
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
-     * @param array|callable               $apiInfo      API information or callback
-     * to retrieve it
+     * @param ConfigManagerInterface $configManager Config manager
+     * @param array|callable         $apiInfo       API information or callback to retrieve it
      */
     public function __construct(
-        \VuFind\Config\PluginManager $configLoader,
+        ConfigManagerInterface $configManager,
         $apiInfo = null
     ) {
         $this->searchIni = $this->facetsIni = 'EDS';
         $this->advancedFacetSettingsSection = 'Advanced_Facet_Settings';
-        parent::__construct($configLoader);
+        parent::__construct($configManager);
 
         // If we get the API info as a callback, defer until it's actually needed to
         // avoid calling the API:

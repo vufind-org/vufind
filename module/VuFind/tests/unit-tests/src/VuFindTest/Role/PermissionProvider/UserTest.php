@@ -29,7 +29,7 @@
 
 namespace VuFindTest\Role\PermissionProvider;
 
-use LmcRbacMvc\Service\AuthorizationService;
+use Lmc\Rbac\Mvc\Service\AuthorizationService;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Db\Entity\UserEntityInterface;
 
@@ -138,13 +138,10 @@ class UserTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockAuthorizationService()
     {
-        $authorizationService
-            = $this->getMockBuilder(AuthorizationService::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $authorizationService = $this->createMock(AuthorizationService::class);
         $authorizationService
             ->method('getIdentity')
-            ->will($this->returnValue($this->getMockUser()));
+            ->willReturn($this->getMockUser());
 
         return $authorizationService;
     }
