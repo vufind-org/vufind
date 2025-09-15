@@ -147,4 +147,37 @@ abstract class AbstractDbService implements DbServiceInterface
         $count = $query->getSingleScalarResult();
         return $count;
     }
+
+    /**
+     * Begin a database transaction.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function beginTransaction(): void
+    {
+        $this->entityManager->getConnection()->beginTransaction();
+    }
+
+    /**
+     * Commit a database transaction.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function commitTransaction(): void
+    {
+        $this->entityManager->getConnection()->commit();
+    }
+
+    /**
+     * Roll back a database transaction.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function rollBackTransaction(): void
+    {
+        $this->entityManager->getConnection()->rollBack();
+    }
 }
