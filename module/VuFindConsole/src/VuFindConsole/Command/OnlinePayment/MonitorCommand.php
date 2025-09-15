@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2016-2024.
+ * Copyright (C) The National Library of Finland 2016-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -27,13 +27,14 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 
-namespace VuFindConsole\Command\Util;
+namespace VuFindConsole\Command\OnlinePayment;
 
 use Laminas\View\Renderer\PhpRenderer;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Config\Feature\EmailSettingsTrait;
 use VuFind\Db\Entity\PaymentEntityInterface;
@@ -56,13 +57,12 @@ use function count;
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 #[AsCommand(
-    name: 'util/online_payment_monitor'
+    name: 'online_payment/monitor'
 )]
-class OnlinePaymentMonitor extends Command
+class MonitorCommand extends Command
 {
     use EmailSettingsTrait;
     use OnlinePaymentEventTrait;
-    use ConsoleLoggerTrait;
 
     /**
      * Minimum time after payment was paid for it to be considered for retry (SECONDS).
@@ -114,6 +114,13 @@ class OnlinePaymentMonitor extends Command
     protected $expiredCount = 0;
 
     /**
+     * Output interface
+     *
+     * @var ?OutputInterface
+     */
+    protected ?OutputInterface $output = null;
+
+    /**
      * Constructor
      *
      * @param PaymentServiceInterface    $paymentService       Payment database service
@@ -143,7 +150,7 @@ class OnlinePaymentMonitor extends Command
     protected function configure()
     {
         $this
-            ->setDescription('Validate unregistered online payment payments and send error notifications')
+            ->setDescription('Validate unregistered online payments and send error notifications')
             ->addOption(
                 'report-interval',
                 null,
@@ -190,6 +197,7 @@ class OnlinePaymentMonitor extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $this->output = $output;
         $this->retryMinutes = (int)$input->getOption('retry-duration');
         $this->fromEmail = $input->getOption('from-email') ?? $this->getEmailSenderAddress($this->config);
         $this->reportInterval = (int)$input->getOption('report-interval');
@@ -264,7 +272,7 @@ class OnlinePaymentMonitor extends Command
             ++$this->registeredCount;
             return;
         } catch (\Exception $e) {
-            $this->warn(
+            $this->msg(
                 "Exception while processing payment {$payment->getId()} for user id {$payment->getUser()?->getId()}"
                 . ", card {$payment->getCatUsername()}: "
                 . (string)$e
@@ -293,13 +301,12 @@ class OnlinePaymentMonitor extends Command
             $errorCount = count($sourcePayments);
             if ($errorCount) {
                 if (!($recipient = $this->getErrorEmail($source))) {
-                    $this->err(
-                        "  No error email for expired payments defined for $source ($errorCount errors)",
-                        '='
-                    );
+                    $msg = "No error email for expired payments defined for $source ($errorCount errors)";
+                    $this->msg($msg);
+                    $this->err($msg);
                     continue;
                 }
-                $this->msg("[$source] Inform $errorCount expired payments to $recipient");
+                $this->msg("Inform $errorCount expired payments to $recipient (source: $source)");
 
                 $adminUrl = ($this->viewRenderer->plugin('url'))('admin-payments');
                 $params = compact('source', 'errorCount', 'adminUrl');
@@ -318,11 +325,10 @@ class OnlinePaymentMonitor extends Command
                         $this->paymentService->persistEntity($payment);
                     }
                 } catch (\Exception $e) {
-                    $this->err(
-                        "    Failed to send error email to staff at $recipient (source: $source)",
-                        'Failed to send error email to staff'
+                    $this->msg(
+                        "Failed to send error email to staff at $recipient (source: $source): " . (string)$e
                     );
-                    $this->logException($e);
+                    $this->err('Failed to send error email to staff');
                     continue;
                 }
             }
@@ -343,14 +349,30 @@ class OnlinePaymentMonitor extends Command
     }
 
     /**
-     * Log a payment debug message
+     * Output a message with a timestamp
      *
      * @param string $msg Message
      *
      * @return void
      */
-    protected function debug(string $msg): void
+    protected function msg($msg)
     {
-        $this->msg($msg);
+        $msg = date('Y-m-d H:i:s') . ' [' . getmypid() . "] $msg";
+        $this->output->writeln($msg);
+    }
+
+    /**
+     * Output an error message with a timestamp
+     *
+     * @param string $msg Message
+     *
+     * @return void
+     */
+    protected function err($msg)
+    {
+        if ($this->output instanceof ConsoleOutputInterface) {
+            $msg = date('Y-m-d H:i:s') . ' [' . getmypid() . "] $msg";
+            $this->output->getErrorOutput()->writeln($msg);
+        }
     }
 }

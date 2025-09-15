@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Factory for online payment monitor.
+ * Factory for online payment background monitor.
  *
  * PHP version 8
  *
@@ -27,7 +27,7 @@
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 
-namespace VuFindConsole\Command\Util;
+namespace VuFindConsole\Command\OnlinePayment;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -40,7 +40,7 @@ use VuFind\Mailer\Mailer;
 use VuFind\OnlinePayment\OnlinePaymentManager;
 
 /**
- * Factory for online payment monitor.
+ * Factory for online payment background monitor.
  *
  * @category VuFind
  * @package  Service
@@ -48,7 +48,7 @@ use VuFind\OnlinePayment\OnlinePaymentManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class OnlinePaymentMonitorFactory implements FactoryInterface
+class MonitorCommandFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -70,8 +70,7 @@ class OnlinePaymentMonitorFactory implements FactoryInterface
         ?array $options = null
     ) {
         // We need to initialize the theme so that the view renderer works:
-        $mainConfig = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
+        $mainConfig = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config');
         $theme = new \VuFindTheme\Initializer($mainConfig->Site, $container);
         $theme->init();
 
@@ -81,7 +80,7 @@ class OnlinePaymentMonitorFactory implements FactoryInterface
             $container->get(OnlinePaymentManager::class),
             $container->get('ViewRenderer'),
             $container->get(Mailer::class),
-            $container->get(\VuFind\Config\PluginManager::class)->get('config')->toArray(),
+            $mainConfig->toArray(),
             $dbServiceManager->get(AuditEventServiceInterface::class),
             ...($options ?? [])
         );

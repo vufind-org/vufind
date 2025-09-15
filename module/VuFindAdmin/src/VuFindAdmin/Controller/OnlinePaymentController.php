@@ -34,6 +34,7 @@ namespace VuFindAdmin\Controller;
 use DateTime;
 use VuFind\Db\Service\AuditEventServiceInterface;
 use VuFind\Db\Service\PaymentServiceInterface;
+use VuFind\Db\Type\AuditEventSubtype;
 use VuFind\Db\Type\PaymentStatus;
 use VuFind\OnlinePayment\OnlinePaymentEventTrait;
 use VuFind\Validator\CsrfInterface;
@@ -126,7 +127,8 @@ class OnlinePaymentController extends AbstractAdmin
 
             $paymentEntity->applyRegistrationResolvedStatus();
             $paymentService->persistEntity($paymentEntity);
-            $this->addPaymentEvent($paymentEntity, 'Payment marked as resolved');
+            $this
+                ->addPaymentEvent($paymentEntity, AuditEventSubtype::PaymentRegistration, 'Payment marked as resolved');
 
             if ($this->inLightbox()) {
                 $this->clearFollowupUrl();

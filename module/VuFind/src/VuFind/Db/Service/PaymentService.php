@@ -199,8 +199,9 @@ class PaymentService extends AbstractDbService implements PaymentServiceInterfac
      */
     public function getFailedPayments(int $minimumPaidAge = 120): array
     {
+        $entityClass = PaymentEntityInterface::class;
         $dql = <<<DQL
-            SELECT p FROM {PaymentEntityInterface::class} p
+            SELECT p FROM $entityClass p
               WHERE p.paid > :emptyDate
                 AND (
                   p.status = :statusFailed
@@ -233,8 +234,9 @@ class PaymentService extends AbstractDbService implements PaymentServiceInterfac
      */
     public function getUnresolvedPaymentsToReport(int $interval): array
     {
+        $entityClass = PaymentEntityInterface::class;
         $dql = <<<DQL
-            SELECT p FROM {PaymentEntityInterface::class} p
+            SELECT p FROM $entityClass p
               WHERE p.status IN (:statuses)
                 AND p.paid > :emptyDate
                 AND p.reported < :reportedLimit
