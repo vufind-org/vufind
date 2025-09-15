@@ -47,7 +47,7 @@ VuFind.register('fines', function fines() {
   /**
    * Set the aria-live attribute for an element
    * @param {Element} element Element to set aria live into
-   * @param {string} politeness Aria live value
+   * @param {string} politeness Aria live value (empty string to remove attribute)
    * @returns {void}
    */
   function ariaLive(element, politeness)
