@@ -30,6 +30,7 @@
 namespace VuFind\Db\Service;
 
 use Doctrine\ORM\EntityManager;
+use Exception;
 use VuFind\Db\Entity\EntityInterface;
 use VuFind\Db\Entity\PluginManager as EntityPluginManager;
 use VuFind\Db\PersistenceManager;

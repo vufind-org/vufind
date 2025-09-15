@@ -31,7 +31,6 @@
 namespace VuFind\Db\Service;
 
 use DateTime;
-use Exception;
 use VuFind\Db\Entity\ShortlinksEntityInterface;
 
 /**
