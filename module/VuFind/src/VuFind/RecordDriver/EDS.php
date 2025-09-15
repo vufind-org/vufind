@@ -307,9 +307,7 @@ class EDS extends DefaultRecord
                     'Name' => $item['Name'] ?? '',
                     'RawData'  => $item['Data'] ?? '',
                 ]);
-                if (
-                    $this->itemIsIncluded($nextItem, $filter)
-                ) {
+                if ($this->itemIsIncluded($nextItem, $filter)) {
                     $items[] = $nextItem;
                 }
             }
