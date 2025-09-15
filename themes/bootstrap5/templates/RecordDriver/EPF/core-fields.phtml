@@ -15,7 +15,7 @@
       <tr class="record__biblio-value"><th><?=$this->transEsc($current['label'])?>:</th><td><?=$current['value']?></td></tr>
     <?php endforeach; ?>
     <?php $holdings = $this->driver->getFullTextHoldings();
-    if (isset($holdings) && !empty($holdings)): ?>
+    if (!empty($holdings)): ?>
       <tr>
         <th><?=$this->transEsc('Linked Full Text') . ':'?></th>
         <td>
