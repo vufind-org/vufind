@@ -71,7 +71,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'language/importlokalise' => Language\ImportLokaliseCommand::class,
         'language/normalize' => Language\NormalizeCommand::class,
         'menu/menu' => Menu\MenuCommand::class,
-        'online_payment/monitor' => OnlinePayment\MonitorCommand::class,
+        'onlinepayment/monitor' => OnlinePayment\MonitorCommand::class,
         'scheduledsearch/notify' => ScheduledSearch\NotifyCommand::class,
         'util/browscap' => Util\BrowscapCommand::class,
         'util/cleanuprecordcache' => Util\CleanUpRecordCacheCommand::class,
