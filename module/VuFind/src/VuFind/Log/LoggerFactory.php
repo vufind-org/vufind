@@ -32,7 +32,7 @@ namespace VuFind\Log;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
-use LmcRbacMvc\Service\AuthorizationService;
+use Lmc\Rbac\Mvc\Service\AuthorizationService;
 use Monolog\Handler\FilterHandler;
 use Monolog\Handler\HandlerInterface;
 use Monolog\Logger as MonologLogger;
