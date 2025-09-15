@@ -70,7 +70,8 @@ class DateConverterFactory implements FactoryInterface
         }
         // Pass along key [Site] settings: displayDateFormat, displayTimeFormat,
         // timezone
-        $settings = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config')['Site'] ?? [];
+        $settings = $container->get(\VuFind\Config\ConfigManagerInterface::class)
+            ->getConfigArray('config')['Site'] ?? [];
         return new $requestedName($settings);
     }
 }

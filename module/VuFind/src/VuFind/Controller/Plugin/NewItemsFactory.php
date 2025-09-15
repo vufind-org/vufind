@@ -69,7 +69,7 @@ class NewItemsFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         $search
-            = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('searches');
+            = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('searches');
         $config = $search->NewItem ?? new \VuFind\Config\Config([]);
         return new $requestedName($config);
     }

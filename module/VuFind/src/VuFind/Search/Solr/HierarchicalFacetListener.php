@@ -115,7 +115,7 @@ class HierarchicalFacetListener
     ) {
         $this->serviceLocator = $serviceLocator;
 
-        $this->facetConfig = $this->getService(\VuFind\Config\ConfigManager::class)
+        $this->facetConfig = $this->getService(\VuFind\Config\ConfigManagerInterface::class)
             ->getConfigObject($facetConfigName);
         $this->facetHelper = $this->getService(\VuFind\Search\Solr\HierarchicalFacetHelper::class);
 

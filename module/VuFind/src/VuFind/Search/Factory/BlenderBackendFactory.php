@@ -32,7 +32,6 @@ namespace VuFind\Search\Factory;
 use Laminas\EventManager\EventManager;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
-use VuFind\Config\ConfigManager;
 use VuFind\Config\ConfigManagerInterface;
 use VuFindSearch\Backend\Blender\Backend;
 
@@ -96,7 +95,7 @@ class BlenderBackendFactory implements FactoryInterface
     public function __invoke(ContainerInterface $sm, $name, ?array $options = null)
     {
         $this->container = $sm;
-        $this->configManager = $sm->get(ConfigManager::class);
+        $this->configManager = $sm->get(ConfigManagerInterface::class);
         $yamlReader = $sm->get(\VuFind\Config\YamlReader::class);
         $blenderConfig = $this->configManager->getConfigObject($this->searchConfig);
         $backendConfig = $blenderConfig->Backends

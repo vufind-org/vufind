@@ -582,6 +582,7 @@ $config = [
             'VuFind\CacheManager' => 'VuFind\Cache\Manager',
             'VuFind\ChannelProviderPluginManager' => 'VuFind\ChannelProvider\PluginManager',
             'VuFind\Config' => 'VuFind\Config\PluginManager',
+            'VuFind\Config\ConfigManagerInterface' => 'VuFind\Config\ConfigManager',
             'VuFind\ContentPluginManager' => 'VuFind\Content\PluginManager',
             'VuFind\ContentAuthorNotesPluginManager' => 'VuFind\Content\AuthorNotes\PluginManager',
             'VuFind\ContentCoversPluginManager' => 'VuFind\Content\Covers\PluginManager',

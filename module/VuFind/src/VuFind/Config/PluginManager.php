@@ -75,7 +75,7 @@ class PluginManager extends Base implements ConfigManagerInterface
         if (!$configOrContainerInstance instanceof ContainerInterface) {
             throw new \Exception('PluginManager needs to be constructed with container instance.');
         }
-        $this->configManager = $configOrContainerInstance->get(ConfigManager::class);
+        $this->configManager = $configOrContainerInstance->get(ConfigManagerInterface::class);
     }
 
     /**
