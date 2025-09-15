@@ -194,13 +194,13 @@ class LoggingTest extends MinkTestCase
         );
 
         // Conditional assertions based on log level/type
-        if (strpos($emailConfig, 'debug') !== false) {
+        if (str_contains($emailConfig, 'debug')) {
             $this->assertStringContainsString(
                 'DEBUG:',
                 $allEmailBodies,
                 'Email body should contain debug messages'
             );
-            
+
             $this->assertStringContainsString(
                 'not-solr',
                 $allEmailBodies,
@@ -213,7 +213,7 @@ class LoggingTest extends MinkTestCase
                 'Email body should contain the specific exception type'
             );
         }
-        
+
         $this->assertStringContainsString(
             '404 Not Found',
             $allEmailBodies,
