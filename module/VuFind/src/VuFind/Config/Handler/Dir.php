@@ -29,7 +29,7 @@
 
 namespace VuFind\Config\Handler;
 
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Config\Location\ConfigLocationInterface;
 use VuFind\Config\PathResolver;
 use VuFind\Exception\ConfigException;
@@ -51,12 +51,12 @@ class Dir extends AbstractBase
     /**
      * Constructor
      *
-     * @param PathResolver  $pathResolver  Path Resolver
-     * @param ConfigManager $configManager Config Manager
+     * @param PathResolver           $pathResolver  Path Resolver
+     * @param ConfigManagerInterface $configManager Config Manager
      */
     public function __construct(
         PathResolver $pathResolver,
-        protected ConfigManager $configManager,
+        protected ConfigManagerInterface $configManager,
     ) {
         parent::__construct($pathResolver);
     }

@@ -69,7 +69,7 @@ class DPLATermsFactory implements \Laminas\ServiceManager\Factory\FactoryInterfa
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         if (!isset($config['DPLA']['apiKey'])) {
             throw new \Exception('DPLA API key missing from configuration.');
         }

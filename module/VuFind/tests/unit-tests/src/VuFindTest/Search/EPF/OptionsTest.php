@@ -84,12 +84,12 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
      */
     public function testOptions(array $config, $ebscoView): void
     {
-        $configMgr = $this->getMockConfigPluginManager(
+        $mockConfigManager = $this->getMockConfigManager(
             [
                 'EPF' => $config,
             ]
         );
-        $options = new Options($configMgr);
+        $options = new Options($mockConfigManager);
         $this->assertEquals($ebscoView, $options->getEbscoView());
     }
 }

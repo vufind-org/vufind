@@ -65,7 +65,7 @@ class AbstractBaseFactory implements FactoryInterface
         $requestedName,
         ?array $options = null
     ) {
-        $mainConfig = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config');
+        $mainConfig = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
         return new $requestedName($mainConfig, ...($options ?: []));
     }
 }

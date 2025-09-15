@@ -181,7 +181,7 @@ class Permission extends AbstractPlugin implements
     /**
      * Get the current identity from the authentication manager.
      *
-     * @return \LmcRbacMvc\Identity\IdentityInterface|null
+     * @return \Lmc\Rbac\Identity\IdentityInterface|null
      */
     public function getIdentity()
     {

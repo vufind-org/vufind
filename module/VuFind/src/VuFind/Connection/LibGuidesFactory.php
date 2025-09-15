@@ -70,7 +70,7 @@ class LibGuidesFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('LibGuidesAPI');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('LibGuidesAPI');
         if (!isset($config->General->client_id)) {
             throw new \Exception('client_id key missing from configuration.');
         }

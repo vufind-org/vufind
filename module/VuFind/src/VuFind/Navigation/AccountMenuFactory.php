@@ -65,7 +65,7 @@ class AccountMenuFactory extends AbstractMenuFactory
         ?array $options = null
     ) {
         // Only load the connector if we need to show
-        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('Overdrive');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('Overdrive');
         $connector = null;
         if (($config['Overdrive']['showMyContent'] ?? '') != 'never') {
             $connector = $container->get(

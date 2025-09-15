@@ -71,7 +71,7 @@ class CacheFactory implements FactoryInterface
         }
         return new $requestedName(
             $container->get(\VuFind\RecordDriver\PluginManager::class),
-            $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('RecordCache'),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('RecordCache'),
             $container->get(\VuFind\Db\Service\PluginManager::class)->get(RecordServiceInterface::class)
         );
     }

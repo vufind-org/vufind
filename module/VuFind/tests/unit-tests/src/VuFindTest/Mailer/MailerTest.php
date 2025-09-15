@@ -75,7 +75,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
         ];
         $cm = $this->getMockConfigManager(compact('config'));
         $sm = new MockContainer($this);
-        $sm->set(\VuFind\Config\ConfigManager::class, $cm);
+        $sm->set(\VuFind\Config\ConfigManagerInterface::class, $cm);
         $factory = new MailerFactory();
 
         $this->assertEquals(

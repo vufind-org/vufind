@@ -243,7 +243,7 @@ class LoggerFactory implements FactoryInterface
     protected function configureMonologLogger(ContainerInterface $container, MonologLogger $monologLogger): void
     {
         $configManager = $container->get(ConfigPluginManager::class);
-        $config = $configManager->get('config');
+        $config = $configManager->getConfigObject('config');
 
         // Add specific handlers based on config:
         // DEBUGGER

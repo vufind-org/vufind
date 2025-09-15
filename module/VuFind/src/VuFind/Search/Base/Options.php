@@ -30,7 +30,9 @@
 
 namespace VuFind\Search\Base;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Config\Config;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 
 use function count;
@@ -336,13 +338,6 @@ abstract class Options implements TranslatorAwareInterface
     protected $listviewOption;
 
     /**
-     * Configuration loader
-     *
-     * @var \VuFind\Config\PluginManager
-     */
-    protected $configLoader;
-
-    /**
      * Maximum number of results (-1 = unlimited)
      *
      * @var int
@@ -462,15 +457,13 @@ abstract class Options implements TranslatorAwareInterface
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(protected ConfigManagerInterface $configManager)
     {
-        $this->setConfigLoader($configLoader);
-
-        $this->mainConfig = $configLoader->get($this->mainIni)?->toArray() ?? [];
-        $this->searchSettings = $configLoader->get($this->searchIni)?->toArray() ?? [];
-        $this->facetSettings = $configLoader->get($this->facetsIni)?->toArray() ?? [];
+        $this->mainConfig = $configManager->getConfigArray($this->mainIni);
+        $this->searchSettings = $configManager->getConfigArray($this->searchIni);
+        $this->facetSettings = $configManager->getConfigArray($this->facetsIni);
 
         // Search handlers:
         $this->basicHandlers = $this->searchSettings['Basic_Searches'] ?? [];
@@ -536,18 +529,6 @@ abstract class Options implements TranslatorAwareInterface
             = (bool)($this->searchSettings['Results_Settings']['display_citation_links'] ?? true);
         $this->showRestrictedViewWarning
             = (bool)($this->searchSettings['General']['show_restricted_view_warning'] ?? false);
-    }
-
-    /**
-     * Set the config loader
-     *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
-     *
-     * @return void
-     */
-    public function setConfigLoader(\VuFind\Config\PluginManager $configLoader)
-    {
-        $this->configLoader = $configLoader;
     }
 
     /**
@@ -1260,12 +1241,10 @@ abstract class Options implements TranslatorAwareInterface
     {
         // Inherit defaults from searches.ini (if that is not already the
         // configured search settings file):
-        $defaultConfig = $this->configLoader->get('searches')->API;
-        $defaultSettings = $defaultConfig ? $defaultConfig->toArray() : [];
+        $defaultSettings = $this->configManager->getConfigArray('searches')['API'] ?? [];
         $localIni = $this->getSearchIni();
-        $localConfig = ($localIni !== 'searches')
-            ? $this->configLoader->get($localIni)->API : null;
-        $localSettings = $localConfig ? $localConfig->toArray() : [];
+        $localSettings = ($localIni !== 'searches')
+            ? $this->configManager->getConfigArray($localIni)['API'] ?? [] : [];
         return array_merge($defaultSettings, $localSettings);
     }
 
@@ -1283,7 +1262,7 @@ abstract class Options implements TranslatorAwareInterface
     {
         // Load the necessary settings to determine the appropriate recommendations
         // module:
-        $searchSettings = $this->configLoader->get($this->getSearchIni());
+        $searchSettings = $this->configManager->getConfigArray($this->getSearchIni());
 
         // Load a type-specific recommendations setting if possible, or the default
         // otherwise:
@@ -1291,40 +1270,27 @@ abstract class Options implements TranslatorAwareInterface
 
         if (
             null !== $handler
-            && isset($searchSettings->TopRecommendations->$handler)
+            && isset($searchSettings['TopRecommendations'][$handler])
         ) {
-            $recommend['top'] = $searchSettings->TopRecommendations
-                ->$handler->toArray();
+            $recommend['top'] = $searchSettings['TopRecommendations'][$handler];
         } else {
-            $recommend['top']
-                = isset($searchSettings->General->default_top_recommend)
-                ? $searchSettings->General->default_top_recommend->toArray()
-                : false;
+            $recommend['top'] = $searchSettings['General']['default_top_recommend'] ?? false;
         }
         if (
             null !== $handler
-            && isset($searchSettings->SideRecommendations->$handler)
+            && isset($searchSettings['SideRecommendations'][$handler])
         ) {
-            $recommend['side'] = $searchSettings->SideRecommendations
-                ->$handler->toArray();
+            $recommend['side'] = $searchSettings['SideRecommendations'][$handler];
         } else {
-            $recommend['side']
-                = isset($searchSettings->General->default_side_recommend)
-                ? $searchSettings->General->default_side_recommend->toArray()
-                : false;
+            $recommend['side'] = $searchSettings['General']['default_side_recommend'] ?? false;
         }
         if (
             null !== $handler
-            && isset($searchSettings->NoResultsRecommendations->$handler)
+            && isset($searchSettings['NoResultsRecommendations'][$handler])
         ) {
-            $recommend['noresults'] = $searchSettings->NoResultsRecommendations
-                ->$handler->toArray();
+            $recommend['noresults'] = $searchSettings['NoResultsRecommendations'][$handler];
         } else {
-            $recommend['noresults']
-                = isset($searchSettings->General->default_noresults_recommend)
-                ? $searchSettings->General->default_noresults_recommend
-                    ->toArray()
-                : false;
+            $recommend['noresults'] = $searchSettings['General']['default_noresults_recommend'] ?? false;
         }
 
         return $recommend;
@@ -1344,7 +1310,7 @@ abstract class Options implements TranslatorAwareInterface
         // Special case: if there's an unexpected number of parts, we may be testing
         // with a mock object; if so, that's okay, but anything else is unexpected.
         if (count($class) !== 4) {
-            if (str_starts_with($className, 'Mock_') || str_starts_with($className, 'MockObject_')) {
+            if ($this instanceof MockObject) {
                 return 'Mock';
             }
             throw new \Exception("Unexpected class name: {$className}");

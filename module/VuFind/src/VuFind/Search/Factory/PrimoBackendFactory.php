@@ -29,7 +29,7 @@
 
 namespace VuFind\Search\Factory;
 
-use LmcRbacMvc\Service\AuthorizationService;
+use Lmc\Rbac\Mvc\Service\AuthorizationService;
 use Psr\Container\ContainerInterface;
 use VuFind\Search\Primo\InjectOnCampusListener;
 use VuFind\Search\Primo\PrimoPermissionHandler;
@@ -132,7 +132,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
     public function __invoke(ContainerInterface $sm, $name, ?array $options = null)
     {
         $this->setup($sm);
-        $this->primoConfig = $this->getService(\VuFind\Config\ConfigManager::class)->getConfigObject('Primo');
+        $this->primoConfig = $this->getService(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('Primo');
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
             $this->logger = $this->getService(\VuFind\Log\Logger::class);
         }

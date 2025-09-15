@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<collection xmlns="http://www.loc.gov/MARC21/slim">
+  <record>
+    <leader>     ntm  2200301 a 4500</leader>
+    <controlfield tag="001">old1</controlfield>
+    <controlfield tag="008">250708b        xx            000 0 und d</controlfield>
+    <datafield tag="245" ind1="0" ind2="0">
+      <subfield code="a">Pyrgi Gold Tablets</subfield>
+    </datafield>
+    <datafield tag="264" ind1="3" ind2="1">
+      <subfield code="c">500 B.C.</subfield>
+    </datafield>
+  </record>
+  <record>
+    <leader>     ntm  2200301 a 4500</leader>
+    <controlfield tag="001">old2</controlfield>
+    <controlfield tag="008">250708s0800    xx            000 0 und d</controlfield>
+    <datafield tag="035" ind1="0" ind2="0">
+      <subfield code="a">(IeDuTC)CALM00051</subfield>
+    </datafield>
+    <datafield tag="245" ind1="0" ind2="0">
+      <subfield code="a">Book of Kells</subfield>
+    </datafield>
+    <datafield tag="264" ind1="3" ind2="1">
+      <subfield code="c">[0800]</subfield>
+    </datafield>
+  </record>
+</collection>

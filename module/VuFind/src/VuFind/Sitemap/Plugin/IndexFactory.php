@@ -70,7 +70,7 @@ class IndexFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $sitemapConfig = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('sitemap');
+        $sitemapConfig = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('sitemap');
         $retrievalMode = $sitemapConfig->Sitemap->retrievalMode ?? 'search';
         return new $requestedName(
             $this->getBackendSettings($sitemapConfig),

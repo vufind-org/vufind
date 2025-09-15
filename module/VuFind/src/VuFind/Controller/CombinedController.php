@@ -205,7 +205,7 @@ class CombinedController extends AbstractSearch
         $results->performAndProcessSearch();
 
         $actualMaxColumns = count($combinedResults);
-        $config = $this->getService(\VuFind\Config\ConfigManager::class)->getConfigArray('combined');
+        $config = $this->getService(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('combined');
         $columnConfig = intval($config['Layout']['columns'] ?? $actualMaxColumns);
         $columns = min($columnConfig, $actualMaxColumns);
         $placement = $config['Layout']['stack_placement'] ?? 'distributed';

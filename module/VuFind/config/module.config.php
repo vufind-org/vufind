@@ -435,6 +435,7 @@ $config = [
             'VuFind\Config\ConfigManager' => 'VuFind\Config\ConfigManagerFactory',
             'VuFind\Config\Upgrade' => 'VuFind\Config\UpgradeFactory',
             'VuFind\Config\Handler\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\Config\ConfigLoader' => 'VuFind\Config\ConfigLoaderFactory',
             'VuFind\Config\PathResolver' => 'VuFind\Config\PathResolverFactory',
             'VuFind\Config\PluginManager' => 'VuFind\Config\PluginManagerFactory',
             'VuFind\Config\SearchSpecsReader' => 'VuFind\Config\YamlReaderFactory',
@@ -466,6 +467,7 @@ $config = [
             'VuFind\Date\Converter' => 'VuFind\Service\DateConverterFactory',
             'VuFind\Db\ConnectionFactory' => 'VuFind\Db\ConnectionFactoryFactory',
             'VuFind\Db\Connection' => 'VuFind\Db\ConnectionFactory',
+            'VuFind\Db\DbBuilder' => 'VuFind\Db\DbBuilderFactory',
             'VuFind\Db\Entity\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Db\PersistenceManager' => 'VuFind\Db\PersistenceManagerFactory',
             'VuFind\Db\Service\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
@@ -525,6 +527,7 @@ $config = [
             'VuFind\RecordTab\TabManager' => 'VuFind\RecordTab\TabManagerFactory',
             'VuFind\Related\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Resolver\Driver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\Role\DynamicRoleProvider' => 'VuFind\Role\DynamicRoleProviderFactory',
             'VuFind\Role\PermissionDeniedManager' => 'VuFind\Role\PermissionDeniedManagerFactory',
             'VuFind\Role\PermissionManager' => 'VuFind\Role\PermissionManagerFactory',
             'VuFind\Role\PermissionProvider\PluginManager' => 'VuFind\Role\PermissionProvider\PluginManagerFactory',
@@ -579,6 +582,7 @@ $config = [
             'VuFind\CacheManager' => 'VuFind\Cache\Manager',
             'VuFind\ChannelProviderPluginManager' => 'VuFind\ChannelProvider\PluginManager',
             'VuFind\Config' => 'VuFind\Config\PluginManager',
+            'VuFind\Config\ConfigManagerInterface' => 'VuFind\Config\ConfigManager',
             'VuFind\ContentPluginManager' => 'VuFind\Content\PluginManager',
             'VuFind\ContentAuthorNotesPluginManager' => 'VuFind\Content\AuthorNotes\PluginManager',
             'VuFind\ContentCoversPluginManager' => 'VuFind\Content\Covers\PluginManager',
@@ -768,11 +772,6 @@ $config = [
         'role_provider' => [
             'VuFind\Role\DynamicRoleProvider' => [
                 'map_legacy_settings' => true,
-            ],
-        ],
-        'role_provider_manager' => [
-            'factories' => [
-                'VuFind\Role\DynamicRoleProvider' => 'VuFind\Role\DynamicRoleProviderFactory',
             ],
         ],
         'vufind_permission_provider_manager' => [ /* see VuFind\Role\PermissionProvider\PluginManager for defaults */ ],

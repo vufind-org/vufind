@@ -69,7 +69,7 @@ class NameBasedConfigFactory extends AbstractBaseFactory
         }
         $parts = explode('\\', $requestedName);
         $configName = array_pop($parts);
-        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject($configName);
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject($configName);
         $finalOptions = [$config, $config];
         return parent::__invoke($container, $requestedName, $finalOptions);
     }

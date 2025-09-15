@@ -30,6 +30,8 @@
 
 namespace VuFind\Search\Solr;
 
+use VuFind\Config\Config;
+use VuFind\Config\ConfigManagerInterface;
 use VuFindSearch\ParamBag;
 
 use function count;
@@ -144,20 +146,23 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Base\Options  $options      Options to use
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
-     * @param ?HierarchicalFacetHelper     $facetHelper  Hierarchical facet helper
+     * @param \VuFind\Search\Base\Options $options       Options to use
+     * @param ConfigManagerInterface      $configManager Config manager
+     * @param ?HierarchicalFacetHelper    $facetHelper   Hierarchical facet helper
      */
     public function __construct(
         $options,
-        \VuFind\Config\PluginManager $configLoader,
+        ConfigManagerInterface $configManager,
         ?HierarchicalFacetHelper $facetHelper = null
     ) {
-        parent::__construct($options, $configLoader);
+        parent::__construct($options, $configManager);
         $this->facetHelper = $facetHelper;
 
         // Use basic facet limit by default, if set:
-        $config = $configLoader->get($options->getFacetsIni());
+        $facetConfigName = $options->getFacetsIni();
+        $config = ($facetConfigName !== null)
+            ? $configManager->getConfigObject($facetConfigName)
+            : new Config([]);
         $this->initFacetLimitsFromConfig($config->Results_Settings ?? null);
         $this->initFacetRestrictionsFromConfig($config->Results_Settings ?? null);
         if (isset($config->LegacyFields)) {
@@ -231,6 +236,7 @@ class Params extends \VuFind\Search\Base\Params
         $facetSet = [];
 
         if (!empty($this->facetConfig)) {
+            $dateRangeTypes = $this->getOptions()->getDateRangeFieldTypes();
             $facetSet['limit'] = $this->facetLimit;
             foreach (array_keys($this->facetConfig) as $facetField) {
                 $fieldLimit = $this->getFacetLimitForField($facetField);
@@ -245,10 +251,23 @@ class Params extends \VuFind\Search\Base\Params
                 if (!empty($fieldMatches)) {
                     $facetSet["f.{$facetField}.facet.matches"] = $fieldMatches;
                 }
-                if ($this->getFacetOperator($facetField) == 'OR') {
-                    $facetField = '{!ex=' . $facetField . '_filter}' . $facetField;
+                if ('DateRangeField' === ($dateRangeTypes[$facetField] ?? null)) {
+                    $startYear = $this->getOptions()->getDateRangeSliderMinValue($facetField)
+                        ?? VUFIND_DEFAULT_EARLIEST_YEAR;
+                    $endYear = $this->getOptions()->getDateRangeSliderMinValue($facetField)
+                        ?? ((int)date('Y') + VUFIND_DEFAULT_LATEST_YEAR_OFFSET);
+                    $facetSet["f.{$facetField}.facet.range.start"]
+                        = sprintf('%s%04d-01-01T00:00:00Z', $startYear < 0 ? '-' : '', $startYear);
+                    $facetSet["f.{$facetField}.facet.range.end"]
+                        = sprintf('%s%04d-12-31T23:59:59Z', $endYear < 0 ? '-' : '', $endYear);
+                    $facetSet["f.{$facetField}.facet.range.gap"] = '+1YEAR';
+                    $facetSet['range'][] = $facetField;
+                } else {
+                    if ($this->getFacetOperator($facetField) == 'OR') {
+                        $facetField = '{!ex=' . $facetField . '_filter}' . $facetField;
+                    }
+                    $facetSet['field'][] = $facetField;
                 }
-                $facetSet['field'][] = $facetField;
             }
             if ($this->facetContains != null) {
                 $facetSet['contains'] = $this->facetContains;
@@ -390,8 +409,8 @@ class Params extends \VuFind\Search\Base\Params
      */
     protected function initFacetList($facetList, $facetSettings, $cfgFile = null)
     {
-        $config = $this->configLoader
-            ->get($cfgFile ?? $this->getOptions()->getFacetsIni());
+        $facetConfigName = $cfgFile ?? $this->getOptions()->getFacetsIni();
+        $config = ($facetConfigName !== null) ? $this->configManager->getConfigObject($facetConfigName) : [];
         $this->initFacetLimitsFromConfig($config->$facetSettings ?? null);
         return parent::initFacetList($facetList, $facetSettings, $cfgFile);
     }
@@ -491,8 +510,8 @@ class Params extends \VuFind\Search\Base\Params
      */
     public function getQueryIDLimit()
     {
-        $config = $this->configLoader->get($this->getOptions()->getMainIni());
-        return $config->Index->maxBooleanClauses ?? 1024;
+        $config = $this->configManager->getConfigArray($this->getOptions()->getMainIni());
+        return $config['Index']['maxBooleanClauses'] ?? 1024;
     }
 
     /**
@@ -739,7 +758,8 @@ class Params extends \VuFind\Search\Base\Params
         // Grab checkbox facet details using the standard method:
         $facets = parent::getCheckboxFacets($include, $includeDynamic);
 
-        $config = $this->configLoader->get($this->getOptions()->getFacetsIni());
+        $facetConfigName = $this->getOptions()->getFacetsIni();
+        $config = ($facetConfigName !== null) ? $this->configManager->getConfigArray($facetConfigName) : [];
 
         // Special case -- inverted checkbox facets should always appear, even on
         // the "no results" screen, since setting them actually EXPANDS rather than
@@ -749,7 +769,7 @@ class Params extends \VuFind\Search\Base\Params
             [$field, $customFilter] = explode(':', $facet['filter'] . ':');
             if (
                 $field === $this->customFilterFieldName
-                && isset($config->CustomFilters->inverted_filters[$customFilter])
+                && isset($config['CustomFilters']['inverted_filters'][$customFilter])
             ) {
                 $facets[$i]['alwaysVisible'] = true;
             }

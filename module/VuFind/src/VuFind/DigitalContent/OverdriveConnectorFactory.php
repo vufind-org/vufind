@@ -74,7 +74,7 @@ class OverdriveConnectorFactory implements
             throw new \Exception('Unexpected options sent to factory!');
         }
 
-        $configManager = $container->get(\VuFind\Config\ConfigManager::class);
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
         $config = $configManager->getConfigObject('config');
         $odConfig = $configManager->getConfigObject('Overdrive');
 

@@ -67,7 +67,7 @@ class GetRecordCoverFactory implements FactoryInterface
         $requestedName,
         ?array $options = null
     ) {
-        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
         $useFallbacks = $config->Content->useCoverFallbacksOnFail ?? false;
         return new $requestedName(
             $container->get(\VuFind\Session\Settings::class),

@@ -29,7 +29,7 @@
 
 namespace VuFindTest\Config;
 
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Config\PathResolver;
 use VuFindTest\Integration\ConfigTestCase;
 
@@ -84,7 +84,7 @@ class ConfigWritingTest extends ConfigTestCase
             baseSubDir: ''
         );
         $pathResolver = $container->get(PathResolver::class);
-        $configManager = $container->get(ConfigManager::class);
+        $configManager = $container->get(ConfigManagerInterface::class);
 
         $baseDirPath = $pathResolver->getBaseConfigDirPath();
         $baseConfigLocation = $pathResolver->getMatchingConfigLocation($baseDirPath, $configName);

@@ -66,7 +66,7 @@ class PersistenceManagerFactory implements FactoryInterface
         $requestedName,
         ?array $options = null
     ) {
-        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         return new $requestedName(
             $this->getEntityManager($container),
             (bool)($config['Authentication']['privacy'] ?? false),

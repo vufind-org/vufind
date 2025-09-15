@@ -1748,7 +1748,7 @@ class SierraRest extends AbstractBase implements
      * @param array $details Driver-specific account recovery details.
      * @param array $params  User-entered form parameters.
      *
-     * @throws AuthException
+     * @throws ILSException
      * @return array Status
      */
     public function resetPassword(array $details, array $params)

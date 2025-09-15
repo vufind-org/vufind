@@ -118,7 +118,7 @@ class MaintenanceController extends AbstractAdmin
     protected function getScripts(): array
     {
         // Load the AdminScripts.ini settings
-        $config = $this->getService(\VuFind\Config\ConfigManager::class)->getConfigArray('AdminScripts');
+        $config = $this->getService(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('AdminScripts');
         $globalConfig = $config['Global'] ?? [];
         unset($config['Global']);
 
