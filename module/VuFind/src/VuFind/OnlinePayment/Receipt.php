@@ -100,6 +100,7 @@ class Receipt implements TranslatorAwareInterface
      * @param Mailer                     $mailer            Mailer
      * @param PhpRenderer                $renderer          View renderer
      * @param PaymentFeeServiceInterface $paymentFeeService Payment fee database service
+     * @param string                     $cacheDir          Cache directory for temporary files
      */
     public function __construct(
         protected array $config,
@@ -109,7 +110,8 @@ class Receipt implements TranslatorAwareInterface
         protected RouteInterface $router,
         protected Mailer $mailer,
         protected PhpRenderer $renderer,
-        protected PaymentFeeServiceInterface $paymentFeeService
+        protected PaymentFeeServiceInterface $paymentFeeService,
+        protected string $cacheDir
     ) {
     }
 
@@ -175,6 +177,7 @@ class Receipt implements TranslatorAwareInterface
         $mpdf = new Mpdf([
             'mode' => 'utf-8',
             'format' => $this->paymentConfig['receiptFormat'] ?? 'A4',
+            'tempDir' => $this->cacheDir,
         ]);
         $mpdf->setCreator($this->config->Site->generator ?? 'VuFind');
         $mpdf->WriteHTML($pdfHtml);

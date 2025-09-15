@@ -70,17 +70,17 @@ class ReceiptFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $configManager = $container->get(\VuFind\Config\PluginManager::class);
         $dbServiceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         return new $requestedName(
-            $configManager->get('config')->toArray(),
+            $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config'),
             $container->get(\VuFind\Date\Converter::class),
             $container->get(\VuFind\I18n\Locale\LocaleSettings::class),
             $container->get(\VuFind\Service\CurrencyFormatter::class),
             $container->get('HttpRouter'),
             $container->get(\VuFind\Mailer\Mailer::class),
             $container->get('ViewRenderer'),
-            $dbServiceManager->get(\VuFind\Db\Service\PaymentFeeServiceInterface::class)
+            $dbServiceManager->get(\VuFind\Db\Service\PaymentFeeServiceInterface::class),
+            $container->get(\VuFind\Cache\Manager::class)->getCache('object')->getOptions()->getCacheDir()
         );
     }
 }
