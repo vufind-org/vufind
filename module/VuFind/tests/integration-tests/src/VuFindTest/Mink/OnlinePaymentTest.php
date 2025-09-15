@@ -630,9 +630,9 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @param string $bibId Bibliographic record ID to create fake item info for.
      *
-     * @return array
+     * @return string
      */
-    protected function getFakeFines(string $bibId): array
+    protected function getFakeFines(string $bibId): string
     {
         return json_encode([
             // Minimal record:

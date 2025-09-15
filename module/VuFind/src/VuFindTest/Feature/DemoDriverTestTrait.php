@@ -125,9 +125,9 @@ trait DemoDriverTestTrait
      *
      * @param string $bibId Bibliographic record ID to create fake item info for.
      *
-     * @return array
+     * @return string
      */
-    protected function getFakeFines(string $bibId)
+    protected function getFakeFines(string $bibId): string
     {
         $checkoutDate = strtotime('now -30 days');
         $returnDate = strtotime('now -2 days');
