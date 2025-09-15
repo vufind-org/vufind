@@ -632,7 +632,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return array
      */
-    protected function getFakeFines(string $bibId)
+    protected function getFakeFines(string $bibId): array
     {
         return json_encode([
             // Minimal record:
