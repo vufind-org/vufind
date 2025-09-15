@@ -84,12 +84,8 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
     public static function paymentDisabledProvider(): array
     {
         return [
-            [
-                false,
-            ],
-            [
-                true,
-            ],
+            'without multibackend' => [false],
+            'with multibackend' => [true],
         ];
     }
 
