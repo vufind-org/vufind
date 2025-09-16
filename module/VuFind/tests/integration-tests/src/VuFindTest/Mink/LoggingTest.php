@@ -53,8 +53,8 @@ class LoggingTest extends MinkTestCase
     {
         return [
             'error_and_alert_logging' => [
-                'email_config'        => 'alerts@myuniversity.edu:alert-5,error-5',
-                'expected_patterns'   => [
+                'emailConfig'        => 'alerts@myuniversity.edu:alert-5,error-5',
+                'expectedPatterns'   => [
                     '/VuFind Log Alert/',
                     '/CRITICAL:/',
                     '/404 Not Found/',
@@ -62,43 +62,43 @@ class LoggingTest extends MinkTestCase
                     '/VuFindSearch\\\\Backend\\\\Exception/',
                     '/Search\/Results.*lookfor.*test/',
                 ],
-                'unexpected_patterns' => [
+                'unexpectedPatterns' => [
                     '/DEBUG:/',
                     '/INFO:/',
                 ],
-                'min_emails'          => 1,
+                'minEmails'          => 1,
                 'description'         => 'Should log critical errors when Solr connection fails',
             ],
             'debug_logging_only'      => [
-                'email_config'        => 'debug@myuniversity.edu:debug-5',
-                'expected_patterns'   => [
+                'emailConfig'        => 'debug@myuniversity.edu:debug-5',
+                'expectedPatterns'   => [
                     '/VuFind Log Alert/',
                     '/DEBUG:/',
                 ],
-                'unexpected_patterns' => [
+                'unexpectedPatterns' => [
                     '/CRITICAL:/',
                 ],
-                'min_emails'          => 1,
+                'minEmails'          => 1,
                 'description'         => 'Should capture debug messages when debug logging is enabled',
             ],
             'minimal_detail_level'    => [
-                'email_config'        => 'alerts@myuniversity.edu:error-1',
-                'expected_patterns'   => [
+                'emailConfig'        => 'alerts@myuniversity.edu:error-1',
+                'expectedPatterns'   => [
                     '/VuFind Log Alert/',
                     '/CRITICAL:/',
                     '/404 Not Found/',
                 ],
-                'unexpected_patterns' => [
+                'unexpectedPatterns' => [
                     '/Backtrace:/',
                     '/Server Context:/',
                     '/Array/',
                 ],
-                'min_emails'          => 1,
+                'minEmails'          => 1,
                 'description'         => 'Should provide minimal detail at level 1',
             ],
             'maximum_detail_level'    => [
-                'email_config'        => 'alerts@myuniversity.edu:error-5',
-                'expected_patterns'   => [
+                'emailConfig'        => 'alerts@myuniversity.edu:error-5',
+                'expectedPatterns'   => [
                     '/VuFind Log Alert/',
                     '/CRITICAL:/',
                     '/404 Not Found/',
@@ -107,8 +107,8 @@ class LoggingTest extends MinkTestCase
                     '/HTTP_USER_AGENT/',
                     '/REQUEST_URI/',
                 ],
-                'unexpected_patterns' => [],
-                'min_emails'          => 1,
+                'unexpectedPatterns' => [],
+                'minEmails'          => 1,
                 'description'         => 'Should provide maximum detail at level 5',
             ],
         ];
@@ -160,7 +160,11 @@ class LoggingTest extends MinkTestCase
         $this->findCss($page, 'body');
 
         $loggedEmails = $this->getLoggedEmails();
-        $allEmailContent = implode('', array_map(fn ($email) => $email->toString(), $loggedEmails));
+        $allEmailContent = preg_replace(
+            '/=[\r\n]+/',
+            '',
+            implode('', array_map(fn ($email) => $email->toString(), $loggedEmails))
+        );
         $allEmailSubjects = implode('', array_map(fn ($email) => $email->getSubject(), $loggedEmails));
         $allEmailBodies = implode('', array_map(fn ($email) => $email->getBody()->getBody(), $loggedEmails));
 
