@@ -135,7 +135,7 @@ class ContentPagesTest extends \PHPUnit\Framework\TestCase
     ): ContentPages {
         // Set up configuration:
         $this->container->set(
-            \VuFind\Config\ConfigManager::class,
+            \VuFind\Config\ConfigManagerInterface::class,
             $this->getMockConfigManager(compact('config'))
         );
 

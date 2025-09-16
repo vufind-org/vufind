@@ -78,7 +78,7 @@ class SimulatedSSOFactory implements \Laminas\ServiceManager\Factory\FactoryInte
                 $url('simulatedsso-login', [], ['query' => ['return' => $target]])
             );
         };
-        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('SimulatedSSO');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('SimulatedSSO');
         return new $requestedName(
             $getUrl,
             $config,

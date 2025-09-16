@@ -30,7 +30,7 @@
 namespace VuFind\Search\Options;
 
 use Psr\Container\ContainerInterface;
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 
 /**
  * Search options plugin factory
@@ -69,6 +69,6 @@ class PluginFactory extends \VuFind\ServiceManager\AbstractPluginFactory
         ?array $options = null
     ) {
         $class = $this->getClassName($requestedName);
-        return new $class($container->get(ConfigManager::class));
+        return new $class($container->get(ConfigManagerInterface::class));
     }
 }

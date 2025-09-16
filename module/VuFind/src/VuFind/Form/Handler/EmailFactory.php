@@ -73,7 +73,7 @@ class EmailFactory implements FactoryInterface
 
         return new $requestedName(
             $container->get('ViewRenderer'),
-            $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config'),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config'),
             $container->get(\VuFind\Mailer\Mailer::class)
         );
     }

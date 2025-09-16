@@ -68,7 +68,7 @@ class ExportFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $configManager = $container->get(\VuFind\Config\ConfigManager::class);
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
         return new $requestedName(
             $configManager->getConfigArray('config'),
             $configManager->getConfigArray('export'),

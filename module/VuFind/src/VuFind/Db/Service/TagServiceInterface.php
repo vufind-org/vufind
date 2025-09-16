@@ -89,7 +89,7 @@ interface TagServiceInterface extends DbServiceInterface
      * @param string $text          Tag text to match
      * @param bool   $caseSensitive Should tags be retrieved case-sensitively?
      *
-     * @return TagsEntityInterface[]
+     * @return ?TagsEntityInterface
      */
     public function getTagByText(string $text, bool $caseSensitive = false): ?TagsEntityInterface;
 

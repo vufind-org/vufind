@@ -85,7 +85,7 @@ class Bootstrapper
         $app = $event->getApplication();
         $this->events = $app->getEventManager();
         $this->container = $app->getServiceManager();
-        $this->config = $this->container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config');
+        $this->config = $this->container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
     }
 
     /**

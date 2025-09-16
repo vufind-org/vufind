@@ -69,7 +69,7 @@ class HoldingsWorldCat2Factory implements \Laminas\ServiceManager\Factory\Factor
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('WorldCat2');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('WorldCat2');
         return new $requestedName(
             $container->get(\VuFindSearch\Service::class),
             $config['Holdings'] ?? []

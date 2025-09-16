@@ -76,7 +76,7 @@ class DefaultRecordFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $configManager = $container->get(\VuFind\Config\ConfigManager::class);
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
         $config = $configManager->getConfigArray('RecordDataFormatter/DefaultRecord');
         // check deprecated legacy RecordDataFormatter.ini for backward compatibility
         $oldConfig = $configManager->getConfigArray('RecordDataFormatter.ini');

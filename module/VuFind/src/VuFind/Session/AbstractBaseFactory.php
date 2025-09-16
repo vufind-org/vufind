@@ -71,7 +71,7 @@ class AbstractBaseFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
 
-        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
         $service = new $requestedName($config->Session ?? null);
         $service->setDbServiceManager(
             $container->get(\VuFind\Db\Service\PluginManager::class)

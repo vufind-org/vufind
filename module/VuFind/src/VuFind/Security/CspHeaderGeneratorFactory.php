@@ -68,7 +68,8 @@ class CspHeaderGeneratorFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('contentsecuritypolicy');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)
+            ->getConfigObject('contentsecuritypolicy');
         $nonceGenerator = $container->get(NonceGenerator::class);
 
         return new $requestedName($config, $nonceGenerator);

@@ -70,7 +70,7 @@ class UpgradeFactory implements FactoryInterface
         }
         return new $requestedName(
             $container->get(PathResolver::class),
-            $container->get(ConfigManager::class),
+            $container->get(ConfigManagerInterface::class),
         );
     }
 }

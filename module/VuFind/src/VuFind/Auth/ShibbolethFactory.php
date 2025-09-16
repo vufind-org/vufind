@@ -33,6 +33,7 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Auth\Shibboleth\ConfigurationLoaderInterface;
 use VuFind\Auth\Shibboleth\MultiIdPConfigurationLoader;
 use VuFind\Auth\Shibboleth\SingleIdPConfigurationLoader;
 
@@ -86,11 +87,11 @@ class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
      *
      * @param ContainerInterface $container Service manager
      *
-     * @return configuration loader
+     * @return ConfigurationLoaderInterface Configuration loader
      */
-    public function getConfigurationLoader(ContainerInterface $container)
+    public function getConfigurationLoader(ContainerInterface $container): ConfigurationLoaderInterface
     {
-        $configManager = $container->get(\VuFind\Config\ConfigManager::class);
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
         $config = $configManager->getConfigObject('config');
         $override = $config->Shibboleth->allow_configuration_override ?? false;
         if ($override) {
