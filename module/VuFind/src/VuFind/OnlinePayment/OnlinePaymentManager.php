@@ -635,6 +635,9 @@ class OnlinePaymentManager implements LoggerAwareInterface
             }
 
             $this->addPaymentEvent($payment, AuditEventSubtype::Payment, 'Payment created');
+        } catch (\Exception $e) {
+            $this->paymentService->rollbackTransaction();
+            throw $e;
         } finally {
             $this->paymentService->commitTransaction();
         }
@@ -714,6 +717,9 @@ class OnlinePaymentManager implements LoggerAwareInterface
         try {
             $this->paymentService->persistEntity($payment);
             $this->auditEventService->addPaymentEvent($payment, $eventSubtype, $auditMessage, $eventData);
+        } catch (\Exception $e) {
+            $this->paymentService->rollbackTransaction();
+            throw $e;
         } finally {
             $this->paymentService->commitTransaction();
         }
