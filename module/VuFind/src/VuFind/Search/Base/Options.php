@@ -1333,18 +1333,6 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
-     * Should we include first/last options in record page navigation?
-     *
-     * @return bool
-     *
-     * @deprecated Use recordFirstLastNavigationEnabled instead
-     */
-    public function supportsFirstLastNavigation()
-    {
-        return $this->recordFirstLastNavigationEnabled();
-    }
-
-    /**
      * Is first/last navigation supported by the backend
      *
      * @return bool
