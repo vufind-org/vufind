@@ -125,9 +125,9 @@ class HierarchicalFacetHelper implements
      *
      * @param array            $facetList Facet list returned from Solr
      * @param bool|string|null $order     Sort order:
-     * - true|top  sort top level alphabetically and the rest by count
-     * - false|all sort all levels alphabetically
-     * - count     sort all levels by count
+     * - true|top   sort top level alphabetically and the rest by count
+     * - false|all  sort all levels alphabetically
+     * - null|count sort all levels by count
      *
      * @return void
      */
