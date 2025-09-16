@@ -113,43 +113,45 @@ $titleHtml = $this->transEsc('Payment::breakdown_title') . ' - ' . $sourceNameEs
       </tbody>
     </table>
 
-    <?php
-      // Collect sums for all VAT bases:
-      $vatTable = [];
-      $percentDecimals = 0;
-      foreach ($this->fees as $fee) {
-        $vat = $fee->getTaxPercent();
-        $entry = $vatTable[$vat] ?? [0, 0, 0];
-        $entry[0] += $fee->calculateAmountExcludingTax();
-        $entry[1] += $fee->calculateTax();
-        $entry[2] += $fee->getAmount();
-        $vatTable[$vat] = $entry;
-        if ($vat % 100 !== 0) {
-          $percentDecimals = 1;
+    <?php if ($this->paymentConfig['vatBreakdown'] ?? false): ?>
+      <?php
+        // Collect sums for all VAT bases:
+        $vatTable = [];
+        $percentDecimals = 0;
+        foreach ($this->fees as $fee) {
+          $vat = $fee->getTaxPercent();
+          $entry = $vatTable[$vat] ?? [0, 0, 0];
+          $entry[0] += $fee->calculateAmountExcludingTax();
+          $entry[1] += $fee->calculateTax();
+          $entry[2] += $fee->getAmount();
+          $vatTable[$vat] = $entry;
+          if ($vat % 100 !== 0) {
+            $percentDecimals = 1;
+          }
         }
-      }
-    ?>
-    <table class="vat-breakdown" align="right">
-      <thead>
-        <tr>
-          <th class="breakdown-heading"><?=$this->transEsc('Payment::VAT Breakdown')?></th>
-          <th><?=$this->transEsc('Payment::VAT Percent')?></th>
-          <th><?=$this->transEsc('Payment::Excluding VAT')?></th>
-          <th><?=$this->transEsc('Payment::VAT')?></th>
-          <th><?=$this->transEsc('Payment::Including VAT')?></th>
-        </tr>
-      </thead>
-      <tbody>
-        <?php foreach ($vatTable as $vat => $amounts): ?>
+      ?>
+      <table class="vat-breakdown" align="right">
+        <thead>
           <tr>
-            <td></td>
-            <td><?=$this->localizedNumber($vat / 100.0, $percentDecimals)?>%</td>
-            <td><?=$this->safeMoneyFormat($amounts[0] / 100.0)?></td>
-            <td><?=$this->safeMoneyFormat($amounts[1] / 100.0)?></td>
-            <td><?=$this->safeMoneyFormat($amounts[2] / 100.0)?></td>
+            <th class="breakdown-heading"><?=$this->transEsc('Payment::VAT Breakdown')?></th>
+            <th><?=$this->transEsc('Payment::VAT Percent')?></th>
+            <th><?=$this->transEsc('Payment::Excluding VAT')?></th>
+            <th><?=$this->transEsc('Payment::VAT')?></th>
+            <th><?=$this->transEsc('Payment::Including VAT')?></th>
           </tr>
-        <?php endforeach; ?>
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          <?php foreach ($vatTable as $vat => $amounts): ?>
+            <tr>
+              <td></td>
+              <td><?=$this->localizedNumber($vat / 100.0, $percentDecimals)?>%</td>
+              <td><?=$this->safeMoneyFormat($amounts[0] / 100.0)?></td>
+              <td><?=$this->safeMoneyFormat($amounts[1] / 100.0)?></td>
+              <td><?=$this->safeMoneyFormat($amounts[2] / 100.0)?></td>
+            </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+    <?php endif; ?>
   </body>
 </html>

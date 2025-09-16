@@ -386,18 +386,34 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Data provider for testReceipt
+     *
+     * @return array
+     */
+    public static function receiptProvider(): array
+    {
+        return [
+            'no VAT breakdown' => [false],
+            'VAT breakdown' => [true],
+        ];
+    }
+
+    /**
      * Test receipt on demand.
+     *
+     * @param bool $vatBreakdown VAT breakdown enabled?
      *
      * @return void
      *
-     * @depends testPayment
+     * @dataProvider receiptProvider
+     * @depends      testPayment
      */
-    public function testReceipt(): void
+    public function testReceipt(bool $vatBreakdown): void
     {
         $this->changeConfigs(
             [
                 'config' => $this->getConfigIniOverrides(false),
-                'Demo' => $this->getDemoIniOverrides() + $this->getDemoIniOverridesForPayment(),
+                'Demo' => $this->getDemoIniOverrides() + $this->getDemoIniOverridesForPayment(compact('vatBreakdown')),
             ]
         );
 
@@ -417,8 +433,13 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
 
         // Check contents of HTML version of the receipt (the PDF version can't be loaded in chrome-headless-shell):
         $session->visit($this->getVuFindUrl('/MyResearch/Fines?paymentReceipt=true&html=true'));
-        $vatBreakdown = $this->findCss($page, '.vat-breakdown tbody');
-        $this->assertEquals('0.0% $1.50 $0.00 $1.50 25.5% $10.76 $2.74 $13.50', $vatBreakdown->getText());
+        $this->findCss($page, '.fee-table');
+        if ($vatBreakdown) {
+            $vatBreakdownEl = $this->findCss($page, '.vat-breakdown tbody');
+            $this->assertEquals('0.0% $1.50 $0.00 $1.50 25.5% $10.76 $2.74 $13.50', $vatBreakdownEl->getText());
+        } else {
+            $this->unFindCss($page, '.vat-breakdown');
+        }
     }
 
     /**

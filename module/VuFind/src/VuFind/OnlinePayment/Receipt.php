@@ -157,7 +157,7 @@ class Receipt implements TranslatorAwareInterface
                 break;
             }
         }
-        $creator = $this->config->Site->generator ?? 'VuFind';
+        $creator = $this->config['Site']['generator'] ?? 'VuFind';
 
         $pdfHtml = $this->renderer->partial(
             'OnlinePayment/receipt.phtml',
@@ -169,6 +169,7 @@ class Receipt implements TranslatorAwareInterface
                 'contactInfo',
                 'creator',
                 'fees',
+                'paymentConfig',
                 'feeSpecificOrganizations',
                 'organizationBusinessIdMappings'
             )
@@ -179,7 +180,7 @@ class Receipt implements TranslatorAwareInterface
             'format' => $this->paymentConfig['receiptFormat'] ?? 'A4',
             'tempDir' => $this->cacheDir,
         ]);
-        $mpdf->setCreator($this->config->Site->generator ?? 'VuFind');
+        $mpdf->setCreator($creator);
         $mpdf->WriteHTML($pdfHtml);
 
         return [
