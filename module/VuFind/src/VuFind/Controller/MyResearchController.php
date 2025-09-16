@@ -99,13 +99,6 @@ class MyResearchController extends AbstractBase
     public const DEFAULT_RECOVERY_HASH_LIFE_TIME = 3600;
 
     /**
-     * Configuration loader
-     *
-     * @var \VuFind\Config\PluginManager
-     */
-    protected $configLoader;
-
-    /**
      * Permission that must be granted to access this module (false for no
      * restriction, null to use configured default (which is usually the same
      * as false)).
@@ -119,13 +112,6 @@ class MyResearchController extends AbstractBase
     protected $accessPermission = false;
 
     /**
-     * Export support class
-     *
-     * @var \VuFind\Export
-     */
-    protected $export;
-
-    /**
      * ILS Pagination Helper
      *
      * @var PaginationHelper
@@ -133,30 +119,20 @@ class MyResearchController extends AbstractBase
     protected $paginationHelper = null;
 
     /**
-     * Session container
-     *
-     * @var Container
-     */
-    protected $session;
-
-    /**
      * Constructor
      *
-     * @param ServiceLocatorInterface      $sm           Service locator
-     * @param Container                    $container    Session container
-     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
-     * @param \VuFind\Export               $export       Export support class
+     * @param ServiceLocatorInterface               $sm            Service locator
+     * @param Container                             $session       Session container
+     * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
+     * @param \VuFind\Export                        $export        Export support class
      */
     public function __construct(
         ServiceLocatorInterface $sm,
-        Container $container,
-        \VuFind\Config\PluginManager $configLoader,
-        \VuFind\Export $export
+        protected Container $session,
+        protected \VuFind\Config\ConfigManagerInterface $configManager,
+        protected \VuFind\Export $export
     ) {
         parent::__construct($sm);
-        $this->session = $container;
-        $this->configLoader = $configLoader;
-        $this->export = $export;
     }
 
     /**
