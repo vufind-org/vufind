@@ -116,7 +116,7 @@ class Receipt implements TranslatorAwareInterface
     }
 
     /**
-     * Create a receipt PDF
+     * Create a receipt PDF.
      *
      * @param PaymentEntityInterface $payment       Payment
      * @param array                  $paymentConfig Payment configuration
@@ -183,16 +183,19 @@ class Receipt implements TranslatorAwareInterface
         $mpdf->setCreator($creator);
         $mpdf->WriteHTML($pdfHtml);
 
+        if (!($filename = $this->extractFileName($pdfHtml))) {
+            $filename = $this->translate('Payment::breakdown_title') . ' - '
+                . $payment->getPaidDate()->format('Y-m-d H-i') . '.pdf';
+        }
         return [
             'pdf' => $mpdf->OutputBinaryData(),
             'html' => $pdfHtml,
-            'filename' => $this->translate('Payment::breakdown_title') . " - $sourceName - "
-                . $payment->getPaidDate()->format('Y-m-d H-i') . '.pdf',
+            'filename' => $filename,
         ];
     }
 
     /**
-     * Send receipt by email
+     * Send receipt by email.
      *
      * @param UserEntityInterface    $user          User
      * @param array                  $patronProfile Patron information
@@ -267,7 +270,7 @@ class Receipt implements TranslatorAwareInterface
     }
 
     /**
-     * Get source name from payment
+     * Get source name from payment.
      *
      * @param PaymentEntityInterface $payment Payment
      *
@@ -276,11 +279,11 @@ class Receipt implements TranslatorAwareInterface
     protected function getSourceName(PaymentEntityInterface $payment): string
     {
         $sourceIls = $payment->getSourceIls();
-        return $this->translate('source_' . $sourceIls, [], $sourceIls);
+        return $this->translate('source_' . $sourceIls, [], '');
     }
 
     /**
-     * Get contact information URL or such
+     * Get contact information URL or such.
      *
      * @param string $source Source ID
      *
@@ -291,5 +294,19 @@ class Receipt implements TranslatorAwareInterface
     protected function getContactInfo(string $source): string
     {
         return $this->paymentConfig['contactInfo'] ?? '';
+    }
+
+    /**
+     * Extract filename from a meta tag.
+     *
+     * @param string $html HTML page
+     *
+     * @return string
+     */
+    protected function extractFileName(string $html): string
+    {
+        return preg_match('/<meta name="filename" content="([^"]+)">/', $html, $matches)
+            ? $matches[1]
+            : '';
     }
 }

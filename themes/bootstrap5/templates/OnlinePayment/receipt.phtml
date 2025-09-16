@@ -2,18 +2,28 @@
 // Note: this template is used to create a payment receipt as a complete HTML page. The result is passed to mpdf for PDF
 // conversion. Not all HTML features are supported, and external stylesheets cannot be used.
 
-$sourceNameEsc = $this->transEscWithPrefix('source_', $this->sourceIls);
-$titleHtml = $this->transEsc('Payment::breakdown_title') . ' - ' . $sourceNameEsc;
+$titleEsc = $this->transEsc('Payment::breakdown_title');
+if ($sourceNameEsc = $this->transEscWithPrefix('source_', $this->sourceIls, [], '')) {
+  $titleEsc .= " - $sourceNameEsc";
+} elseif ($this->businessId) {
+  $titleEsc .= ' - ' . $this->escapeHtml($this->businessId);
+}
 ?>
 <!DOCTYPE html>
 <html lang="<?=$this->layout()->userLang?>"<?php if ($this->layout()->rtl): ?> dir="rtl"<?php endif; ?>>
   <head>
-    <title><?=$titleHtml?> - <?=$this->payment->getPaidDate()->format('Y-m-d H-i')?></title>
+    <title><?=$titleEsc?> - <?=$this->payment->getPaidDate()->format('Y-m-d H-i')?></title>
     <meta name="description" content="<?=$this->transEscAttr('Payment::breakdown_title')?>">
+    <?php
+      // The following special tag can be used to specify the file name for the resulting PDF. It must be formatted
+      // exactly as below.
+      $filenameEsc = $titleEsc . ' - ' . $payment->getPaidDate()->format('Y-m-d H-i') . '.pdf';
+    ?>
+    <meta name="filename" content="<?=$filenameEsc?>">
     <?=$this->partial('OnlinePayment/receipt-head-style.phtml')?>
   </head>
   <body>
-    <h1><?=$titleHtml?></h1>
+    <h1><?=$titleEsc?></h1>
 
     <hr>
 
@@ -24,7 +34,11 @@ $titleHtml = $this->transEsc('Payment::breakdown_title') . ' - ' . $sourceNameEs
             <?=$this->transEsc('Payment::Recipient')?>
           </th>
           <td>
-            <?=$sourceNameEsc?><?=$this->businessId ? $this->escapeHtml(" ($this->businessId)") : ''?>
+            <?php if ($sourceNameEsc): ?>
+              <?=$sourceNameEsc?><?=$this->businessId ? $this->escapeHtml(" ($this->businessId)") : ''?>
+            <?php else: ?>
+               <?=$this->escapeHtml($this->businessId)?>
+            <?php endif; ?>
           </td>
         </tr>
         <tr>
