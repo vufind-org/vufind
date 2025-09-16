@@ -216,22 +216,24 @@ class OnlinePaymentManager implements LoggerAwareInterface
             case BaseHandler::PAYMENT_SUCCESS:
                 if ($markedAsPaid = $payment->isInProgress()) {
                     $payment->applyPaymentPaidStatus();
-                    $this->paymentService->persistEntity($payment);
-                    $this->addPaymentEvent($payment, AuditEventSubtype::Payment, 'Payment marked as paid');
+                    $this->persistEntityWithAuditEvent($payment, AuditEventSubtype::Payment, 'Payment marked as paid');
                 }
                 break;
             case BaseHandler::PAYMENT_CANCEL:
                 if (PaymentStatus::InProgress === $payment->getStatus()) {
                     $payment->applyCanceledStatus();
-                    $this->paymentService->persistEntity($payment);
-                    $this->addPaymentEvent($payment, AuditEventSubtype::Payment, 'Payment marked as canceled');
+                    $this->persistEntityWithAuditEvent(
+                        $payment,
+                        AuditEventSubtype::Payment,
+                        'Payment marked as canceled'
+                    );
                 }
                 break;
             case BaseHandler::PAYMENT_FAILURE:
                 if (PaymentStatus::InProgress === $payment->getStatus()) {
                     $payment->applyPaymentFailedStatus();
-                    $this->paymentService->persistEntity($payment);
-                    $this->addPaymentEvent($payment, AuditEventSubtype::Payment, 'Payment marked as failed');
+                    $this
+                        ->persistEntityWithAuditEvent($payment, AuditEventSubtype::Payment, 'Payment marked as failed');
                 }
                 break;
             case BaseHandler::PAYMENT_PENDING:
@@ -339,8 +341,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
             );
 
             $payment->applyRegistrationFailedStatus('patron login error');
-            $this->paymentService->persistEntity($payment);
-            $this->addPaymentEvent($payment, AuditEventSubtype::PaymentRegistration, 'Patron login failed');
+            $this->persistEntityWithAuditEvent($payment, AuditEventSubtype::PaymentRegistration, 'Patron login failed');
             return false;
         }
 
@@ -420,8 +421,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
         }
 
         $payment->applyRegistrationStartedStatus();
-        $this->paymentService->persistEntity($payment);
-        $this->addPaymentEvent($payment, AuditEventSubtype::PaymentRegistration, 'Started registration');
+        $this->persistEntityWithAuditEvent($payment, AuditEventSubtype::PaymentRegistration, 'Started registration');
 
         $paymentConfig = $this->ils->getConfig('OnlinePayment', $patron);
         $fineIds = $this->paymentFeeService->getFineIdsForPayment($payment);
@@ -441,8 +441,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
             } catch (\Exception $e) {
                 $this->logException($e);
                 $payment->applyRegistrationFailedStatus('Failed to process fine details');
-                $this->paymentService->persistEntity($payment);
-                $this->addPaymentEvent(
+                $this->persistEntityWithAuditEvent(
                     $payment,
                     AuditEventSubtype::PaymentRegistration,
                     'Registration failed: could not process fine details',
@@ -467,8 +466,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
                     . var_export($paymentDetails, true)
                 );
                 $payment->applyFinesUpdatedStatus();
-                $this->paymentService->persistEntity($payment);
-                $this->addPaymentEvent(
+                $this->persistEntityWithAuditEvent(
                     $payment,
                     AuditEventSubtype::PaymentRegistration,
                     'Registration failed: fines updated'
@@ -498,8 +496,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
                 );
                 if ('Payment::error_fines_changed' === $res['reason']) {
                     $payment->applyFinesUpdatedStatus();
-                    $this->paymentService->persistEntity($payment);
-                    $this->addPaymentEvent(
+                    $this->persistEntityWithAuditEvent(
                         $payment,
                         AuditEventSubtype::PaymentRegistration,
                         'Registration failed: fines updated'
@@ -508,8 +505,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
                     $payment->applyRegistrationFailedStatus(
                         'Failed to mark fees paid: ' . ($res ?: 'no error information')
                     );
-                    $this->paymentService->persistEntity($payment);
-                    $this->addPaymentEvent(
+                    $this->persistEntityWithAuditEvent(
                         $payment,
                         AuditEventSubtype::PaymentRegistration,
                         'Registration failed: ' . ($res['reason'] ?? 'no error information')
@@ -518,19 +514,17 @@ class OnlinePaymentManager implements LoggerAwareInterface
                 return false;
             }
             $payment->applyRegisteredStatus();
-            $this->paymentService->persistEntity($payment);
-            $this->debug("Registration of payment {$payment->getLocalIdentifier()} successful");
-            $this->addPaymentEvent(
+            $this->persistEntityWithAuditEvent(
                 $payment,
                 AuditEventSubtype::PaymentRegistration,
                 'Successfully registered'
             );
+            $this->debug("Registration of payment {$payment->getLocalIdentifier()} successful");
         } catch (\Exception $e) {
             $this->logError('Payment registration error (patron ' . $patron['id'] . '): ' . $e->getMessage());
             $this->logException($e);
             $payment->applyRegistrationFailedStatus($e->getMessage());
-            $this->paymentService->persistEntity($payment);
-            $this->addPaymentEvent(
+            $this->persistEntityWithAuditEvent(
                 $payment,
                 AuditEventSubtype::PaymentRegistration,
                 'Registration failed',
@@ -589,15 +583,63 @@ class OnlinePaymentManager implements LoggerAwareInterface
     }
 
     /**
-     * Get patron's source ILS
+     * Add a new payment and its fines to database.
      *
-     * @param array $patron Patron
+     * @param string              $localIdentifier  Local payment identifier
+     * @param ?string             $remoteIdentifier Handler's payment identifier
+     * @param UserEntityInterface $user             User
+     * @param array               $patron           Patron
+     * @param int                 $amount           Amount (excluding service fee)
+     * @param string              $currencyCode     Currency code
+     * @param int                 $serviceFee       Service fee
+     * @param array               $fines            Fines data
      *
-     * @return string
+     * @return PaymentEntityInterface
      */
-    protected function getSourceIls(array $patron): string
-    {
-        return $patron['__source'] ?? 'default';
+    public function createPaymentEntity(
+        string $localIdentifier,
+        ?string $remoteIdentifier,
+        UserEntityInterface $user,
+        array $patron,
+        int $amount,
+        string $currencyCode,
+        int $serviceFee,
+        array $fines
+    ): PaymentEntityInterface {
+        $this->paymentService->beginTransaction();
+        try {
+            $payment = $this->paymentService->createInProgressPayment()
+                ->setLocalIdentifier($localIdentifier)
+                ->setRemoteIdentifier($remoteIdentifier)
+                ->setSourceIls($this->getSourceIls($patron))
+                ->setUser($user)
+                ->setCatUsername($patron['cat_username'])
+                ->setAmount($amount)
+                ->setCurrency($currencyCode)
+                ->setServiceFee($serviceFee);
+            $this->paymentService->persistEntity($payment);
+
+            foreach ($fines as $fine) {
+                // Sanitize fine strings
+                $fee = $this->paymentFeeService->createEntity()
+                    ->setPayment($payment)
+                    ->setAmount($fine['balance'])
+                    ->setTaxPercent($fine['taxPercent'] ?? 0)
+                    ->setCurrency($currencyCode)
+                    ->setType(iconv('UTF-8', 'UTF-8//IGNORE', $fine['fine'] ?? ''))
+                    ->setDescription(iconv('UTF-8', 'UTF-8//IGNORE', $fine['description'] ?? ''))
+                    ->setFineId((string)$fine['fineId'])
+                    ->setOrganization(iconv('UTF-8', 'UTF-8//IGNORE', $fine['organization'] ?? ''))
+                    ->setTitle(iconv('UTF-8', 'UTF-8//IGNORE', $fine['title'] ?? ''));
+                $this->paymentFeeService->persistEntity($fee);
+            }
+
+            $this->addPaymentEvent($payment, AuditEventSubtype::Payment, 'Payment created');
+        } finally {
+            $this->paymentService->commitTransaction();
+        }
+
+        return $payment;
     }
 
     /**
@@ -650,6 +692,43 @@ class OnlinePaymentManager implements LoggerAwareInterface
         $result = $session->paymentSuccessful === true;
         unset($session->paymentSuccessful);
         return $result;
+    }
+
+    /**
+     * Persist a payment and add an audit event in the same transaction.
+     *
+     * @param PaymentEntityInterface $payment      Payment
+     * @param AuditEventSubtype      $eventSubtype Audit event subtype
+     * @param string                 $auditMessage Audit message
+     * @param array                  $eventData    Any additional audit event data
+     *
+     * @return void
+     */
+    public function persistEntityWithAuditEvent(
+        PaymentEntityInterface $payment,
+        AuditEventSubtype $eventSubtype,
+        string $auditMessage,
+        array $eventData = []
+    ): void {
+        $this->paymentService->beginTransaction();
+        try {
+            $this->paymentService->persistEntity($payment);
+            $this->auditEventService->addPaymentEvent($payment, $eventSubtype, $auditMessage, $eventData);
+        } finally {
+            $this->paymentService->commitTransaction();
+        }
+    }
+
+    /**
+     * Get patron's source ILS
+     *
+     * @param array $patron Patron
+     *
+     * @return string
+     */
+    protected function getSourceIls(array $patron): string
+    {
+        return $patron['__source'] ?? 'default';
     }
 
     /**

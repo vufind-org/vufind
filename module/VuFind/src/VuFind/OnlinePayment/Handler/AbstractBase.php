@@ -37,11 +37,10 @@ use Laminas\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\PaymentEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\AuditEventServiceInterface;
-use VuFind\Db\Service\PaymentFeeServiceInterface;
-use VuFind\Db\Service\PaymentServiceInterface;
 use VuFind\Db\Type\AuditEventSubtype;
 use VuFind\I18n\Locale\LocaleSettings;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\OnlinePayment\OnlinePaymentManager;
 use VuFindHttp\HttpService;
 
 use function count;
@@ -101,19 +100,17 @@ abstract class AbstractBase implements
     /**
      * Constructor
      *
-     * @param array                      $config            VuFind configuration
-     * @param HttpService                $httpService       HTTP service
-     * @param LocaleSettings             $localeSettings    Locale settings
-     * @param PaymentServiceInterface    $paymentService    Payment database service
-     * @param PaymentFeeServiceInterface $paymentFeeService Payment fee database service
-     * @param AuditEventServiceInterface $auditEventService Audit event log database service
+     * @param array                      $config               VuFind configuration
+     * @param HttpService                $httpService          HTTP service
+     * @param LocaleSettings             $localeSettings       Locale settings
+     * @param OnlinePaymentManager       $onlinePaymentManager Online payment manager
+     * @param AuditEventServiceInterface $auditEventService    Audit event log database service
      */
     public function __construct(
         protected array $config,
         protected HttpService $httpService,
         protected LocaleSettings $localeSettings,
-        protected PaymentServiceInterface $paymentService,
-        protected PaymentFeeServiceInterface $paymentFeeService,
+        protected OnlinePaymentManager $onlinePaymentManager,
         AuditEventServiceInterface $auditEventService
     ) {
         $this->auditEventService = $auditEventService;
@@ -192,35 +189,16 @@ abstract class AbstractBase implements
         int $amount,
         array $fines
     ): PaymentEntityInterface {
-        $payment = $this->paymentService->createInProgressPayment()
-            ->setLocalIdentifier($localIdentifier)
-            ->setRemoteIdentifier($remoteIdentifier)
-            ->setSourceIls($this->getSourceIls($patron))
-            ->setUser($user)
-            ->setCatUsername($patron['cat_username'])
-            ->setAmount($amount)
-            ->setCurrency($this->getCurrencyCode())
-            ->setServiceFee($this->getServiceFee());
-        $this->paymentService->persistEntity($payment);
-
-        foreach ($fines as $fine) {
-            // Sanitize fine strings
-            $fee = $this->paymentFeeService->createEntity()
-                ->setPayment($payment)
-                ->setAmount($fine['balance'])
-                ->setTaxPercent($fine['taxPercent'] ?? 0)
-                ->setCurrency($this->getCurrencyCode())
-                ->setType(iconv('UTF-8', 'UTF-8//IGNORE', $fine['fine'] ?? ''))
-                ->setDescription(iconv('UTF-8', 'UTF-8//IGNORE', $fine['description'] ?? ''))
-                ->setFineId((string)$fine['fineId'])
-                ->setOrganization(iconv('UTF-8', 'UTF-8//IGNORE', $fine['organization'] ?? ''))
-                ->setTitle(iconv('UTF-8', 'UTF-8//IGNORE', $fine['title'] ?? ''));
-            $this->paymentFeeService->persistEntity($fee);
-        }
-
-        $this->addPaymentEvent($payment, AuditEventSubtype::Payment, 'Payment created');
-
-        return $payment;
+        return $this->onlinePaymentManager->createPaymentEntity(
+            $localIdentifier,
+            $remoteIdentifier,
+            $user,
+            $patron,
+            $amount,
+            $this->getCurrencyCode(),
+            $this->getServiceFee(),
+            $fines
+        );
     }
 
     /**
