@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Marker interface for VuFind database services.
+ * Base interface for VuFind database services.
  *
  * PHP version 8
  *
@@ -29,10 +29,11 @@
 
 namespace VuFind\Db\Service;
 
+use Exception;
 use VuFind\Db\Entity\EntityInterface;
 
 /**
- * Marker interface for VuFind database services.
+ * Base interface for VuFind database services.
  *
  * @category VuFind
  * @package  Database
@@ -50,4 +51,28 @@ interface DbServiceInterface
      * @return void
      */
     public function persistEntity(EntityInterface $entity): void;
+
+    /**
+     * Begin a database transaction.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function beginTransaction(): void;
+
+    /**
+     * Commit a database transaction.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function commitTransaction(): void;
+
+    /**
+     * Roll back a database transaction.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function rollBackTransaction(): void;
 }

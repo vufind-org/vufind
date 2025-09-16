@@ -54,7 +54,6 @@ use VuFind\Log\LoggerAwareTrait;
 class ResourceService extends AbstractDbService implements
     ResourceServiceInterface,
     DbServiceAwareInterface,
-    Feature\TransactionInterface,
     LoggerAwareInterface
 {
     use DbServiceAwareTrait;
@@ -84,39 +83,6 @@ class ResourceService extends AbstractDbService implements
     ) {
         $this->resourcePopulatorLoader = $resourcePopulatorLoader;
         parent::__construct($entityManager, $entityPluginManager, $persistenceManager);
-    }
-
-    /**
-     * Begin a database transaction.
-     *
-     * @return void
-     * @throws Exception
-     */
-    public function beginTransaction(): void
-    {
-        $this->entityManager->getConnection()->beginTransaction();
-    }
-
-    /**
-     * Commit a database transaction.
-     *
-     * @return void
-     * @throws Exception
-     */
-    public function commitTransaction(): void
-    {
-        $this->entityManager->getConnection()->commit();
-    }
-
-    /**
-     * Roll back a database transaction.
-     *
-     * @return void
-     * @throws Exception
-     */
-    public function rollBackTransaction(): void
-    {
-        $this->entityManager->getConnection()->rollBack();
     }
 
     /**

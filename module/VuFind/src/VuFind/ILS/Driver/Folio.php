@@ -2599,7 +2599,7 @@ class Folio extends AbstractAPI implements
                 'amount' => $fine->amount * 100,
                 'balance' => $fine->remaining * 100,
                 'status' => $fine->paymentStatus->name,
-                'type' => $fine->feeFineType,
+                'fine' => $fine->feeFineType,
                 'title' => $title,
                 'createdate' => date_format($date, 'j M Y'),
             ];

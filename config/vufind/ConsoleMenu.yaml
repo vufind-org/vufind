@@ -75,7 +75,10 @@ main:
     - label: Configuration and Installation Tools
       type: menu
       contents:
-      - label: Manage VuFind installation
+      - label: Initialize VuFind® database
+        type: internal-command
+        command: install/database
+      - label: Manage VuFind® installation
         type: internal-command
         command: install/install
       - label: Manage the browscap cache
@@ -96,6 +99,9 @@ main:
       - label: Expire old access tokens in the database
         type: internal-command
         command: util/expire_access_tokens
+      - label: Expire old audit events in the database
+        type: internal-command
+        command: util/expire_audit_events
       - label: Expire old authentication hashes in the database
         type: internal-command
         command: util/expire_auth_hashes
