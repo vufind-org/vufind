@@ -101,6 +101,9 @@ if ($sourceNameEsc = $this->transEscWithPrefix('source_', $this->sourceIls, [], 
             if ($title = $fee->getTitle()) {
                 $descriptions[] = $title;
             }
+            if (!$descriptions) {
+              $descriptions[] = $this->translate('Payment::receipt_no_details_placeholder');
+            }
             $feeTotal += $fee->getAmount();
           ?>
           <tr>
