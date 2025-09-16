@@ -69,7 +69,7 @@ class FacetListFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         $fcpm = $container->get(\VuFind\Search\FacetCache\PluginManager::class);
-        $cm = $container->get(\VuFind\Config\PluginManager::class);
+        $cm = $container->get(\VuFind\Config\ConfigManagerInterface::class);
         return new $requestedName($fcpm, $cm);
     }
 }
