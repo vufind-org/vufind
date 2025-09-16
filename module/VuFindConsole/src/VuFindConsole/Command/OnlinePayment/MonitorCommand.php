@@ -258,8 +258,8 @@ class MonitorCommand extends Command
         if (time() - $payment->getPaidDate()->getTimestamp() > $this->retryMinutes * 60) {
             // Payment has expired
             $payment->applyRegistrationExpiredStatus();
-            $this->paymentService->persistEntity($payment);
-            $this->addPaymentEvent($payment, AuditEventSubtype::PaymentRegistration, 'Marked as expired');
+            $this->onlinePaymentManager
+                ->persistEntityWithAuditEvent($payment, AuditEventSubtype::PaymentRegistration, 'Marked as expired');
             $this->msg('Payment ' . $payment->getLocalIdentifier() . ' marked as expired.');
             return;
         }
