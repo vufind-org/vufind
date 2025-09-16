@@ -35,7 +35,7 @@
               <div class="resultItemLine1">
                 <?php if ('Ti' == $item['Group']): ?>
                   <h2>
-                    <a href="<?=$this->escapeHtmlAttr($recordLinker->getUrl($this->driver))?>" class="title getFull _record_link"  data-view="<?=$this->escapeHtmlAttr($this->params->getOptions()->getListViewOption())?>">
+                    <a href="<?=$this->escapeHtmlAttr($recordLinker->getUrl($this->driver))?>" class="title getFull _record_link"  data-view="<?=$this->escapeHtmlAttr($this->params->getOptions()->getListViewOption())?>" id="<?=$this->record($this->driver)->getUniqueHtmlElementId()?>">
                     <?=$item['Data']?> </a>
                   </h2>
                 <?php elseif ('Au' == $item['Group'] && strtolower($edsConfig->AuthorDisplay->ResultListFormat ?? 'Short') == 'short'): ?>
