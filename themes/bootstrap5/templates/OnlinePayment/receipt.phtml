@@ -63,7 +63,9 @@ if ($sourceNameEsc = $this->transEscWithPrefix('source_', $this->sourceIls, [], 
               <?=$this->transEsc('Payment::Contact Information')?>
             </th>
             <td>
-              <?php if (preg_match('/^https?:\/\/([^\s]+)$/', $this->contactInfo, $matches)): ?>
+              <?php if (preg_match('/^(https?:\/\/.+)\|(.+)$/', $this->contactInfo, $matches)): ?>
+                <a href="<?=$this->escapeHtmlAttr($matches[1])?>"><?=$this->escapeHtml($matches[2])?></a>
+              <?php elseif (preg_match('/^https?:\/\/([^\s]+)$/', $this->contactInfo, $matches)): ?>
                 <a href="<?=$this->escapeHtmlAttr($this->contactInfo)?>"><?=$this->escapeHtml($matches[1])?></a>
               <?php else: ?>
                 <?=$this->escapeHtml($this->contactInfo)?>
