@@ -1331,7 +1331,6 @@ abstract class Options implements TranslatorAwareInterface
         return $this->getSearchClassId();
     }
 
-
     /**
      * Is first/last navigation supported by the backend
      *
