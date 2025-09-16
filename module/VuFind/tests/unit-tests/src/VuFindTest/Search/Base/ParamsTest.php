@@ -53,40 +53,8 @@ use VuFindSearch\Query\Query;
 class ParamsTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\ConfigRelatedServicesTrait;
+    use \VuFindTest\Feature\MockSearchOptionsTrait;
     use \VuFindTest\Feature\ReflectionTrait;
-
-    /**
-     * Get mock Options object
-     *
-     * @param ?ConfigManagerInterface $configManager Config manager for Options object (null
-     * for new mock)
-     *
-     * @return Options
-     */
-    protected function getMockOptions(?ConfigManagerInterface $configManager = null): Options
-    {
-        return new class ($configManager) extends Options {
-            /**
-             * Return the route name for the search results action.
-             *
-             * @return string
-             */
-            public function getSearchAction()
-            {
-                return '';
-            }
-
-            /**
-             * Get the identifier used for naming the various search classes in this family.
-             *
-             * @return string
-             */
-            public function getSearchClassId()
-            {
-                return 'Mock';
-            }
-        };
-    }
 
     /**
      * Get mock Params object
