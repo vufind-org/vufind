@@ -81,8 +81,8 @@
 #                               In addition, the following setting is required:
 #                               - onlyForLoggedUsers = true (barcode is available only for logged users)
 #   help
-#     pre (string)  Help text displayed at the beginning of the form (translation key).
-#     post (string) Help text displayed at the end of the form (translation key)
+#     pre (string|array)  Help text displayed at the beginning of the form (translation key) or an array of translation keys.
+#     post (string|array) Help text displayed at the end of the form (translation key) or an array of translation keys
 #
 #     Help texts may contain HTML-formatting.
 #
