@@ -817,9 +817,9 @@ class Params
      * Build a string for onscreen display showing the
      *   query used in the search (not the filters).
      *
-     * @return ?string user friendly version of 'query'
+     * @return string user friendly version of 'query'
      */
-    public function getDisplayQuery(): ?string
+    public function getDisplayQuery(): string
     {
         // Set up callbacks:
         $translate = [$this, 'translate'];
