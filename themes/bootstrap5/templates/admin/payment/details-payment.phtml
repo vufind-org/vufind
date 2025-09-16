@@ -1,3 +1,5 @@
+<?=$this->component('page-title', ['title' => $this->translate('Payment::Payment'), 'level' => 2, 'lightboxLevel' => 3]);?>
+
 <table class="table table-striped">
   <tr>
     <th><?=$this->transEsc('Payment::ID')?></th>
@@ -18,6 +20,10 @@
   <tr>
     <th><?=$this->transEsc('Payment::Username')?></th>
     <td><?=$this->escapeHtml($paymentEntity->getCatUsername())?></td>
+  </tr>
+  <tr>
+    <th><?=$this->transEsc('Payment::Total')?></th>
+    <td><?=$this->safeMoneyFormat($paymentEntity->getAmount() / 100.00) ?></td>
   </tr>
   <tr>
     <th><?=$this->transEsc('Payment::Created')?></th>

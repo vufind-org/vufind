@@ -167,7 +167,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
         );
         // Test cancel from dialog:
         $this->clickCss($page, '.js-pay-selected');
-        $this->assertLightboxTitle($page, 'Accept Terms to Continue Payment');
+        $this->assertLightboxTitle($page, 'Accept terms to continue payment');
         $this->clickCss($page, '#modal .btn.btn-primary');
         $this->assertEquals(
             'Pay Online',
@@ -224,7 +224,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
 
         if ($receiptEnabled) {
             $this->assertStringStartsWith(
-                'Last Paid: $15.00',
+                'Last paid: $15.00',
                 $this->findCssAndGetText($page, '.last-payment-information')
             );
         } else {
@@ -380,7 +380,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
         $this->checkForMissingDevTools($page);
 
         $this->assertStringStartsWith(
-            'Last Paid: $15.00',
+            'Last paid: $15.00',
             $this->findCssAndGetText($page, '.last-payment-information')
         );
     }
@@ -479,7 +479,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
                 [
                     'minimumFee' => '5000',
                 ],
-                'Minimum Payable Amount: $50.00',
+                'Minimum payable amount: $50.00',
             ],
         ];
     }

@@ -89,6 +89,7 @@ $this->headTitle($this->translate('VuFind Administration - Online Payment Manage
           <th scope="col"><?=$this->transEsc('Payment::Remote Identifier')?></th>
           <th scope="col"><?=$this->transEsc('Payment::ILS')?></th>
           <th scope="col"><?=$this->transEsc('Payment::Username')?></th>
+          <th scope="col"><?=$this->transEsc('Payment::Total')?></th>
           <th scope="col"><?=$this->transEsc('Payment::Created')?></th>
           <th scope="col"><?=$this->transEsc('Payment::Paid')?></th>
           <th scope="col"><?=$this->transEsc('Payment::Status')?></th>
@@ -113,6 +114,9 @@ $this->headTitle($this->translate('VuFind Administration - Online Payment Manage
             </td>
             <td data-label="<?=$this->transEscAttr('Payment::Username')?>">
               <?=$this->escapeHtml($paymentEntity->getCatUsername())?>
+            </td>
+            <td data-label="<?=$this->transEscAttr('Payment::Total')?>">
+              <?=$this->safeMoneyFormat($paymentEntity->getAmount() / 100.00) ?>
             </td>
             <td class="date-time" data-label="<?=$this->transEscAttr('Payment::Created')?>">
               <?=$this->dateTime()->convertToDisplayDateAndTime('U', $paymentEntity->getCreated()->getTimestamp())?>

@@ -33,6 +33,7 @@ namespace VuFindAdmin\Controller;
 
 use DateTime;
 use VuFind\Db\Service\AuditEventServiceInterface;
+use VuFind\Db\Service\PaymentFeeServiceInterface;
 use VuFind\Db\Service\PaymentServiceInterface;
 use VuFind\Db\Type\AuditEventSubtype;
 use VuFind\Db\Type\PaymentStatus;
@@ -99,10 +100,29 @@ class OnlinePaymentController extends AbstractAdmin
         $this->setFollowupUrlToReferer();
 
         $paymentService = $this->getDbService(PaymentServiceInterface::class);
+        $paymentFeeService = $this->getDbService(PaymentFeeServiceInterface::class);
         $auditEventService = $this->getDbService(AuditEventServiceInterface::class);
         $paymentEntity = $paymentService->getPaymentById($id);
+
+        // Check if we have recipient organizations:
+        $feeSpecificOrganizations = false;
+        if ($paymentEntity) {
+            $fees = $paymentFeeService->getFeesForPayment($paymentEntity);
+            foreach ($fees as $fee) {
+                $feeOrg = $fee->getOrganization();
+                if ($feeOrg) {
+                    $feeSpecificOrganizations = true;
+                    break;
+                }
+            }
+        } else {
+            $fees = [];
+        }
+
         $view = $this->createViewModel([
             'paymentEntity' => $paymentEntity,
+            'paymentFees' => $fees,
+            'feeSpecificOrganizations' => $feeSpecificOrganizations,
             'paymentEvents' => $paymentEntity ? $auditEventService->getEvents(payment: $paymentEntity) : [],
             'statuses' => $this->getStatuses(),
         ]);
@@ -214,7 +234,7 @@ class OnlinePaymentController extends AbstractAdmin
     {
         return [
             PaymentStatus::InProgress->value => 'In Progress',
-            PaymentStatus::Completed->value => 'Successfully Completed',
+            PaymentStatus::Completed->value => 'Completed',
             PaymentStatus::Canceled->value => 'Canceled',
             PaymentStatus::Paid->value => 'Waiting for ILS Registration',
             PaymentStatus::PaymentFailed->value => 'Payment Failed',
