@@ -57,7 +57,7 @@ use function count;
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 #[AsCommand(
-    name: 'online_payment/monitor'
+    name: 'onlinepayment/monitor'
 )]
 class MonitorCommand extends Command
 {
