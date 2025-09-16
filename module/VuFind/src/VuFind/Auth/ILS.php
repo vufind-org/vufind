@@ -154,7 +154,7 @@ class ILS extends AbstractBase
      */
     public function getPasswordPolicy(?string $target = null): array
     {
-        // If a target is specified, use an arbitrary cat_username with the corrent target prefix:
+        // If a target is specified, use an arbitrary cat_username with the current target prefix:
         $patron = $target ? ['cat_username' => "$target.123"] : $this->getLoggedInPatron();
         $policy = $this->getCatalog()->getPasswordPolicy($patron);
         if ($policy === false) {

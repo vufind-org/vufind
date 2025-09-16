@@ -175,7 +175,7 @@ class MapTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test construction of map-coordinates adn labels.
+     * Test construction of map-coordinates and labels.
      *
      * @return void
      */

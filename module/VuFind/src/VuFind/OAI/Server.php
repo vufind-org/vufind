@@ -522,7 +522,7 @@ class Server
      * @param AbstractRecordDriver $record A record driver object
      * @param string               $format Metadata format to obtain
      *
-     * @return string|false String or false if an error occured
+     * @return string|false String or false if an error occurred
      */
     protected function getRecordAsXML(AbstractRecordDriver $record, string $format): string|false
     {

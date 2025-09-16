@@ -21,7 +21,7 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Reccomend
+ * @package  Recommend
  * @author   Chris Hallberg <challber@villanova.edu>
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
@@ -36,7 +36,7 @@ use VuFind\Search\Base\Results;
  * Trait for date facet processing.
  *
  * @category VuFind
- * @package  Reccomend
+ * @package  Recommend
  * @author   Chris Hallberg <challber@villanova.edu>
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License

@@ -133,7 +133,7 @@ class RecordCoverImageTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool    $ajaxcovers            Should we use AJAX covers?
      * @param string  $expectedImage         Expected image URL (minus base path)
      * @param ?string $expectedBacklink      Expected backlink text (null for none)
-     * @param string  $noCoverAvailableImage Image to load if unavaiable (empty for none)
+     * @param string  $noCoverAvailableImage Image to load if unavailable (empty for none)
      *
      * @return void
      *

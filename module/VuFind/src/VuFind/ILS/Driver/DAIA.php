@@ -999,7 +999,7 @@ class DAIA extends AbstractBase implements
 
     /**
      * Helper function to determine if item is recallable.
-     * DAIA does not genuinly allow distinguishing between holdable and recallable
+     * DAIA does not genuinely allow distinguishing between holdable and recallable
      * items. This could be achieved by usage of limitations but this would not be
      * shared functionality between different DAIA implementations (thus should be
      * implemented in custom drivers). Therefore this returns whether an item
@@ -1096,7 +1096,7 @@ class DAIA extends AbstractBase implements
 
     /**
      * Helper function to determine the holdtype available for current item.
-     * DAIA does not genuinly allow distinguishing between holdable and recallable
+     * DAIA does not genuinely allow distinguishing between holdable and recallable
      * items. This could be achieved by usage of limitations but this would not be
      * shared functionality between different DAIA implementations (thus should be
      * implemented in custom drivers). Therefore getHoldType always returns recall.
