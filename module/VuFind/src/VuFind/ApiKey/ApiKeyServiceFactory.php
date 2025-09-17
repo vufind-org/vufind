@@ -72,7 +72,7 @@ class ApiKeyServiceFactory implements FactoryInterface
         }
         return new $requestedName(
             $container->get(PluginManager::class)->get(ApiKeyService::class),
-            $container->get(ConfigManager::class)->getConfigArray('config/API_Keys')
+            $container->get(ConfigManager::class)->getConfigArray('config')['API_Keys'] ?? []
         );
     }
 }
