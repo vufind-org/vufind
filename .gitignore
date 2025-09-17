@@ -15,8 +15,6 @@ local/config/vufind/*
 composer.phar
 /downloads
 node_modules
-themes/bootstrap5/css/vendor
-themes/bootstrap5/js/vendor
 themes/bootstrap5/scss/vendor
 /vendor
 
