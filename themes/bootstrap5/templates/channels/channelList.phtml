@@ -114,7 +114,7 @@
       <?php
         $limit = $channel['limit'] ?? 6;
         $disabled = $channel['resultTotal']
-          ? $channel['resultTotal'] <= $limit
+          ? $channel['resultTotal'] != -1 && $channel['resultTotal'] <= $limit
           : count($channel['contents']) < $limit;
       ?>
       <a
