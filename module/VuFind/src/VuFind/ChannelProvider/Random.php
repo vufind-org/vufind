@@ -162,6 +162,7 @@ class Random extends AbstractChannelProvider implements TranslatorAwareInterface
         $retVal = [
             'title' => $this->translate('random_recommendation_title'),
             'providerId' => $this->providerId,
+            'limit' => $this->channelSize ?? 6,
         ];
         $query = $params->getQuery();
         $paramBag = $params->getBackendParameters();

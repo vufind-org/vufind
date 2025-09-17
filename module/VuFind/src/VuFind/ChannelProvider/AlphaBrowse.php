@@ -282,6 +282,7 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
             ),
             'providerId' => $this->providerId,
             'links' => [],
+            'limit' => $this->channelSize ?? 6,
         ];
         $raw = $driver->getRawData();
         $from = isset($raw[$this->solrField]) ? (array)$raw[$this->solrField] : null;

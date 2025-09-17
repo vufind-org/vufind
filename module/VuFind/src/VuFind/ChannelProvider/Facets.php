@@ -273,6 +273,7 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
             'groupId' => current(explode(':', $filter)),
             'token' => $this->getToken($filter, $title),
             'links' => [],
+            'limit' => $this->channelSize,
         ];
         if ($tokenOnly) {
             return $retVal;
@@ -301,10 +302,10 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
         // Add pagination
         $pagedParams = $newResults->getParams();
         $request = new HttpRequest();
-        if ($page = $request->getQuery('page', false)) {
+        if ($page = $request->getQuery('page', 1)) {
             $pagedParams->setPage($page);
         }
-        if ($limit = $request->getQuery('limit', $this->channelSize)) {
+        if ($limit = $request->getQuery('limit', $this->channelSize ?? 6)) {
             $pagedParams->setLimit($limit);
         }
         $newResults->setParams($pagedParams);

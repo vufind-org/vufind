@@ -152,6 +152,7 @@ class NewSearchItems extends AbstractChannelProvider implements TranslatorAwareI
         $retVal = [
             'title' => $this->translate('New Items'),
             'providerId' => $this->providerId,
+            'limit' => $this->channelSize ?? 6,
         ];
         $params->addHiddenFilter($this->newItems->getSolrFilter($this->maxAge));
         $params->setSort($this->sort, true);

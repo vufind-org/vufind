@@ -209,33 +209,39 @@ class SimilarItems extends AbstractChannelProvider implements TranslatorAwareInt
             'title' => "{$heading}: {$driver->getBreadcrumb()}",
             'providerId' => $this->providerId,
             'links' => [],
+            'token' => $driver->getUniqueID(),
+            'limit' => $this->channelSize ?? 6,
         ];
+
         if ($tokenOnly) {
-            $retVal['token'] = $driver->getUniqueID();
-        } else {
-            $params = new \VuFindSearch\ParamBag(['rows' => $this->channelSize]);
-            $command = new SimilarCommand(
-                $driver->getSourceIdentifier(),
-                $driver->getUniqueID(),
-                $params
-            );
-            $similar = $this->searchService->invoke($command)->getResult();
-            $retVal['contents'] = $this->summarizeRecordDrivers($similar);
-            $route = $this->recordRouter->getRouteDetails($driver);
-            $retVal['links'][] = [
-                'label' => 'View Record',
-                'icon' => 'fa-file-text-o',
-                'url' => $this->url
-                    ->fromRoute($route['route'], $route['params']),
-            ];
-            $retVal['links'][] = [
-                'label' => 'channel_expand',
-                'icon' => 'fa-search-plus',
-                'url' => $this->url->fromRoute('channels-record')
-                    . '?id=' . urlencode($driver->getUniqueID())
-                    . '&source=' . urlencode($driver->getSourceIdentifier()),
-            ];
+            return $retVal;
         }
+
+        $params = new \VuFindSearch\ParamBag(['rows' => $this->channelSize]);
+        $command = new SimilarCommand(
+            $driver->getSourceIdentifier(),
+            $driver->getUniqueID(),
+            $params
+        );
+        $similar = $this->searchService->invoke($command)->getResult();
+        $retVal['contents'] = $this->summarizeRecordDrivers($similar);
+
+        $route = $this->recordRouter->getRouteDetails($driver);
+        $retVal['links'][] = [
+            'label' => 'View Record',
+            'icon' => 'fa-file-text-o',
+            'url' => $this->url
+                ->fromRoute($route['route'], $route['params']),
+        ];
+
+        $retVal['links'][] = [
+            'label' => 'channel_expand',
+            'icon' => 'fa-search-plus',
+            'url' => $this->url->fromRoute('channels-record')
+                . '?id=' . urlencode($driver->getUniqueID())
+                . '&source=' . urlencode($driver->getSourceIdentifier()),
+        ];
+
         return $retVal;
     }
 }
