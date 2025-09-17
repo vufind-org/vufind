@@ -272,8 +272,8 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
             'providerId' => $this->providerId,
             'groupId' => current(explode(':', $filter)),
             'token' => $this->getToken($filter, $title),
-            'links' => [],
             'limit' => $this->channelSize,
+            'links' => [],
         ];
         if ($tokenOnly) {
             return $retVal;
@@ -312,8 +312,8 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
 
         // Run the search and convert the results into a channel:
         $newResults->performAndProcessSearch();
-        $retVal['contents']
-            = $this->summarizeRecordDrivers($newResults->getResults());
+        $retVal['contents'] = $this->summarizeRecordDrivers($newResults->getResults());
+        $retVal['resultTotal'] = $newResults->getResultTotal();
         return $retVal;
     }
 
