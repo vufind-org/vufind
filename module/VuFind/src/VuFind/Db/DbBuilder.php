@@ -176,6 +176,7 @@ class DbBuilder
     protected function getRootDatabaseConnection(
         string $driver,
         string $dbHost,
+        string $dbPort,
         string $rootUser,
         string $rootPass,
         ?string $dbName = null
@@ -186,6 +187,7 @@ class DbBuilder
             [
                 'driver' => $this->dbFactory->getDriverName($driver),
                 'host' => $dbHost,
+                'port' => $dbPort,
                 'user' => $rootUser,
                 'password' => $rootPass,
                 'dbname' => $dbName,
@@ -223,8 +225,14 @@ class DbBuilder
         bool $returnSqlOnly = false,
         array $steps = []
     ): string {
+        $dbPort = 3306;
+        if (str_contains($dbHost, ':')) {
+            $dbHost = explode(':', $dbHost);
+            $dbPort = $dbHost[1];
+            $dbHost = $dbHost[0];
+        }
         try {
-            $db = $returnSqlOnly ? null : $this->getRootDatabaseConnection($driver, $dbHost, $rootUser, $rootPass);
+            $db = $returnSqlOnly ? null : $this->getRootDatabaseConnection($driver, $dbHost, $dbPort, $rootUser, $rootPass);
         } catch (\Exception $e) {
             throw new \Exception(
                 'Problem initializing database adapter; '
@@ -260,7 +268,7 @@ class DbBuilder
             if ($db) {
                 // If we're already connected to the database, we should reconnect now using the name of
                 // the newly created database.
-                $db = $this->getRootDatabaseConnection($driver, $dbHost, $rootUser, $rootPass, $newName);
+                $db = $this->getRootDatabaseConnection($driver, $dbHost, $dbPort, $rootUser, $rootPass, $newName);
                 $statements = $this->migrationLoader->splitSqlIntoStatements($sql);
                 foreach ($statements as $current) {
                     $db->executeQuery($current);
