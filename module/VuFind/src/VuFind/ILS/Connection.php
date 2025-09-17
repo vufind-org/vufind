@@ -197,7 +197,6 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         $this->configReader = $configReader;
         $this->driverManager = $driverManager;
         $this->request = $request;
-        error_reporting(E_ALL ^ E_DEPRECATED);
     }
 
     /**
