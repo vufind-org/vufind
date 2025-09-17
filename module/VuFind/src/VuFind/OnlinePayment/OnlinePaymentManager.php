@@ -32,10 +32,10 @@ declare(strict_types=1);
 namespace VuFind\OnlinePayment;
 
 use Laminas\Http\PhpEnvironment\Response;
-use Laminas\Log\LoggerAwareInterface;
 use Laminas\Session\Container as SessionContainer;
 use Laminas\Session\SessionManager;
 use Laminas\Stdlib\RequestInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Db\Entity\PaymentEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
