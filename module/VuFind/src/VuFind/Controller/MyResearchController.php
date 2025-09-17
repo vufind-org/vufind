@@ -528,7 +528,7 @@ class MyResearchController extends AbstractBase
         }
 
         // If we didn't find an already-saved row, let's save and retry:
-        if (!($savedRow->saved ?? false)) {
+        if (!($savedRow->getSaved() ?? false)) {
             $this->setSavedFlagSecurely($sid, true, $user);
             $savedRow = $this->getSearchRowSecurely($sid, $userId);
         }
@@ -2209,7 +2209,7 @@ class MyResearchController extends AbstractBase
                 'error_inconsistent_parameters'
             );
         }
-        $this->getAuthManager()->deleteUserLoginTokens($this->getUser()->id);
+        $this->getAuthManager()->deleteUserLoginTokens($this->getUser()->getId());
         return $this->redirect()->toRoute('myresearch-profile');
     }
 
