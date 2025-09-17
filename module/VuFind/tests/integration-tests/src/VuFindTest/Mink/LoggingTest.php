@@ -31,6 +31,8 @@ namespace VuFindTest\Mink;
 
 use VuFindTest\Integration\MinkTestCase;
 
+use function count;
+
 /**
  * Logging integration test.
  *
@@ -45,17 +47,31 @@ class LoggingTest extends MinkTestCase
     use \VuFindTest\Feature\EmailTrait;
 
     /**
-     * Data provider for logging test scenarios
+     * Data provider for email logging test scenarios
      *
      * @return array
      */
     public static function emailLoggingScenarioProvider(): array
     {
         return [
-            'error_and_alert_logging' => [
+            'debug_error_and_alert_logging' => [
+                'emailConfig'        => 'alerts@myuniversity.edu:debug-5,alert-5,error-5',
+                'expectedPatterns'   => [
+                    '/CRITICAL:/',
+                    '/404 Not Found/',
+                    '/RequestErrorException/',
+                    '/VuFindSearch\\\\Backend\\\\Exception/',
+                    '/Search\/Results.*lookfor.*test/',
+                    '/DEBUG:/',
+                ],
+                'unexpectedPatterns' => [
+                ],
+                'minEmails'          => 4,
+                'description'         => 'Should log critical errors when Solr connection fails',
+            ],
+            'error_and_alert_logging_only' => [
                 'emailConfig'        => 'alerts@myuniversity.edu:alert-5,error-5',
                 'expectedPatterns'   => [
-                    '/VuFind Log Alert/',
                     '/CRITICAL:/',
                     '/404 Not Found/',
                     '/RequestErrorException/',
@@ -72,42 +88,91 @@ class LoggingTest extends MinkTestCase
             'debug_logging_only'      => [
                 'emailConfig'        => 'debug@myuniversity.edu:debug-5',
                 'expectedPatterns'   => [
-                    '/VuFind Log Alert/',
                     '/DEBUG:/',
                 ],
                 'unexpectedPatterns' => [
                     '/CRITICAL:/',
                 ],
-                'minEmails'          => 1,
+                'minEmails'          => 3,
                 'description'         => 'Should capture debug messages when debug logging is enabled',
             ],
             'minimal_detail_level'    => [
                 'emailConfig'        => 'alerts@myuniversity.edu:error-1',
                 'expectedPatterns'   => [
-                    '/VuFind Log Alert/',
                     '/CRITICAL:/',
                     '/404 Not Found/',
                 ],
                 'unexpectedPatterns' => [
                     '/Backtrace:/',
+                    '/\(Server: IP =/',
                     '/Server Context:/',
                     '/Array/',
+                    '/args:/',
                 ],
                 'minEmails'          => 1,
                 'description'         => 'Should provide minimal detail at level 1',
             ],
+            'detail_level_2'    => [
+                'emailConfig'        => 'alerts@myuniversity.edu:error-2',
+                'expectedPatterns'   => [
+                    '/CRITICAL:/',
+                    '/404 Not Found/',
+                    '/\(Server: IP =/',
+                ],
+                'unexpectedPatterns' => [
+                    '/Backtrace:/',
+                    '/Server Context:/',
+                    '/Array/',
+                    '/args:/',
+                ],
+                'minEmails'          => 1,
+                'description'         => 'Should provide appropriate detail at level 2',
+            ],
+            'detail_level_3'    => [
+                'emailConfig'        => 'alerts@myuniversity.edu:error-3',
+                'expectedPatterns'   => [
+                    '/CRITICAL:/',
+                    '/404 Not Found/',
+                    '/\(Server: IP =/',
+                    '/Backtrace:/',
+                ],
+                'unexpectedPatterns' => [
+                    '/Server Context:/',
+                    '/Array/',
+                    '/args:/',
+                ],
+                'minEmails'          => 1,
+                'description'         => 'Should provide appropriate detail at level 3',
+            ],
+            'detail_level_4'    => [
+                'emailConfig'        => 'alerts@myuniversity.edu:error-4',
+                'expectedPatterns'   => [
+                    '/CRITICAL:/',
+                    '/404 Not Found/',
+                    '/Server Context:/',
+                    '/Backtrace:/',
+                ],
+                'unexpectedPatterns' => [
+                    '/\(Server: IP =/',
+                    '/args:/',
+                ],
+                'minEmails'          => 1,
+                'description'         => 'Should provide appropriate detail at level 4',
+            ],
             'maximum_detail_level'    => [
                 'emailConfig'        => 'alerts@myuniversity.edu:error-5',
                 'expectedPatterns'   => [
-                    '/VuFind Log Alert/',
                     '/CRITICAL:/',
                     '/404 Not Found/',
                     '/Backtrace:/',
                     '/Server Context:/',
                     '/HTTP_USER_AGENT/',
                     '/REQUEST_URI/',
+                    '/args:/',
                 ],
-                'unexpectedPatterns' => [],
+                'unexpectedPatterns' => [
+                    '/\(Server: IP =/',
+                ],
                 'minEmails'          => 1,
                 'description'         => 'Should provide maximum detail at level 5',
             ],
@@ -160,6 +225,7 @@ class LoggingTest extends MinkTestCase
         $this->findCss($page, 'body');
 
         $loggedEmails = $this->getLoggedEmails();
+        $this->assertGreaterThanOrEqual($minEmails, count($loggedEmails));
         $allEmailContent = preg_replace(
             '/=[\r\n]+/',
             '',
@@ -174,6 +240,7 @@ class LoggingTest extends MinkTestCase
             $description . ': Expected to receive log email'
         );
 
+        $expectedPatterns[] = '/VuFind Log Alert/'; // every email contains this string
         foreach ($expectedPatterns as $pattern) {
             $this->assertMatchesRegularExpression(
                 $pattern,
@@ -223,6 +290,100 @@ class LoggingTest extends MinkTestCase
             $allEmailBodies,
             'Email body should contain the HTTP error'
         );
+    }
+
+    /**
+     * Data provider for file logging test scenarios
+     *
+     * @return array
+     */
+    public static function fileLoggingScenarioProvider(): array
+    {
+        // Transform the email test cases into file test cases:
+        return array_map(
+            function ($case) {
+                $configParts = explode(':', $case['emailConfig']);
+                $logSettings = array_pop($configParts);
+                // Generate a random filename in the cache, to be sure the server has
+                // permission to write there, and to keep each test's log distinct.
+                $filename = LOCAL_CACHE_DIR . '/' . uniqid() . '.log';
+                return [
+                    'loggingConfig' => "$filename:$logSettings",
+                    'expectedPatterns' => $case['expectedPatterns'],
+                    'unexpectedPatterns' => $case['unexpectedPatterns'],
+                    'description' => $case['description'],
+                ];
+            },
+            static::emailLoggingScenarioProvider()
+        );
+    }
+
+    /**
+     * Test file logging functionality with various configurations
+     *
+     * @param string $loggingConfig      Logging configuration string
+     * @param array  $expectedPatterns   Patterns that should be found in log
+     * @param array  $unexpectedPatterns Patterns that should NOT be found in log
+     * @param string $description        Test scenario description
+     *
+     * @return void
+     *
+     * @dataProvider fileLoggingScenarioProvider
+     */
+    public function testFileLogging(
+        string $loggingConfig,
+        array $expectedPatterns,
+        array $unexpectedPatterns,
+        string $description
+    ): void {
+        $this->changeConfigs([
+            'config' => [
+                'Index'   => [
+                    'url' => 'http://localhost:8983/not-solr',
+                ],
+                'Mail'    => [
+                    'testOnly'           => true,
+                    'message_log'        => $this->getEmailLogPath(),
+                    'message_log_format' => $this->getEmailLogFormat(),
+                ],
+                'Logging' => [
+                    'file' => $loggingConfig,
+                ],
+            ],
+        ]);
+
+        [$filename] = explode(':', $loggingConfig);
+
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Results?lookfor=test');
+        $page = $session->getPage();
+
+        // Wait for logging to complete
+        $this->findCss($page, 'body');
+
+        $logContent = file_get_contents($filename);
+
+        // Basic assertions
+        $this->assertNotEmpty(
+            $logContent,
+            $description . ': Expected to have log messages'
+        );
+
+        foreach ($expectedPatterns as $pattern) {
+            $this->assertMatchesRegularExpression(
+                $pattern,
+                $logContent,
+                $description . ': Expected pattern not found: ' . $pattern
+            );
+        }
+
+        foreach ($unexpectedPatterns as $pattern) {
+            $this->assertDoesNotMatchRegularExpression(
+                $pattern,
+                $logContent,
+                $description . ': Unexpected pattern found: ' . $pattern
+            );
+        }
     }
 
     /**
