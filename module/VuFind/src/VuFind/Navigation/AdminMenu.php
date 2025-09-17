@@ -99,6 +99,11 @@ class AdminMenu extends AbstractMenu
                         'route' => 'admin/overdrive',
                         'checkMethod' => 'checkShowOverdrive',
                     ],
+                    [
+                        'name' => 'payment',
+                        'label' => 'Online Payment',
+                        'route' => 'admin/payment',
+                    ],
                 ],
             ],
         ];

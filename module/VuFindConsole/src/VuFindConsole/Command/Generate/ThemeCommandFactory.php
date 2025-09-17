@@ -64,8 +64,7 @@ class ThemeCommandFactory extends AbstractCommandFactory
         $requestedName,
         ?array $options = null
     ) {
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
         return new $requestedName(
             $container->get(\VuFindTheme\ThemeGenerator::class),
             $config,

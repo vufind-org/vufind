@@ -312,7 +312,7 @@ class Mailer implements
             if ($logFile = $this->options['message_log'] ?? null) {
                 $format = $this->options['message_log_format'] ?? 'plain';
                 $data = 'serialized' === $format
-                    ? serialize($email) . "\x1E" // use Record Separator to separate messages
+                    ? serialize($email) . "\x1E\x00" // use Record Separator + null to separate messages
                     : $email->toString() . "\n\n";
                 file_put_contents($logFile, $data, FILE_APPEND);
             }

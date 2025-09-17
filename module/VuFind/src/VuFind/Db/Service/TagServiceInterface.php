@@ -89,7 +89,7 @@ interface TagServiceInterface extends DbServiceInterface
      * @param string $text          Tag text to match
      * @param bool   $caseSensitive Should tags be retrieved case-sensitively?
      *
-     * @return TagsEntityInterface[]
+     * @return ?TagsEntityInterface
      */
     public function getTagByText(string $text, bool $caseSensitive = false): ?TagsEntityInterface;
 
@@ -202,6 +202,16 @@ interface TagServiceInterface extends DbServiceInterface
         UserEntityInterface|int|null $ownerOrId = null,
         bool $caseSensitive = false
     ): array;
+
+    /**
+     * Merge source tag into target tag.
+     *
+     * @param TagsEntityInterface $target Target tag
+     * @param TagsEntityInterface $source Source tag
+     *
+     * @return void
+     */
+    public function mergeTags(TagsEntityInterface $target, TagsEntityInterface $source): void;
 
     /**
      * Get a list of duplicate tags (this should never happen, but past bugs and the introduction of case-insensitive

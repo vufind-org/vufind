@@ -60,6 +60,20 @@ trait LoggerAwareTrait
     }
 
     /**
+     * Log an exception
+     *
+     * @param \Exception $exception Exception to log
+     *
+     * @return void
+     */
+    public function logException(\Exception $exception): void
+    {
+        if ($this->logger instanceof \VuFind\Log\Logger) {
+            $this->logger->logException($exception, new \Laminas\Stdlib\Parameters());
+        }
+    }
+
+    /**
      * Log a warning message.
      *
      * @param string $msg          Log message

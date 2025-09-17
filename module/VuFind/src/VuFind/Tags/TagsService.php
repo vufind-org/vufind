@@ -34,15 +34,13 @@ use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\TagsEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
-use VuFind\Db\Service\Feature\TransactionInterface;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
-use VuFind\Db\Table\DbTableAwareInterface;
-use VuFind\Db\Table\DbTableAwareTrait;
 use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
+use function count;
 use function is_array;
 
 /**
@@ -54,23 +52,21 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/ Wiki
  */
-class TagsService implements DbTableAwareInterface
+class TagsService
 {
-    use DbTableAwareTrait;
-
     /**
      * Constructor
      *
-     * @param TagServiceInterface                               $tagDbService        Tag database service
-     * @param ResourceTagsServiceInterface&TransactionInterface $resourceTagsService Resource/Tags database service
-     * @param UserListServiceInterface                          $userListService     User list database service
-     * @param ResourcePopulator                                 $resourcePopulator   Resource populator service
-     * @param int                                               $maxLength           Maximum tag length
-     * @param bool                                              $caseSensitive       Are tags case sensitive?
+     * @param TagServiceInterface          $tagDbService        Tag database service
+     * @param ResourceTagsServiceInterface $resourceTagsService Resource/Tags database service
+     * @param UserListServiceInterface     $userListService     User list database service
+     * @param ResourcePopulator            $resourcePopulator   Resource populator service
+     * @param int                          $maxLength           Maximum tag length
+     * @param bool                         $caseSensitive       Are tags case sensitive?
      */
     public function __construct(
         protected TagServiceInterface $tagDbService,
-        protected ResourceTagsServiceInterface&TransactionInterface $resourceTagsService,
+        protected ResourceTagsServiceInterface $resourceTagsService,
         protected UserListServiceInterface $userListService,
         protected ResourcePopulator $resourcePopulator,
         protected int $maxLength = 64,
@@ -212,13 +208,39 @@ class TagsService implements DbTableAwareInterface
     }
 
     /**
-     * Repair duplicate tags in the database (if any).
+     * Support method for fixDuplicateTags()
+     *
+     * @param string $tag           Tag to deduplicate.
+     * @param bool   $caseSensitive Treat tags as case-sensitive?
      *
      * @return void
      */
-    public function fixDuplicateTags(): void
+    protected function fixDuplicateTag($tag, $caseSensitive)
     {
-        $this->getDbTable('Tags')->fixDuplicateTags($this->caseSensitive);
+        // Make sure this really is a duplicate.
+        $result = $this->tagDbService->getTagsByText($tag, $caseSensitive);
+        if (count($result) < 2) {
+            return;
+        }
+
+        $first = current($result);
+        foreach ($result as $current) {
+            $this->tagDbService->mergeTags($first, $current);
+        }
+    }
+
+    /**
+     * Repair duplicate tags in the database (if any). Returns the number of tags merged.
+     *
+     * @return int
+     */
+    public function fixDuplicateTags(): int
+    {
+        $dupes = $this->getDuplicateTags();
+        foreach ($dupes as $dupe) {
+            $this->fixDuplicateTag($dupe['tag'], $this->caseSensitive);
+        }
+        return count($dupes);
     }
 
     /**
@@ -279,7 +301,7 @@ class TagsService implements DbTableAwareInterface
      *
      * @param string $text Tag text to match
      *
-     * @return TagsEntityInterface[]
+     * @return ?TagsEntityInterface
      */
     public function getTagByText(string $text): ?TagsEntityInterface
     {

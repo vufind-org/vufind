@@ -74,9 +74,6 @@ class ResultsFactory extends \VuFind\Search\Results\ResultsFactory
         $resourceService = $serviceManager->get(ResourceServiceInterface::class);
         $listService = $serviceManager->get(UserListServiceInterface::class);
         $tagsService = $container->get(TagsService::class);
-        $obj = parent::__invoke($container, $requestedName, [$resourceService, $listService, $tagsService]);
-        $init = new \LmcRbacMvc\Initializer\AuthorizationServiceInitializer();
-        $init($container, $obj);
-        return $obj;
+        return parent::__invoke($container, $requestedName, [$resourceService, $listService, $tagsService]);
     }
 }

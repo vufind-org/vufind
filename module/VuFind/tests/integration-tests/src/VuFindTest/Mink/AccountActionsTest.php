@@ -6,7 +6,7 @@
  * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
- * Copyright (C) The National Library of Finland 2022.
+ * Copyright (C) The National Library of Finland 2022-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -31,7 +31,8 @@
 
 namespace VuFindTest\Mink;
 
-use VuFind\Db\Table\User;
+use Doctrine\ORM\EntityManager;
+use VuFind\Db\Service\UserService;
 
 use function count;
 
@@ -329,8 +330,8 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->submitCatalogLoginForm($page, 'catuser', 'catpass');
 
         // Check the default library and possible values:
-        $userTable = $this->getTable(User::class);
-        $this->assertSame('', $userTable->getByUsername('username2')->getHomeLibrary());
+        $userService = $this->getDbService(UserService::class);
+        $this->assertSame('', $userService->getUserByUsername('username2')->getHomeLibrary());
         $this->assertEquals(
             '',
             $this->findCssAndGetValue($page, '#home_library')
@@ -355,9 +356,11 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#profile_form .btn');
         $this->waitForPageLoad($page);
         $this->assertEquals('B', $this->findCssAndGetValue($page, '#home_library'));
+        $entityManager = $this->getLiveDatabaseContainer()->get(EntityManager::class);
+        $entityManager->clear();
         $this->assertEquals(
             'B',
-            $userTable->getByUsername('username2')->getHomeLibrary()
+            $userService->getUserByUsername('username2')->getHomeLibrary()
         );
 
         // Change to "Always ask me":
@@ -368,7 +371,8 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
             ' ** ',
             $this->findCssAndGetValue($page, '#home_library')
         );
-        $this->assertNull($userTable->getByUsername('username2')->getHomeLibrary());
+        $entityManager->clear();
+        $this->assertNull($userService->getUserByUsername('username2')->getHomeLibrary());
 
         // Back to default:
         $this->findCssAndSetValue($page, '#home_library', '');
@@ -378,7 +382,8 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
             '',
             $this->findCssAndGetValue($page, '#home_library')
         );
-        $this->assertSame('', $userTable->getByUsername('username2')->getHomeLibrary());
+        $entityManager->clear();
+        $this->assertSame('', $userService->getUserByUsername('username2')->getHomeLibrary());
     }
 
     /**
@@ -518,44 +523,121 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Data provider for testRecoverILSPassword
+     *
+     * @return array
+     */
+    public static function recoverILSPasswordProvider(): array
+    {
+        return [
+            [false, false],
+            [false, true],
+            [true, false],
+            [true, true],
+        ];
+    }
+
+    /**
      * Test recovering an ILS password.
      *
+     * @param bool $multiBackend Test with MultiBackend driver?
+     * @param bool $choiceAuth   Test with ChoiceAuth?
+     *
      * @return void
+     *
+     * @dataProvider recoverILSPasswordProvider
      */
-    public function testRecoverILSPassword(): void
+    public function testRecoverILSPassword(bool $multiBackend, bool $choiceAuth): void
     {
-        $this->changeConfigs(
-            [
-                'config' => [
-                    'Authentication' => [
-                        'recover_password' => true,
-                        'recover_interval' => 0,
-                        'method' => 'ILS',
-                    ],
-                    'Catalog' => [
-                        'driver' => 'Demo',
-                    ],
-                    'Mail' => [
-                        'testOnly' => true,
-                        'message_log' => $this->getEmailLogPath(),
-                        'message_log_format' => $this->getEmailLogFormat(),
+        $configs = [
+            'config' => [
+                'Authentication' => [
+                    'change_password' => false,
+                    'recover_password' => true,
+                    'recover_interval' => 0,
+                ],
+                'Catalog' => [
+                    'driver' => 'Demo',
+                ],
+                'Mail' => [
+                    'testOnly' => true,
+                    'message_log' => $this->getEmailLogPath(),
+                    'message_log_format' => $this->getEmailLogFormat(),
+                ],
+                'MultiAuth' => [
+                    'method_order' => 'Database',
+                ],
+            ],
+            'MultiBackend' => [
+                'General' => [
+                    'default_driver' => 'norecovery',
+                ],
+                'Drivers' => [
+                    'norecovery' => 'Demo',
+                    'recovery' => 'Demo',
+                ],
+                'Login' => [
+                    'default_driver' => 'norecovery',
+                    'drivers' => [
+                        'norecovery',
+                        'recovery',
                     ],
                 ],
-                'Demo' => $this->getDemoIniOverrides() + [
-                    'PasswordRecovery' => [
-                        'enabled' => true,
-                    ],
+            ],
+            'Demo' => $this->getDemoIniOverrides() + [
+                'PasswordRecovery' => [
+                    'enabled' => true,
                 ],
-            ]
-        );
+            ],
+            'Demo:norecovery' => $this->getDemoIniOverrides(),
+            'Demo:recovery' => $this->getDemoIniOverrides() + [
+                'PasswordRecovery' => [
+                    'enabled' => true,
+                ],
+            ],
+        ];
+        if ($multiBackend) {
+            $configs['config']['Authentication']['method'] = $choiceAuth ? 'ChoiceAuth' : 'MultiILS';
+            // Use MultiAuth as default as it does not support password recovery:
+            $configs['config']['ChoiceAuth']['choice_order'] = 'MultiAuth,MultiILS';
+            $configs['config']['Catalog']['driver'] = 'MultiBackend';
+        } else {
+            $configs['config']['Authentication']['method'] = $choiceAuth ? 'ChoiceAuth' : 'ILS';
+            // Use MultiAuth as default as it does not support password recovery:
+            $configs['config']['ChoiceAuth']['choice_order'] = 'MultiAuth,ILS';
+        }
+
+        $this->changeConfigs($configs);
 
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl());
         $page = $session->getPage();
         $this->resetEmailLog();
 
-        // Start recovery:
+        // Open login dialog:
         $this->clickCss($page, '#loginOptions a');
+
+        if ($multiBackend) {
+            // Check that there's no visible recovery link for the default target:
+            $this->findCss($page, '.modal-body #login_MultiILS_username');
+            $this->assertEqualsWithTimeout(
+                'btn btn-link recover-account-link hidden',
+                function () use ($page) {
+                    return $page->find('css', '.modal-body .recover-account-link')?->getAttribute('class');
+                }
+            );
+
+            // Switch to demo2 and check that there's now a visible recovery link:
+            $this->clickCss($page, '.modal-body #login_MultiILS_target option', null, 1);
+            $this->assertEqualsWithTimeout(
+                'btn btn-link recover-account-link',
+                function () use ($page) {
+                    return $page->find('css', '.modal-body .recover-account-link')?->getAttribute('class');
+                }
+            );
+        }
+
+        // Start recovery:
         $this->clickCss($page, '.modal-body .recover-account-link');
 
         // Missing username:

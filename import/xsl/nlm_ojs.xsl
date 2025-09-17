@@ -175,6 +175,9 @@
                     <field name="publishDate">
                         <xsl:value-of select="//nlm:pub-date[@pub-type='collection']/nlm:year"/>
                     </field>
+                    <field name="publishDateRange">
+                        <xsl:value-of select="//nlm:pub-date[@pub-type='collection']/nlm:year"/>
+                    </field>
                     <field name="publishDateSort">
                         <xsl:value-of select="//nlm:pub-date[@pub-type='collection']/nlm:year"/>
                     </field>

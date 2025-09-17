@@ -1,8 +1,18 @@
+/**
+ * Submit a form to processe a renewal request
+ * @param {jQuery|HTMLElement} link   The button or link that was clicked
+ * @param {string}             action The action to perform 
+ */
 function confirmRenewRequest(link, action) {
   $('#submitType').attr('name', action);
   $(link).parents('form').trigger("submit");
 }
 
+/**
+ * Submit a form to process a purge request 
+ * @param {jQuery|HTMLElement} link   The button or link that was clicked
+ * @param {string}             action The action to perform
+ */
 function confirmPurgeRequest(link, action) {
   $('#submitType').attr('name', action);
   $(link).parents('form').trigger("submit");

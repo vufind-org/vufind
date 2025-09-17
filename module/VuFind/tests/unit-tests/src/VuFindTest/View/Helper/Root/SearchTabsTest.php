@@ -31,6 +31,7 @@ namespace VuFindTest\View\Helper\Root;
 
 use Laminas\Http\Request;
 use Laminas\View\Helper\Url;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Record\Loader;
 use VuFind\Search\Results\PluginManager as ResultsPluginManager;
 use VuFind\Search\SearchTabsHelper;
@@ -333,7 +334,7 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
         $solrOptions->expects($this->any())
             ->method('getDefaultLimit')
             ->willReturn(20);
-        $configManager = $this->createMock(\VuFind\Config\PluginManager::class);
+        $configManager = $this->createMock(ConfigManagerInterface::class);
         return new \VuFind\Search\Solr\Params($solrOptions, $configManager);
     }
 }

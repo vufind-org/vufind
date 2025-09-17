@@ -1,5 +1,13 @@
 /* exported AjaxRequestQueue */
 class AjaxRequestQueue {
+  /**
+   * Constructor
+   * @param {object}   options           The options for the queue.
+   * @param {Function} options.run       A function that takes an array of items and returns a Promise.
+   * @param {Function} [options.success] A callback function for a successful run.
+   * @param {Function} [options.failure] A callback function for a failed run.
+   * @param {number}   [options.delay]   The debounce delay in milliseconds (default = 300).
+   */
   constructor({ run, success, failure, delay }) {
     // Status
     this.isRunning = false;
@@ -19,6 +27,10 @@ class AjaxRequestQueue {
     this.failureFn = failure ? failure : noop;
   }
 
+  /**
+   * Add an object to the request queue or payload.
+   * @param {*} obj The item to add to the queue.
+   */
   add(obj) {
     if (this.isRunning) {
       this.queue.push(obj);
@@ -29,11 +41,17 @@ class AjaxRequestQueue {
     }
   }
 
+  /**
+   * Start or reset the debounce timer for running the payload.
+   */
   runPayload() {
     clearTimeout(this.timeout);
     this.timeout = setTimeout(() => this.runPayloadImpl(), this.delay);
   }
 
+  /**
+   * Execute the payload, handling success and failure.
+   */
   runPayloadImpl() {
     this.isRunning = true;
 

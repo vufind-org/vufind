@@ -29,7 +29,7 @@
 
 namespace VuFindTest\Search\Solr;
 
-use VuFind\Config\PluginManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Solr\Options;
 use VuFind\Search\Solr\Params;
 
@@ -134,8 +134,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
         ];
-        $configManager = $this->getMockConfigPluginManager($config);
-        $params = $this->getParams(null, $configManager);
+        $configManager = $this->getMockConfigManager($config);
+        $params = $this->getParams(mockConfigManager: $configManager);
         // We expect "normal" filters to NOT be always visible, and inverted
         // filters to be always visible.
         $this->assertEquals(
@@ -422,7 +422,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      */
     public function testSortList(array $searchConfig, string $sort, array $expectedSortList): void
     {
-        $params = $this->getParams(mockConfig: $this->getMockConfigPluginManager(['searches' => $searchConfig]));
+        $params = $this->getParams(mockConfigManager: $this->getMockConfigManager(['searches' => $searchConfig]));
         $params->setSort($sort);
         $this->assertEquals($expectedSortList, $params->getSortList());
     }
@@ -430,19 +430,19 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get Params object
      *
-     * @param ?Options       $options    Options object (null to create)
-     * @param ?PluginManager $mockConfig Mock config plugin manager (null to create)
+     * @param ?Options                $options           Options object (null to create)
+     * @param ?ConfigManagerInterface $mockConfigManager Mock ConfigManager (null to create)
      *
      * @return Params
      */
     protected function getParams(
         ?Options $options = null,
-        ?PluginManager $mockConfig = null
+        ?ConfigManagerInterface $mockConfigManager = null
     ): Params {
-        $mockConfig ??= $this->createMock(PluginManager::class);
+        $mockConfigManager ??= $this->createMock(ConfigManagerInterface::class);
         return new Params(
-            $options ?? new Options($mockConfig),
-            $mockConfig
+            $options ?? new Options($mockConfigManager),
+            $mockConfigManager
         );
     }
 }

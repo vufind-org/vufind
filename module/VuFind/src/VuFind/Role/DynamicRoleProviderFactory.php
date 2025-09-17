@@ -70,7 +70,7 @@ class DynamicRoleProviderFactory implements FactoryInterface
      * Get a configuration array.
      *
      * @param ContainerInterface $container  Service container
-     * @param array              $rbacConfig LmcRbacMvc configuration
+     * @param array              $rbacConfig Lmc\Rbac\Mvc configuration
      *
      * @return array
      */
@@ -78,12 +78,12 @@ class DynamicRoleProviderFactory implements FactoryInterface
         ContainerInterface $container,
         array $rbacConfig
     ) {
-        // Get role provider settings from the LmcRbacMvc configuration:
+        // Get role provider settings from the Lmc\Rbac\Mvc configuration:
         $config = $rbacConfig['role_provider']['VuFind\Role\DynamicRoleProvider'];
 
         // Load the permissions:
         $configLoader = $container->get(\VuFind\Config\PluginManager::class);
-        $permissions = $configLoader->get('permissions')->toArray();
+        $permissions = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('permissions');
 
         // If we're configured to map legacy settings, do so now:
         if (

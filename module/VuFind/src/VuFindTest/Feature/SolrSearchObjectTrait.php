@@ -44,18 +44,7 @@ use VuFind\Search\Solr\Results;
  */
 trait SolrSearchObjectTrait
 {
-    /**
-     * Get mock config manager.
-     *
-     * @return \VuFind\Config\PluginManager
-     */
-    public function getMockConfigManager(): \VuFind\Config\PluginManager
-    {
-        $manager = $this->createMock(\VuFind\Config\PluginManager::class);
-        $manager->expects($this->any())->method('get')
-            ->will($this->returnValue(new \VuFind\Config\Config([])));
-        return $manager;
-    }
+    use ConfigRelatedServicesTrait;
 
     /**
      * Get Solr options.

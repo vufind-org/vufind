@@ -30,6 +30,7 @@
 namespace VuFind\OAuth2\Repository;
 
 use League\OAuth2\Server\Entities\ClientEntityInterface;
+use League\OAuth2\Server\Entities\ScopeEntityInterface;
 use League\OAuth2\Server\Repositories\ScopeRepositoryInterface;
 use VuFind\OAuth2\Entity\ScopeEntity;
 
@@ -68,9 +69,9 @@ class ScopeRepository implements ScopeRepositoryInterface
      *
      * @param string $identifier The scope identifier
      *
-     * @return ScopeEntityInterface|null
+     * @return ?ScopeEntityInterface
      */
-    public function getScopeEntityByIdentifier($identifier)
+    public function getScopeEntityByIdentifier($identifier): ?ScopeEntityInterface
     {
         if (!isset($this->oauth2Config['Scopes'][$identifier])) {
             return null;
@@ -89,6 +90,7 @@ class ScopeRepository implements ScopeRepositoryInterface
      * @param string                 $grantType      Grant type
      * @param ClientEntityInterface  $clientEntity   Client
      * @param null|string            $userIdentifier User ID
+     * @param ?string                $authCodeId     Auth code ID
      *
      * @return ScopeEntityInterface[]
      *
@@ -98,8 +100,9 @@ class ScopeRepository implements ScopeRepositoryInterface
         array $scopes,
         $grantType,
         ClientEntityInterface $clientEntity,
-        $userIdentifier = null
-    ) {
+        $userIdentifier = null,
+        ?string $authCodeId = null
+    ): array {
         $clientId = $clientEntity->getIdentifier();
         // Apply any client-specific filter to scopes:
         if ($allowedScopes = $this->oauth2Config['Clients'][$clientId]['allowedScopes'] ?? null) {

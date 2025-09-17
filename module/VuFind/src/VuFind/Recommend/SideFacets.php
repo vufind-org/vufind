@@ -30,6 +30,7 @@
 
 namespace VuFind\Recommend;
 
+use VuFind\Search\Base\DateRangeOptionsInterface;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
 use VuFind\Solr\Utils as SolrUtils;
 
@@ -278,6 +279,13 @@ class SideFacets extends AbstractFacets
             $mainFacets = array_intersect_key($mainFacets, array_flip($enabledFacets));
             $checkboxFacets = array_intersect_key($checkboxFacets, array_flip($enabledFacets));
         }
+        // Skip dateRangeField fields in normal facet requests (visualizations request facet data separately):
+        $options = $params->getOptions();
+        if ($options instanceof DateRangeOptionsInterface) {
+            $dateRangeFacets = $options->getDateRangeFacets() + $options->getFullDateRangeFacets();
+            $mainFacets = array_diff_key($mainFacets, array_flip($dateRangeFacets));
+        }
+
         // Turn on side facets in the search results:
         foreach ($mainFacets as $name => $desc) {
             $params->addFacet($name, $desc, in_array($name, $this->orFacets));

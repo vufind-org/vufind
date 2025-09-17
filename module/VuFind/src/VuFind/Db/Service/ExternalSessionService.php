@@ -31,8 +31,6 @@ namespace VuFind\Db\Service;
 
 use DateTime;
 use VuFind\Db\Entity\ExternalSessionEntityInterface;
-use VuFind\Db\Table\DbTableAwareInterface;
-use VuFind\Db\Table\DbTableAwareTrait;
 
 /**
  * Database service for external_session table.
@@ -45,11 +43,8 @@ use VuFind\Db\Table\DbTableAwareTrait;
  */
 class ExternalSessionService extends AbstractDbService implements
     ExternalSessionServiceInterface,
-    Feature\DeleteExpiredInterface,
-    DbTableAwareInterface
+    Feature\DeleteExpiredInterface
 {
-    use DbTableAwareTrait;
-
     /**
      * Create a new external session entity.
      *
@@ -57,7 +52,7 @@ class ExternalSessionService extends AbstractDbService implements
      */
     public function createEntity(): ExternalSessionEntityInterface
     {
-        return $this->getDbTable('ExternalSession')->createRow();
+        return $this->entityPluginManager->get(ExternalSessionEntityInterface::class);
     }
 
     /**
@@ -90,7 +85,13 @@ class ExternalSessionService extends AbstractDbService implements
      */
     public function getAllByExternalSessionId(string $sid): array
     {
-        return iterator_to_array($this->getDbTable('ExternalSession')->select(['external_session_id' => $sid]));
+        $dql = 'SELECT es '
+            . 'FROM ' . ExternalSessionEntityInterface::class . ' es '
+            . 'WHERE es.externalSessionId = :esid ';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameter('esid', $sid);
+        $result = $query->getResult();
+        return $result;
     }
 
     /**
@@ -102,7 +103,11 @@ class ExternalSessionService extends AbstractDbService implements
      */
     public function destroySession(string $sid): void
     {
-        $this->getDbTable('ExternalSession')->delete(['session_id' => $sid]);
+        $dql = 'DELETE FROM ' . ExternalSessionEntityInterface::class . ' es'
+            . ' WHERE es.sessionId = :sid';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameter('sid', $sid);
+        $query->execute();
     }
 
     /**
@@ -115,6 +120,18 @@ class ExternalSessionService extends AbstractDbService implements
      */
     public function deleteExpired(DateTime $dateLimit, ?int $limit = null): int
     {
-        return $this->getDbTable('ExternalSession')->deleteExpired($dateLimit->format('Y-m-d H:i:s'), $limit);
+        $subQueryBuilder = $this->entityManager->createQueryBuilder();
+        $subQueryBuilder->select('es.id')
+            ->from(ExternalSessionEntityInterface::class, 'es')
+            ->where('es.created < :dateLimit')
+            ->setParameter('dateLimit', $dateLimit);
+        if ($limit) {
+            $subQueryBuilder->setMaxResults($limit);
+        }
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->delete(ExternalSessionEntityInterface::class, 'es')
+            ->where('es.id IN (:ids)')
+            ->setParameter('ids', $subQueryBuilder->getQuery()->getResult());
+        return $queryBuilder->getQuery()->execute();
     }
 }

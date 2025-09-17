@@ -30,7 +30,7 @@
 namespace VuFind\Search\Base;
 
 use VuFind\Cache\Manager as CacheManager;
-use VuFind\Config\PluginManager as ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
 
 use function in_array;
@@ -55,14 +55,14 @@ abstract class FacetCache
      * @param CacheManager             $cacheManager            Cache manager
      * @param string                   $language                Active UI language
      * @param ?HierarchicalFacetHelper $hierarchicalFacetHelper Hierarchical facet helper
-     * @param ?ConfigManager           $configManager           Configuration manager
+     * @param ?ConfigManagerInterface  $configManager           Config manager
      */
     public function __construct(
         protected Results $results,
         protected CacheManager $cacheManager,
         protected $language = 'en',
         protected ?HierarchicalFacetHelper $hierarchicalFacetHelper = null,
-        protected ?ConfigManager $configManager = null
+        protected ?ConfigManagerInterface $configManager = null
     ) {
     }
 
@@ -143,7 +143,8 @@ abstract class FacetCache
         // Temporary context-specific sort fix for Advanced and HomePage:
         if (in_array($context, ['Advanced', 'HomePage']) && $this->hierarchicalFacetHelper && $this->configManager) {
             $options = $this->results->getOptions();
-            $facetConfig = $this->configManager->get($this->results->getOptions()->getFacetsIni())->toArray();
+            $facetConfigName = $options->getFacetsIni();
+            $facetConfig = ($facetConfigName !== null) ? $this->configManager->getConfigArray($facetConfigName) : [];
             $sortOptions = array_merge(
                 $options->getHierarchicalFacetSortSettings(),
                 $facetConfig[$context . '_Settings']['hierarchicalFacetSortOptions'] ?? []
