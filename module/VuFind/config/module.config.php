@@ -853,7 +853,7 @@ $staticRoutes = [
     'Browse/Topic',
     'BrowZine/Home',
     'BrowZine/Search',
-        'Cart/doExport',
+    'Cart/doExport',
     'Cart/Email',
     'Cart/Export',
     'Cart/Home',
