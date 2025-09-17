@@ -2,7 +2,7 @@
 
 /**
  * VuFind Action Feature Trait - Bulk action helper methods
- * Depends on access to the config loader and export support class.
+ * Depends on access to the config manager and export support class.
  *
  * PHP version 8
  *
@@ -65,7 +65,7 @@ trait BulkActionTrait
     protected function getBulkActionConfig()
     {
         if ($this->bulkActionConfig === null) {
-            $this->bulkActionConfig = $this->configLoader->get('config');
+            $this->bulkActionConfig = $this->configManager->getConfigObject('config');
         }
         return $this->bulkActionConfig;
     }
@@ -78,7 +78,7 @@ trait BulkActionTrait
     protected function getBulkActionExportConfig()
     {
         if ($this->bulkActionExportConfig === null) {
-            $this->bulkActionExportConfig = $this->configLoader->get('export');
+            $this->bulkActionExportConfig = $this->configManager->getConfigObject('export');
         }
         return $this->bulkActionExportConfig;
     }

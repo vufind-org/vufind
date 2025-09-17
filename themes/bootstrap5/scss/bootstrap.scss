@@ -66,6 +66,7 @@ $fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
 @import "mixins/mixins";
 
 @import "components/accessibility";
+@import "components/admin";
 @import "components/advanced-search";
 @import "components/alphabrowse";
 @import "components/autocomplete";
@@ -328,36 +329,6 @@ body.rtl .dropdown-menu {
     text-decoration: none;
     background-color: #333;
     outline: dotted 1px #000;
-  }
-}
-
-/* ------ Admin ------ */
-.form-admin-maintenance {
-  .form-control, .form-select {
-    display: inline-block;
-    width: 8rem;
-  }
-}
-.form-feedback-search {
-  margin-bottom: 1rem;
-
-  label {
-    margin-top: 0.5rem;
-    margin-right: 0.5rem;
-  }
-
-  input {
-    display: block;
-  }
-}
-
-.form-feedback-list {
-  > input {
-    margin-top: 0.5rem;
-  }
-
-  table {
-    margin-top: 1rem;
   }
 }
 
@@ -648,6 +619,68 @@ body.rtl .dropdown-menu {
   font-weight: bold;
 }
 .list-edit-container { @include clearfix(); }
+
+.fines-info-area {
+  margin-bottom: 1rem;
+
+  div.card-holder {
+    display: flex;
+    align-items: center;
+    font-weight: bold;
+  }
+  .amount {
+    font-weight: bold;
+  }
+  .online-payment-payable-info {
+    display: flex;
+    align-items: baseline;
+    margin-bottom: 0.25rem;
+
+    .online-payment-payable {
+      padding: 0.25rem 0;
+    }
+
+    .online-payment-minimum-payment {
+      @extend .alert-warning;
+      color: var(--bs-alert-color);
+      background-color: var(--bs-alert-bg);
+      border-color: var(--bs-alert-border-color);
+      margin-left: 1rem;
+      padding: 0.25rem;
+    }
+  }
+  .last-transaction-information {
+    @extend .alert;
+
+    background: lighten($gray-lighter, 20%);
+    border: 1px solid $gray-lighter;
+    display: flex;
+    align-items: center;
+    div {
+      flex: 1 1;
+    }
+  }
+}
+.terms-of-service__text {
+    margin-bottom: 1rem;
+}
+.terms-of-service-logo {
+   width: 5rem;
+   margin-bottom: 1rem;
+}
+.last-payment-information {
+  @extend .alert;
+
+  background-color: $gray-lighter;
+  display: flex;
+  align-items: center;
+  div {
+    flex: 1 1;
+  }
+}
+.online-payment-status-note {
+  font-weight: bold;
+}
 
 /* ------ PubDateVis ------ */
 #dateVisColorSettings {

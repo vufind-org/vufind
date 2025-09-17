@@ -30,7 +30,7 @@
 namespace VuFind\ContentBlock;
 
 use VuFind\Config\Config;
-use VuFind\Config\PluginManager as ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\FacetCache\PluginManager as FacetCacheManager;
 
 /**
@@ -59,29 +59,15 @@ class FacetList implements ContentBlockInterface
     protected $searchClassId = 'Solr';
 
     /**
-     * Configuration manager
-     *
-     * @var ConfigManager
-     */
-    protected $configManager;
-
-    /**
-     * Facet cache plugin manager
-     *
-     * @var FacetCacheManager
-     */
-    protected $facetCacheManager;
-
-    /**
      * Constructor
      *
-     * @param FacetCacheManager $fcm Facet cache plugin manager
-     * @param ConfigManager     $cm  Configuration manager
+     * @param FacetCacheManager      $facetCacheManager Facet cache plugin manager
+     * @param ConfigManagerInterface $configManager     Configuration manager
      */
-    public function __construct(FacetCacheManager $fcm, ConfigManager $cm)
-    {
-        $this->facetCacheManager = $fcm;
-        $this->configManager = $cm;
+    public function __construct(
+        protected FacetCacheManager $facetCacheManager,
+        protected ConfigManagerInterface $configManager
+    ) {
     }
 
     /**
@@ -144,7 +130,7 @@ class FacetList implements ContentBlockInterface
         $facetCache = $this->facetCacheManager->get($this->searchClassId);
         $results = $facetCache->getResults();
         $facetConfig = $this->configManager
-            ->get($results->getOptions()->getFacetsIni());
+            ->getConfigObject($results->getOptions()->getFacetsIni());
         return [
             'searchClassId' => $this->searchClassId,
             'columnSize' => $this->columnSize,
