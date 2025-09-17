@@ -31,7 +31,6 @@
 
 namespace VuFind\RecordDataFormatter\Specs;
 
-use function count;
 use function is_array;
 use function is_callable;
 
@@ -164,32 +163,6 @@ abstract class AbstractBase implements SpecInterface, \VuFind\I18n\Translator\Tr
             $options = array_merge($options, $contextOptions);
         }
 
-        $includingFilter = array_merge_recursive(
-            $options['filter']['include'] ?? [],
-            $this->getFilterFromConfig($options['filterInclude'] ?? []),
-        );
-        if (!empty($includingFilter)) {
-            $options['multiEnabled'] = false;
-        }
-        foreach ($includingFilter as $lineIdentifierKey => $lineIdentifierValues) {
-            foreach ($lineIdentifierValues as $lineIdentifierValue) {
-                $options['lineOptions'][$lineIdentifierKey][$lineIdentifierValue]['enabled'] = true;
-            }
-        }
-
-        $excludingFilter = array_merge_recursive(
-            $options['filter']['exclude'] ?? [],
-            $this->getFilterFromConfig($options['filterExclude'] ?? []),
-        );
-        foreach ($excludingFilter as $lineIdentifierKey => $lineIdentifierValues) {
-            foreach ($lineIdentifierValues as $lineIdentifierValue) {
-                $options['lineOptions'][$lineIdentifierKey][$lineIdentifierValue]['enabled'] = false;
-            }
-        }
-        unset($options['filterExclude']);
-        unset($options['filterInclude']);
-        unset($options['filter']);
-
         foreach ($options['extraLineOptions'] ?? [] as $lineOptionSection) {
             $extraLineOption = $this->config[$lineOptionSection] ?? [];
             $lineIdentifierKey = $extraLineOption['lineIdentifierKey'] ?? 'label';
@@ -207,27 +180,5 @@ abstract class AbstractBase implements SpecInterface, \VuFind\I18n\Translator\Tr
         unset($options['extraLineOptions']);
 
         return $options;
-    }
-
-    /**
-     * Get filter from config.
-     *
-     * @param array $config Config
-     *
-     * @return array
-     */
-    protected function getFilterFromConfig(array $config): array
-    {
-        $filterFromConfig = [];
-        foreach ($config as $filter) {
-            $lineIdentifierKey = 'label';
-            $lineIdentifierValue = $filter;
-            $filterParts = explode(':', $filter);
-            if (count($filterParts) === 2) {
-                [$lineIdentifierKey, $lineIdentifierValue] = $filterParts;
-            }
-            $filterFromConfig[$lineIdentifierKey][] = $lineIdentifierValue;
-        }
-        return $filterFromConfig;
     }
 }

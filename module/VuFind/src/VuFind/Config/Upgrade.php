@@ -844,21 +844,21 @@ class Upgrade implements LoggerAwareInterface
 
         // Move several settings to RecordDataFormatter/EDS
         foreach ($newBaseConfig['ItemCoreFilter']['excludeLabel'] ?? [] as $label) {
-            $newRecordDataFormatterConfig['CoreItems']['filterExclude'][] = 'Label:' . $label;
+            $this->setEbscoItemFilter($newRecordDataFormatterConfig, 'CoreItems', 'Label', $label);
             $recordDataFormatterConfigModified = true;
         }
-        foreach ($newBaseConfig['ItemCoreFilter']['excludeGroup'] ?? [] as $label) {
-            $newRecordDataFormatterConfig['CoreItems']['filterExclude'][] = 'Group:' . $label;
+        foreach ($newBaseConfig['ItemCoreFilter']['excludeGroup'] ?? [] as $group) {
+            $this->setEbscoItemFilter($newRecordDataFormatterConfig, 'CoreItems', 'Group', $group);
             $recordDataFormatterConfigModified = true;
         }
         unset($newBaseConfig['ItemCoreFilter']);
 
         foreach ($newBaseConfig['ItemResultListFilter']['excludeLabel'] ?? [] as $label) {
-            $newRecordDataFormatterConfig['ResultListItems']['filterExclude'][] = 'Label:' . $label;
+            $this->setEbscoItemFilter($newRecordDataFormatterConfig, 'ResultListItems', 'Label', $label);
             $recordDataFormatterConfigModified = true;
         }
-        foreach ($newBaseConfig['ItemResultListFilter']['excludeGroup'] ?? [] as $label) {
-            $newRecordDataFormatterConfig['ResultListItems']['filterExclude'][] = 'Group:' . $label;
+        foreach ($newBaseConfig['ItemResultListFilter']['excludeGroup'] ?? [] as $group) {
+            $this->setEbscoItemFilter($newRecordDataFormatterConfig, 'ResultListItems', 'Group', $group);
             $recordDataFormatterConfigModified = true;
         }
         unset($newBaseConfig['ItemResultListFilter']);
@@ -867,7 +867,7 @@ class Upgrade implements LoggerAwareInterface
             isset($newBaseConfig['AuthorDisplay']['DetailPageFormat'])
             && $newBaseConfig['AuthorDisplay']['DetailPageFormat'] === 'Short'
         ) {
-            $newRecordDataFormatterConfig['CoreItems']['filterExclude'][] = 'Group:AuInfo';
+            $this->setEbscoItemFilter($newRecordDataFormatterConfig, 'CoreItems', 'Group', 'AuInfo');
             $newRecordDataFormatterConfig['CoreItems']['extraLineOptions'][] = 'CoreAuthors';
             $newRecordDataFormatterConfig['CoreAuthors']['multiAltDataMethod'] =
                 'getPrimaryAuthorsWithHighlighting';
@@ -893,6 +893,31 @@ class Upgrade implements LoggerAwareInterface
         // save the configuration
         $this->saveModifiedConfig($configName);
         $this->saveModifiedConfig('RecordDataFormatter/' . $configName, $recordDataFormatterConfigModified);
+    }
+
+    /**
+     * Set EBSCO item filter.
+     *
+     * @param array  $newRecordDataFormatterConfig New RecordDataFormatter config
+     * @param string $section                      Section to change
+     * @param string $lineIdentifierKey            Identifier key to filter
+     * @param string $lineIdentifierValue          Identifier value to filter
+     *
+     * @return void
+     */
+    protected function setEbscoItemFilter(
+        array &$newRecordDataFormatterConfig,
+        string $section,
+        string $lineIdentifierKey,
+        string $lineIdentifierValue
+    ): void {
+        $filterSection = "{$section}_Filter_{$lineIdentifierKey}_$lineIdentifierValue";
+        $newRecordDataFormatterConfig[$section]['extraLineOptions'][] = $filterSection;
+        $newRecordDataFormatterConfig[$filterSection] = [
+            'lineIdentifierKey' => $lineIdentifierKey,
+            'lineIdentifierValue' => $lineIdentifierValue,
+            'multiEnabled' => false,
+        ];
     }
 
     /**

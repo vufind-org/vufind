@@ -466,18 +466,14 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             'CoreAuthors',
             $edsRecordDataFormatterConfig['CoreItems']['extraLineOptions']
         );
-        foreach (['Label:Availability', 'Group:URL', 'Group:AuInfo'] as $excludeFilter) {
-            $this->assertContains(
-                $excludeFilter,
-                $edsRecordDataFormatterConfig['CoreItems']['filterExclude']
-            );
-        }
-        foreach (['Label:Availability', 'Group:Su', 'Group:URL'] as $excludeFilter) {
-            $this->assertContains(
-                $excludeFilter,
-                $edsRecordDataFormatterConfig['ResultListItems']['filterExclude']
-            );
-        }
+
+        $this->checkFilterConfig($edsRecordDataFormatterConfig, 'CoreItems', 'Label', 'Availability');
+        $this->checkFilterConfig($edsRecordDataFormatterConfig, 'CoreItems', 'Group', 'URL');
+        $this->checkFilterConfig($edsRecordDataFormatterConfig, 'CoreItems', 'Group', 'AuInfo');
+        $this->checkFilterConfig($edsRecordDataFormatterConfig, 'ResultListItems', 'Label', 'Availability');
+        $this->checkFilterConfig($edsRecordDataFormatterConfig, 'ResultListItems', 'Group', 'Su');
+        $this->checkFilterConfig($edsRecordDataFormatterConfig, 'ResultListItems', 'Group', 'URL');
+
         $this->assertEquals(
             'getPrimaryAuthorsWithHighlighting',
             $edsRecordDataFormatterConfig['CoreAuthors']['multiAltDataMethod']
@@ -488,6 +484,37 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertArrayNotHasKey('multiAltDataMethod', $edsRecordDataFormatterConfig['ResultListAuthors']);
         $this->assertArrayNotHasKey('limit', $edsRecordDataFormatterConfig['ResultListAuthors']);
+    }
+
+    /**
+     * Check filter config.
+     *
+     * @param array  $recordDataFormatterConfig RecordDataFormatter config
+     * @param string $section                   Section to check
+     * @param string $lineIdentifierKey         Expected identifier key
+     * @param string $lineIdentifierValue       Expected identifier value
+     *
+     * @return void
+     */
+    protected function checkFilterConfig(
+        array $recordDataFormatterConfig,
+        string $section,
+        string $lineIdentifierKey,
+        string $lineIdentifierValue
+    ): void {
+        $filterSection = "{$section}_Filter_{$lineIdentifierKey}_$lineIdentifierValue";
+        $this->assertContains(
+            $filterSection,
+            $recordDataFormatterConfig[$section]['extraLineOptions']
+        );
+        $this->assertEquals(
+            [
+                'lineIdentifierKey' => $lineIdentifierKey,
+                'lineIdentifierValue' => $lineIdentifierValue,
+                'multiEnabled' => false,
+            ],
+            $recordDataFormatterConfig[$filterSection]
+        );
     }
 
     /**
