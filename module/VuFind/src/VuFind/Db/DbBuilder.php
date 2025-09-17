@@ -166,6 +166,7 @@ class DbBuilder
      *
      * @param string  $driver   Database driver to use
      * @param string  $dbHost   Name of database host
+     * @param string  $dbPort   Port for the database host
      * @param string  $rootUser Root username for connecting to database
      * @param string  $rootPass Root password for connecting to database
      * @param ?string $dbName   Database to connect to (null = default)
@@ -232,7 +233,15 @@ class DbBuilder
             $dbHost = $dbHost[0];
         }
         try {
-            $db = $returnSqlOnly ? null : $this->getRootDatabaseConnection($driver, $dbHost, $dbPort, $rootUser, $rootPass);
+            $db = $returnSqlOnly ?
+                null :
+                $this->getRootDatabaseConnection(
+                    $driver,
+                    $dbHost,
+                    $dbPort,
+                    $rootUser,
+                    $rootPass
+                );
         } catch (\Exception $e) {
             throw new \Exception(
                 'Problem initializing database adapter; '
