@@ -35,6 +35,7 @@ use Laminas\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\ResourceTagsEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Entity\UserList;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Entity\UserResourceEntityInterface;
 use VuFind\Exception\RecordMissing as RecordMissingException;
@@ -121,6 +122,10 @@ class UserListService extends AbstractDbService implements
             $where[] = 'ul NOT IN (:excludeFilter)';
             $parameters['excludeFilter'] = $excludeFilter;
         }
+        // Set type to default userlist to obtain only lists with default values
+        $where[] = 'ul.type = :listType';
+        $parameters['listType'] = UserList::TYPE_USERLIST;
+
         $dql .= 'WHERE ' . implode(' AND ', $where);
 
         $query = $this->entityManager->createQuery($dql);
@@ -143,11 +148,15 @@ class UserListService extends AbstractDbService implements
         $dql = 'SELECT ul AS list_entity, COUNT(DISTINCT(ur.resource)) AS count '
             . 'FROM ' . UserListEntityInterface::class . ' ul '
             . 'LEFT JOIN ' . UserResourceEntityInterface::class . ' ur WITH ur.list = ul.id '
-            . 'WHERE ul.user = :user '
+            . 'WHERE ul.user = :user AND ul.type = :listType '
             . 'GROUP BY ul '
             . 'ORDER BY ul.title';
 
-        $parameters = ['user' => $this->getDoctrineReference(UserEntityInterface::class, $userOrId)];
+        // Set type to default userlist to obtain only lists with default values
+        $parameters = [
+            'user' => $this->getDoctrineReference(UserEntityInterface::class, $userOrId),
+            'listType' => UserList::TYPE_USERLIST,
+        ];
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
         $results = $query->getResult();
@@ -191,6 +200,11 @@ class UserListService extends AbstractDbService implements
         if ($publicOnly) {
             $dql .= "AND l.public = '1' ";
         }
+
+        // Set type to default userlist to obtain only lists with default values
+        $dql .= 'AND l.type = :listType';
+        $parameters['listType'] = UserList::TYPE_USERLIST;
+
         if ($tag) {
             if ($caseSensitiveTags) {
                 $dql .= 'AND t.tag IN (:tag) ';
@@ -228,10 +242,13 @@ class UserListService extends AbstractDbService implements
     {
         $dql = 'SELECT ul '
             . 'FROM ' . UserListEntityInterface::class . ' ul '
-            . 'WHERE ul.user = :user '
+            . 'WHERE ul.user = :user AND ul.type = :listType '
             . 'ORDER BY ul.title';
 
-        $parameters = ['user' => $this->getDoctrineReference(UserEntityInterface::class, $userOrId)];
+        $parameters = [
+            'user' => $this->getDoctrineReference(UserEntityInterface::class, $userOrId),
+            'listType' => UserList::TYPE_USERLIST,
+        ];
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
         $results = $query->getResult();
@@ -248,8 +265,11 @@ class UserListService extends AbstractDbService implements
     protected function getUserListsById(array $ids): array
     {
         $dql = 'SELECT ul FROM ' . UserListEntityInterface::class . ' ul '
-            . 'WHERE ul.id IN (:ids)';
-        $parameters = compact('ids');
+            . 'WHERE ul.id IN (:ids) AND ul.type = :listType';
+        $parameters = [
+            'ids' => $ids,
+            'listType' => UserList::TYPE_USERLIST,
+        ];
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
         $results = $query->getResult();
@@ -274,9 +294,14 @@ class UserListService extends AbstractDbService implements
         $dql = 'SELECT ul FROM ' . UserListEntityInterface::class . ' ul '
             . 'JOIN ' . UserResourceEntityInterface::class . ' ur WITH ur.list = ul.id '
             . 'JOIN ' . ResourceEntityInterface::class . ' r WITH r.id = ur.resource '
-            . 'WHERE r.recordId = :recordId AND r.source = :source ';
+            . 'WHERE r.recordId = :recordId AND r.source = :source AND ul.type = :listType ';
 
-        $parameters = compact('recordId', 'source');
+        $parameters = [
+            'recordId' => $recordId,
+            'source' => $source,
+            'listType' => UserList::TYPE_USERLIST,
+        ];
+
         if (null !== $userOrId) {
             $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
             $dql .= 'AND ur.user = :userId ';
