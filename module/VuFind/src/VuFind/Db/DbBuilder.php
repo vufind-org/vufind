@@ -166,9 +166,9 @@ class DbBuilder
      *
      * @param string  $driver   Database driver to use
      * @param string  $dbHost   Name of database host
-     * @param string  $dbPort   Port for the database host
      * @param string  $rootUser Root username for connecting to database
      * @param string  $rootPass Root password for connecting to database
+     * @param ?string $dbPort   Port for the database host
      * @param ?string $dbName   Database to connect to (null = default)
      *
      * @return Connection
@@ -177,9 +177,9 @@ class DbBuilder
     protected function getRootDatabaseConnection(
         string $driver,
         string $dbHost,
-        string $dbPort,
         string $rootUser,
         string $rootPass,
+        ?string $dbPort = null,
         ?string $dbName = null
     ): Connection {
         // We need a default database name to use to establish a connection:
@@ -226,7 +226,7 @@ class DbBuilder
         bool $returnSqlOnly = false,
         array $steps = []
     ): string {
-        $dbPort = 3306;
+        $dbPort = null;
         if (str_contains($dbHost, ':')) {
             $dbHost = explode(':', $dbHost);
             $dbPort = $dbHost[1];
@@ -238,9 +238,9 @@ class DbBuilder
                 $this->getRootDatabaseConnection(
                     $driver,
                     $dbHost,
-                    $dbPort,
                     $rootUser,
-                    $rootPass
+                    $rootPass,
+                    $dbPort
                 );
         } catch (\Exception $e) {
             throw new \Exception(
@@ -277,7 +277,7 @@ class DbBuilder
             if ($db) {
                 // If we're already connected to the database, we should reconnect now using the name of
                 // the newly created database.
-                $db = $this->getRootDatabaseConnection($driver, $dbHost, $dbPort, $rootUser, $rootPass, $newName);
+                $db = $this->getRootDatabaseConnection($driver, $dbHost, $rootUser, $rootPass, $dbPort, $newName);
                 $statements = $this->migrationLoader->splitSqlIntoStatements($sql);
                 foreach ($statements as $current) {
                     $db->executeQuery($current);
