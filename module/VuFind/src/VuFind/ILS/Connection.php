@@ -858,6 +858,22 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     }
 
     /**
+     * Check if online payment is supported.
+     *
+     * @param array $functionConfig Function configuration values
+     * @param array $params         An array of function-specific params (or null)
+     *
+     * @return boolean
+     */
+    protected function checkMethodregisterPayment($functionConfig, $params)
+    {
+        if ($this->checkCapability('registerPayment', [$params ?: []])) {
+            return ['function' => 'registerPayment'];
+        }
+        return false;
+    }
+
+    /**
      * Get proper help text from the function config
      *
      * @param string|array $helpText Help text(s)

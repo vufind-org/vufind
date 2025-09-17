@@ -99,6 +99,6 @@ trait EmailTrait
         if (!$data) {
             throw new \Exception('No serialized email message data found');
         }
-        return array_filter(array_map('unserialize', explode("\x1E", $data)));
+        return array_filter(array_map('unserialize', explode("\x1E\x00", $data)));
     }
 }

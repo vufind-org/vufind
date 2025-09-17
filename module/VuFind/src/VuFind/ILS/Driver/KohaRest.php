@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2016-2023.
+ * Copyright (C) The National Library of Finland 2016-2025.
  * Copyright (C) Moravian Library 2019.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -36,6 +36,7 @@ use VuFind\Date\DateException;
 use VuFind\Exception\AuthToken as AuthTokenException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Logic\AvailabilityStatus;
+use VuFind\ILS\Logic\OnlinePaymentTrait;
 use VuFind\Service\CurrencyFormatter;
 
 use function array_key_exists;
@@ -71,6 +72,10 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     use \VuFind\Cache\CacheTrait;
     use \VuFind\ILS\Driver\OAuth2TokenTrait;
     use \VuFind\I18n\HasSorterTrait;
+    use OnlinePaymentTrait {
+        fineIsPayable as fineIsPayableBase;
+        fineBlocksPayment as fineBlocksPaymentBase;
+    }
 
     /**
      * Library prefix
@@ -159,6 +164,13 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         'HE' => 'Hold Expired',
         'RENT' => 'Rental',
     ];
+
+    /**
+     * Mappings from fee types to tax percents (1/100ths of a percent)
+     *
+     * @var array
+     */
+    protected $feeTypeToTaxRateMappings = [];
 
     /**
      * Mappings from renewal block reasons
@@ -325,6 +337,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 $this->config['FeeTypeMappings']
             );
         }
+        $this->feeTypeToTaxRateMappings = $this->config['OnlinePayment']['feeTypeToTaxRateMappings'] ?? [];
 
         if (!empty($this->config['PatronStatusMappings'])) {
             $this->patronStatusMappings = array_merge(
@@ -1676,25 +1689,91 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                     $bibId = $item['biblio_id'];
                 }
             }
-            $type = trim($entry['debit_type']);
-            $type = $this->translate($this->feeTypeMappings[$type] ?? $type);
+            $debitType = trim($entry['debit_type']);
+            $type = $this->feeTypeMappings[$debitType] ?? $debitType;
             $description = trim($entry['description']);
-            if ($description !== $type) {
-                $type .= " - $description";
-            }
             $fine = [
-                'amount' => $entry['amount'] * 100,
-                'balance' => $entry['amount_outstanding'] * 100,
+                'fineId' => $entry['account_line_id'],
+                'amount' => (int)round($entry['amount'] * 100),
+                'balance' => (int)round($entry['amount_outstanding'] * 100),
                 'fine' => $type,
+                'description' => $description,
                 'createdate' => $this->convertDate($entry['date'] ?? null),
                 'checkout' => '',
+                'organization' => $entry['library_id'] ?? '',
+                '__status' => trim($entry['status'] ?? ''),
             ];
             if (null !== $bibId) {
                 $fine['id'] = $bibId;
             }
+            $fine['payableOnline'] = $this->fineIsPayable($fine);
+            $fine['taxPercent'] = $this->getFineTaxRate($fine, $entry);
             $fines[] = $fine;
         }
         return $fines;
+    }
+
+    /**
+     * Register a payment.
+     *
+     * This is called after a successful online payment.
+     *
+     * @param array   $patron                  Patron
+     * @param int     $amount                  Amount to be registered as paid
+     * @param string  $localPaymentIdentifier  Local payment identifier
+     * @param ?string $remotePaymentIdentifier Remote payment identifier
+     * @param int     $paymentId               Internal payment id
+     * @param ?array  $fineIds                 Fine IDs to mark paid or null for bulk payment
+     *
+     * @throws ILSException
+     * @return array Associative array with keys success (bool, always) and reason (string, on error)
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function registerPayment(
+        array $patron,
+        int $amount,
+        string $localPaymentIdentifier,
+        ?string $remotePaymentIdentifier,
+        int $paymentId,
+        ?array $fineIds = null
+    ): array {
+        $note = "Online payment $localPaymentIdentifier";
+        if ($remotePaymentIdentifier) {
+            $note .= " / $remotePaymentIdentifier";
+        }
+        $request = [
+            'credit_type' => 'PAYMENT',
+            'amount' => $amount / 100,
+            'note' => $note,
+        ];
+        if (null !== $fineIds) {
+            $request['account_lines_ids'] = $fineIds;
+        }
+
+        $result = $this->makeRequest(
+            [
+                'path' => ['v1', 'patrons', $patron['id'], 'account', 'credits'],
+                'json' => $request,
+                'method' => 'POST',
+                'errors' => true,
+            ]
+        );
+        if ($result['code'] >= 300) {
+            $error = "Failed to mark payment of $amount paid for patron"
+                . " {$patron['id']}: {$result['code']}: " . var_export($result, true);
+            $this->logError($error);
+            return [
+                'success' => false,
+                'reason' => 'Payment::error_payment_request_failed',
+            ];
+        }
+        // Clear patron's block cache
+        $cacheId = 'blocks|' . $patron['id'];
+        $this->removeCachedData($cacheId);
+        return [
+            'success' => true,
+        ];
     }
 
     /**
@@ -3036,5 +3115,59 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     protected function formatMoney($amount)
     {
         return $this->currencyFormatter->convertToDisplayFormat($amount);
+    }
+
+    /**
+     * Check if a fine is payable.
+     *
+     * @param array $fine Fine
+     *
+     * @return bool
+     */
+    protected function fineIsPayable(array $fine): bool
+    {
+        if (!$this->fineIsPayableBase($fine)) {
+            return false;
+        }
+        $paymentConfig = $this->config['OnlinePayment'] ?? [];
+        if (in_array($fine['__status'], $paymentConfig['nonPayableStatuses'] ?? [])) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Check if a fine should completely block payment.
+     *
+     * @param array $fine Fine
+     *
+     * @return bool
+     */
+    protected function fineBlocksPayment(array $fine): bool
+    {
+        if ($this->fineBlocksPaymentBase($fine)) {
+            return true;
+        }
+        $paymentConfig = $this->config['OnlinePayment'] ?? [];
+        if (in_array($fine['__status'], $paymentConfig['blockingNonPayableStatuses'] ?? [])) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Get tax rate for a fine.
+     *
+     * @param array $fine     Fine
+     * @param array $kohaFine Koha fine entry
+     *
+     * @return int 1/100ths of a percent
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function getFineTaxRate(array $fine, array $kohaFine): int
+    {
+        $code = trim($kohaFine['debit_type']) ?? '';
+        return $this->feeTypeToTaxRateMappings[$code] ?? 0;
     }
 }

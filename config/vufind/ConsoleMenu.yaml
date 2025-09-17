@@ -129,6 +129,9 @@ main:
       - label: Send scheduled search email notifications
         type: internal-command
         command: scheduledsearch/notify
+      - label: Register pending online payments and report expired ones
+        type: internal-command
+        command: onlinepayment/monitor
     - label: Harvest Tools
       type: menu
       contents:

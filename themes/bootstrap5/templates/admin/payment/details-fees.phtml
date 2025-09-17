@@ -1,0 +1,51 @@
+<?=$this->component('page-title', ['title' => $this->translate('Payment::Fees'), 'level' => 2, 'lightboxLevel' => 3]);?>
+
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th><?=$this->transEsc('Payment::Identifier')?></th>
+      <th><?=$this->transEsc('Payment::Type')?></th>
+      <th><?=$this->transEsc('Payment::Details')?></th>
+      <?php if ($this->feeSpecificOrganizations): ?>
+        <th><?=$this->transEsc('Payment::Recipient')?></th>
+      <?php endif; ?>
+      <th><?=$this->transEsc('Payment::Fee')?></th>
+    </tr>
+  </thead>
+  <tbody>
+    <?php $feeTotal = 0; ?>
+    <?php foreach ($this->paymentFees as $fee): ?>
+      <?php
+        $type = $fee->getType();
+        $typeEsc = $this->transEscWithPrefix('fee_status_', $type);
+        $descriptions = [];
+        if ($desc = $fee->getDescription()) {
+            $descriptions[] = $desc;
+        }
+        if ($title = $fee->getTitle()) {
+            $descriptions[] = $title;
+        }
+        $feeTotal += $fee->getAmount();
+      ?>
+      <tr>
+        <td class="identifier"><?=$this->escapeHtml($fee->getFineId())?></td>
+        <td class="type"><?=$typeEsc?></td>
+        <td class="details"><?=$this->escapeHtml(implode(' - ', $descriptions))?></td>
+        <?php if ($this->feeSpecificOrganizations): ?>
+          <?php
+            $feeOrg = $fee->getOrganization();
+            $lineBusinessId = $feeOrg ? ($this->organizationBusinessIdMappings[$feeOrg] ?? '') : '';
+            if ($feeOrg && $lineBusinessId) {
+                $recipientEsc = $this->transEsc("Payment::organisation_{$sourceIls}_{$feeOrg}", [], $feeOrg)
+                    . $this->escapeHtml(" ($lineBusinessId)");
+            } else {
+                $recipientEsc = $this->sourceNameEsc . ($businessId ? $this->transEsc(" ($businessId)") : '');
+            }
+          ?>
+          <td class="recipient"><?=$recipientEsc?></td>
+        <?php endif; ?>
+        <td class="fee"><?=$this->safeMoneyFormat($fee->getAmount() / 100.0)?></td>
+      </tr>
+    <?php endforeach; ?>
+  </tbody>
+</table>
