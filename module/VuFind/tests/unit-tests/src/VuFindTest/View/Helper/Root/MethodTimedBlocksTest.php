@@ -62,16 +62,16 @@ class MethodTimedBlocksTest extends \PHPUnit\Framework\TestCase
         return [
             'end defined' => [
                 [
-                    'start' => strtotime('now'),
-                    'end' => strtotime('31-12-2025 23:59.59'),
+                    'start' => new \DateTime(),
+                    'end' => new \DateTime('31-12-2025 23:59.59'),
                     'recurring' => false,
                 ],
                 'This feature is unavailable until 12-31-2025',
             ],
             'service defined' => [
                 [
-                    'start' => strtotime('now'),
-                    'end' => strtotime('31-12-2025 23:59.59'),
+                    'start' => new \DateTime(),
+                    'end' => new \DateTime('31-12-2025 23:59.59'),
                     'recurring' => false,
                 ],
                 'TestFeature is unavailable until 12-31-2025',
@@ -79,7 +79,7 @@ class MethodTimedBlocksTest extends \PHPUnit\Framework\TestCase
             ],
             'only start' => [
                 [
-                    'start' => strtotime('now'),
+                    'start' => new \DateTime('now'),
                     'end' => '',
                     'recurring' => false,
                 ],
@@ -87,8 +87,8 @@ class MethodTimedBlocksTest extends \PHPUnit\Framework\TestCase
             ],
             'not currently blocked' => [
                 [
-                    'start' => strtotime('01-01-2025'),
-                    'end' => strtotime('02-02-2025'),
+                    'start' => new \DateTime('01-01-2025'),
+                    'end' => new \DateTime('02-02-2025'),
                     'recurring' => false,
                 ],
                 '',
@@ -152,8 +152,8 @@ class MethodTimedBlocksTest extends \PHPUnit\Framework\TestCase
             ->method('getMethodTimedBlocks')
             ->willReturn($timedBlocks);
         $connection->expects($this->any())
-            ->method('isMethodBlocked')
-            ->willReturn($blocked);
+            ->method('getMethodBlock')
+            ->willReturn($blocked ? $timedBlocks : []);
         $ils = new Ils($connection);
         $dateTime = new DateTime(new Converter());
         return compact('transEsc', 'translate', 'ils', 'dateTime');

@@ -197,6 +197,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         $this->configReader = $configReader;
         $this->driverManager = $driverManager;
         $this->request = $request;
+        error_reporting(E_ALL ^ E_DEPRECATED);
     }
 
     /**
@@ -395,7 +396,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             if (!method_exists($this, $checkMethod)) {
                 return false;
             }
-            if ($this->isMethodBlocked($function)) {
+            if (!empty($this->getMethodBlock($function, $params))) {
                 return false;
             }
 
@@ -1332,45 +1333,56 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * Get timed blocks for a method from driver configuration
      *
      * @param string $methodName Method to check
+     * @param array  $params     Array of passed parameters
      *
      * @return array Array with keys 'start', 'end', 'recurring'
      *               or empty array if no blocks are found
      */
-    public function getMethodTimedBlocks(string $methodName): array
+    public function getMethodTimedBlocks(string $methodName, array $params = []): array
     {
-        $functionConfig = $this->checkCapability('getConfig', ['TimedBlocks'])
+        $functionConfig = $this->checkCapability('getConfig', ['TimedBlocks', $params])
             ? $this->getDriver()->getConfig('TimedBlocks')
             : [];
 
         if (!isset($functionConfig[$methodName])) {
             return [];
         }
-        $methodBlock = $functionConfig[$methodName];
-        $startDate = strtotime($methodBlock['startDate'] ?? '');
-        $endDate = $methodBlock['endDate'] ?? '';
-        $noEndHours = empty(explode(' ', $endDate, 2)[1]);
-        if ($endDate && $noEndHours) {
-            $endDate .= ' 23:59.59';
+        $blocks = [];
+        foreach ($functionConfig[$methodName] as $block) {
+            if (!str_contains($block, '/')) {
+                continue;
+            }
+            [$start, $end] = explode('/', $block, 2);
+            $isDate = preg_match('/^\d{4}-\d{2}-\d{2}/', $start ?: $end);
+
+            if ($isDate) {
+                $startDate = $start ? new \DateTime($start) : null;
+                $noEndHours = empty(explode(' ', $end, 2)[1]);
+                if ($end && $noEndHours) {
+                    $end .= ' 23:59:59';
+                }
+                $endDate = $end ? new \DateTime($end) : null;
+                $blocks[] = [
+                    'start' => $startDate,
+                    'end' => $endDate,
+                    'recurring' => false,
+                ];
+            } else {
+                $startTime = new \DateTime($start);
+                $endTime = new \DateTime($end);
+                if ($startTime && $endTime) {
+                    if ($endTime <= $startTime) {
+                        $endTime->modify('+1 day');
+                    }
+                    $blocks[] = [
+                        'start' => $startTime,
+                        'end' => $endTime,
+                        'recurring' => true,
+                    ];
+                }
+            }
         }
-        $endDate = strtotime($endDate);
-        if ($startDate || $endDate) {
-            return [
-                'start' => $startDate,
-                'end' => $endDate,
-                'recurring' => false,
-            ];
-        }
-        if (
-            ($startTime = strtotime($methodBlock['recurringStart'] ?? ''))
-            && ($endTime = strtotime($methodBlock['recurringEnd'] ?? ''))
-        ) {
-            return [
-                'start' => $startTime,
-                'end' => $endTime,
-                'recurring' => true,
-            ];
-        }
-        return [];
+        return $blocks;
     }
 
     /**
@@ -1378,37 +1390,29 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * driver configuration
      *
      * @param string $methodName Method to check
+     * @param array  $params     Array of passed parameters
      *
-     * @return bool
+     * @return array If currently blocked, return the blocked times.
+     *               Otherwise return an empty array
      */
-    public function isMethodBlocked(string $methodName): bool
+    public function getMethodBlock(string $methodName, array $params = []): array
     {
-        $blocks = $this->getMethodTimedBlocks($methodName);
-        if (!empty($blocks)) {
-            $now = time();
-            $start = $blocks['start'];
-            $end = $blocks['end'];
-            $recurring = $blocks['recurring'];
-            if (!$recurring) {
-                if ($start && !$end) {
-                    return $now >= $start;
-                }
-                if ($end && !$start) {
-                    return $now < $end;
-                }
-                if ($start && $end) {
-                    return $now >= $start && $now < $end;
-                }
+        $blocks = $this->getMethodTimedBlocks($methodName, $params);
+        foreach ($blocks as $block) {
+            $now = new \DateTime();
+            $start = $block['start'];
+            $end = $block['end'];
+            if ($start && !$end && $now >= $start) {
+                return $block;
             }
-            if ($recurring) {
-                if ($start < $end) {
-                    return $now >= $start && $now < $end;
-                } else {
-                    return $now >= $start || $now < $end;
-                }
+            if ($end && !$start && $now < $end) {
+                return $block;
+            }
+            if ($start && $end && $now >= $start && $now < $end) {
+                return $block;
             }
         }
-        return false;
+        return [];
     }
 
     /**

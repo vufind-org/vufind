@@ -95,96 +95,112 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
             'only startDate' => [
                 [
                     'Renewals' => [
-                        'startDate' => date('Y-m-d', strtotime('now')),
+                        date('Y-m-d', strtotime('now')) . '/',
                     ],
                 ],
-                true,
+                [
+                    'start' => new \DateTime('today'),
+                    'end' => null,
+                    'recurring' => false,
+                ],
             ],
             'only endDate' => [
                 [
                     'Renewals' => [
-                        'endDate' => date('Y-m-d', strtotime('now + 1 days')),
+                        '/' . date('Y-m-d', strtotime('now + 1 days')),
                     ],
                 ],
-                true,
+                [
+                    'start' => null,
+                    'end' => new \DateTime('tomorrow 23:59:59'),
+                    'recurring' => false,
+                ],
             ],
             'future startDate' => [
                 [
                     'Renewals' => [
-                        'startDate' => date('Y-m-d', strtotime('now + 1 days')),
-                        'endDate' => date('Y-m-d', strtotime('now + 2 days')),
+                        date('Y-m-d', strtotime('now + 1 days')) . '/' . date('Y-m-d', strtotime('now + 2 days')),
                     ],
                 ],
-                false,
+                [],
             ],
             'startDate in the past and endDate in the future' => [
                 [
                     'Renewals' => [
-                        'startDate' => date('Y-m-d', strtotime('now - 1 days')),
-                        'endDate' => date('Y-m-d', strtotime('now + 1 days')),
+                        date('Y-m-d', strtotime('now - 1 days')) . '/' . date('Y-m-d', strtotime('now + 1 days')),
                     ],
                 ],
-                true,
+                [
+                    'start' => new \DateTime('yesterday'),
+                    'end' => new \DateTime('tomorrow 23:59:59'),
+                    'recurring' => false,
+                ],
             ],
             'inside recurring limits' => [
                 [
                     'Renewals' => [
-                        'recurringStart' => date('H:i', strtotime('now - 1 hours')),
-                        'recurringEnd' => date('H:i', strtotime('now + 1 hours')),
+                        date('H:i', strtotime('now - 1 hours')) . '/' . date('H:i', strtotime('now + 1 hours')),
                     ],
                 ],
-                true,
+                [
+                    'start' => new \DateTime(date('H:i', strtotime('now - 1 hours'))),
+                    'end' => new \DateTime(date('H:i', strtotime('now + 1 hours'))),
+                    'recurring' => true,
+                ],
             ],
             'outside recurring limits' => [
                 [
                     'Renewals' => [
-                        'recurringStart' => date('H:i', strtotime('now + 1 hours')),
-                        'recurringEnd' => date('H:i', strtotime('now - 1 hours')),
+                        date('H:i', strtotime('now + 1 hours')) . '/' . date('H:i', strtotime('now - 1 hours')),
                     ],
                 ],
-                false,
+                [],
             ],
-            'recurring crossing midnight' => [
+            'recurring block active, fixed date block inactive' => [
                 [
                     'Renewals' => [
-                        'recurringStart' => date('H:i', strtotime('now + 2 hours')),
-                        'recurringEnd' => date('H:i', strtotime('now + 1 hours')),
+                        date('H:i', strtotime('now - 1 hours')) . '/' . date('H:i', strtotime('now + 1 hours')),
+                        date('Y-m-d', strtotime('now - 2 days')) . '/' . date('Y-m-d', strtotime('now - 1 days')),
                     ],
                 ],
-                true,
+                [
+                    'start' => new \DateTime(date('H:i', strtotime('now - 1 hours'))),
+                    'end' => new \DateTime(date('H:i', strtotime('now + 1 hours'))),
+                    'recurring' => true,
+                ],
+            ],
+            'recurring block inactive, fixed date block active' => [
+                [
+                    'Renewals' => [
+                        date('H:i', strtotime('now + 1 hours')) . '/' . date('H:i', strtotime('now + 2 hours')),
+                        date('Y-m-d', strtotime('now - 1 days')) . '/' . date('Y-m-d', strtotime('now + 1 days')),
+                    ],
+                ],
+                [
+                    'start' => new \DateTime(date('Y-m-d', strtotime('now - 1 days'))),
+                    'end' => new \DateTime('tomorrow 23:59:59'),
+                    'recurring' => false,
+                ],
             ],
             'empty configuration' => [
                 [],
-                false,
+                [],
             ],
             'startDate and endDate in the past' => [
                 [
                     'Renewals' => [
-                        'startDate' => date('Y-m-d', strtotime('now - 2 days')),
-                        'endDate' => date('Y-m-d', strtotime('now - 1 days')),
+                        date('Y-m-d', strtotime('now - 2 days')) . '/' . date('Y-m-d', strtotime('now - 1 days')),
                     ],
                 ],
-                false,
+                [],
             ],
             'startDate after endDate' => [
                 [
                     'Renewals' => [
-                        'startDate' => date('Y-m-d', strtotime('now - 1 days')),
-                        'endDate' => date('Y-m-d', strtotime('now - 2 days')),
+                        date('Y-m-d', strtotime('now - 1 days')) . '/' . date('Y-m-d', strtotime('now - 2 days')),
                     ],
                 ],
-                false,
-            ],
-            'invalid values' => [
-                [
-                    'Renewals' => [
-                        'startDate' => 'testing string',
-                        'endDate' => 'true',
-                        'recurringStart' => 'starting',
-                        'recurringEnd' => 'ending',
-                    ],
-                ],
-                false,
+                [],
             ],
         ];
     }
@@ -199,9 +215,9 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testIsMethodBlocked(array $timedBlocks, bool $expectedResult): void
+    public function testIsMethodBlocked(array $timedBlocks, array $expectedResult): void
     {
         $this->setTimedBlocks($timedBlocks);
-        $this->assertEquals($expectedResult, $this->connection->isMethodBlocked('Renewals'));
+        $this->assertEquals($expectedResult, $this->connection->getMethodBlock('Renewals'));
     }
 }

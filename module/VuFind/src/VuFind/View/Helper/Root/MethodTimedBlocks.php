@@ -53,8 +53,7 @@ class MethodTimedBlocks extends \Laminas\View\Helper\AbstractHelper
         string $methodDisplayName = '',
     ): string {
         $ils = $this->getView()->plugin('ils');
-        if ($ils()->isMethodBlocked($methodName)) {
-            $methodBlocks = $ils()->getMethodTimedBlocks($methodName);
+        if ($block = $ils()->getMethodBlock($methodName)) {
             $transEsc = $this->getView()->plugin('transEsc');
             $dateTime = $this->getView()->plugin('dateTime');
             $transParams = [
@@ -63,9 +62,9 @@ class MethodTimedBlocks extends \Laminas\View\Helper\AbstractHelper
                     : $transEsc('default_service_description'),
             ];
 
-            if (!$methodBlocks['recurring']) {
-                $end = $methodBlocks['end']
-                    ? $dateTime->convertToDisplayDate('U', $methodBlocks['end'])
+            if (!$block['recurring']) {
+                $end = $block['end']
+                    ? $dateTime->convertToDisplayDate('U', $block['end']->getTimestamp())
                     : '';
                 $transParams['%%end%%'] = $end;
 
@@ -75,7 +74,7 @@ class MethodTimedBlocks extends \Laminas\View\Helper\AbstractHelper
                     return $transEsc('service_blocked', $transParams);
                 }
             } else {
-                $end = $dateTime->convertToDisplayTime('U', $methodBlocks['end']);
+                $end = $dateTime->convertToDisplayTime('U', $block['end']->getTimestamp());
                 $transParams['%%end%%'] = $end;
                 return $transEsc('service_blocked_until', $transParams);
             }
