@@ -77,6 +77,10 @@ abstract class AbstractDescriptionProvider implements DescriptionProviderInterfa
         // Trim leading and trailing whitespace
         $content = trim($content);
 
+        // Trim any leading and trailing empty paragraphs (repeating and possibly containing NBSP in UTF-8)
+        $content = preg_replace('{^(<p>\s*</p>\s*)*}u', '', $content);
+        $content = preg_replace('{(\s*<p>\s*</p>)*$}u', '', $content);
+
         // Replace line breaks with <br>
         $content = preg_replace(
             '/(\r\n|\n|\r){3,}/',
