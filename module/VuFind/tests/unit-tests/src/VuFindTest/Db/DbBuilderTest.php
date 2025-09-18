@@ -29,9 +29,11 @@
 
 namespace VuFindTest\Db;
 
+use VuFind\Config\Version;
 use VuFind\Db\Connection;
 use VuFind\Db\ConnectionFactory;
 use VuFind\Db\DbBuilder;
+use VuFind\Db\Migration\MigrationLoader;
 
 use function count;
 
@@ -99,7 +101,7 @@ class DbBuilderTest extends \PHPUnit\Framework\TestCase
                 ->willReturnCallback(fn ($str) => "'$str'");
             $factory->expects($this->exactly(1))->method('getConnectionFromOptions')->willReturn($mockConnection);
         }
-        $builder = new DbBuilder($factory);
+        $builder = new DbBuilder($factory, $this->createMock(MigrationLoader::class));
         $result = $builder->build('name', 'user', 'pass', $driver, returnSqlOnly: $sqlOnly, steps: ['pre']);
         $this->assertEquals(implode("\n", $expectedCommands), trim($result));
     }
@@ -130,7 +132,7 @@ class DbBuilderTest extends \PHPUnit\Framework\TestCase
     {
         $factory = $this->createMock(ConnectionFactory::class);
         $factory->expects($this->never())->method('getConnectionFromOptions');
-        $builder = new DbBuilder($factory);
+        $builder = new DbBuilder($factory, $this->createMock(MigrationLoader::class));
         $result = $builder->build('name', 'user', 'pass', $driver, returnSqlOnly: true, steps: ['main']);
         $this->assertEquals(trim(file_get_contents($expectedFile)), trim($result));
     }
@@ -142,10 +144,18 @@ class DbBuilderTest extends \PHPUnit\Framework\TestCase
      */
     public static function postCommandsProvider(): array
     {
-        $expectedMySql = [];
+        $version = Version::getBuildVersion();
+        $expectedMySql = [
+            "INSERT INTO migrations(name, status, target_version) VALUES ('mysql.sql', 'success', '$version');",
+            "INSERT INTO migrations(name, status, target_version) VALUES ('11.0/001-fake.sql', 'success', '$version');",
+            "INSERT INTO migrations(name, status, target_version) VALUES ('11.0/002-fake.sql', 'success', '$version');",
+        ];
         $expectedPgSql = [
             'GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO user;',
             'GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO user;',
+            "INSERT INTO migrations(name, status, target_version) VALUES ('pgsql.sql', 'success', '$version');",
+            "INSERT INTO migrations(name, status, target_version) VALUES ('11.0/001-fake.sql', 'success', '$version');",
+            "INSERT INTO migrations(name, status, target_version) VALUES ('11.0/002-fake.sql', 'success', '$version');",
         ];
         return [
             'mariadb, sql-only' => ['mariadb', $expectedMySql, true],
@@ -178,7 +188,17 @@ class DbBuilderTest extends \PHPUnit\Framework\TestCase
             $mockConnection->expects($this->exactly(count($expectedCommands)))->method('executeQuery');
             $factory->expects($this->exactly(1))->method('getConnectionFromOptions')->willReturn($mockConnection);
         }
-        $builder = new DbBuilder($factory);
+        $loader = $this->createMock(MigrationLoader::class);
+        $migrationDir = '/dummy/value/for/migration/directory';
+        $migrationSubdir = "$migrationDir/11.0";
+        $loader->expects($this->once())->method('getMigrationDirForPlatform')->with($driver)
+            ->willReturn($migrationDir);
+        $loader->expects($this->once())->method('getMigrationSubdirectoriesMatchingVersion')
+            ->with(Version::getBuildVersion(), $migrationDir)
+            ->willReturn([$migrationSubdir]);
+        $loader->expects($this->once())->method('getMigrationsFromDir')->with($migrationSubdir)
+            ->willReturn(["$migrationSubdir/001-fake.sql", "$migrationSubdir/002-fake.sql"]);
+        $builder = new DbBuilder($factory, $loader);
         $result = $builder->build('name', 'user', 'pass', $driver, returnSqlOnly: $sqlOnly, steps: ['post']);
         $this->assertEquals(implode("\n", $expectedCommands), trim($result));
     }
