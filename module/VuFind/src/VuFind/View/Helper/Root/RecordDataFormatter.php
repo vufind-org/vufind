@@ -351,7 +351,10 @@ class RecordDataFormatter extends AbstractHelper
                     $options['lineOptions'][$key][$value] ?? [],
                 );
             }
-            if (!($currentOptions['multiEnabled'] ?? $currentOptions['enabled'] ?? true)) {
+            if (isset($currentOptions['multiEnabled'])) {
+                $currentOptions['enabled'] = $currentOptions['multiEnabled'];
+            }
+            if (!($currentOptions['enabled'] ?? true)) {
                 continue;
             }
             if (isset($currentOptions['multiAltDataMethod'])) {
