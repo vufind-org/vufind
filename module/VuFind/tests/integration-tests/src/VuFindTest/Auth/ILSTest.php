@@ -42,7 +42,6 @@ namespace VuFindTest\Auth;
  */
 final class ILSTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
     use \VuFindTest\Feature\LiveDatabaseTrait;
     use \VuFindTest\Feature\LiveDetectionTrait;
 
