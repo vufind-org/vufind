@@ -85,10 +85,10 @@ trait EmailTrait
         if (!$data) {
             throw new \Exception('No serialized email message data found');
         }
-        $records = explode("\x1E\x00", $data);
+        $records = explode("\x1E", $data);
         if (null === ($record = $records[$index] ?? null)) {
             throw new \Exception("Message with index $index not found");
         }
-        return unserialize($record);
+        return unserialize(base64_decode($record));
     }
 }

@@ -244,7 +244,7 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
       };
       const typeahead = new Autocomplete({
         rtl: $(document.body).hasClass("rtl"),
-        maxResults: 10,
+        limit: 20,
         loadingString: VuFind.translate('loading_ellipsis'),
       });
 

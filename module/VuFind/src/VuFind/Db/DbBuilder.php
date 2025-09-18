@@ -32,9 +32,10 @@ namespace VuFind\Db;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception as DBALException;
 use Exception;
+use VuFind\Config\Version;
+use VuFind\Db\Migration\MigrationLoader;
 
 use function in_array;
-use function strlen;
 
 /**
  * Database builder (for creating the database required by the system).
@@ -50,11 +51,12 @@ class DbBuilder
     /**
      * Constructor
      *
-     * @param ConnectionFactory $dbFactory Database connection factory
+     * @param ConnectionFactory $dbFactory       Database connection factory
+     * @param MigrationLoader   $migrationLoader Migration file loader
      *
      * @return void
      */
-    public function __construct(protected ConnectionFactory $dbFactory)
+    public function __construct(protected ConnectionFactory $dbFactory, protected MigrationLoader $migrationLoader)
     {
     }
 
@@ -110,16 +112,37 @@ class DbBuilder
      */
     protected function getPostCommands(string $driver, string $newUser): array
     {
-        // Special case: PostgreSQL:
+        $postCommands = [];
+        // Special case: PostgreSQL requires extra steps:
         if ($driver == 'pgsql') {
             $grantTables = 'GRANT ALL PRIVILEGES ON ALL TABLES IN '
                 . "SCHEMA public TO {$newUser}";
             $grantSequences = 'GRANT ALL PRIVILEGES ON ALL SEQUENCES'
                 . " IN SCHEMA public TO {$newUser}";
-            return [$grantTables, $grantSequences];
+            $postCommands = [$grantTables, $grantSequences];
         }
-        // Default: MySQL:
-        return [];
+        // Default: track setup state for future migrations.
+        // Version should always consist of digits and dots, but strip out anything
+        // unexpected just to be on the safe side -- don't want any weird SQL injection.
+        $version = Version::getBuildVersion();
+        $safeVersion = preg_replace('/[^\d.]/', '', $version);
+        $filename = $driver === 'pgsql' ? 'pgsql' : 'mysql';
+        $postCommands[] = 'INSERT INTO migrations(name, status, target_version) VALUES '
+            . "('{$filename}.sql', 'success', '$safeVersion')";
+        // Let's also treat any migrations for the current version as applied. Since we only
+        // change the version number when we make an actual release, users tracking the "bleeding
+        // edge" dev branch may apply SOME migrations for a release before ALL migrations have
+        // been created. This helps ensure that nothing gets missed or repeated.
+        $migrationDir = $this->migrationLoader->getMigrationDirForPlatform($driver);
+        $dirs = $this->migrationLoader->getMigrationSubdirectoriesMatchingVersion($version, $migrationDir);
+        foreach ($dirs as $dir) {
+            foreach ($this->migrationLoader->getMigrationsFromDir($dir) as $migration) {
+                $shortMigration = str_replace("$migrationDir/", '', $migration);
+                $postCommands[] = 'INSERT INTO migrations(name, status, target_version) VALUES '
+                    . "('{$shortMigration}', 'success', '$safeVersion')";
+            }
+        }
+        return $postCommands;
     }
 
     /**
@@ -238,12 +261,8 @@ class DbBuilder
                 // If we're already connected to the database, we should reconnect now using the name of
                 // the newly created database.
                 $db = $this->getRootDatabaseConnection($driver, $dbHost, $rootUser, $rootPass, $newName);
-                $statements = preg_split('/;\s*([\r\n]|$)/', $sql);
+                $statements = $this->migrationLoader->splitSqlIntoStatements($sql);
                 foreach ($statements as $current) {
-                    // Skip empty sections:
-                    if (strlen(trim($current)) == 0) {
-                        continue;
-                    }
                     $db->executeQuery($current);
                 }
             }
