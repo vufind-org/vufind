@@ -181,14 +181,14 @@
 
   <!-- Report rule violations with PHPMD (mess detector) -->
   <target name="phpmd">
-    <exec executable="${srcdir}/vendor/bin/phpmd">
+    <exec executable="${srcdir}/vendor/bin/phpmd" passthru="true">
       <arg line="${srcdir}/module xml ${srcdir}/tests/phpmd.xml --exclude ${srcdir}/module/VuFind/tests,${srcdir}/module/VuFindSearch/tests --reportfile ${builddir}/reports/phpmd.xml" />
     </exec>
   </target>
 
   <!-- PHP_Depend code analysis -->
   <target name="pdepend">
-    <exec executable="${srcdir}/vendor/bin/pdepend">
+    <exec executable="${srcdir}/vendor/bin/pdepend" passthru="true" checkreturn="true">
       <arg line="--jdepend-xml=${builddir}/reports/jdepend.xml --jdepend-chart=${builddir}/reports/dependencies.svg --overview-pyramid=${builddir}/reports/pdepend-pyramid.svg ${srcdir}/module" />
     </exec>
   </target>
@@ -224,7 +224,7 @@
     </if>
   </target>
   <target name="phpcs">
-    <exec executable="${srcdir}/vendor/bin/phpcs" escape="false">
+    <exec executable="${srcdir}/vendor/bin/phpcs" escape="false" passthru="true" checkreturn="true">
       <arg line="--cache=${srcdir}/tests/phpcs.cache.json --standard=${srcdir}/tests/phpcs.xml --report=checkstyle &gt; ${builddir}/reports/checkstyle.xml" />
     </exec>
   </target>
