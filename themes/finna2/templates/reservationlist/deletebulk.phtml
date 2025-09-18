@@ -1,5 +1,5 @@
-<h2><?=$this->transEsc('delete_selected')?></h2>
- <form action="<?=$this->url('reservationlist-deletebulk', ['listId' => $this->list->getId()])?>" method="post" name="deleteBulk" data-lightbox-onclose="VuFind.refreshPage">
+<?=$this->component('page-title', ['title' => $this->translate('delete_selected')])?>;
+<form action="<?=$this->url('reservationlist-deletebulk', ['listId' => $this->list->getId()])?>" method="post" name="deleteBulk" data-lightbox-onclose="VuFind.refreshPage">
   <div id="popupMessages"><?=$this->flashmessages()?></div>
   <div id="popupDetails">
     <?php if (!$this->list): ?>

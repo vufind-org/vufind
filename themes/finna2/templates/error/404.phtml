@@ -1,6 +1,5 @@
 <?php
-  $this->layout()->finnaMainHeader = '<div><h3 class="finna-main-header">' . $this->transEsc($this->message) . '</h3></div>';
-  $this->headTitle($this->transEsc($this->message));
+  $this->layout()->finnaMainHeader = $this->component('page-title', ['title' => $this->translate($this->message), 'class' => 'finna-main-header']);
 ?>
 <div class="content-404">
   <?php if (isset($this->reason) && $this->reason): ?><!-- <p><b><?=$this->transEsc('Message')?>:</b> <?=$this->transEsc($this->reason)?></p> --><?php endif; ?>

@@ -1,7 +1,5 @@
 <!-- START of: finna - myresearch/fines.phtml -->
 <?php
-    // Set up page title:
-    $this->headTitle($this->translate('My Fines'));
     $this->layout()->finnaUserAccountHeading = 'useraccount-content-heading';
 
     // Set up breadcrumbs:
@@ -118,8 +116,8 @@
       <div class="useraccount-row">
         <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user, 'label' => 'Library Card'])?>
       </div>
-      <div id="useraccount-content-heading" class="useraccount-header" tabindex="0">
-        <h2><?=$this->transEsc('Your Fines') . ' (' . count($this->fines ?? []) . ')'?></h2>
+      <div id="useraccount-content-heading" class="useraccount-header">
+        <?=$this->component('page-title', ['title' => $this->translate('Your Fines') . " ($rowCount)", 'headTitle' => $this->translate('My Fines')]);?>
       </div>
     </div>
     <?=$this->flashmessages()?>

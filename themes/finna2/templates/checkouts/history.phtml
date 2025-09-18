@@ -1,7 +1,5 @@
 <!-- START of: finna - myresearch/historicloans.phtml -->
 <?php
-    // Set up page title:
-    $this->headTitle($this->translate('Loan History'));
     $this->layout()->finnaUserAccountHeading = 'useraccount-content-heading';
 
     // Set up breadcrumbs:
@@ -26,8 +24,8 @@
     <div class="useraccount-row">
       <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user, 'label' => 'Library Card'])?>
     </div>
-    <div id="useraccount-content-heading" class="useraccount-header" tabindex="0">
-      <h2><?=$this->transEsc('Loan History')?> (<?=$recordCount;?>)</h2>
+    <div id="useraccount-content-heading" class="useraccount-header">
+      <?=$this->component('page-title', ['title' => $this->translate('Loan History') . " ($recordCount)", 'headTitle' => $this->translate('Loan History')]);?>
     </div>
     <?php if (isset($this->noSupport)): ?>
       <?php if (count($this->libraryCards()->getCardsForUser($user)) > 1): ?>

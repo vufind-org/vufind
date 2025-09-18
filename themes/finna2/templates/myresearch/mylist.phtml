@@ -3,8 +3,6 @@
   // Grab list object from search results (if applicable):
   $list = $this->results->getListObject();
 
-  // Set up page title:
-  $this->headTitle($list ? $list->getTitle() : $this->translate('saved_items'));
   $this->layout()->finnaUserAccountHeading = 'useraccount-content-heading';
 
   // Set up breadcrumbs:
@@ -45,15 +43,15 @@
     <input type="hidden" name="listID" value="<?=$this->escapeHtmlAttr($list->getId())?>">
     <input type="hidden" name="listName" value="<?=$this->escapeHtmlAttr($list->getTitle())?>">
   <?php endif; ?>
-  <div id="useraccount-content-heading" class="clearfix mylist-header hidden-print" tabindex="0">
+  <div class="clearfix mylist-header hidden-print" tabindex="0">
     <div>
       <?=$this->flashmessages()?>
     </div>
     <div>
       <?php if ($list): ?>
-        <div class="useraccount-header">
-          <h2><?=$this->transEsc('saved_items')?></h2>
-        </div>
+        <div id="useraccount-content-heading" class="useraccount-header">
+          <?=$this->component('page-title', ['title' => $this->translate('saved_items'), 'headTitle' => $this->translate('saved_items')])?>
+        </div>  
         <div class="useraccount-header">
           <h3 class="list-title"><i class="list-title-edit fa fa-pen" aria-label="<?=$this->transEscAttr('edit')?>"></i><span><?=$this->escapeHtml($list->getTitle())?></span></h3>
         </div>
@@ -103,9 +101,7 @@
           </div>
         <?php endif ?>
       <?php else: ?>
-        <div class="useraccount-header">
-          <h2 class="list-title no-edit"><span><?=$this->transEsc('default_list_title')?></span></h2>
-        </div>
+        <?=$this->component('page-title', ['class' => 'list-title no-edit', 'title' => $this->translate('default_list_title'), 'headTitle' => $this->translate('saved_items')])?>
       <?php endif; ?>
     </div>
   </div>

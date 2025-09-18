@@ -1,14 +1,12 @@
 <!-- START of: finna - librarycards/recover.phtml -->
 <?php
-    // Set up page title:
-    $this->headTitle($this->translate('recovery_title'));
     $this->layout()->finnaMainHeader = '';
 
     // Set up breadcrumbs:
     $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
       ->add($this->translate('recovery_title'), active: true);
 ?>
-<h2><?=$this->transEsc('recovery_title') ?></h2>
+<?=$this->component('page-title', ['title' => $this->translate('recovery_title')]);?>
 <?=$this->flashmessages()?>
 <?php if ($this->recoveryDisabled): ?>
   <div class="error"><?=$this->transEsc('recovery_disabled') ?></div>

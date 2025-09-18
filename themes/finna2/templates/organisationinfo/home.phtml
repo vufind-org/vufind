@@ -1,7 +1,6 @@
 <!-- START of: finna - organisationinfo/home.phtml -->
 <?php
-  $this->headTitle($this->title);
-  $this->layout()->finnaMainHeader = '<div><h2>' . $this->escapeHtml($this->title) . '</h2></div>';
+  $this->layout()->finnaMainHeader = $this->component('page-title', ['title' => $this->title]);
 
   $initParams = json_encode(
       [

@@ -1,7 +1,5 @@
 <!-- START of: finna - myresearch/storageretrievalrequests.phtml -->
 <?php
-  // Set up page title:
-  $this->headTitle($this->translate('Storage Retrieval Requests'));
   $this->layout()->finnaUserAccountHeading = 'useraccount-content-heading';
 
   // Set up breadcrumbs:
@@ -9,6 +7,7 @@
     ->add($this->translate('Storage Retrieval Requests'), active: true);
 
   $user = $this->auth()->getUserObject();
+  $recordCount = count($this->recordList ?? []);
 ?>
 
 <!-- Leftside navigationbar -->
@@ -22,8 +21,8 @@
     <div class="useraccount-row">
       <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user, 'label' => 'Library Card'])?>
     </div>
-    <div id="useraccount-content-heading" class="useraccount-header" tabindex="0">
-      <h2><?=$this->transEsc('Storage Retrieval Requests') ?> (<?=count($this->recordList ?? []);?>)</h2>
+    <div id="useraccount-content-heading" class="useraccount-header">
+      <?=$this->component('page-title', ['title' => $this->translate('Storage Retrieval Requests') . " ($recordCount)", 'headTitle' => $this->translate('Storage Retrieval Requests')]);?>
     </div>
     <?php if (isset($this->noSupport)): ?>
       <?php if (count($this->libraryCards()->getCardsForUser($user)) > 1): ?>

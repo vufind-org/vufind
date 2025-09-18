@@ -1,16 +1,13 @@
 <!-- START of: finna - librarycards/register.phtml -->
 <?php
-    // Set up page title:
     $targetName = $this->translate('source_' . $this->target, null, $this->target);
-    $pageTitle = $this->translate('new_ils_account') . " ($targetName)";
-    $this->headTitle($pageTitle);
     $this->layout()->finnaMainHeader = '';
 
     // Set up breadcrumbs:
     $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
       ->add($this->translate('new_ils_account'), active: true);
 ?>
-<h2><?=$this->escapeHtml($pageTitle) ?></h2>
+<?=$this->component('page-title', ['title' => $this->translate('new_ils_account') . " ($targetName)"]);?>
 <?=$this->flashmessages()?>
 
 <?php if (!$this->emailSent): ?>

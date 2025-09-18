@@ -1,15 +1,11 @@
 <?php
   $pageTitle = $this->translate('ReservationList::reserve_to_research_room');
-  // Set up page title:
-  $this->headTitle($pageTitle);
-
   // Set up breadcrumbs:
   $this->breadcrumbs()->set(...$this->recordLinker()->getBreadcrumbParams($this->driver))
     ->add($pageTitle, active: true);
   $user = $this->auth()->getUserObject();
 ?>
-
-<h2><?= $this->escapeHtml($pageTitle); ?></h2>
+<?=$this->component('page-title', ['title' => $pageTitle]);?>
 
 <?php // TODO: create a component which handles the defaulting into prettier form ?>
 <?php if ($title = $listHandler->getTitle($this->layout()->userLang)): ?>

@@ -1,7 +1,5 @@
 <?php
-  // Set up page title:
   $pageTitle = $this->translate('ReservationList::Create new list for holds');
-  $this->headTitle($pageTitle);
 
   // Set up breadcrumbs:
   if ($this->driver) {
@@ -14,7 +12,7 @@
 
 <?=$this->flashmessages()?>
 
-<h2><?=$this->transEsc($pageTitle); ?></h2>
+<?=$this->component('page-title', ['title' => $pageTitle]);?>
 
 <form class="form-edit-list" method="post" name="CreateReservationList" action="<?=$this->url('reservationlist-createlist'); ?>">
   <input type="hidden" name="recordId" value="<?=$this->escapeHtmlAttr($this->recordId)?>">

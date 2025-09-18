@@ -2,9 +2,6 @@
 <?php
     $this->assetManager()->appendScriptLink('finna-primo-adv-search.js');
 
-    // Set page title.
-    $this->headTitle($this->translate('Advanced Search'));
-
     // Disable top search box -- this page has a special layout.
     $this->layout()->searchbox = false;
 
@@ -31,7 +28,7 @@
     $this->searchType = 'advanced';
     $searchTabs = $this->searchtabs()->getTabConfig($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, $hiddenFilters, []);
     $this->layout()->finnaMainTabs = $this->context($this)->renderInContext('search/searchTabs', ['searchTabs' => $searchTabs['tabs'], 'hiddenFilters' => $hiddenFilters]);
-    $this->layout()->finnaMainHeader = '<div><h1 class="content-header">' . $this->transEsc('Advanced Search from Primo') . '</h1></div>';
+    $this->layout()->finnaMainHeader = $this->component('page-title', ['title' => $this->translate('Advanced Search from Primo'), 'headTitle' => $this->translate('Advanced Search'), 'class' => 'content-header', 'level' => 1]);
 ?>
 <form id="advSearchForm" name="searchForm"  method="get" action="<?=$this->url($this->options->getSearchAction())?>" class="form-horizontal">
   <input type="hidden" name="join" value="AND">

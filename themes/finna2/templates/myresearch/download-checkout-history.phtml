@@ -1,13 +1,11 @@
 <!-- START of: finna - myresearch/download-checkout-history.phtml -->
 <?php
-    // Set page title.
-    $this->headTitle($this->translate('loan_history_download'));
-
     // Set up breadcrumbs:
     $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
       ->add($this->translate('loan_history_download'), active: true);
 
     $inLightBox = $this->inLightbox ?? false;
+    $fullTitle = $this->translate('loan_history_download') . ': ' . $this->transEscWithPrefix('loan_history_download_', $this->format);
 ?>
 <?php if (!$inLightBox): ?>
   <!-- Leftside navigationbar -->
@@ -18,7 +16,7 @@
   <?=$this->assetManager()->outputHeaderAssets()?>
 <?php endif; ?>
 
-<h2><?=$this->transEsc('loan_history_download') . ': ' . $this->transEscWithPrefix('loan_history_download_', $this->format); ?></h2>
+<?=$this->component('page-title', ['title' => $fullTitle, 'headTitle' => $this->translate('loan_history_download')]);?>
 
 <?php if (!$this->translationEmpty('download_checkout_history_info_html')): ?>
   <div class="alert alert-info"><?=$this->translate('download_checkout_history_info_html'); ?></div>

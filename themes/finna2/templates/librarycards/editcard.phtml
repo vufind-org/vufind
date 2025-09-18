@@ -2,7 +2,6 @@
 <?php
   // Set up page title:
   $pageTitle = empty($this->card->getId()) ? 'Connect Library Card' : 'Update Card Details';
-  $this->headTitle($this->translate($pageTitle));
 
   // Set up breadcrumbs:
   $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
@@ -16,7 +15,7 @@
 <div class="<?=$this->layoutClass('mainbody-myresearch')?>">
   <?=$this->flashmessages()?>
 
-  <h2><?=$this->transEsc($pageTitle); ?></h2>
+  <?= $this->component('page-title', ['title' => $this->translate($pageTitle)]);?>
   <form class="edit-card-form" method="post" name="<?=empty($this->card->getId()) ? 'newCardForm' : 'editCardForm'?>" autocomplete="off" data-clear-account-cache>
     <input type="hidden" name="id" value="<?=empty($this->card->getId()) ? 'NEW' : $this->escapeHtmlAttr($this->card->getId()) ?>">
     <div class="form-group">

@@ -1,20 +1,12 @@
 <?php
   $form = $this->form;
   $form->prepare();
-
-  $title = $form->getTitle();
-  $title = !empty($title) ? $this->translate($title) : null;
 ?>
 <?php if (!$this->inLightbox): ?>
 <div class="feedback-content">
 <?php endif; ?>
-  <?php if ($title): ?>
-    <?php $this->headTitle($title); ?>
-    <?php if (!$this->inLightbox): ?>
-      <h1><?=$this->escapeHtml($title)?></h1>
-    <?php else: ?>
-      <h2><?=$this->escapeHtml($title)?></h2>
-    <?php endif; ?>
+  <?php if ($title = $this->translate($form->getTitle() ?: '')): ?>
+    <?=$this->component('page-title', ['title' => $title, 'level' => 1])?>
   <?php endif; ?>
   <p role="status"><?= $this->translate($this->successMessage) ?></p>
 <?php if (!$this->inLightbox): ?>

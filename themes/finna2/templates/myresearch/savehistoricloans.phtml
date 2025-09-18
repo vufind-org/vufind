@@ -1,8 +1,4 @@
-<?php
-  // Set page title.
-  $this->headTitle($this->translate('loan_history_save'));
-?>
-<h2><?=$this->transEsc('loan_history_save') ?></h2>
+<?=$this->component('page-title', ['title' => $this->translate('loan_history_save')]);?>
 <?=$this->flashmessages()?>
 <p><?=$this->transEsc('loan_history_save_info_html') ?></p>
 <form class="form-record-save" method="post" action="<?=$this->url('myresearch-savehistoricloans')?>" name="saveLoans" data-lightbox-onclose="VuFind.saveStatuses.refresh">

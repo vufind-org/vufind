@@ -1,7 +1,4 @@
 <?php
-    // Set page title.
-    $this->headTitle($this->translate('request_place_text') . ': ' . $this->driver->getBreadcrumb());
-
     // Set up breadcrumbs:
     $this->breadcrumbs()->reset();
     if ($url = $this->searchMemory()->getLastSearchUrl()) {
@@ -13,7 +10,7 @@
     // Make sure extra hold fields is an array (might not be if ILS connection failed):
     $this->extraHoldFields ??= [];
 ?>
-<h2><?=$this->transEsc('request_place_text')?></h2>
+<?=$this->component('page-title', ['title' => $this->translate('request_place_text'), 'headTitle' => $this->translate('request_place_text') . ': ' . $this->driver->getBreadcrumb()]);?>
 <?php if ($this->helpText): ?>
 <p class="helptext"><?=$this->helpText?></p>
 <?php endif; ?>

@@ -1,7 +1,5 @@
 <!-- START of: finna - record/validationreport.phtml -->
 <?php
-  $this->headTitle($this->translate('Validation::report_title'));
-
   $list = function (array $items): string {
     return '<ul class="list-bullets">'
       . implode(
@@ -21,7 +19,7 @@
       . '</ul>';
   };
 ?>
-<h2><?=$this->transEsc('Validation::report_title')?></h2>
+<?=$this->component('page-title', ['title' => $this->translate('Validation::report_title')])?>
 
 <?=$this->flashmessages()?>
 

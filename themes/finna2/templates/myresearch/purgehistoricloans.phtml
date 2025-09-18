@@ -1,8 +1,5 @@
 <!-- START of: finna - myresearch/purgehistoricloans.phtml -->
 <?php
-    // Set up page title:
-    $this->headTitle($this->translate('loan_history_purge'));
-
     // Set up myresearch menu
     $this->layout()->finnaMainTabs = $this->context($this)->renderInContext('myresearch/menu.phtml', ['active' => 'purgehistoricloans']);
 
@@ -10,8 +7,7 @@
     $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
       ->add($this->translate('loan_history_purge'), active: true);
 ?>
-<h2><?=$this->transEsc('loan_history_purge')?></h2>
-
+<?=$this->component('page-title', ['title' => $this->translate('loan_history_purge')]);?>
 <div>
   <div class="my-research-content">
     <?=$this->flashmessages()?>

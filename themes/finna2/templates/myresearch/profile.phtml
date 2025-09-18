@@ -1,7 +1,5 @@
 <!-- START of: finna - myresearch/profile.phtml -->
 <?php
-    // Set up page title:
-    $this->headTitle($this->translate('My Profile'));
     $this->layout()->finnaUserAccountHeading = 'useraccount-content-heading';
 
     // Set up breadcrumbs:
@@ -48,8 +46,8 @@
 <?= $this->context($this)->renderInContext('myresearch/menu.phtml', ['active' => 'profile']); ?>
 
 <div class="<?=$this->layoutClass('mainbody-myresearch')?>">
-  <div id="useraccount-content-heading" class="useraccount-header" tabindex="0">
-    <h2><?=$this->transEsc('Profile')?></h2>
+  <div id="useraccount-content-heading" class="useraccount-header">
+    <?=$this->component('page-title', ['title' => $this->translate('My Profile')]);?>
   </div>
   <div class="my-research-content">
     <div>

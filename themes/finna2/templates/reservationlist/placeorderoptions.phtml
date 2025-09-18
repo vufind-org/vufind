@@ -1,7 +1,5 @@
 <?php
   $pageTitle = $this->translate('ReservationList::reserve_to_research_room');
-  // Set up page title:
-  $this->headTitle($pageTitle);
   $user = $this->auth()->getUserObject();
 
   // Set up breadcrumbs:
@@ -14,7 +12,7 @@
     'listIdentifier' => $this->listHandler->getIdentifier(),
   ];
 ?>
-<h2><?= $this->escapeHtml($pageTitle); ?></h2>
+<?=$this->component('page-title', ['title' => $pageTitle]);?>
 <div>
   <div>
     <label for="resource_name"><?=$this->transEsc('ReservationList::Resource')?>:</label>

@@ -2,7 +2,6 @@
 <?php
   // Set up page title:
   $pageTitle = $this->translate($this->listEntity->getTitle());
-  $this->headTitle($pageTitle);
 
   // Set up breadcrumbs:
   $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
@@ -17,8 +16,8 @@
 
 <div class="<?=$this->layoutClass('mainbody-myresearch')?> reservation-list-body">
   <div class="my-research-content">
-    <div class="title-wrapper">
-      <h2><?=$this->escapeHtml($pageTitle) ?></h2>
+    <div id="useraccount-content-heading" class="useraccount-header">
+      <?=$this->component('page-title', ['title' => $pageTitle]);?>
     </div>
     <?= $this->flashmessages() ?>
     <?php // TODO: create a component which handles the defaulting into prettier form ?>

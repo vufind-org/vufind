@@ -1,7 +1,4 @@
 <?php
-  // Set page title.
-  $this->headTitle($this->translate('email_selected_favorites'));
-
   // Set up breadcrumbs:
   $this->breadcrumbs()->reset();
   if ($url = $this->searchMemory()->getLastSearchUrl()) {
@@ -10,7 +7,7 @@
   $this->breadcrumbs()->add($this->translate('Book Bag'), $this->url('cart-home'))
     ->add($this->translate('email_selected_favorites'), active: true);
 ?>
-<h2><?=$this->transEsc('bulk_email_cart') ?></h2>
+<?=$this->component('page-title', ['title' => $this->translate('bulk_email_cart'), 'headTitle' => $this->translate('email_selected_favorites')]);?>
 <?=$this->flashmessages()?>
 <?php if (count($this->records) > 0): ?>
   <form class="form-cart-email" action="<?=$this->url('cart-email')?>" method="post"  name="bulkEmail">

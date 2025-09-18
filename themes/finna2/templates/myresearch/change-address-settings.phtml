@@ -5,16 +5,13 @@
     $updateEmail = $this->ils()->checkFunction('updateEmail', compact('patron'));
     $updateAddress = $this->ils()->checkFunction('updateAddress', compact('patron'));
     $needsApproval = $updateAddress['needsApproval'] ?? true;
-    // If user can update contact information separately then display title for address change
-    $title = $this->translate(($updatePhone || $updateEmail) ? 'request_address_change' : 'request_contact_information_change');
-    $this->headTitle($title);
 
     // Set up breadcrumbs:
     $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
       ->add($this->translate('Profile'), active: true);
 ?>
-
-<h2><?=$this->escapeHtml($title) ?></h2>
+<?php // If user can update contact information separately then display title for address change: ?>
+<?=$this->component('page-title', ['title' => $this->translate(($updatePhone || $updateEmail) ? 'request_address_change' : 'request_contact_information_change')]);?>
 <?=$this->flashmessages()?>
 <?php if (!isset($this->requestCompleted) || !$this->requestCompleted): ?>
   <form name="requestAddressChange" method="post" action="<?=$this->url('myresearch-changeprofileaddress')?>" class="address-form profile-form" data-toggle="validator">

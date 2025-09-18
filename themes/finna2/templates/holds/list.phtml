@@ -1,7 +1,5 @@
 <!-- START of: finna - holds/list.phtml -->
 <?php
-  // Set up page title:
-  $this->headTitle($this->translate('My Holds'));
   $this->layout()->finnaUserAccountHeading = 'useraccount-content-heading';
 
   // Set up breadcrumbs:
@@ -11,6 +9,7 @@
   $user = $this->auth()->getUserObject();
   $patron = $user ? $this->auth()->getILSPatron() : false;
   $sortList = $this->sortList;
+  $holdsRecallsCount = count($this->recordList ?? []);
 ?>
 
 <!-- Leftside navigationbar -->
@@ -24,8 +23,8 @@
     <div class="useraccount-row">
       <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $user, 'label' => 'Library Card'])?>
     </div>
-    <div id="useraccount-content-heading" class="useraccount-header" tabindex="0">
-      <h2><?=$this->transEsc('Your Holds and Recalls') ?> (<?=count($this->recordList ?? []);?>)</h2>
+    <div id="useraccount-content-heading" class="useraccount-header">
+      <?=$this->component('page-title', ['title' => $this->translate('Your Holds and Recalls') . " ($holdsRecallsCount)", 'headTitle' => $this->translate('My Holds')]);?>
     </div>
     <?php if (isset($this->noSupport)): ?>
       <?php if (count($this->libraryCards()->getCardsForUser($user)) > 1): ?>

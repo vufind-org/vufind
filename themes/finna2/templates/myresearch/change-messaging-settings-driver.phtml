@@ -1,15 +1,12 @@
 <!-- START of: finna - myresearch/change-messaging-settings-driver.phtml -->
 <?php
-    // Set up page title:
-    $this->headTitle($this->translate('request_messaging_settings_change'));
-
     // Set up myresearch menu
     $this->layout()->finnaMainTabs = $this->context($this)->renderInContext('myresearch/menu.phtml', ['active' => 'profile']);
     // Set up breadcrumbs:
     $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
       ->add($this->translate('Profile'), active: true);
 ?>
-<h2><?=$this->transEsc('request_messaging_settings_change'); ?></h2>
+<?=$this->component('page-title', ['title' => $this->translate('request_messaging_settings_change')]);?>
 <?=$this->flashmessages()?>
 <?php if (empty($profile['email'])): ?>
   <div class="alert alert-danger">

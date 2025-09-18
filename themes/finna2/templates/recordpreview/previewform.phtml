@@ -1,8 +1,5 @@
 <!-- START of: finna - record/previewform.phtml -->
-<?php
-  $this->headTitle($this->translate('Preview'));
-?>
-<h2><?= $this->transEsc('Preview'); ?></h2>
+<?=$this->component('page-title', ['title' => $this->translate('Preview')]);?>
 
 <?=$this->flashmessages()?>
 <form class="form preview-record-form" method="post" name="previewRecord" target="_blank">

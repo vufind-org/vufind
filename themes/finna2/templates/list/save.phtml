@@ -1,8 +1,4 @@
-<?php
-  // Set page title.
-  $this->headTitle($this->translate('import_favorites_from_list'));
-?>
-<h2><?=$this->translate('import_favorites_from_list') ?></h2>
+<?=$this->component('page-title', ['title' => $this->translate('import_favorites_from_list')]);?>
 <form class="form-record-save" method="post" action="<?=$this->url('list-save', ['id' => $this->listId])?>" name="cloneList" data-lightbox-onclose="VuFind.saveStatuses.refresh">
   <input type="hidden" name="submitButton" value="1">
   <input type="hidden" name="list" value="<?=$this->escapeHtmlAttr($this->listId) ?>">

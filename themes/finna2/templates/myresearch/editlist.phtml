@@ -1,8 +1,4 @@
 <?php
-  // Set up page title:
-  $pageTitle = empty($this->list->getId()) ? 'Create a List' : 'edit_list';
-  $this->headTitle($this->translate($pageTitle));
-
   // Set up breadcrumbs:
   $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
     ->add($this->translate($pageTitle), active: true);
@@ -10,7 +6,7 @@
 
 <?=$this->flashmessages()?>
 
-<h2><?=$this->transEsc($pageTitle); ?></h2>
+<?=$this->component('page-title', ['title' => $this->translate(empty($this->list->getId()) ? 'Create a List' : 'edit_list')]);?>
 
 <form class="form-edit-list" method="post" name="<?=empty($this->list->getId()) ? 'newList' : 'editListForm'?>" action="<?=$this->url('editList'); ?>">
   <input type="hidden" name="id" value="<?=empty($this->list->getId()) ? 'NEW' : $this->escapeHtmlAttr($this->list->getId()) ?>">

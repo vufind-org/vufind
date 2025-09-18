@@ -1,8 +1,6 @@
 <!-- START of: finna - reservationlist/displaylists.phtml -->
 <?php
-  $title = $this->transEsc('ReservationList::All Lists');
-  // Set up page title:
-  $this->headTitle($title);
+  $title = $this->translate('ReservationList::All Lists');
 
   // Set up breadcrumbs:
   $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
@@ -14,7 +12,9 @@
 
 
 <div class="<?=$this->layoutClass('mainbody-myresearch')?> reservation-list-body">
-  <h2><?=$title ?></h2>
+  <div id="useraccount-content-heading" class="useraccount-header">
+    <?=$this->component('page-title', ['title' => $title]);?>
+  </div>
   <?= $this->flashmessages() ?>
   <ul class="reservations-list-home-ul">
     <?php foreach ($this->listEntities ?? [] as $listEntity): ?>

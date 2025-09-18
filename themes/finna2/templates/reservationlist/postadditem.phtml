@@ -2,8 +2,6 @@
   $pageTitleKey = $this->listEntity->getOrdered() ? 'ReservationList::form_email_subject' : 'ReservationList::Add to reservation list';
   $toListKey = $this->listEntity->getOrdered() ? 'go_to_list' : 'ReservationList::Continue to sending the hold request';
   $pageTitle = $this->translate($pageTitleKey);
-  // Set up page title:
-  $this->headTitle($pageTitle);
   $user = $this->auth()->getUserObject();
 
   // Set up breadcrumbs:
@@ -11,7 +9,7 @@
     ->add($pageTitle, active: true);
 ?>
 
-<h2><?= $this->escapeHtml($pageTitle) ?></h2>
+<?=$this->component('page-title', ['title' => $pageTitle]);?>
 
 <p><?=$this->transEsc('ReservationList::resource_added_to_list', ['%%resource%%' => $this->driver->getTitle(), '%%list%%' => $this->listEntity->getTitle()]);?></p>
 
