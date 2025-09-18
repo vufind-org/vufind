@@ -71,7 +71,7 @@ class AbstractMultiDriverFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
         return new $requestedName(
-            $container->get(\VuFind\Config\PluginManager::class),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class),
             $container->get(\VuFind\ILS\Driver\PluginManager::class)
         );
     }
