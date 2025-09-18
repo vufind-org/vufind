@@ -136,6 +136,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                     'reference' => '',
                     'publishingInfo' => '',
                     'mainHeading' => '',
+                    'relation' => '',
                 ],
                 [
                     'id' => '',
@@ -145,6 +146,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                     'reference' => '',
                     'publishingInfo' => '',
                     'mainHeading' => '',
+                    'relation' => '',
                 ],
             ],
         ];
@@ -164,6 +166,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                     'reference' => '',
                     'publishingInfo' => '',
                     'mainHeading' => '',
+                    'relation' => '',
                 ],
                 [
                     'id' => '',
@@ -173,6 +176,17 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                     'reference' => '',
                     'publishingInfo' => '',
                     'mainHeading' => '',
+                    'relation' => '',
+                ],
+                [
+                    'id' => '',
+                    'linkingId' => '(FI-MELINDA)019172566',
+                    'sourceId' => 'Solr',
+                    'title' => 'Art Research',
+                    'reference' => '',
+                    'publishingInfo' => '',
+                    'mainHeading' => '',
+                    'relation' => 'Included in collections',
                 ],
             ],
         ];
@@ -192,6 +206,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                     'reference' => '',
                     'publishingInfo' => '',
                     'mainHeading' => '',
+                    'relation' => '',
                 ],
                 [
                     'id' => '',
@@ -201,6 +216,17 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                     'reference' => '',
                     'publishingInfo' => '',
                     'mainHeading' => '',
+                    'relation' => '',
+                ],
+                [
+                    'id' => '',
+                    'linkingId' => '',
+                    'sourceId' => 'Solr',
+                    'title' => 'Art Research',
+                    'reference' => '',
+                    'publishingInfo' => '',
+                    'mainHeading' => '',
+                    'relation' => 'Included in collections',
                 ],
             ],
         ];
@@ -220,6 +246,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                     'reference' => '',
                     'publishingInfo' => '',
                     'mainHeading' => '',
+                    'relation' => '',
                 ],
                 [
                     'id' => 'link.withdot2',
@@ -229,6 +256,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                     'reference' => '',
                     'publishingInfo' => '',
                     'mainHeading' => '',
+                    'relation' => '',
                 ],
             ],
         ];
@@ -248,6 +276,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                     'reference' => '',
                     'publishingInfo' => '',
                     'mainHeading' => '',
+                    'relation' => '',
                 ],
                 [
                     'id' => '555',
@@ -257,6 +286,17 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                     'reference' => '',
                     'publishingInfo' => '',
                     'mainHeading' => '',
+                    'relation' => '',
+                ],
+                [
+                    'id' => '019172566',
+                    'linkingId' => '',
+                    'sourceId' => 'Solr',
+                    'title' => 'Art Research',
+                    'reference' => '',
+                    'publishingInfo' => '',
+                    'mainHeading' => '',
+                    'relation' => 'Included in collections',
                 ],
             ],
         ];
@@ -319,6 +359,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                         'type' => 'bib',
                         'value' => 'test.123456',
                     ],
+                    'isCollection' => false,
                 ],
                 [
                     'value' => 'United records parent',
@@ -327,6 +368,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                         'type' => 'title',
                         'value' => 'United records parent',
                     ],
+                    'isCollection' => false,
                 ],
             ],
         ];
@@ -345,6 +387,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                         'type' => 'linkingId',
                         'value' => '(FI-MELINDA)123456789',
                     ],
+                    'isCollection' => false,
                 ],
                 [
                     'value' => 'United records Top',
@@ -353,6 +396,16 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                         'type' => 'linkingId',
                         'value' => '(FI-MELINDA)555',
                     ],
+                    'isCollection' => false,
+                ],
+                [
+                    'value' => 'Art Research',
+                    'title' => 'Included in collections',
+                    'link' => [
+                        'type' => 'linkingId',
+                        'value' => '(FI-MELINDA)019172566',
+                    ],
+                    'isCollection' => true,
                 ],
             ],
         ];
@@ -371,6 +424,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                         'type' => 'bib',
                         'value' => '123456789',
                     ],
+                    'isCollection' => false,
                 ],
                 [
                     'value' => 'United records Top',
@@ -379,6 +433,16 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                         'type' => 'bib',
                         'value' => '555',
                     ],
+                    'isCollection' => false,
+                ],
+                [
+                    'value' => 'Art Research',
+                    'title' => 'Included in collections',
+                    'link' => [
+                        'type' => 'bib',
+                        'value' => '019172566',
+                    ],
+                    'isCollection' => true,
                 ],
             ],
         ];
@@ -397,6 +461,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                         'type' => 'linkingId',
                         'value' => '(FI-MELINDA)123456789',
                     ],
+                    'isCollection' => false,
                 ],
                 [
                     'value' => 'United records Top',
@@ -405,6 +470,16 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                         'type' => 'linkingId',
                         'value' => '(FI-NL)555',
                     ],
+                    'isCollection' => false,
+                ],
+                [
+                    'value' => 'Art Research',
+                    'title' => 'Included in collections',
+                    'link' => [
+                        'type' => 'title',
+                        'value' => 'Art Research',
+                    ],
+                    'isCollection' => true,
                 ],
             ],
         ];
@@ -423,6 +498,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                         'type' => 'bib',
                         'value' => 'link.withdot1',
                     ],
+                    'isCollection' => false,
                 ],
                 [
                     'value' => 'United records parent',
@@ -431,6 +507,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                         'type' => 'bib',
                         'value' => 'link.withdot2',
                     ],
+                    'isCollection' => false,
                 ],
             ],
         ];
@@ -452,6 +529,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                         'type' => 'title',
                         'value' => 'United records parent',
                     ],
+                    'isCollection' => false,
                 ],
                 [
                     'value' => 'United records Top',
@@ -460,6 +538,16 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                         'type' => 'title',
                         'value' => 'United records Top',
                     ],
+                    'isCollection' => false,
+                ],
+                [
+                    'value' => 'Art Research',
+                    'title' => 'Included in collections',
+                    'link' => [
+                        'type' => 'title',
+                        'value' => 'Art Research',
+                    ],
+                    'isCollection' => true,
                 ],
             ],
         ];

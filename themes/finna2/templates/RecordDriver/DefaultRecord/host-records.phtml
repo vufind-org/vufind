@@ -1,5 +1,4 @@
 <?php foreach ($hostRecords as $i => $hostRecord): ?>
-  <?=$i > 0 ? '<br>' : ''?>
   <?php
     $label = $hostRecord['title'] ?: $hostRecord['mainHeading'];
     $link = '';
@@ -12,7 +11,8 @@
     }
   ?>
   <?php if ($link): ?>
-    <a href="<?=$this->escapeHtmlAttr($link)?>"><?=$label?></a>
+    <div><a href="<?=$this->escapeHtmlAttr($link)?>"><?=$label?></a>  <?=$this->escapeHtml($hostRecord['reference']); ?></div>
+  <?php else: ?>
+    <div><?=$this->escapeHtml($hostRecord['reference']); ?></div>
   <?php endif; ?>
-  <?=$this->escapeHtml($hostRecord['reference']); ?>
 <?php endforeach; ?>

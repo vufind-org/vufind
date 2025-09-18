@@ -6,18 +6,41 @@
     <?php
       $containerSource = $this->driver->getSourceIdentifier();
       $containerID = $this->driver->getContainerRecordID();
+      $linkedItems = $nonLinkedItems = [];
+      foreach ($hostRecords ?? [] as $hostRecord) {
+        if ($hostRecord['relation']) {
+          $linkedItems[] = $hostRecord;
+        } else {
+          $nonLinkedItems[] = $hostRecord;
+        }
+      }
+      $hostRecords = $nonLinkedItems;
     ?>
     <div class="truncate-field">
-      <span class="recordPublished"><?=$this->transEsc('Published in')?>: </span>
-      <?php if ($hostRecords): ?>
-        <?= $this->record($this->driver)->renderTemplate('host-records.phtml', compact('hostRecords', 'driver')); ?>
-      <?php else: ?>
-        <?php $link = $containerID ? $this->recordLinker()->getUrl($containerSource . '|' . $containerID) : $this->record($this->driver)->getLink('title', $containerTitle); ?>
-        <a href="<?=$this->escapeHtmlAttr($link)?>"><?=$this->escapeHtml($containerTitle)?></a>
-        <?php $ref = $this->driver->getContainerReference();
-        if (!empty($ref)) {
-          echo $this->escapeHtml($ref);
-        } ?>
+      <?php if ($hostRecords || !$linkedItems): ?>
+        <div class="published-in">
+          <div class="recordPublished"><?=$this->transEsc('Published in')?>: </div>
+          <div class="container-reference-links">
+            <?php if ($hostRecords): ?>
+              <?= $this->record($this->driver)->renderTemplate('host-records.phtml', compact('hostRecords', 'driver')); ?>
+            <?php else: ?>
+              <?php $link = $containerID ? $this->recordLinker()->getUrl($containerSource . '|' . $containerID) : $this->record($this->driver)->getLink('title', $containerTitle); ?>
+              <a href="<?=$this->escapeHtmlAttr($link)?>"><?=$this->escapeHtml($containerTitle)?></a>
+              <?php $ref = $this->driver->getContainerReference();
+              if (!empty($ref)) {
+                echo $this->escapeHtml($ref);
+              } ?>
+            <?php endif; ?>
+          </div>
+        </div>
+      <?php endif; ?>
+      <?php if ($linkedItems && !$this->inRecordInfo): ?>
+        <div class="included-in">
+          <div class="record-included-in"><?=$this->transEsc('Included in collections')?>: </div>
+          <div class="container-reference-links">
+            <?= $this->record($this->driver)->renderTemplate('host-records.phtml', ['hostRecords' => $linkedItems, 'includedIn' => true]); ?>
+          </div>
+        </div>
       <?php endif; ?>
     </div>
   </div>

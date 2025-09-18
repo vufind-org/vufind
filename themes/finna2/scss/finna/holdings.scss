@@ -401,8 +401,13 @@
                 line-height: 1.3;
             }
         }
-        .recordPublished {
-            font-weight: 700;
+        .recordContainerReference {
+            .container-reference-links {
+                padding-left: 1em;
+            }
+            .recordPublished, .record-included-in {
+                font-weight: 700;
+            }
         }
     }
     .headers {

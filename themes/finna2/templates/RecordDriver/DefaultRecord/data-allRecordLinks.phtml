@@ -13,10 +13,12 @@
     <?php foreach ($allLinks as $title => $links): ?>
       <tr class="recordLinks">
         <th><?=$this->transEsc($title);?></th>
+        <?php $class = isset($links[0]['isCollection']) ? 'contained-in' : ''; ?>
         <td>
           <?php foreach ($links as $link): ?>
-            <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->related($link['link'], $this->driver->getSourceIdentifier()));?>"><?=$this->escapeHtml($link['value'] ?: $this->translate($title));?></a><?php if (isset($link['detail'])): ?> (<?=$this->escapeHtml($link['detail'])?>)<?php endif; ?><?php if (!empty($link['misc'])): ?> / <?=$this->escapeHtml($link['misc'])?><?php endif; ?>
-            <br>
+            <div class="<?=$class?>">
+              <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->related($link['link'], $this->driver->getSourceIdentifier()));?>"><?=$this->escapeHtml($link['value'] ?: $this->translate($title));?></a><?php if (isset($link['detail'])): ?> (<?=$this->escapeHtml($link['detail'])?>)<?php endif; ?><?php if (!empty($link['misc'])): ?> / <?=$this->escapeHtml($link['misc'])?><?php endif; ?>
+            </div>
           <?php endforeach; ?>
         </td>
       </tr>

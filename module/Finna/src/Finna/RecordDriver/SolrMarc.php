@@ -94,6 +94,15 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc implements \Laminas\Log\Log
     ];
 
     /**
+     * Mappings for component part relations
+     *
+     * @var array
+     */
+    protected $relationMappings = [
+        'Sisältyy kokoelmaan' => 'Included in collections',
+    ];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Config\Config $mainConfig     VuFind main configuration (omit
@@ -209,19 +218,21 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc implements \Laminas\Log\Log
 
                 // Get data for field
                 $tmp = $this->getFieldData($field);
+                if (!$tmp) {
+                    continue;
+                }
 
+                $tmp['isCollection'] = false;
                 if ($value == '730') {
                     // getfieldData doesn't handle subfield a (it's not the same for
                     // other fields), so do it now if we didn't get a title:
-                    if ($tmp) {
-                        if ('' === $tmp['value']) {
-                            $tmp['value'] = $this->getSubfield($field, 'a');
-                            if ('title' === $tmp['link']['type']) {
-                                $tmp['link']['value'] = $tmp['value'];
-                            }
-                            // get also subfield g for related misc info
-                            $tmp['misc'] = $this->getSubfield($field, 'g');
+                    if ('' === $tmp['value']) {
+                        $tmp['value'] = $this->getSubfield($field, 'a');
+                        if ('title' === $tmp['link']['type']) {
+                            $tmp['link']['value'] = $tmp['value'];
                         }
+                        // get also subfield g for related misc info
+                        $tmp['misc'] = $this->getSubfield($field, 'g');
                     }
                 } elseif ($value == '775' || $value == '776') {
                     // We need to display most of the subfields in this case
@@ -232,6 +243,15 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc implements \Laminas\Log\Log
                         }
                     }
                     $tmp['value'] = implode(' ', $line);
+                } elseif ($value == '773') {
+                    $relation =
+                        $this->relationMappings[$this->stripTrailingPunctuation($this->getSubfield($field, 'i'), ':')]
+                        ?? null;
+                    if ($relation) {
+                        // Use relation as the field heading:
+                        $tmp['title'] = $relation;
+                        $tmp['isCollection'] = true;
+                    }
                 }
                 $result[] = $tmp;
             }
@@ -984,6 +1004,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc implements \Laminas\Log\Log
             $reference = '';
             $publishingInfo = '';
             $author = '';
+            $relation = '';
             foreach ($this->getAllSubfields($field) as $subfield) {
                 $data = $subfield['data'];
                 switch ($subfield['code']) {
@@ -1008,6 +1029,9 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc implements \Laminas\Log\Log
                         break;
                     case 't':
                         $title = $this->stripTrailingPunctuation($data, '.-');
+                        break;
+                    case 'i':
+                        $relation = $this->relationMappings[$this->stripTrailingPunctuation($data, ':')] ?? '';
                         break;
                     case 'g':
                         $reference = $data;
@@ -1041,6 +1065,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc implements \Laminas\Log\Log
                 'reference' => $reference,
                 'publishingInfo' => $publishingInfo,
                 'mainHeading' => $author,
+                'relation' => $relation,
             ];
         }
         return $result;

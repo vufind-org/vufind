@@ -13,7 +13,7 @@
         }
     }
 ?>
-<table id="componentparts" class="display table">
+<table id="componentparts_table" class="display table">
   <thead>
     <tr>
       <th scope="col"><?=$this->translate('No.') ?></th>
@@ -79,7 +79,7 @@ $translations = json_encode(
 
 $script = <<<JS
     $(document).ready(function() {
-      $('table#componentparts').dataTable({
+      $('table#componentparts_table').dataTable({
         "pageLength": 50,
         "language": {$translations},
       });
