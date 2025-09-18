@@ -49,6 +49,7 @@
   <property name="pgsqlhost" value="localhost" />
   <property name="pgsqlrootuser" value="postgres" />
   <property name="disable_csp" value="false" /> <!-- set value to "true" to disable Content Security Policy -->
+  <property name="phpmd_cache_params" value="--cache" />
   <property name="phpunit_command" value="${srcdir}/vendor/bin/phpunit" />
   <property name="phpunit_extra_params" value="" />
   <property name="composer_version" value="2.7.7" />
@@ -182,7 +183,7 @@
   <!-- Report rule violations with PHPMD (mess detector) -->
   <target name="phpmd">
     <exec executable="${srcdir}/vendor/bin/phpmd" passthru="true">
-      <arg line="${srcdir}/module xml ${srcdir}/tests/phpmd.xml --exclude ${srcdir}/module/VuFind/tests,${srcdir}/module/VuFindSearch/tests --reportfile ${builddir}/reports/phpmd.xml" />
+      <arg line="${srcdir}/module xml ${srcdir}/tests/phpmd.xml --exclude ${srcdir}/module/VuFind/tests,${srcdir}/module/VuFindSearch/tests --reportfile ${builddir}/reports/phpmd.xml ${phpmd_cache_params}" />
     </exec>
   </target>
 
