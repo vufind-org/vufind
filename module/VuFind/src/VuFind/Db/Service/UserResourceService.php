@@ -233,7 +233,7 @@ class UserResourceService extends AbstractDbService implements
         $repo = $this->entityManager->getRepository(UserResourceEntityInterface::class);
         foreach ($this->getDuplicates() as $dupe) {
             // Do this as a transaction to prevent odd behavior:
-            $this->entityManager->getConnection()->beginTransaction();
+            $this->beginTransaction();
 
             // Merge notes together...
             $mainCriteria = [
@@ -265,10 +265,10 @@ class UserResourceService extends AbstractDbService implements
                 $query->setParameters($mainCriteria);
                 $query->execute();
                 // Done -- commit the transaction:
-                $this->entityManager->getConnection()->commit();
+                $this->commitTransaction();
             } catch (\Exception $e) {
                 // If something went wrong, roll back the transaction and rethrow the error:
-                $this->entityManager->getConnection()->rollBack();
+                $this->rollBackTransaction();
                 throw $e;
             }
         }

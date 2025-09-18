@@ -56,44 +56,20 @@ class CartController extends AbstractBase
     use ListItemSelectionTrait;
 
     /**
-     * Session container
-     *
-     * @var \Laminas\Session\Container
-     */
-    protected $session;
-
-    /**
-     * Configuration loader
-     *
-     * @var \VuFind\Config\PluginManager
-     */
-    protected $configLoader;
-
-    /**
-     * Export support class
-     *
-     * @var \VuFind\Export
-     */
-    protected $export;
-
-    /**
      * Constructor
      *
-     * @param ServiceLocatorInterface      $sm           Service manager
-     * @param Container                    $container    Session container
-     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
-     * @param \VuFind\Export               $export       Export support class
+     * @param ServiceLocatorInterface               $sm            Service manager
+     * @param Container                             $session       Session container
+     * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
+     * @param \VuFind\Export                        $export        Export support class
      */
     public function __construct(
         ServiceLocatorInterface $sm,
-        Container $container,
-        \VuFind\Config\PluginManager $configLoader,
-        \VuFind\Export $export
+        protected Container $session,
+        protected \VuFind\Config\ConfigManagerInterface $configManager,
+        protected \VuFind\Export $export
     ) {
         parent::__construct($sm);
-        $this->session = $container;
-        $this->configLoader = $configLoader;
-        $this->export = $export;
     }
 
     /**

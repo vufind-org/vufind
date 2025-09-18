@@ -41,6 +41,7 @@ use VuFind\Account\UserAccountService;
 use VuFind\Auth\EmailAuthenticator;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Controller\Feature\ListItemSelectionTrait;
+use VuFind\Controller\Feature\OnlinePaymentTrait;
 use VuFind\Crypt\SecretCalculator;
 use VuFind\Db\Entity\SearchEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
@@ -90,6 +91,7 @@ class MyResearchController extends AbstractBase
     use Feature\CatchIlsExceptionsTrait;
     use \VuFind\ILS\Logic\SummaryTrait;
     use ListItemSelectionTrait;
+    use OnlinePaymentTrait;
 
     /**
      * Default life time for recovery hashes (one hour)
@@ -97,13 +99,6 @@ class MyResearchController extends AbstractBase
      * @var int
      */
     public const DEFAULT_RECOVERY_HASH_LIFE_TIME = 3600;
-
-    /**
-     * Configuration loader
-     *
-     * @var \VuFind\Config\PluginManager
-     */
-    protected $configLoader;
 
     /**
      * Permission that must be granted to access this module (false for no
@@ -119,13 +114,6 @@ class MyResearchController extends AbstractBase
     protected $accessPermission = false;
 
     /**
-     * Export support class
-     *
-     * @var \VuFind\Export
-     */
-    protected $export;
-
-    /**
      * ILS Pagination Helper
      *
      * @var PaginationHelper
@@ -133,30 +121,20 @@ class MyResearchController extends AbstractBase
     protected $paginationHelper = null;
 
     /**
-     * Session container
-     *
-     * @var Container
-     */
-    protected $session;
-
-    /**
      * Constructor
      *
-     * @param ServiceLocatorInterface      $sm           Service locator
-     * @param Container                    $container    Session container
-     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
-     * @param \VuFind\Export               $export       Export support class
+     * @param ServiceLocatorInterface               $sm            Service locator
+     * @param Container                             $session       Session container
+     * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
+     * @param \VuFind\Export                        $export        Export support class
      */
     public function __construct(
         ServiceLocatorInterface $sm,
-        Container $container,
-        \VuFind\Config\PluginManager $configLoader,
-        \VuFind\Export $export
+        protected Container $session,
+        protected \VuFind\Config\ConfigManagerInterface $configManager,
+        protected \VuFind\Export $export
     ) {
         parent::__construct($sm);
-        $this->session = $container;
-        $this->configLoader = $configLoader;
-        $this->export = $export;
     }
 
     /**
@@ -1729,7 +1707,12 @@ class MyResearchController extends AbstractBase
             $accountStatus = null;
         }
 
-        return $this->createViewModel(compact('fines', 'accountStatus'));
+        $view = $this->createViewModel(compact('fines', 'accountStatus'));
+        // Handle online payment and return any response (redirect, receipt):
+        if ($paymentResponse = $this->handleOnlinePayment($patron, $view->fines, $view)) {
+            return $paymentResponse;
+        }
+        return $view;
     }
 
     /**

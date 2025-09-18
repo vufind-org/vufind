@@ -440,6 +440,59 @@ CREATE TABLE `login_token` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `payment`
+--
+
+CREATE TABLE `payment` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `local_identifier` varchar(255) NOT NULL,
+  `remote_identifier` varchar(255) NULL,
+  `user_id` int NOT NULL,
+  `source_ils` varchar(255) NOT NULL,
+  `cat_username` varchar(50) NOT NULL,
+  `amount` int NOT NULL,
+  `currency` varchar(3) NOT NULL,
+  `service_fee` int NOT NULL,
+  `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+  `paid` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+  `registration_started` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+  `registered` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+  `status` int NOT NULL DEFAULT '0',
+  `status_message` varchar(255),
+  `reported` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+  PRIMARY KEY (`id`),
+  KEY `payment_local_identifier_idx` (`local_identifier`),
+  KEY `payment_user_id_idx` (`user_id`),
+  KEY `payment_status_cat_username_created_idx` (`status`, `cat_username`, `created`),
+  KEY `payment_paid_reported_idx` (`paid`, `reported`),
+  CONSTRAINT `payment_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 collate utf8mb4_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `payment_fee`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `payment_fee` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `payment_id` int(11) NOT NULL,
+  `title` varchar(255) NOT NULL DEFAULT '',
+  `type` varchar(255) NOT NULL DEFAULT '',
+  `description` varchar(255) NOT NULL DEFAULT '',
+  `amount` int NOT NULL DEFAULT '0',
+  `tax_percent` int NOT NULL DEFAULT '0',
+  `currency` varchar(3) NOT NULL,
+  `fine_id` varchar(1024) NOT NULL DEFAULT '',
+  `organization` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  KEY `payment_fee_payment_id_idx` (`payment_id`),
+  CONSTRAINT `payment_fee_ibfk_1` FOREIGN KEY (`payment_id`) REFERENCES `payment` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 collate utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `audit_event`
 --
 
@@ -451,6 +504,7 @@ CREATE TABLE `audit_event` (
   `type` varchar(50) NOT NULL,
   `subtype` varchar(50) NOT NULL,
   `user_id` int NULL,
+  `payment_id` int NULL,
   `session_id` varchar(128) NULL,
   `username` varchar(255) NULL,
   `client_ip` varchar(255) NULL,
@@ -460,6 +514,8 @@ CREATE TABLE `audit_event` (
   `data` json DEFAULT NULL,
   PRIMARY KEY (`id`),
   KEY `audit_event_user_id_idx` (`user_id`),
-  CONSTRAINT `audit_event_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE SET NULL
+  KEY `audit_event_payment_id_idx` (`payment_id`),
+  CONSTRAINT `audit_event_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `audit_event_ibfk_2` FOREIGN KEY (`payment_id`) REFERENCES `payment` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;

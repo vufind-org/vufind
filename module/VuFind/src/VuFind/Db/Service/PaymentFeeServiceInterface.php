@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Interface for exposing the database transaction functionality.
+ * Database service interface for PaymentFee.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2024.
+ * Copyright (C) The National Library of Finland 2024-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,45 +22,51 @@
  *
  * @category VuFind
  * @package  Database
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
-namespace VuFind\Db\Service\Feature;
+declare(strict_types=1);
+
+namespace VuFind\Db\Service;
+
+use VuFind\Db\Entity\PaymentEntityInterface;
+use VuFind\Db\Entity\PaymentFeeEntityInterface;
 
 /**
- * Interface for exposing the database transaction functionality.
+ * Database service interface for PaymentFee.
  *
  * @category VuFind
  * @package  Database
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-interface TransactionInterface
+interface PaymentFeeServiceInterface extends DbServiceInterface
 {
     /**
-     * Begin a database transaction.
+     * Create a PaymentFee entity object.
      *
-     * @return void
-     * @throws Exception
+     * @return PaymentFeeEntityInterface
      */
-    public function beginTransaction(): void;
+    public function createEntity(): PaymentFeeEntityInterface;
 
     /**
-     * Commit a database transaction.
+     * Get fines associated with a payment.
      *
-     * @return void
-     * @throws Exception
+     * @param PaymentEntityInterface $payment Payment
+     *
+     * @return PaymentFeeEntityInterface[]
      */
-    public function commitTransaction(): void;
+    public function getFeesForPayment(PaymentEntityInterface $payment): array;
 
     /**
-     * Roll back a database transaction.
+     * Get IDs from fines associated with a payment
      *
-     * @return void
-     * @throws Exception
+     * @param PaymentEntityInterface $payment Payment
+     *
+     * @return string[]
      */
-    public function rollBackTransaction(): void;
+    public function getFineIdsForPayment(PaymentEntityInterface $payment): array;
 }

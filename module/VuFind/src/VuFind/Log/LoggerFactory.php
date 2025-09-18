@@ -311,7 +311,7 @@ class LoggerFactory implements FactoryInterface
                 $authManager = $container->get(\VuFind\Auth\Manager::class);
                 if ($user = $authManager->getUserObject()) {
                     $processor = new \Laminas\Log\Processor\ReferenceId();
-                    $processor->setReferenceId($user->username);
+                    $processor->setReferenceId($user->getUsername());
                     $logger->addProcessor($processor);
                 }
             }
