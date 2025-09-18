@@ -137,7 +137,9 @@ class DatabaseCommand extends Command
                 ->getMigrations($fromVersion ?? $this->migrationManager->determineOldVersion());
             if ($interactive) {
                 foreach ($migrations as $migration) {
-                    $output->writeln($migration);
+                    $output->writeln(
+                        "Working on migration: " . $this->migrationManager->getShortMigrationName($migration)
+                    );
                     $question = new ChoiceQuestion(
                         'Choose an option:',
                         [
