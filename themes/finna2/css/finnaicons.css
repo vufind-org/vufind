@@ -1,11 +1,11 @@
 @font-face {
   font-family: 'finnaicons';
-  src: url('fonts/finnaicons.eot?28767136');
-  src: url('fonts/finnaicons.eot?28767136#iefix') format('embedded-opentype'),
-       url('fonts/finnaicons.woff2?28767136') format('woff2'),
-       url('fonts/finnaicons.woff?28767136') format('woff'),
-       url('fonts/finnaicons.ttf?28767136') format('truetype'),
-       url('fonts/finnaicons.svg?28767136#finnaicons') format('svg');
+  src: url('fonts/finnaicons.eot?28767137');
+  src: url('fonts/finnaicons.eot?28767137#iefix') format('embedded-opentype'),
+       url('fonts/finnaicons.woff2?28767137') format('woff2'),
+       url('fonts/finnaicons.woff?28767137') format('woff'),
+       url('fonts/finnaicons.ttf?28767137') format('truetype'),
+       url('fonts/finnaicons.svg?28767137#finnaicons') format('svg');
   font-weight: normal;
   font-style: normal;
 }
@@ -259,3 +259,4 @@
 .fi-learning-material:before { content: '\e971'; } /* '' */
 .fi-threads-solid:before { content: '\e8cd'; } /* '[]' */
 .fi-library-card-barcode:before { content: '\e8ce'; } /* '[]' */
+.fi-external-link:before { content: '\f14c'; } /* '[]' */

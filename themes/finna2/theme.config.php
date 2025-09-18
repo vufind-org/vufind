@@ -326,7 +326,7 @@ return [
             'download' => 'FontAwesome:download',
             'email' => 'FinnaIcons:envelope',
             'export' => 'FinnaIcons:export',
-            'external-link' => 'FontAwesome:chevron-circle-right',
+            'external-link' => 'FinnaIcons:external-link',
             'facebook' => 'FinnaIcons:facebook',
             'facet-collapse' => 'FinnaIcons:down',
             'facet-exclude' => 'FontAwesome:times',
