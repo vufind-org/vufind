@@ -203,7 +203,7 @@ class DbBuilder
      * @param string   $newUser       Username for connecting to new database (will be created)
      * @param string   $newPass       Password for new user
      * @param string   $driver        Database driver to use
-     * @param string   $dbHost        Name of database host
+     * @param string   $dbHost        Name of database host (may include port number, e.g. localhost:3306)
      * @param string   $vufindHost    Name of VuFind host (for use in creating users)
      * @param string   $rootUser      Root username for connecting to database
      * @param string   $rootPass      Root password for connecting to database
@@ -226,16 +226,14 @@ class DbBuilder
         bool $returnSqlOnly = false,
         array $steps = []
     ): string {
-        $dbPort = null;
-        if (str_contains($dbHost, ':')) {
-            $dbHost = explode(':', $dbHost);
-            $dbPort = $dbHost[1];
-            $dbHost = $dbHost[0];
-        }
+        // Account for possibility of port number attached to host:
+        [$dbHost, $dbPort] = str_contains($dbHost, ':')
+            ? explode(':', $dbHost)
+            : [$dbHost, null];
         try {
-            $db = $returnSqlOnly ?
-                null :
-                $this->getRootDatabaseConnection(
+            $db = $returnSqlOnly
+                ? null
+                : $this->getRootDatabaseConnection(
                     $driver,
                     $dbHost,
                     $rootUser,
@@ -247,7 +245,7 @@ class DbBuilder
                 'Problem initializing database adapter; '
                 . 'check for missing ' . $driver
                 . ' library. Details: ' . $e->getMessage(),
-                'error',
+                $e->getCode(),
                 $e
             );
         }
