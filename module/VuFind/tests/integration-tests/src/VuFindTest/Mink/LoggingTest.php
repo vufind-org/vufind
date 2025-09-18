@@ -39,13 +39,15 @@ use function count;
 /**
  * Logging integration test.
  *
+ * Class must be final due to use of "new static()" by LiveDatabaseTrait.
+ *
  * @category VuFind
  * @package  Tests
  * @author   Sambhav Pokharel <sambhavpokharel@gmail.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class LoggingTest extends MinkTestCase
+final class LoggingTest extends MinkTestCase
 {
     use \VuFindTest\Feature\EmailTrait;
     use \VuFindTest\Feature\LiveDatabaseTrait;
