@@ -46,9 +46,9 @@ class LoggingTest extends MinkTestCase
 {
     use \VuFindTest\Feature\EmailTrait;
 
-    protected const string CRITICAL_LEVEL_REGEX = '/CRIT/';
-    protected const string DEBUG_LEVEL_REGEX = '/DEBUG/';
-    protected const string INFO_LEVEL_REGEX = '/INFO/';
+    protected const CRITICAL_LEVEL_REGEX = '/CRIT/';
+    protected const DEBUG_LEVEL_REGEX = '/DEBUG/';
+    protected const INFO_LEVEL_REGEX = '/INFO/';
 
     /**
      * Data provider for email logging test scenarios
