@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Factory for ComposedDriver ILS driver.
+ * Factory for EPF specs.
  *
  * PHP version 8
  *
- * Copyright (C) Hebis Verbundzentrale 2023.
+ * Copyright (C) Villanova University 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,14 +21,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  ILS_Drivers
+ * @package  RecordDataFormatter
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:architecture:record_data_formatter
+ * Wiki
  */
 
-namespace VuFind\ILS\Driver;
+namespace VuFind\RecordDataFormatter\Specs;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -37,16 +38,17 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for ComposedDriver ILS driver.
+ * Factory for EPF specs.
  *
  * @category VuFind
- * @package  ILS_Drivers
+ * @package  RecordDataFormatter
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:architecture:record_data_formatter
+ * Wiki
  */
-class AbstractMultiDriverFactory implements FactoryInterface
+class EPFFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -61,6 +63,8 @@ class AbstractMultiDriverFactory implements FactoryInterface
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(
         ContainerInterface $container,
@@ -68,11 +72,11 @@ class AbstractMultiDriverFactory implements FactoryInterface
         ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options passed to factory.');
+            throw new \Exception('Unexpected options sent to factory.');
         }
-        return new $requestedName(
-            $container->get(\VuFind\Config\ConfigManagerInterface::class),
-            $container->get(\VuFind\ILS\Driver\PluginManager::class)
-        );
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
+        $config = $configManager->getConfigArray('RecordDataFormatter/EPF');
+        $schemaOrgHelper = $container->get('ViewHelperManager')->get('schemaOrg');
+        return new $requestedName($config, $schemaOrgHelper);
     }
 }

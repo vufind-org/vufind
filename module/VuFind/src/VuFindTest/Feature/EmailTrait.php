@@ -81,14 +81,25 @@ trait EmailTrait
      */
     protected function getLoggedEmail(int $index = 0): Email
     {
+        $records = $this->getLoggedEmails();
+        if (null === ($record = $records[$index] ?? null)) {
+            throw new \Exception("Message with index $index not found");
+        }
+        return $record;
+    }
+
+    /**
+     * Get all logged emails from the log file.
+     *
+     * @return Email[]
+     */
+    protected function getLoggedEmails(): array
+    {
         $data = file_get_contents($this->getEmailLogPath());
         if (!$data) {
             throw new \Exception('No serialized email message data found');
         }
-        $records = explode("\x1E\x00", $data);
-        if (null === ($record = $records[$index] ?? null)) {
-            throw new \Exception("Message with index $index not found");
-        }
-        return unserialize($record);
+        $decoder = fn ($email) => unserialize(base64_decode($email));
+        return array_filter(array_map($decoder, explode("\x1E", $data)));
     }
 }

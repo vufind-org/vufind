@@ -68,12 +68,13 @@ class ConnectionFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
+        $config = $configManager->getConfigObject('config');
         $request = $container->get('Request');
         $catalog = new $requestedName(
             $config->Catalog,
             $container->get(\VuFind\ILS\Driver\PluginManager::class),
-            $container->get(\VuFind\Config\PluginManager::class),
+            $configManager,
             $request instanceof \Laminas\Http\Request ? $request : null
         );
         $catalog->setHoldConfig(
