@@ -85,6 +85,7 @@ function setupVuFindRemoteCodeCoverage(array $modules): void
         if (!mkdir($outputDir)) {
             $error("Failed to create output directory $outputDir");
         }
+        chmod($outputDir, 0o775);
     }
     $outputFile = $outputDir . '/coverage-' . time() . '-' . getmypid() . '.cov';
     header('X-VuFind-Coverage: ' . basename($outputFile));
@@ -97,6 +98,7 @@ function setupVuFindRemoteCodeCoverage(array $modules): void
         $reporter = new PHPReport();
         $result = $reporter->process($coverage);
         file_put_contents($outputFile, $result);
+        chmod($outputFile, 0o664);
     };
     register_shutdown_function($shutdownFunc);
 }

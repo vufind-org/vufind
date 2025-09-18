@@ -95,10 +95,13 @@ class RecordDataFormatter extends AbstractHelper
      */
     protected function sortCallback(array $a, array $b): int
     {
-        // Sort on 'pos' with 'label' as tie-breaker.
-        return ($a['pos'] == $b['pos'])
-            ? $a['label'] <=> $b['label']
-            : $a['pos'] <=> $b['pos'];
+        // Sort on 'pos' and 'multiPos' with 'label' as tie-breaker.
+        foreach (['pos', 'multiPos', 'label'] as $sortKey) {
+            if (isset($a[$sortKey]) && isset($b[$sortKey]) && $a[$sortKey] !== $b[$sortKey]) {
+                return $a[$sortKey] <=> $b[$sortKey];
+            }
+        }
+        return 0;
     }
 
     /**
@@ -322,19 +325,46 @@ class RecordDataFormatter extends AbstractHelper
 
         // Adjust the options array so we can use it to call the standard
         // render function on the grouped data....
-        $defaultOptions = ['renderType' => $options['multiRenderType'] ?? 'Simple']
-            + $options;
+        $defaultOptions = array_merge(
+            $options,
+            [
+                'renderType' => $options['multiRenderType'] ?? 'Simple',
+                'enabled' => $options['multiEnabled'] ?? true,
+            ]
+        );
 
         // Collect the results:
         $results = [];
-        $input = $callback($data, $options, $this->driver);
-        foreach (is_array($input) ? $input : [] as $current) {
+        $input = $callback($data, $options, $this->driver) ?? [];
+        $multiPositions = array_filter(array_map(function ($line) {
+            return $line['options']['multiPos'] ?? null;
+        }, $input));
+        $multiPositions[] = 0;
+        $multiPos = max($multiPositions) + 10;
+        foreach ($input as $current) {
             $label = $current['label'] ?? '';
             $values = $current['values'] ?? null;
-            $currentOptions = ($current['options'] ?? []) + $defaultOptions;
-            $next = $this->render($label, $values, $currentOptions);
-            if ($next !== null) {
-                $results = array_merge($results, $next);
+            $currentOptions = array_merge($defaultOptions, $current['options'] ?? []);
+            foreach ($current as $key => $value) {
+                $currentOptions = array_merge(
+                    $currentOptions,
+                    $options['lineOptions'][$key][$value] ?? [],
+                );
+            }
+            if (isset($currentOptions['multiEnabled'])) {
+                $currentOptions['enabled'] = $currentOptions['multiEnabled'];
+            }
+            if (!($currentOptions['enabled'] ?? true)) {
+                continue;
+            }
+            if (isset($currentOptions['multiAltDataMethod'])) {
+                $currentOptions['dataMethod'] = $currentOptions['multiAltDataMethod'];
+                $values = $this->extractData($currentOptions);
+            }
+            $currentResult = $this->render($label, $values, $currentOptions);
+            foreach ($currentResult ?? [] as $resultLine) {
+                $resultLine['multiPos'] = $currentOptions['multiPos'] ?? $multiPos++;
+                $results[] = $resultLine;
             }
         }
         return $results;
