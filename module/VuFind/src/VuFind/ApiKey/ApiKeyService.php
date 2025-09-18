@@ -132,6 +132,7 @@ class ApiKeyService
         $tokenHash = $this->createRandomToken($user);
         $token->setData($tokenHash);
         $token->setUser($user);
+        $token->setExpires(false);
         $this->accessTokenService->persistEntity($token);
         return $tokenHash;
     }

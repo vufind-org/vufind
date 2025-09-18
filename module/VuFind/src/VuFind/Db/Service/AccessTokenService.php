@@ -156,12 +156,11 @@ class AccessTokenService extends AbstractDbService implements
     public function deleteExpired(DateTime $dateLimit, ?int $limit = null): int
     {
         $subQueryBuilder = $this->entityManager->createQueryBuilder();
-        // Delete all but API keys here, as those are not really expired.
+        // Delete only tokens with expires set to 1
         $subQueryBuilder->select('CONCAT(a.id, a.type)')
             ->from(AccessTokenEntityInterface::class, 'a')
-            ->where('a.created < :latestCreated AND NOT a.type = :exclude')
-            ->setParameter('latestCreated', $dateLimit->format('Y-m-d H:i:s'))
-            ->setParameter('exclude', self::TYPE_API_KEY);
+            ->where('a.created < :latestCreated AND a.expires = 1')
+            ->setParameter('latestCreated', $dateLimit->format('Y-m-d H:i:s'));
         if ($limit) {
             $subQueryBuilder->setMaxResults($limit);
         }

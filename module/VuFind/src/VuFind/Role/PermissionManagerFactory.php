@@ -69,20 +69,10 @@ class PermissionManagerFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         $permissions = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('permissions');
-        $authorizationService = $container->get(\Lmc\Rbac\Mvc\Service\AuthorizationService::class);
-        foreach ($permissions as $settings) {
-            $sectionPermissions = (array)($settings['permission'] ?? []);
-            $assertions = (array)($settings['assertion'] ?? []);
-            if ($sectionPermissions && $assertions) {
-                foreach ($sectionPermissions as $permission) {
-                    foreach ($assertions as $assertion) {
-                        $authorizationService->setAssertion($permission, new $assertion());
-                    }
-                }
-            }
-        }
         $permManager = new $requestedName($permissions);
-        $permManager->setAuthorizationService($authorizationService);
+        $permManager->setAuthorizationService(
+            $container->get(\Lmc\Rbac\Mvc\Service\AuthorizationService::class)
+        );
         return $permManager;
     }
 }

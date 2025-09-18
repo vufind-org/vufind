@@ -137,4 +137,20 @@ interface AccessTokenEntityInterface extends EntityInterface
      * @return static
      */
     public function setRevoked(bool $revoked): static;
+
+    /**
+     * Will this token expire? Used when handling expired tokens with ExpireAccessTokens command
+     *
+     * @return bool
+     */
+    public function getExpires(): bool;
+
+    /**
+     * Set if this token will expire.
+     *
+     * @param bool $expires Will this token expire
+     *
+     * @return static
+     */
+    public function setExpires(bool $expires): static;
 }

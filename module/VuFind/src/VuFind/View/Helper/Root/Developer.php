@@ -30,7 +30,6 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
-use VuFind\ApiKey\ApiKeyService;
 use VuFind\Db\Entity\UserEntityInterface;
 
 /**
@@ -47,11 +46,9 @@ class Developer extends AbstractHelper
     /**
      * Constructor
      *
-     * @param ApiKeyService        $apiKeyService API key service
-     * @param ?UserEntityInterface $user          Current logged in user or null
+     * @param ?UserEntityInterface $user Current logged in user or null
      */
     public function __construct(
-        protected ApiKeyService $apiKeyService,
         protected ?UserEntityInterface $user = null
     ) {
     }

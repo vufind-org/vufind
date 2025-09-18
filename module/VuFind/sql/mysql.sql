@@ -410,8 +410,10 @@ CREATE TABLE `access_token` (
   `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   `data` mediumtext DEFAULT NULL,
   `revoked` tinyint(1) NOT NULL DEFAULT '0',
+  `expires` tinyint(1) NOT NULL DEFAULT '1',
   PRIMARY KEY (`id`, `type`),
   KEY `access_token_user_id_idx` (`user_id`),
+  KEY `access_token_expires_idx` (`expires`),
   CONSTRAINT `access_token_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;

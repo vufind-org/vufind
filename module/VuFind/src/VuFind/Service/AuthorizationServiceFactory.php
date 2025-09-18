@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Piwik helper factory.
+ * Authorization service factory to inject assertions and permissions.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,30 +21,31 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  View_Helpers
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Service
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\View\Helper\Root;
+namespace VuFind\Service;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-use Laminas\ServiceManager\Factory\FactoryInterface;
+use Lmc\Rbac\Mvc\Service\AuthorizationService;
+use Lmc\Rbac\Mvc\Service\AuthorizationServiceFactory as LmcRbacAuthorizationServiceFactory;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Piwik helper factory.
+ * Authorization service factory
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  Service
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class DeveloperFactory implements FactoryInterface
+class AuthorizationServiceFactory extends LmcRbacAuthorizationServiceFactory
 {
     /**
      * Create an object
@@ -64,12 +65,23 @@ class DeveloperFactory implements FactoryInterface
         ContainerInterface $container,
         $requestedName,
         ?array $options = null
-    ) {
+    ): AuthorizationService {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
-        return new $requestedName(
-            $container->get(\VuFind\Auth\Manager::class)->getUserObject()
-        );
+        $authorizationService = parent::__invoke($container, $requestedName, $options);
+        $permissions = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('permissions');
+        foreach ($permissions as $settings) {
+            $sectionPermissions = (array)($settings['permission'] ?? []);
+            $assertions = (array)($settings['assertion'] ?? []);
+            if ($sectionPermissions && $assertions) {
+                foreach ($sectionPermissions as $permission) {
+                    foreach ($assertions as $assertion) {
+                        $authorizationService->setAssertion($permission, new $assertion());
+                    }
+                }
+            }
+        }
+        return $authorizationService;
     }
 }

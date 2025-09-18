@@ -569,6 +569,7 @@ $config = [
             'VuFindHttp\HttpService' => 'VuFind\Service\HttpServiceFactory',
             'VuFindSearch\Service' => 'VuFind\Service\SearchServiceFactory',
             'Laminas\Session\SessionManager' => 'VuFind\Session\ManagerFactory',
+            'Lmc\Rbac\Mvc\Service\AuthorizationService' => 'VuFind\Service\AuthorizationServiceFactory',
         ],
         'delegators' => [
             'Laminas\Mvc\I18n\Translator' => [

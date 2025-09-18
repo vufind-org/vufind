@@ -34,7 +34,8 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
+use VuFind\Db\Service\AccessTokenService;
 use VuFind\Db\Service\PluginManager;
 
 /**
@@ -71,8 +72,8 @@ class ApiKeyServiceFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory!');
         }
         return new $requestedName(
-            $container->get(PluginManager::class)->get(ApiKeyService::class),
-            $container->get(ConfigManager::class)->getConfigArray('config')['API_Keys'] ?? []
+            $container->get(PluginManager::class)->get(AccessTokenService::class),
+            $container->get(ConfigManagerInterface::class)->getConfigArray('config')['API_Keys'] ?? []
         );
     }
 }

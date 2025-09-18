@@ -103,6 +103,14 @@ class AccessToken implements AccessTokenEntityInterface
     protected bool $revoked = false;
 
     /**
+     * Flag indicating if the token will expire normally.
+     *
+     * @var bool
+     */
+    #[ORM\Column(name: 'expires', type: 'boolean', nullable: false, options: ['default' => true])]
+    protected bool $expires = true;
+
+    /**
      * Constructor.
      */
     public function __construct()
@@ -246,6 +254,29 @@ class AccessToken implements AccessTokenEntityInterface
     public function setRevoked(bool $revoked): static
     {
         $this->revoked = $revoked;
+        return $this;
+    }
+
+    /**
+     * Will this token expire? Used when handling expired tokens with ExpireAccessTokens command
+     *
+     * @return bool
+     */
+    public function getExpires(): bool
+    {
+        return $this->expires;
+    }
+
+    /**
+     * Set if this token will expire.
+     *
+     * @param bool $expires Will this token expire
+     *
+     * @return static
+     */
+    public function setExpires(bool $expires): static
+    {
+        $this->expires = $expires;
         return $this;
     }
 }
