@@ -48,6 +48,7 @@ class LoggingTest extends MinkTestCase
 
     protected const string CRITICAL_LEVEL_REGEX = '/CRIT/';
     protected const string DEBUG_LEVEL_REGEX = '/DEBUG/';
+    protected const string INFO_LEVEL_REGEX = '/INFO/';
 
     /**
      * Data provider for email logging test scenarios
@@ -83,7 +84,7 @@ class LoggingTest extends MinkTestCase
                 ],
                 'unexpectedPatterns' => [
                     self::DEBUG_LEVEL_REGEX,
-                    '/INFO:/',
+                    self::INFO_LEVEL_REGEX,
                 ],
                 'minEmails'          => 1,
                 'description'         => 'Should log critical errors when Solr connection fails',
