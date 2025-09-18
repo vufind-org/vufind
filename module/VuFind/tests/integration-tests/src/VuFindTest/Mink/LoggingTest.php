@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Mink;
 
+use VuFind\Db\Connection;
 use VuFindTest\Integration\MinkTestCase;
 
 use function count;
@@ -45,6 +46,7 @@ use function count;
 class LoggingTest extends MinkTestCase
 {
     use \VuFindTest\Feature\EmailTrait;
+    use \VuFindTest\Feature\LiveDatabaseTrait;
     use \VuFindTest\Feature\LiveSolrTrait;
 
     protected const CRITICAL_LEVEL_REGEX = '/CRIT/';
@@ -347,11 +349,6 @@ class LoggingTest extends MinkTestCase
                 'Index'   => [
                     'url' => "http://localhost:$port/not-solr",
                 ],
-                'Mail'    => [
-                    'testOnly'           => true,
-                    'message_log'        => $this->getEmailLogPath(),
-                    'message_log_format' => $this->getEmailLogFormat(),
-                ],
                 'Logging' => [
                     'file' => $loggingConfig,
                 ],
@@ -436,5 +433,106 @@ class LoggingTest extends MinkTestCase
         } else {
             $this->assertTrue(true, 'Email log file does not exist, which is expected when logging is disabled');
         }
+    }
+
+    /**
+     * Data provider for database logging test scenarios
+     *
+     * @return array
+     */
+    public static function databaseLoggingScenarioProvider(): array
+    {
+        // Transform the email test cases into database test cases:
+        return array_map(
+            function ($case) {
+                $configParts = explode(':', $case['emailConfig']);
+                $logSettings = array_pop($configParts);
+                return [
+                    'loggingConfig' => "log_table:$logSettings",
+                    'expectedPatterns' => $case['expectedPatterns'],
+                    'unexpectedPatterns' => $case['unexpectedPatterns'],
+                    'description' => $case['description'],
+                ];
+            },
+            static::emailLoggingScenarioProvider()
+        );
+    }
+
+    /**
+     * Test database logging functionality with various configurations
+     *
+     * @param string $loggingConfig      Logging configuration string
+     * @param array  $expectedPatterns   Patterns that should be found in log
+     * @param array  $unexpectedPatterns Patterns that should NOT be found in log
+     * @param string $description        Test scenario description
+     *
+     * @return void
+     *
+     * @dataProvider DatabaseLoggingScenarioProvider
+     */
+    public function testDatabaseLogging(
+        string $loggingConfig,
+        array $expectedPatterns,
+        array $unexpectedPatterns,
+        string $description
+    ): void {
+        $port = $this->getSolrPort();
+        $this->changeConfigs([
+            'config' => [
+                'Index'   => [
+                    'url' => "http://localhost:$port/not-solr",
+                ],
+                'Logging' => [
+                    'database' => $loggingConfig,
+                ],
+            ],
+        ]);
+
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Results?lookfor=test');
+        $page = $session->getPage();
+
+        // Wait for logging to complete
+        $this->findCss($page, 'body');
+
+        $connection = $this->getLiveDatabaseContainer()->get(Connection::class);
+        $queryBuilder = $connection->createQueryBuilder();
+        $queryBuilder->select('*')->from('log_table');
+        $result = $connection->executeQuery($queryBuilder);
+        $priorities = ['EMERGENCY', 'ALERT', 'CRITICAL', 'ERROR', 'WARNING', 'NOTICE', 'INFO', 'DEBUG'];
+        $logContent = implode("\n", array_map(
+            function ($row) use ($priorities) {
+                $row['priority'] = $priorities[$row['priority']] ?? 'UNKNOWN-PRIORITY';
+                return implode(' ', $row);
+            },
+            $result->fetchAllAssociative()));
+
+        // Basic assertions
+        $this->assertNotEmpty(
+            $logContent,
+            $description . ': Expected to have log messages'
+        );
+
+        foreach ($expectedPatterns as $pattern) {
+            $this->assertMatchesRegularExpression(
+                $pattern,
+                $logContent,
+                $description . ': Expected pattern not found: ' . $pattern
+            );
+        }
+
+        $unexpectedPatterns[] = '/UNKNOWN-PRIORITY/';
+        foreach ($unexpectedPatterns as $pattern) {
+            $this->assertDoesNotMatchRegularExpression(
+                $pattern,
+                $logContent,
+                $description . ': Unexpected pattern found: ' . $pattern
+            );
+        }
+
+        // Clear data for the next test:
+        $deleteQueryBuilder = $connection->createQueryBuilder();
+        $deleteQueryBuilder->delete('log_table');
+        $connection->executeQuery($deleteQueryBuilder);
     }
 }
