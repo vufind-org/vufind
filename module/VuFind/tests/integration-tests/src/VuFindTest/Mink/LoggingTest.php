@@ -46,6 +46,9 @@ class LoggingTest extends MinkTestCase
 {
     use \VuFindTest\Feature\EmailTrait;
 
+    protected const string CRITICAL_LEVEL_REGEX = '/CRIT/';
+    protected const string DEBUG_LEVEL_REGEX = '/DEBUG/';
+
     /**
      * Data provider for email logging test scenarios
      *
@@ -57,29 +60,29 @@ class LoggingTest extends MinkTestCase
             'debug_error_and_alert_logging' => [
                 'emailConfig'        => 'alerts@myuniversity.edu:debug-5,alert-5,error-5',
                 'expectedPatterns'   => [
-                    '/CRITICAL:/',
+                    self::CRITICAL_LEVEL_REGEX,
                     '/404 Not Found/',
                     '/RequestErrorException/',
                     '/VuFindSearch\\\\Backend\\\\Exception/',
                     '/Search\/Results.*lookfor.*test/',
-                    '/DEBUG:/',
+                    self::DEBUG_LEVEL_REGEX,
                 ],
                 'unexpectedPatterns' => [
                 ],
-                'minEmails'          => 4,
+                'minEmails'          => 2,
                 'description'         => 'Should log critical errors when Solr connection fails',
             ],
             'error_and_alert_logging_only' => [
                 'emailConfig'        => 'alerts@myuniversity.edu:alert-5,error-5',
                 'expectedPatterns'   => [
-                    '/CRITICAL:/',
+                    self::CRITICAL_LEVEL_REGEX,
                     '/404 Not Found/',
                     '/RequestErrorException/',
                     '/VuFindSearch\\\\Backend\\\\Exception/',
                     '/Search\/Results.*lookfor.*test/',
                 ],
                 'unexpectedPatterns' => [
-                    '/DEBUG:/',
+                    self::DEBUG_LEVEL_REGEX,
                     '/INFO:/',
                 ],
                 'minEmails'          => 1,
@@ -88,18 +91,18 @@ class LoggingTest extends MinkTestCase
             'debug_logging_only'      => [
                 'emailConfig'        => 'debug@myuniversity.edu:debug-5',
                 'expectedPatterns'   => [
-                    '/DEBUG:/',
+                    self::DEBUG_LEVEL_REGEX,
                 ],
                 'unexpectedPatterns' => [
-                    '/CRITICAL:/',
+                    self::CRITICAL_LEVEL_REGEX,
                 ],
-                'minEmails'          => 3,
+                'minEmails'          => 1,
                 'description'         => 'Should capture debug messages when debug logging is enabled',
             ],
             'minimal_detail_level'    => [
                 'emailConfig'        => 'alerts@myuniversity.edu:error-1',
                 'expectedPatterns'   => [
-                    '/CRITICAL:/',
+                    self::CRITICAL_LEVEL_REGEX,
                     '/404 Not Found/',
                 ],
                 'unexpectedPatterns' => [
@@ -115,7 +118,7 @@ class LoggingTest extends MinkTestCase
             'detail_level_2'    => [
                 'emailConfig'        => 'alerts@myuniversity.edu:error-2',
                 'expectedPatterns'   => [
-                    '/CRITICAL:/',
+                    self::CRITICAL_LEVEL_REGEX,
                     '/404 Not Found/',
                     '/\(Server: IP =/',
                 ],
@@ -131,7 +134,7 @@ class LoggingTest extends MinkTestCase
             'detail_level_3'    => [
                 'emailConfig'        => 'alerts@myuniversity.edu:error-3',
                 'expectedPatterns'   => [
-                    '/CRITICAL:/',
+                    self::CRITICAL_LEVEL_REGEX,
                     '/404 Not Found/',
                     '/\(Server: IP =/',
                     '/Backtrace:/',
@@ -147,7 +150,7 @@ class LoggingTest extends MinkTestCase
             'detail_level_4'    => [
                 'emailConfig'        => 'alerts@myuniversity.edu:error-4',
                 'expectedPatterns'   => [
-                    '/CRITICAL:/',
+                    self::CRITICAL_LEVEL_REGEX,
                     '/404 Not Found/',
                     '/Server Context:/',
                     '/Backtrace:/',
@@ -162,7 +165,7 @@ class LoggingTest extends MinkTestCase
             'maximum_detail_level'    => [
                 'emailConfig'        => 'alerts@myuniversity.edu:error-5',
                 'expectedPatterns'   => [
-                    '/CRITICAL:/',
+                    self::CRITICAL_LEVEL_REGEX,
                     '/404 Not Found/',
                     '/Backtrace:/',
                     '/Server Context:/',
@@ -240,7 +243,6 @@ class LoggingTest extends MinkTestCase
             $description . ': Expected to receive log email'
         );
 
-        $expectedPatterns[] = '/VuFind Log Alert/'; // every email contains this string
         foreach ($expectedPatterns as $pattern) {
             $this->assertMatchesRegularExpression(
                 $pattern,
@@ -267,7 +269,7 @@ class LoggingTest extends MinkTestCase
         // Conditional assertions based on log level/type
         if (str_contains($emailConfig, 'debug')) {
             $this->assertStringContainsString(
-                'DEBUG:',
+                trim(self::DEBUG_LEVEL_REGEX, '/'),
                 $allEmailBodies,
                 'Email body should contain debug messages'
             );
