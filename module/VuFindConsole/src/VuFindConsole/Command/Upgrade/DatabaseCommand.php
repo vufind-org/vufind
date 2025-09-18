@@ -34,6 +34,7 @@ use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Question\ChoiceQuestion;
 use VuFind\Db\ConnectionFactory;
 use VuFind\Db\Migration\MigrationManager;
 
@@ -85,6 +86,11 @@ class DatabaseCommand extends Command
                 InputOption::VALUE_NONE,
                 'output SQL without any actual database interactions'
             )->addOption(
+                'interactive',
+                null,
+                InputOption::VALUE_NONE,
+                'run in interactive mode'
+            )->addOption(
                 'rootUser',
                 null,
                 InputOption::VALUE_OPTIONAL,
@@ -116,6 +122,11 @@ class DatabaseCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $sqlOnly = $input->getOption('sql-only') ? true : false;
+        $interactive = $input->getOption('interactive') ? true : false;
+        if ($sqlOnly && $interactive) {
+            $output->writeln('--sql-only and --interactive options are incompatible; choose only one');
+            return 1;
+        }
         $rootUser = $input->getOption('rootUser');
         $rootPass = $input->getOption('rootPass');
         $fromVersion = $input->getOption('fromVersion');
@@ -124,9 +135,40 @@ class DatabaseCommand extends Command
             $connection = $sqlOnly ? null : $this->connectionFactory->getConnection($rootUser, $rootPass);
             $migrations = $this->migrationManager
                 ->getMigrations($fromVersion ?? $this->migrationManager->determineOldVersion());
-            $result = $this->migrationManager->applyMigrations($migrations, $connection);
-            if ($sqlOnly) {
-                $output->writeln($result);
+            if ($interactive) {
+                foreach ($migrations as $migration) {
+                    $output->writeln($migration);
+                    $question = new ChoiceQuestion(
+                        'Choose an option:',
+                        [
+                            'View',
+                            'Apply',
+                            'Skip',
+                            'Mark as already applied (use after manually applying)',
+                        ]
+                    );
+                    while (true) {
+                        $choice = $this->getHelper('question')->ask($input, $output, $question);
+                        switch (substr($choice, 0, 4)) {
+                            case 'View':
+                                $output->writeln(file_get_contents($migration));
+                                break;
+                            case 'Appl':
+                                $this->migrationManager->applyMigrations([$migration], $connection);
+                                break 2;
+                            case 'Skip':
+                                break 2;
+                            case 'Mark':
+                                $this->migrationManager->markMigrationApplied($migration, $connection);
+                                break 2;
+                        }
+                    }
+                }
+            } else {
+                $result = $this->migrationManager->applyMigrations($migrations, $connection);
+                if ($sqlOnly) {
+                    $output->writeln($result);
+                }
             }
         } catch (\Exception $e) {
             $output->writeln('Fatal error: ' . $e->getMessage());
@@ -138,7 +180,8 @@ class DatabaseCommand extends Command
             }
             return 1;
         }
-        if (!$sqlOnly) {
+        // Display a final message if we're in non-interactive/non-SQL mode, or had nothing to do in interactive mode.
+        if (!$sqlOnly && !($interactive && !empty($migrations))) {
             $output->writeln(empty($migrations) ? 'Nothing to do.' : 'Successfully upgraded database.');
         }
         return 0;
