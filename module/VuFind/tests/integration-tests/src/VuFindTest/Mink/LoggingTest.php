@@ -45,6 +45,7 @@ use function count;
 class LoggingTest extends MinkTestCase
 {
     use \VuFindTest\Feature\EmailTrait;
+    use \VuFindTest\Feature\LiveSolrTrait;
 
     protected const CRITICAL_LEVEL_REGEX = '/CRIT/';
     protected const DEBUG_LEVEL_REGEX = '/DEBUG/';
@@ -203,10 +204,11 @@ class LoggingTest extends MinkTestCase
         int $minEmails,
         string $description
     ): void {
+        $port = $this->getSolrPort();
         $this->changeConfigs([
             'config' => [
                 'Index'   => [
-                    'url' => 'http://localhost:8983/not-solr',
+                    'url' => "http://localhost:$port/not-solr",
                 ],
                 'Mail'    => [
                     'testOnly'           => true,
@@ -339,10 +341,11 @@ class LoggingTest extends MinkTestCase
         array $unexpectedPatterns,
         string $description
     ): void {
+        $port = $this->getSolrPort();
         $this->changeConfigs([
             'config' => [
                 'Index'   => [
-                    'url' => 'http://localhost:8983/not-solr',
+                    'url' => "http://localhost:$port/not-solr",
                 ],
                 'Mail'    => [
                     'testOnly'           => true,
@@ -396,10 +399,11 @@ class LoggingTest extends MinkTestCase
      */
     public function testNoEmailLoggingWhenDisabled(): void
     {
+        $port = $this->getSolrPort();
         $this->changeConfigs([
             'config' => [
                 'Index' => [
-                    'url' => 'http://localhost:8983/not-solr',
+                    'url' => "http://localhost:$port/not-solr",
                 ],
                 'Mail'  => [
                     'testOnly'           => true,
