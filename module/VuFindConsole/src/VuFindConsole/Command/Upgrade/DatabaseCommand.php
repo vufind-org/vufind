@@ -29,6 +29,7 @@
 
 namespace VuFindConsole\Command\Upgrade;
 
+use Doctrine\DBAL\Connection;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -112,6 +113,52 @@ class DatabaseCommand extends Command
     }
 
     /**
+     * Support method for "interactive mode."
+     *
+     * @param string[]        $migrations Migrations to apply
+     * @param Connection      $connection Active database connection
+     * @param InputInterface  $input      Input object
+     * @param OutputInterface $output     Output object
+     *
+     * @return void
+     */
+    protected function applyMigrationsInteractively(
+        array $migrations,
+        Connection $connection,
+        InputInterface $input,
+        OutputInterface $output
+    ): void {
+        foreach ($migrations as $migration) {
+            $output->writeln('Working on migration: ' . $this->migrationManager->getShortMigrationName($migration));
+            $question = new ChoiceQuestion(
+                'Choose an option:',
+                [
+                    'View',
+                    'Apply',
+                    'Skip',
+                    'Mark as already applied (use after manually applying)',
+                ]
+            );
+            while (true) {
+                $choice = $this->getHelper('question')->ask($input, $output, $question);
+                switch (substr($choice, 0, 4)) {
+                    case 'View':
+                        $output->writeln(file_get_contents($migration));
+                        break;
+                    case 'Appl':
+                        $this->migrationManager->applyMigrations([$migration], $connection);
+                        break 2;
+                    case 'Skip':
+                        break 2;
+                    case 'Mark':
+                        $this->migrationManager->markMigrationApplied($migration, $connection);
+                        break 2;
+                }
+            }
+        }
+    }
+
+    /**
      * Run the command.
      *
      * @param InputInterface  $input  Input object
@@ -136,36 +183,7 @@ class DatabaseCommand extends Command
             $migrations = $this->migrationManager
                 ->getMigrations($fromVersion ?? $this->migrationManager->determineOldVersion());
             if ($interactive) {
-                foreach ($migrations as $migration) {
-                    $output->writeln(
-                        "Working on migration: " . $this->migrationManager->getShortMigrationName($migration)
-                    );
-                    $question = new ChoiceQuestion(
-                        'Choose an option:',
-                        [
-                            'View',
-                            'Apply',
-                            'Skip',
-                            'Mark as already applied (use after manually applying)',
-                        ]
-                    );
-                    while (true) {
-                        $choice = $this->getHelper('question')->ask($input, $output, $question);
-                        switch (substr($choice, 0, 4)) {
-                            case 'View':
-                                $output->writeln(file_get_contents($migration));
-                                break;
-                            case 'Appl':
-                                $this->migrationManager->applyMigrations([$migration], $connection);
-                                break 2;
-                            case 'Skip':
-                                break 2;
-                            case 'Mark':
-                                $this->migrationManager->markMigrationApplied($migration, $connection);
-                                break 2;
-                        }
-                    }
-                }
+                $this->applyMigrationsInteractively($migrations, $connection, $input, $output);
             } else {
                 $result = $this->migrationManager->applyMigrations($migrations, $connection);
                 if ($sqlOnly) {
