@@ -63,7 +63,7 @@ class MethodTimedBlocksTest extends \PHPUnit\Framework\TestCase
             'end defined' => [
                 [
                     'start' => new \DateTime(),
-                    'end' => new \DateTime('31-12-2025 23:59.59'),
+                    'end' => new \DateTime('31-12-2025 23:59:59'),
                     'recurring' => false,
                 ],
                 'This feature is unavailable until 12-31-2025',
@@ -71,7 +71,7 @@ class MethodTimedBlocksTest extends \PHPUnit\Framework\TestCase
             'service defined' => [
                 [
                     'start' => new \DateTime(),
-                    'end' => new \DateTime('31-12-2025 23:59.59'),
+                    'end' => new \DateTime('31-12-2025 23:59:59'),
                     'recurring' => false,
                 ],
                 'TestFeature is unavailable until 12-31-2025',
