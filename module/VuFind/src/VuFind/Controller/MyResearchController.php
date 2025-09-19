@@ -1750,10 +1750,11 @@ class MyResearchController extends AbstractBase
                 if ($recoveryData = $authManager->getPasswordRecoveryData($this->params()->fromPost())) {
                     $this->sendRecoveryEmail($recoveryData);
                 } else {
-                    if(!empty($config->Authentication->recover_be_honest))
+                    if (!empty($config->Authentication->recover_be_honest)) {
                         $this->flashMessenger()->addErrorMessage('recovery_user_not_found');
-                    else
+                    } else {
                         $this->flashMessenger()->addSuccessMessage('recovery_email_sent');
+                    }
                 }
             } catch (AuthException $e) {
                 $this->flashMessenger()->addErrorMessage($e->getMessage());
