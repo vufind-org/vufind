@@ -49,7 +49,6 @@ use function in_array;
 use function intval;
 use function is_array;
 use function is_callable;
-use function is_object;
 
 /**
  * Catalog Connection Class
@@ -88,13 +87,6 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     protected $driver = null;
 
     /**
-     * ILS configuration
-     *
-     * @var \VuFind\Config\Config
-     */
-    protected $config;
-
-    /**
      * Holds mode
      *
      * @var string
@@ -109,32 +101,11 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     protected $titleHoldsMode = 'disabled';
 
     /**
-     * Driver plugin manager
-     *
-     * @var \VuFind\ILS\Driver\PluginManager
-     */
-    protected $driverManager;
-
-    /**
-     * Configuration loader
-     *
-     * @var \VuFind\Config\PluginManager
-     */
-    protected $configReader;
-
-    /**
      * Is the current ILS driver failing?
      *
      * @var bool
      */
     protected $failing = false;
-
-    /**
-     * Request object
-     *
-     * @var \Laminas\Http\Request
-     */
-    protected $request;
 
     /**
      * Cache life time per method
@@ -175,17 +146,17 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     /**
      * Constructor
      *
-     * @param \VuFind\Config\Config            $config        Configuration
+     * @param \VuFind\Config\Config                 $config        Configuration
      * representing the [Catalog] section of config.ini
-     * @param \VuFind\ILS\Driver\PluginManager $driverManager Driver plugin manager
-     * @param \VuFind\Config\PluginManager     $configReader  Configuration loader
-     * @param ?\Laminas\Http\Request           $request       Request object
+     * @param \VuFind\ILS\Driver\PluginManager      $driverManager Driver plugin manager
+     * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
+     * @param ?\Laminas\Http\Request                $request       Request object
      */
     public function __construct(
-        \VuFind\Config\Config $config,
-        \VuFind\ILS\Driver\PluginManager $driverManager,
-        \VuFind\Config\PluginManager $configReader,
-        ?\Laminas\Http\Request $request = null
+        protected \VuFind\Config\Config $config,
+        protected \VuFind\ILS\Driver\PluginManager $driverManager,
+        protected \VuFind\Config\ConfigManagerInterface $configManager,
+        protected ?\Laminas\Http\Request $request = null
     ) {
         if (!isset($config->driver)) {
             throw new \Exception('ILS driver setting missing.');
@@ -193,10 +164,6 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
         if (!$driverManager->has($config->driver)) {
             throw new \Exception('ILS driver missing: ' . $config->driver);
         }
-        $this->config = $config;
-        $this->configReader = $configReader;
-        $this->driverManager = $driverManager;
-        $this->request = $request;
     }
 
     /**
@@ -364,8 +331,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     {
         // Determine config file name based on class name:
         $parts = explode('\\', $this->getDriverClass());
-        $config = $this->configReader->get(end($parts));
-        return is_object($config) ? $config->toArray() : [];
+        return $this->configManager->getConfigArray(end($parts));
     }
 
     /**

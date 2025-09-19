@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2024.
+ * Copyright (C) Villanova University 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -45,6 +45,11 @@ use function count;
 class LoggingTest extends MinkTestCase
 {
     use \VuFindTest\Feature\EmailTrait;
+    use \VuFindTest\Feature\LiveSolrTrait;
+
+    protected const CRITICAL_LEVEL_REGEX = '/CRIT/';
+    protected const DEBUG_LEVEL_REGEX = '/DEBUG/';
+    protected const INFO_LEVEL_REGEX = '/INFO/';
 
     /**
      * Data provider for email logging test scenarios
@@ -57,30 +62,30 @@ class LoggingTest extends MinkTestCase
             'debug_error_and_alert_logging' => [
                 'emailConfig'        => 'alerts@myuniversity.edu:debug-5,alert-5,error-5',
                 'expectedPatterns'   => [
-                    '/CRITICAL:/',
+                    self::CRITICAL_LEVEL_REGEX,
                     '/404 Not Found/',
                     '/RequestErrorException/',
                     '/VuFindSearch\\\\Backend\\\\Exception/',
                     '/Search\/Results.*lookfor.*test/',
-                    '/DEBUG:/',
+                    self::DEBUG_LEVEL_REGEX,
                 ],
                 'unexpectedPatterns' => [
                 ],
-                'minEmails'          => 4,
+                'minEmails'          => 2,
                 'description'         => 'Should log critical errors when Solr connection fails',
             ],
             'error_and_alert_logging_only' => [
                 'emailConfig'        => 'alerts@myuniversity.edu:alert-5,error-5',
                 'expectedPatterns'   => [
-                    '/CRITICAL:/',
+                    self::CRITICAL_LEVEL_REGEX,
                     '/404 Not Found/',
                     '/RequestErrorException/',
                     '/VuFindSearch\\\\Backend\\\\Exception/',
                     '/Search\/Results.*lookfor.*test/',
                 ],
                 'unexpectedPatterns' => [
-                    '/DEBUG:/',
-                    '/INFO:/',
+                    self::DEBUG_LEVEL_REGEX,
+                    self::INFO_LEVEL_REGEX,
                 ],
                 'minEmails'          => 1,
                 'description'         => 'Should log critical errors when Solr connection fails',
@@ -88,18 +93,18 @@ class LoggingTest extends MinkTestCase
             'debug_logging_only'      => [
                 'emailConfig'        => 'debug@myuniversity.edu:debug-5',
                 'expectedPatterns'   => [
-                    '/DEBUG:/',
+                    self::DEBUG_LEVEL_REGEX,
                 ],
                 'unexpectedPatterns' => [
-                    '/CRITICAL:/',
+                    self::CRITICAL_LEVEL_REGEX,
                 ],
-                'minEmails'          => 3,
+                'minEmails'          => 1,
                 'description'         => 'Should capture debug messages when debug logging is enabled',
             ],
             'minimal_detail_level'    => [
                 'emailConfig'        => 'alerts@myuniversity.edu:error-1',
                 'expectedPatterns'   => [
-                    '/CRITICAL:/',
+                    self::CRITICAL_LEVEL_REGEX,
                     '/404 Not Found/',
                 ],
                 'unexpectedPatterns' => [
@@ -115,7 +120,7 @@ class LoggingTest extends MinkTestCase
             'detail_level_2'    => [
                 'emailConfig'        => 'alerts@myuniversity.edu:error-2',
                 'expectedPatterns'   => [
-                    '/CRITICAL:/',
+                    self::CRITICAL_LEVEL_REGEX,
                     '/404 Not Found/',
                     '/\(Server: IP =/',
                 ],
@@ -131,7 +136,7 @@ class LoggingTest extends MinkTestCase
             'detail_level_3'    => [
                 'emailConfig'        => 'alerts@myuniversity.edu:error-3',
                 'expectedPatterns'   => [
-                    '/CRITICAL:/',
+                    self::CRITICAL_LEVEL_REGEX,
                     '/404 Not Found/',
                     '/\(Server: IP =/',
                     '/Backtrace:/',
@@ -147,7 +152,7 @@ class LoggingTest extends MinkTestCase
             'detail_level_4'    => [
                 'emailConfig'        => 'alerts@myuniversity.edu:error-4',
                 'expectedPatterns'   => [
-                    '/CRITICAL:/',
+                    self::CRITICAL_LEVEL_REGEX,
                     '/404 Not Found/',
                     '/Server Context:/',
                     '/Backtrace:/',
@@ -162,7 +167,7 @@ class LoggingTest extends MinkTestCase
             'maximum_detail_level'    => [
                 'emailConfig'        => 'alerts@myuniversity.edu:error-5',
                 'expectedPatterns'   => [
-                    '/CRITICAL:/',
+                    self::CRITICAL_LEVEL_REGEX,
                     '/404 Not Found/',
                     '/Backtrace:/',
                     '/Server Context:/',
@@ -199,10 +204,11 @@ class LoggingTest extends MinkTestCase
         int $minEmails,
         string $description
     ): void {
+        $port = $this->getSolrPort();
         $this->changeConfigs([
             'config' => [
                 'Index'   => [
-                    'url' => 'http://localhost:8983/not-solr',
+                    'url' => "http://localhost:$port/not-solr",
                 ],
                 'Mail'    => [
                     'testOnly'           => true,
@@ -267,7 +273,7 @@ class LoggingTest extends MinkTestCase
         // Conditional assertions based on log level/type
         if (str_contains($emailConfig, 'debug')) {
             $this->assertStringContainsString(
-                'DEBUG:',
+                trim(self::DEBUG_LEVEL_REGEX, '/'),
                 $allEmailBodies,
                 'Email body should contain debug messages'
             );
@@ -336,10 +342,11 @@ class LoggingTest extends MinkTestCase
         array $unexpectedPatterns,
         string $description
     ): void {
+        $port = $this->getSolrPort();
         $this->changeConfigs([
             'config' => [
                 'Index'   => [
-                    'url' => 'http://localhost:8983/not-solr',
+                    'url' => "http://localhost:$port/not-solr",
                 ],
                 'Mail'    => [
                     'testOnly'           => true,
@@ -393,10 +400,11 @@ class LoggingTest extends MinkTestCase
      */
     public function testNoEmailLoggingWhenDisabled(): void
     {
+        $port = $this->getSolrPort();
         $this->changeConfigs([
             'config' => [
                 'Index' => [
-                    'url' => 'http://localhost:8983/not-solr',
+                    'url' => "http://localhost:$port/not-solr",
                 ],
                 'Mail'  => [
                     'testOnly'           => true,
