@@ -297,11 +297,11 @@ abstract class Options implements TranslatorAwareInterface
     protected $autocompleteAutoSubmit = true;
 
     /**
-     * Autocomplete max suggestions setting
+     * Autocomplete max display items setting
      *
      * @var int
      */
-    protected $autocompleteSuggestionLimit = 20;
+    protected $autocompleteDisplayLimit = 20;
 
     /**
      * Autocomplete query formatting rules
@@ -1055,13 +1055,13 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
-     * Get max number of suggestions
+     * Get max number of displayed suggestions
      *
      * @return array
      */
-    public function getAutocompleteSuggestionLimit(): int
+    public function getAutocompleteDisplayLimit(): int
     {
-        return $this->autocompleteSuggestionLimit;
+        return $this->autocompleteDisplayLimit;
     }
 
     /**
@@ -1541,8 +1541,8 @@ abstract class Options implements TranslatorAwareInterface
         if (null !== ($autosubmit = $autocompleteSettings['auto_submit'] ?? null)) {
             $this->autocompleteAutoSubmit = $autosubmit;
         }
-        if (null !== ($suggestionlimit = $autocompleteSettings['suggestion_limit'] ?? null)) {
-            $this->autocompleteSuggestionLimit = (int)$suggestionlimit;
+        if (null !== ($displaylimit = $autocompleteSettings['display_limit'] ?? null)) {
+            $this->autocompleteDisplayLimit = (int)$displaylimit;
         }
         $formattingRules = $autocompleteSettings['formatting_rule'] ?? [];
         if ($formattingRules && is_array($formattingRules)) {

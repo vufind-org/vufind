@@ -164,9 +164,9 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
      *
      * @return bool
      */
-    public function autocompleteSuggestionLimit($activeSearchClass)
+    public function autocompleteDisplayLimit($activeSearchClass)
     {
-        return $this->getOptionsForTarget($activeSearchClass)->getAutocompleteSuggestionLimit();
+        return $this->getOptionsForTarget($activeSearchClass)->getAutocompleteDisplayLimit();
     }
 
     /**
