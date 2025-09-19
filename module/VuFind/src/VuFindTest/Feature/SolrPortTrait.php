@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Mix-in for detecting whether a live test environment is currently running.
+ * Helper method to read the current Solr port.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2021.
+ * Copyright (C) Villanova University 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -30,7 +30,7 @@
 namespace VuFindTest\Feature;
 
 /**
- * Mix-in for detecting whether a live test environment is currently running.
+ * Helper method to read the current Solr port.
  *
  * @category VuFind
  * @package  Tests
@@ -38,27 +38,15 @@ namespace VuFindTest\Feature;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-trait LiveDetectionTrait
+trait SolrPortTrait
 {
-    use SolrPortTrait;
-
     /**
-     * Flag to allow other traits to test for the presence of this one (to enforce
-     * dependencies).
+     * Get Solr port number
      *
-     * @var bool
+     * @return int
      */
-    public $hasLiveDetectionTrait = true;
-
-    /**
-     * Is this test running in a continuous integration context?
-     *
-     * @return bool
-     */
-    public function continuousIntegrationRunning()
+    protected function getSolrPort(): int
     {
-        // We'll assume that if the CI Solr PID is present, then CI is active:
-        $port = $this->getSolrPort();
-        return file_exists(__DIR__ . "/../../../../../local/solr-$port.pid");
+        return (int)(getenv('SOLR_PORT') ?? '8983');
     }
 }

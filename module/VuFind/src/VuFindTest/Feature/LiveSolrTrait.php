@@ -136,14 +136,4 @@ trait LiveSolrTrait
         return $this->getLiveSolrContainer()
             ->get(\VuFind\Search\Results\PluginManager::class)->get($name);
     }
-
-    /**
-     * Get Solr port number
-     *
-     * @return int
-     */
-    protected function getSolrPort(): int
-    {
-        return (int)(getenv('SOLR_PORT') ?? '8983');
-    }
 }
