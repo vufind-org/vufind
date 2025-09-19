@@ -178,7 +178,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function getTestName(): string
     {
-        return $this::class . '::' . $this->name();
+        return $this::class . '::' . $this->nameWithDataSet();
     }
 
     /**
