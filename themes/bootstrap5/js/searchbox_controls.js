@@ -213,6 +213,7 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
       const formattingRules = $searchbox.data('autocompleteFormattingRules');
       const typeFieldSelector = $searchbox.data('autocompleteTypeFieldSelector');
       const typePrefix = $searchbox.data('autocompleteTypePrefix');
+      const suggestionLimit = $searchbox.data('autocompleteSuggestionLimit');
       const getFormattingRule = function getAutocompleteFormattingRule(type) {
         if (typeof(formattingRules) !== "undefined") {
           if (typeof(formattingRules[type]) !== "undefined") {
@@ -244,7 +245,7 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
       };
       const typeahead = new Autocomplete({
         rtl: $(document.body).hasClass("rtl"),
-        limit: 20,
+        limit: suggestionLimit ? suggestionLimit : 20,
         loadingString: VuFind.translate('loading_ellipsis'),
       });
 
