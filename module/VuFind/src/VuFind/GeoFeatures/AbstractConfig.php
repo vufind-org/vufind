@@ -29,8 +29,6 @@
 
 namespace VuFind\GeoFeatures;
 
-use VuFind\Config\Config;
-
 /**
  * MapTab Configuration Class
  *
@@ -43,20 +41,12 @@ use VuFind\Config\Config;
 class AbstractConfig
 {
     /**
-     * Configuration loader
-     *
-     * @var \VuFind\Config\PluginManager
-     */
-    protected $configLoader;
-
-    /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
+     * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(protected \VuFind\Config\ConfigManagerInterface $configManager)
     {
-        $this->configLoader = $configLoader;
     }
 
     /**
@@ -71,11 +61,11 @@ class AbstractConfig
      */
     protected function getOptions($configName, $section, $validOptions)
     {
-        $config = $this->configLoader->get($configName);
+        $config = $this->configManager->getConfigArray($configName);
         $options = [];
         foreach ($validOptions as $field) {
-            if (isset($config->$section->$field)) {
-                $options[$field] = $config->$section->$field;
+            if (isset($config[$section][$field])) {
+                $options[$field] = $config[$section][$field];
             }
         }
         return $options;

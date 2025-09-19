@@ -69,7 +69,7 @@ class AuditEventServiceFactory extends AbstractDbServiceFactory
         $requestedName,
         ?array $options = null
     ) {
-        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config')->toArray();
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         $enabledEventTypes = $this->explodeListSetting($config['Logging']['log_audit_events'] ?? 'payment');
         $sessionId = null;
         $clientIp = null;

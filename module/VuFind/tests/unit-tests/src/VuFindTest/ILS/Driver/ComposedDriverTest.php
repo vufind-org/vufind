@@ -58,7 +58,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
 
         $driver = $this->getDriver(
             [
-                'configLoader' => $this->getMockFailingConfigPluginManager(new RuntimeException()),
+                'configManager' => $this->getMockFailingConfigManager(new RuntimeException()),
             ]
         );
         $driver->setConfig(['Drivers' => ['d1' => 'DAIA']]);
@@ -1703,7 +1703,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
     protected function getDriver($constructorArgs = [])
     {
         $driver = new ComposedDriver(
-            $constructorArgs['configLoader'] ?? $this->getMockConfigPluginManager([], ['config' => 'values']),
+            $constructorArgs['configManager'] ?? $this->getMockConfigManager([], ['config' => 'values']),
             $constructorArgs['driverManager'] ?? $this->getMockSM()
         );
         return $driver;

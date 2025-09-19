@@ -34,6 +34,7 @@ namespace VuFindTest\RecordDriver;
 use VuFind\RecordDriver\EDS;
 
 use function array_slice;
+use function count;
 
 /**
  * EDS Record Driver Test Class
@@ -56,11 +57,64 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      *
      * @var array
      */
-    protected $defaultDriverConfig = [
+    protected array $defaultDriverConfig = [
         'General' => [
             'default_sort' => 'relevance',
         ],
         'ItemGlobalOrder' => [],
+    ];
+
+    /**
+     * Valid eds record title.
+     *
+     * @var array
+     */
+    protected static array $validTitle = [
+        'Name' => 'Title',
+        'Label' => 'Title',
+        'Group' => 'Ti',
+        'Data' => 'METAPHOR IN PRACTICE: A PROFESSIONAL\'S GUIDE TO USING THE SCIENCE OF LANGUAGE.',
+        'RawData' => 'METAPHOR IN PRACTICE: A PROFESSIONAL\'S GUIDE TO USING THE SCIENCE OF LANGUAGE.',
+        'Elements' => [
+            ['Data' => 'METAPHOR IN PRACTICE: A PROFESSIONAL\'S GUIDE TO USING THE SCIENCE OF LANGUAGE.'],
+        ],
+    ];
+
+    /**
+     * Valid eds record author.
+     *
+     * @var array
+     */
+    protected static array $validAuthor = [
+        'Name' => 'Author',
+        'Label' => 'Authors',
+        'Group' => 'Au',
+        'Data' => '<span>TORNEKE, NIKLAS.</span>',
+        'RawData' =>
+            '&lt;searchLink fieldCode="AR" term="%22TORNEKE%2C+NIKLAS%2E%22"&gt;TORNEKE, NIKLAS.&lt;/searchLink&gt;',
+        'Elements' => [
+            [
+                'Data' => '<span>TORNEKE, NIKLAS.</span>',
+                'SearchLink' =>
+                    '<a href="../EDS/Search?lookfor=%22TORNEKE%2C+NIKLAS%2E%22&amp;type=AU">TORNEKE, NIKLAS.</a>',
+            ],
+        ],
+    ];
+
+    /**
+     * Valid eds record publisher.
+     *
+     * @var array
+     */
+    protected static array $validPublisher = [
+        'Name' => 'Publisher',
+        'Label' => 'Publisher Information',
+        'Group' => 'PubInfo',
+        'Data' => 'OAKLAND: NEW HARBINGER PUB, 2017.',
+        'RawData' => 'OAKLAND: NEW HARBINGER PUB, 2017.',
+        'Elements' => [
+            ['Data' => 'OAKLAND: NEW HARBINGER PUB, 2017.'],
+        ],
     ];
 
     /**
@@ -140,14 +194,14 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getItemsAbstract for a record.
+     * Test getAbstractNotes for a record.
      *
      * @return void
      */
-    public function testGetItemsAbstract(): void
+    public function testGetAbstractNotes(): void
     {
         $driver = $this->getDriver('valid-eds-record');
-        $this->assertEquals('unit test abstract', $driver->getItemsAbstract());
+        $this->assertEquals(['unit test abstract'], $driver->getAbstractNotes());
     }
 
     /**
@@ -259,24 +313,9 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     {
         $driver = $this->getDriver('valid-eds-record');
         $items = [
-            [
-                'Name' => 'Title',
-                'Label' => 'Title',
-                'Group' => 'Ti',
-                'Data' => 'METAPHOR IN PRACTICE: A PROFESSIONAL\'S GUIDE TO USING THE SCIENCE OF LANGUAGE.',
-            ],
-            [
-                'Name' => 'Author',
-                'Label' => 'Authors',
-                'Group' => 'Au',
-                'Data' => '<a href="../EDS/Search?lookfor=%22TORNEKE%2C+NIKLAS%2E%22&amp;type=AU">TORNEKE, NIKLAS.</a>',
-            ],
-            [
-                'Name' => 'Publisher',
-                'Label' => 'Publisher Information',
-                'Group' => 'PubInfo',
-                'Data' => 'OAKLAND: NEW HARBINGER PUB, 2017.',
-            ],
+            self::$validTitle,
+            self::$validAuthor,
+            self::$validPublisher,
         ];
         $results = $driver->getItems();
 
@@ -301,24 +340,9 @@ class EDSTest extends \PHPUnit\Framework\TestCase
 
         $driver = $this->getDriver('valid-eds-record', $config);
         $items = [
-            [
-                'Name' => 'Author',
-                'Label' => 'Authors',
-                'Group' => 'Au',
-                'Data' => '<a href="../EDS/Search?lookfor=%22TORNEKE%2C+NIKLAS%2E%22&amp;type=AU">TORNEKE, NIKLAS.</a>',
-            ],
-            [
-                'Name' => 'Title',
-                'Label' => 'Title',
-                'Group' => 'Ti',
-                'Data' => 'METAPHOR IN PRACTICE: A PROFESSIONAL\'S GUIDE TO USING THE SCIENCE OF LANGUAGE.',
-            ],
-            [
-                'Name' => 'Publisher',
-                'Label' => 'Publisher Information',
-                'Group' => 'PubInfo',
-                'Data' => 'OAKLAND: NEW HARBINGER PUB, 2017.',
-            ],
+            self::$validAuthor,
+            self::$validTitle,
+            self::$validPublisher,
         ];
         $results = $driver->getItems();
 
@@ -329,75 +353,57 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getItems filtering the data for a record.
+     * Data provider for testGetItemsFilter.
      *
-     * @return void
+     * @return array
      */
-    public function testGetItemsFilteredCore(): void
+    public static function filterProvider(): array
     {
-        // Change the default order the array data is in and exclude one of the items
-        // to ensure it appears at the end
-        $config = $this->defaultDriverConfig;
-        $config['ItemCoreFilter']['excludeLabel'][] = 'Title';
-
-        $driver = $this->getDriver('valid-eds-record', $config);
-        $items = [
-            [
-                'Name' => 'Author',
-                'Label' => 'Authors',
-                'Group' => 'Au',
-                'Data' => '<a href="../EDS/Search?lookfor=%22TORNEKE%2C+NIKLAS%2E%22&amp;type=AU">TORNEKE, NIKLAS.</a>',
+        return [
+            'exclude' => [
+                ['exclude' => ['Label' => ['Title']]],
+                [self::$validAuthor, self::$validPublisher,],
+                10,
             ],
-            [
-                'Name' => 'Publisher',
-                'Label' => 'Publisher Information',
-                'Group' => 'PubInfo',
-                'Data' => 'OAKLAND: NEW HARBINGER PUB, 2017.',
+            'include' => [
+                ['include' => ['Label' => ['Title']]],
+                [self::$validTitle],
+                1,
+            ],
+            'exclude and include' => [
+                [
+                    'include' => ['Label' => ['Title', 'Authors']],
+                    'exclude' => ['Label' => ['Title']],
+                ],
+                [self::$validAuthor],
+                1,
             ],
         ];
-        $results = $driver->getItems('core');
-
-        // Verify total number of metadata elements
-        // (Note one is removed from the fixture file since it has been filtered)
-        $this->assertCount(10, $results);
-        // Verify contents of the first 2 elements
-        $this->assertEquals($items, array_slice($results, 0, 2));
     }
 
     /**
-     * Test getItems filtering the data for a record.
+     * Test getItems filter.
+     *
+     * @param array $filter        Filter
+     * @param array $expectedItems Expected items
+     * @param int   $expectedCount Expected item count
+     *
+     * @dataProvider filterProvider
      *
      * @return void
      */
-    public function testGetItemsFilteredResultList(): void
+    public function testGetItemsFilter(array $filter, array $expectedItems, int $expectedCount): void
     {
         // Change the default order the array data is in and exclude one of the items
         // to ensure it appears at the end
-        $config = $this->defaultDriverConfig;
-        $config['ItemResultListFilter']['excludeLabel'][] = 'Title';
-
-        $driver = $this->getDriver('valid-eds-record', $config);
-        $items = [
-            [
-                'Name' => 'Author',
-                'Label' => 'Authors',
-                'Group' => 'Au',
-                'Data' => '<a href="../EDS/Search?lookfor=%22TORNEKE%2C+NIKLAS%2E%22&amp;type=AU">TORNEKE, NIKLAS.</a>',
-            ],
-            [
-                'Name' => 'Publisher',
-                'Label' => 'Publisher Information',
-                'Group' => 'PubInfo',
-                'Data' => 'OAKLAND: NEW HARBINGER PUB, 2017.',
-            ],
-        ];
-        $results = $driver->getItems('result-list');
+        $driver = $this->getDriver('valid-eds-record');
+        $results = $driver->getItems($filter);
 
         // Verify total number of metadata elements
         // (Note one is removed from the fixture file since it has been filtered)
-        $this->assertCount(10, $results);
+        $this->assertCount($expectedCount, $results);
         // Verify contents of the first 2 elements
-        $this->assertEquals($items, array_slice($results, 0, 2));
+        $this->assertEquals($expectedItems, array_slice($results, 0, count($expectedItems)));
     }
 
     /**
@@ -415,24 +421,9 @@ class EDSTest extends \PHPUnit\Framework\TestCase
 
         // items in original order are returned when the config can't be parsed
         $items = [
-            [
-                'Name' => 'Title',
-                'Label' => 'Title',
-                'Group' => 'Ti',
-                'Data' => 'METAPHOR IN PRACTICE: A PROFESSIONAL\'S GUIDE TO USING THE SCIENCE OF LANGUAGE.',
-            ],
-            [
-                'Name' => 'Author',
-                'Label' => 'Authors',
-                'Group' => 'Au',
-                'Data' => '<a href="../EDS/Search?lookfor=%22TORNEKE%2C+NIKLAS%2E%22&amp;type=AU">TORNEKE, NIKLAS.</a>',
-            ],
-            [
-                'Name' => 'Publisher',
-                'Label' => 'Publisher Information',
-                'Group' => 'PubInfo',
-                'Data' => 'OAKLAND: NEW HARBINGER PUB, 2017.',
-            ],
+            self::$validTitle,
+            self::$validAuthor,
+            self::$validPublisher,
         ];
         $results = $driver->getItems();
 
@@ -650,42 +641,6 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     {
         $driver = $this->getDriver('valid-eds-record');
         $this->assertEquals('unit test source', $driver->getItemsTitleSource());
-    }
-
-    /**
-     * Data provider for testLinkUrls
-     *
-     * @return array
-     */
-    public static function getLinkUrlsProvider(): array
-    {
-        return [
-            [
-                'http://localhost/sample1',
-                '<a href=\'http://localhost/sample1\'>http://localhost/sample1</a>',
-            ],
-            [
-                '<link linkTarget="URL" linkTerm="https://localhost/sample"'
-                    . ' linkWindow="_blank">https://localhost/sample</link>',
-                '<a href=\'https://localhost/sample\'>https://localhost/sample</a>',
-            ],
-        ];
-    }
-
-    /**
-     * Test linkUrls for a record.
-     *
-     * @param string $url      Input URL
-     * @param string $expected Expected value
-     *
-     * @dataProvider getLinkUrlsProvider
-     *
-     * @return void
-     */
-    public function testLinkUrls(string $url, string $expected): void
-    {
-        $driver = $this->getDriver();
-        $this->assertEquals($expected, $driver->linkUrls($url));
     }
 
     /**

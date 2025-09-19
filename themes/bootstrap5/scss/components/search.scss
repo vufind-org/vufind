@@ -352,6 +352,10 @@ header .container.navbar { margin-bottom: 0; }
 .result-body {
   padding: 0;
   padding-bottom: .25rem;
+
+  .author sup {
+    display: none;
+  }
 }
 
 .result-body,
