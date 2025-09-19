@@ -83,6 +83,13 @@ class Solr implements AutocompleteInterface
     protected $sortField;
 
     /**
+     * Max number of search result rows
+     *
+     * @var int
+     */
+    protected $limit;
+
+    /**
      * Filters to apply to Solr search
      *
      * @var array
@@ -140,7 +147,13 @@ class Solr implements AutocompleteInterface
             $params[2] : null;
         $this->filters = [];
         if (count($params) > 3) {
-            for ($x = 3; $x < count($params); $x += 2) {
+            if (ctype_digit($params[3])) {
+                $this->limit = (int)$params[3];
+                $fs = 4;
+            } else {
+                $fs = 3;
+            }
+            for ($x = $fs; $x < count($params); $x += 2) {
                 if (isset($params[$x + 1])) {
                     $this->filters[] = $params[$x] . ':' . $params[$x + 1];
                 }
@@ -209,6 +222,9 @@ class Solr implements AutocompleteInterface
             $this->handler
         );
         $this->searchObject->getParams()->setSort($this->sortField);
+        if ($this->limit) {
+            $this->searchObject->getParams()->setLimit($this->limit);
+        }
         foreach ($this->filters as $current) {
             $this->searchObject->getParams()->addFilter($current);
         }
@@ -358,6 +374,18 @@ class Solr implements AutocompleteInterface
     protected function setSortField($new)
     {
         $this->sortField = $new;
+    }
+
+    /**
+     * Set the limit. Useful for child classes.
+     *
+     * @param int $new Limit of search result rows.
+     *
+     * @return void
+     */
+    protected function setLimit($new)
+    {
+        $this->limit = $new;
     }
 
     /**
