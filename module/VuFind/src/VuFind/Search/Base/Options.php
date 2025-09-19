@@ -1542,7 +1542,7 @@ abstract class Options implements TranslatorAwareInterface
             $this->autocompleteAutoSubmit = $autosubmit;
         }
         if (null !== ($suggestionlimit = $autocompleteSettings['suggestion_limit'] ?? null)) {
-            $this->autocompleteSuggestionLimit = (int) $suggestionlimit;
+            $this->autocompleteSuggestionLimit = (int)$suggestionlimit;
         }
         $formattingRules = $autocompleteSettings['formatting_rule'] ?? [];
         if ($formattingRules && is_array($formattingRules)) {
