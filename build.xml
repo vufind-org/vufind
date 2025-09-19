@@ -540,6 +540,8 @@
       </else>
     </if>
     <echo message="Installing dependencies..." />
+    <!-- in order to respect the ${downloadsdir} property, we should install Solr here before running composer. -->
+    <phingcall target="installsolr" />
     <exec executable="sh" passthru="true" checkreturn="true">
       <arg line="-c 'cd ${workdir}; php ${downloadsdir}/${composer_filename} install ${composer_extra_params}'" />
     </exec>
