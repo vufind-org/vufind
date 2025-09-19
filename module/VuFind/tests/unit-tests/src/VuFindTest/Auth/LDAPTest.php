@@ -85,7 +85,6 @@ class LDAPTest extends \PHPUnit\Framework\TestCase
     {
         return [
             'missing host' => ['host'],
-            'missing port' => ['port'],
             'missing basedn' => ['basedn'],
             'missing username' => ['username'],
         ];

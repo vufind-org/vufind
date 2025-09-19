@@ -67,7 +67,7 @@ class LDAP extends AbstractBase
     protected function validateConfig()
     {
         // Check for missing parameters:
-        $requiredParams = ['host', 'port', 'basedn', 'username'];
+        $requiredParams = ['host', 'basedn', 'username'];
         foreach ($requiredParams as $param) {
             if (
                 !isset($this->config->LDAP->$param)
@@ -160,9 +160,18 @@ class LDAP extends AbstractBase
         // is unavailable -- we need to check for bad return values again at search
         // time!
         $host = $this->getSetting('host');
-        $port = $this->getSetting('port');
-        $this->debug("connecting to host=$host, port=$port");
-        $connection = @ldap_connect($host, $port);
+        if (str_starts_with($host, 'ldap://') || str_starts_with($host, 'ldaps://')) {
+            $this->debug("connecting to host=$host");
+            $connection = @ldap_connect($host);
+        } else {
+            // Using $host and $port is deprecated since PHP 8.3
+            $port = $this->getSetting('port');
+            if ($port === '') {
+                $port = 389;
+            }
+            $this->debug("connecting to host=$host, port=$port");
+            $connection = @ldap_connect($host, $port);
+        }
         if (!$connection) {
             $this->debug('connection failed');
             throw new AuthException('authentication_error_technical');
