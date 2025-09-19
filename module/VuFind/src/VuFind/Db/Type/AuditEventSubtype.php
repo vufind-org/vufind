@@ -48,6 +48,13 @@ enum AuditEventSubtype: string
     case RenewLoans = 'renew_loans';
     case UpdateHolds = 'update_holds';
 
+    // Payment
+    case Payment = 'payment';
+    case PaymentNotifyHandler = 'payment_notify';
+    case PaymentReceipt = 'payment_receipt';
+    case PaymentRegistration = 'payment_registration';
+    case PaymentResponseHandler = 'payment_response';
+
     // User
     case ConnectCard = 'connect_card';
     case ConnectCardByEmail = 'connect_card_by_email';

@@ -70,7 +70,7 @@ class BlockLoaderFactory implements FactoryInterface
         }
         return new $requestedName(
             $container->get(\VuFind\Search\Options\PluginManager::class),
-            $container->get(\VuFind\Config\PluginManager::class),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class),
             $container->get(\VuFind\ContentBlock\PluginManager::class)
         );
     }

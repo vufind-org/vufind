@@ -87,7 +87,7 @@ trait CacheManagementTrait
         );
         $response = $client->send();
         if (200 !== $response->getStatusCode()) {
-            throw new \Exception('Could not clear object cache: ' . $response->getBody());
+            throw new \Exception('Could not clear ' . $name . ' cache: ' . $response->getBody());
         }
     }
 }

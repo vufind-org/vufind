@@ -29,9 +29,12 @@
 
 namespace VuFindTest\Db;
 
+use PHPUnit\Framework\MockObject\MockObject;
+use VuFind\Config\Version;
 use VuFind\Db\Connection;
 use VuFind\Db\ConnectionFactory;
 use VuFind\Db\DbBuilder;
+use VuFind\Db\Migration\MigrationLoader;
 
 use function count;
 
@@ -46,6 +49,55 @@ use function count;
  */
 class DbBuilderTest extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * Get a mock database connection with a working quote method.
+     *
+     * @return MockObject&Connection
+     */
+    protected function getMockConnectionWithQuote(): MockObject&Connection
+    {
+        $mockConnection = $this->createMock(Connection::class);
+        $mockConnection->expects($this->once())->method('quote')->willReturnCallback(fn ($str) => "'$str'");
+        return $mockConnection;
+    }
+
+    /**
+     * Data provider for testPortHandling().
+     *
+     * @return array[]
+     */
+    public static function portHandlingProvider(): array
+    {
+        return [
+            'port' => ['localhost:1234', 'localhost', '1234'],
+            'no port' => ['localhost', 'localhost', null],
+        ];
+    }
+
+    /**
+     * Test port number processing.
+     *
+     * @param string  $host         Host string
+     * @param string  $expectedHost Expected hostname parsed from string
+     * @param ?string $expectedPort Expected port number (or null) parsed from string
+     *
+     * @return void
+     *
+     * @dataProvider portHandlingProvider
+     */
+    public function testPortHandling(string $host, string $expectedHost, ?string $expectedPort): void
+    {
+        $mockConnectionFactory = $this->createMock(ConnectionFactory::class);
+        $mockLoader = $this->createMock(MigrationLoader::class);
+        $builder = $this->getMockBuilder(DbBuilder::class)->onlyMethods(['getRootDatabaseConnection'])
+            ->setConstructorArgs([$mockConnectionFactory, $mockLoader])
+            ->getMock();
+        $builder->expects($this->exactly(2))->method('getRootDatabaseConnection')
+            ->with('mysql', $expectedHost, 'root', '', $expectedPort)
+            ->willReturn($this->getMockConnectionWithQuote());
+        $builder->build('newName', 'newUser', 'newPass', 'mysql', $host);
+    }
+
     /**
      * Data provider for testPreCommands().
      *
@@ -93,13 +145,11 @@ class DbBuilderTest extends \PHPUnit\Framework\TestCase
         if ($sqlOnly) {
             $factory->expects($this->never())->method('getConnectionFromOptions');
         } else {
-            $mockConnection = $this->createMock(Connection::class);
+            $mockConnection = $this->getMockConnectionWithQuote();
             $mockConnection->expects($this->exactly(count($expectedCommands)))->method('executeQuery');
-            $mockConnection->expects($this->exactly(1))->method('quote')
-                ->willReturnCallback(fn ($str) => "'$str'");
             $factory->expects($this->exactly(1))->method('getConnectionFromOptions')->willReturn($mockConnection);
         }
-        $builder = new DbBuilder($factory);
+        $builder = new DbBuilder($factory, $this->createMock(MigrationLoader::class));
         $result = $builder->build('name', 'user', 'pass', $driver, returnSqlOnly: $sqlOnly, steps: ['pre']);
         $this->assertEquals(implode("\n", $expectedCommands), trim($result));
     }
@@ -130,7 +180,7 @@ class DbBuilderTest extends \PHPUnit\Framework\TestCase
     {
         $factory = $this->createMock(ConnectionFactory::class);
         $factory->expects($this->never())->method('getConnectionFromOptions');
-        $builder = new DbBuilder($factory);
+        $builder = new DbBuilder($factory, $this->createMock(MigrationLoader::class));
         $result = $builder->build('name', 'user', 'pass', $driver, returnSqlOnly: true, steps: ['main']);
         $this->assertEquals(trim(file_get_contents($expectedFile)), trim($result));
     }
@@ -142,10 +192,18 @@ class DbBuilderTest extends \PHPUnit\Framework\TestCase
      */
     public static function postCommandsProvider(): array
     {
-        $expectedMySql = [];
+        $version = Version::getBuildVersion();
+        $expectedMySql = [
+            "INSERT INTO migrations(name, status, target_version) VALUES ('mysql.sql', 'success', '$version');",
+            "INSERT INTO migrations(name, status, target_version) VALUES ('11.0/001-fake.sql', 'success', '$version');",
+            "INSERT INTO migrations(name, status, target_version) VALUES ('11.0/002-fake.sql', 'success', '$version');",
+        ];
         $expectedPgSql = [
             'GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO user;',
             'GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO user;',
+            "INSERT INTO migrations(name, status, target_version) VALUES ('pgsql.sql', 'success', '$version');",
+            "INSERT INTO migrations(name, status, target_version) VALUES ('11.0/001-fake.sql', 'success', '$version');",
+            "INSERT INTO migrations(name, status, target_version) VALUES ('11.0/002-fake.sql', 'success', '$version');",
         ];
         return [
             'mariadb, sql-only' => ['mariadb', $expectedMySql, true],
@@ -178,7 +236,17 @@ class DbBuilderTest extends \PHPUnit\Framework\TestCase
             $mockConnection->expects($this->exactly(count($expectedCommands)))->method('executeQuery');
             $factory->expects($this->exactly(1))->method('getConnectionFromOptions')->willReturn($mockConnection);
         }
-        $builder = new DbBuilder($factory);
+        $loader = $this->createMock(MigrationLoader::class);
+        $migrationDir = '/dummy/value/for/migration/directory';
+        $migrationSubdir = "$migrationDir/11.0";
+        $loader->expects($this->once())->method('getMigrationDirForPlatform')->with($driver)
+            ->willReturn($migrationDir);
+        $loader->expects($this->once())->method('getMigrationSubdirectoriesMatchingVersion')
+            ->with(Version::getBuildVersion(), $migrationDir)
+            ->willReturn([$migrationSubdir]);
+        $loader->expects($this->once())->method('getMigrationsFromDir')->with($migrationSubdir)
+            ->willReturn(["$migrationSubdir/001-fake.sql", "$migrationSubdir/002-fake.sql"]);
+        $builder = new DbBuilder($factory, $loader);
         $result = $builder->build('name', 'user', 'pass', $driver, returnSqlOnly: $sqlOnly, steps: ['post']);
         $this->assertEquals(implode("\n", $expectedCommands), trim($result));
     }

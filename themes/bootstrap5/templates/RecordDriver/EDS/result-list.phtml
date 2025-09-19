@@ -28,56 +28,35 @@
   <?php endif; ?>
   <div class="media-body">
     <div class="result-body">
-      <?php $items = $this->driver->getItems('result-list');
-        if (isset($items) && !empty($items)):
-          foreach ($items as $item):
-            if (!empty($item)): ?>
-              <div class="resultItemLine1">
-                <?php if ('Ti' == $item['Group']): ?>
-                  <h2>
-                    <a href="<?=$this->escapeHtmlAttr($recordLinker->getUrl($this->driver))?>" class="title getFull _record_link"  data-view="<?=$this->escapeHtmlAttr($this->params->getOptions()->getListViewOption())?>">
-                    <?=$item['Data']?> </a>
-                  </h2>
-                <?php elseif ('Au' == $item['Group'] && strtolower($edsConfig->AuthorDisplay->ResultListFormat ?? 'Short') == 'short'): ?>
-                  <p>
-                    <b><?=$this->transEsc($item['Label'])?>:</b>
-                    <?php
-                      $authors = $driver->getPrimaryAuthorsWithHighlighting();
-                      $authorCount = count($authors);
-                      $authorNameLimit = $edsConfig->AuthorDisplay->ShortAuthorLimit ?? 3;
-                    ?>
-                    <?php if ($authorCount > 1): ?>
-                      <?php foreach ($authors as $i => $author): ?>
-                        <span class="author"><a href="<?=$this->record($driver)->getLink('author', $this->highlight($author, null, true, false))?>"><?=$this->highlight($author)?></a></span><?php
-                        if ($authorCount == ($i + 1)) {
-                          break;
-                        } elseif (($i + 1) >= $authorNameLimit) {
-                          echo ' ' . $this->transEsc('more_authors_abbrev');
-                          break;
-                        }
-                      ?><?php endforeach; ?>
-                    <?php else: ?>
-                      <?=$this->driver->linkUrls($item['Data'])?>
-                    <?php endif; ?>
-                  </p>
-                <?php else:?>
-                  <p>
-                    <b><?=$this->transEsc($item['Label'])?>:</b>
-                    <?=$this->driver->linkUrls($item['Data'])?>
-                  </p>
-                <?php endif;?>
-              </div>
-            <?php endif; ?>
-          <?php endforeach; ?>
-        <?php elseif ($restrictedView): ?>
+      <?php
+        $formatter = $this->recordDataFormatter($this->driver);
+        $items = $formatter->getData($formatter->getDefaults('result-list'));
+      ?>
+      <?php if (!empty($items)): ?>
+        <?php foreach ($items as $item): ?>
           <div class="resultItemLine1">
-            <p>
-              <?=$this->transEsc('This result is not displayed to guests')?>
-              <br>
-              <?=$this->render('error/loginForAccess.phtml')?>
-            </p>
+            <?php if ('Title' == $item['label']): ?>
+              <h2>
+                <a href="<?=$this->escapeHtmlAttr($recordLinker->getUrl($this->driver))?>" class="title getFull _record_link"  data-view="<?=$this->escapeHtmlAttr($this->params->getOptions()->getListViewOption())?>">
+                <?=$item['value']?> </a>
+              </h2>
+            <?php else:?>
+              <p>
+                <b><?=$this->transEsc($item['label'])?>:</b>
+                <?=$item['value']?>
+              </p>
+            <?php endif;?>
           </div>
-        <?php endif; ?>
+        <?php endforeach; ?>
+      <?php elseif ($restrictedView): ?>
+        <div class="resultItemLine1">
+          <p>
+            <?=$this->transEsc('This result is not displayed to guests')?>
+            <br>
+            <?=$this->render('error/loginForAccess.phtml')?>
+          </p>
+        </div>
+      <?php endif; ?>
 
       <div class="resultItemLine4 custom-links">
         <?php $customLinks = array_merge($this->driver->getFTCustomLinks(), $this->driver->getCustomLinks());
@@ -122,11 +101,17 @@
       <?php endif; ?>
 
       <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
-        <?php /* Add to favorites */ ?>
-        <?=$this->icon('user-list-add') ?> <a href="<?=$this->escapeHtmlAttr($recordLinker->getActionUrl($this->driver, 'Save'))?>" class="save-record" data-lightbox id="<?=$this->driver->getUniqueId() ?>" title="<?=$this->transEscAttr('Add to favorites')?>"><?=$this->transEsc('Add to favorites')?></a><br>
-
+        <?php if ($this->permission()->allowDisplay('feature.Favorites')): ?>
+          <?php /* Add to favorites */ ?>
+          <a href="<?=$this->escapeHtmlAttr($recordLinker->getActionUrl($this->driver, 'Save'))?>" data-lightbox class="save-record result-link icon-link" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>">
+            <?=$this->icon('user-favorites', 'icon-link__icon') ?>
+            <span class="result-link-label icon-link__label"><?=$this->transEsc('Add to favorites')?></span>
+          </a><br>
+        <?php elseif ($block = $this->permission()->getAlternateContent('feature.Favorites')): ?>
+          <?=$block?>
+        <?php endif; ?>
         <?php /* Saved lists */ ?>
-        <div class="savedLists alert alert-info hidden">
+        <div class="savedLists">
           <strong><?=$this->transEsc('Saved in')?>:</strong>
         </div>
       <?php endif; ?>

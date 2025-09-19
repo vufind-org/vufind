@@ -41,5 +41,6 @@ namespace VuFind\Db\Type;
 enum AuditEventType: string
 {
     case ILS = 'ils';
+    case Payment = 'payment';
     case User = 'user';
 }
