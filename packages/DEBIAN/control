@@ -5,7 +5,7 @@ Priority: Optional
 Architecture: all
 Depends: apache2,
          default-jdk | java-compiler,
-         libapache2-mod-php,
+         libapache2-mod-php | php-fpm,
          mysql-server | virtual-mysql-server-core,
          php-pear,
          php,
