@@ -178,7 +178,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function getTestName(): string
     {
-        return $this::class . '::' . $this->name();
+        return $this::class . '::' . $this->nameWithDataSet();
     }
 
     /**
@@ -1142,7 +1142,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     {
         $this->assertEquals(
             $title,
-            $page->find('css', '#lightbox-title')->getText()
+            $this->findCss($page, '#lightbox-title')->getText()
         );
     }
 

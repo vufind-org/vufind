@@ -34,7 +34,6 @@ use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\TagsEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
-use VuFind\Db\Service\Feature\TransactionInterface;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
@@ -58,16 +57,16 @@ class TagsService
     /**
      * Constructor
      *
-     * @param TagServiceInterface                               $tagDbService        Tag database service
-     * @param ResourceTagsServiceInterface&TransactionInterface $resourceTagsService Resource/Tags database service
-     * @param UserListServiceInterface                          $userListService     User list database service
-     * @param ResourcePopulator                                 $resourcePopulator   Resource populator service
-     * @param int                                               $maxLength           Maximum tag length
-     * @param bool                                              $caseSensitive       Are tags case sensitive?
+     * @param TagServiceInterface          $tagDbService        Tag database service
+     * @param ResourceTagsServiceInterface $resourceTagsService Resource/Tags database service
+     * @param UserListServiceInterface     $userListService     User list database service
+     * @param ResourcePopulator            $resourcePopulator   Resource populator service
+     * @param int                          $maxLength           Maximum tag length
+     * @param bool                         $caseSensitive       Are tags case sensitive?
      */
     public function __construct(
         protected TagServiceInterface $tagDbService,
-        protected ResourceTagsServiceInterface&TransactionInterface $resourceTagsService,
+        protected ResourceTagsServiceInterface $resourceTagsService,
         protected UserListServiceInterface $userListService,
         protected ResourcePopulator $resourcePopulator,
         protected int $maxLength = 64,

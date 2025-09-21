@@ -48,6 +48,7 @@ use function is_string;
  */
 #[ORM\Table(name: 'audit_event')]
 #[ORM\Index(name: 'audit_event_user_id_idx', columns: ['user_id'])]
+#[ORM\Index(name: 'audit_event_payment_id_idx', columns: ['payment_id'])]
 #[ORM\Entity]
 class AuditEvent implements AuditEventEntityInterface
 {
@@ -90,11 +91,20 @@ class AuditEvent implements AuditEventEntityInterface
     /**
      * User.
      *
-     * @var UserEntityInterface
+     * @var ?UserEntityInterface
      */
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
     #[ORM\ManyToOne(targetEntity: UserEntityInterface::class)]
     protected ?UserEntityInterface $user = null;
+
+    /**
+     * Payment.
+     *
+     * @var ?Payment
+     */
+    #[ORM\JoinColumn(name: 'payment_id', referencedColumnName: 'id', nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \VuFind\Db\Entity\Payment::class)]
+    protected ?PaymentEntityInterface $payment = null;
 
     /**
      * Session ID.
@@ -253,6 +263,29 @@ class AuditEvent implements AuditEventEntityInterface
         $this->user = $user?->getId() ? $user : null;
         // Set username always:
         $this->username = $user?->getUsername();
+        return $this;
+    }
+
+    /**
+     * Get payment.
+     *
+     * @return ?PaymentEntityInterface
+     */
+    public function getPayment(): ?PaymentEntityInterface
+    {
+        return $this->payment;
+    }
+
+    /**
+     * Set payment.
+     *
+     * @param ?PaymentEntityInterface $payment Payment
+     *
+     * @return static
+     */
+    public function setPayment(?PaymentEntityInterface $payment): static
+    {
+        $this->payment = $payment;
         return $this;
     }
 

@@ -31,7 +31,7 @@ namespace VuFind\Http;
 
 use Laminas\Cache\Storage\StorageInterface;
 use VuFind\Cache\Manager as CacheManager;
-use VuFind\Config\PluginManager as ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Exception\HttpDownloadException;
 
 /**
@@ -71,13 +71,13 @@ class CachingDownloader implements \VuFindHttp\HttpServiceAwareInterface
     /**
      * Constructor
      *
-     * @param CacheManager  $cacheManager  VuFind Cache Manager
-     * @param ConfigManager $configManager VuFind Config Manager
-     * @param bool          $cacheEnabled  Main toggle for enabling caching
+     * @param CacheManager           $cacheManager  VuFind Cache Manager
+     * @param ConfigManagerInterface $configManager VuFind Config Manager
+     * @param bool                   $cacheEnabled  Main toggle for enabling caching
      */
     public function __construct(
         protected CacheManager $cacheManager,
-        protected ConfigManager $configManager,
+        protected ConfigManagerInterface $configManager,
         protected bool $cacheEnabled = true
     ) {
         $this->setUpCache('default');
@@ -119,8 +119,8 @@ class CachingDownloader implements \VuFindHttp\HttpServiceAwareInterface
 
         if (!empty($cacheOptionsSection)) {
             $fullCacheOptionsSection = 'Cache_' . $cacheOptionsSection;
-            $section = $this->configManager->get($cacheOptionsFile ?? 'config')->$fullCacheOptionsSection;
-            $this->cacheOptions = !empty($section) ? $section->toArray() : [];
+            $this->cacheOptions = $this->configManager
+                ->getConfigArray($cacheOptionsFile ?? 'config')[$fullCacheOptionsSection] ?? [];
         }
     }
 

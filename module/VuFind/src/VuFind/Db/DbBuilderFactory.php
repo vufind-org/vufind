@@ -34,6 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Db\Migration\MigrationLoader;
 
 /**
  * Factory for the database builder.
@@ -67,6 +68,7 @@ class DbBuilderFactory implements FactoryInterface
     ) {
         return new $requestedName(
             $container->get(ConnectionFactory::class),
+            $container->get(MigrationLoader::class),
             ...($options ?? [])
         );
     }

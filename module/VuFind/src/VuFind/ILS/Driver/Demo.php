@@ -10,7 +10,7 @@
  * PHP version 8
  *
  * Copyright (C) Villanova University 2007, 2022.
- * Copyright (C) The National Library of Finland 2014.
+ * Copyright (C) The National Library of Finland 2014-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -42,6 +42,7 @@ use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Logic\AvailabilityStatus;
 use VuFind\ILS\Logic\AvailabilityStatusInterface;
+use VuFind\ILS\Logic\OnlinePaymentTrait;
 use VuFindSearch\Command\RandomCommand;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Service as SearchService;
@@ -67,6 +68,7 @@ use function strlen;
 class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
 {
     use \VuFind\I18n\HasSorterTrait;
+    use OnlinePaymentTrait;
 
     /**
      * Catalog ID used to distinguish between multiple Demo driver instances with the
@@ -1098,6 +1100,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         $fines = rand() % 20 - 2;
 
         $fineList = [];
+        $firstId = rand(1, 1000);
         for ($i = 0; $i < $fines; $i++) {
             // How many days overdue is the item?
             $day_overdue = rand() % 30 + 5;
@@ -1105,41 +1108,46 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             $checkout = strtotime('now - ' . ($day_overdue + 14) . ' days');
             // 1 in 10 chance of this being a "Manual Fee":
             if (rand(1, 10) === 1) {
-                $fine = 2.50;
+                $amount = 2.50;
                 $type = 'Manual Fee';
             } else {
                 // 50c a day fine
-                $fine = $day_overdue * 0.50;
+                $amount = $day_overdue * 0.50;
                 // After 20 days it becomes 'Long Overdue'
                 $type = $day_overdue > 20 ? 'Long Overdue' : 'Overdue';
             }
+            // 50% chance they've paid half of it:
+            $balance = (rand() % 100 > 49 ? $amount / 2 : $amount);
 
-            $fineList[] = [
-                'amount'   => $fine * 100,
-                'checkout' => $this->dateConverter
-                    ->convertToDisplayDate('U', $checkout),
-                'createdate' => $this->dateConverter
-                    ->convertToDisplayDate('U', time()),
+            $fine = [
+                'fineId'  => (string)($firstId + $i),
+                'amount'   => (int)round($amount * 100),
+                'checkout' => $this->dateConverter->convertToDisplayDate('U', $checkout),
+                'createdate' => $this->dateConverter->convertToDisplayDate('U', time()),
                 'fine'     => $type,
-                // Additional description for long overdue fines:
+                // Additional description:
                 'description' => 'Manual Fee' === $type ? 'Interlibrary loan request fee' : '',
-                // 50% chance they've paid half of it
-                'balance'  => (rand() % 100 > 49 ? $fine / 2 : $fine) * 100,
+                'balance'  => (int)round($balance * 100),
                 'duedate'  => $this->dateConverter->convertToDisplayDate(
                     'U',
                     strtotime("now - $day_overdue days")
                 ),
             ];
+
+            $fine['payableOnline'] = $this->fineIsPayable($fine);
+
             // Some fines will have no id or title:
             if (rand() % 3 != 1) {
                 if ($this->idsInMyResearch) {
-                    [$fineList[$i]['id'], $fineList[$i]['title']]
+                    [$fine['id'], $fine['title']]
                         = $this->getRandomBibIdAndTitle();
-                    $fineList[$i]['source'] = $this->getRecordSource();
+                    $fine['source'] = $this->getRecordSource();
                 } else {
-                    $fineList[$i]['title'] = 'Demo Title ' . $i;
+                    $fine['title'] = 'Demo Title ' . $i;
                 }
             }
+
+            $fineList[] = $fine;
         }
         return $fineList;
     }
@@ -1165,6 +1173,60 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 : $this->getRandomFines();
         }
         return $session->fines;
+    }
+
+    /**
+     * Register a payment.
+     *
+     * This is called after a successful online payment.
+     *
+     * @param array   $patron                  Patron
+     * @param int     $amount                  Amount to be registered as paid
+     * @param string  $localPaymentIdentifier  Local payment identifier
+     * @param ?string $remotePaymentIdentifier Remote payment identifier
+     * @param int     $paymentId               Internal payment id
+     * @param ?array  $fineIds                 Fine IDs to mark paid or null for bulk payment
+     *
+     * @throws ILSException
+     * @return array Associative array with keys success (bool, always) and reason (string, on error)
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function registerPayment(
+        array $patron,
+        int $amount,
+        string $localPaymentIdentifier,
+        ?string $remotePaymentIdentifier,
+        int $paymentId,
+        ?array $fineIds = null
+    ): array {
+        if ($this->isFailing(__METHOD__, 10)) {
+            throw new ILSException('Payment::registration_failed');
+        }
+
+        $session = $this->getSession($patron['id'] ?? null);
+        $paid = 0;
+        foreach ($session->fines ?? [] as $key => $fine) {
+            if (
+                ($fine['payableOnline'] ?? false)
+                && (!$fineIds || in_array($fine['fineId'] ?? '', $fineIds))
+            ) {
+                unset($session->fines[$key]);
+                $paid += $fine['balance'];
+            }
+        }
+        if ($paid < $amount) {
+            $session->fines[] = [
+                'amount'   => $paid - $amount,
+                'createdate' => $this->dateConverter->convertToDisplayDate('U', time()),
+                'fine'     => 'Balance',
+                'balance'  => $paid - $amount,
+            ];
+        }
+
+        return [
+            'success' => true,
+        ];
     }
 
     /**
@@ -2907,6 +2969,9 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         if ('getPasswordRecoveryData' === $function || 'resetPassword' === $function) {
             $config = $this->config['PasswordRecovery'] ?? [];
             return ($config['enabled'] ?? false) ? $config : false;
+        }
+        if ($function == 'OnlinePayment') {
+            return $this->config['OnlinePayment'] ?? [];
         }
 
         return [];

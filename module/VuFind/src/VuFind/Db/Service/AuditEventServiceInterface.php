@@ -31,6 +31,7 @@ namespace VuFind\Db\Service;
 
 use DateTime;
 use VuFind\Db\Entity\AuditEventEntityInterface;
+use VuFind\Db\Entity\PaymentEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Type\AuditEventSubtype;
 use VuFind\Db\Type\AuditEventType;
@@ -73,6 +74,23 @@ interface AuditEventServiceInterface extends DbServiceInterface
     ): void;
 
     /**
+     * Add a payment event.
+     *
+     * @param PaymentEntityInterface   $payment Payment
+     * @param AuditEventSubtype|string $subtype Event subtype
+     * @param string                   $message Status message
+     * @param array                    $data    Additional data
+     *
+     * @return void
+     */
+    public function addPaymentEvent(
+        PaymentEntityInterface $payment,
+        AuditEventSubtype|string $subtype,
+        string $message = '',
+        array $data = []
+    ): void;
+
+    /**
      * Get an array of events.
      *
      * @param ?DateTime                     $fromDate   Start date
@@ -84,7 +102,8 @@ interface AuditEventServiceInterface extends DbServiceInterface
      * @param ?string                       $clientIp   Client's IP address
      * @param ?string                       $serverIp   Server's IP address
      * @param ?string                       $serverName Server's host name
-     * @param array                         $sort       Sort order
+     * @param ?PaymentEntityInterface       $payment    Payment entity
+     * @param ?array                        $sort       Sort order (null for default descending order)
      *
      * @return AuditEventEntityInterface[]
      */
@@ -98,6 +117,7 @@ interface AuditEventServiceInterface extends DbServiceInterface
         ?string $clientIp = null,
         ?string $serverIp = null,
         ?string $serverName = null,
-        array $sort = ['date DESC']
+        ?PaymentEntityInterface $payment = null,
+        ?array $sort = null,
     ): array;
 }

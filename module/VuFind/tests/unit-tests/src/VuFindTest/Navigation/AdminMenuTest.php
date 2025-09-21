@@ -66,7 +66,7 @@ class AdminMenuTest extends \PHPUnit\Framework\TestCase
             AdminMenu::getDefaultMenuConfig(),
             $this->getCheckMethods(false)
         )->getMenu();
-        $this->assertCount(6, $menu['Admin']['MenuItems']);
+        $this->assertCount(7, $menu['Admin']['MenuItems']);
     }
 
     /**
