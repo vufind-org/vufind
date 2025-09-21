@@ -272,6 +272,10 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
 
         $accessToken = $requestToken->access_token;
         $userInfo = $this->getUserInfo($accessToken);
+
+        // Store id_token in session for logout
+        $this->session->oidc_id_token = $requestToken->id_token;
+
         return $this->setUserAttributes($userInfo);
     }
 
@@ -358,6 +362,50 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
             'scope' => $this->getConfig('scope') ?? 'openid profile email',
         ];
         return $this->getProvider()->authorization_endpoint . '?' . http_build_query($params);
+    }
+
+    /**
+     * Perform cleanup at logout time.
+     *
+     * @param string $url URL to redirect user to after logging out.
+     *
+     * @return string Redirect URL (modified for OpenIDConnect logout).
+     */
+    public function logout($url)
+    {
+        $redirectUrl = $url;
+        $end_session_endpoint = false;
+
+        $logout = $this->getConfig('logout');
+
+        if (!$logout) {
+            // No logout configured, so don't logout from service provider.
+            $this->debug('no logout URL given');
+        } elseif (filter_var($logout, FILTER_VALIDATE_URL)) {
+            // A valid URL was configured, use it.
+            $end_session_endpoint = $logout;
+        } else {
+            // Get end_session_endpoint from provider.
+            $provider = $this->getProvider();
+            $end_session_endpoint = $provider->end_session_endpoint;
+        }
+
+        if ($end_session_endpoint) {
+            // Retrieve id_token from session.
+            $idToken = $this->session->oidc_id_token ?? null;
+            if ($idToken === null) {
+                $this->logWarning('No id_token found in session data');
+            } else {
+                $params = [
+                    'id_token_hint' => $idToken,
+                    'post_logout_redirect_uri' => $url,
+                ];
+                $redirectUrl = $end_session_endpoint . '?' . http_build_query($params);
+            }
+        }
+
+        // Send back the redirect URL (possibly modified).
+        return $redirectUrl;
     }
 
     /**
