@@ -65,6 +65,59 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
+     * Valid eds record title.
+     *
+     * @var array
+     */
+    protected static array $validTitle = [
+        'Name' => 'Title',
+        'Label' => 'Title',
+        'Group' => 'Ti',
+        'Data' => 'METAPHOR IN PRACTICE: A PROFESSIONAL\'S GUIDE TO USING THE SCIENCE OF LANGUAGE.',
+        'RawData' => 'METAPHOR IN PRACTICE: A PROFESSIONAL\'S GUIDE TO USING THE SCIENCE OF LANGUAGE.',
+        'Elements' => [
+            ['Data' => 'METAPHOR IN PRACTICE: A PROFESSIONAL\'S GUIDE TO USING THE SCIENCE OF LANGUAGE.'],
+        ],
+    ];
+
+    /**
+     * Valid eds record author.
+     *
+     * @var array
+     */
+    protected static array $validAuthor = [
+        'Name' => 'Author',
+        'Label' => 'Authors',
+        'Group' => 'Au',
+        'Data' => '<span>TORNEKE, NIKLAS.</span>',
+        'RawData' =>
+            '&lt;searchLink fieldCode="AR" term="%22TORNEKE%2C+NIKLAS%2E%22"&gt;TORNEKE, NIKLAS.&lt;/searchLink&gt;',
+        'Elements' => [
+            [
+                'Data' => '<span>TORNEKE, NIKLAS.</span>',
+                'SearchLink' =>
+                    '<a href="../EDS/Search?lookfor=%22TORNEKE%2C+NIKLAS%2E%22&amp;type=AU">TORNEKE, NIKLAS.</a>',
+            ],
+        ],
+    ];
+
+    /**
+     * Valid eds record publisher.
+     *
+     * @var array
+     */
+    protected static array $validPublisher = [
+        'Name' => 'Publisher',
+        'Label' => 'Publisher Information',
+        'Group' => 'PubInfo',
+        'Data' => 'OAKLAND: NEW HARBINGER PUB, 2017.',
+        'RawData' => 'OAKLAND: NEW HARBINGER PUB, 2017.',
+        'Elements' => [
+            ['Data' => 'OAKLAND: NEW HARBINGER PUB, 2017.'],
+        ],
+    ];
+
+    /**
      * Default test configuration Patron Empowerment Framework (PEF)
      *
      * @var array
