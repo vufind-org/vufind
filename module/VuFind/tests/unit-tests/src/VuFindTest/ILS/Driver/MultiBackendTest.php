@@ -2549,8 +2549,8 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     protected function getDriver($constructorArgs = [])
     {
         $driver = new MultiBackend(
-            $constructorArgs['configLoader']
-                ?? $this->getMockConfigPluginManager([], ['config' => 'values']),
+            $constructorArgs['configManager']
+                ?? $this->getMockConfigManager([], ['config' => 'values']),
             $constructorArgs['ilsAuth'] ?? $this->getMockILSAuthenticator(),
             $constructorArgs['driverManager'] ?? $this->getMockSM()
         );

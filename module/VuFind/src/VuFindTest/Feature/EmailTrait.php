@@ -81,14 +81,31 @@ trait EmailTrait
      */
     protected function getLoggedEmail(int $index = 0): Email
     {
-        $data = file_get_contents($this->getEmailLogPath());
-        if (!$data) {
-            throw new \Exception('No serialized email message data found');
-        }
-        $records = explode("\x1E", $data);
+        $records = $this->getLoggedEmails();
         if (null === ($record = $records[$index] ?? null)) {
             throw new \Exception("Message with index $index not found");
         }
-        return unserialize(base64_decode($record));
+        return $record;
+    }
+
+    /**
+     * Get all logged emails from the log file.
+     *
+     * @param bool $allowEmpty Controls behavior when no emails are logged;
+     * true = return empty array; false = throw exception.
+     *
+     * @return Email[]
+     */
+    protected function getLoggedEmails($allowEmpty = false): array
+    {
+        $data = file_get_contents($this->getEmailLogPath());
+        if (!$data) {
+            if ($allowEmpty) {
+                return [];
+            }
+            throw new \Exception('No serialized email message data found');
+        }
+        $decoder = fn ($email) => unserialize(base64_decode($email));
+        return array_filter(array_map($decoder, explode("\x1E", $data)));
     }
 }

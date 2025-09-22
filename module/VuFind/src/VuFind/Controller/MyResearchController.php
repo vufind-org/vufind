@@ -1745,11 +1745,16 @@ class MyResearchController extends AbstractBase
                 $csrf->trimTokenList(0);
             }
 
+            $config = $this->getConfig();
             try {
                 if ($recoveryData = $authManager->getPasswordRecoveryData($this->params()->fromPost())) {
                     $this->sendRecoveryEmail($recoveryData);
                 } else {
-                    $this->flashMessenger()->addErrorMessage('recovery_user_not_found');
+                    if (!empty($config->Authentication->recover_be_honest)) {
+                        $this->flashMessenger()->addErrorMessage('recovery_user_not_found');
+                    } else {
+                        $this->flashMessenger()->addSuccessMessage('recovery_email_sent');
+                    }
                 }
             } catch (AuthException $e) {
                 $this->flashMessenger()->addErrorMessage($e->getMessage());

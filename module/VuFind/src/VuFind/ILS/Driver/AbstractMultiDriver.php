@@ -79,31 +79,15 @@ abstract class AbstractMultiDriver extends AbstractBase implements \Laminas\Log\
     protected $driverCache = [];
 
     /**
-     * Configuration loader
-     *
-     * @var \VuFind\Config\PluginManager
-     */
-    protected $configLoader;
-
-    /**
-     * ILS driver manager
-     *
-     * @var PluginManager
-     */
-    protected $driverManager;
-
-    /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
-     * @param PluginManager                $dm           ILS driver manager
+     * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
+     * @param PluginManager                         $driverManager ILS driver manager
      */
     public function __construct(
-        \VuFind\Config\PluginManager $configLoader,
-        PluginManager $dm
+        protected \VuFind\Config\ConfigManagerInterface $configManager,
+        protected PluginManager $driverManager
     ) {
-        $this->configLoader = $configLoader;
-        $this->driverManager = $dm;
     }
 
     /**
@@ -184,18 +168,14 @@ abstract class AbstractMultiDriver extends AbstractBase implements \Laminas\Log\
     protected function getDriverConfig($name)
     {
         // Determine config file name based on class name:
-        try {
-            $path = empty($this->driversConfigPath)
-                ? $name
-                : $this->driversConfigPath . '/' . $name;
-            $config = $this->configLoader->get($path);
-        } catch (\Exception $e) {
-            // Configuration loading failed; probably means file does not
-            // exist -- just return an empty array in that case:
+        $path = empty($this->driversConfigPath)
+            ? $name
+            : $this->driversConfigPath . '/' . $name;
+        $config = $this->configManager->getConfigArray($path);
+        if (empty($config)) {
             $this->error("Could not load config for $name");
-            return [];
         }
-        return $config->toArray();
+        return $config;
     }
 
     /**

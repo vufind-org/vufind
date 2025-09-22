@@ -461,6 +461,72 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Data provider for testRecoverPasswordByUsername().
+     *
+     * @return array[]
+     */
+    public static function honestyProvider(): array
+    {
+        return [
+            'be honest' => [true],
+            'be dishonest' => [false],
+        ];
+    }
+
+    /**
+     * Test attempting to recover a password with an invalid username.
+     *
+     * @param bool $beHonest Should the recovery error message be honest?
+     *
+     * @return void
+     *
+     * @depends testChangePassword
+     *
+     * @dataProvider honestyProvider
+     */
+    public function testRecoveryHonesty(bool $beHonest): void
+    {
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Authentication' => [
+                        'recover_password' => true,
+                        'recover_interval' => 0,
+                        'recover_be_honest' => $beHonest,
+                    ],
+                    'Mail' => [
+                        'testOnly' => true,
+                        'message_log' => $this->getEmailLogPath(),
+                        'message_log_format' => $this->getEmailLogFormat(),
+                    ],
+                ],
+            ]
+        );
+
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl());
+        $page = $session->getPage();
+        $this->resetEmailLog();
+
+        // Recover account
+        $this->clickCss($page, '#loginOptions a');
+        $this->clickCss($page, '.modal-body .recover-account-link');
+        $this->findCssAndSetValue($page, '#recovery_username', 'bad');
+        $this->clickCss($page, '.modal-body input[type="submit"]');
+        if ($beHonest) {
+            $this->assertEquals('We could not find your account', $this->findCssAndGetText($page, '.alert-danger'));
+        } else {
+            $this->assertEquals(
+                'Password recovery instructions have been sent to the email address registered with this account.',
+                $this->findCssAndGetText($page, '.alert-success')
+            );
+        }
+
+        // No email should have been sent
+        $this->assertEmpty($this->getLoggedEmails(allowEmpty: true));
+    }
+
+    /**
      * Test recovering a password by username.
      *
      * @return void
@@ -493,9 +559,6 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Recover account
         $this->clickCss($page, '#loginOptions a');
         $this->clickCss($page, '.modal-body .recover-account-link');
-        $this->findCssAndSetValue($page, '#recovery_username', 'bad');
-        $this->clickCss($page, '.modal-body input[type="submit"]');
-        $this->assertEquals('We could not find your account', $this->findCssAndGetText($page, '.alert-danger'));
         $this->findCssAndSetValue($page, '#recovery_username', 'username1');
         $this->clickCss($page, '.modal-body input[type="submit"]');
         $this->assertEquals(

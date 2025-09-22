@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Db;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Config\Version;
 use VuFind\Db\Connection;
 use VuFind\Db\ConnectionFactory;
@@ -48,6 +49,55 @@ use function count;
  */
 class DbBuilderTest extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * Get a mock database connection with a working quote method.
+     *
+     * @return MockObject&Connection
+     */
+    protected function getMockConnectionWithQuote(): MockObject&Connection
+    {
+        $mockConnection = $this->createMock(Connection::class);
+        $mockConnection->expects($this->once())->method('quote')->willReturnCallback(fn ($str) => "'$str'");
+        return $mockConnection;
+    }
+
+    /**
+     * Data provider for testPortHandling().
+     *
+     * @return array[]
+     */
+    public static function portHandlingProvider(): array
+    {
+        return [
+            'port' => ['localhost:1234', 'localhost', '1234'],
+            'no port' => ['localhost', 'localhost', null],
+        ];
+    }
+
+    /**
+     * Test port number processing.
+     *
+     * @param string  $host         Host string
+     * @param string  $expectedHost Expected hostname parsed from string
+     * @param ?string $expectedPort Expected port number (or null) parsed from string
+     *
+     * @return void
+     *
+     * @dataProvider portHandlingProvider
+     */
+    public function testPortHandling(string $host, string $expectedHost, ?string $expectedPort): void
+    {
+        $mockConnectionFactory = $this->createMock(ConnectionFactory::class);
+        $mockLoader = $this->createMock(MigrationLoader::class);
+        $builder = $this->getMockBuilder(DbBuilder::class)->onlyMethods(['getRootDatabaseConnection'])
+            ->setConstructorArgs([$mockConnectionFactory, $mockLoader])
+            ->getMock();
+        $builder->expects($this->exactly(2))->method('getRootDatabaseConnection')
+            ->with('mysql', $expectedHost, 'root', '', $expectedPort)
+            ->willReturn($this->getMockConnectionWithQuote());
+        $builder->build('newName', 'newUser', 'newPass', 'mysql', $host);
+    }
+
     /**
      * Data provider for testPreCommands().
      *
@@ -95,10 +145,8 @@ class DbBuilderTest extends \PHPUnit\Framework\TestCase
         if ($sqlOnly) {
             $factory->expects($this->never())->method('getConnectionFromOptions');
         } else {
-            $mockConnection = $this->createMock(Connection::class);
+            $mockConnection = $this->getMockConnectionWithQuote();
             $mockConnection->expects($this->exactly(count($expectedCommands)))->method('executeQuery');
-            $mockConnection->expects($this->exactly(1))->method('quote')
-                ->willReturnCallback(fn ($str) => "'$str'");
             $factory->expects($this->exactly(1))->method('getConnectionFromOptions')->willReturn($mockConnection);
         }
         $builder = new DbBuilder($factory, $this->createMock(MigrationLoader::class));

@@ -950,8 +950,7 @@ class AbstractRecord extends AbstractBase
             ? (bool)$config->Site->loadInitialTabWithAjax : false;
 
         // Set up next/previous record links (if appropriate)
-        $searchOptions = $this->serviceLocator->get(\VuFind\Search\Options\PluginManager::class)->get($this->sourceId);
-        if ($searchOptions->resultScrollerActive()) {
+        if ($this->getSearchMemory()->getCurrentSearch()?->getOptions()?->resultScrollerActive()) {
             $driver = $this->loadRecord();
             $view->scrollData = $this->resultScroller()->getScrollData($driver);
         }
