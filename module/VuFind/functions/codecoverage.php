@@ -62,13 +62,25 @@ function setupVuFindRemoteCodeCoverage(array $modules): void
     if (!is_dir($outputDir)) {
         $error("setupVuFindRemoteCodeCoverage: Bad output directory $outputDir");
     }
+    // Ensure that a cache directory for static analysis exists:
+    $cacheDir = LOCAL_CACHE_DIR . '/coverage';
+    if (!is_dir($cacheDir)) {
+        if (!mkdir($cacheDir)) {
+            $error("Failed to create cache directory $cacheDir");
+        }
+        chmod($cacheDir, 0o775);
+    }
 
     try {
         $filter = new Filter();
         foreach ($modules as $module) {
             $moduleDir = __DIR__ . "/../../$module";
             if (!str_contains($module, '\\') && is_dir($moduleDir)) {
-                $filter->includeDirectory("$moduleDir/src/");
+                foreach (
+                    (new \SebastianBergmann\FileIterator\Facade())->getFilesAsArray("$moduleDir/src/", '.php') as $file
+                ) {
+                    $filter->includeFile($file);
+                }
             }
         }
 
@@ -76,6 +88,7 @@ function setupVuFindRemoteCodeCoverage(array $modules): void
             (new Selector())->forLineCoverage($filter),
             $filter
         );
+        $coverage->cacheStaticAnalysis($cacheDir);
     } catch (\Exception $e) {
         $error('Failed to create collector: ' . (string)$e);
     }
@@ -93,12 +106,16 @@ function setupVuFindRemoteCodeCoverage(array $modules): void
     $coverage->start($testName);
 
     // Write coverage report on shutdown:
-    $shutdownFunc = function () use ($coverage, $outputFile): void {
+    $shutdownFunc = function () use ($coverage, $outputFile, $cacheDir): void {
         $coverage->stop();
         $reporter = new PHPReport();
         $result = $reporter->process($coverage);
         file_put_contents($outputFile, $result);
         chmod($outputFile, 0o664);
+        // Reset permissions of static analysis cache files:
+        foreach (glob("$cacheDir/*") as $file) {
+            chmod($file, 0o664);
+        }
     };
     register_shutdown_function($shutdownFunc);
 }
