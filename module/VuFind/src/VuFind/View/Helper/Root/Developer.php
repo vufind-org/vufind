@@ -30,7 +30,6 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
-use VuFind\Db\Entity\UserEntityInterface;
 
 /**
  * Developer helper
@@ -43,31 +42,6 @@ use VuFind\Db\Entity\UserEntityInterface;
  */
 class Developer extends AbstractHelper
 {
-    /**
-     * Constructor
-     *
-     * @param ?UserEntityInterface $user Current logged in user or null
-     */
-    public function __construct(
-        protected ?UserEntityInterface $user = null
-    ) {
-    }
-
-    /**
-     * Invoke
-     *
-     * @param ?UserEntityInterface $user Override user
-     *
-     * @return static
-     */
-    public function __invoke(?UserEntityInterface $user = null): static
-    {
-        if ($user !== null) {
-            $this->user = $user;
-        }
-        return $this;
-    }
-
     /**
      * Are developer settings enabled? This includes in example: API keys
      *

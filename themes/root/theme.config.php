@@ -29,7 +29,7 @@ return [
             'VuFind\View\Helper\Root\Csp' => 'VuFind\View\Helper\Root\CspFactory',
             'VuFind\View\Helper\Root\CurrentPath' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\DateTime' => 'VuFind\View\Helper\Root\DateTimeFactory',
-            'VuFind\View\Helper\Root\Developer' => 'VuFind\View\Helper\Root\DeveloperFactory',
+            'VuFind\View\Helper\Root\Developer' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\View\Helper\Root\DisplayLanguageOption' => 'VuFind\View\Helper\Root\DisplayLanguageOptionFactory',
             'VuFind\View\Helper\Root\EscapeOrCleanHtml' => 'VuFind\View\Helper\Root\EscapeOrCleanHtmlFactory',
             'VuFind\View\Helper\Root\ExplainElement' => 'Laminas\ServiceManager\Factory\InvokableFactory',
