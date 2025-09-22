@@ -148,12 +148,12 @@ class Solr implements AutocompleteInterface
         $this->filters = [];
         if (count($params) > 3) {
             if (ctype_digit($params[3])) {
-                $this->limit = (int)$params[3];
-                $fs = 4;
+                $this->setLimit((int)$params[3]);
+                $filterStartIndex = 4;
             } else {
-                $fs = 3;
+                $filterStartIndex = 3;
             }
-            for ($x = $fs; $x < count($params); $x += 2) {
+            for ($x = $filterStartIndex; $x < count($params); $x += 2) {
                 if (isset($params[$x + 1])) {
                     $this->filters[] = $params[$x] . ':' . $params[$x + 1];
                 }
