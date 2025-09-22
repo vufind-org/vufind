@@ -97,8 +97,8 @@ trait SearchObjectsTrait
     /**
      * Get mock search params.
      *
-     * @param ?Options $options     The search options contained within the search parameters
-     * @param string  $subNamespace The sub-namespace of \VuFind\Search for the object being mocked
+     * @param ?Options $options      The search options contained within the search parameters
+     * @param string   $subNamespace The sub-namespace of \VuFind\Search for the object being mocked
      *
      * @return MockObject&Params
      */
@@ -112,7 +112,7 @@ trait SearchObjectsTrait
     /**
      * Get mock results plugin object.
      *
-     * @param ?Params $params     The search params contained within the search results
+     * @param ?Params $params       The search params contained within the search results
      * @param string  $subNamespace The sub-namespace of \VuFind\Search for the object being mocked
      *
      * @return MockObject&Results
