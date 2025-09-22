@@ -74,10 +74,10 @@ trait VerbosityTrait
      */
     protected function applyVerbosity(array $record): array
     {
-        $vufindDetails = $record['context']['details'] ?? null;
+        $vufindDetails = $record['context']['vufind_log_details'] ?? null;
         if (is_array($vufindDetails) && isset($vufindDetails[$this->verbosity])) {
             $record['message'] = $vufindDetails[$this->verbosity];
-            $record['context'] = [];
+            unset($record['context']['details']);
         }
         return $record;
     }
