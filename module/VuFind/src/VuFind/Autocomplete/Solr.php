@@ -85,9 +85,9 @@ class Solr implements AutocompleteInterface
     /**
      * Max number of search result rows
      *
-     * @var int
+     * @var ?int
      */
-    protected $limit;
+    protected ?int $limit = null;
 
     /**
      * Filters to apply to Solr search
