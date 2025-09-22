@@ -162,7 +162,6 @@ FinnaPopup.prototype.show = function show() {
     $(document).on('focusin.finna', function setFocusTrap(e) {
       _.focusTrap(e);
     });
-    _.toggleScroll(false);
   }
   _.setKeyBinds();
 
@@ -174,6 +173,7 @@ FinnaPopup.prototype.show = function show() {
         _.onPopupClose();
       }
     });
+    $(document.body).addClass('overflow-hidden');
   }
   if (typeof _.modalHolder !== 'undefined') {
     _.modalHolder.remove();
@@ -297,20 +297,12 @@ FinnaPopup.prototype.onPopupOpen = function onPopupOpen(open, close) {
 };
 
 /**
- * Toggles the document body scroll state
- * @param {boolean} value Should the scrolling be enabled
- */
-FinnaPopup.prototype.toggleScroll = function toggleScroll(value) {
-  $(document.body).css('overflow', value ? 'auto' : 'hidden');
-};
-
-/**
  * Function that handles the flow when a popup closes
  */
 FinnaPopup.prototype.onPopupClose = function onPopupClose() {
   var _ = this;
   if (typeof _.parent === 'undefined') {
-    _.toggleScroll(true);
+    $(document.body).removeClass('overflow-hidden');
     $(document).off('focusin.finna');
   }
   if (typeof _.backDrop !== 'undefined') {
