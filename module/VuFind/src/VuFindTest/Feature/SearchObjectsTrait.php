@@ -120,7 +120,7 @@ trait SearchObjectsTrait
     protected function getMockResults(?Params $params = null, string $subNamespace = 'Solr'): MockObject&Results
     {
         $results = $this->createMock("VuFind\Search\\$subNamespace\Results");
-        $params ??= $this->getMockParams(subNamespace: $subNamespace);
+        $params ??= $this->getMockParams(null, $subNamespace);
         $results->method('getParams')->willReturn($params);
         $results->method('getOptions')->willReturn($params->getOptions());
         return $results;
