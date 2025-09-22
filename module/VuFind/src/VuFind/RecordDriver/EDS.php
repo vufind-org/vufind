@@ -105,17 +105,6 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Get the abstract (summary) of the record.
-     *
-     * @return string
-     */
-    public function getItemsAbstract()
-    {
-        $abstract = $this->getItems(null, null, 'Ab');
-        return $abstract[0]['Data'] ?? '';
-    }
-
-    /**
      * Get the abstract notes.
      * For EDS, returns the abstract in an array or an empty array.
      *
@@ -123,8 +112,8 @@ class EDS extends DefaultRecord
      */
     public function getAbstractNotes()
     {
-        $abstract = $this->getItems(null, null, 'Ab');
-        return (array)($abstract[0]['Data'] ?? []);
+        $abstracts = $this->getItem('Group', 'Ab');
+        return array_filter(array_map(fn ($abstract) => ($abstract['Data'] ?? null), $abstracts));
     }
 
     /**
@@ -162,9 +151,18 @@ class EDS extends DefaultRecord
     {
         return array_map(
             function ($data) {
-                return $data['Data'];
+                $elements = array_map(
+                    fn ($element) => $element['SearchLink'] ?? $element['Data'],
+                    $data['Elements']
+                );
+
+                if (!empty($elements)) {
+                    return implode(', ', $elements);
+                } else {
+                    return $data['Data'];
+                }
             },
-            $this->getItems(null, null, 'Au')
+            $this->getItem('Group', 'Au')
         );
     }
 
@@ -220,68 +218,76 @@ class EDS extends DefaultRecord
 
     /**
      * Support method for getItems, used to apply filters.
+     * Filters are multidimensional arrays. The first dimension
+     * defines if the values should be excluded or are the only ones
+     * to be included. The second dimension defines in which item
+     * key (e.g. Label or Group) is used for filtering.
      *
-     * @param array  $item    Item to check
-     * @param string $context The context in which items are being retrieved
-     * (used for context-sensitive filtering)
+     * @param array $item   Item to check
+     * @param array $filter Filters
      *
      * @return bool
      */
-    protected function itemIsExcluded($item, $context)
+    protected function itemIsIncluded(array $item, array $filter): bool
     {
-        // Create a list of config sections to check, based on context:
-        $sections = ['ItemGlobalFilter'];
-        switch ($context) {
-            case 'result-list':
-                $sections[] = 'ItemResultListFilter';
-                break;
-            case 'core':
-                $sections[] = 'ItemCoreFilter';
-                break;
+        $globalFilter = isset($this->recordConfig->ItemGlobalFilter)
+            ? $this->recordConfig->ItemGlobalFilter->toArray() : [];
+
+        $filter['exclude']['Label'] =
+            array_merge($globalFilter['excludeLabel'] ?? [], $filter['exclude']['Label'] ?? []);
+        $filter['include']['Label'] =
+            array_merge($globalFilter['includeLabel'] ?? [], $filter['include']['Label'] ?? []);
+        $filter['exclude']['Group'] =
+            array_merge($globalFilter['excludeGroup'] ?? [], $filter['exclude']['Group'] ?? []);
+        $filter['include']['Group'] =
+            array_merge($globalFilter['includeGroup'] ?? [], $filter['include']['Group'] ?? []);
+
+        foreach ($filter['exclude'] ?? [] as $itemKey => $filteredItemValues) {
+            if (isset($item[$itemKey]) && in_array($item[$itemKey], $filteredItemValues)) {
+                return false;
+            }
         }
-        // Check to see if anything is filtered:
-        foreach ($sections as $section) {
-            $currentConfig = isset($this->recordConfig->$section)
-                ? $this->recordConfig->$section->toArray() : [];
-            $badLabels = (array)($currentConfig['excludeLabel'] ?? []);
-            $badGroups = (array)($currentConfig['excludeGroup'] ?? []);
-            if (
-                in_array($item['Label'], $badLabels)
-                || in_array($item['Group'], $badGroups)
-            ) {
+
+        foreach ($filter['include'] ?? [] as $itemKey => $filteredItemValues) {
+            if (isset($item[$itemKey]) && in_array($item[$itemKey], $filteredItemValues)) {
                 return true;
             }
         }
-        // If we got this far, no filter was applied:
-        return false;
+
+        return empty(array_filter($filter['include']));
+    }
+
+    /**
+     * Get the items of the record based on a value of a specific key.
+     * E.g. Label and Authors or Group and Au.
+     *
+     * @param string $itemKey   Key of item used for selection
+     * @param string $itemValue Value to be selected
+     *
+     * @return array
+     */
+    public function getItem(string $itemKey, string $itemValue): array
+    {
+        $filter = ['include' => [$itemKey => [$itemValue]]];
+        return $this->getItems($filter);
     }
 
     /**
      * Get the items of the record.
      *
-     * @param string $context     The context in which items are being retrieved
-     * (used for context-sensitive filtering)
-     * @param string $labelFilter A specific label to retrieve (filter out others;
-     * null for no filter)
-     * @param string $groupFilter A specific group to retrieve (filter out others;
-     * null for no filter)
-     * @param string $nameFilter  A specific name to retrieve (filter out others;
-     * null for no filter)
+     * @param array $filter Filter (see itemIsIncluded)
      *
      * @return array
      */
     public function getItems(
-        $context = null,
-        $labelFilter = null,
-        $groupFilter = null,
-        $nameFilter = null
-    ) {
+        array $filter = []
+    ): array {
         $items = [];
         if (is_array($this->fields['Items'] ?? null)) {
             $itemGlobalOrderConfig = $this->recordConfig?->ItemGlobalOrder?->toArray() ?? [];
             $origItems = $this->fields['Items'];
-            // Only sort by label if we have a sort config and we're fetching multiple labels:
-            if (!empty($itemGlobalOrderConfig) && $labelFilter === null) {
+            // Only sort by label if we have a sort config:
+            if (!empty($itemGlobalOrderConfig)) {
                 // We want unassigned labels to appear AFTER configured labels:
                 $nextPos = max(array_keys($itemGlobalOrderConfig));
                 foreach (array_keys($origItems) as $key) {
@@ -295,19 +301,13 @@ class EDS extends DefaultRecord
             }
 
             foreach ($origItems as $item) {
-                $nextItem = [
+                $nextItem = $this->parseItem([
                     'Label' => $item['Label'] ?? '',
                     'Group' => $item['Group'] ?? '',
                     'Name' => $item['Name'] ?? '',
-                    'Data'  => isset($item['Data'])
-                        ? $this->toHTML($item['Data'], $item['Group']) : '',
-                ];
-                if (
-                    !$this->itemIsExcluded($nextItem, $context)
-                    && ($labelFilter === null || $nextItem['Label'] === $labelFilter)
-                    && ($groupFilter === null || $nextItem['Group'] === $groupFilter)
-                    && ($nameFilter === null || $nextItem['Name'] === $nameFilter)
-                ) {
+                    'RawData'  => $item['Data'] ?? '',
+                ]);
+                if ($this->itemIsIncluded($nextItem, $filter)) {
                     $items[] = $nextItem;
                 }
             }
@@ -451,10 +451,13 @@ class EDS extends DefaultRecord
     {
         $subject_arrays = array_map(
             function ($data) {
-                $str = preg_replace('/>\s*[;,]\s*</', '>|<', $data['Data']);
-                return explode('|', rtrim(strip_tags($str), '.'));
+                $elements = $data['Elements'] ?? [];
+                return array_map(
+                    fn ($element) => rtrim(strip_tags($element['Data']), '.'),
+                    $elements
+                );
             },
-            $this->getItems(null, null, 'Su')
+            $this->getItem('Group', 'Su')
         );
         return array_merge(...$subject_arrays);
     }
@@ -485,7 +488,7 @@ class EDS extends DefaultRecord
      */
     public function getItemsTitle()
     {
-        $title = $this->getItems(null, null, 'Ti');
+        $title = $this->getItem('Group', 'Ti');
         return $title[0]['Data'] ?? '';
     }
 
@@ -520,63 +523,43 @@ class EDS extends DefaultRecord
     }
 
     /**
+     * Get highlighted author data, if available.
+     *
+     * @return array
+     */
+    public function getRawAuthorHighlights()
+    {
+        $authors = $this->getItem('Group', 'Au')[0] ?? [];
+        $highlightedAuthors = [];
+        foreach ($authors['Elements'] ?? [] as $author) {
+            if (preg_match('/<span class="highlight">(((?!<\/span>).)*)<\/span>/', $author['Data'] ?? '', $matches)) {
+                $highlightedAuthors[] = '{{{{START_HILITE}}}}' . $matches[1] . '{{{{END_HILITE}}}}';
+            }
+        }
+        return $highlightedAuthors;
+    }
+
+    /**
      * Get the source of the record.
      *
      * @return string
      */
     public function getItemsTitleSource()
     {
-        $title = $this->getItems(null, null, 'Src');
+        $title = $this->getItem('Group', 'Src');
         return $title[0]['Data'] ?? '';
     }
 
     /**
-     * Performs a regex and replaces any url's with links containing themselves
-     * as the text. Also replaces link elements with anchors.
-     *
-     * @param string $string String to process
-     *
-     * @return string        HTML string
-     */
-    public function linkUrls($string)
-    {
-        $isLink = preg_match(
-            '/^<link linkTarget="URL" linkTerm="([^"]+)"[^<]*<\/link>$/',
-            $string,
-            $matches
-        );
-        if ($isLink) {
-            $string = $matches[1];
-        }
-        $linkedString = preg_replace_callback(
-            "/\b(https?):\/\/([-A-Z0-9+&@#\/%?=~_|!:,.;]*[-A-Z0-9+&@#\/%=~_|]*)\b/i",
-            function ($matches) {
-                return "<a href='" . $matches[0] . "'>"
-                    . htmlentities($matches[0]) . '</a>';
-            },
-            $string
-        );
-        return $linkedString;
-    }
-
-    /**
      * Parse a SimpleXml element and
-     * return it's inner XML as an HTML string
+     * return it's inner XML as an HTML string.
      *
-     * @param SimpleXml $data  A SimpleXml DOM
-     * @param string    $group Group identifier
+     * @param string $data A SimpleXml DOM
      *
-     * @return string          The HTML string
+     * @return string      The HTML string
      */
-    protected function toHTML($data, $group = null)
+    protected function toHTML(string $data): string
     {
-        // Map xml tags to the HTML tags
-        // This is just a small list, the total number of xml tags is far greater
-
-        // Any group can be added here, but we only use Au (Author)
-        // Other groups, not present here, won't be transformed to HTML links
-        $allowed_searchlink_groups = ['au','su'];
-
         $xml_to_html_tags = [
                 '<jsection'    => '<section',
                 '</jsection'   => '</section',
@@ -632,21 +615,6 @@ class EDS extends DefaultRecord
             $data = preg_replace('/<\/searchLink/', '</searchLink>', $data);
             $data = preg_replace('/<\/searchLink>>/', '</searchLink>', $data);
 
-            //$searchBase = $this->url('eds-search');
-            // Parse searchLinks
-            if (!empty($group)) {
-                $group = strtolower($group);
-                if (in_array($group, $allowed_searchlink_groups)) {
-                    $type = strtoupper($group);
-                    $link_xml = '/<searchLink fieldCode="([^\"]*)" '
-                        . 'term="(%22[^\"]*%22)">/';
-                    $link_html = '<a href="../EDS/Search?lookfor=$2&amp;type='
-                        . urlencode($type) . '">';
-                    $data = preg_replace($link_xml, $link_html, $data);
-                    $data = str_replace('</searchLink>', '</a>', $data);
-                }
-            }
-
             // Replace the rest of searchLinks with simple spans
             $link_xml = '/<searchLink fieldCode="([^\"]*)" term="%22([^\"]*)%22">/';
             $link_html = '<span>';
@@ -660,7 +628,6 @@ class EDS extends DefaultRecord
                 '<a id="$1" href="#$2"',
                 $data
             );
-            $data = $this->replaceBRWithCommas($data, $group);
 
             // Avoid tables & mathML markup from showing as "raw html"
             // - Tables and mathML markup are wrapped in <ephtml> tags
@@ -691,22 +658,49 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Replace <br> tags that are embedded in data to commas
+     * Parse an item.
      *
-     * @param string $data  Data to process
-     * @param string $group Group identifier
+     * @param array $item Item
      *
-     * @return string
+     * @return array Parsed Item
      */
-    protected function replaceBRWithCommas($data, $group)
+    protected function parseItem(array $item): array
     {
-        $groupsToReplace = ['au','su'];
-        if (in_array($group, $groupsToReplace)) {
-            $br = '/<br \/>/';
-            $comma = ', ';
-            return preg_replace($br, $comma, $data);
+        $data = $item['RawData'] ?? '';
+        $type = strtoupper($item['Group'] ?? '');
+        $elements = [];
+        foreach (explode('&lt;br /&gt;', $data) as $elementData) {
+            if (empty($elementData)) {
+                continue;
+            }
+            // Parse searchLinks
+            $excludeQuotationMark = '(((?!&quot;)[^"])*)';
+            $link_xml = '/&lt;searchLink fieldCode=(&quot;|")' . $excludeQuotationMark
+                . '(&quot;|") term=(&quot;|")%22' . $excludeQuotationMark . '%22(&quot;|")&gt;/';
+            if (!empty($type) && preg_match($link_xml, $elementData, $matches)) {
+                $link_html = '&lt;a href=&quot;../EDS/Search?lookfor=%22$6%22&amp;amp;type='
+                    . urlencode($type) . '&quot;&gt;';
+                $link = preg_replace($link_xml, $link_html, $elementData);
+                $link = str_replace('&lt;/searchLink&gt;', '&lt;/a&gt;', $link);
+                $element['SearchLink'] = $this->toHTML($link);
+            }
+            $element['Data'] = $this->toHTML($elementData);
+            if (
+                preg_match(
+                    '/^<link linkTarget="URL" linkTerm="([^"]+)"[^<]*<\/link>$/',
+                    $element['Data'],
+                    $matches
+                )
+            ) {
+                $element['Link'] = $matches[1];
+            }
+            $elements[] = $element;
         }
-        return $data;
+
+        $item['Data'] = $this->toHTML($data);
+        $item['Elements'] = $elements;
+
+        return $item;
     }
 
     /**
@@ -716,7 +710,7 @@ class EDS extends DefaultRecord
      */
     public function getCleanDOI()
     {
-        $doi = $this->getItems(null, null, null, 'DOI');
+        $doi = $this->getItem('Name', 'DOI');
         if (isset($doi[0]['Data'])) {
             return strip_tags($doi[0]['Data']);
         }
@@ -989,7 +983,7 @@ class EDS extends DefaultRecord
     protected function getRawEDSPublicationDetails()
     {
         $details = [];
-        foreach ($this->getItems(null, 'Publication Information') as $pub) {
+        foreach ($this->getItem('Label', 'Publication Information') as $pub) {
             // Try to extract place, publisher and date:
             if (preg_match('/^(.+):(.*)\.\s*(\d{4})$/', $pub['Data'], $matches)) {
                 [$place, $pub, $date] = [trim($matches[1]), trim($matches[2]), $matches[3]];
@@ -1010,6 +1004,16 @@ class EDS extends DefaultRecord
             );
         }
         return $details;
+    }
+
+    /**
+     * Get class name for RecordDataFormatter spec.
+     *
+     * @return ?string
+     */
+    public function getRecordDataFormatterSpecClass(): ?string
+    {
+        return \VuFind\RecordDataFormatter\Specs\EDS::class;
     }
 
     /**
@@ -1047,7 +1051,7 @@ class EDS extends DefaultRecord
      */
     protected function extractEbscoDataFromItems($label)
     {
-        $items = $this->getItems(null, $label);
+        $items = $this->getItem('Label', $label);
         $output = [];
         foreach ($items as $item) {
             $output[] = $item['Data'];

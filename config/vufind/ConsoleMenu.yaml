@@ -72,7 +72,7 @@ main:
       - label: Compile theme (flatten hierarchy)
         type: internal-command
         command: compile/theme
-    - label: Configuration and Installation Tools
+    - label: Configuration, Installation and Upgrade Tools
       type: menu
       contents:
       - label: Initialize VuFind® database
@@ -81,6 +81,9 @@ main:
       - label: Manage VuFind® installation
         type: internal-command
         command: install/install
+      - label: Upgrade VuFind® database
+        type: internal-command
+        command: upgrade/database
       - label: Manage the browscap cache
         type: internal-command
         command: util/browscap

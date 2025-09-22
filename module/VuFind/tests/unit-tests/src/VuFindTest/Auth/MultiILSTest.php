@@ -323,7 +323,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
         $driverManager = new \VuFind\ILS\Driver\PluginManager($this->container);
         $parts = explode('\\', $driver::class);
         $driverClass = end($parts);
-        $mockConfigReader = $this->getMockConfigPluginManager(
+        $mockConfigManager = $this->getMockConfigManager(
             [
                 $driverClass => [
                     'Drivers' => [
@@ -338,7 +338,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
         $connection = new \VuFind\ILS\Connection(
             new \VuFind\Config\Config(['driver' => 'MultiBackend']),
             $driverManager,
-            $mockConfigReader
+            $mockConfigManager
         );
         $connection->setDriver($driver);
 

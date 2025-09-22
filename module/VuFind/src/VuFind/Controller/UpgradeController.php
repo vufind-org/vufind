@@ -48,7 +48,7 @@ use VuFind\Crypt\Base62;
 use VuFind\Crypt\BlockCipher;
 use VuFind\Db\Connection;
 use VuFind\Db\ConnectionFactory;
-use VuFind\Db\MigrationManager;
+use VuFind\Db\Migration\MigrationManager;
 use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\SearchServiceInterface;
@@ -61,7 +61,6 @@ use VuFind\Tags\TagsService;
 
 use function count;
 use function dirname;
-use function get_class;
 use function in_array;
 use function strlen;
 
@@ -312,24 +311,6 @@ class UpgradeController extends AbstractBase
     }
 
     /**
-     * Look up relevant database migrations and return them as a string (empty string if none needed).
-     *
-     * @return string
-     */
-    public function getDatabaseMigrations(): string
-    {
-        $connection = $this->getService(Connection::class);
-        $rawPlatform = strtolower(get_class($connection->getDatabasePlatform()));
-        $platform = str_contains($rawPlatform, 'postgres') ? 'pgsql' : 'mysql';
-        $migrationManager = new MigrationManager();
-        $sql = '';
-        foreach ($migrationManager->getMigrations($platform, $this->cookie->oldVersion) as $migration) {
-            $sql .= file_get_contents($migration) . "\n";
-        }
-        return $sql;
-    }
-
-    /**
      * Apply migrations to the database. Return null if successful, or a Laminas view model if
      * user input is required.
      *
@@ -337,24 +318,26 @@ class UpgradeController extends AbstractBase
      */
     public function applyDatabaseMigrations(): ?ViewModel
     {
-        $migrationSql = trim($this->getDatabaseMigrations());
-        if (!empty($migrationSql) && !$this->logsql) {
+        $migrationManager = $this->getService(MigrationManager::class);
+        $migrations = $migrationManager->getMigrations($this->cookie->oldVersion);
+        $failedMigrations = $migrationManager->getFailedMigrations();
+        if (!empty($failedMigrations)) {
+            $this->flashMessenger()->addErrorMessage(
+                'Failed migration(s) detected: ' . implode(' ', $failedMigrations)
+                . ' -- see migrations table in database for details; manual intervention may be needed.'
+            );
+        }
+        if (!empty($migrations) && !$this->logsql) {
             if (!$this->hasDatabaseRootCredentials()) {
                 return $this->forwardTo('Upgrade', 'GetDbCredentials');
             }
-            $connection = $this->getRootDbConnection();
-            foreach (explode(';', $migrationSql) as $sqlLine) {
-                $trimmedLine = trim($sqlLine);
-                if (!empty($trimmedLine)) {
-                    $connection->executeQuery($trimmedLine);
-                }
-            }
+            $migrationManager->applyMigrations($migrations, $this->getRootDbConnection());
             // Don't keep DB credentials in session longer than necessary:
             unset($this->session->dbRootUser);
             unset($this->session->dbRootPass);
             $this->session->sql = '';
         } else {
-            $this->session->sql = $migrationSql;
+            $this->session->sql = $migrationManager->applyMigrations($migrations, null);
         }
         return null;
     }
@@ -628,9 +611,9 @@ class UpgradeController extends AbstractBase
                 $this->flashMessenger()->addErrorMessage(
                     'Illegal version number; please upgrade to at least version 10.x before proceeding.'
                 );
-            } elseif (Comparator::greaterThanOrEqualTo($version, $newVersion)) {
+            } elseif (Comparator::greaterThan($version, $newVersion)) {
                 $this->flashMessenger()->addMessage(
-                    "Source version must be less than {$newVersion}.",
+                    "Source version must be less than or equal to {$newVersion}.",
                     'error'
                 );
             } else {
@@ -641,6 +624,8 @@ class UpgradeController extends AbstractBase
                 return $this->forwardTo('Upgrade', 'Home');
             }
         }
+        $oldVersion = $this->getService(MigrationManager::class)->determineOldVersion();
+        return $this->createViewModel(compact('oldVersion'));
     }
 
     /**
