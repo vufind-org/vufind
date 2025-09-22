@@ -53,7 +53,7 @@ use VuFindSearch\Query\Query;
 class ParamsTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\ConfigRelatedServicesTrait;
-    use \VuFindTest\Feature\MockSearchOptionsTrait;
+    use \VuFindTest\Feature\SearchObjectsTrait;
     use \VuFindTest\Feature\ReflectionTrait;
 
     /**
@@ -71,7 +71,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         ?ConfigManagerInterface $configManager = null
     ): Params {
         $configManager ??= $this->getMockConfigManager();
-        return new class ($options ?? $this->getMockOptions($configManager), $configManager) extends Params {
+        return new class ($options ?? $this->getBaseOptionsObject($configManager), $configManager) extends Params {
         };
     }
 

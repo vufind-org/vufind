@@ -43,49 +43,7 @@ use VuFind\Autocomplete\Solr;
 class SolrTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\ReflectionTrait;
-
-    /**
-     * Get mock search options.
-     *
-     * @return \VuFind\Search\Solr\Options
-     */
-    protected function getMockOptions()
-    {
-        return $this->getMockBuilder(\VuFind\Search\Solr\Options::class)
-            ->disableOriginalConstructor()->getMock();
-    }
-
-    /**
-     * Get mock results plugin manager.
-     *
-     * @return \VuFind\Search\Results\PluginManager
-     */
-    protected function getMockResults()
-    {
-        $results = $this->getMockBuilder(\VuFind\Search\Solr\Results::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['getOptions'])
-            ->getMock();
-        $results->expects($this->any())->method('getOptions')
-            ->will($this->returnValue($this->getMockOptions()));
-        return $results;
-    }
-
-    /**
-     * Get mock results plugin manager.
-     *
-     * @return \VuFind\Search\Results\PluginManager
-     */
-    protected function getMockResultsPluginManager()
-    {
-        $rpm = $this->getMockBuilder(\VuFind\Search\Results\PluginManager::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['get'])
-            ->getMock();
-        $rpm->expects($this->any())->method('get')
-            ->will($this->returnValue($this->getMockResults()));
-        return $rpm;
-    }
+    use \VuFindTest\Feature\SearchObjectsTrait;
 
     /**
      * Test that configuration is parsed correctly.
