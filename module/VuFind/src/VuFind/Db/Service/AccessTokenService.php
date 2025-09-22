@@ -159,8 +159,13 @@ class AccessTokenService extends AbstractDbService implements
         // Delete only tokens with expires set to 1
         $subQueryBuilder->select('CONCAT(a.id, a.type)')
             ->from(AccessTokenEntityInterface::class, 'a')
-            ->where('a.created < :latestCreated AND a.expires = 1')
-            ->setParameter('latestCreated', $dateLimit->format(VUFIND_DATABASE_DATETIME_FORMAT));
+            ->where('a.created < :latestCreated AND a.expires = :expires')
+            ->setParameters(
+                [
+                    'latestCreated' => $dateLimit->format(VUFIND_DATABASE_DATETIME_FORMAT),
+                    'expires' => true,
+                ]
+            );
         if ($limit) {
             $subQueryBuilder->setMaxResults($limit);
         }
