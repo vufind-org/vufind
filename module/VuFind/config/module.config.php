@@ -786,6 +786,14 @@ $config = [
             ],
         ],
         'vufind_permission_provider_manager' => [ /* see VuFind\Role\PermissionProvider\PluginManager for defaults */ ],
+        'assertion_manager' => [
+            'factories' => [
+                'VuFind\Role\Assertion\HasVerifiedEmailAssertion' => 'Laminas\ServiceManager\Factory\InvokableFactory',
+            ],
+            'aliases' => [
+                'VerifiedEmail' => 'VuFind\Role\Assertion\HasVerifiedEmailAssertion',
+            ],
+        ],
     ],
 ];
 

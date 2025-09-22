@@ -31,6 +31,7 @@ namespace VuFind\Service;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Lmc\Rbac\Assertion\AssertionPluginManager;
 use Lmc\Rbac\Mvc\Service\AuthorizationService;
 use Lmc\Rbac\Mvc\Service\AuthorizationServiceFactory as LmcRbacAuthorizationServiceFactory;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
@@ -71,13 +72,14 @@ class AuthorizationServiceFactory extends LmcRbacAuthorizationServiceFactory
         }
         $authorizationService = parent::__invoke($container, $requestedName, $options);
         $permissions = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('permissions');
-        foreach ($permissions as $settings) {
+        $assertionPluginManager = $container->get(AssertionPluginManager::class);
+        foreach ($permissions as $key => $settings) {
             $sectionPermissions = (array)($settings['permission'] ?? []);
             $assertions = (array)($settings['assertion'] ?? []);
             if ($sectionPermissions && $assertions) {
                 foreach ($sectionPermissions as $permission) {
                     foreach ($assertions as $assertion) {
-                        $authorizationService->setAssertion($permission, new $assertion());
+                        $authorizationService->setAssertion($permission, $assertionPluginManager->get($assertion));
                     }
                 }
             }
