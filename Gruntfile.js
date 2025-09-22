@@ -128,6 +128,7 @@ module.exports = function(grunt) {
           }
         ],
         options: {
+          excludes: ['important'],
           replacements: [
             // Activate SCSS
             {
