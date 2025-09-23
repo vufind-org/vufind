@@ -32,6 +32,7 @@ namespace VuFindTest\Autocomplete;
 
 use VuFind\Autocomplete\SolrPrefix;
 use VuFind\Search\Results\PluginManager;
+use VuFindTest\Feature\SearchObjectsTrait;
 
 /**
  * SolrPrefix autocomplete test class.
@@ -45,6 +46,8 @@ use VuFind\Search\Results\PluginManager;
  */
 class SolrPrefixTest extends \PHPUnit\Framework\TestCase
 {
+    use SearchObjectsTrait;
+
     /**
      * Test check on order of operations.
      *
@@ -55,5 +58,45 @@ class SolrPrefixTest extends \PHPUnit\Framework\TestCase
         $handler = new SolrPrefix($this->createMock(PluginManager::class));
         $this->expectExceptionMessage('Please set configuration first.');
         $handler->getSuggestions('foo');
+    }
+
+    /**
+     * Test setting up a full test scenario and running getSuggestions().
+     *
+     * @return void
+     */
+    public function testGetSuggestions(): void
+    {
+        $autocompleteField = 'auto_str';
+        $facetField = 'facet_str';
+        $config = "$autocompleteField:$facetField";
+        $filters = ['filter:1'];
+        $options = $this->getMockOptions();
+        $options->expects($this->once())->method('spellcheckEnabled')->with(false);
+        $options->expects($this->once())->method('disableHighlighting');
+        $params = $this->getMockParams($options);
+        $params->expects($this->once())->method('setBasicSearch')->with("$autocompleteField:(foo   bar)");
+        $params->expects($this->once())->method('setLimit')->with(0);
+        $params->expects($this->once())->method('setFacetLimit')->with(10);
+        $params->expects($this->once())->method('addFilter')->with($filters[0]);
+        $results = $this->getMockResults($params);
+        $results->expects($this->once())->method('getResults');
+        $facetList = [
+            $facetField => [
+                'list' => [
+                    ['value' => '1'],
+                    ['value' => '2'],
+                    ['value' => '2'], // duplicate value to test deduplication
+                    ['value' => '3'],
+                    ['value' => '4'],
+                ],
+            ],
+        ];
+        $results->expects($this->once())->method('getFacetList')->willReturn($facetList);
+        $map = ['Solr' => $results];
+        $handler = new SolrPrefix($this->getMockResultsPluginManager($map));
+        $handler->setConfig($config);
+        $handler->addFilters($filters);
+        $this->assertEquals(['1', '2', '3', '4'], array_values($handler->getSuggestions('foo(:)bar')));
     }
 }
