@@ -76,9 +76,22 @@ function setupVuFindRemoteCodeCoverage(array $modules): void
         foreach ($modules as $module) {
             $moduleDir = __DIR__ . "/../../$module";
             if (!str_contains($module, '\\') && is_dir($moduleDir)) {
-                foreach (
-                    (new \SebastianBergmann\FileIterator\Facade())->getFilesAsArray("$moduleDir/src/", '.php') as $file
-                ) {
+                // Recursively find all .php files in the module's src directory (not resolving symlinks because
+                // includeFile below will do it in any case):
+                $iterator = new \RecursiveDirectoryIterator(
+                    "$moduleDir/src/",
+                    \FileSystemIterator::CURRENT_AS_PATHNAME | \FileSystemIterator::SKIP_DOTS
+                );
+                $filterIterator = new \RecursiveCallbackFilterIterator(
+                    $iterator,
+                    function ($current) {
+                        // Include directories (apart from VuFindTest) and .php files:
+                        return
+                            (is_dir($current) && !str_ends_with($current, '/VuFindTest'))
+                            || str_ends_with($current, '.php');
+                    }
+                );
+                foreach ((new \RecursiveIteratorIterator($filterIterator)) as $file) {
                     $filter->includeFile($file);
                 }
             }
