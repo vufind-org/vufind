@@ -74,7 +74,7 @@ class OaiResumptionService extends AbstractDbService implements
     }
 
     /**
-     * Retrieve a row from the database based on primary key; return null if it
+     * Retrieve an unexpired row from the database based on primary key; return null if it
      * is not found.
      *
      * @param string $token The resumption token to retrieve.
@@ -88,7 +88,7 @@ class OaiResumptionService extends AbstractDbService implements
     }
 
     /**
-     * Retrieve a row from the database based on primary key; return null if it
+     * Retrieve an unexpired row from the database based on primary key; return null if it
      * is not found.
      *
      * @param string $id Id to use for the search.
@@ -107,7 +107,7 @@ class OaiResumptionService extends AbstractDbService implements
     }
 
     /**
-     * Retrieve a row from the database based on token; return null if it
+     * Retrieve an unexpired row from the database based on token; return null if it
      * is not found.
      *
      * @param string $token Token used for the search.
@@ -126,7 +126,7 @@ class OaiResumptionService extends AbstractDbService implements
     }
 
     /**
-     * Retrieve a row from the database based on primary key and where the token is null.
+     * Retrieve an unexpired row from the database based on primary key and where the token is null.
      *
      * @param int $id Id used for the search.
      *
@@ -145,7 +145,7 @@ class OaiResumptionService extends AbstractDbService implements
     }
 
     /**
-     * Try to find with token first, if not found then try to find with id where the token is null.
+     * Try to find an unexpired row with token first, if not found then try to find with id where the token is null.
      *
      * @param string $tokenOrId Token or id
      *
