@@ -129,15 +129,21 @@ trait SearchObjectsTrait
     /**
      * Get mock results plugin manager.
      *
-     * @param array $map Map of service name => object to return (returns a generic mock for undefined values)
+     * @param array $map                  Map of service name => object to return
+     * @param bool  $allowDefaultFallback Should we return a default mock for services undefined in the map?
      *
      * @return MockObject&PluginManager
      */
-    protected function getMockResultsPluginManager(array $map = []): MockObject&PluginManager
-    {
+    protected function getMockResultsPluginManager(
+        array $map = [],
+        bool $allowDefaultFallback = false
+    ): MockObject&PluginManager {
         $rpm = $this->createMock(PluginManager::class);
         $rpm->method('get')->willReturnCallback(
-            function ($service) use ($map) {
+            function ($service) use ($map, $allowDefaultFallback) {
+                if (!$allowDefaultFallback && !isset($map[$service])) {
+                    throw new \Exception("Unknown service: $service");
+                }
                 return $map[$service] ?? $this->getMockResults();
             }
         );

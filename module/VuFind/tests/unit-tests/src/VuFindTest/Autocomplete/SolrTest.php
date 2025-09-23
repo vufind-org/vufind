@@ -52,7 +52,7 @@ class SolrTest extends \PHPUnit\Framework\TestCase
      */
     public function testSetConfigDefaults()
     {
-        $solr = new Solr($this->getMockResultsPluginManager());
+        $solr = new Solr($this->getMockResultsPluginManager(allowDefaultFallback: true));
         $solr->setConfig('');
         $this->assertEquals(null, $this->getProperty($solr, 'handler'));
         $this->assertEquals(['title'], $this->getProperty($solr, 'displayField'));
@@ -67,7 +67,7 @@ class SolrTest extends \PHPUnit\Framework\TestCase
      */
     public function testSetConfig()
     {
-        $solr = new Solr($this->getMockResultsPluginManager());
+        $solr = new Solr($this->getMockResultsPluginManager(allowDefaultFallback: true));
         $solr->setConfig('Handler:Display:Sort:FF1:FV1:FF2:FV2');
         $this->assertEquals('Handler', $this->getProperty($solr, 'handler'));
         $this->assertEquals(['Display'], $this->getProperty($solr, 'displayField'));
