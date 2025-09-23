@@ -383,7 +383,7 @@ class Solr implements AutocompleteInterface
      *
      * @return void
      */
-    protected function setLimit($new)
+    protected function setLimit(int $new): void
     {
         $this->limit = $new;
     }
