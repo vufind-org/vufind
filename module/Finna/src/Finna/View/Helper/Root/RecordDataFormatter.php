@@ -606,7 +606,7 @@ class RecordDataFormatter extends \VuFind\View\Helper\Root\RecordDataFormatter
             case 'qdc':
                 return $this->filterQDCFields($defaults);
             case 'eaccpf':
-                return $defaults;
+                return $this->filterFields($defaults);
             case 'ead':
                 return $this->filterEADFields($defaults);
             case 'ead3':
@@ -717,15 +717,15 @@ class RecordDataFormatter extends \VuFind\View\Helper\Root\RecordDataFormatter
      * If record source has hidden fields, excludes them from result.
      *
      * @param array $coreFields Core fields list
-     * @param array $include    Fields to include for the driver
+     * @param array $include    Fields to include for the driver (optional)
      *
      * @return array
      */
-    protected function filterFields(array $coreFields, array $include): array
+    protected function filterFields(array $coreFields, array $include = []): array
     {
-        $intersected = array_intersect_key($coreFields, array_flip($include));
+        $intersected = $include ? array_intersect_key($coreFields, array_flip($include)) : $coreFields;
         $config = $this->getView()->plugin('config')->get('datasources');
-        $source = $this->driver?->tryMethod('getSource');
+        $source = $this->driver?->tryMethod('getDataSource');
         if ($source && $hide = $config->$source?->hidden_record_fields) {
             $intersected = array_diff_key($intersected, array_flip($hide->toArray()));
         }
