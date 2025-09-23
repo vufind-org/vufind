@@ -33,7 +33,23 @@
       <?php else: ?>
         <?php if ($item['availability'] ?? false): ?>
           <?php /* Begin Available Items (Holds) */ ?>
-           <span class="text-success"><?=$this->transEsc("Available")?><link property="availability" href="http://schema.org/InStock" /></span>
+		  
+	
+		  <?php $desc_availability = $item['availability']->getStatusDescription();
+
+		if (
+			strcasecmp($desc_availability, "Checked out") === 0 ||
+			strcasecmp($desc_availability, "aged to lost") === 0 ||
+			strcasecmp($desc_availability, "missing") === 0 ): ?>
+
+			<span class="text-danger"><?=$item['availability']->getStatusDescription()?><link property="availability" href="http://schema.org/InStock" /></span>
+
+		  <?php else: ?>
+		  
+			<span class="text-success"><?=$item['availability']->getStatusDescription()?><link property="availability" href="http://schema.org/InStock" /></span>
+
+		  <?php endif; ?>
+
 
       <?php if (1 == 2) { ?>
 
@@ -57,7 +73,7 @@
 
         <?php else: ?>
           <?php /* Begin Unavailable Items (Recalls) */ ?>
-          <span class="text-danger"><?=$this->transEsc($item['status'])?><link property="availability" href="http://schema.org/OutOfStock" /></span>
+          <span class="text-danger"><?=$item['availability']->getStatusDescription()?><link property="availability" href="http://schema.org/OutOfStock" /></span>
           <?php if ($item['returnDate'] ?? false): ?>&ndash; <span class="small"><?=$this->escapeHtml($item['returnDate'])?></span><?php endif; ?>
           <?php if ($item['duedate'] ?? false): ?>
             &ndash; <span class="small"><?=$this->transEsc("Due")?>: <?=$this->escapeHtml($item['duedate'])?></span>
