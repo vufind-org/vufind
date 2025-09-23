@@ -248,4 +248,18 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
         $extension = pathinfo($this->getFileName(), PATHINFO_EXTENSION);
         return !empty($extension) ? $extension : null;
     }
+
+    /**
+     * Get cache key.
+     *
+     * @return string
+     */
+    public function getCacheKey(): string
+    {
+        $path = $this->getPath();
+        if ($realPath = realpath($path)) {
+            $path = $realPath;
+        }
+        return $path . '_' . implode('_', $this->getSubsection());
+    }
 }

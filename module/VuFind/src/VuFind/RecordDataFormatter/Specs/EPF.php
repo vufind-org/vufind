@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Interface for exposing the database transaction functionality.
+ * EPF RecordDataFormatter specs.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2024.
+ * Copyright (C) Villanova University 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,46 +21,27 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
  *
  * @category VuFind
- * @package  Database
+ * @package  RecordDataFormatter
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
+ * @link     https://vufind.org/wiki/development:architecture:record_data_formatter
+ * Wiki
  */
 
-namespace VuFind\Db\Service\Feature;
+namespace VuFind\RecordDataFormatter\Specs;
 
 /**
- * Interface for exposing the database transaction functionality.
+ * EPF RecordDataFormatter specs.
  *
  * @category VuFind
- * @package  Database
+ * @package  RecordDataFormatter
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
+ * @link     https://vufind.org/wiki/development:architecture:record_data_formatter
+ * Wiki
  */
-interface TransactionInterface
+class EPF extends EDS
 {
-    /**
-     * Begin a database transaction.
-     *
-     * @return void
-     * @throws Exception
-     */
-    public function beginTransaction(): void;
-
-    /**
-     * Commit a database transaction.
-     *
-     * @return void
-     * @throws Exception
-     */
-    public function commitTransaction(): void;
-
-    /**
-     * Roll back a database transaction.
-     *
-     * @return void
-     * @throws Exception
-     */
-    public function rollBackTransaction(): void;
 }

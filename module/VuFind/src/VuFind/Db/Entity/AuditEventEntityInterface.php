@@ -109,6 +109,22 @@ interface AuditEventEntityInterface extends EntityInterface
     public function setUser(?UserEntityInterface $user): static;
 
     /**
+     * Get payment.
+     *
+     * @return ?PaymentEntityInterface
+     */
+    public function getPayment(): ?PaymentEntityInterface;
+
+    /**
+     * Set payment.
+     *
+     * @param ?PaymentEntityInterface $payment Payment
+     *
+     * @return static
+     */
+    public function setPayment(?PaymentEntityInterface $payment): static;
+
+    /**
      * Get username.
      *
      * @return ?string

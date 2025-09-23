@@ -31,6 +31,8 @@
 
 namespace VuFind\Search\Combined;
 
+use VuFind\Config\ConfigManagerInterface;
+
 /**
  * Combined search model.
  *
@@ -46,15 +48,15 @@ class Options extends \VuFind\Search\Base\Options
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager         $configLoader   Config loader
+     * @param ConfigManagerInterface               $configManager  Config loader
      * @param \VuFind\Search\Options\PluginManager $optionsManager Options plugin manager
      */
     public function __construct(
-        \VuFind\Config\PluginManager $configLoader,
+        ConfigManagerInterface $configManager,
         protected \VuFind\Search\Options\PluginManager $optionsManager
     ) {
-        parent::__construct($configLoader);
-        $searchSettings = $this->configLoader->get('combined')->toArray();
+        parent::__construct($configManager);
+        $searchSettings = $this->configManager->getConfigArray('combined');
         $this->basicHandlers = $searchSettings['Basic_Searches'] ?? [];
     }
 
@@ -81,11 +83,11 @@ class Options extends \VuFind\Search\Base\Options
     public function getRecommendationSettings($handler = null)
     {
         $recommend = [];
-        $config = $this->configLoader->get('combined');
+        $config = $this->configManager->getConfigArray('combined');
         foreach (['top', 'bottom'] as $location) {
-            if (isset($config->RecommendationModules->$location)) {
+            if (isset($config['RecommendationModules'][$location])) {
                 $recommend[$location]
-                    = $config->RecommendationModules->$location->toArray();
+                    = $config['RecommendationModules'][$location];
             }
         }
         return $recommend;
@@ -98,7 +100,7 @@ class Options extends \VuFind\Search\Base\Options
      */
     public function getTabConfig()
     {
-        $config = $this->configLoader->get('combined')->toArray();
+        $config = $this->configManager->getConfigArray('combined');
 
         // Strip out non-tab sections of the configuration:
         unset($config['Basic_Searches']);

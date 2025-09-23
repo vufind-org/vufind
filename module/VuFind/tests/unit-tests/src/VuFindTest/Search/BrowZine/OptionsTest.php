@@ -52,12 +52,12 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
      */
     public function testOptions(): void
     {
-        $configMgr = $this->getMockConfigPluginManager(
+        $mockConfigManager = $this->getMockConfigManager(
             [
                 'BrowZine' => [],
             ]
         );
-        $options = new Options($configMgr);
+        $options = new Options($mockConfigManager);
         $this->assertEquals('browzine-search', $options->getSearchAction());
         $this->assertEquals(['relevance' => 'Relevance'], $options->getSortOptions());
         $this->assertFalse($options->getFacetListAction());

@@ -428,14 +428,29 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'multiFunction' => function () {
                 return [
                     [
+                        'label' => 'f',
+                        'values' => 'f',
+                        'options' => ['pos' => 3000],
+                    ],
+                    [
+                        'label' => 'e',
+                        'values' => 'e',
+                        'options' => ['pos' => 3000],
+                    ],
+                    [
+                        'label' => 'd',
+                        'values' => 'd',
+                        'options' => ['pos' => 3000, 'multiPos' => 0],
+                    ],
+                    [
                         'label' => 'b',
                         'values' => 'b',
-                        'options' => ['pos' => 3000],
+                        'options' => ['pos' => 3000, 'multiPos' => 10],
                     ],
                     [
                         'label' => 'a',
                         'values' => 'a',
-                        'options' => ['pos' => 3000],
+                        'options' => ['pos' => 3000, 'multiPos' => 10],
                     ],
                     [
                         'label' => 'c',
@@ -544,16 +559,19 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'Published' => 'Centro di Studi Vichiani, 1992',
             'Edition' => 'Fictional edition.',
             'Series' => 'Vico, Giambattista, 1668-1744. Works. 1982 ;',
-            'Multi Count' => 1,
             'Multi Data' => 'Book',
+            'Multi Count' => 1,
             'Subjects' => 'Naples (Kingdom) History Spanish rule, 1442-1707 Sources',
             'Online Access' => 'http://fictional.com/sample/url',
             // Double slash at the end comes from inline javascript
             'Tags' => 'Add Tag No Tags, Be the first to tag this record! //',
             'ZeroAllowed' => 0,
             'c' => 'c',
+            'd' => 'd',
             'a' => 'a',
             'b' => 'b',
+            'f' => 'f',
+            'e' => 'e',
             'CombineAlt' => 'Standard Title Alternative Title',
             'CombineAltPrioritizeAlt' => 'Alternative Title Standard Title',
             'CombineAltDataMethod' => 'Standard Title Other Alternative Title',

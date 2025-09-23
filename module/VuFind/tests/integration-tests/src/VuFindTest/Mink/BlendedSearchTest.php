@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022-2023.
+ * Copyright (C) The National Library of Finland 2022-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -63,6 +63,9 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
                     'SolrAuth',
                 ],
                 'blockSize' => 7,
+            ],
+            'Record' => [
+                'next_prev_navigation' => true,
             ],
             'Basic_Searches' => [
                 'AllFields' => 'adv_search_all',
@@ -196,6 +199,35 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
             'Blended',
             $this->findCssAndGetText($page, '.searchbox li a.active')
         );
+
+        if (1 === $queryParams['page']) {
+            // Test next/prev navigation:
+            // Next record:
+            $this->clickCss($page, '.pager a', index: 1);
+            $this->assertStringContainsStringWithTimeout(
+                '/Record/0000183626-1',
+                fn () => $session->getCurrentUrl()
+            );
+            // Next record:
+            $this->clickCss($page, '.pager a', index: 1);
+            $this->assertStringContainsStringWithTimeout(
+                'AuthorityRecord/vtls000001429',
+                fn () => $session->getCurrentUrl()
+            );
+            // Back to previous record (using history because author record doesn't show navigation):
+            $session->back();
+            $this->assertStringContainsStringWithTimeout(
+                '/Record/0000183626-1',
+                fn () => $session->getCurrentUrl()
+            );
+            // Then once more back with pager:
+            $this->clickCss($page, '.pager a');
+            $this->waitForPageLoad($page);
+            $this->assertStringContainsStringWithTimeout(
+                '/Record/0000183626-0',
+                fn () => $session->getCurrentUrl()
+            );
+        }
     }
 
     /**

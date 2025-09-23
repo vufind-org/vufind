@@ -32,6 +32,7 @@ namespace VuFind\Db\Service;
 use DateTime;
 use Doctrine\ORM\EntityManager;
 use VuFind\Db\Entity\AuditEventEntityInterface;
+use VuFind\Db\Entity\PaymentEntityInterface;
 use VuFind\Db\Entity\PluginManager as EntityPluginManager;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\PersistenceManager;
@@ -65,6 +66,7 @@ class AuditEventService extends AbstractDbService implements
      * @param ?string             $clientIp            Client IP address (if applicable)
      * @param ?string             $serverIp            Server IP address (if applicable)
      * @param ?string             $serverName          Server name (if applicable)
+     * @param ?string             $requestUri          Request URI (if applicable)
      */
     public function __construct(
         protected EntityManager $entityManager,
@@ -74,7 +76,8 @@ class AuditEventService extends AbstractDbService implements
         protected ?string $sessionId,
         protected ?string $clientIp,
         protected ?string $serverIp,
-        protected ?string $serverName
+        protected ?string $serverName,
+        protected ?string $requestUri
     ) {
     }
 
@@ -127,6 +130,44 @@ class AuditEventService extends AbstractDbService implements
     }
 
     /**
+     * Add a payment event.
+     *
+     * @param PaymentEntityInterface   $payment Payment
+     * @param AuditEventSubtype|string $subtype Event subtype
+     * @param string                   $message Status message
+     * @param array                    $data    Additional data
+     *
+     * @return void
+     */
+    public function addPaymentEvent(
+        PaymentEntityInterface $payment,
+        AuditEventSubtype|string $subtype,
+        string $message = '',
+        array $data = []
+    ): void {
+        $type = AuditEventType::Payment->value;
+        if (!in_array($type, $this->enabledEventTypes)) {
+            return;
+        }
+        $data = $this->scrubSecrets($data);
+        $data['__method'] = $this->getCallerOfParentMethod();
+        $data['__request_uri'] = $this->requestUri;
+        $event = $this->createEntity();
+        $event
+            ->setType($type)
+            ->setSubtype($subtype)
+            ->setUser($payment->getUser())
+            ->setPayment($payment)
+            ->setSessionId($this->sessionId)
+            ->setClientIp($this->clientIp)
+            ->setServerIp($this->serverIp)
+            ->setServerName($this->serverName)
+            ->setMessage($message)
+            ->setData(json_encode($data));
+        $this->persistEntity($event);
+    }
+
+    /**
      * Get an array of events.
      *
      * @param ?DateTime                     $fromDate   Start date
@@ -138,7 +179,8 @@ class AuditEventService extends AbstractDbService implements
      * @param ?string                       $clientIp   Client's IP address
      * @param ?string                       $serverIp   Server's IP address
      * @param ?string                       $serverName Server's host name
-     * @param array                         $sort       Sort order
+     * @param ?PaymentEntityInterface       $payment    Payment entity
+     * @param ?array                        $sort       Sort order (null for default descending order)
      *
      * @return AuditEventEntityInterface[]
      */
@@ -152,9 +194,13 @@ class AuditEventService extends AbstractDbService implements
         ?string $clientIp = null,
         ?string $serverIp = null,
         ?string $serverName = null,
-        array $sort = ['date DESC']
+        ?PaymentEntityInterface $payment = null,
+        ?array $sort = null,
     ): array {
         $user = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
+        if (null === $sort) {
+            $sort = ['date DESC', 'id DESC'];
+        }
 
         $dql = 'SELECT e FROM ' . AuditEventEntityInterface::class . ' e';
         $conditions = [];
@@ -196,6 +242,10 @@ class AuditEventService extends AbstractDbService implements
         if (null !== $serverName) {
             $conditions[] = 'e.serverName = :serverName';
             $params['serverName'] = $serverName;
+        }
+        if (null !== $payment) {
+            $conditions[] = 'e.payment = :payment';
+            $params['payment'] = $payment->getId();
         }
 
         if ($conditions) {

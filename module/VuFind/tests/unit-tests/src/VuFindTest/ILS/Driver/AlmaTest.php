@@ -195,6 +195,38 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
+     * Testing getCourses
+     *
+     * @return void
+     */
+    public function testGetCourses()
+    {
+        $this->createConnector('get-courses');
+        $result = $this->driver->getCourses();
+        $expected = [
+            '1234' => 'VuFind Basics',
+            '5678' => 'Advanced VuFind',
+        ];
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Testing getFunds
+     *
+     * @return void
+     */
+    public function testGetFunds()
+    {
+        $this->createConnector('get-funds');
+        $result = $this->driver->getFunds();
+        $expected = [
+            'FUND-01' => 'VuFind Community',
+            'FUND-02' => 'VuFind Sponsors',
+        ];
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
      * Test getHolding
      *
      * @return void

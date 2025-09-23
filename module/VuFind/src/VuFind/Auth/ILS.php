@@ -244,9 +244,13 @@ class ILS extends AbstractBase
         // Validate Input
         $this->validatePasswordUpdate($params, $recoveryData['target'] ?? null);
 
-        $result = $this->getCatalog()->resetPassword($recoveryData['details'], $params);
-        if (!$result['success']) {
-            throw new AuthException($result['error']);
+        try {
+            $result = $this->getCatalog()->resetPassword($recoveryData['details'], $params);
+            if (!$result['success']) {
+                throw new AuthException($result['error']);
+            }
+        } catch (ILSException $e) {
+            throw new AuthException('ils_connection_failed', previous: $e);
         }
     }
 

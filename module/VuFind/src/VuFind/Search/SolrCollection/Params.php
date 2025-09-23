@@ -93,16 +93,13 @@ class Params extends \VuFind\Search\Solr\Params
         // Solr search backend come from searches.ini and are set up in the
         // AbstractSolrBackendFactory, we need to account for additional ones
         // from Collection.ini here.
-        $collectionConfig = $this->configLoader->get('Collection');
-        if (isset($collectionConfig->HiddenFilters)) {
-            foreach ($collectionConfig->HiddenFilters as $field => $value) {
-                $this->addHiddenFilter(sprintf('%s:"%s"', $field, $value));
-            }
+        $collectionConfig = $this->configManager->getConfigArray('Collection');
+        foreach ($collectionConfig['HiddenFilters'] ?? [] as $field => $value) {
+            $this->addHiddenFilter(sprintf('%s:"%s"', $field, $value));
         }
-        if (isset($collectionConfig->RawHiddenFilters)) {
-            foreach ($collectionConfig->RawHiddenFilters as $current) {
-                $this->addHiddenFilter($current);
-            }
+
+        foreach ($collectionConfig['RawHiddenFilters'] ?? [] as $current) {
+            $this->addHiddenFilter($current);
         }
     }
 

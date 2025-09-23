@@ -44,7 +44,7 @@ use DateTime;
 interface UserEntityInterface extends
     EntityInterface,
     ExchangeArrayInterface,
-    \LmcRbacMvc\Identity\IdentityInterface
+    \Lmc\Rbac\Identity\IdentityInterface
 {
     /**
      * Get identifier (returns null for an uninitialized or non-persisted object).

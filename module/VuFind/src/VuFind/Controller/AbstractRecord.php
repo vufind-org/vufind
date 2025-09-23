@@ -455,12 +455,6 @@ class AbstractRecord extends AbstractBase
             return $response;
         }
 
-        if ($this->formWasSubmitted('newList')) {
-            // Remove submit now from parameters
-            $this->getRequest()->getPost()->set('newList', null)->set('submitButton', null);
-            return $this->forwardTo('MyResearch', 'editList', ['id' => 'NEW']);
-        }
-
         // Process form submission:
         if ($this->formWasSubmitted()) {
             return $this->processSave();
@@ -956,8 +950,7 @@ class AbstractRecord extends AbstractBase
             ? (bool)$config->Site->loadInitialTabWithAjax : false;
 
         // Set up next/previous record links (if appropriate)
-        $searchOptions = $this->serviceLocator->get(\VuFind\Search\Options\PluginManager::class)->get($this->sourceId);
-        if ($searchOptions->resultScrollerActive()) {
+        if ($this->getSearchMemory()->getCurrentSearch()?->getOptions()?->resultScrollerActive()) {
             $driver = $this->loadRecord();
             $view->scrollData = $this->resultScroller()->getScrollData($driver);
         }

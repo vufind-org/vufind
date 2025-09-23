@@ -31,7 +31,7 @@
 
 namespace VuFindTest\Config;
 
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Config\Location\ConfigDirectory;
 use VuFind\Config\Location\ConfigFile;
 use VuFind\Exception\ConfigException;
@@ -59,13 +59,13 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
     /**
      * Get config manager.
      *
-     * @return ConfigManager
+     * @return ConfigManagerInterface
      */
-    protected function getConfigManager(): ConfigManager
+    protected function getConfigManager(): ConfigManagerInterface
     {
         $container = new \VuFindTest\Container\MockContainer($this);
         $this->addConfigRelatedServicesToContainer($container);
-        return $container->get(ConfigManager::class);
+        return $container->get(ConfigManagerInterface::class);
     }
 
     /**
@@ -588,7 +588,7 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
         $configManager = $this->getContainerWithConfigRelatedServices(
             baseDir: $fixtureDir . 'base',
             localDir: $fixtureDir . 'primary'
-        )->get(ConfigManager::class);
+        )->get(ConfigManagerInterface::class);
 
         $config = $configManager->getConfigArray($configPath);
         $this->assertEquals(

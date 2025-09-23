@@ -33,7 +33,7 @@
 namespace VuFindTest\Search\Base;
 
 use minSO;
-use VuFind\Config\PluginManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Base\Options;
 use VuFind\Search\Base\Params;
 use VuFind\Search\QueryAdapter;
@@ -53,43 +53,26 @@ use VuFindSearch\Query\Query;
 class ParamsTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\ConfigRelatedServicesTrait;
+    use \VuFindTest\Feature\MockSearchOptionsTrait;
     use \VuFindTest\Feature\ReflectionTrait;
-
-    /**
-     * Get mock Options object
-     *
-     * @param ?PluginManager $configManager Config manager for Options object (null
-     * for new mock)
-     *
-     * @return Options
-     */
-    protected function getMockOptions(?PluginManager $configManager = null): Options
-    {
-        return $this->getMockForAbstractClass(
-            Options::class,
-            [$configManager ?? $this->getMockConfigPluginManager([])]
-        );
-    }
 
     /**
      * Get mock Params object
      *
-     * @param Options       $options       Options object to send to Params
-     * constructor (null for new mock)
-     * @param PluginManager $configManager Config manager for Params object (null
+     * @param Options                $options       Options object to send to Params
+     *                                              constructor (null for new mock)
+     * @param ConfigManagerInterface $configManager Config manager for Params object (null
      * for new mock)
      *
      * @return Params
      */
     protected function getMockParams(
         ?Options $options = null,
-        ?PluginManager $configManager = null
+        ?ConfigManagerInterface $configManager = null
     ): Params {
-        $configManager ??= $this->getMockConfigPluginManager([]);
-        return $this->getMockForAbstractClass(
-            Params::class,
-            [$options ?? $this->getMockOptions($configManager), $configManager]
-        );
+        $configManager ??= $this->getMockConfigManager();
+        return new class ($options ?? $this->getMockOptions($configManager), $configManager) extends Params {
+        };
     }
 
     /**

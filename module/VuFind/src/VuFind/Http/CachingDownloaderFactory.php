@@ -69,8 +69,8 @@ class CachingDownloaderFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
 
-        $configManager = $container->get(\VuFind\Config\PluginManager::class);
-        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config');
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         return new $requestedName(
             $container->get(\VuFind\Cache\Manager::class),
             $configManager,

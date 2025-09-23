@@ -67,7 +67,7 @@ class HTMLTreeFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
         if ($options !== null) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         return new $requestedName(
             $container->get('ControllerPluginManager')->get('Url'),
             !empty($config['Collections']['collections']),

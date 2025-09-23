@@ -58,7 +58,7 @@ class GetResolverLinksTest extends \VuFindTest\Unit\AjaxHandlerTestCase
     protected function setupConfig($config = [])
     {
         $this->container->set(
-            \VuFind\Config\ConfigManager::class,
+            \VuFind\Config\ConfigManagerInterface::class,
             $this->getMockConfigManager(compact('config'))
         );
     }

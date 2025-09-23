@@ -1,0 +1,10 @@
+<h2><?=$this->transEsc('Payment::Mark Payment Resolved')?></h2>
+
+<?=$this->render('admin/payment/details-table.phtml')?>
+
+<form method="POST">
+  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>" name="csrf">
+  <input type="hidden" name="id" value="<?=$this->escapeHtmlAttr($this->paymentEntity->getId())?>">
+  <button type="submit" class="btn btn-default" name="resolve-confirm" value="1"><?=$this->transEsc('Confirm')?></button>
+  <a class="btn btn-link" href="<?=$this->url('admin/payment')?>" data-lightbox-ignore><?=$this->transEsc('Cancel')?></a>
+</form>

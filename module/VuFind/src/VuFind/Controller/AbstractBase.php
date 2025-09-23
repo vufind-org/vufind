@@ -301,11 +301,11 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      * rather than through injection with the AuthorizationServiceAwareInterface
      * to minimize expensive initialization when authorization is not needed.
      *
-     * @return \LmcRbacMvc\Service\AuthorizationService
+     * @return \Lmc\Rbac\Mvc\Service\AuthorizationService
      */
     protected function getAuthorizationService()
     {
-        return $this->getService(\LmcRbacMvc\Service\AuthorizationService::class);
+        return $this->getService(\Lmc\Rbac\Mvc\Service\AuthorizationService::class);
     }
 
     /**
@@ -462,7 +462,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     public function getConfig($id = 'config')
     {
-        return $this->getService(\VuFind\Config\ConfigManager::class)->getConfigObject($id);
+        return $this->getService(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject($id);
     }
 
     /**

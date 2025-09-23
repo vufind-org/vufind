@@ -42,7 +42,6 @@ use VuFind\Recommend\CollectionSideFacets;
  */
 class CollectionSideFacetsTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
     use \VuFindTest\Feature\SolrSearchObjectTrait;
 
     /**
