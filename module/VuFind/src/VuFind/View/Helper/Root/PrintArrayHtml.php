@@ -111,7 +111,7 @@ class PrintArrayHtml extends AbstractHelper
             return false;
         }
         $i = 0;
-        foreach ($var as $key => $_) {
+        foreach (array_keys($var) as $key) {
             if ($key !== $i++) {
                 return false;
             }

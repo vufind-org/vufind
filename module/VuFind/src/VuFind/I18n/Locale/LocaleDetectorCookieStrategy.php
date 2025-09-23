@@ -49,6 +49,8 @@ class LocaleDetectorCookieStrategy extends CookieStrategy
      * @param LocaleEvent $event Event
      *
      * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function found(LocaleEvent $event)
     {

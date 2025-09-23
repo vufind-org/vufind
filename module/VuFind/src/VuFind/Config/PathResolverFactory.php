@@ -69,7 +69,7 @@ class PathResolverFactory implements FactoryInterface
         ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
         $localDir = defined('LOCAL_OVERRIDE_DIR')
             && strlen(trim(LOCAL_OVERRIDE_DIR)) > 0

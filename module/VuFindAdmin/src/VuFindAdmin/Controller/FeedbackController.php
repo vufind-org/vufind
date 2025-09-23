@@ -228,6 +228,7 @@ class FeedbackController extends AbstractAdmin
                 $success = true;
             }
         } catch (\Exception $e) {
+            // Fall through to display an error message
         }
         if ($success) {
             $this->flashMessenger()->addMessage(

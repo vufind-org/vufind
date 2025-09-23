@@ -65,7 +65,7 @@ class NameBasedConfigFactory extends AbstractBaseFactory
         ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
         $parts = explode('\\', $requestedName);
         $configName = array_pop($parts);

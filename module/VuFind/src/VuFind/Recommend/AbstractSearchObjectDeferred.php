@@ -134,12 +134,13 @@ abstract class AbstractSearchObjectDeferred implements RecommendInterface
      * @param array                      $settings Parameter array (passed by reference)
      *
      * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function initLookFor($params, $request, &$settings)
     {
         // Map the user-specified query field to 'lookfor' for simplicity:
-        $this->lookfor
-            = $request->get(empty($settings[0]) ? 'lookfor' : $settings[0], '');
+        $this->lookfor = $request->get(empty($settings[0]) ? 'lookfor' : $settings[0], '');
         $settings[0] = 'lookfor';
 
         // If lookfor has somehow been set as an array, collapse it into a string:
@@ -156,6 +157,8 @@ abstract class AbstractSearchObjectDeferred implements RecommendInterface
      * @param \VuFind\Search\Base\Results $results Search results object
      *
      * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function process($results)
     {

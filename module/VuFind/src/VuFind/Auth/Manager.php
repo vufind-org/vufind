@@ -257,6 +257,8 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
      * the one in config file
      *
      * @return bool
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function supportsEmailChange(?string $authMethod = null): bool
     {

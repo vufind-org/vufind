@@ -473,6 +473,8 @@ class Form extends \Laminas\Form\Form implements
      * Retrieve input filter used by this form
      *
      * @return InputFilterInterface
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getInputFilter(): InputFilterInterface
     {

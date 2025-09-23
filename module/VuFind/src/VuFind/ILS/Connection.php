@@ -817,6 +817,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      *
      * @return mixed On success, an associative array with specific function keys
      * and values for login; on failure, false.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function checkMethodpatronLogin($functionConfig, $params)
     {
@@ -829,7 +831,9 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * @param array $functionConfig Function configuration values
      * @param array $params         An array of function-specific params (or null)
      *
-     * @return boolean
+     * @return bool
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function checkMethodregisterPayment($functionConfig, $params)
     {

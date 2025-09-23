@@ -59,6 +59,8 @@ class RejectAll implements LimiterInterface
      *                                          (in seconds)
      * @throws ReserveNotSupportedException     if this limiter implementation doesn't support reserving tokens
      * @throws \InvalidArgumentException        if $tokens is larger than the maximum burst size
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function reserve(int $tokens = 1, ?float $maxTime = null): Reservation
     {
@@ -72,6 +74,8 @@ class RejectAll implements LimiterInterface
      * @param int $tokens the number of tokens required
      *
      * @return RateLimit The limit counter
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function consume(int $tokens = 1): RateLimit
     {

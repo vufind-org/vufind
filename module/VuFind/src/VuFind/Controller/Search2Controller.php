@@ -65,7 +65,7 @@ class Search2Controller extends AbstractSolrSearch
             // Because we're coming in from a search, we want to do a fuzzy
             // tag search, not an exact search like we would when linking to a
             // specific tag name.
-            $query = $this->getRequest()->getQuery()->set('fuzzy', 'true');
+            $this->getRequest()->getQuery()->set('fuzzy', 'true');
             return $this->forwardTo('Tag', 'Home');
         }
 

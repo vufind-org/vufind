@@ -66,7 +66,7 @@ class UpgradeControllerFactory extends AbstractBaseFactory
         ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
         $cookieManager = $container->get(\VuFind\Cookie\CookieManager::class);
         $session = new \Laminas\Session\Container(

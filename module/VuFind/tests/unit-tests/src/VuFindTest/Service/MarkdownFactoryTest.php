@@ -381,7 +381,7 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
         $markdownFactory = new MarkdownFactory();
         return $markdownFactory(
             $container,
-            \League\CommonMark\ConverterInterface::class
+            \League\CommonMark\MarkdownConverter::class
         );
     }
 }

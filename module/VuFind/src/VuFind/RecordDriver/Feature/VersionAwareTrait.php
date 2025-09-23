@@ -110,7 +110,7 @@ trait VersionAwareTrait
         if (!isset($this->otherVersions)) {
             $command = new SearchCommand(
                 $this->getSourceIdentifier(),
-                new WorkKeysQuery($this->getUniqueID(), false, $keys),
+                new WorkKeysQuery($this->getUniqueID(), $includeSelf, $keys),
                 $offset,
                 $count
             );

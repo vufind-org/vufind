@@ -235,11 +235,7 @@ class ObalkyKnihService implements
                 ? $ids['uuid']
                 : ('uuid:' . $ids['uuid']);
         }
-        foreach (['isbn', 'oclc', 'ismn', 'nbn', 'uuid'] as $identifier) {
-            if (isset($$identifier)) {
-                $query[$identifier] = $$identifier;
-            }
-        }
+        $query = array_filter(compact('isbn', 'oclc', 'ismn', 'nbn', 'uuid'), fn ($v) => null !== $v);
 
         return $query;
     }

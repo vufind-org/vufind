@@ -69,7 +69,7 @@ class OverdriveFactory implements FactoryInterface
         ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
         // Only load the connector if we need to show
         $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('Overdrive');

@@ -66,6 +66,10 @@ class UrlFactory implements FactoryInterface
         $requestedName,
         ?array $options = null
     ) {
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options passed to factory.');
+        }
+
         $request = $container->get('Request');
         if (!($request instanceof \Laminas\Http\PhpEnvironment\Request)) {
             $request = null;

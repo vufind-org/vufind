@@ -111,8 +111,6 @@ class Sitemap extends AbstractFile
 
             $alternativeLinks = '  ' . implode("\n  ", $links) . "\n";
             $this->xhtmlNamespaceNeeded = true;
-        } else {
-            $locs[] = '<loc>' . htmlspecialchars($link) . '</loc>';
         }
         $link = htmlspecialchars($link);
         $freq = htmlspecialchars($frequency ?: $this->frequency);

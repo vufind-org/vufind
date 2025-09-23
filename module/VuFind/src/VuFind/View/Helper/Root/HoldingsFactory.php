@@ -65,6 +65,9 @@ class HoldingsFactory implements FactoryInterface
         $requestedName,
         ?array $options = null
     ) {
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options passed to factory.');
+        }
         return new $requestedName(
             $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config')
         );

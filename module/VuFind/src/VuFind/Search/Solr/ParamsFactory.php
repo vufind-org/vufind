@@ -65,7 +65,7 @@ class ParamsFactory extends \VuFind\Search\Params\ParamsFactory
         ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
         $helper = $container
             ->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class);

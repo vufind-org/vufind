@@ -422,6 +422,8 @@ class DAIA extends AbstractBase implements
      *
      * @throws ILSException
      * @return array     An array with the acquisitions data on success.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPurchaseHistory($id)
     {
@@ -978,6 +980,8 @@ class DAIA extends AbstractBase implements
      * @param array $item Array with DAIA item data
      *
      * @return array
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function getCustomData($item)
     {
@@ -990,6 +994,8 @@ class DAIA extends AbstractBase implements
      * @param array $item Array with DAIA item data
      *
      * @return string
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function getStatusString($item)
     {
@@ -1262,6 +1268,8 @@ class DAIA extends AbstractBase implements
      * @param int   $counter Integer counting items as alternative return value
      *
      * @return mixed
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function getItemNumber($item, $counter)
     {
@@ -1274,6 +1282,8 @@ class DAIA extends AbstractBase implements
      * @param array $item Array with DAIA item data
      *
      * @return string
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function getItemBarcode($item)
     {
@@ -1286,6 +1296,8 @@ class DAIA extends AbstractBase implements
      * @param array $item Array with DAIA item data
      *
      * @return string
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function getItemReserveStatus($item)
     {

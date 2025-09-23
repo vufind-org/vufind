@@ -65,7 +65,7 @@ class MultiAuthFactory implements \Laminas\ServiceManager\Factory\FactoryInterfa
         ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
         $auth = new $requestedName();
         $auth->setPluginManager($container->get(PluginManager::class));

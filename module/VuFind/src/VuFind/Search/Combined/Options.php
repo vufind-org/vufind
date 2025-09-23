@@ -79,6 +79,8 @@ class Options extends \VuFind\Search\Base\Options
      * @param string $handler Name of handler for which to load specific settings.
      *
      * @return array associative: location (top/side/etc.) => search settings
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getRecommendationSettings($handler = null)
     {
@@ -119,7 +121,7 @@ class Options extends \VuFind\Search\Base\Options
     public function supportsCart()
     {
         // Cart is supported if any of the tabs support cart:
-        foreach ($this->getTabConfig() as $current => $settings) {
+        foreach (array_keys($this->getTabConfig()) as $current) {
             [$searchClassId] = explode(':', $current);
             $currentOptions = $this->optionsManager->get($searchClassId);
             if ($currentOptions->supportsCart()) {

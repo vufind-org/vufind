@@ -530,7 +530,6 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
         $ils->method('__call')->willThrowException($exception);
 
         $writer = $this->getMockSolrWriter();
-        $that = $this;
         $command = $this->getCommand($writer, $ils);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);

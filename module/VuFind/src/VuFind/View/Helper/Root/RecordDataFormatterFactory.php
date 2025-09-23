@@ -99,7 +99,7 @@ class RecordDataFormatterFactory implements FactoryInterface
         ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
         $specPluginManager = $container->get(\VuFind\RecordDataFormatter\Specs\PluginManager::class);
         // for legacy backward compatibility check if getDefault*Specs methods got overridden.

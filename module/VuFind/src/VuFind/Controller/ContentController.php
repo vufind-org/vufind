@@ -99,6 +99,8 @@ class ContentController extends AbstractBase
      * @param string $path    Full path to file with content (if applicable)
      *
      * @return ViewModel
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function getViewForMd(string $page, string $relPath, string $path): ViewModel
     {
@@ -115,6 +117,8 @@ class ContentController extends AbstractBase
      * @param string $path    Full path to file with content (if applicable)
      *
      * @return ViewModel
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function getViewForPhtml(string $page, string $relPath, string $path): ViewModel
     {

@@ -416,7 +416,7 @@ $config = [
     'service_manager' => [
         'allow_override' => true,
         'factories' => [
-            'League\CommonMark\ConverterInterface' => 'VuFind\Service\MarkdownFactory',
+            'League\CommonMark\MarkdownConverter' => 'VuFind\Service\MarkdownFactory',
             'VuFind\Account\UserAccountService' => 'VuFind\Account\UserAccountServiceFactory',
             'VuFind\AjaxHandler\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Auth\EmailAuthenticator' => 'VuFind\Auth\EmailAuthenticatorFactory',
@@ -641,7 +641,7 @@ $config = [
             // Overrides:
             'Laminas\Escaper\Escaper' => 'VuFind\Escaper\Escaper',
             'Laminas\Validator\Csrf' => 'VuFind\Validator\SessionCsrf',
-            'League\CommonMark\MarkdownConverterInterface' => 'League\CommonMark\ConverterInterface',
+            'League\CommonMark\ConverterInterface' => 'League\CommonMark\MarkdownConverter',
             'Request' => 'VuFind\Http\PhpEnvironment\Request',
         ],
         'shared' => [

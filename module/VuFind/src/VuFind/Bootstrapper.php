@@ -171,6 +171,8 @@ class Bootstrapper
      * Set view variables representing the current context.
      *
      * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function initContext(): void
     {
@@ -213,6 +215,8 @@ class Bootstrapper
      * Update language in user account, as needed.
      *
      * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function initUserLanguage(): void
     {
@@ -351,6 +355,8 @@ class Bootstrapper
      * Set up handling for rendering problems.
      *
      * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function initRenderErrorEvent(): void
     {

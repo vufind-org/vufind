@@ -128,7 +128,6 @@ class Receipt implements TranslatorAwareInterface
         $this->paymentConfig = $paymentConfig;
 
         $sourceIls = $payment->getSourceIls();
-        $sourceName = $this->getSourceName($payment);
         $contactInfo = $this->getContactInfo($sourceIls);
 
         $paidDate = $this->dateConverter->convertToDisplayDateAndTime(

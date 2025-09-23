@@ -66,7 +66,7 @@ class RepositoryWithOAuth2ConfigFactory implements FactoryInterface
         ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
         $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
         return new $requestedName($yamlReader->get('OAuth2Server.yaml'));

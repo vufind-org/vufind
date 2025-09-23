@@ -1244,9 +1244,6 @@ class SierraRest extends AbstractBase implements
         if ($this->config['InnReach']['enabled'] ?? false) {
             foreach ($holds as $n => $hold) {
                 if (!empty($hold['item_id']) && strstr($hold['item_id'], $this->config['InnReach']['identifier'])) {
-                    $id = $hold['id'];
-                    $volume = $hold['volume'];
-
                     $innReach = $this->getInnReachHoldTitleInfoFromId($hold['reqnum'], $hold['id']);
                     if (!empty($innReach)) {
                         $holds[$n]['id'] = $innReach['id'];

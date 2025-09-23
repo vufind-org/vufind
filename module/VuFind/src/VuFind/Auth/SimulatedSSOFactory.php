@@ -65,7 +65,7 @@ class SimulatedSSOFactory implements \Laminas\ServiceManager\Factory\FactoryInte
         ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
         $helpers = $container->get('ViewHelperManager');
         // The view helpers aren't set up yet when this factory runs, so we need to

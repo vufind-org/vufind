@@ -83,6 +83,8 @@ class PrimoController extends AbstractSearch
      * Perform a "cited" or "cited by" search
      *
      * @return mixed
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function performCitationSearch()
     {

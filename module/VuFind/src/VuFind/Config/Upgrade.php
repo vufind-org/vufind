@@ -167,7 +167,7 @@ class Upgrade implements LoggerAwareInterface
         $this->saveModifiedConfig('permissions', $this->permissionsModified);
 
         // Make sure to update any remaining configurations that were not explicitly updated above.
-        foreach ($this->newConfigs as $configName => $newConfig) {
+        foreach (array_keys($this->newConfigs) as $configName) {
             if (!in_array($configName, $this->writtenConfig)) {
                 $this->applyOldSettings($configName);
                 $this->saveModifiedConfig($configName);

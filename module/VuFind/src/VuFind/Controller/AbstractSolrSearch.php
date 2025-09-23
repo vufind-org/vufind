@@ -156,6 +156,8 @@ class AbstractSolrSearch extends AbstractSearch
      * (if any)
      *
      * @return array Sorted facets, with selected values flagged.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function processAdvancedFacets(
         $facetList,

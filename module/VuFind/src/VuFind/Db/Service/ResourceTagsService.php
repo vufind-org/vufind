@@ -372,10 +372,10 @@ class ResourceTagsService extends AbstractDbService implements
         $list = $this->getDoctrineReference(UserListEntityInterface::class, $listOrId);
         $user = $this->getDoctrineReference(UserEntityInterface::class, $userOrId);
         $dql = 'DELETE FROM ' . ResourceTagsEntityInterface::class . ' rt '
-            . 'WHERE rt.user = :user AND rt.resource IS NULL AND rt.list = :list ';
+            . 'WHERE rt.user = :user AND rt.resource IS NULL AND rt.list = :list';
         $parameters = compact('user', 'list');
         if (null !== $tagId) {
-            $dqlWhere[] = 'AND rt.tag IN (:tag) ';
+            $dql .= ' AND rt.tag IN (:tag) ';
             $parameters['tag'] = (array)$tagId;
         }
         $query = $this->entityManager->createQuery($dql);

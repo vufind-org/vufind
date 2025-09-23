@@ -177,7 +177,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     public function getFormattedDigitalFormats()
     {
         $results = [];
-        foreach ($this->getDigitalFormats() as $key => $format) {
+        foreach ($this->getDigitalFormats() as $format) {
             $tmpresults = [];
             if ($format->fileSize > 0) {
                 if ($format->fileSize > 1000000) {

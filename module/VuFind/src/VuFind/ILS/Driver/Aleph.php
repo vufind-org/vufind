@@ -1070,7 +1070,7 @@ class Aleph extends AbstractBase implements
         $items = [];
         foreach ($details['details'] as $id) {
             try {
-                $result = $this->doRestDLFRequest(
+                $this->doRestDLFRequest(
                     [
                         'patron', $patronId, 'circulationActions', 'requests',
                         'holds', $id,
@@ -1514,6 +1514,7 @@ class Aleph extends AbstractBase implements
                     }
                 }
             } catch (\Exception $ex) {
+                // Fall through to throw the exception below
             }
         }
         throw new ILSException('barcode not found');

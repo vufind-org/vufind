@@ -245,7 +245,7 @@ class LibraryCardsController extends AbstractBase
      */
     public function connectCardLoginAction()
     {
-        if (!($user = $this->getUser())) {
+        if (!$this->getUser()) {
             return $this->forceLogin();
         }
         $url = $this->getServerUrl('librarycards-connectcard');

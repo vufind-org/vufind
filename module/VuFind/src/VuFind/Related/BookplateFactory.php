@@ -57,6 +57,9 @@ class BookplateFactory implements FactoryInterface
         $requestedName,
         ?array $options = null
     ) {
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options passed to factory.');
+        }
         $configManager = $container->get(\VuFind\Config\PluginManager::class);
         return new $requestedName($configManager);
     }

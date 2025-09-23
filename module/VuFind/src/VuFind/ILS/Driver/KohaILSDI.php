@@ -989,13 +989,6 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
                 ($rowItem['TRANSFERFROM'] != null)
                 && ($rowItem['TRANSFERTO'] != null)
             ) {
-                $branchSqlStmt->execute([':branch' => $rowItem['TRANSFERFROM']]);
-                $rowFrom = $branchSqlStmt->fetch();
-                $transferfrom = $rowFrom
-                    ? $rowFrom['BNAME'] : $rowItem['TRANSFERFROM'];
-                $branchSqlStmt->execute([':branch' => $rowItem['TRANSFERTO']]);
-                $rowTo = $branchSqlStmt->fetch();
-                $transferto = $rowTo ? $rowTo['BNAME'] : $rowItem['TRANSFERTO'];
                 $status = 'In transit between library locations';
                 $available = false;
                 $onTransfer = true;

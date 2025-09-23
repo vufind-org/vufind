@@ -64,7 +64,7 @@ class LinkifyFactory implements FactoryInterface
         ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
 
         $proxyUrl = $container->get('ViewHelperManager')->get('proxyUrl');
@@ -74,6 +74,6 @@ class LinkifyFactory implements FactoryInterface
         $validatorExceptEmail = new Validator(matchEmails: false);
         $urlHighlight = new UrlHighlight(null, $highlighter, $encoder);
         $urlHighlightExceptEmail = new UrlHighlight($validatorExceptEmail, $highlighter, $encoder);
-        return new Linkify($urlHighlight, $urlHighlightExceptEmail);
+        return new $requestedName($urlHighlight, $urlHighlightExceptEmail);
     }
 }

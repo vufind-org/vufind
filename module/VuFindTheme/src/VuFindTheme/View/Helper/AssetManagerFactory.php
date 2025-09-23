@@ -97,7 +97,7 @@ class AssetManagerFactory implements FactoryInterface
         ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
         $nonceGenerator = $container->get(\VuFind\Security\NonceGenerator::class);
         $nonce = $nonceGenerator->getNonce();

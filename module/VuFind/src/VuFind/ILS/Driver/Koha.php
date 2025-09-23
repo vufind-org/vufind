@@ -676,7 +676,6 @@ class Koha extends AbstractBase
      */
     public function patronLogin($username, $password)
     {
-        $patron = [];
         $row = '';
 
         $stored_hash = '';

@@ -145,7 +145,7 @@ class Sorter implements SorterInterface
             $data
         );
         $success = $this->collator->asort($data);
-        foreach ($data as $key => $item) {
+        foreach (array_keys($data) as $key) {
             $data[$key] = $array[$key];
         }
         $array = $data;

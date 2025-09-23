@@ -66,7 +66,7 @@ class RouterFactory implements FactoryInterface
         ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
         // Try to get the base URL from the controller plugin; fail over to
         // the view helper if that doesn't work.

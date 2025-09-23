@@ -2894,6 +2894,8 @@ class XCNCIP2 extends AbstractBase implements
      * @param string $key     Cache key (For LookupUser its cat_username)
      *
      * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function invalidateResponseCache(string $message, string $key): void
     {

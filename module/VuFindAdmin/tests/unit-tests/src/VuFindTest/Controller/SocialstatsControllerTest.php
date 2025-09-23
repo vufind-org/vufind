@@ -87,7 +87,7 @@ class SocialstatsControllerTest extends \PHPUnit\Framework\TestCase
         $viewRenderer = $this->getMockBuilder(\Laminas\View\Renderer\RendererInterface::class)
             ->onlyMethods(['getEngine', 'setResolver', 'render'])->addMethods(['plugin'])->getMock();
         $viewRenderer->expects($this->once())->method('plugin')->withAnyParameters()
-            ->will($this->returnValue(function ($input) {
+            ->will($this->returnValue(function (/*$input*/) {
                 return 'url';
             }));
         $container->set('ViewRenderer', $viewRenderer);

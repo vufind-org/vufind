@@ -59,8 +59,10 @@ class MarkdownFactory implements FactoryInterface
         $requestedName,
         ?array $options = null
     ) {
-        $markdownService = $container
-            ->get(\League\CommonMark\ConverterInterface::class);
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options passed to factory.');
+        }
+        $markdownService = $container->get(\League\CommonMark\ConverterInterface::class);
         return new $requestedName($markdownService);
     }
 }

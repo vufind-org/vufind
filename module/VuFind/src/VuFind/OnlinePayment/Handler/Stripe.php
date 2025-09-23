@@ -98,6 +98,8 @@ class Stripe extends AbstractBase implements
      * @return Response
      *
      * @throws PaymentException
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function startPayment(
         string $returnBaseUrl,
@@ -117,10 +119,6 @@ class Stripe extends AbstractBase implements
 
         $returnUrl = $this->addQueryParams(
             $returnBaseUrl,
-            [$paymentParam => $localIdentifier]
-        );
-        $notifyUrl = $this->addQueryParams(
-            $notifyBaseUrl,
             [$paymentParam => $localIdentifier]
         );
 
@@ -218,6 +216,8 @@ class Stripe extends AbstractBase implements
      * @return int One of the result codes defined in AbstractBase
      *
      * @throws PaymentException
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function processPaymentResponse(
         PaymentEntityInterface $payment,

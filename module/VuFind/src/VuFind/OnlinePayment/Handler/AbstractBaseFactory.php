@@ -72,6 +72,9 @@ class AbstractBaseFactory implements FactoryInterface
         $requestedName,
         ?array $options = null
     ) {
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options passed to factory.');
+        }
         $dbServiceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         return new $requestedName(
             $container->get(ConfigManager::class)->getConfigArray('config'),

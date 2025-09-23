@@ -112,7 +112,7 @@ class OAuth2ControllerFactory extends AbstractBaseFactory
         ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
         $this->container = $container;
         $this->pathResolver = $container->get(PathResolver::class);

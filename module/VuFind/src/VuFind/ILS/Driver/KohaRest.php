@@ -1355,6 +1355,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @param array $patron       Patron array
      *
      * @return array Associative array of the results
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function updateHolds(
         array $holdsDetails,
@@ -2327,7 +2329,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             $extraStatusInformation = [];
             if ($transit = $avail['unavailabilities']['Item::Transfer'] ?? null) {
                 if (null !== ($toLibrary = $transit['to_library'] ?? null)) {
-                    $extraStatusInformation['location'] = $this->getLibraryName($transit['to_library']);
+                    $extraStatusInformation['location'] = $this->getLibraryName($toLibrary);
                     if ($status == 'HoldingStatus::transit_to_date') {
                         $extraStatusInformation['date'] = $this->convertDate(
                             $transit['datesent'],

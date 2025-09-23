@@ -70,7 +70,7 @@ class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
         $loader = $this->getConfigurationLoader($container);
         $request = $container->get('Request');

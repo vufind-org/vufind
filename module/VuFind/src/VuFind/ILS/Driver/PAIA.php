@@ -464,6 +464,8 @@ class PAIA extends DAIA
      * or may be ignored.
      *
      * @return string       The default pickup location for the patron.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getDefaultPickUpLocation($patron = null, $holdDetails = null)
     {
@@ -496,6 +498,8 @@ class PAIA extends DAIA
      *
      * @return array               An array of data on each request including
      * whether or not it was successful and a system message (if available)
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function cancelStorageRetrievalRequests($cancelDetails)
     {
@@ -570,6 +574,8 @@ class PAIA extends DAIA
      *
      * @return mixed An array of data on the request including
      * whether or not it was successful and a system message (if available)
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function placeILLRequest($details)
     {
@@ -627,6 +633,8 @@ class PAIA extends DAIA
      *
      * @return array               An array of data on each request including
      * whether or not it was successful and a system message (if available)
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function cancelILLRequests($cancelDetails)
     {
@@ -715,6 +723,8 @@ class PAIA extends DAIA
      * @param array $patron The patron array from patronLogin
      *
      * @return array Additional fee data for the item
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function getAdditionalFeeData($fee, $patron = null)
     {
@@ -865,6 +875,8 @@ class PAIA extends DAIA
      * @return array An associative array with two keys: 'count' (the number of items
      * in the 'results' array) and 'results' (an array of associative arrays, each
      * with a single key: 'id', a record ID).
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getNewItems($page, $limit, $daysOld, $fundID)
     {
@@ -889,6 +901,8 @@ class PAIA extends DAIA
      *
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPickUpLocations($patron = null, $holdDetails = null)
     {

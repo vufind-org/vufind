@@ -70,7 +70,7 @@ class ILSAuthenticatorFactory implements FactoryInterface
         ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
         $service = new $requestedName(
             // Use a callback to retrieve authentication manager to break a circular reference:

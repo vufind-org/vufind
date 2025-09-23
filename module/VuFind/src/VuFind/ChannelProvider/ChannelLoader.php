@@ -77,6 +77,8 @@ class ChannelLoader
      * @param string $source        Backend to use
      *
      * @return Results
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function performChannelSearch($searchRequest, $providers, $source)
     {

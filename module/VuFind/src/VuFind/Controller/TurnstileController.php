@@ -97,6 +97,8 @@ class TurnstileController extends AbstractBase implements
      * Verify the Turnstile widget result against the Turnstile backend
      *
      * @return mixed
+     *
+     * @SuppressWarnings(PHPMD.UnusedLocalVariable)
      */
     public function verifyAction()
     {

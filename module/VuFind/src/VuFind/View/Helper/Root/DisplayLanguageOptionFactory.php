@@ -67,7 +67,7 @@ class DisplayLanguageOptionFactory implements FactoryInterface
         ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
         $translator = $container->get(Translator::class);
         // Add a special locale used just for this plugin:

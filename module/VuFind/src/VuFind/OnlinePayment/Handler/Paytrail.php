@@ -159,7 +159,6 @@ class Paytrail extends AbstractBase
         // Map fines to items:
         $items = [];
         foreach ($fines as $fine) {
-            $fineType = $fine['fine'] ?? '';
             $fineOrg = $fine['organization'] ?? '';
 
             if (null === $code = $this->getFineProductCode($fine)) {

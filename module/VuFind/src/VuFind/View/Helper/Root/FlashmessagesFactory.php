@@ -66,7 +66,7 @@ class FlashmessagesFactory implements FactoryInterface
         ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
         $messenger = $container->get('ControllerPluginManager')
             ->get(\Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger::class);
