@@ -61,15 +61,38 @@ class SolrPrefixTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test setting up a full test scenario and running getSuggestions().
+     * Data provider for testGetSuggestions().
      *
-     * @return void
+     * @return array[]
      */
-    public function testGetSuggestions(): void
+    public static function getSuggestionsProvider(): array
     {
         $autocompleteField = 'auto_str';
         $facetField = 'facet_str';
-        $config = "$autocompleteField:$facetField";
+        return [
+            'default limit' => [$autocompleteField, $facetField, "$autocompleteField:$facetField", 10],
+            'non-default limit' => [$autocompleteField, $facetField, "$autocompleteField:$facetField:20", 20],
+        ];
+    }
+
+    /**
+     * Test setting up a full test scenario and running getSuggestions().
+     *
+     * @param string $autocompleteField Name of expected autocomplete field
+     * @param string $facetField        Name of expected facet field
+     * @param string $config            Configuration to test with
+     * @param int    $expectedLimit     Expected limit value
+     *
+     * @return void
+     *
+     * @dataProvider getSuggestionsProvider
+     */
+    public function testGetSuggestions(
+        string $autocompleteField,
+        string $facetField,
+        string $config,
+        int $expectedLimit
+    ): void {
         $filters = ['filter:1'];
         $options = $this->getMockOptions();
         $options->expects($this->once())->method('spellcheckEnabled')->with(false);
@@ -77,7 +100,7 @@ class SolrPrefixTest extends \PHPUnit\Framework\TestCase
         $params = $this->getMockParams($options);
         $params->expects($this->once())->method('setBasicSearch')->with("$autocompleteField:(foo   bar)");
         $params->expects($this->once())->method('setLimit')->with(0);
-        $params->expects($this->once())->method('setFacetLimit')->with(10);
+        $params->expects($this->once())->method('setFacetLimit')->with($expectedLimit);
         $params->expects($this->once())->method('addFilter')->with($filters[0]);
         $results = $this->getMockResults($params);
         $results->expects($this->once())->method('getResults');
