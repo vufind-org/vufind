@@ -379,8 +379,8 @@ class Solr implements AutocompleteInterface
     /**
      * Set the limit. Useful for child classes.
      *
-		 * @param int $new Limit of search result rows. Can be null to default
-		 * to the limit of the search class.
+     * @param int $new Limit of search result rows. Can be null to default
+     * to the limit of the search class.
      *
      * @return void
      */
