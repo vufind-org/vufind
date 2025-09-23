@@ -356,6 +356,15 @@ a.authority {
   ul.truncate-field {
     margin-bottom: 0;
   }
+  > .label-resource-type {
+    display: none;
+  }
+  .recordFormat .label {
+    display: none;
+    &.label-info, &.label-resource-type {
+      display: inline-block;
+    }
+  }
 }
 
 .record-links {

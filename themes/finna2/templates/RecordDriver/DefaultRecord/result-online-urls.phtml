@@ -77,7 +77,7 @@
               }
               break;
             }
-            $desc = $url['desc'] ?? $url['url'];
+            $desc = $url['desc'] ?? $url['description'] ?? $url['url'];
             if ($desc === $url['url']) {
               $desc = $this->truncateUrl($desc);
             }
@@ -112,7 +112,8 @@
               <span class="video-desc"><?=$this->escapeHtml($this->truncate(ucfirst($desc), 30))?></span>
             </finna-video>
           <?php else: ?>
-            <a <?= $this->htmlElement()->getAttributes($currentUrl, 'url-base') ?>><?=$this->icon('external-link') ?>
+            <?php $icon = isset($url['linkType']) && $url['linkType'] === 'proxy-link' ? 'download' : 'external-link'; ?>
+            <a <?= $this->htmlElement()->getAttributes($currentUrl, 'url-base') ?>><?=$this->icon($icon) ?>
               <?=$this->transEsc('default::link_' . $desc, null, $desc)?>
             </a>
           <?php endif; ?>

@@ -164,7 +164,7 @@ class RecordDataFormatter extends \VuFind\View\Helper\Root\RecordDataFormatter
             'Edition',
             'Events',
             'Extent',
-            'Format',
+            'Format and Labels',
             'Inscriptions',
             'Introduction',
             'Inventory ID',

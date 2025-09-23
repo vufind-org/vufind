@@ -73,6 +73,7 @@ class RecordSpecsTest extends \PHPUnit\Framework\TestCase
           'Presenters Marc',
           'Other Titles',
           'Format',
+          'Format and Labels',
           'Parent Archive',
           'Parent Collection',
           'Parent Subcollection',

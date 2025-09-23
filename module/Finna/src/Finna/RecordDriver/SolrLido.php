@@ -621,6 +621,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Laminas\Log\
                             $documentDesc,
                             $documentRights,
                             $linkType,
+                            $type,
                         )
                     ) {
                         $documentUrls = array_merge($documentUrls, $document);
@@ -941,7 +942,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Laminas\Log\
 
     /**
      * Function to return an audio in associative array
-     * - desc   Default is false
+     * - desc   Default is null
      * - url    Url to audio file
      * - codec  Codec type of the audio
      * - type   Type what type is the audio file
@@ -962,7 +963,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Laminas\Log\
     ): array {
         if ($codec = $this->supportedAudioFormats[$format] ?? false) {
             $audio = [
-                'desc' => $description ?: false,
+                'desc' => $description ?: null,
                 'url' => $url,
                 'codec' => $format,
                 'type' => 'audio',
@@ -978,7 +979,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Laminas\Log\
 
     /**
      * Function to return a video in associative array
-     * - desc           Default is false
+     * - desc           Default is null
      * - url            Video url
      * - embed          Video embed is video
      * - videosources
@@ -1001,14 +1002,14 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Laminas\Log\
         $mediaType = $this->supportedVideoFormats[$format] ?? false;
         $video = match ($mediaType) {
             'text/html' => [
-                'desc' => $description ?: false,
+                'desc' => $description ?: null,
                 'url' => $url,
                 'embed' => 'iframe',
                 'format' => $format,
             ],
             false => [],
             default => [
-                'desc' => $description ?: false,
+                'desc' => $description ?: null,
                 'url' => $url,
                 'embed' => 'video',
                 'format' => $format,
@@ -1032,6 +1033,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Laminas\Log\
      * @param string $description Description of the document
      * @param array  $rights      Array of document rights
      * @param bool   $linkType    Type of document link, default is 'proxy-link'.
+     * @param string $type        Type of resource.
      *
      * @return array
      */
@@ -1040,19 +1042,22 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Laminas\Log\
         string $format,
         string $description,
         array $rights,
-        string $linkType = 'proxy-link'
+        string $linkType = 'proxy-link',
+        string $type = '',
     ): array {
         $format = strtolower($format);
         // Do not display text/html mediatype
         if ('text/html' === $format) {
             $format = '';
         }
+        $label = $type === 'provided_3D' ? '3D' : '';
         return [
             'description' => $description ?: false,
             'url' => $url,
             'format' => $format,
             'rights' => $rights,
             'linkType' => $linkType,
+            'label' => $label,
         ];
     }
 
@@ -1146,6 +1151,32 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Laminas\Log\
     }
 
     /**
+     * Return all labels for the record
+     *
+     * @return array
+     */
+    public function getLabels(): array
+    {
+        if ($this->has3DResources()) {
+            return array_merge($this->labels, [['label' => '3D', 'class' => 'resource-type']]);
+        }
+        return $this->labels;
+    }
+
+    /**
+     * If record has 3D resources
+     *
+     * @return bool
+     */
+    public function has3DResources(): bool
+    {
+        if ($this->getModels()) {
+            return true;
+        }
+        return in_array('3D', array_column($this->getDocuments(), 'label'));
+    }
+
+    /**
      * Can model preview images be shown
      *
      * @return bool
@@ -1221,6 +1252,16 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Laminas\Log\
             }
         }
         return $results;
+    }
+
+    /**
+     * Get online URLs
+     *
+     * @return array
+     */
+    public function getOnlineURLs(): array
+    {
+        return $this->getDocuments();
     }
 
     /**

@@ -5,12 +5,16 @@
 <div class="audio-accordion">
 <?php foreach ($audioUrls as $ind => $url):
     $format = $this->driver->tryMethod('getRecordFormat', [], '');
-    $showDetails = $format === 'lido' ? true : false;
+    $showDetails = $showFormat = false;
+    if ($format === 'lido') {
+      $showDetails = true;
+      $showFormat = $url['desc'] === $url['url'];
+    }
   ?>
   <div class="audio-item-wrapper">
     <div class="audio-title-wrapper">
       <div class="audio-title">
-      <?php if (!empty($url['desc'])): ?>
+      <?php if (!empty($url['desc']) && !$showFormat): ?>
         <strong><?= $this->escapeHtml($this->translate('link_' . $url['desc'], null, $url['desc'])); ?></strong>
       <?php else: ?>
         <strong><?=$this->transEsc('format_Sound')?></strong>

@@ -40,21 +40,22 @@
     <?php foreach ($videoUrls as $url): ?>
       <?php
       $embeddedVideo = $this->recordLinker()->getEmbeddedVideo($url['url']);
-      $desc = $url['desc'] ?? $this->truncateUrl($url['url']);
       switch ($this->driver->tryMethod('getRecordFormat', [], '')) {
         case 'ead':
         case 'ead3':
           $desc = $embeddedVideo === 'data-embed-iframe' ? $this->translate('format_Video') : $this->translate('link_' . $url['desc'], null, $url['desc']);
         break;
         case 'forward':
-          $desc = $this->translate('default::link_' . $desc, null, $desc);
+          $text = $url['desc'] ?? $this->truncateUrl($url['url']);
+          $desc = $this->translate('default::link_' . $text, null, $text);
         break;
         case 'lido':
           $showDetails = true;
-          $desc = $desc ?: $this->translate('format_Video');
+          $desc = $url['desc'] !== $url['url'] ? $url['desc'] : $this->translate('format_Video');
         break;
         default:
-          $desc = $embeddedVideo === 'data-embed-iframe' ? $this->translate('format_Video') : $desc;
+          $text = $url['desc'] ?? $this->truncateUrl($url['url']);
+          $desc = $embeddedVideo === 'data-embed-iframe' ? $this->translate('format_Video') : $text;
         break;
       }
 
