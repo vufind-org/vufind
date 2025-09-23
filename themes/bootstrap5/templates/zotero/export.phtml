@@ -5,6 +5,6 @@
     // Set up breadcrumbs:
     $this->breadcrumbs()->set($this->translate('Export'));
 ?>
-<h2><?=$this->transEsc('Export')?></h2>
+<?=$this->component('page-title', ['title' => $this->translate('Export')]);?>
 
 <?=$this->flashmessages()?>

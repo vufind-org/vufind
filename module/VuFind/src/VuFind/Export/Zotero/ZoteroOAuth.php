@@ -54,6 +54,13 @@ use function is_array;
 class ZoteroOAuth extends \League\OAuth1\Client\Server\Server
 {
     /**
+     * Zotero OAuth base URL including the trailing slash.
+     *
+     * @var string
+     */
+    protected string $baseUrl = 'https://www.zotero.org/oauth/';
+
+    /**
      * Constructor.
      *
      * @param GuzzleService                    $guzzleService     Guzzle service
@@ -77,7 +84,7 @@ class ZoteroOAuth extends \League\OAuth1\Client\Server\Server
      */
     public function urlTemporaryCredentials()
     {
-        return 'https://www.zotero.org/oauth/request';
+        return $this->baseUrl . 'request';
     }
 
     /**
@@ -87,7 +94,7 @@ class ZoteroOAuth extends \League\OAuth1\Client\Server\Server
      */
     public function urlAuthorization()
     {
-        $url = 'https://www.zotero.org/oauth/authorize?library_access=1&write_access=1';
+        $url = $this->baseUrl . 'authorize?library_access=1&write_access=1';
         if ($this->serviceName) {
             $url .= '&name=' . urlencode($this->serviceName);
         }
@@ -101,11 +108,13 @@ class ZoteroOAuth extends \League\OAuth1\Client\Server\Server
      */
     public function urlTokenCredentials()
     {
-        return 'https://www.zotero.org/oauth/access';
+        return $this->baseUrl . 'access';
     }
 
     /**
      * Get the URL for retrieving user details.
+     *
+     * Stub, not used with Zotero.
      *
      * @return string
      */
