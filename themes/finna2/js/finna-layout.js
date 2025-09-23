@@ -873,21 +873,25 @@ finna.layout = (function finnaLayout() {
       var play = self.find('.play');
       var source = self.find('source');
       play.one('click', function onPlay() {
-        finna.scriptLoader.loadInOrder(
+        finna.scriptLoader.load(
           scripts,
-          subScripts,
-          function onVideoJsLoaded() {
-            self.find('.audio-player-wrapper').removeClass('hide');
-            var audio = self.find('audio');
-            audio.removeClass('hide').addClass('video-js');
-            source.attr('src', source.data('src'));
-            videojs(
-              audio.attr('id'),
-              { controlBar: { volumePanel: false, muteToggle: false } },
-              function onVideoJsInited() {}
+          () => {
+            finna.scriptLoader.load(
+              subScripts,
+              function onVideoJsLoaded() {
+                self.find('.audio-player-wrapper').removeClass('hide');
+                var audio = self.find('audio');
+                audio.removeClass('hide').addClass('video-js');
+                source.attr('src', source.data('src'));
+                videojs(
+                  audio.attr('id'),
+                  { controlBar: { volumePanel: false, muteToggle: false } },
+                  function onVideoJsInited() {}
+                );
+                play.remove();
+                self.find('.vjs-play-control').focus();
+              }
             );
-            play.remove();
-            self.find('.vjs-play-control').focus();
           }
         );
       });

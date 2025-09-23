@@ -268,9 +268,17 @@ class VideoElement extends HTMLElement {
         }
         switch (self.type) {
         case 'video':
-          finna.scriptLoader.loadInOrder(self.scripts, self.subScripts, () => {
-            finna.videoPopup.initVideoJs('.video-popup', self.videoSources, self.posterUrl);
-          });
+          finna.scriptLoader.load(
+            self.scripts,
+            () => {
+              finna.scriptLoader.load(
+                self.subScripts,
+                () => {
+                  finna.videoPopup.initVideoJs('.video-popup', self.videoSources, self.posterUrl);
+                }
+              );
+            }
+          );
           break;
         case 'iframe':
           // If using Chrome + VoiceOver, Chrome crashes if vimeo player video settings button has aria-haspopup=true

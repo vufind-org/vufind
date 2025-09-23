@@ -33,15 +33,7 @@
 $js = <<<JS
     finna.scriptLoader.load(
       {'finna-checkout-history': 'finna-checkout-history.js'},
-      () => {
-        if (document.readyState === 'complete') {
-          finna.checkoutHistory.init();
-        } else {
-          document.addEventListener('DOMContentLoaded', () => {
-            finna.checkoutHistory.init();
-          });
-        }
-      }
+      () => {finna.checkoutHistory.init();}
     );
     JS;
 

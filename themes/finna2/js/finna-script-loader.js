@@ -8,7 +8,6 @@
  * @returns {object} Exposed functions
  */
 finna.scriptLoader = (() => {
-
   /**
    * Load given scripts asynchronously.
    * @param {object}   scripts        Object of scripts to load
@@ -17,59 +16,38 @@ finna.scriptLoader = (() => {
    *                                  Value is the js file name to load
    * @param {?Function} scriptsLoaded Callback when the scripts are loaded
    */
-  function load(scripts, scriptsLoaded) {
-    let keyCount = Object.keys(scripts).length;
-    let onScriptLoad;
-    if (keyCount) {
-      onScriptLoad = () => {
-        if (--keyCount === 0) {
-          scriptsLoaded();
-        }
-      };
-    }
+  function load(scripts, scriptsLoaded = () => {}) {
+    let promisesToWait = [];
+    const onLoadFunc = (e) => finna.resolvePromise(e.currentTarget.id);
     for (let [key, value] of Object.entries(scripts)) {
       key = `scriptloader-js-${key}`;
-      const found = document.getElementById(key);
-      if (found) {
-        keyCount--;
-        continue;
+      let foundPromise = finna.getPromise(key);
+      if (!foundPromise) {
+        foundPromise = finna.setPromise(key);
+        const scriptElement = document.createElement('script');
+        scriptElement.src = `${VuFind.path}/themes/finna2/js/${value}?_=${Date.now()}`;
+        scriptElement.async = 'async';
+        scriptElement.id = key;
+        scriptElement.addEventListener('load', onLoadFunc);
+        scriptElement.setAttribute('nonce', VuFind.getCspNonce());
+        document.head.appendChild(scriptElement);
       }
-      const scriptElement = document.createElement('script');
-      scriptElement.async = 'async';
-      scriptElement.src = `${VuFind.path}/themes/finna2/js/${value}?_=${Date.now()}`;
-      if (typeof onScriptLoad === 'function' && typeof scriptsLoaded === 'function') {
-        scriptElement.addEventListener('load', onScriptLoad);
-      }
-      scriptElement.id = key;
-      scriptElement.setAttribute('nonce', VuFind.getCspNonce());
-      document.head.appendChild(scriptElement);
+      promisesToWait.push(foundPromise);
+      // Wait until the promise has resolved (Script has loaded) until loading the next one.
     }
-    if (keyCount === 0 && typeof scriptsLoaded === 'function') {
-      scriptsLoaded();
-    }
-  }
-
-  /**
-   * Load given scripts asynchronously. First are the scripts to be loaded before
-   * the last scripts can be loaded.
-   * @param {object}   first          First scripts to load.
-   *                                  Key is an unique identifier used to check if
-   *                                  script has already been loaded
-   *                                  Value is the js file name to load
-   * @param {object}   last           Last scripts to load.
-   *                                  Key is an unique identifier used to check if
-   *                                  script has already been loaded
-   *                                  Value is the js file name to load
-   * @param {?Function} scriptsLoaded Callback when the scripts are loaded
-   */
-  function loadInOrder(first, last, scriptsLoaded) {
-    load(first, () => {
-      load(last, scriptsLoaded);
-    });
+    const handlePromise = (cb) => {
+      promisesToWait.shift().then(() => {
+        if (promisesToWait.length > 0) {
+          handlePromise(cb);
+        } else {
+          cb();
+        }
+      });
+    };
+    handlePromise(scriptsLoaded);
   }
 
   return {
-    load,
-    loadInOrder
+    load
   };
 })();
