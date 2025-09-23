@@ -136,7 +136,6 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
 
         $query = $this->createMock(AbstractQuery::class);
         $query->expects($this->once())->method('execute')
-            ->with()
             ->willReturn(0);
 
         $subQuery = $this->createMock(AbstractQuery::class);
