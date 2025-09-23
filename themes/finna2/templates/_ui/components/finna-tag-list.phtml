@@ -1,4 +1,15 @@
 <?php
+  /**
+   * Component for displaying a list of tags with an optional title.
+   *
+   * @param ?iterable attributes     Additional attributes
+   * @param ?bool     htmlItems      Are the items plain text or HTML? Defaults to
+   *                                 false.
+   * @param string[]  items          Array of plain text or HTML items
+   * @param ?string   title          Title
+   * @param ?bool     translateItems Should the items be translated? Defaults to
+   *                                 true. Has no effect if htmlItems is true.
+   */
   $__attributes = $this->htmlAttributes($attributes ?? []);
   $__htmlItems = $htmlItems ?? false;
   $__translateItems = $translateItems ?? true;

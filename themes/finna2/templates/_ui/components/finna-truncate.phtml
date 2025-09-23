@@ -1,4 +1,27 @@
 <?php
+  /**
+   * A truncation component that supports both element-based and height-based
+   * truncation. Processes Finna default values and provided parameters to build a
+   * data-truncate attribute for truncate.js.
+   *
+   * @param ?iterable attributes     Additional attributes
+   * @param ?string   btnClass       Button class
+   * @param ?string   content        Content
+   * @param ?string   element        Used for element-based truncation. If not set
+   *                                 the default is to use height-based truncation.
+   * @param ?bool     inPlaceToggle  Use in-place toggle?
+   * @param ?string   label          Label
+   * @param ?string   labelIcons     Label icons placement. Defaults to 'after'.
+   * @param ?string   lessIcon       Show less icon
+   * @param ?string   lessLabel      Show less label. Defaults to 'show_less'.
+   * @param ?string   moreIcon       Show more icon
+   * @param ?string   moreLabel      Show more label. Defaults to 'show_more'.
+   * @param ?int      rows           Number of rows to show. Defaults to 0.
+   * @param ?int      topToggle      Use top toggle on this row
+   * @param ?string   wrapperClass   Wrapper class. Defaults to
+   *                                 'finna-truncate-btn-wrapper-default'.
+   * @param ?string   wrapperTagname Wrapper tag name.
+   */
   $__attributes = $this->htmlAttributes($attributes ?? []);
   $__truncateSettings = [];
   if (isset($btnClass)) {

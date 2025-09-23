@@ -1,4 +1,26 @@
 <?php
+  /**
+   * Basic list of navigation items that supports displaying the active item's
+   * children.
+   *
+   * Uses the following components:
+   * - finna-nav-item
+   *
+   * @param ?string   ariaCurrent    If this parameter is set it will override the
+   *                                 same parameter in all provided items
+   * @param ?iterable attributes     Additional attributes
+   * @param ?array    items          Array of finna-nav-item parameter arrays
+   * @param ?string   renderChildren If this parameter is set it will override the
+   *                                 same parameter in all provided items
+   *
+   * Supported variations using CSS classes:
+   * - finna-nav-lg
+   *     Larger variation
+   * - finna-nav-navbar
+   *     Variation for finna-navbar
+   * - finna-nav-tabs
+   *     Variation for finna-tabs-nav
+   */
   $__attributes = $this->htmlAttributes($attributes ?? []);
 
   // Internally use Bootstrap styles as a base.

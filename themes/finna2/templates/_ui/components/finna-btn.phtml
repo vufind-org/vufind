@@ -1,4 +1,14 @@
 <?php
+/**
+ * Accessible button with an icon and/or label.
+ *
+ * @param ?string   ariaLabel  Value for aria-label attribute. Not used if there is a
+ *                             label.
+ * @param ?iterable attributes Additional attributes
+ * @param ?string   icon       Icon name
+ * @param ?string   iconClass  Icon class
+ * @param ?string   label      Label
+ */
 $__attributes = $this->htmlAttributes($attributes ?? []);
 if (!isset($__attributes['type'])) {
   $__attributes['type'] = 'button';

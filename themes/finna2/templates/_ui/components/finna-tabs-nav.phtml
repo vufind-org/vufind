@@ -1,4 +1,19 @@
 <?php
+  /**
+   * Tabbed navigation bar that will also show the active tab's children.
+   *
+   * Uses the following components:
+   * - finna-nav
+   *
+   * @param ?string   ariaCurrent  See finna-nav
+   * @param ?string   ariaLabel    Value for aria-label attribute
+   * @param ?iterable attributes   Additional attributes
+   * @param ?array    items        See finna-nav
+   *
+   * Supported variations using CSS classes:
+   * - finna-tabs-nav-lg
+   *     Larger variation
+   */
   $__attributes = $this->htmlAttributes($attributes ?? []);
   if (isset($ariaLabel)) {
     $__attributes['aria-label'] = $ariaLabel;

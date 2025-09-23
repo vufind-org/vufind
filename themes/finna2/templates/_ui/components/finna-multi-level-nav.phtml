@@ -1,3 +1,33 @@
+<?php
+/**
+ * Responsive multi-level navigation: tabbed navigation bar for large screens and a
+ * navbar for small screens.
+ *
+ * Uses the following components:
+ * - finna-nav
+ * - finna-navbar
+ * - finna-tabs-nav
+ *
+ * @param string    ariaLabel         See finna-navbar and finna-tabs-nav
+ * @param ?iterable attributes        Additional attributes
+ * @param array     items             See finna-nav and finna-tabs-nav
+ * @param ?iterable navbarAttributes  Additional finna-navbar attributes
+ * @param ?iterable tabsNavAttributes Additional finna-tabs-nav attributes
+ *
+ * Additionally, all finna-navbar parameters except attributes (use navbarAttributes)
+ * and collapseContent.
+ *
+ * If either navbarAttributes or tabsNavAttributes is provided with a class
+ * attribute, the caller is responsible for setting a visibility class for the
+ * respective component.
+ *
+ * Supported variations using CSS classes:
+ * - finna-multi-level-nav-lg
+ *     Larger variation
+ * - finna-multi-level-nav-content
+ *     Content navigation variation
+ */
+?>
 <?php $__attributes = $this->htmlAttributes($attributes ?? []); ?>
 <div<?= $__attributes->add('class', 'finna-multi-level-nav') ?>>
   <?php

@@ -1,3 +1,14 @@
+<?php
+/**
+ * A browse bar for Bazaar API functionality. Used to select a record and send
+ * selection information to a callback URL.
+ *
+ * @param ?iterable attributes                 Additional attributes
+ * @param string    addResourceCallbackUrl     Callback URL
+ * @param ?string   addResourceCallbackPayload Callback payload
+ * @param string    cancelUrl                  Cancel selection URL
+ */
+?>
 <?php $__attributes = $this->htmlAttributes($attributes ?? []); ?>
 <div<?= $__attributes->add('class', 'finna-bazaar-browse-bar') ?>>
   <div class="finna-bazaar-browse-bar-layout container-fluid navbar">

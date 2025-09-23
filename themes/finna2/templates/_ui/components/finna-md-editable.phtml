@@ -1,4 +1,19 @@
 <?php
+  /**
+   * Markdown editable component based on EasyMDE.
+   *
+   * Uses the following components:
+   * - finna-editable
+   *
+   * @param ?iterable attributes Additional attributes
+   * @param ?string   editLabel  See finna-editable
+   * @param ?string   emptyHtml  Shown when there is no Markdown content
+   * @param ?string   html       Shown when the component is initially rendered,
+   *                             unless emptyHtml is set and there is no Markdown
+   *                             content.
+   * @param ?string   markdown   Markdown content
+   * @param ?bool     preview    Show preview when editing? Defaults to false.
+   */
   $__attributes = $this->htmlAttributes($attributes ?? [])->add('class', 'finna-md-editable');
   $__markdown = $markdown ?? '';
   $__containerAttributes = $this->htmlAttributes(['data-markdown' => $__markdown]);

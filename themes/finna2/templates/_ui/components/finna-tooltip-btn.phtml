@@ -1,4 +1,15 @@
 <?php
+  /**
+   * A tooltip button with an icon and/or label.
+   *
+   * @param ?string   ariaLabel  Value for aria-label attribute. Not used if there is
+   *                             a label.
+   * @param ?iterable attributes Additional attributes
+   * @param ?string   content    Tooltip content HTML
+   * @param ?string   iconClass  Icon class
+   * @param ?string   label      Label
+   * @param ?string   placement  Tooltip placement. Defaults to 'bottom'.
+   */
   $__attributes = $this->htmlAttributes($attributes ?? []);
   $__attributes->set([
     'type' => 'button',

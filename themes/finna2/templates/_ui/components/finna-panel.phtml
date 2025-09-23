@@ -1,4 +1,30 @@
 <?php
+  /**
+   * Optionally collapsible panel component.
+   *
+   * @param ?iterable attributes   Additional attributes
+   * @param bool      collapsed    Is the panel initially collapsed? Defaults to
+   *                               true. Has no effect if the panel is not
+   *                               collapsible.
+   * @param string    collapseId   Id attribute value for collapsible content
+   * @param string    content      Panel content HTML
+   * @param string    heading      Heading
+   * @param string    headingId    Id attribute value for the heading
+   * @param int       headingLevel Heading level
+   * @param bool      headingTag   Use a h-tag for the heading? Defaults to true.
+   *
+   * Setting collapseId, heading and headingId will make the panel collapsible.
+   *
+   * ARIA role and aria-level attributes will be added to the heading div if a
+   * headingLevel is set and headingTag is set to false.
+   *
+   * Supported variations using CSS classes:
+   * - all Bootstrap's panel variation classes
+   * - finna-panel-default
+   *     Default variation
+   * - finna-panel-borderless
+   *     Borderless variation.
+   */
   $collapsed ??= true;
   $headingTag ??= true;
 ?>

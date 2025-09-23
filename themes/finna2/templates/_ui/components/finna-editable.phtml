@@ -1,3 +1,21 @@
+<?php
+  /**
+   * Container for editable components. Provides a consistent interface for activating
+   * edit mode and showing a busy state.
+   *
+   * @param ?iterable attributes          Additional attributes
+   * @param ?iterable containerAttributes Additional attributes for the container
+   * @param ?string   editable            Rendered HTML of the editable component
+   * @param ?string   editLabel           Label for the edit button. Defaults to
+   *                                      'Edit'.
+   *
+   * Supported variations using CSS classes:
+   * - finna-editable-open
+   *     Editable component has been activated using edit button
+   * - finna-editable-busy
+   *     Editable component is busy, e.g. loading or saving
+   */
+?>
 <div<?= $this->htmlAttributes($attributes ?? [])->add('class', ['finna-editable', 'clearfix']) ?>>
   <?= $this->component('finna-btn', [
       'ariaLabel' => $editLabel ?? $this->transEsc('Edit'),

@@ -1,4 +1,28 @@
 <?php
+  /**
+   * Navigation item with support for an optional tooltip button and one level of
+   * child items.
+   *
+   * Uses the following components:
+   * - finna-tooltip-btn
+   *
+   * @param ?bool     active         Is the item active? Defaults to false.
+   * @param ?string   ariaCurrent    aria-current value for possible active items
+   * @param ?iterable attributes     Additional attributes
+   * @param ?array    children       Array of child finna-nav-item parameter arrays
+   * @param ?string   description    Item description. Only rendered for child items.
+   * @param ?string   label          Item label
+   * @param ?string   link           Item link (href value). Not used if the item has
+   *                                 children and the value of renderChildren is
+   *                                 dropdown.
+   * @param ?iterable linkAttributes Additional item link attributes.
+   * @param ?string   renderChildren Used to control how possible child items are
+   *                                 rendered. Supported values are 'false', 'simple'
+   *                                 and 'dropdown' (default).
+   * @param ?array    tooltipBtn     Parameter array for finna-tooltip-btn. Tooltip
+   *                                 buttons are only rendered for first level items
+   *                                 that do not have a dropdown.
+   */
   $__attributes = $this->htmlAttributes($attributes ?? []);
   $__attributes->add('class', 'nav-item');
   $__linkAttributes = $this->htmlAttributes($__linkAttributes ?? []);
