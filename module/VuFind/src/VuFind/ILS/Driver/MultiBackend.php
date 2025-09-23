@@ -72,13 +72,6 @@ class MultiBackend extends AbstractMultiDriver
     protected $defaultDriver;
 
     /**
-     * ILS authenticator
-     *
-     * @var \VuFind\Auth\ILSAuthenticator
-     */
-    protected $ilsAuth;
-
-    /**
      * An array of methods that should determine source from a specific parameter
      * field
      *
@@ -119,17 +112,16 @@ class MultiBackend extends AbstractMultiDriver
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager  $configLoader Configuration loader
-     * @param \VuFind\Auth\ILSAuthenticator $ilsAuth      ILS authenticator
-     * @param PluginManager                 $dm           ILS driver manager
+     * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
+     * @param \VuFind\Auth\ILSAuthenticator         $ilsAuth       ILS authenticator
+     * @param PluginManager                         $driverManager ILS driver manager
      */
     public function __construct(
-        \VuFind\Config\PluginManager $configLoader,
-        \VuFind\Auth\ILSAuthenticator $ilsAuth,
-        PluginManager $dm
+        \VuFind\Config\ConfigManagerInterface $configManager,
+        protected \VuFind\Auth\ILSAuthenticator $ilsAuth,
+        PluginManager $driverManager
     ) {
-        parent::__construct($configLoader, $dm);
-        $this->ilsAuth = $ilsAuth;
+        parent::__construct($configManager, $driverManager);
     }
 
     /**

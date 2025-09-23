@@ -345,7 +345,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     {
         // Adding the auth_method setting makes it possible to handle logins when
         // using an auth method that proxies others (e.g. ChoiceAuth)
-        $targetUri = $target . (str_contains($target, '?') ? '&' : '?') . 'auth_method=oidc';
+        $targetUri = $target . (str_contains($target, '?') ? '&' : '?') . 'auth_method=OpenIDConnect';
         if (empty($this->session->oidcLastUri) && !empty($target)) {
             $this->session->oidcLastUri = $targetUri;
         }

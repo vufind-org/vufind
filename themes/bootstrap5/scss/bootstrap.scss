@@ -372,11 +372,12 @@ body.rtl .dropdown-menu {
 .browse-item:last-child { border-bottom: 1px solid $list-group-border-color; }
 
 .browse-item.with-badge {
-  padding-right: 3rem; // Prevent text from overlapping badge
-  .badge {
-    position: absolute;
-    top: .5rem;
-    right: .25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-decoration: none;
+  &>.browse-item-text {
+    text-decoration: underline;
   }
 
   body.rtl & {

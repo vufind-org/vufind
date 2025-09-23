@@ -158,6 +158,18 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
+     * Get limit of items in autocomplete list
+     *
+     * @param string $activeSearchClass Active search class ID
+     *
+     * @return bool
+     */
+    public function autocompleteDisplayLimit($activeSearchClass)
+    {
+        return $this->getOptionsForTarget($activeSearchClass)->getAutocompleteDisplayLimit();
+    }
+
+    /**
      * Are alphabrowse options configured to display in the search options
      * drop-down?
      *

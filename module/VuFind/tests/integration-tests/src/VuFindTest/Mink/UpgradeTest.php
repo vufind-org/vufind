@@ -30,6 +30,7 @@
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
+use VuFind\Config\Version;
 
 /**
  * Mink upgrade controller test class.
@@ -70,6 +71,24 @@ final class UpgradeTest extends \VuFindTest\Integration\MinkTestCase
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl('/Record/' . rawurlencode($id)));
         return $session->getPage();
+    }
+
+    /**
+     * Test that we pick a reasonable default "from" version.
+     *
+     * @return void
+     */
+    public function testDefaultUpgradeFromVersion(): void
+    {
+        // Now go to the upgrade page:
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl('/Upgrade'));
+        $page = $session->getPage();
+        // Confirm that the source version defaults to the current version.
+        $this->assertEquals(
+            Version::getBuildVersion(),
+            $this->findCssAndGetValue($page, 'input[name="sourceversion"]')
+        );
     }
 
     /**
@@ -115,8 +134,7 @@ final class UpgradeTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals(['foo', 'foo', 'foo'], $this->getTagsFromPage($page));
         // Now go to the upgrade page:
         $this->getMinkSession()->visit($this->getVuFindUrl('/Upgrade'));
-        // Upgrade the database from version 10.0:
-        $this->findCssAndSetValue($page, 'input[name="sourceversion"]', '10.0');
+        // Upgrade the database only:
         $this->clickCss($page, '#skip-config');
         $this->clickCss($page, '#skip-metadata');
         $this->clickCss($page, '.main input.btn-primary');
@@ -126,12 +144,6 @@ final class UpgradeTest extends \VuFindTest\Integration\MinkTestCase
         $ignoreSelector = '.main a.btn-default';
         $this->assertEquals('ignore the problem', $this->findCssAndGetText($page, $ignoreSelector));
         $this->clickCss($page, $ignoreSelector);
-        $this->waitForPageLoad($page);
-        // Print the migrations instead of running them:
-        $this->clickCss($page, 'input[name="printsql"]');
-        $this->waitForPageLoad($page);
-        // Acknowledge the migrations:
-        $this->clickCss($page, 'input[name="continue"]');
         $this->waitForPageLoad($page);
         // Now we should be on the duplicate tag screen; let's submit it:
         $this->assertStringContainsString('duplicate tags', $this->findCssAndGetText($page, 'p'));
