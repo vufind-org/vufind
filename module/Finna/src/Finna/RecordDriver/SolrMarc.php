@@ -705,6 +705,10 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc implements \Laminas\Log\Log
                 'otherAuthors' => $partOtherAuthors,
             ];
         }
+        // Return here if only collections were requested as the indicator 2 differs from 979
+        if ($onlyCollections) {
+            return $componentParts;
+        }
 
         // Try fields 700 and 730 if 979 is empty
         if (!$componentParts) {

@@ -450,7 +450,7 @@ trait FinnaRecordTrait
         }
         $datasourceSpecsClass = $this->datasourceSettings[$dataSource]['record']['record_field_specs']
             ?? '';
-        if ($datasourceSpecsClass === 'CollectionRecord' && $this->getChildRecordCount()) {
+        if ($datasourceSpecsClass === 'CollectionRecord' && $this->tryMethod('getChildCollections')) {
             return 'Finna\\RecordDataFormatter\\Specs\\' . $datasourceSpecsClass;
         }
         return $defaultSpecsClass;

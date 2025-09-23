@@ -53,7 +53,6 @@ class RecordSpecsTest extends \PHPUnit\Framework\TestCase
      * @var array
      */
     protected array $finnaDefaultRecordFields = [
-          'Contains collections',
           'Genre',
           'Age Limit',
           'Original Work',
