@@ -171,7 +171,10 @@ class SolrPrefix implements AutocompleteInterface
      */
     public function setConfig($params)
     {
-        [$this->autocompleteField, $this->facetField] = explode(':', $params, 2);
+        [$this->autocompleteField, $this->facetField, $limit] = explode(':', $params . '::');
+        if ($limit && ctype_digit($limit)) {
+            $this->limit = $limit;
+        }
         $this->initSearchObject();
     }
 
