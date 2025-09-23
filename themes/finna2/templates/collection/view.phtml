@@ -106,6 +106,10 @@
       <?php
         $formatter = $this->recordDataFormatter($driver);
         $coreFields = $formatter->getDefaults();
+        if ($driver instanceof \Finna\RecordDriver\SolrEad3) {
+          // Do not display sub label in access restrictions for EAD3 to avoid duplicate for general
+          $coreFields['Access Restrictions Extended']['hideSubheadings'] = ['access_restrictions_general'];
+        }
         $coreFieldGroups = $formatter->getGroupedData($driver, $formatter->getGroupedFields([
           ['label' => 'Context',
             'lines' => ['Archive Origination', 'Archive', 'Archive Series', 'Archive File'],
