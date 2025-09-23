@@ -221,7 +221,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
      */
     public function getExport($format)
     {
-        $format = str_replace(' ', '-', strtolower($format));
+        $format = strtolower($format);
         return $this->renderTemplate('export-' . $format . '.phtml');
     }
 
