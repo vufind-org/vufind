@@ -180,4 +180,35 @@ class MigrationManagerTest extends \PHPUnit\Framework\TestCase
             $result
         );
     }
+
+    /**
+     * Test getShortMigrationName().
+     *
+     * @return void
+     */
+    public function testGetShortMigrationName(): void
+    {
+        $loader = $this->createMock(MigrationLoader::class);
+        $loader->expects($this->once())->method('getMigrationDirForPlatform')->willReturn('/base/path/foo');
+        $manager = $this->getMockMigrationManager([], loader: $loader);
+        $this->assertEquals('10.0/001-foo.sql', $manager->getShortMigrationName('/base/path/foo/10.0/001-foo.sql'));
+    }
+
+    /**
+     * Test markMigrationApplied().
+     *
+     * @return void
+     */
+    public function testMarkMigrationApplied(): void
+    {
+        $shortName = 'foo';
+        $longName = "/base/path/$shortName";
+        $connection = null;
+        $resultSql = 'fake sql goes here';
+        $manager = $this->getMockMigrationManager(['getShortMigrationName', 'logMigrationEvent']);
+        $manager->expects($this->once())->method('getShortMigrationName')->with($longName)->willReturn($shortName);
+        $manager->expects($this->once())->method('logMigrationEvent')->with($connection, $shortName, 'success')
+            ->willReturn($resultSql);
+        $this->assertEquals($resultSql, $manager->markMigrationApplied($longName, $connection));
+    }
 }

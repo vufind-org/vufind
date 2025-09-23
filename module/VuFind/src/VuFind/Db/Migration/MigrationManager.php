@@ -239,6 +239,18 @@ class MigrationManager
     }
 
     /**
+     * Get a short migration name from a full migration path.
+     *
+     * @param string $migration Full migration file path
+     *
+     * @return string
+     */
+    public function getShortMigrationName(string $migration): string
+    {
+        return str_replace($this->migrationPath . '/', '', $migration);
+    }
+
+    /**
      * Apply a single database migration file.
      *
      * @param string      $migration  Migration file to apply
@@ -250,7 +262,7 @@ class MigrationManager
     public function applyMigration(string $migration, ?Connection $connection): string
     {
         $output = '';
-        $shortMigrationName = str_replace($this->migrationPath . '/', '', $migration);
+        $shortMigrationName = $this->getShortMigrationName($migration);
         $output .= $this->logMigrationEvent($connection, $shortMigrationName, 'start');
         $sql = file_get_contents($migration);
         foreach ($this->loader->splitSqlIntoStatements($sql) as $i => $sqlChunk) {
@@ -263,6 +275,23 @@ class MigrationManager
         $output .= $this->logMigrationEvent($connection, $shortMigrationName, 'success');
         $output .= $this->cleanUpMigrationEvents($connection, $shortMigrationName);
         return $output;
+    }
+
+    /**
+     * Update the migration tracker to mark a migration as applied without actually applying
+     * it (useful if a user has manually applied the migration and needs to catch up). Returns
+     * the SQL used for the update.
+     *
+     * @param string      $migration  Migration file to apply
+     * @param ?Connection $connection Database connection to use for applying migrations
+     * (if null, the method returns the SQL to apply without actually writing to the database)
+     *
+     * @return string
+     */
+    public function markMigrationApplied(string $migration, ?Connection $connection): string
+    {
+        $shortMigrationName = $this->getShortMigrationName($migration);
+        return $this->logMigrationEvent($connection, $shortMigrationName, 'success');
     }
 
     /**

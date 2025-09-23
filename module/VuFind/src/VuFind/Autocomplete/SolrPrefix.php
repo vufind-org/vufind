@@ -122,8 +122,7 @@ class SolrPrefix implements AutocompleteInterface
         $results = [];
         try {
             $params = $this->searchObject->getParams();
-            $rawQuery = $this->autocompleteField . ':(' .
-                $this->mungeQuery($query) . ')';
+            $rawQuery = $this->autocompleteField . ':(' . $this->mungeQuery($query) . ')';
             $params->setBasicSearch($rawQuery);
             $params->addFacet($this->facetField);
             $params->setLimit(0);
@@ -172,7 +171,10 @@ class SolrPrefix implements AutocompleteInterface
      */
     public function setConfig($params)
     {
-        [$this->autocompleteField, $this->facetField] = explode(':', $params, 2);
+        [$this->autocompleteField, $this->facetField, $limit] = explode(':', $params . '::');
+        if ($limit && ctype_digit($limit)) {
+            $this->limit = $limit;
+        }
         $this->initSearchObject();
     }
 
@@ -197,7 +199,5 @@ class SolrPrefix implements AutocompleteInterface
     {
         // Build a new search object:
         $this->searchObject = $this->resultsManager->get($this->searchClassId);
-        $this->searchObject->getOptions()->spellcheckEnabled(false);
-        $this->searchObject->getOptions()->disableHighlighting();
     }
 }

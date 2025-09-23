@@ -51,7 +51,7 @@ final class LoggingTest extends MinkTestCase
 {
     use \VuFindTest\Feature\EmailTrait;
     use \VuFindTest\Feature\LiveDatabaseTrait;
-    use \VuFindTest\Feature\LiveSolrTrait;
+    use \VuFindTest\Feature\SolrPortTrait;
 
     protected const CRITICAL_LEVEL_REGEX = '/CRIT/';
     protected const DEBUG_LEVEL_REGEX = '/DEBUG/';

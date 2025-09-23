@@ -40,6 +40,8 @@ namespace VuFindTest\Feature;
  */
 trait LiveDetectionTrait
 {
+    use SolrPortTrait;
+
     /**
      * Flag to allow other traits to test for the presence of this one (to enforce
      * dependencies).
@@ -56,7 +58,7 @@ trait LiveDetectionTrait
     public function continuousIntegrationRunning()
     {
         // We'll assume that if the CI Solr PID is present, then CI is active:
-        $port = getenv('SOLR_PORT') ?? '8983';
+        $port = $this->getSolrPort();
         return file_exists(__DIR__ . "/../../../../../local/solr-$port.pid");
     }
 }

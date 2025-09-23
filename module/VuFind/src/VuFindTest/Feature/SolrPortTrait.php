@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Trait for tests that need a mock \VuFind\Search\Base\Options object.
+ * Helper method to read the current Solr port.
  *
  * PHP version 8
  *
@@ -23,58 +23,30 @@
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 
 namespace VuFindTest\Feature;
 
-use VuFind\Config\ConfigManagerInterface;
-use VuFind\Search\Base\Options;
-
 /**
- * Trait for tests that need a mock \VuFind\Search\Base\Options object.
+ * Helper method to read the current Solr port.
  *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Thomas Wagener <wagener@hebis.uni-frankfurt.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-trait MockSearchOptionsTrait
+trait SolrPortTrait
 {
     /**
-     * Get mock Options object
+     * Get Solr port number
      *
-     * @param ?ConfigManagerInterface $configManager Config manager for Options object (null
-     * for new mock)
-     *
-     * @return Options
+     * @return int
      */
-    protected function getMockOptions(?ConfigManagerInterface $configManager = null): Options
+    protected function getSolrPort(): int
     {
-        return new class ($configManager) extends Options {
-            /**
-             * Return the route name for the search results action.
-             *
-             * @return string
-             */
-            public function getSearchAction()
-            {
-                return '';
-            }
-
-            /**
-             * Get the identifier used for naming the various search classes in this family.
-             *
-             * @return string
-             */
-            public function getSearchClassId()
-            {
-                return 'Mock';
-            }
-        };
+        return (int)(getenv('SOLR_PORT') ?? '8983');
     }
 }
