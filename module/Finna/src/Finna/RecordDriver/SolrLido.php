@@ -1483,7 +1483,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Laminas\Log\
 
             $places = [];
             foreach ($node->eventPlace ?? [] as $placenode) {
-                $place = trim((string)$placenode->displayPlace ?? '');
+                $place = trim((string)($placenode->displayPlace ?? ''), ', \n\r\t\v\0');
                 $placeId = $placenode->place->placeID ?? [];
                 if (!$place) {
                     $eventPlace = [];
@@ -2272,7 +2272,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Laminas\Log\
         $xpath = 'lido/descriptiveMetadata/objectRelationWrap/subjectWrap/'
             . 'subjectSet/subject/subjectPlace';
         foreach ($this->getXmlRecord()->xpath($xpath) as $subjectPlace) {
-            if (!($displayPlace = (string)($subjectPlace->displayPlace ?? ''))) {
+            if (!($displayPlace = trim((string)($subjectPlace->displayPlace ?? ''), ', \n\r\t\v\0'))) {
                 $placeNames = [];
                 foreach ($subjectPlace->place->namePlaceSet ?? [] as $nameSet) {
                     if ($name = trim((string)$nameSet->appellationValue ?? '')) {
