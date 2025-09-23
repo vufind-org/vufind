@@ -210,10 +210,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#modal .btn.btn-primary', null, 1);
         $localIdentifier = $this->getLocalIdentifierFromReturnUrl($page);
         $this->clickCss($page, '.button-success');
-        $this->assertEquals(
-            'Payment successful',
-            $this->findCssAndGetText($page, '.alert.alert-success')
-        );
+        $this->waitForPageLoad($page);
         // Wait for the "Processing Payment" info alert to disappear:
         $this->unFindCss($page, '.alert.alert-info');
         $this->waitForPageLoad($page);

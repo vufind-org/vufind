@@ -5,7 +5,7 @@
   <property name="package"  value="${phing.project.name}" override="true" />
   <property name="builddir" value="${tmp}/build/${phing.project.name}" override="true" />
   <property name="srcdir"   value="${project.basedir}" override="true" />
-  <property name="downloadsdir" value="${srcdir}/downloads" override="true" />
+  <property name="downloadsdir" value="${srcdir}/downloads" />
   <!--
     Use builddir/local-symlink that points to builddir/local as the local directory
     if defaultconfigs=true. This allows the tests to be run without any custom
