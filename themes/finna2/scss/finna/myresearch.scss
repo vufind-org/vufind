@@ -1053,3 +1053,24 @@ form#renewals, form#update_holds, form#purge_history {
     vertical-align: middle;
   }
 }
+.usercontent-table {
+  tbody > tr > td {
+    vertical-align: middle;
+    .checkbox-container {
+      padding-top: 0rem;
+      border-bottom: 0px;
+      border-top: 0px;
+      .checkbox-select-item {
+        float: none;
+      }
+    }
+    @include media-breakpoint-up(md) {
+      &.user-comment {
+        width: 40%;
+      }
+    }
+  }
+  .finna-tooltip-btn {
+    color: $red;
+  }
+}

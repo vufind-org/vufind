@@ -91,6 +91,11 @@
         'translation' => 'saved_items',
         'show' => $this->userlist()->getMode() !== 'disabled',
       ],
+      'usercontent' => [
+        'url' => 'myresearch-usercontent',
+        'translation' => 'comments_and_ratings',
+        'show' => !empty($this->accountCapabilities()->getUserContentTabs()),
+      ],
       'logout' => [
         'url' => 'myresearch-logout',
         'translation' => 'Log Out',
@@ -133,6 +138,7 @@
           'params' => $listParams ?? [],
         ],
       ],
+      'usercontent',
       'logout',
     ];
 

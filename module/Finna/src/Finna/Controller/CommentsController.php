@@ -44,8 +44,21 @@ use function assert;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class CommentsController extends \VuFind\Controller\AbstractBase
+class CommentsController extends \VuFind\Controller\CommentsController
 {
+    use Feature\UserContentTrait;
+
+    /**
+     * Array of sort options for userListAction
+     *
+     * @var array
+     */
+    protected array $sortList = [
+        'created desc' => 'hold_sort_create_desc',
+        'created asc' => 'hold_sort_create_asc',
+        'title' => 'sort_title',
+    ];
+
     /**
      * Report inappropriate comment
      *
