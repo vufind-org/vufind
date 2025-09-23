@@ -955,14 +955,14 @@ finna-model-viewer .object-editor {
   display: inline-block;
 
   .show-info {
-    i {
+    .icon {
       font-size: 1.0rem;
       vertical-align: middle;
     }
-    i.expand {
+    .icon.expand {
       display: inline-block;
     }
-    i.collapse {
+    .icon.collapse {
       display: none;
     }
   }
@@ -1000,16 +1000,20 @@ finna-model-viewer .object-editor {
     .popover-external-links {
       margin-top: 1rem;
     }
+    .content, .popover-external-links {
+      display: flex;
+      flex-direction: column;
+    }
   }
   // Note: there can be nested popovers, so make sure to match the immediate child:
   &.open > .field-popover {
     display: block;
   }
   &.open > .show-info {
-    i.expand {
+    .icon.expand {
       display: none;
     }
-    i.collapse {
+    .icon.collapse {
       display: inline-block;
     }
   }

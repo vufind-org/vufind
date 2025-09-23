@@ -7,24 +7,24 @@ $aAttrsBase = [
   'id' => "field-anchor-$fieldId",
   'aria-expanded' => 'false',
   'aria-haspopup' => 'true',
-  'aria-controls' => "field-popover-$fieldId",
+  'role' => 'button',
 ];
 $aAttributes = $this->htmlAttributes($aAttrsBase);
 $aAttributes->add('class', 'show-info');
-$aAttributes->add('title', $this->title ?: $this->translate('field_info_link_title'));
+$aAttributes->add('aria-label', $this->title ?: $this->translate('field_info_link_title'));
 $additionalDataElem = !empty($this->additionalDataHtml) ? "<span class=\"field-additional-data\">{$this->additionalDataHtml}</span>" : '';
 ?>
-<div class="inline-linked-field" data-ids="<?=$this->escapeHtmlAttr(json_encode($this->ids))?>" data-auth-ids="<?=$this->escapeHtmlAttr(json_encode($this->authIds))?>" data-type="<?=$this->escapeHtmlAttr($this->type)?>" data-record-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" data-record-source="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>">
+<div class="inline-linked-field" data-ids="<?=$this->escapeHtmlAttr(json_encode($this->ids))?>" data-auth-ids="<?=$this->escapeHtmlAttr(json_encode($this->authIds))?>" data-type="<?=$this->escapeHtmlAttr($this->type)?>" data-record-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" data-record-source="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" role="group">
   <a<?=$aAttributes?>><span class="field-label"><?=$this->escapeHtml($this->label)?></span> <?=$this->icon('popover-expand', 'expand') ?><?=$this->icon('popover-collapse', 'collapse') ?></a><?=$additionalDataElem?>
   <?php if (!empty($this->description)): ?>
     <span class="authority-description"><?="({$this->escapeHtml($this->description)})"?></span>
   <?php endif; ?>
-  <div class="field-info field-popover" id="field-popover-<?=$this->escapeHtmlAttr($fieldId)?>">
+  <div class="field-info field-popover" id="field-popover-<?=$this->escapeHtmlAttr($fieldId)?>" aria-labelledby="field-anchor-<?=$this->escapeHtmlAttr($fieldId)?>" >
     <div class="content">
-      <h2><?=$this->escapeHtml($this->label)?></h2>
+      <h2 tabindex="0"><?=$this->escapeHtml($this->label)?></h2>
       <?php foreach ($this->fieldLinks as $link): ?>
         <span class="<?=$this->escapeHtmlAttr($link['linkType'])?>">
-          <a href="<?=$link['escapedUrl']?>"><?=$this->transEsc($link['linkText'])?></a><br>
+          <a href="<?=$link['escapedUrl']?>"><?=$this->transEsc($link['linkText'])?></a>
         </span>
       <?php endforeach; ?>
       <?php if ($this->ids): ?>
@@ -34,12 +34,10 @@ $additionalDataElem = !empty($this->additionalDataHtml) ? "<span class=\"field-a
         <?php if ($this->externalLinks): ?>
           <div class="popover-external-links">
             <?php foreach ($this->externalLinks as $i => $link): ?>
-              <?=($i > 0) ? '<br>' : ''?>
               <a href="<?=$this->escapeHtmlAttr($link['url'])?>" target="_blank" aria-label="<?=$this->transEscAttr($link['title'])?> (<?=$this->transEscAttr('external_link')?>; <?=$this->transEscAttr('Open in a new window')?>)">
                 <?=$this->icon('external-link') ?> <?=$this->transEsc($link['text'])?>
               </a>
               <?php if ($link['displayId']): ?>
-                <br>
                 <span class="external-link-identifier">
                   <?=$this->transEsc('Inventory ID')?>: <?=$this->escapeHtml($link['displayId'])?>
                 </span>
@@ -49,6 +47,6 @@ $additionalDataElem = !empty($this->additionalDataHtml) ? "<span class=\"field-a
         <?php endif; ?>
       <?php endif; ?>
     </div>
-    <a href="#" class="hide-info"><span class="link-text"><?=$this->translate('field_hide_info')?></span></a>
+    <a href="#" class="hide-info" role="button"><span class="link-text"><?=$this->translate('field_hide_info')?></span></a>
   </div>
 </div>
