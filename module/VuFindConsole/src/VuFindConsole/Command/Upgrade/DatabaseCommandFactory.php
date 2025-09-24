@@ -69,6 +69,7 @@ class DatabaseCommandFactory implements FactoryInterface
         ?array $options = null
     ) {
         return new $requestedName(
+            // Defer MigrationManager build so database errors don't break other console utils:
             Closure::fromCallable(fn () => $container->get(MigrationManager::class)),
             $container->get(ConnectionFactory::class),
             ...($options ?? [])

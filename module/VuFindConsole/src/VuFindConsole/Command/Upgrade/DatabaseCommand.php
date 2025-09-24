@@ -60,7 +60,7 @@ class DatabaseCommand extends Command
     /**
      * Constructor
      *
-     * @param Closure           $migrationManagerFactory Database migration manager
+     * @param Closure           $migrationManagerFactory Database migration manager factory
      * @param ConnectionFactory $connectionFactory       Database connection factory
      * @param ?string           $name                    The name of the command; passing null means it
      * must be set in configure()
