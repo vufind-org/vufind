@@ -334,7 +334,11 @@ trait ContainerFormatTrait
      */
     protected function loadNeededRecords(array $records): void
     {
+        // Maps records that need to be loaded to the provided record drivers in case
+        // multiple provided record drivers need the same record to be loaded.
         $neededMap = [];
+        // Deduplicated list of records that need to be loaded so that the same
+        // record won't be loaded more than once.
         $ids = [];
         foreach ($records as $i => $record) {
             if (
@@ -342,8 +346,20 @@ trait ContainerFormatTrait
                 && $needed = $record->needsRecordLoaded()
             ) {
                 $source = $needed['source'];
-                $neededMap[$source][$needed['id']] = $i;
-                $ids[] = $needed;
+                if (!isset($neededMap[$source][$needed['id']])) {
+                    $neededMap[$source][$needed['id']] = [];
+                }
+                $neededMap[$source][$needed['id']][] = $i;
+                $alreadyAdded = false;
+                foreach ($ids as $existing) {
+                    if ($existing === $needed) {
+                        $alreadyAdded = true;
+                        break;
+                    }
+                }
+                if (!$alreadyAdded) {
+                    $ids[] = $needed;
+                }
             }
         }
         if (!empty($ids)) {
@@ -353,12 +369,13 @@ trait ContainerFormatTrait
             foreach ($loadedRecords as $loadedRecord) {
                 $loadedSource = $loadedRecord->getSourceIdentifier();
                 $loadedId = $loadedRecord->getUniqueID();
-                if (isset($neededMap[$loadedSource][$loadedId])) {
-                    $records[$neededMap[$loadedSource][$loadedId]]->setLoadedRecord($loadedRecord);
+                foreach ($neededMap[$loadedSource][$loadedId] ?? [] as $i) {
+                    $records[$i]->setLoadedRecord($loadedRecord);
                 }
-                $previousId = $loadedRecord->tryMethod('getPreviousUniqueID');
-                if ($previousId && isset($neededMap[$loadedSource][$previousId])) {
-                    $records[$neededMap[$loadedSource][$previousId]]->setLoadedRecord($loadedRecord);
+                if ($previousId = $loadedRecord->tryMethod('getPreviousUniqueID')) {
+                    foreach ($neededMap[$loadedSource][$previousId] ?? [] as $i) {
+                        $records[$i]->setLoadedRecord($loadedRecord);
+                    }
                 }
             }
         }
