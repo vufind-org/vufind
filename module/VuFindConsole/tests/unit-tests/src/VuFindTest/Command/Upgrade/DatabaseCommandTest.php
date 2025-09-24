@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Command\Upgrade;
 
+use Closure;
 use Symfony\Component\Console\Tester\CommandTester;
 use VuFind\Db\Connection;
 use VuFind\Db\ConnectionFactory;
@@ -82,7 +83,7 @@ class DatabaseCommandTest extends \PHPUnit\Framework\TestCase
         if (!$sqlOnly) {
             $factory->expects($this->once())->method('getConnection')->with(null, null)->willReturn($connection);
         }
-        $command = new DatabaseCommand($manager, $factory);
+        $command = new DatabaseCommand(Closure::fromCallable(fn () => $manager), $factory);
         $commandTester = new CommandTester($command);
         $commandTester->execute($sqlOnly ? ['--sql-only' => true] : []);
         $this->assertEquals(
@@ -101,7 +102,7 @@ class DatabaseCommandTest extends \PHPUnit\Framework\TestCase
     {
         $manager = $this->createMock(MigrationManager::class);
         $factory = $this->createMock(ConnectionFactory::class);
-        $command = new DatabaseCommand($manager, $factory);
+        $command = new DatabaseCommand(Closure::fromCallable(fn () => $manager), $factory);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
         $this->assertEquals(
