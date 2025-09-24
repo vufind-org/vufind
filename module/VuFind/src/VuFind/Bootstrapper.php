@@ -171,12 +171,10 @@ class Bootstrapper
      * Set view variables representing the current context.
      *
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function initContext(): void
     {
-        $callback = function ($event) {
+        $callback = function (/*$event*/) {
             if (PHP_SAPI !== 'cli') {
                 $viewModel = $this->container->get('ViewManager')->getViewModel();
 
@@ -215,12 +213,10 @@ class Bootstrapper
      * Update language in user account, as needed.
      *
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function initUserLanguage(): void
     {
-        $callback = function ($event) {
+        $callback = function (/*$event*/) {
             // Store last selected language in user account, if applicable:
             $settings = $this->container->get(LocaleSettings::class);
             $language = $settings->getUserLocale();
@@ -355,8 +351,6 @@ class Bootstrapper
      * Set up handling for rendering problems.
      *
      * @return void
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function initRenderErrorEvent(): void
     {
@@ -364,7 +358,7 @@ class Bootstrapper
         // layout that can be used to suppress actions in the layout templates that
         // might trigger exceptions -- this will greatly increase the odds of showing
         // a user-friendly message instead of a fatal error.
-        $callback = function ($event) {
+        $callback = function (/*$event*/) {
             $viewModel = $this->container->get('ViewManager')->getViewModel();
             $viewModel->renderingError = true;
         };
