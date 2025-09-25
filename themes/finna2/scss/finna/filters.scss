@@ -134,6 +134,9 @@
   .filter-value {
     background: $gray-ultralight;
     color: $text-color;
+    .search-filter-remove {
+        color: $text-color;
+    }
   }
 }
 
