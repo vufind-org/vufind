@@ -34,12 +34,9 @@
           recommendationContainer.append(recommendation);
           recommendation.style.display = 'inherit';
         }
-
-        if (document.readyState != 'loading') {
+        VuFind.getPromise('document-ready').then(() => {
           addRecommendation_$recommendationClass();
-        } else {
-          document.addEventListener('DOMContentLoaded', addRecommendation_$recommendationClass);
-        }
+        });
         JS;
   };
 
@@ -66,13 +63,9 @@
           combinedJumpLinks.style.visibility = "inherit";
         }
       }
-
-      if (document.readyState != 'loading') {
+      VuFind.getPromise('document-ready').then(() => {
         updateJumpLink_$classId();
-      }
-      else {
-        document.addEventListener('DOMContentLoaded', updateJumpLink_$classId);
-      }
+      });
       JS;
 ?>
 <?=$this->assetManager()->outputInlineScriptString($countsJs)?>

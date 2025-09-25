@@ -10,7 +10,7 @@
     $lookforEncoded = urlencode($lookfor);
     $typeEncoded = urlencode($params->getSearchHandler() ?? '');
     $loadJs = <<<JS
-        $(document).ready(function() {
+        VuFind.getPromise('document-ready').then(() => {
             var url = VuFind.path
                 + '/Combined/Result?id=$searchClassIdEncoded&lookfor=$lookforEncoded'
                 + '&type=$typeEncoded';

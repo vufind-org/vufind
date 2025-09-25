@@ -1,4 +1,4 @@
-$(document).ready(function() {
+VuFind.getPromise('document-ready').then(() => {
   // Switch and prepare for JS mode
   $('#groupJoin').addClass('hidden');
   $('#groupPlaceHolder').removeClass('hidden');

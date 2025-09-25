@@ -115,13 +115,9 @@
     echo $this->assetManager()->outputInlineScriptLink('ill.js');
 
     $js = <<<JS
-        if ($.isReady) {
-            setUpILLRequestForm("{$this->escapeHtml($this->driver->getUniqueId())}");
-        } else {
-            $(document).ready(function() {
-                setUpILLRequestForm("{$this->escapeHtml($this->driver->getUniqueId())}");
-            });
-        }
+        VuFind.getPromise('document-ready').then(() => {
+          setUpILLRequestForm("{$this->escapeHtml($this->driver->getUniqueId())}");
+        });
         JS;
 
     echo $this->assetManager()->outputInlineScriptString($js);

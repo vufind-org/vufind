@@ -109,4 +109,12 @@
     </div>
   <?php endif; ?>
 </div>
-<?=$this->assetManager()->outputInlineScriptString('$(document).ready(recordDocReady);'); ?>
+<?php
+    $js = <<<JS
+        VuFind.getPromise('document-ready').then(() => {
+          recordDocReady();
+        });
+        JS;
+
+    echo $this->assetManager()->outputInlineScriptString($js);
+?>

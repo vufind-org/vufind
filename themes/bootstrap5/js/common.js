@@ -17,6 +17,21 @@ var VuFind = (function VuFind() {
   var _iconsCache = {};
 
   /**
+   * Object containing resolve functions of promises. Key is the same as the promises key and value a resolve function.
+   * @member {object}
+   */
+  let _resolves = {};
+
+  /**
+   * Object containing promises where key is the identifier and value is the promise.
+   * @member {object}
+   */
+  let _promises = {
+    'cookie-consent-initialized': new Promise((resolve) => _resolves['cookie-consent-initialized'] = resolve),
+    'document-ready': new Promise((resolve) => _resolves['document-ready'] = resolve)
+  };
+
+  /**
    * Element creator function
    * @param {string}         tagName   Element tag name
    * @param {string}         className Element class
@@ -102,6 +117,44 @@ var VuFind = (function VuFind() {
     for (const fn of Array.from(listeners[event])) {
       fn(...args);
     }
+  }
+  // Promises and resolves.
+
+  /**
+   * Create a promise for an event. Promises are useful in situations, where code requires something to be available
+   * before executing. I.e calling getPromise('document-ready').then(() => {...code}) will execute the function
+   * after VuFind module has called resolvePromise('document-ready'). After promise has been resolved, every
+   * call to getPromise('document-ready).then() will succeed.
+   * @param {string} identifier Identifier for the promise. Same identifier has to be used with resolvePromise.
+   * @returns {Promise} Promise which has to be resolved by using resolvePromise
+   */
+  function createPromise(identifier) {
+    if (!_promises[identifier]) {
+      _promises[identifier] = new Promise((resolve) => _resolves[identifier] = resolve);
+    }
+    return _promises[identifier];
+  }
+
+  /**
+   * Get a promise.
+   * @param {string} identifier Identifier for the promise.
+   * @returns {Promise|undefined} Promise or undefined.
+   */
+  function getPromise(identifier) {
+    return _promises[identifier] || undefined;
+  }
+
+  /**
+   * Resolve a promise to allow continue of the code.
+   * @param {string} identifier Identifier for the promise to resolve.
+   * @returns {Promise|undefined} Resolved promise or undefined
+   */
+  function resolvePromise(identifier) {
+    if (!_resolves[identifier]) {
+      return undefined;
+    }
+    _resolves[identifier]();
+    return _resolves[identifier];
   }
 
   // Module control
@@ -650,8 +703,10 @@ var VuFind = (function VuFind() {
     addIcons: addIcons,
     addTranslations: addTranslations,
     init: init,
+    createPromise: createPromise,
     el: el,
     emit: emit,
+    getPromise: getPromise,
     listen: listen,
     unlisten: unlisten,
     evalCallback: evalCallback,
@@ -660,6 +715,7 @@ var VuFind = (function VuFind() {
     isPrinting: isPrinting,
     refreshPage: refreshPage,
     register: register,
+    resolvePromise: resolvePromise,
     setCspNonce: setCspNonce,
     spinner: spinner,
     spinnerElement: spinnerElement,
@@ -993,6 +1049,8 @@ function setupMultiILSLoginFields(loginMethods, idPrefix) {
 
 document.addEventListener('DOMContentLoaded', () => {
   VuFind.emit("ready");
+  // Resolve the promise so any waiting or new script can safely be executed
+  VuFind.resolvePromise('document-ready');
   // Start up all of our submodules
   VuFind.init();
   // Off canvas

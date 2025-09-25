@@ -127,7 +127,7 @@ $formName = $this->escapeHtmlAttr($this->params['form_name'] ?? '');
 $siteUrl = $this->escapeHtmlAttr($this->params['site_url'] ?? '');
 $status = $this->escapeHtmlAttr($this->params['status'] ?? '');
 $js = <<<JS
-    $(document).ready(function() {
+    VuFind.getPromise('document-ready').then(() => {
         $('.status_update').change(function() {
             const id = $(this).closest('tr').find('input[name="ids[]"]').val();
             const new_status = $(this).val();

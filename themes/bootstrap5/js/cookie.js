@@ -99,6 +99,7 @@ VuFind.register('cookie', function cookie() {
     };
     CookieConsent.run(consentConfig.consentDialog);
     VuFind.emit('cookie-consent-initialized');
+    VuFind.resolvePromise('cookie-consent-initialized');
   }
 
   /**

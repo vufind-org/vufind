@@ -1,4 +1,4 @@
-$(document).ready(function() {
+VuFind.getPromise('document-ready').then(() => {
   // Switch and prepare for JS mode
   $('#groupPlaceHolder').addClass('hidden');
   $('#new_search_template').addClass('hidden').detach().appendTo('[role="main"]');

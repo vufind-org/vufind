@@ -47,7 +47,7 @@
     $script = <<<JS
         VuFind.addTranslations($translations);
         var pivotdata = $pivotData;
-        jQuery(document).ready(function(data) {
+        VuFind.getPromise('document-ready').then(() => {
           showVisualFacets(pivotdata);
         });
         JS;

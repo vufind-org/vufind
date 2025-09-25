@@ -101,7 +101,7 @@
 
 <?php
   $changeHandler = <<<'JS'
-      $(document).ready(function() {
+      VuFind.getPromise('document-ready').then(() => {
         $("input[type='radio']").change(function() {
           if ($('#storageRetrievalRequestItem').is(':checked')) {
             $('#storageRetrievalRequestReference input').attr('disabled', 'disabled');
