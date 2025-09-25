@@ -240,7 +240,7 @@ class ZoteroService implements LoggerAwareInterface, TranslatorAwareInterface
         $zoteroApiKey = $credentials['zoteroApiKey'];
 
         $apiUrl = "https://api.zotero.org/users/$zoteroUserId/items";
-        // Make sure we send an array of records for a single one as well:
+        // Make sure we send an array of records for a single one as well (casting to array doesn't work for objects!):
         $records = is_array($records) ? $records : [$records];
         $recordCount = count($records);
         $records = $this->cleanupRecords($records);
