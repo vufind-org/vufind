@@ -225,7 +225,7 @@ class ZoteroService implements LoggerAwareInterface, TranslatorAwareInterface
         if ($vufindResponse->getStatusCode() !== 200) {
             $this->logError(
                 "GET request for '$callbackUrl' failed: "
-                . $vufindResponse->getStatusCode() . ': ' . $vufindResponse-> getReasonPhrase()
+                . $vufindResponse->getStatusCode() . ': ' . $vufindResponse->getReasonPhrase()
             );
             throw new ZoteroException('Export request failed');
         }
