@@ -30,6 +30,7 @@
 namespace VuFindTest\Recommend;
 
 use VuFind\Recommend\SummonResults;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
  * SummonResults Test Class
@@ -42,6 +43,8 @@ use VuFind\Recommend\SummonResults;
  */
 class SummonResultsTest extends \PHPUnit\Framework\TestCase
 {
+    use ConfigRelatedServicesTrait;
+
     /**
      * Test getting search class id.
      *
@@ -55,10 +58,7 @@ class SummonResultsTest extends \PHPUnit\Framework\TestCase
         $runner = $this->getMockBuilder(\VuFind\Search\SearchRunner::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $configManager = $this->getMockBuilder(\VuFind\Config\PluginManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $obj = new SummonResults($runner, $configManager);
+        $obj = new SummonResults($runner, $this->getMockConfigManager());
         $this->assertSame('Summon', $method->invoke($obj));
     }
 }

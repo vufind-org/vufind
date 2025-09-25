@@ -74,7 +74,7 @@ class AbstractSearchObjectFactory implements \Laminas\ServiceManager\Factory\Fac
         }
         $module = new $requestedName(
             $container->get(SearchRunner::class),
-            $container->get(\VuFind\Config\PluginManager::class)
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)
         );
         return $module;
     }

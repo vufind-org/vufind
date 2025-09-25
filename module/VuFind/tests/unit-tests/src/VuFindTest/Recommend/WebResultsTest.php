@@ -30,6 +30,7 @@
 namespace VuFindTest\Recommend;
 
 use VuFind\Recommend\WebResults;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
  * WebResults Test Class
@@ -42,6 +43,8 @@ use VuFind\Recommend\WebResults;
  */
 class WebResultsTest extends \PHPUnit\Framework\TestCase
 {
+    use ConfigRelatedServicesTrait;
+
     /**
      * Test getting search class id.
      *
@@ -55,10 +58,7 @@ class WebResultsTest extends \PHPUnit\Framework\TestCase
         $runner = $this->getMockBuilder(\VuFind\Search\SearchRunner::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $configManager = $this->getMockBuilder(\VuFind\Config\PluginManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $obj = new WebResults($runner, $configManager);
+        $obj = new WebResults($runner, $this->getMockConfigManager());
 
         $this->assertSame('SolrWeb', $method->invoke($obj));
     }
