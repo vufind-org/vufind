@@ -193,7 +193,9 @@ abstract class AbstractProvider implements
         if (!empty($result['consortium']['logo']['small'])) {
             $result['consortium']['logo']['small'] = $this->proxifyImageUrl($result['consortium']['logo']['small']);
         }
-        foreach ($result['list'] ?? [] as &$item) {
+        // Ensure that the result to be returned contains the 'list' element:
+        $result['list'] ??= [];
+        foreach ($result['list'] as &$item) {
             $item = $this->processDetails($item);
         }
         unset($item);
