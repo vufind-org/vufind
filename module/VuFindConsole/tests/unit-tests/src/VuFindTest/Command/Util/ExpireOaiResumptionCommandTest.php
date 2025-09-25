@@ -78,9 +78,9 @@ class ExpireOaiResumptionCommandTest extends AbstractExpireCommandTest
     protected $expectedThreshold = 0.0;
 
     /**
-     * Expected minimum age in error message.
+     * Expected minimum age in error message or null if not applicable.
      *
-     * @var float
+     * @var ?float
      */
-    protected $expectedMinAge = 0.0;
+    protected $expectedMinAge = null;
 }

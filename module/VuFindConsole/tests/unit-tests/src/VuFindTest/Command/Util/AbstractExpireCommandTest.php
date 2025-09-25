@@ -77,9 +77,9 @@ class AbstractExpireCommandTest extends \PHPUnit\Framework\TestCase
     protected $illegalAge = 1.0;
 
     /**
-     * Expected minimum age in error message.
+     * Expected minimum age in error message or null if not applicable.
      *
-     * @var float
+     * @var ?float
      */
     protected $expectedMinAge = 2.0;
 
@@ -100,6 +100,9 @@ class AbstractExpireCommandTest extends \PHPUnit\Framework\TestCase
         $service = $this->createMock($this->validServiceClass);
         $command = new $this->targetClass($service, 'foo');
         $commandTester = new CommandTester($command);
+        if (null === $this->expectedMinAge) {
+            $this->expectExceptionMessage('The "age" argument does not exist.');
+        }
         $commandTester->execute(['age' => $this->illegalAge]);
         $expectedMinAge = number_format($this->expectedMinAge, 1, '.', '');
         $this->assertEquals(

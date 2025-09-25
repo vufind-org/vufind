@@ -34,7 +34,6 @@ namespace VuFindConsole\Command\Util;
 use DateTime;
 use DateTimeZone;
 use Symfony\Component\Console\Attribute\AsCommand;
-use Symfony\Component\Console\Input\InputArgument;
 
 /**
  * Console command: expire OAI resumption tokens.
@@ -66,29 +65,11 @@ class ExpireOaiResumptionCommand extends AbstractExpireCommand
     protected $rowLabel = 'resumption tokens';
 
     /**
-     * Minimum legal age (in days) of rows to delete.
+     * Minimum legal age (in days) of rows to delete or null if age isn't applicable.
      *
-     * @var int
+     * @var int|float|null
      */
-    protected $minAge = 0;
-
-    /**
-     * Configure the command.
-     *
-     * @return void
-     */
-    protected function configure()
-    {
-        parent::configure();
-        $arguments = $this->getDefinition()->getArguments();
-        $arguments['age'] = new InputArgument(
-            'age',
-            InputArgument::OPTIONAL,
-            'Minimum age (IGNORED in this command)',
-            0
-        );
-        $this->getDefinition()->setArguments($arguments);
-    }
+    protected $minAge = null;
 
     /**
      * Convert days to a date threshold

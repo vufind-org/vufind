@@ -71,9 +71,9 @@ class ExpireSessionsCommandTest extends AbstractExpireCommandTest
     protected $illegalAge = 0.01;
 
     /**
-     * Expected minimum age in error message.
+     * Expected minimum age in error message or null if not applicable.
      *
-     * @var float
+     * @var ?float
      */
     protected $expectedMinAge = 0.1;
 }

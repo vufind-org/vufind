@@ -46,16 +46,17 @@ use Symfony\Component\Console\Attribute\AsCommand;
 class ExpireAuditEventsCommand extends AbstractExpireCommand
 {
     /**
-     * Minimum legal age of rows to delete.
+     * Minimum legal age (in days) of rows to delete or null if age isn't applicable.
      *
-     * @var int
+     * @var int|float|null
      */
     protected $minAge = 1;
 
     /**
-     * Default age of rows to delete. $minAge is used if $defaultAge is null.
+     * Default age of rows (in days) to delete. $minAge is used if $defaultAge is
+     * null.
      *
-     * @var int
+     * @var int|float|null
      */
     protected $defaultAge = 365;
 

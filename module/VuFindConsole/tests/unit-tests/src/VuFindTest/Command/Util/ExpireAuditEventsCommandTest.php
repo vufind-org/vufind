@@ -72,9 +72,9 @@ class ExpireAuditEventsCommandTest extends AbstractExpireCommandTest
     protected $illegalAge = 0.9;
 
     /**
-     * Expected minimum age in error message.
+     * Expected minimum age in error message or null if not applicable.
      *
-     * @var float
+     * @var ?float
      */
     protected $expectedMinAge = 1.0;
 
