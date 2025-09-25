@@ -31,7 +31,6 @@
 namespace VuFindTest\Db\Service;
 
 use DateTime;
-use DateTimeZone;
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\QueryBuilder;
@@ -80,7 +79,7 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
     ): MockObject&OaiResumptionService {
         $persistenceManager = $this->createMock(PersistenceManager::class);
         $serviceMock = $this->getMockBuilder(OaiResumptionService::class)
-            ->onlyMethods(['createEntity', 'getDateTimeUtc'])
+            ->onlyMethods(['createEntity', 'getDateTime'])
             ->setConstructorArgs([$entityManager, $pluginManager, $persistenceManager])
             ->getMock();
         if ($oaiResumption) {
@@ -176,8 +175,8 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
         $queryStmt =
             'SELECT O FROM VuFind\Db\Entity\OaiResumptionEntityInterface O WHERE O.id = :id AND O.expires > :now';
 
-        $dateTime = new DateTime('now', new DateTimeZone('UTC'));
-        $resumptionService->expects($this->once())->method('getDateTimeUtc')
+        $dateTime = new DateTime();
+        $resumptionService->expects($this->once())->method('getDateTime')
             ->willReturn($dateTime);
 
         $query = $this->createMock(\Doctrine\ORM\AbstractQuery::class);
@@ -241,7 +240,7 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
             'params' => [
               'param5' => 'cat',
             ],
-            'timestamp' => 1739870677 + 99999,
+            'expiry' => DateTime::createFromFormat('U', 1739870677 + 99999),
           ],
           [
             'onetokenonly',
@@ -254,7 +253,7 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
               'param2' => 'mainecoon',
               'param3' => 'calico',
             ],
-            'timestamp' => 1739870677 + 99999,
+            'expiry' => DateTime::createFromFormat('U', 1739870677 + 99999),
           ],
           [
             'testtokenfirstduplicate',
@@ -269,7 +268,7 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
               'param2' => 'norwegianforestcat',
               'param3' => 'turle',
             ],
-            'timestamp' => 1739870677 + 99999,
+            'expiry' => DateTime::createFromFormat('U', 1739870677 + 99999),
           ],
           [
             'testtokenfirstduplicate',
@@ -287,7 +286,7 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
     /**
      * Test duplicate tokens but success on the second try
      *
-     * @param array  $token               Array with params and timestamp
+     * @param array  $token               Array with params and expiry
      * @param array  $randomTokenSequence Array containing strings to simulate duplicate tokens
      * @param string $error               If set, will expect this iteration to throw this error message
      *
@@ -329,11 +328,11 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
         $oaiResumptionService->expects($this->any())->method('createEntity')->willReturn($row);
 
         // Create first token as baseline
-        $oaiResumptionService->createAndPersistToken(['params' => $token['params']], $token['timestamp']);
+        $oaiResumptionService->createAndPersistToken(['params' => $token['params']], $token['expiry']);
 
         if (count($randomTokenSequence) > 1) {
             // Create second token and try to assign new random token sequences
-            $oaiResumptionService->createAndPersistToken(['params' => $token['params']], $token['timestamp']);
+            $oaiResumptionService->createAndPersistToken(['params' => $token['params']], $token['expiry']);
         }
         $this->assertEmpty($randomTokenSequence, 'Used all the tokens in random token generation.');
     }

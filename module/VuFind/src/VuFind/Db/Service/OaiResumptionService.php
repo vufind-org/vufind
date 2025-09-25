@@ -32,7 +32,6 @@
 namespace VuFind\Db\Service;
 
 use DateTime;
-use DateTimeZone;
 use Laminas\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\OaiResumptionEntityInterface;
 use VuFind\Log\LoggerAwareTrait;
@@ -67,7 +66,7 @@ class OaiResumptionService extends AbstractDbService implements
      */
     public function removeExpired(): void
     {
-        $dateThreshold = $this->getDateTimeUtc('now - 1 days');
+        $dateThreshold = $this->getDateTime('now - 1 days');
         do {
             $count = $this->deleteExpired($dateThreshold, 1000);
         } while ($count > 0);
@@ -99,7 +98,7 @@ class OaiResumptionService extends AbstractDbService implements
     {
         $dql = 'SELECT O FROM ' . OaiResumptionEntityInterface::class . ' O '
             . 'WHERE O.id = :id AND O.expires > :now';
-        $now = $this->getDateTimeUtc();
+        $now = $this->getDateTime();
         $parameters = compact('id', 'now');
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
@@ -118,7 +117,7 @@ class OaiResumptionService extends AbstractDbService implements
     {
         $dql = 'SELECT O FROM ' . OaiResumptionEntityInterface::class . ' O '
             . 'WHERE O.token = :token AND O.expires > :now';
-        $now = $this->getDateTimeUtc();
+        $now = $this->getDateTime();
         $parameters = compact('token', 'now');
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
@@ -137,7 +136,7 @@ class OaiResumptionService extends AbstractDbService implements
     {
         $dql = 'SELECT O FROM ' . OaiResumptionEntityInterface::class . ' O '
             . 'WHERE O.token IS NULL AND O.id = :id AND O.expires > :now';
-        $now = $this->getDateTimeUtc();
+        $now = $this->getDateTime();
         $parameters = compact('id', 'now');
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
@@ -177,13 +176,13 @@ class OaiResumptionService extends AbstractDbService implements
     /**
      * Create and persist a new resumption token.
      *
-     * @param array $params Parameters associated with the token.
-     * @param int   $expire Expiration time for token (Unix timestamp).
+     * @param array    $params Parameters associated with the token.
+     * @param DateTime $expiry Expiration time for token (Unix timestamp).
      *
      * @return OaiResumptionEntityInterface
      * @throws \Exception
      */
-    public function createAndPersistToken(array $params, int $expire): OaiResumptionEntityInterface
+    public function createAndPersistToken(array $params, DateTime $expiry): OaiResumptionEntityInterface
     {
         $row = null;
         // In extremely rare cases it might be possible that the generated random token already exists in the
@@ -193,7 +192,7 @@ class OaiResumptionService extends AbstractDbService implements
                 $row = $this->createEntity()
                     ->setToken($this->createRandomToken())
                     ->setResumptionParameters($this->encodeParams($params))
-                    ->setExpiry(\DateTime::createFromFormat('U', $expire));
+                    ->setExpiry($expiry);
                 $this->persistEntity($row);
                 break;
             } catch (\Exception $e) {
@@ -259,14 +258,16 @@ class OaiResumptionService extends AbstractDbService implements
     }
 
     /**
-     * Get current time or specified time as DateTime in UTC time zone.
+     * Get current time or specified time as DateTime.
+     *
+     * This wrapper method makes testing easier.
      *
      * @param string $datetime Time to return
      *
      * @return DateTime
      */
-    protected function getDateTimeUtc(string $datetime = 'now'): DateTime
+    protected function getDateTime(string $datetime = 'now'): DateTime
     {
-        return new Datetime($datetime, new DateTimeZone('UTC'));
+        return new Datetime($datetime);
     }
 }
