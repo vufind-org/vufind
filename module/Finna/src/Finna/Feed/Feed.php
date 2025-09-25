@@ -665,8 +665,7 @@ class Feed implements
                 $cnt = 0;
                 foreach ($items as &$item) {
                     foreach ($xpathContent as $setting => $xpathElement) {
-                        $content = $xpath->query($xpathElement, $xpathItem)
-                            ->item($cnt++)->nodeValue;
+                        $content = $xpath->query($xpathElement, $xpathItem)->item($cnt++)?->nodeValue;
 
                         $content = $this->processItemContent(
                             $content ?: '',
