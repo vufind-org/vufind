@@ -25,6 +25,8 @@ services:
         condition: service_started
       mariadb:
         condition: service_healthy
+    networks:
+      - finnadev
 
   # SOCKS5 proxy over SSH jump hosts
   sshproxy:
@@ -49,6 +51,8 @@ services:
     env_file: .env
     environment:
       - SSH_AUTH_SOCK=/ssh-auth.sock
+    networks:
+      - finnadev
 
   mariadb:
     image: mariadb:10-ubi
@@ -78,6 +82,8 @@ services:
       - type: volume
         source: finna-mariadb
         target: /var/lib/mysql:rw
+    networks:
+      - finnadev
 
 configs:
   site_config:
@@ -96,3 +102,7 @@ secrets:
 volumes:
   finna-mariadb:
   finna-log:
+
+networks:
+  finnadev:
+    enable_ipv6: true
