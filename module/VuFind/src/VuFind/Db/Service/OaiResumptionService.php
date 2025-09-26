@@ -260,7 +260,7 @@ class OaiResumptionService extends AbstractDbService implements
     /**
      * Get current time or specified time as DateTime.
      *
-     * This wrapper method makes testing easier.
+     * NOTE: This method is useful because it helps with mocking dates in tests.
      *
      * @param string $datetime Time to return
      *
