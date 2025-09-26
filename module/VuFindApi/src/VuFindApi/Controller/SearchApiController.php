@@ -329,8 +329,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements
         if ($result = $this->isAccessDenied($this->searchAccessPermission)) {
             return $result;
         }
-        $apiKeyResult = $this->checkRequestForApiKey();
-        if (!$apiKeyResult) {
+        if (!$this->checkRequestForApiKey()) {
             return $this->getBadApiKeyResponse();
         }
         // Send both GET and POST variables to search class:
