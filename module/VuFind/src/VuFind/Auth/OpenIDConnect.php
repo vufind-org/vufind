@@ -400,7 +400,8 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
                     'id_token_hint' => $idToken,
                     'post_logout_redirect_uri' => $url,
                 ];
-                $redirectUrl = $endSessionEndpoint . '?' . http_build_query($params);
+                $append = (str_contains($endSessionEndpoint, '?') ? '&' : '?');
+                $redirectUrl = $endSessionEndpoint . $append . http_build_query($params);
             }
         }
 
