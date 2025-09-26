@@ -78,7 +78,7 @@ abstract class AbstractBase implements DriverInterface
      *
      * @param string                 $id               The patron's ID in the ILS
      * @param string                 $cat_username     The username used to log in
-     * @param string                 $cat_password     The password used to log in
+     * @param ?string                $cat_password     The password used to log in or null.
      * @param Stringable|string|null $email            The patron's email address (null if unavailable)
      * @param string                 $firstname        The patron's first name
      * @param string                 $lastname         The patron's last name
@@ -94,7 +94,7 @@ abstract class AbstractBase implements DriverInterface
     protected function createPatronArray(
         string $id,
         string $cat_username = '',
-        string $cat_password = '',
+        ?string $cat_password = null,
         Stringable|string|null $email = null,
         string $firstname = '',
         string $lastname = '',
