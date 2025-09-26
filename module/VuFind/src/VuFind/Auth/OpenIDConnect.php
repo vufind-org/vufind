@@ -374,7 +374,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     public function logout($url)
     {
         $redirectUrl = $url;
-        $end_session_endpoint = false;
+        $endSessionEndpoint = false;
 
         $logout = $this->getConfig('logout');
 
@@ -383,14 +383,14 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
             $this->debug('no logout URL given');
         } elseif (filter_var($logout, FILTER_VALIDATE_URL)) {
             // A valid URL was configured, use it.
-            $end_session_endpoint = $logout;
+            $endSessionEndpoint = $logout;
         } else {
             // Get end_session_endpoint from provider.
             $provider = $this->getProvider();
-            $end_session_endpoint = $provider->end_session_endpoint ?? null;
+            $endSessionEndpoint = $provider->end_session_endpoint ?? null;
         }
 
-        if ($end_session_endpoint) {
+        if ($endSessionEndpoint) {
             // Retrieve id_token from session.
             $idToken = $this->session->oidc_id_token ?? null;
             if ($idToken === null) {
@@ -400,7 +400,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
                     'id_token_hint' => $idToken,
                     'post_logout_redirect_uri' => $url,
                 ];
-                $redirectUrl = $end_session_endpoint . '?' . http_build_query($params);
+                $redirectUrl = $endSessionEndpoint . '?' . http_build_query($params);
             }
         }
 
