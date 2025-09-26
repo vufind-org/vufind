@@ -273,8 +273,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements
         $request = $this->getRequest()->getQuery()->toArray()
             + $this->getRequest()->getPost()->toArray();
 
-        $apiKeyResult = $this->checkRequestForApiKey();
-        if (!$apiKeyResult) {
+        if (!$this->checkRequestForApiKey()) {
             return $this->getBadApiKeyResponse();
         }
         if (!isset($request['id'])) {
