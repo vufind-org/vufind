@@ -94,7 +94,7 @@ abstract class AbstractBase implements DriverInterface
     protected function createPatronArray(
         string $id,
         string $cat_username = '',
-        string $cat_password = '',
+        ?string $cat_password = null,
         Stringable|string|null $email = null,
         string $firstname = '',
         string $lastname = '',
