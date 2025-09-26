@@ -166,13 +166,12 @@ abstract class AbstractSearchObject implements RecommendInterface
             if (!empty($this->filterIniSection)) {
                 $ini = $params->getOptions()->getSearchIni();
                 $config = $this->configManager->getConfigArray($ini);
-                try {
-                    $filters = $config[$this->filterIniSection] ?? [];
-                } catch (\Error $e) {
+                if (!isset($config[$this->filterIniSection])) {
                     throw new \Exception(
                         "No section found matching '$this->filterIniSection' in $ini.ini."
                     );
                 }
+                $filters = $config[$this->filterIniSection] ?? [];
                 foreach ($filters as $filter) {
                     $params->addFilter($filter);
                 }
