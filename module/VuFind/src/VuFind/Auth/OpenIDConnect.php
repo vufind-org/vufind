@@ -387,7 +387,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
         } else {
             // Get end_session_endpoint from provider.
             $provider = $this->getProvider();
-            $end_session_endpoint = $provider->end_session_endpoint;
+            $end_session_endpoint = $provider->end_session_endpoint ?? null;
         }
 
         if ($end_session_endpoint) {
