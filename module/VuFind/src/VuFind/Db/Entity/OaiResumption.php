@@ -46,6 +46,7 @@ use VuFind\Db\Feature\DateTimeTrait;
  */
 #[ORM\Table(name: 'oai_resumption')]
 #[ORM\UniqueConstraint(name: 'oai_resumption_token_idx', columns: ['token'])]
+#[ORM\Index(name: 'oai_resumption_expires_idx', columns: ['expires'])]
 #[ORM\Entity]
 class OaiResumption implements OaiResumptionEntityInterface
 {
