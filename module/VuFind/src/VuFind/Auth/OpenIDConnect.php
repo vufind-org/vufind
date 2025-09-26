@@ -247,7 +247,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
         if (empty($code)) {
             throw new AuthException('authentication_error_admin');
         }
-        $request_token = $this->getRequestToken($code);
+        $requestToken = $this->getRequestToken($code);
         $state = $request->getQuery()->get('state');
         $currentState = $this->session->oidc_state;
         $stateIsValid = $state === $currentState;
@@ -257,7 +257,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
             throw new AuthException('authentication_error_technical');
         }
 
-        $claims = $this->decodeJWT($request_token->id_token);
+        $claims = $this->decodeJWT($requestToken->id_token);
 
         if (!$this->validateIssuer($claims->iss)) {
             $this->logError('Wrong issuer: ' . $claims->iss);
@@ -270,7 +270,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
             throw new AuthException('authentication_error_technical');
         }
 
-        $accessToken = $request_token->access_token;
+        $accessToken = $requestToken->access_token;
         $userInfo = $this->getUserInfo($accessToken);
         return $this->setUserAttributes($userInfo);
     }
@@ -426,18 +426,18 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     /**
      * Given an access token, look up user details.
      *
-     * @param string $access_token Access token
+     * @param string $accessToken Access token
      *
      * @return object
      * @throws AuthException
      */
-    protected function getUserInfo(string $access_token): object
+    protected function getUserInfo(string $accessToken): object
     {
         $url = $this->getProvider()->userinfo_endpoint;
         $params = [
             'schema' => 'openid',
         ];
-        $headers = ['Authorization: Bearer ' . $access_token];
+        $headers = ['Authorization: Bearer ' . $accessToken];
         try {
             $response = $this->httpService->get($url, $params, null, $headers);
         } catch (\Exception $e) {
