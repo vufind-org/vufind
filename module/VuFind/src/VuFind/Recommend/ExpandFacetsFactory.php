@@ -70,7 +70,7 @@ class ExpandFacetsFactory implements \Laminas\ServiceManager\Factory\FactoryInte
             throw new \Exception('Unexpected options passed to factory.');
         }
         return new $requestedName(
-            $container->get(\VuFind\Config\PluginManager::class),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class),
             $container->get(\VuFind\Search\Results\PluginManager::class)->get('Solr')
         );
     }

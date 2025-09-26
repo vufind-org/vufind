@@ -174,12 +174,14 @@ trait ConfigRelatedServicesTrait
      * Get a mock configuration plugin manager with the given configuration "files"
      * available.
      *
-     * @param array            $configs              An associative array of configurations
+     * @param array            $configs               An associative array of configurations
      * where key is the file (e.g. 'config') and value an array of configuration
      * sections and directives
-     * @param array            $default              Default configuration to return when no
+     * @param array            $default               Default configuration to return when no
      * entry is found in $configs
-     * @param ?InvocationOrder $getConfigArrayExpect The expected invocation order for the getConfigArray()
+     * @param ?InvocationOrder $getConfigArrayExpect  The expected invocation order for the getConfigArray()
+     * method (null for any)
+     * @param ?InvocationOrder $getConfigObjectExpect The expected invocation order for the getConfigObject()
      * method (null for any)
      *
      * @return MockObject&ConfigManagerInterface
@@ -187,28 +189,25 @@ trait ConfigRelatedServicesTrait
     protected function getMockConfigManager(
         array $configs = [],
         array $default = [],
-        ?InvocationOrder $getConfigArrayExpect = null
+        ?InvocationOrder $getConfigArrayExpect = null,
+        ?InvocationOrder $getConfigObjectExpect = null
     ): ConfigManagerInterface {
         $manager = $this->createMock(ConfigManagerInterface::class);
         $manager->expects($getConfigArrayExpect ?? $this->any())
             ->method('getConfigArray')
             ->with($this->isType('string'))
-            ->will(
-                $this->returnCallback(
-                    function ($config) use ($configs, $default): array {
-                        return $configs[$config] ?? $default;
-                    }
-                )
+            ->willReturnCallback(
+                function ($config) use ($configs, $default): array {
+                    return $configs[$config] ?? $default;
+                }
             );
-        $manager->expects($this->any())
+        $manager->expects($getConfigObjectExpect ?? $this->any())
             ->method('getConfigObject')
             ->with($this->isType('string'))
-            ->will(
-                $this->returnCallback(
-                    function ($config) use ($configs, $default): Config {
-                        return new Config($configs[$config] ?? $default);
-                    }
-                )
+            ->willReturnCallback(
+                function ($config) use ($configs, $default): Config {
+                    return new Config($configs[$config] ?? $default);
+                }
             );
         return $manager;
     }
@@ -257,22 +256,18 @@ trait ConfigRelatedServicesTrait
         $manager->expects($getExpect ?? $this->any())
             ->method('get')
             ->with($this->isType('string'))
-            ->will(
-                $this->returnCallback(
-                    function ($config) use ($configs, $default): Config {
-                        return new Config($configs[$config] ?? $default);
-                    }
-                )
+            ->willReturnCallback(
+                function ($config) use ($configs, $default): Config {
+                    return new Config($configs[$config] ?? $default);
+                }
             );
         $manager->expects($hasExpect ?? $this->any())
             ->method('has')
             ->with($this->isType('string'))
-            ->will(
-                $this->returnCallback(
-                    function ($config) use ($configs): bool {
-                        return isset($configs[$config]);
-                    }
-                )
+            ->willReturnCallback(
+                function ($config) use ($configs): bool {
+                    return isset($configs[$config]);
+                }
             );
         return $manager;
     }

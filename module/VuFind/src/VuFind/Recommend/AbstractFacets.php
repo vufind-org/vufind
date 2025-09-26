@@ -68,20 +68,12 @@ abstract class AbstractFacets implements RecommendInterface
     protected $results;
 
     /**
-     * Configuration loader
-     *
-     * @var \VuFind\Config\PluginManager
-     */
-    protected $configLoader;
-
-    /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
+     * @param \VuFind\Config\PluginManager $configManager Configuration manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(protected \VuFind\Config\ConfigManagerInterface $configManager)
     {
-        $this->configLoader = $configLoader;
     }
 
     /**

@@ -52,14 +52,14 @@ class FavoriteFacets extends SideFacets
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
-     * @param string                       $tagSetting   Tag capability setting
+     * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
+     * @param string                                $tagSetting    Tag capability setting
      */
     public function __construct(
-        \VuFind\Config\PluginManager $configLoader,
+        \VuFind\Config\ConfigManagerInterface $configManager,
         $tagSetting = 'enabled'
     ) {
-        parent::__construct($configLoader);
+        parent::__construct($configManager);
         $this->tagSetting = $tagSetting;
     }
 

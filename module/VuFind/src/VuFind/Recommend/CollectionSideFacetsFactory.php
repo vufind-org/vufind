@@ -70,7 +70,7 @@ class CollectionSideFacetsFactory implements \Laminas\ServiceManager\Factory\Fac
             throw new \Exception('Unexpected options passed to factory.');
         }
         return new $requestedName(
-            $container->get(\VuFind\Config\PluginManager::class),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class),
             $container->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class)
         );
     }
