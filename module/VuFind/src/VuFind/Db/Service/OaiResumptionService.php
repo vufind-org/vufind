@@ -268,6 +268,6 @@ class OaiResumptionService extends AbstractDbService implements
      */
     protected function getDateTime(string $datetime = 'now'): DateTime
     {
-        return new Datetime($datetime);
+        return new DateTime($datetime);
     }
 }
