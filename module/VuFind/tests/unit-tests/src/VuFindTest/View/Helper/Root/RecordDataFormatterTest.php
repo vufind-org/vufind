@@ -96,7 +96,9 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
                 $this->createMock(\VuFind\Auth\ILSAuthenticator::class)
             ),
             'context' => $context,
-            'config' => new \VuFind\View\Helper\Root\Config($container->get(\VuFind\Config\PluginManager::class)),
+            'config' => new \VuFind\View\Helper\Root\Config(
+                $container->get(\VuFind\Config\ConfigManagerInterface::class)
+            ),
             'identifierLinker' => new \VuFind\View\Helper\Root\IdentifierLinker($context),
             'htmlSafeJsonEncode' => new \VuFind\View\Helper\Root\HtmlSafeJsonEncode(),
             'icon' => new \VuFind\View\Helper\Root\Icon(
@@ -236,15 +238,6 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
                 'enabled' => true,
             ],
         ]);
-        $container->set(
-            \VuFind\Config\PluginManager::class,
-            $this->getMockConfigPluginManager([
-                'config' => [
-                    'Record' => [],
-                ],
-                'RecordDataFormatter' => $recordDataFormatterConfig,
-            ])
-        );
         $schemaOrgHelper = new \VuFind\View\Helper\Root\SchemaOrg(
             new \Laminas\View\Helper\HtmlAttributes()
         );
