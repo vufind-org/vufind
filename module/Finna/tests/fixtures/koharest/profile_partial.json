@@ -1,0 +1,26 @@
+{
+    "code": 200,
+    "data": {
+        "messages": [
+        ],
+        "mobile": "",
+        "sms_number": "",
+        "other_name": "Other name",
+        "calling_name": "",
+        "firstname": "",
+        "surname": "Tester",
+        "address": "",
+        "address2": "Address 2",
+        "postal_code": "",
+        "city": "",
+        "country": "",
+        "expiry_date": "",
+        "privacy": "",
+        "email": "",
+        "category_id": "",
+        "expiry_date_near": null,
+        "opac_notes": "",
+        "messaging_preferences": {
+        }
+    }
+}

@@ -24,14 +24,17 @@
           <?php if (!empty($setting['readonly'])) {
             continue;
           } ?>
+          <?php
+            $settingName = !empty($setting['name']) ? $setting['name'] : $settingId;
+            $settingNameEsc = $this->transEscWithPrefix('messaging_settings_setting_', $settingName);
+          ?>
           <div class="form-group">
-            <?php $name = !empty($setting['name']) ? $setting['name'] : $settingId; ?>
-            <label<?='select' == $setting['type'] ? ' class="form-label"' : ''?>><?=$this->transEsc("messaging_settings_setting_$name", null, $name) ?>:</label>
+            <label<?='select' == $setting['type'] ? ' class="form-label"' : ''?>><?=$settingNameEsc?>:</label>
             <?php if ('boolean' == $setting['type']): ?>
               <div class="checkbox">
                 <label>
                   <input type="checkbox" name="<?=$this->escapeHtmlAttr($serviceId . '_' . $settingId)?>" value="1"<?php if ($setting['active']): ?> checked<?php endif; ?><?php if (!empty($setting['readonly'])): ?> disabled<?php endif; ?>>
-                  <?=$this->transEsc("messaging_settings_setting_$name", null, $name) ?> <?=$this->transEsc('messaging_settings_option_active');?>
+                  <?=$settingNameEsc?>
                 </label>
               </div>
             <?php elseif ('multiselect' == $setting['type']): ?>
@@ -41,7 +44,7 @@
                     <label>
                       <input type="checkbox" id="<?=$this->escapeHtmlAttr($fullId)?>" name="<?=$this->escapeHtmlAttr($fullId)?>" value="1"<?php if ($option['active']): ?> checked<?php endif; ?><?php if (!empty($setting['readonly'])): ?> disabled<?php endif; ?>>
                       <?php $name = $option['name'] ?? $optionId; ?>
-                      <?=$this->transEsc("messaging_settings_option_$name", null, $name) ?>
+                      <?=$this->transEscWithPrefix('messaging_settings_option_', $name) ?>
                     </label>
                   </div>
                 <?php endforeach; ?>
@@ -50,7 +53,7 @@
               <select name="<?=$this->escapeHtmlAttr($serviceId . '_' . $settingId)?>" class="form-select" <?php if (!empty($setting['readonly'])): ?> readonly<?php endif; ?>>
                 <?php foreach ($setting['options'] as $optionId => $option): ?>
                   <?php $name = $option['name'] ?? $optionId; ?>
-                  <option value="<?=$this->escapeHtmlAttr($optionId)?>"<?php if ($optionId == $setting['value']): ?> selected<?php endif; ?>><?=$this->transEsc("messaging_settings_option_$name", null, $name)?></option>
+                  <option value="<?=$this->escapeHtmlAttr($optionId)?>"<?php if ($option['active']): ?> selected<?php endif; ?>><?=$this->transEscWithPrefix('messaging_settings_option_', $name)?></option>
                 <?php endforeach; ?>
               </select>
             <?php endif; ?>

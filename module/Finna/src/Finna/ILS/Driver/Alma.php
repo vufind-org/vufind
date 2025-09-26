@@ -29,6 +29,7 @@
 
 namespace Finna\ILS\Driver;
 
+use Finna\ILS\Driver\Feature\FinnaCommonILSTrait;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\ILS\Logic\AvailabilityStatus;
@@ -53,6 +54,7 @@ use function sprintf;
 class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
+    use FinnaCommonILSTrait;
 
     /**
      * Simple cache to avoid repeated requests
@@ -460,162 +462,170 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
         if (empty($xml)) {
             return [];
         }
-        $profile = [
-            'firstname'  => isset($xml->first_name)
-                                ? (string)$xml->first_name
-                                : null,
-            'lastname'   => isset($xml->last_name)
-                                ? (string)$xml->last_name
-                                : null,
-            'group'      => isset($xml->user_group['desc'])
-                                ? (string)$xml->user_group['desc']
-                                : null,
-            'group_code' => isset($xml->user_group)
-                                ? (string)$xml->user_group
-                                : null,
-            'account_type' => strtolower((string)$xml->account_type),
-            'language'   => isset($xml->preferred_language)
-                                ? (string)$xml->preferred_language
-                                : null,
-        ];
+        $firstName = isset($xml->first_name) ? (string)$xml->first_name : null;
+        $lastName = isset($xml->last_name) ? (string)$xml->last_name : null;
+        $group = isset($xml->user_group['desc']) ? (string)$xml->user_group['desc'] : null;
+        $group_code = isset($xml->user_group) ? (string)$xml->user_group : null;
+        $accountType = strtolower((string)$xml->account_type);
+        $language = isset($xml->preferred_language) ? (string)$xml->preferred_language : null;
+
         $contact = $xml->contact_info;
-        if ($contact) {
-            if ($contact->addresses) {
-                $profile['addresses'] = [];
-                foreach ($contact->addresses->address as $item) {
-                    $address = [
-                        'preferred' => 'true' === (string)$item['preferred'],
-                        'types' => [],
-                        'address1' => (string)($item->line1 ?? ''),
-                        'address2' => (string)($item->line2 ?? ''),
-                        'address3' => (string)($item->line3 ?? ''),
-                        'zip' => (string)($item->postal_code ?? ''),
-                        'city' => (string)($item->city ?? ''),
-                    ];
-                    foreach ($item->address_types->address_type as $type) {
-                        $address['types'][] = (string)$type;
-                    }
-                    if (!empty($item->country)) {
-                        $address['country'] = new \VuFind\I18n\TranslatableString(
-                            (string)$item->country,
-                            (string)$item->country->attributes()->desc
-                        );
-                    } else {
-                        $address['country'] = '';
-                    }
-                    $profile['addresses'][] = $address;
+        $addresses = [];
+        $address1 = null;
+        $address2 = null;
+        $address3 = null;
+        $zip = null;
+        $city = null;
+        $country = null;
+        $homeAddress = null;
+        $workAddress = null;
+        foreach ($contact->addresses->address ?? [] as $item) {
+            $address = [
+                'preferred' => 'true' === (string)$item['preferred'],
+                'types' => [],
+                'address1' => (string)($item->line1 ?? ''),
+                'address2' => (string)($item->line2 ?? ''),
+                'address3' => (string)($item->line3 ?? ''),
+                'zip' => (string)($item->postal_code ?? ''),
+                'city' => (string)($item->city ?? ''),
+                'country' => !empty($item->country) ? new \VuFind\I18n\TranslatableString(
+                    (string)$item->country,
+                    (string)$item->country->attributes()->desc
+                ) : '',
+            ];
+            if ($address['preferred']) {
+                $address1 = $address['address1'];
+                $address2 = $address['address2'];
+                $address3 = $address['address3'];
+                $zip = $address['zip'];
+                $city = $address['city'];
+                $country = $address['country'];
+            }
+            foreach ($item->address_types->address_type ?? [] as $type) {
+                $address['types'][] = $typeStr = (string)$type;
+                if (!in_array($typeStr, ['home', 'work'])) {
+                    continue;
                 }
-
-                // Copy preferred address to the basic fields
-                foreach ($profile['addresses'] as $address) {
-                    if (!empty($address['preferred'])) {
-                        foreach ($address as $key => $value) {
-                            $profile[$key] = $value;
-                        }
-                        break;
+                $addressLine = $address['address1'];
+                if ($address['zip'] || $address['city']) {
+                    if ($addressLine) {
+                        $addressLine .= ',';
+                    }
+                    if ($address['zip']) {
+                        $addressLine .= ' ' . $address['zip'];
+                    }
+                    if ($address['city']) {
+                        $addressLine .= ' ' . $address['city'];
                     }
                 }
-
-                // Check if the user has a work and/or home address for hold pickup
-                foreach ($contact->addresses->address as $item) {
-                    foreach ($item->address_types->address_type ?? [] as $type) {
-                        $parts = [
-                            (string)$item->line1 ?? '',
-                            ((string)$item->zip ?? '') . ' '
-                            . ((string)$item->city ?? ''),
-                        ];
-                        $parts = array_map('trim', $parts);
-                        $addressLine = implode(', ', array_filter($parts));
-                        if ('home' === (string)$type) {
-                            $profile['homeAddress'] = $addressLine;
-                        }
-                        if ('work' === (string)$type) {
-                            $profile['workAddress'] = $addressLine;
-                        }
-                    }
+                if ('home' === $typeStr) {
+                    $homeAddress = $addressLine;
+                }
+                if ('work' === $typeStr) {
+                    $workAddress = $addressLine;
                 }
             }
-            if ($contact->phones) {
-                $phone = null;
-                foreach ($contact->phones->phone as $item) {
-                    if ('true' === (string)$item['preferred']) {
-                        $phone = $item;
-                        break;
-                    }
-                }
-                if (null === $phone) {
-                    $phone = $contact->phones[0]->phone[0];
-                }
-                $profile['phone'] = isset($phone->phone_number)
-                                        ? (string)$phone->phone_number
-                                        : null;
-            }
-            if ($contact->emails) {
-                $email = null;
-                foreach ($contact->emails->email as $item) {
-                    if ('true' === (string)$item['preferred']) {
-                        $email = $item;
-                        break;
-                    }
-                }
-                if (null === $email) {
-                    $email = $contact->emails[0]->email[0];
-                }
-                $profile['email'] = isset($email->email_address)
-                                        ? (string)$email->email_address
-                                        : null;
-            }
+            $addresses[] = $address;
         }
 
-        if ($xml->user_identifiers && $xml->user_identifiers->user_identifier) {
-            foreach ($xml->user_identifiers->user_identifier as $identifier) {
-                if (
-                    'BARCODE' === (string)$identifier->id_type
-                    && 'ACTIVE' === (string)$identifier->status
-                ) {
-                    $profile['barcode'] = (string)$identifier->value;
-                    break;
+        $phone = $contact->phones[0]->phone[0]->phone_number ?? null;
+        foreach ($contact->phones->phone ?? [] as $item) {
+            if ('true' === (string)$item['preferred']) {
+                if ($number = $item->phone_number ?? null) {
+                    $phone = $number;
                 }
+                break;
+            }
+        }
+        if ($phone) {
+            $phone = (string)$phone;
+        }
+
+        $email = null;
+        foreach ($contact->emails->email ?? [] as $item) {
+            if ('true' === (string)$item['preferred']) {
+                $email = $item;
+                break;
+            }
+        }
+        if ($email ??= $contact->emails[0]->email[0]->email_address ?? null) {
+            $email = (string)$email;
+        }
+
+        $barcode = null;
+        foreach ($xml->user_identifiers->user_identifier ?? [] as $identifier) {
+            if (
+                'BARCODE' === (string)$identifier->id_type
+                && 'ACTIVE' === (string)$identifier->status
+            ) {
+                $barcode = (string)$identifier->value;
+                break;
             }
         }
 
         // Display '****' as a hint that the field is available to update..
         $fieldConfig = $this->getUpdateProfileFields();
+        $self_service_pin = null;
         foreach ($fieldConfig as $field) {
             $parts = explode(':', $field);
             if (($parts[1] ?? '') === 'self_service_pin') {
-                $profile['self_service_pin'] = '****';
+                $self_service_pin = '****';
             }
         }
-
-        if ($xml->proxy_for_users) {
-            foreach ($xml->proxy_for_users->proxy_for_user as $user) {
-                $profile['guarantees'][] = [
-                    'lastname' => (string)$user->full_name,
-                ];
-            }
+        $guarantees = [];
+        foreach ($xml->proxy_for_users->proxy_for_user ?? [] as $user) {
+            $guarantees[] = [
+                'lastname' => (string)$user->full_name,
+            ];
         }
-
-        if ($expiryDate = (string)$xml->expiry_date) {
-            $parsed = $this->parseDate($expiryDate);
-            $profile['expiration_date'] = $parsed;
+        $expiryDate = $xml->expiry_date ?? null;
+        $expired = null;
+        $expiration_soon = null;
+        if ($expiryDate) {
+            $expiryDate = $this->parseDate((string)$expiryDate);
             $date = \DateTime::createFromFormat(
                 'Y-m-d',
-                $this->dateConverter->convertFromDisplayDate('Y-m-d', $parsed)
+                $this->dateConverter->convertFromDisplayDate('Y-m-d', $expiryDate)
             );
             $diff = $date->diff(new \Datetime());
             if (!$diff->invert && $diff->days > 0) {
-                $profile['expired'] = true;
+                $expired = true;
             } elseif (
                 $this->daysBeforeAccountExpirationNotification
                 && $diff->days === 0
                 || ($diff->invert
                 && $diff->days <= $this->daysBeforeAccountExpirationNotification)
             ) {
-                $profile['expiration_soon'] = true;
+                $expiration_soon = true;
             }
         }
-
+        $profile = $this->createProfileArray(
+            firstname: $firstName,
+            lastname: $lastName,
+            address1: $address1,
+            address2: $address2,
+            city: $city,
+            country: $country,
+            zip: $zip,
+            phone: $phone,
+            expiration_date: $expiryDate,
+            group: $group,
+            email: $email,
+            nonDefaultFields: [
+                'addresses' => $addresses,
+                'barcode' => $barcode,
+                'group_code' => $group_code,
+                'expired' => $expired,
+                'expiration_soon' => $expiration_soon,
+                'self_service_pin' => $self_service_pin,
+                'address3' => $address3,
+                'homeAddress' => $homeAddress,
+                'workAddress' => $workAddress,
+                'guarantees' => $guarantees,
+                'account_type' => $accountType,
+                'language' => $language,
+            ],
+        );
         // Cache the user group code
         $cacheId = 'alma|user|' . $patronId . '|group_code';
         $this->putCachedData($cacheId, $profile['group_code'] ?? null);

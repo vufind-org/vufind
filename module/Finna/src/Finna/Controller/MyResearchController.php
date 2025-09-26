@@ -1006,35 +1006,37 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $config = $catalog->getConfig('updateMessagingSettings', $patron);
 
         if ($this->formWasSubmitted('messaging_update_request')) {
-            if (isset($config['method']) && 'driver' === $config['method']) {
-                $data = $profile['messagingServices'];
-                $request = $this->getRequest();
-                // Collect results from the POST request and update settings
-                foreach ($data as $serviceId => &$service) {
-                    foreach ($service['settings'] as $settingId => &$setting) {
-                        if (!empty($setting['readonly'])) {
-                            continue;
-                        }
-                        if ('boolean' == $setting['type']) {
-                            $setting['active'] = (bool)$request->getPost(
-                                $serviceId . '_' . $settingId,
+            $data = $profile['messagingServices'];
+            $request = $this->getRequest();
+            // Collect results from the POST request and update settings
+            foreach ($data as $serviceId => &$service) {
+                foreach ($service['settings'] as $settingId => &$setting) {
+                    if (!empty($setting['readonly'])) {
+                        continue;
+                    }
+                    if ('boolean' == $setting['type']) {
+                        $setting['active'] = (bool)$request->getPost(
+                            $serviceId . '_' . $settingId,
+                            false
+                        );
+                    } elseif ('select' == $setting['type']) {
+                        $setting['value'] = $request->getPost(
+                            $serviceId . '_' . $settingId,
+                            ''
+                        );
+                    } elseif ('multiselect' == $setting['type']) {
+                        foreach ($setting['options'] as $optionId => &$option) {
+                            $option['active'] = (bool)$request->getPost(
+                                $serviceId . '_' . $settingId . '_' . $optionId,
                                 false
                             );
-                        } elseif ('select' == $setting['type']) {
-                            $setting['value'] = $request->getPost(
-                                $serviceId . '_' . $settingId,
-                                ''
-                            );
-                        } elseif ('multiselect' == $setting['type']) {
-                            foreach ($setting['options'] as $optionId => &$option) {
-                                $option['active'] = (bool)$request->getPost(
-                                    $serviceId . '_' . $settingId . '_' . $optionId,
-                                    false
-                                );
-                            }
                         }
                     }
                 }
+            }
+            unset($setting);
+
+            if (isset($config['method']) && 'driver' === $config['method']) {
                 $result = $catalog->updateMessagingSettings($patron, $data);
                 if ($result['success']) {
                     $this->flashMessenger()->addSuccessMessage($result['status']);
@@ -1043,34 +1045,37 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                     $this->flashMessenger()->addErrorMessage($result['status']);
                 }
             } else {
-                $data = filter_input_array(INPUT_POST, FILTER_SANITIZE_STRING);
-                $data['pickUpNotice'] = $this->translate(
-                    'messaging_settings_method_' . $data['pickUpNotice'],
+                $emailValues = [];
+                $selectedPickUpNotice = $data['pickUpNotice']['settings']['transport_types']['value'];
+                $emailValues['pickUpNotice'] = $this->translate(
+                    'messaging_settings_method_' . $selectedPickUpNotice,
                     null,
-                    $data['pickUpNotice']
+                    $selectedPickUpNotice
                 );
-                $data['overdueNotice'] = $this->translate(
-                    'messaging_settings_method_' . $data['overdueNotice'],
+                $selectedOverdueNotice = $data['overdueNotice']['settings']['transport_types']['value'];
+                $emailValues['overdueNotice'] = $this->translate(
+                    'messaging_settings_method_' . $selectedOverdueNotice,
                     null,
-                    $data['overdueNotice']
+                    $selectedOverdueNotice
                 );
-                if ($data['dueDateAlert'] == 0) {
-                    $data['dueDateAlert']
+                $selectedDueDateAlert = $data['dueDateAlert']['settings']['transport_types']['value'];
+                $selectedDueDateAlertDays = $data['dueDateAlert']['settings']['days_in_advance']['value'];
+                if ($selectedDueDateAlert === 'inactive') {
+                    $emailValues['dueDateAlert']
                         = $this->translate('messaging_settings_method_none');
-                } elseif ($data['dueDateAlert'] == 1) {
-                    $data['dueDateAlert']
+                } elseif ($data['dueDateAlert'] == '1') {
+                    $emailValues['dueDateAlert']
                         = $this->translate('messaging_settings_num_of_days');
                 } else {
-                    $data['dueDateAlert'] = $this->translate(
+                    $emailValues['dueDateAlert'] = $this->translate(
                         'messaging_settings_num_of_days_plural',
-                        ['%%days%%' => $data['dueDateAlert']]
+                        ['%%days%%' => $selectedDueDateAlertDays]
                     );
                 }
-
                 $result = $this->saveChangeRequestFeedback(
                     $patron,
                     $profile,
-                    $data,
+                    $emailValues,
                     [],
                     'finna_UpdateMessagingSettings'
                 );
@@ -1084,29 +1089,10 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
 
         if (isset($profile['messagingServices'])) {
             $view->services = $profile['messagingServices'];
-            $emailDays = [];
-            foreach ([1, 2, 3, 4, 5] as $day) {
-                if ($day == 1) {
-                    $label = $this->translate('messaging_settings_num_of_days');
-                } else {
-                    $label = $this->translate(
-                        'messaging_settings_num_of_days_plural',
-                        ['%%days%%' => $day]
-                    );
-                }
-                $emailDays[] = $label;
-            }
-
-            $view->emailDays = $emailDays;
-            $view->days = [1, 2, 3, 4, 5];
             $view->profile = $profile;
         }
-        if (isset($config['method']) && 'driver' === $config['method']) {
-            $view->setTemplate('myresearch/change-messaging-settings-driver');
-            $view->approvalRequired = !empty($config['approvalRequired']);
-        } else {
-            $view->setTemplate('myresearch/change-messaging-settings');
-        }
+        $view->setTemplate('myresearch/change-messaging-settings-driver');
+        $view->approvalRequired = !empty($config['approvalRequired']);
         return $view;
     }
 

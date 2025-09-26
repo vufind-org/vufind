@@ -1,0 +1,39 @@
+[
+    200,
+    {
+        "Advance_Notice": {
+            "transport_types": {
+                "letter": true,
+                "sms": false
+            },
+            "digest": {
+                "value": true,
+                "configurable": false
+            },
+            "days_in_advance": {
+                "configurable": true,
+                "value": 5
+            }
+        },
+        "Hold_Filled": {
+            "transport_types": {
+                "letter": true,
+                "sms": false
+            },
+            "digest": {
+                "value": true,
+                "configurable": false
+            }
+        },
+        "Item_Due": {
+            "transport_types": {
+                "letter": true,
+                "sms": false
+            },
+            "digest": {
+                "value": true,
+                "configurable": false
+            }
+        }
+    }
+]

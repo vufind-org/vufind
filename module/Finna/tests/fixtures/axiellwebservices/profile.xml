@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<res>
+<patronInformationResult>
+    <primary_id>57391</primary_id>
+    <first_name>John</first_name>
+    <last_name>Smith</last_name>
+    <user_group desc="descgroup">test</user_group>
+    <account_type>Normal</account_type>
+    <preferred_language>fi</preferred_language>
+    <user_identifiers>
+        <user_identifier>
+            <id_type>SOMETHING</id_type>
+            <status>YES</status>
+            <value>bait</value>
+        </user_identifier>
+        <user_identifier>
+            <id_type>BARCODE</id_type>
+            <status>ACTIVE</status>
+            <value>01924019240</value>
+        </user_identifier>
+    </user_identifiers>
+    <proxy_for_users>
+        <proxy_for_user>
+            <full_name>Tester Test</full_name>
+        </proxy_for_user>
+        <proxy_for_user>
+            <full_name>Ttee Tst</full_name>
+        </proxy_for_user>
+    </proxy_for_users>
+    <contact_info>
+        <addresses>
+            <address>
+                <line1>A street 1</line1>
+                <line2>          </line2>
+                <line3>Not a default field</line3>
+                <country>Far</country>
+                <city>Far away</city>
+                <postal_code>00000</postal_code>
+                <address_types>
+                    <address_type>work</address_type>
+                    <address_type>something</address_type>
+                </address_types>
+            </address>
+            <address preferred="true">
+                <line1>Line 1</line1>
+                <line2>Line 2</line2>
+                <line3>Line 3</line3>
+                <country>Country</country>
+                <city>City</city>
+                <postal_code>00000</postal_code>
+                <address_types>
+                    <address_type>Type 1</address_type>
+                    <address_type>home</address_type>
+                </address_types>
+            </address>
+        </addresses>
+        <phones>
+            <phone>
+                <phone_number>0123456789</phone_number>
+            </phone>
+            <phone preferred="true">
+                <phone_number>9876543210</phone_number>
+            </phone>
+        </phones>
+        <emails>
+            <email><email_address>pref@email.if</email_address></email>
+            <email><email_address>notpref@email.if</email_address></email>
+        </emails>
+    </contact_info>
+    <status><type>ok</type></status>
+    <patronInformation>
+        <patronName>Testi Tester</patronName>
+        <isLoanHistoryEnabled>true</isLoanHistoryEnabled>
+        <emailAddresses>
+            <emailAddress>
+                <isActive>no</isActive>
+                <address>notactive@email.fi</address>
+                <id>221</id>
+            </emailAddress>
+            <emailAddress>
+                <isActive>yes</isActive>
+                <address>active@email.fi</address>
+                <id>124213</id>
+            </emailAddress>
+        </emailAddresses>
+        <addresses>
+            <address>
+                <isActive>no</isActive>
+                <streetAddress>Not active street 1</streetAddress>
+                <zipCode>00001</zipCode>
+                <country>Act</country>
+                <city>Not Ive</city>
+                <id>010101</id>
+            </address>
+            <address>
+                <isActive>yes</isActive>
+                <streetAddress>Active street 1</streetAddress>
+                <zipCode>02010</zipCode>
+                <country>Ive</country>
+                <city>Act</city>
+                <id>13123</id>
+            </address>
+        </addresses>
+        <phoneNumbers>
+            <phoneNumber>
+                <sms>
+                    <useForSms>no</useForSms>
+                </sms>
+                <localCode>5125125</localCode>
+                <areaCode>121</areaCode>
+                <id>123</id>
+            </phoneNumber>
+            <phoneNumber>
+                <sms>
+                    <useForSms>yes</useForSms>
+                </sms>
+                <localCode>1231231</localCode>
+                <areaCode>222</areaCode>
+                <id>3</id>
+            </phoneNumber>
+        </phoneNumbers>
+        <messageServices>
+            <messageService>
+                <serviceType>dueDateAlert</serviceType>
+                <sendMethods>
+                    <sendMethod>
+                        <value>ilsDefined</value>
+                        <isActive>yes</isActive>
+                    </sendMethod>
+                </sendMethods>
+                <nofDays><value>2</value></nofDays>
+                <isActive>yes</isActive>
+            </messageService>
+            <messageService>
+                <serviceType>pickUpNotice</serviceType>
+                <sendMethods>
+                    <sendMethod>
+                        <value>sms</value>
+                        <isActive>yes</isActive>
+                    </sendMethod>
+                </sendMethods>
+
+            </messageService>
+            <messageService>
+                <serviceType>overdueNotice</serviceType>
+                <sendMethods>
+                    <sendMethod>
+                        <value>snailMail</value>
+                        <isActive>yes</isActive>
+                    </sendMethod>
+                </sendMethods>
+                <isActive>yes</isActive>
+            </messageService>
+        </messageServices>
+        <backendPatronId>121212</backendPatronId>
+    </patronInformation>
+</patronInformationResult>
+
+</res>

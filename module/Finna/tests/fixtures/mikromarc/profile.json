@@ -1,0 +1,17 @@
+{
+    "Expires": "19.01.2022",
+    "Name": "Tester,Test",
+    "StoreBorrowerHistory": true,
+    "MainPhone": "0123456789",
+    "Mobile": "0000000000",
+    "MainAddrLine1": "Address 1",
+    "MainAddrLine2": "Address 2",
+    "MainZip": "010101",
+    "MainPlace": "Test city",
+    "Defaulted": 1,
+    "MainEmail": "test@email.fi",
+    "RefuseReminderMessages": false,
+    "ReceiptMessageFormat": "Email",
+    "LettersByEmail": false,
+    "LettersBySMS": true
+}

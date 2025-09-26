@@ -1,0 +1,12 @@
+{
+    "Name": "Test Some",
+    "StoreBorrowerHistory": true,
+    "MainPhone": "0123456789",
+    "Mobile": "0000000000",
+    "MainAddrLine1": "",
+    "MainAddrLine2": "",
+    "MainZip": "",
+    "MainPlace": "",
+    "MainEmail": "",
+    "RefuseReminderMessages": false
+}

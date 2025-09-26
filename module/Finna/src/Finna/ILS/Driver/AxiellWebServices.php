@@ -34,6 +34,7 @@
 namespace Finna\ILS\Driver;
 
 use DOMDocument;
+use Finna\ILS\Driver\Feature\FinnaCommonILSTrait;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface as TranslatorAwareInterface;
@@ -69,6 +70,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase implements
         logError as error;
     }
     use \VuFind\Cache\CacheTrait;
+    use FinnaCommonILSTrait;
 
     /**
      * Date formatting object
@@ -241,6 +243,18 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase implements
     ];
 
     /**
+     * Messaging preference type mappings
+     *
+     * @var array
+     */
+    protected array $messagingPrefTypeMap = [
+        'overdueNotice' => 'overdueNotice',
+        'pickUpNotice' => 'pickUpNotice',
+        'dueDateAlert' => 'dueDateAlert',
+        'dueDateAlertEmail' => 'dueDateAlertEmail',
+    ];
+
+    /**
      * Messaging settings status code mappings
      *
      * @var array
@@ -248,16 +262,6 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase implements
     protected $statuses = [
         'snailMail'             => 'print',
         'ilsDefined'            => 'inactive',
-    ];
-
-    /**
-     * Backwards compatibility for messagingSettings
-     *
-     * @var array
-     */
-    protected $oldStatuses = [
-        'snailMail' => 'letter',
-        'ilsDefined' => 'none',
     ];
 
     /**
@@ -1386,305 +1390,216 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase implements
             }
             return null;
         }
-
         $info = $result->$functionResult->patronInformation;
 
         $names = explode(' ', $info->patronName);
         $lastname = array_pop($names);
         $firstname = implode(' ', $names);
 
-        $loanHistoryEnabled = $info->isLoanHistoryEnabled ?? false;
-
         /**
          * Request an authentication id used in certain requests e.g:
          * GetTransactionHistory
          */
         $patronId = $this->authenticatePatron($username, $password);
+        $user = $this->createPatronArray(
+            id: $patronId,
+            cat_username: $username,
+            cat_password: $password,
+            firstname: $firstname,
+            lastname: $lastname,
+            nonDefaultFields: [
+                // Non  default field for legacy support
+                'patronId' => $patronId,
+            ]
+        );
 
-        $user = [
-            'id' => $info->backendPatronId,
-            'cat_username' => $username,
-            'cat_password' => $password,
-            'lastname' => $lastname,
-            'firstname' => $firstname,
-            'major' => null,
-            'college' => null,
-            'patronId' => $patronId,
-        ];
+        $email = null;
+        $emailId = null;
 
-        $userCached = [
-            'id' => $info->backendPatronId,
-            'cat_username' => $username,
-            'cat_password' => $password,
-            'lastname' => $lastname,
-            'firstname' => $firstname,
-            'email' => '',
-            'emailId' => '',
-            'address1' => '',
-            'addressId' => '',
-            'zip' => '',
-            'city' => '',
-            'country' => '',
-            'phone' => '',
-            'phoneId' => '',
-            'phoneLocalCode' => '',
-            'phoneAreaCode' => '',
-            'major' => null,
-            'college' => null,
-            'patronId' => $patronId,
-            'loan_history' => (bool)$loanHistoryEnabled,
-        ];
-
-        if (!empty($info->emailAddresses->emailAddress)) {
-            $emailAddresses
-                =  $this->objectToArray($info->emailAddresses->emailAddress);
-
-            foreach ($emailAddresses as $emailAddress) {
-                if ($emailAddress->isActive == 'yes') {
-                    $userCached['email'] = $emailAddress->address ?? '';
-                    $userCached['emailId'] = $emailAddress->id ?? '';
-                }
+        foreach ($this->objectToArray($info->emailAddresses->emailAddress ?? []) as $emailAddress) {
+            if ($emailAddress->isActive === 'yes') {
+                $email = $emailAddress->address ?? '';
+                $emailId = $emailAddress->id ?? '';
+                break;
+            }
+        }
+        $address1 = null;
+        $zip = null;
+        $city = null;
+        $country = null;
+        $addressId = null;
+        foreach ($this->objectToArray($info->addresses->address ?? []) as $address) {
+            if ($address->isActive == 'yes') {
+                $address1 = $address->streetAddress ?? '';
+                $zip = $address->zipCode ?? '';
+                $city = $address->city ?? '';
+                $country = $address->country ?? '';
+                $addressId = $address->id ?? '';
             }
         }
 
-        if (isset($info->addresses->address)) {
-            $addresses = $this->objectToArray($info->addresses->address);
-            foreach ($addresses as $address) {
-                if ($address->isActive == 'yes') {
-                    $userCached['address1'] = $address->streetAddress ?? '';
-                    $userCached['zip'] = $address->zipCode ?? '';
-                    $userCached['city'] = $address->city ?? '';
-                    $userCached['country'] = $address->country ?? '';
-                    $userCached['addressId'] = $address->id ?? '';
+        $phone = null;
+        $phoneLocalCode = null;
+        $phoneAreaCode = null;
+        $phoneId = null;
+        foreach ($this->objectToArray($info->phoneNumbers->phoneNumber ?? []) as $phoneNumber) {
+            if ($phoneNumber->sms->useForSms == 'yes') {
+                $phoneAreaCode = $phone = $phoneNumber->areaCode ?? '';
+                if (isset($phoneNumber->localCode)) {
+                    $phone .= $phoneNumber->localCode;
+                    $phoneLocalCode = $phoneNumber->localCode;
                 }
-            }
-        }
-
-        if (isset($info->phoneNumbers->phoneNumber)) {
-            $phoneNumbers = $this->objectToArray($info->phoneNumbers->phoneNumber);
-            foreach ($phoneNumbers as $phoneNumber) {
-                if ($phoneNumber->sms->useForSms == 'yes') {
-                    $userCached['phone'] = $phoneNumber->areaCode ?? '';
-                    $userCached['phoneAreaCode'] = $userCached['phone'];
-                    if (isset($phoneNumber->localCode)) {
-                        $userCached['phone'] .= $phoneNumber->localCode;
-                        $userCached['phoneLocalCode'] = $phoneNumber->localCode;
-                    }
-                    if (isset($phoneNumber->id)) {
-                        $userCached['phoneId'] = $phoneNumber->id;
-                    }
+                if (isset($phoneNumber->id)) {
+                    $phoneId = $phoneNumber->id;
                 }
             }
         }
 
         $serviceSendMethod
             = $this->config['updateMessagingSettings']['method'] ?? 'none';
-
-        switch ($serviceSendMethod) {
-            case 'database':
-                $userCached['messagingServices']
-                    = $this->parseEmailMessagingSettings(
-                        $info->messageServices->messageService ?? null
-                    );
-                break;
-            case 'driver':
-                $userCached['messagingServices']
-                    = $this->parseDriverMessagingSettings(
-                        $info->messageServices->messageService ?? null,
-                        $user
-                    );
-                break;
-            default:
-                $userCached['messagingServices'] = [];
-                break;
+        $messagingServices = [];
+        // Convert users messaging services into koha style array
+        if ($serviceSendMethod === 'driver') {
+            $allowedMessagingServices = $this->getMessageServices($user);
+            $userMessagingServices
+                = $this->parseObtainedMessagingSettings(
+                    $this->objectToArray($info->messageServices->messageService ?? []),
+                    $allowedMessagingServices,
+                );
+            $messagingServices = $this->createMessagingSettingsArray(
+                $userMessagingServices,
+                1,
+                5,
+                'select'
+            );
+        } elseif ($serviceSendMethod === 'database') {
+            $allowedMessagingServices = $this->getEmailMessagingServices();
+            $messagingServices = $this->parseObtainedMessagingSettings(
+                $this->objectToArray($info->messageServices->messageService ?? []),
+                $allowedMessagingServices
+            );
+            $messagingServices = $this->createMessagingSettingsArray($messagingServices, 1, 5);
         }
 
+        $userCached = $this->createProfileArray(
+            firstname: $firstname,
+            lastname: $lastname,
+            address1: $address1,
+            zip: $zip,
+            city: $city,
+            country: $country,
+            phone: $phone,
+            email: $email,
+            messagingServices: $messagingServices,
+            loan_history: $info->isLoanHistoryEnabled ?? null,
+            nonDefaultFields: [
+                'emailId' => $emailId,
+                'addressId' => $addressId,
+                'phoneId' => $phoneId,
+                'phoneLocalCode' => $phoneLocalCode,
+                'phoneAreaCode' => $phoneAreaCode,
+                'patronId' => $patronId,
+                'id' => $info->backendPatronId,
+                'cat_username' => $username,
+                'cat_password' => $password,
+            ]
+        );
         $this->putCachedData($cacheKey, $userCached);
 
         return $user;
     }
 
     /**
-     * Function to create an array for using email to change messaging services
+     * Helper function to format obtained messaging services from object into common array format
      *
-     * @param ?object $infoServices Services to parse
+     * @param ?object $userServices    User defined services and methods
+     * @param array   $allowedServices Services allowed, obtained from ILS
      *
-     * @return array parsed services
+     * @return array
      */
-    public function parseEmailMessagingSettings($infoServices)
+    protected function parseObtainedMessagingSettings($userServices, $allowedServices): array
     {
-        $validServices = [
-            'pickUpNotice'  => [
-                'letter', 'email', 'sms', 'none',
-            ],
-            'overdueNotice' => [
-                'letter', 'email', 'sms', 'none',
-            ],
-            'dueDateAlert' => [
-                'email', 'none',
-            ],
-         ];
+        if (!$userServices || !$allowedServices) {
+            return [];
+        }
 
-        $services = [];
-        foreach ($validServices as $service => $validMethods) {
-            $typeLabel = 'dueDateAlert' === $service
-                ? $this->translate(
-                    'messaging_settings_type_dueDateAlertEmail'
-                )
-                : $this->translate("messaging_settings_type_$service");
-            $data = [
-                'active' => false,
-                'type' => $typeLabel,
-                'sendMethods' => [],
-            ];
-
-            foreach ($validMethods as $methodKey) {
+        // Loop through services found from users profile and parse them into a commonly understandable
+        // form
+        foreach ($userServices as $userService) {
+            $type = (string)$userService->serviceType;
+            if (!isset($allowedServices[$type])) {
+                continue;
+            }
+            // Loop through users preferred send methods and adjust the returning array with correct values
+            foreach ($this->objectToArray($userService->sendMethods) as $method) {
+                $mappedMethod = $this->mapCodeToStatus($method->sendMethod->value ?? 'inactive');
                 if (
-                    in_array(
-                        $this->mapOldStatusToCode($methodKey),
-                        $this->messagingFilters[$service] ?? []
-                    )
+                    !isset($allowedServices[$type]['transport_types'][$mappedMethod])
                 ) {
                     continue;
                 }
-
-                $data['sendMethods'] += [
-                    "$methodKey" => [
-                        'active' => false,
-                        'type' => $methodKey,
-                    ],
-                ];
+                $allowedServices[$type]['transport_types'][$mappedMethod]
+                    = ($method->sendMethod->isActive ?? 'no') === 'yes';
             }
-            $services[$service] = $data;
-        }
-
-        if (null !== $infoServices) {
-            foreach ($infoServices as $service) {
-                $serviceType = $service->serviceType;
-                $numOfDays = $service->nofDays->value ?? 'none';
-                $active = $service->isActive === 'yes';
-
-                $sendMethods = $this->objectToArray($service->sendMethods);
-
-                foreach ($sendMethods as $method) {
-                    $type = isset($method->sendMethod->value)
-                        ? $this->mapOldCodeToStatus($method->sendMethod->value)
-                        : 'none';
-                    if (!isset($services[$serviceType]['sendMethods'][$type])) {
-                        continue;
-                    }
-                    $services[$serviceType]['sendMethods'][$type]['active']
-                        = isset($method->sendMethod->isActive)
-                            && $method->sendMethod->isActive === 'yes';
-                }
-
-                foreach ($services[$serviceType]['sendMethods'] as $key => &$data) {
-                    $methodLabel
-                        = $this->translate("messaging_settings_method_$key");
-
-                    if ($numOfDays > 0 && $key == 'email') {
-                        $methodLabel =  $this->translate(
-                            $numOfDays == 1
-                            ? 'messaging_settings_num_of_days'
-                            : 'messaging_settings_num_of_days_plural',
-                            ['%%days%%' => $numOfDays]
-                        );
-                    }
-
-                    if (!$active) {
-                        $methodLabel
-                            =  $this->translate('messaging_settings_method_none');
-                    }
-                    $data['method'] = $methodLabel;
-                }
-
-                if (isset($services[$serviceType])) {
-                    $services[$serviceType]['active'] = $active;
-                    $services[$serviceType]['numOfDays'] = $numOfDays;
-                }
+            if (isset($userService->nofDays->value)) {
+                $allowedServices[$type]['days_in_advance']['value'] = (int)$userService->nofDays->value;
             }
         }
-
-        return $services;
+        return $allowedServices;
     }
 
     /**
-     * Function to create an array for using driver to change messaging services
-     *
-     * @param ?object $infoServices Services to parse
-     * @param array   $user         User data
+     * Function to create an array for using email to change messaging services.
+     * This is a Legacy compatibility function.
      *
      * @return array parsed services
      */
-    public function parseDriverMessagingSettings($infoServices, $user)
+    public function getEmailMessagingServices()
     {
-        $services = [];
-        $messagingSettings = [];
-
-        if (null !== $infoServices) {
-            foreach ($infoServices as $service => $options) {
-                $current = [
-                    'transport_type' =>
-                        (string)$options->sendMethods->sendMethod->value,
-                ];
-                if (isset($options->nofDays)) {
-                    $current['nofDays'] = $options->nofDays->value;
-                }
-                $services[$options->serviceType] = $current;
-            }
-        }
-
-        // We need to find proper options for current service
-        foreach ($this->getMessageServices($user) as $service => $methods) {
-            $settings = [
-                'type' => $service,
-                'settings' => [
-                    'transport_types' => [
-                        'type' => 'select',
-                        'options' => [],
-                        'value' => $this->mapCodeToStatus(
-                            $services[$service]['transport_type']
-                        ),
-                    ],
+        $defaultEmailServices = [
+            'pickUpNotice'  => [
+                'transport_types' => [
+                    'print' => false,
+                    'email' => false,
+                    'sms' => false,
+                    'inactive' => false,
                 ],
-            ];
-            if ($service === 'dueDateAlert') {
-                $options = [];
-                $hasActive = false;
-                for ($i = 1; $i <= 5; $i++) {
-                    if ($i === $services[$service]['nofDays']) {
-                        $hasActive = true;
-                    }
-                    $options[$i] = [
-                        'name' => $this->translate(
-                            1 === $i ? 'messaging_settings_num_of_days'
-                            : 'messaging_settings_num_of_days_plural',
-                            ['%%days%%' => $i]
-                        ),
-                        'active' => $i === $services[$service]['nofDays'],
-                    ];
+                'selectType' => 'select',
+                'type' => 'pickUpNotice',
+            ],
+            'overdueNotice' => [
+                'transport_types' => [
+                    'print' => false,
+                    'email' => false,
+                    'sms' => false,
+                    'inactive' => false,
+                ],
+                'selectType' => 'select',
+                'type' => 'overdueNotice',
+            ],
+            'dueDateAlert' => [
+                'transport_types' => [
+                    'email' => false,
+                    'inactive' => false,
+                ],
+                'selectType' => 'select',
+                'type' => 'dueDateAlertEmail',
+                'days_in_advance' => [
+                    'configurable' => true,
+                ],
+            ],
+        ];
+        $filtered = [];
+        foreach ($defaultEmailServices as $serviceType => $settings) {
+            $filtered[$serviceType] = $settings;
+            foreach ($settings['transport_types'] as $method => $active) {
+                $oldStatus = $this->mapStatusToCode($method);
+                if (in_array($oldStatus, $this->messagingFilters[$serviceType] ?? [])) {
+                    unset($filtered[$serviceType]['transport_types'][$method]);
                 }
-                if (!$hasActive) {
-                    $options[1]['active'] = true;
-                }
-                $settings['settings']['days_in_advance'] = [
-                    'type' => 'select',
-                    'value' => $services[$service]['nofDays'],
-                    'options' => $options,
-                    'readonly' => false,
-                ];
             }
-            foreach ($methods as $methodId => $method) {
-                $coded = $this->mapCodeToStatus($method);
-                $settings['settings']['transport_types']['options'][$coded] = [
-                        'active' => $services[$service]['transport_type']
-                            === $method,
-                    ];
-            }
-            $messagingSettings[$service] = $settings;
         }
-
-        return $messagingSettings;
+        return $filtered;
     }
 
     /**
@@ -2130,11 +2045,10 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase implements
 
         $conf = [
             'arenaMember' => $this->arenaMember,
-            'language' => $this->getLanguage(),
             'user' => $username,
             'password' => $password,
+            'language' => $this->getLanguage(),
         ];
-
         $result = $this->doSOAPRequest(
             $this->patronaurora_wsdl,
             $function,
@@ -2152,25 +2066,30 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase implements
             }
             return [];
         }
-
         $resultArray = $this->objectToArray(
             $result->$functionResult->messageServices->messageService
         );
         $returnable = [];
-        foreach ($resultArray as $service => $sendMethods) {
-            $current = [];
-            $currentMethods = $sendMethods->sendMethods->sendMethod;
-            $serviceType = $sendMethods->serviceType;
-            foreach ($currentMethods as $key => $value) {
+        foreach ($resultArray as $sendMethods) {
+            $serviceType = $this->mapCodeToStatus($sendMethods->serviceType);
+            $current = [
+                'transport_types' => [],
+            ];
+            foreach ($sendMethods->sendMethods->sendMethod as $value) {
                 $method = is_object($value) ? $value->value : $value;
+                $mappedMethod = $this->mapCodeToStatus($method);
                 if (in_array($method, $this->messagingFilters[$serviceType] ?? [])) {
                     continue;
                 }
-                $current[] = $method;
+                $current['transport_types'][$mappedMethod] = false;
+            }
+            if ($serviceType === 'dueDateAlert') {
+                $current['days_in_advance'] = [
+                    'configurable' => true,
+                ];
             }
             $returnable[$serviceType] = $current;
         }
-
         return $returnable;
     }
 
@@ -3487,31 +3406,6 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase implements
     protected function mapStatusToCode($status)
     {
         $found = array_search($status, $this->statuses);
-        return $found !== false ? $found : $status;
-    }
-
-    /**
-     * Map old code to status
-     *
-     * @param string $code as a string
-     *
-     * @return string Mapped code
-     */
-    protected function mapOldCodeToStatus($code)
-    {
-        return $this->oldStatuses[$code] ?? $code;
-    }
-
-    /**
-     * Map old status to code
-     *
-     * @param string $status as a string
-     *
-     * @return string Mapped status
-     */
-    protected function mapOldStatusToCode($status)
-    {
-        $found = array_search($status, $this->oldStatuses);
         return $found !== false ? $found : $status;
     }
 

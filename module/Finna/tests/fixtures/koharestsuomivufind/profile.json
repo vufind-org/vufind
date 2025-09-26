@@ -1,0 +1,19 @@
+{
+    "mobile": "0101010101",
+    "smsalertnumber": "0123456789",
+    "othernames": "Other name",
+    "calling_name": "Calling name",
+    "firstname": "Test",
+    "surname": "Tester",
+    "address": "Address 1",
+    "address2": "Address 2",
+    "zipcode": "010101",
+    "city": "Test city",
+    "country": "Test country",
+    "expiry_date": "19.1.2022",
+    "privacy": "true",
+    "email": "test@email.fi",
+    "category_id": "4",
+    "expiry_date_near": true,
+    "opacnote": "Test opac notes"
+}

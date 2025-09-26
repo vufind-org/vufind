@@ -1,0 +1,31 @@
+{
+    "names": [
+        "Tester, Test"
+    ],
+    "addresses": [
+        {
+            "lines": [
+                "Street address 1",
+                "010101 Test city"
+            ]
+        }
+    ],
+    "message": {
+        "accountMessages": [
+            "Test message 1",
+            "Test message 2"
+        ]
+    },
+    "expirationDate": "2019-12-21",
+    "phones": [
+        {
+            "type": "p",
+            "number": "01010101"
+        },
+        {
+            "type": "t",
+            "number": "0123456789"
+        }
+    ],
+    "homeLibraryCode": "121"
+}

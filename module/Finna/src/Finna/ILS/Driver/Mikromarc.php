@@ -33,6 +33,7 @@
 
 namespace Finna\ILS\Driver;
 
+use Finna\ILS\Driver\Feature\FinnaCommonILSTrait;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 
@@ -65,6 +66,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
     use \VuFind\Cache\CacheTrait;
+    use FinnaCommonILSTrait;
 
     /**
      * Date converter object
@@ -143,6 +145,18 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
      * @var boolean
      */
     protected $requestGroupsEnabled = false;
+
+    /**
+     * Messaging settings status code mappings
+     *
+     * @var array
+     */
+    protected $statuses = [
+        'Paper'             => 'print',
+        'None'              => 'inactive',
+        'SMS'               => 'sms',
+        'Email'             => 'email',
+    ];
 
     /**
      * Constructor
@@ -370,11 +384,19 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
             'id' => $patronId,
         ];
 
-        if ($profile = $this->getMyProfile($patron)) {
-            $profile['major'] = null;
-            $profile['college'] = null;
-        }
-        return $profile;
+        $profile = $this->getMyProfile($patron);
+        return $this->createPatronArray(
+            id: $patronId,
+            cat_username: $username,
+            cat_password: $password,
+            email: $profile['email'],
+            firstname: $profile['firstname'],
+            lastname: $profile['lastname'],
+            nonDefaultFields: [
+                'loan_history' => $profile['loan_history'],
+                'blocked' => $profile['blocked'],
+            ]
+        );
     }
 
     /**
@@ -516,90 +538,78 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
         $name = explode(',', $result['Name'], 2);
         $messagingConf = $this->config['messaging'] ?? null;
 
+        // Parse messaging settings to a common format and create the final array with
+        // createMessagingSettingsArray
         $messagingSettings = [];
-
-        $type = 'dueDateNotice';
-        $dueDateNoticeActive = !$result['RefuseReminderMessages'];
-        $messagingSettings[$type] = [
-           'type' => $type,
-           'settings' => [
-              'digest' => [
-                 'type' => 'boolean',
-                 'readonly' => false,
-                 'active' => $dueDateNoticeActive,
-                 'label' => 'messaging_settings_option_' .
-                    ($dueDateNoticeActive ? 'active' : 'inactive'),
-              ],
-           ],
-        ];
-
-        if (!empty($messagingConf['checkoutNotice'])) {
-            $checkoutNoticeFormat = $result['ReceiptMessageFormat'];
-            $type = 'checkoutNotice';
-            $options = [];
-            foreach ($messagingConf['checkoutNotice'] as $option) {
-                [$key, $label] = explode(':', $option);
-                $options[$key] = [
-                   'name' => $this->translate("messaging_settings_option_$label"),
-                   'value' => $key,
-                   'active' => $checkoutNoticeFormat == $key,
-                ];
+        foreach (['dueDateNotice', 'checkoutNotice', 'notifications'] as $serviceType) {
+            $settings = [];
+            switch ($serviceType) {
+                case 'dueDateNotice':
+                    $settings = [
+                        'digest' => [
+                            'type' => 'boolean',
+                            'configurable' => true,
+                            'value' => !$result['RefuseReminderMessages'],
+                        ],
+                    ];
+                    break;
+                case 'checkoutNotice':
+                    if (empty($messagingConf[$serviceType])) {
+                        continue 2;
+                    }
+                    $activeValue = $result['ReceiptMessageFormat'];
+                    $options = [];
+                    foreach ($messagingConf['checkoutNotice'] as $option) {
+                        [$key, $label] = explode(':', $option);
+                        $mappedKey = $this->mapCodeToStatus($key);
+                        $options[$mappedKey] = $activeValue === $key;
+                    }
+                    $settings['transport_types'] = $options;
+                    $settings['selectType'] = 'select';
+                    break;
+                case 'notifications':
+                    if (empty($messagingConf[$serviceType])) {
+                        continue 2;
+                    }
+                    $map = ['Email' => 'LettersByEmail', 'SMS' => 'LettersBySMS'];
+                    $options = [];
+                    foreach ($messagingConf[$serviceType] as $option) {
+                        [$key, $label] = explode(':', $option);
+                        $mappedKey = $this->mapCodeToStatus($key);
+                        $options[$mappedKey] = $result[$map[$key]];
+                    }
+                    $settings['transport_types'] = $options;
+                    break;
             }
-            $messagingSettings[$type] = [
-               'type' => $type,
-               'settings' => [
-                  'transport_types' => [
-                     'type' => 'select',
-                     'value' => $checkoutNoticeFormat,
-                     'options' => $options,
-                  ],
-               ],
+            $messagingSettings[$serviceType] = [
+                'type' => $serviceType,
+                ...$settings,
             ];
         }
-
-        if (!empty($messagingConf['notifications'])) {
-            $type = 'notifications';
-            $map = ['Email' => 'LettersByEmail', 'SMS' => 'LettersBySMS'];
-            $options = [];
-            foreach ($messagingConf['notifications'] as $option) {
-                [$key, $label] = explode(':', $option);
-                $options[$key] = [
-                   'name' => $this->translate("messaging_settings_option_$label"),
-                   'value' => $key,
-                   'active' => $result[$map[$key]],
-                ];
-            }
-            $messagingSettings[$type] = [
-               'type' => $type,
-               'settings' => [
-                  'transport_types' => [
-                     'type' => 'multiselect',
-                     'options' => $options,
-                  ],
-               ],
-            ];
-        }
-
-        $profile = [
-            'firstname' => trim($name[1] ?? ''),
-            'lastname' => ucfirst(trim($name[0])),
-            'phone' => !empty($result['MainPhone'])
+        $messagingSettings = $this->createMessagingSettingsArray($messagingSettings);
+        $loanHistory = isset($this->config['updateTransactionHistoryState']['method'])
+            ? $result['StoreBorrowerHistory']
+            : null;
+        $profile = $this->createProfileArray(
+            firstname: trim($name[1] ?? ''),
+            lastname: ucfirst(trim($name[0])),
+            phone: !empty($result['MainPhone'])
                 ? $result['MainPhone'] : $result['Mobile'],
-            'email' => $result['MainEmail'],
-            'address1' => $result['MainAddrLine1'],
-            'address2' => $result['MainAddrLine2'],
-            'zip' => $result['MainZip'],
-            'city' => $result['MainPlace'],
-            'expiration_date' => $expirationDate,
-            'messagingServices' => $messagingSettings,
-            'blocked' => !empty($result['Defaulted']),
-        ];
-
-        if (isset($this->config['updateTransactionHistoryState']['method'])) {
-            $profile['loan_history'] = $result['StoreBorrowerHistory'];
-        }
-
-        $profile = array_merge($patron, $profile);
+            address1: $result['MainAddrLine1'],
+            address2: $result['MainAddrLine2'],
+            zip: $result['MainZip'],
+            city: $result['MainPlace'],
+            expiration_date: $expirationDate,
+            messagingServices: $messagingSettings,
+            loan_history: $loanHistory,
+            email: $result['MainEmail'],
+            nonDefaultFields: [
+                'blocked' => !empty($result['Defaulted']),
+                'cat_username' => $patron['cat_username'],
+                'cat_password' => $patron['cat_password'],
+                'id' => $patron['id'],
+            ],
+        );
         $this->putCachedData($cacheKey, $profile);
         return $profile;
     }
@@ -2359,5 +2369,17 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
             }
         }
         return true;
+    }
+
+    /**
+     * Map ILS code to common status
+     *
+     * @param string $code Code to map
+     *
+     * @return string Mapped code
+     */
+    protected function mapCodeToStatus(string $code): string
+    {
+        return $this->statuses[$code] ?? $code;
     }
 }

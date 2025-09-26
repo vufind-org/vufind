@@ -1,0 +1,12 @@
+{
+    "data": [
+        {
+            "library_id": 15,
+            "name": "Test library 15"
+        },
+        {
+            "library_id": 5,
+            "name": "Test library 5"
+        }
+    ]
+}

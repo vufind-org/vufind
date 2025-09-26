@@ -1,0 +1,10 @@
+{
+    "code": 200,
+    "data": {
+        "patron_id": "12345",
+        "firstname": "",
+        "surname": "",
+        "email": "",
+        "library_id": ""
+    }
+}

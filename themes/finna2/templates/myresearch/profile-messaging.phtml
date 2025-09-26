@@ -11,29 +11,9 @@ if (!isset($capabilityParams)) {
         <h4 class="myresearch-profile-middle-header"><?= $this->transEsc('messaging_settings_title') ?></h4>
     </div>
     <?php foreach ($profile['messagingServices'] as $service): ?>
+        <div class="my-profile-col profile-title"><?=$this->transEscWithPrefix('messaging_settings_type_', $service['type'])?></div>
+        <div class="profile-text-value">
             <?php
-            echo '<div class="my-profile-col profile-title">' . $this->transEscWithPrefix('messaging_settings_type_', $service['type']) . ':</div>';
-            echo '<div class="profile-text-value">';
-            if (isset($service['sendMethods'])) {
-                // Axiell
-                $activeMethods = 0;
-                foreach ($service['sendMethods'] as $method) {
-                    if ($method['active']) {
-                        if ($activeMethods) {
-                            echo ', ';
-                        }
-                        echo $this->transEsc(
-                            'messaging_settings_method_' . $method['method'],
-                            null,
-                            $method['method']
-                        );
-                        ++$activeMethods;
-                    }
-                }
-                if (0 === $activeMethods) {
-                    echo $this->transEsc('messaging_settings_method_none');
-                }
-            } else {
                 // Driver
                 $settingStrs = [];
                 foreach ($service['settings'] as $settingId => $setting) {
@@ -69,7 +49,6 @@ if (!isset($capabilityParams)) {
                     }
                 }
                 echo implode(', ', $settingStrs);
-            }
             ?>
         </div>
     <?php endforeach; ?>

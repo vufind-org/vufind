@@ -29,6 +29,7 @@
 
 namespace Finna\ILS\Driver;
 
+use Finna\ILS\Driver\Feature\FinnaCommonILSTrait;
 use VuFind\Exception\ILS as ILSException;
 
 use function array_key_exists;
@@ -49,6 +50,8 @@ use function strlen;
  */
 class SierraRest extends \VuFind\ILS\Driver\SierraRest
 {
+    use FinnaCommonILSTrait;
+
     /**
      * Fine types that allow online payment
      *
@@ -217,17 +220,17 @@ class SierraRest extends \VuFind\ILS\Driver\SierraRest
             $lastname = $parts[0];
             $firstname = $parts[1] ?? '';
         }
-        return [
-            'id' => $patron['id'],
-            'firstname' => $firstname,
-            'lastname' => $lastname,
-            'cat_username' => $username,
-            'cat_password' => $password,
-            'email' => !empty($patron['emails']) ? $patron['emails'][0] : '',
-            'major' => null,
-            'college' => null,
-            'home_library' => $patron['homeLibraryCode'] ?? '',
-        ];
+        return $this->createPatronArray(
+            id: $patron['id'],
+            firstname: $firstname,
+            lastname: $lastname,
+            cat_username: $username,
+            cat_password: $password,
+            email: $patron['emails'][0] ?? '',
+            nonDefaultFields: [
+                'home_library' => $patron['homeLibraryCode'] ?? '',
+            ]
+        );
     }
 
     /**
@@ -436,46 +439,35 @@ class SierraRest extends \VuFind\ILS\Driver\SierraRest
             }
         }
 
-        $profile = [
-            'firstname' => $firstname,
-            'lastname' => $lastname,
-            'phone' => $phone,
-            'smsnumber' => $sms,
-            'email' => !empty($result['emails']) ? $result['emails'][0] : '',
-            'address1' => $address,
-            'zip' => $zip,
-            'city' => $city,
-            'birthdate' => $result['birthDate'] ?? '',
-            'messages' => $messages,
-            'home_library' => $result['homeLibraryCode'],
-        ];
-
+        $expirationDate = null;
+        $expirationSoon = false;
+        $expired = false;
         if (!empty($result['expirationDate'])) {
-            $profile['expiration_date'] = $this->dateConverter->convertToDisplayDate(
+            $expirationDate = $this->dateConverter->convertToDisplayDate(
                 'Y-m-d',
                 $result['expirationDate']
             );
             $date = \DateTime::createFromFormat('Y-m-d', $result['expirationDate']);
             $diff = $date->diff(new \Datetime());
             if (!$diff->invert && $diff->days > 0) {
-                $profile['expired'] = true;
+                $expired = true;
             } elseif (
                 $this->daysBeforeAccountExpirationNotification
                 && $diff->days === 0
                 || ($diff->invert
                 && $diff->days <= $this->daysBeforeAccountExpirationNotification)
             ) {
-                $profile['expiration_soon'] = true;
+                $expirationSoon = true;
             }
         }
-
+        $selfServiceLibrary = null;
         // PCODE3: self-service library access
         if ($field = $result['fixedFields'][46] ?? null) {
-            $profile['self_service_library'] = (string)$field['value'] === '1';
+            $selfServiceLibrary = (string)$field['value'] === '1';
         }
 
         // Checkout history:
-        $result = $this->makeRequest(
+        $historyResult = $this->makeRequest(
             [
                 'v6', 'patrons', $patron['id'], 'checkouts', 'history',
                 'activationStatus',
@@ -484,11 +476,27 @@ class SierraRest extends \VuFind\ILS\Driver\SierraRest
             'GET',
             $patron
         );
-        if (array_key_exists('readingHistoryActivation', $result)) {
-            $profile['loan_history'] = $result['readingHistoryActivation'];
-        }
 
-        return $profile;
+        return $this->createProfileArray(
+            firstname: $firstname,
+            lastname: $lastname,
+            phone: $phone,
+            birthdate: $result['birthDate'] ?? '',
+            zip: $zip,
+            city: $city,
+            address1: $address,
+            home_library: $result['homeLibraryCode'],
+            expiration_date: $expirationDate,
+            loan_history: $historyResult['readingHistoryActivation'] ?? null,
+            email: $result['emails'][0] ?? '',
+            nonDefaultFields: [
+                'self_service_library' => $selfServiceLibrary,
+                'expired' => $expired,
+                'expiration_soon' => $expirationSoon,
+                'messages' => $messages,
+                'smsnumber' => $sms,
+            ]
+        );
     }
 
     /**

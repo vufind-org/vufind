@@ -33,6 +33,7 @@ use Finna\ILS\Driver\Alma;
 use Generator;
 use PHPUnit\Framework\MockObject\MockObject;
 use SimpleXMLElement;
+use VuFind\I18n\TranslatableString;
 
 /**
  * Alma test class
@@ -55,73 +56,73 @@ class AlmaTest extends \PHPUnit\Framework\TestCase
     public static function getTestUpdateAddressData(): Generator
     {
         yield 'single entries' => [
-        [
-          'id' => '123456',
-        ],
-        [
-          'address1' => 'Test address update',
-          'email' => 'newemail@email.fi',
-          'phone' => '0123456789',
-        ],
-        [
-          'updateProfile' => [
-              'fields' => [
-                  'Address:address1',
-                  'Email:email',
-                  'Phone:phone',
-              ],
-          ],
-        ],
-        'alma/user.xml',
-        'alma/user_address_updated.xml',
+            [
+                'id' => '123456',
+            ],
+            [
+                'address1' => 'Test address update',
+                'email' => 'newemail@email.fi',
+                'phone' => '0123456789',
+            ],
+            [
+                'updateProfile' => [
+                    'fields' => [
+                        'Address:address1',
+                        'Email:email',
+                        'Phone:phone',
+                    ],
+                ],
+            ],
+            'alma/user.xml',
+            'alma/user_address_updated.xml',
         ];
 
         yield 'empty entries' => [
-          [
-            'id' => '123456',
-          ],
-          [
-            'address1' => '',
-            'email' => '',
-            'phone' => '',
-          ],
-          [
-            'updateProfile' => [
-                'fields' => [
-                    'Address:address1',
-                    'Email:email',
-                    'Phone:phone',
+            [
+                'id' => '123456',
+            ],
+            [
+                'address1' => '',
+                'email' => '',
+                'phone' => '',
+            ],
+            [
+                'updateProfile' => [
+                    'fields' => [
+                        'Address:address1',
+                        'Email:email',
+                        'Phone:phone',
+                    ],
                 ],
             ],
-          ],
-          'alma/user.xml',
-          'alma/user_empty_address_updated.xml',
+            'alma/user.xml',
+            'alma/user_empty_address_updated.xml',
         ];
 
         yield 'multiple addresses' => [
-        [
-          'id' => '123456',
-        ],
-        [
-          'addresses' => [
-            'address' => [
-              'address1' => 'Test address 1',
-              'address2' => 'Test address 2',
+            [
+                'id' => '123456',
             ],
-          ],
-        ],
-        [
-          'updateProfile' => [
-              'fields' => [
-                  'Address:address1',
-                  'Address2:address2',
-                  'Email:email',
-                  'Phone:phone',
-              ],
-          ],
-        ],
-        'alma/user_multiple_address.xml',
-        'alma/user_multiple_address_updated.xml',
+            [
+                'addresses' => [
+                    'address' => [
+                        'address1' => 'Test address 1',
+                        'address2' => 'Test address 2',
+                    ],
+                ],
+            ],
+            [
+                'updateProfile' => [
+                    'fields' => [
+                        'Address:address1',
+                        'Address2:address2',
+                        'Email:email',
+                        'Phone:phone',
+                    ],
+                ],
+            ],
+            'alma/user_multiple_address.xml',
+            'alma/user_multiple_address_updated.xml',
         ];
     }
 
@@ -154,6 +155,193 @@ class AlmaTest extends \PHPUnit\Framework\TestCase
         $driver = $this->getDriver($makeRequestMap);
         $driver->setConfig($config);
         $driver->updateAddress($patron, $details);
+    }
+
+    /**
+     * Data provider for testPatronLogin
+     *
+     * @return Generator
+     */
+    public static function getTestPatronLoginData(): Generator
+    {
+        yield 'patron all values set' => [
+            'alma/patron.xml',
+            [
+                'id' => '57391',
+                'cat_username' => '1111',
+                'cat_password' => '2121',
+                'firstname' => 'John',
+                'lastname' => 'Smith',
+                'email' => 'pref@email.if',
+                'major' => null,
+                'college' => null,
+            ],
+        ];
+        yield 'patron some values missing' => [
+        'alma/patron_partial.xml',
+            [
+                'id' => '57391',
+                'email' => null,
+                'firstname' => 'Test',
+                'lastname' => '',
+                'major' => null,
+                'college' => null,
+                'cat_username' => '1111',
+                'cat_password' => '2121',
+            ],
+        ];
+    }
+
+    /**
+     * Test patron login
+     *
+     * @param string $fixtureKey Fixture key
+     * @param array  $expected   Expected results
+     *
+     * @return       void
+     * @dataProvider getTestPatronLoginData
+     */
+    public function testPatronLogin(string $fixtureKey, array $expected): void
+    {
+        $userFixture = $this->getFixture($fixtureKey, 'Finna');
+        $makeRequestMap = [
+            ['/users/1111', 'GET', [new SimpleXMLElement($userFixture), 200]],
+        ];
+        $driver = $this->getDriver($makeRequestMap);
+        $result = $driver->patronLogin('1111', '2121');
+        $this->assertEquals(
+            $expected,
+            $result
+        );
+    }
+
+    /**
+     * Data provider for testGetMyProfileData
+     *
+     * @return Generator
+     */
+    public static function getTestGetMyProfileData(): Generator
+    {
+        yield 'profile all values set' => [
+            'alma/profile.xml',
+            [
+                'barcode' => '01924019240',
+                'email' => 'pref@email.if',
+                'group_code' => 'test',
+                'expired' => null,
+                'expiration_soon' => null,
+                'self_service_pin' => null,
+                'address3' => 'Line 3',
+                'homeAddress' => 'Line 1, 00000 City',
+                'workAddress' => 'A street 1, 00000 Far away',
+                'account_type' => 'normal',
+                'language' => 'fi',
+                'firstname' => 'John',
+                'lastname' => 'Smith',
+                'birthdate' => '',
+                'address1' => 'Line 1',
+                'address2' => 'Line 2',
+                'city' => 'City',
+                'country' => new TranslatableString('Country', ''),
+                'zip' => '00000',
+                'phone' => '9876543210',
+                'mobile_phone' => null,
+                'home_library' => null,
+                'expiration_date' => null,
+                'group' => 'descgroup',
+                'addresses' => [
+                    [
+                        'address1' => 'A street 1',
+                        'address2' => '          ',
+                        'address3' => 'Not a default field',
+                        'country' => new TranslatableString('Far', ''),
+                        'city' => 'Far away',
+                        'zip' => '00000',
+                        'types' => [
+                            'work',
+                            'something',
+                        ],
+                        'preferred' => false,
+                    ],
+                    [
+                        'address1' => 'Line 1',
+                        'address2' => 'Line 2',
+                        'address3' => 'Line 3',
+                        'country' => new TranslatableString('Country', ''),
+                        'city' => 'City',
+                        'zip' => '00000',
+                        'types' => [
+                            'Type 1',
+                            'home',
+                        ],
+                        'preferred' => true,
+                    ],
+                ],
+                'guarantees' => [
+                    ['lastname' => 'Tester Test'],
+                    ['lastname' => 'Ttee Tst'],
+                ],
+                'messagingServices' => [],
+                'loan_history' => null,
+            ],
+        ];
+        yield 'profile some values missing' => [
+            'alma/profile_partial.xml',
+            [
+                'addresses' => [],
+                'barcode' => null,
+                'group_code' => null,
+                'expired' => null,
+                'expiration_soon' => null,
+                'self_service_pin' => null,
+                'address3' => null,
+                'homeAddress' => null,
+                'workAddress' => null,
+                'guarantees' => [],
+                'account_type' => '',
+                'language' => null,
+                'messagingServices' => [],
+                'loan_history' => null,
+                'email' => null,
+                'firstname' => null,
+                'lastname' => null,
+                'birthdate' => '',
+                'address1' => null,
+                'address2' => null,
+                'city' => null,
+                'country' => '',
+                'mobile_phone' => null,
+                'expiration_date' => null,
+                'group' => null,
+                'home_library' => null,
+                'zip' => null,
+                'phone' => null,
+            ],
+        ];
+    }
+
+    /**
+     * Test getMyProfile
+     *
+     * @param string $fixtureKey Fixture key
+     * @param array  $expected   Expected results
+     *
+     * @return       void
+     * @dataProvider getTestGetMyProfileData
+     */
+    public function testGetMyProfile(string $fixtureKey, array $expected): void
+    {
+        $profileFixture = $this->getFixture($fixtureKey, 'Finna');
+        $makeRequestMap = [
+            ['/users/1111', 'GET', new SimpleXMLElement($profileFixture)],
+        ];
+        $driver = $this->getDriver($makeRequestMap);
+        $result = $driver->getMyProfile(['id' => '1111']);
+
+        $this->assertEquals(
+            $expected,
+            $result
+        );
     }
 
     /**

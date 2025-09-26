@@ -1,0 +1,82 @@
+{
+    "code": 200,
+    "data": {
+        "guarantors": [
+            {
+                "firstname": "quarantor1",
+                "surname": "surname1"
+            }
+        ],
+        "guarantees": [
+            {
+                "firstname": "quarantee1",
+                "surname": "surname_qua_1"
+            }
+        ],
+        "messages": [
+            {
+                "date": "15.05.2005",
+                "library_id": "5",
+                "message": "Library message"
+            },
+            {
+                "date": "11.01.2009",
+                "library_id": "55",
+                "message": "Another library message"
+            }
+        ],
+        "mobile": "0101010101",
+        "sms_number": "0123456789",
+        "other_name": "Other name",
+        "calling_name": "Calling name",
+        "firstname": "Test",
+        "surname": "Tester",
+        "address": "Address 1",
+        "address2": "Address 2",
+        "postal_code": "010101",
+        "city": "Test city",
+        "country": "Test country",
+        "expiry_date": "19.1.2022",
+        "privacy": "true",
+        "email": "test@email.fi",
+        "category_id": "4",
+        "expiry_date_near": true,
+        "opac_notes": "Test opac notes",
+        "messaging_preferences": {
+            "Advance_Notice": {
+                "transport_types": {
+                    "letter": true,
+                    "sms": false
+                },
+                "digest": {
+                    "value": true,
+                    "configurable": false
+                },
+                "days_in_advance": {
+                    "configurable": true,
+                    "value": 5
+                }
+            },
+            "Hold_Filled": {
+                "transport_types": {
+                    "letter": true,
+                    "sms": false
+                },
+                "digest": {
+                    "value": true,
+                    "configurable": false
+                }
+            },
+            "Item_Due": {
+                "transport_types": {
+                    "letter": true,
+                    "sms": false
+                },
+                "digest": {
+                    "value": true,
+                    "configurable": false
+                }
+            }
+        }
+    }
+}

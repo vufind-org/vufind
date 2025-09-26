@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<res>
+<patronInformationResult>
+    <status><type>ok</type></status>
+    <patronInformation>
+        <patronName> Tester </patronName>
+        <emailAddresses>
+            <emailAddress>
+                <isActive>no</isActive>
+                <address>notactive@email.fi</address>
+                <id>221</id>
+            </emailAddress>
+        </emailAddresses>
+        <addresses>
+            <address>
+                <isActive>no</isActive>
+                <streetAddress>Not active street 1</streetAddress>
+                <zipCode>00001</zipCode>
+                <country>Act</country>
+                <city>Not Ive</city>
+                <id>010101</id>
+            </address>
+        </addresses>
+        <phoneNumbers>
+            <phoneNumber>
+                <sms>
+                    <useForSms>no</useForSms>
+                </sms>
+                <localCode>5125125</localCode>
+                <areaCode>121</areaCode>
+                <id>123</id>
+            </phoneNumber>
+        </phoneNumbers>
+        <messageServices>
+        </messageServices>
+        <backendPatronId>121212</backendPatronId>
+    </patronInformation>
+</patronInformationResult>
+
+</res>
