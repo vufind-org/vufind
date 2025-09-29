@@ -226,7 +226,7 @@ class GetItemStatuses extends AbstractBase implements
     {
         return [
             'prefix' => $item['callnumber_prefix'] ?? '',
-            'callnumber' => $item['callnumber'],
+            'callnumber' => $item['callnumber'] ?? null,
         ];
     }
 
@@ -287,7 +287,7 @@ class GetItemStatuses extends AbstractBase implements
             $itemIdParams = !empty($record[0]['item_id']) ? ['query' => ['item_id' => $record[0]['item_id']]] : null;
             $getThisURI = $urlHelper(
                 'record-getthis',
-                ['id' => $record[0]['id']],
+                ['id' => $record[0]['id'] ?? null],
                 $itemIdParams
             );
         } else {
@@ -300,7 +300,9 @@ class GetItemStatuses extends AbstractBase implements
             // Store call number/location info:
             $callNumbers[] = $this->getCallNumberArray($info);
 
-            $locations[] = $info['location'];
+            if (!empty($info['location'])) {
+                $locations[] = $info['location'];
+            }
             // Store all available services
             if (isset($info['services'])) {
                 $services = array_merge($services, $info['services']);
@@ -336,7 +338,7 @@ class GetItemStatuses extends AbstractBase implements
 
         // Send back the collected details:
         return [
-            'id' => $record[0]['id'],
+            'id' => $record[0]['id'] ?? null,
             'availability' => $combinedAvailability->availabilityAsString(),
             'availability_message' => $availabilityMessage,
             'location' => htmlentities(implode(",\t", $location), ENT_COMPAT, 'UTF-8'),

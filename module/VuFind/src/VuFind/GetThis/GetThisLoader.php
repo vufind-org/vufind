@@ -714,7 +714,7 @@ class GetThisLoader implements LoggerAwareInterface
             return $itemId; // Use the one passed as a parameter first
         } elseif (isset($this->item['item_id'])) {
             return $this->item['item_id']; // Get the one set by the loader
-        } elseif (is_array($this->items) && count($this->items) > 0) {
+        } elseif (isset($this->items[0]['item_id'])) {
             return $this->items[0]['item_id']; // Grab the first holding record
         } else {
             return null; // This shouldn't happen, but we have no item id!
@@ -734,7 +734,7 @@ class GetThisLoader implements LoggerAwareInterface
     {
         if (
             !isset($this->item)
-            || (isset($itemId) && $this->item['item_id'] != $itemId)
+            || (isset($itemId, $this->item['item_id']) && $this->item['item_id'] != $itemId)
         ) {
             $this->cacheItem($itemId);
         }
@@ -752,12 +752,17 @@ class GetThisLoader implements LoggerAwareInterface
     protected function cacheItem(?string $itemId = null): void
     {
         $this->item = null;
-        $itemId = $this->getItemId($itemId);
-        foreach ($this->getItems() as $hold_item) {
-            if ($hold_item['item_id'] == $itemId) {
-                $this->item = $hold_item;
-                break;
+        if ($itemId = $this->getItemId($itemId)) {
+            foreach ($this->getItems() as $hold_item) {
+                if (isset($hold_item['item_id']) && $hold_item['item_id'] == $itemId) {
+                    $this->item = $hold_item;
+                    break;
+                }
             }
+        }
+        // If none matching or parameter is null, select the first one if available
+        if (!isset($this->item) && count($this->items) > 0) {
+            $this->item = $this->items[0];
         }
     }
 

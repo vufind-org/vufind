@@ -1,7 +1,7 @@
 <!-- Get-this: remote-delivery -->
 <?php
 $data = [
-    '%%item%%' => $this->getThis->getItem(),
+    '%%item%%' => $this->getThis->getItem()['id'],
     '%%location%%' => $this->getThis->getLocation(),
     '%%status%%' => $this->getThis->getStatus(),
     '%%callNum%%' => $this->getThis->getCallNumber(),

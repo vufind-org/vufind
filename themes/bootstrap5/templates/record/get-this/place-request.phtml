@@ -9,7 +9,7 @@ $link = $this->getThis->getLink();
 $dataLightbox = !empty($item['linkLightbox']) ? 'data-lightbox' : '';
 $checkRequest = $check ? 'checkRequest ' : '';
 ?>
-<?php if ($item['is_holdable'] && $link ?? false) : ?>
+<?php if (isset($item['is_holdable']) && !empty($link)) : ?>
   <div>
     <p><strong><?= $this->transEsc('campus_pickup') ?> :</strong>
         <?= $this->transEsc('campus_pickup_place_request_text') ?>
