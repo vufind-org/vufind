@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,12 +29,9 @@
 
 namespace VuFindTest\Config;
 
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Config\PathResolver;
-use VuFind\Feature\DirUtilityTrait;
-use VuFindTest\Feature\ConfigRelatedServicesTrait;
-use VuFindTest\Feature\FixtureTrait;
-use VuFindTest\Feature\LiveDetectionTrait;
+use VuFindTest\Integration\ConfigTestCase;
 
 /**
  * Config Writing Integration Test Class
@@ -45,65 +42,8 @@ use VuFindTest\Feature\LiveDetectionTrait;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ConfigWritingTest extends \PHPUnit\Framework\TestCase
+class ConfigWritingTest extends ConfigTestCase
 {
-    use LiveDetectionTrait;
-    use FixtureTrait;
-    use DirUtilityTrait;
-    use ConfigRelatedServicesTrait;
-
-    /**
-     * Path to local dir configurations
-     *
-     * @var string
-     */
-    protected string $localDirPath;
-
-    /**
-     * Standard setup method.
-     *
-     * @return void
-     */
-    public function setUp(): void
-    {
-        // Give up if we're not running in CI:
-        if (!$this->continuousIntegrationRunning()) {
-            $this->markTestSkipped('Continuous integration not running.');
-            return;
-        }
-
-        $pathResolver = $this->getPathResolver();
-        $this->localDirPath = $pathResolver->getLocalConfigDirPath();
-        if ($this->localDirPath === null) {
-            $this->markTestSkipped('No local config dir configured.');
-        }
-
-        // create backup of local config dir
-        if (is_dir($this->localDirPath)) {
-            $backUpDir = $this->localDirPath . '.bak';
-            rename($this->localDirPath, $backUpDir);
-            mkdir($this->localDirPath);
-        }
-    }
-
-    /**
-     * Standard teardown method.
-     *
-     * @return void
-     */
-    public function tearDown(): void
-    {
-        // restore backup of local config dir
-        $localDirPath = $this->localDirPath;
-        $backUpDir = $localDirPath . '.bak';
-        if (is_dir($localDirPath)) {
-            self::rmDir($localDirPath);
-        }
-        if (is_dir($backUpDir)) {
-            rename($backUpDir, $localDirPath);
-        }
-    }
-
     /**
      * Upgrade test provider.
      *
@@ -144,7 +84,7 @@ class ConfigWritingTest extends \PHPUnit\Framework\TestCase
             baseSubDir: ''
         );
         $pathResolver = $container->get(PathResolver::class);
-        $configManager = $container->get(ConfigManager::class);
+        $configManager = $container->get(ConfigManagerInterface::class);
 
         $baseDirPath = $pathResolver->getBaseConfigDirPath();
         $baseConfigLocation = $pathResolver->getMatchingConfigLocation($baseDirPath, $configName);

@@ -270,7 +270,7 @@ Facets:
         Primo:
           Field: creationdate
         Solr:
-          Field: publishDate
+          Field: publishDateRange
     source:
       Mappings:
         EDS:

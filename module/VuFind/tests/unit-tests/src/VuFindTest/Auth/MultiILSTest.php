@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -238,20 +238,16 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock MultiBackend driver to test.
      *
-     * @param array $onlyMethods Existing methods to mock (in addition to
-     * supportsMethod)
-     * @param array $addMethods  New methods to mock (in addition to
-     * getLoginDrivers)
+     * @param array $onlyMethods Existing methods to mock (in addition to supportsMethod)
      *
      * @return MockObject&MultiBackend
      */
-    protected function getMockMultiBackend(
-        $onlyMethods = [],
-        $addMethods = ['patronLogin']
-    ): MockObject&MultiBackend {
+    protected function getMockMultiBackend($onlyMethods = []): MockObject&MultiBackend
+    {
         $onlyMethods[] = 'supportsMethod';
         $onlyMethods[] = 'getLoginDrivers';
         $onlyMethods[] = 'getConfig';
+        $onlyMethods[] = 'patronLogin';
         $configLoader = $this->getMockBuilder(\VuFind\Config\PluginManager::class)
             ->setConstructorArgs([$this->container])
             ->getMock();
@@ -265,7 +261,6 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
         $driver = $this->getMockBuilder(\VuFind\ILS\Driver\MultiBackend::class)
             ->setConstructorArgs([$configLoader, $ilsAuth, $driverManager])
             ->onlyMethods($onlyMethods)
-            ->addMethods($addMethods)
             ->getMock();
         $driver->expects($this->any())
             ->method('getLoginDrivers')
@@ -328,7 +323,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
         $driverManager = new \VuFind\ILS\Driver\PluginManager($this->container);
         $parts = explode('\\', $driver::class);
         $driverClass = end($parts);
-        $mockConfigReader = $this->getMockConfigPluginManager(
+        $mockConfigManager = $this->getMockConfigManager(
             [
                 $driverClass => [
                     'Drivers' => [
@@ -343,7 +338,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
         $connection = new \VuFind\ILS\Connection(
             new \VuFind\Config\Config(['driver' => 'MultiBackend']),
             $driverManager,
-            $mockConfigReader
+            $mockConfigManager
         );
         $connection->setDriver($driver);
 

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,7 +29,7 @@
 
 namespace VuFindTest\Related;
 
-use VuFind\Config\PluginManager as ConfigManager;
+use VuFind\Config\PluginManager as ConfigPluginManager;
 use VuFind\Related\Bookplate;
 use VuFind\Related\BookplateFactory;
 use VuFindTest\Container\MockContainer;
@@ -172,7 +172,7 @@ class BookplateTest extends \PHPUnit\Framework\TestCase
     ): MockContainer {
         $container = new MockContainer($this);
         $container->set(
-            ConfigManager::class,
+            ConfigPluginManager::class,
             $this->getMockConfigPluginManager([$expectedConfig => $config])
         );
         return $container;

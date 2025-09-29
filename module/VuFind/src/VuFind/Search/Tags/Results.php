@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Tags
@@ -135,7 +135,7 @@ class Results extends BaseResults
 
         // Retrieve record drivers for the selected items.
         $callback = function ($row) {
-            return ['id' => $row['record_id'], 'source' => $row['source']];
+            return ['id' => $row[0]->getRecordId(), 'source' => $row[0]->getSource()];
         };
         $this->results = $this->recordLoader
             ->loadBatch(array_map($callback, $results), true);

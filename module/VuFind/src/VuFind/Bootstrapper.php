@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Bootstrap
@@ -85,8 +85,7 @@ class Bootstrapper
         $app = $event->getApplication();
         $this->events = $app->getEventManager();
         $this->container = $app->getServiceManager();
-        $this->config = $this->container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
+        $this->config = $this->container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
     }
 
     /**
@@ -175,7 +174,7 @@ class Bootstrapper
      */
     protected function initContext(): void
     {
-        $callback = function ($event) {
+        $callback = function (/*$event*/) {
             if (PHP_SAPI !== 'cli') {
                 $viewModel = $this->container->get('ViewManager')->getViewModel();
 
@@ -217,7 +216,7 @@ class Bootstrapper
      */
     protected function initUserLanguage(): void
     {
-        $callback = function ($event) {
+        $callback = function (/*$event*/) {
             // Store last selected language in user account, if applicable:
             $settings = $this->container->get(LocaleSettings::class);
             $language = $settings->getUserLocale();
@@ -359,7 +358,7 @@ class Bootstrapper
         // layout that can be used to suppress actions in the layout templates that
         // might trigger exceptions -- this will greatly increase the odds of showing
         // a user-friendly message instead of a fatal error.
-        $callback = function ($event) {
+        $callback = function (/*$event*/) {
             $viewModel = $this->container->get('ViewManager')->getViewModel();
             $viewModel->renderingError = true;
         };

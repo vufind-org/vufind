@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -335,6 +335,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'lastname' => 'last',
             'email' => 'fake@fake.com',
             'addressTypeIds' => [],
+            'major' => null,
+            'college' => null,
         ];
         $this->assertEquals($expected, $result);
     }
@@ -365,6 +367,8 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'lastname' => 'last',
             'email' => 'fake@fake.com',
             'addressTypeIds' => [],
+            'major' => null,
+            'college' => null,
         ];
         $this->assertEquals($expected, $result);
     }
@@ -853,13 +857,17 @@ class FolioTest extends \PHPUnit\Framework\TestCase
             'id' => 'foo',
             'firstname' => 'Test',
             'lastname' => 'User',
+            'birthdate' => null,
             'address1' => 'street',
+            'address2' => null,
             'city' => 'city',
             'country' => 'country',
             'zip' => '12345',
             'phone' => '0123456789',
             'mobile_phone' => '1234567890',
             'expiration_date' => '05-29-2030',
+            'group' => null,
+            'home_library' => null,
         ];
         $this->assertEquals($expected, $result);
     }

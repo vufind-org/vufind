@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -154,7 +154,7 @@ class ILS extends AbstractBase
      */
     public function getPasswordPolicy(?string $target = null): array
     {
-        // If a target is specified, use an arbitrary cat_username with the corrent target prefix:
+        // If a target is specified, use an arbitrary cat_username with the current target prefix:
         $patron = $target ? ['cat_username' => "$target.123"] : $this->getLoggedInPatron();
         $policy = $this->getCatalog()->getPasswordPolicy($patron);
         if ($policy === false) {
@@ -244,9 +244,13 @@ class ILS extends AbstractBase
         // Validate Input
         $this->validatePasswordUpdate($params, $recoveryData['target'] ?? null);
 
-        $result = $this->getCatalog()->resetPassword($recoveryData['details'], $params);
-        if (!$result['success']) {
-            throw new AuthException($result['error']);
+        try {
+            $result = $this->getCatalog()->resetPassword($recoveryData['details'], $params);
+            if (!$result['success']) {
+                throw new AuthException($result['error']);
+            }
+        } catch (ILSException $e) {
+            throw new AuthException('ils_connection_failed', previous: $e);
         }
     }
 

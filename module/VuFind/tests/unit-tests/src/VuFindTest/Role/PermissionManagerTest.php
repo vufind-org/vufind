@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -119,7 +119,7 @@ class PermissionManagerTest extends \PHPUnit\Framework\TestCase
     public function testGrantedPermission(): void
     {
         $pm = new PermissionManager($this->permissionConfig);
-        $mockAuth = $this->createMock(\LmcRbacMvc\Service\AuthorizationService::class);
+        $mockAuth = $this->createMock(\Lmc\Rbac\Mvc\Service\AuthorizationService::class);
         $mockAuth->expects($this->any())->method('isGranted')->willReturn(true);
         $pm->setAuthorizationService($mockAuth);
 
@@ -134,7 +134,7 @@ class PermissionManagerTest extends \PHPUnit\Framework\TestCase
     public function testDeniedPermission()
     {
         $pm = new PermissionManager($this->permissionConfig);
-        $mockAuth = $this->createMock(\LmcRbacMvc\Service\AuthorizationService::class);
+        $mockAuth = $this->createMock(\Lmc\Rbac\Mvc\Service\AuthorizationService::class);
         $mockAuth->expects($this->any())->method('isGranted')->willReturn(false);
         $pm->setAuthorizationService($mockAuth);
 

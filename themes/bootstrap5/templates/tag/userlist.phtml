@@ -76,7 +76,7 @@
                   </div>
                 </div>
               </td>
-              <td data-label="<?=$this->transEscAttr('Created')?>"><?=$this->dateTime()->convertToDisplayDateAndTime('Y-m-d H:i:s', $tag['posted'])?></td>
+              <td data-label="<?=$this->transEscAttr('Created')?>"><?=$this->dateTime()->convertToDisplayDateAndTime('U', $tag['posted']->getTimestamp())?></td>
               <td data-label="<?=$this->transEscAttr('Title')?>">
                 <a href="<?=$this->url('record', ['id' => $tag['record_id']])?>"><?=$this->escapeHtml($tag['recordTitle'])?></a>
               </td>

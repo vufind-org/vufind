@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -345,7 +345,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     {
         // Adding the auth_method setting makes it possible to handle logins when
         // using an auth method that proxies others (e.g. ChoiceAuth)
-        $targetUri = $target . (str_contains($target, '?') ? '&' : '?') . 'auth_method=oidc';
+        $targetUri = $target . (str_contains($target, '?') ? '&' : '?') . 'auth_method=OpenIDConnect';
         if (empty($this->session->oidcLastUri) && !empty($target)) {
             $this->session->oidcLastUri = $targetUri;
         }
@@ -355,7 +355,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
             'client_id' => $this->getConfig('client_id'),
             'nonce' => $this->session->oidc_nonce,
             'state' => $this->session->oidc_state,
-            'scope' => 'openid profile email',
+            'scope' => $this->getConfig('scope') ?? 'openid profile email',
         ];
         return $this->getProvider()->authorization_endpoint . '?' . http_build_query($params);
     }
@@ -518,7 +518,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     }
 
     /**
-     * Get attibute value from user info
+     * Get attribute value from user info
      *
      * @param object $userInfo  User info claim from OIDC server
      * @param string $attribute Attribute to get value for

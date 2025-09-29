@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -34,7 +34,6 @@ namespace VuFind\Controller;
 use ArrayObject;
 use Composer\Semver\Comparator;
 use Exception;
-use Laminas\Db\Adapter\Adapter;
 use Laminas\Mvc\MvcEvent;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container;
@@ -47,8 +46,9 @@ use VuFind\Cookie\Container as CookieContainer;
 use VuFind\Cookie\CookieManager;
 use VuFind\Crypt\Base62;
 use VuFind\Crypt\BlockCipher;
-use VuFind\Db\AdapterFactory;
-use VuFind\Db\MigrationManager;
+use VuFind\Db\Connection;
+use VuFind\Db\ConnectionFactory;
+use VuFind\Db\Migration\MigrationManager;
 use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\SearchServiceInterface;
@@ -221,23 +221,23 @@ class UpgradeController extends AbstractBase
     }
 
     /**
-     * Get a database adapter for root access using credentials in session.
+     * Get a database connection for root access using credentials in session.
      *
-     * @return Adapter
+     * @return Connection
      */
-    protected function getRootDbAdapter()
+    protected function getRootDbConnection(): Connection
     {
-        // Use static cache to avoid loading adapter more than once on
+        // Use static cache to avoid loading connection more than once on
         // subsequent calls.
-        static $adapter = false;
-        if (!$adapter) {
-            $factory = $this->getService(AdapterFactory::class);
-            $adapter = $factory->getAdapter(
+        static $connection = false;
+        if (!$connection) {
+            $factory = $this->getService(ConnectionFactory::class);
+            $connection = $factory->getConnection(
                 $this->session->dbRootUser,
                 $this->session->dbRootPass
             );
         }
-        return $adapter;
+        return $connection;
     }
 
     /**
@@ -311,27 +311,6 @@ class UpgradeController extends AbstractBase
     }
 
     /**
-     * Look up relevant database migrations and return them as a string (empty string if none needed).
-     *
-     * @return string
-     */
-    public function getDatabaseMigrations(): string
-    {
-        $adapter = $this->getService(Adapter::class);
-        $rawPlatform = strtolower($adapter->getDriver()->getDatabasePlatformName());
-        $platform = match ($rawPlatform) {
-            'postgresql' => 'pgsql',
-            default => $rawPlatform,
-        };
-        $migrationManager = new MigrationManager();
-        $sql = '';
-        foreach ($migrationManager->getMigrations($platform, $this->cookie->oldVersion) as $migration) {
-            $sql .= file_get_contents($migration) . "\n";
-        }
-        return $sql;
-    }
-
-    /**
      * Apply migrations to the database. Return null if successful, or a Laminas view model if
      * user input is required.
      *
@@ -339,24 +318,26 @@ class UpgradeController extends AbstractBase
      */
     public function applyDatabaseMigrations(): ?ViewModel
     {
-        $migrationSql = trim($this->getDatabaseMigrations());
-        if (!empty($migrationSql) && !$this->logsql) {
+        $migrationManager = $this->getService(MigrationManager::class);
+        $migrations = $migrationManager->getMigrations($this->cookie->oldVersion);
+        $failedMigrations = $migrationManager->getFailedMigrations();
+        if (!empty($failedMigrations)) {
+            $this->flashMessenger()->addErrorMessage(
+                'Failed migration(s) detected: ' . implode(' ', $failedMigrations)
+                . ' -- see migrations table in database for details; manual intervention may be needed.'
+            );
+        }
+        if (!empty($migrations) && !$this->logsql) {
             if (!$this->hasDatabaseRootCredentials()) {
                 return $this->forwardTo('Upgrade', 'GetDbCredentials');
             }
-            $adapter = $this->getRootDbAdapter();
-            foreach (explode(';', $migrationSql) as $sqlLine) {
-                $trimmedLine = trim($sqlLine);
-                if (!empty($trimmedLine)) {
-                    $adapter->query($trimmedLine, $adapter::QUERY_MODE_EXECUTE);
-                }
-            }
+            $migrationManager->applyMigrations($migrations, $this->getRootDbConnection());
             // Don't keep DB credentials in session longer than necessary:
             unset($this->session->dbRootUser);
             unset($this->session->dbRootPass);
             $this->session->sql = '';
         } else {
-            $this->session->sql = $migrationSql;
+            $this->session->sql = $migrationManager->applyMigrations($migrations, null);
         }
         return null;
     }
@@ -465,9 +446,9 @@ class UpgradeController extends AbstractBase
                 // Test the connection:
                 try {
                     // Query a table known to exist
-                    $factory = $this->getService(AdapterFactory::class);
-                    $db = $factory->getAdapter($dbrootuser, $pass);
-                    $db->query('SELECT * FROM user;');
+                    $factory = $this->getService(ConnectionFactory::class);
+                    $db = $factory->getConnection($dbrootuser, $pass);
+                    $db->executeQuery('SELECT * FROM user;');
                     $this->session->dbRootUser = $dbrootuser;
                     $this->session->dbRootPass = $pass;
                     return $this->forwardTo('Upgrade', 'FixDatabase');
@@ -538,7 +519,10 @@ class UpgradeController extends AbstractBase
 
         // Handle submit action:
         if ($this->formWasSubmitted()) {
-            $this->getService(TagsService::class)->fixDuplicateTags();
+            $fixed = $this->getService(TagsService::class)->fixDuplicateTags();
+            if ($fixed > 0) {
+                $this->session->warnings->append("Merged $fixed duplicate tag(s)");
+            }
             return $this->forwardTo('Upgrade', 'FixDatabase');
         }
 
@@ -627,9 +611,9 @@ class UpgradeController extends AbstractBase
                 $this->flashMessenger()->addErrorMessage(
                     'Illegal version number; please upgrade to at least version 10.x before proceeding.'
                 );
-            } elseif (Comparator::greaterThanOrEqualTo($version, $newVersion)) {
+            } elseif (Comparator::greaterThan($version, $newVersion)) {
                 $this->flashMessenger()->addMessage(
-                    "Source version must be less than {$newVersion}.",
+                    "Source version must be less than or equal to {$newVersion}.",
                     'error'
                 );
             } else {
@@ -640,6 +624,8 @@ class UpgradeController extends AbstractBase
                 return $this->forwardTo('Upgrade', 'Home');
             }
         }
+        $oldVersion = $this->getService(MigrationManager::class)->determineOldVersion();
+        return $this->createViewModel(compact('oldVersion'));
     }
 
     /**
