@@ -88,7 +88,7 @@ class StreamHandler extends MonologStreamHandler
     {
         if (!$this->standardFileFormatter) {
             $this->standardFileFormatter = new LineFormatter(
-                "[%datetime%] %channel%.%level_name%: %message% %context%\n %extra%",
+                "[%datetime%] %channel%.%level_name%: %message% %context% %extra%\n",
                 'c',
                 true,
                 true
