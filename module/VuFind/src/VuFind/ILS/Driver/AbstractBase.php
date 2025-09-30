@@ -96,8 +96,8 @@ abstract class AbstractBase implements DriverInterface
         string $cat_username = '',
         ?string $cat_password = null,
         Stringable|string|null $email = null,
-        string|null $firstname = '',
-        string|null $lastname = '',
+        ?string $firstname = '',
+        ?string $lastname = '',
         Stringable|string|null $major = null,
         Stringable|string|null $college = null,
         array $nonDefaultFields = []
