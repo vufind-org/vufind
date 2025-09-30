@@ -828,6 +828,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
                 $page,
                 $this->facetSecondLevelExcludeLinkSelector
             );
+            $this->assertAppliedFilters($page, ['hierarchy:level1a/level2a']);
         }
         $this->assertEquals(
             'Showing 1 - 7 results of 7',
