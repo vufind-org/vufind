@@ -11,7 +11,7 @@
 <!-- Leftside navigationbar -->
 <?= $this->context($this)->renderInContext('myresearch/menu.phtml', ['active' => 'usercontent']); ?>
 
-<div class="<?=$this->layoutClass('mainbody')?>">
+<div class="<?=$this->layoutClass('mainbody-myresearch')?>">
   <?=$this->component('page-title', ['title' => $this->translate('Ratings')]);?>
   <ul class="nav nav-tabs" role="tablist">
     <?php foreach ($tabs as $tab => $title): ?>
