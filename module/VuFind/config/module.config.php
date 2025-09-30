@@ -418,6 +418,8 @@ $config = [
         'factories' => [
             'League\CommonMark\MarkdownConverter' => 'VuFind\Service\MarkdownFactory',
             'VuFind\Account\UserAccountService' => 'VuFind\Account\UserAccountServiceFactory',
+            'VuFind\Action\Helper\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\Action\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\AjaxHandler\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Auth\EmailAuthenticator' => 'VuFind\Auth\EmailAuthenticatorFactory',
             'VuFind\Auth\ILSAuthenticator' => 'VuFind\Auth\ILSAuthenticatorFactory',
@@ -720,6 +722,8 @@ $config = [
         // This section contains service manager configurations for all VuFind
         // pluggable components:
         'plugin_managers' => [
+            'action' => [ /* see VuFind\Action\PluginManager for details */],
+            'action_helper' => [ /* see VuFind\Action\Helper\PluginManager for details */],
             'ajaxhandler' => [ /* see VuFind\AjaxHandler\PluginManager for defaults */ ],
             'auth' => [ /* see VuFind\Auth\PluginManager for defaults */ ],
             'autocomplete' => [ /* see VuFind\Autocomplete\PluginManager for defaults */ ],
