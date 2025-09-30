@@ -79,7 +79,8 @@ CREATE TABLE `oai_resumption` (
   `params` text,
   `expires` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `oai_resumption_token_idx` (`token`)
+  UNIQUE KEY `oai_resumption_token_idx` (`token`),
+  KEY `oai_resumption_expires_idx` (`expires`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -534,4 +535,20 @@ CREATE TABLE `migrations` (
   `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `log_table`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `log_table` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `logtime` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `ident` CHAR(16) NOT NULL DEFAULT '',
+  `priority` INT NOT NULL DEFAULT '0',
+  `message` TEXT,
+  PRIMARY KEY (id)
+);
 /*!40101 SET character_set_client = @saved_cs_client */;

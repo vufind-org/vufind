@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Recommendations
@@ -146,25 +146,17 @@ class SideFacets extends AbstractFacets
     protected $hierarchicalFacetSortOptions = [];
 
     /**
-     * Hierarchical facet helper
-     *
-     * @var HierarchicalFacetHelper
-     */
-    protected $hierarchicalFacetHelper;
-
-    /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
-     * @param ?HierarchicalFacetHelper     $facetHelper  Helper for handling
+     * @param \VuFind\Config\ConfigManagerInterface $configManager           Configuration manager
+     * @param ?HierarchicalFacetHelper              $hierarchicalFacetHelper Helper for handling
      * hierarchical facets
      */
     public function __construct(
-        \VuFind\Config\PluginManager $configLoader,
-        ?HierarchicalFacetHelper $facetHelper = null
+        \VuFind\Config\ConfigManagerInterface $configManager,
+        protected ?HierarchicalFacetHelper $hierarchicalFacetHelper = null
     ) {
-        parent::__construct($configLoader);
-        $this->hierarchicalFacetHelper = $facetHelper;
+        parent::__construct($configManager);
     }
 
     /**
@@ -184,7 +176,7 @@ class SideFacets extends AbstractFacets
         $showDynamicCheckboxFacets = $settings[3] ?? true;
 
         // Load the desired facet information...
-        $config = $this->configLoader->get($iniName);
+        $config = $this->configManager->getConfigObject($iniName);
 
         // All standard facets to display:
         $this->mainFacets = isset($config->$mainSection) ?

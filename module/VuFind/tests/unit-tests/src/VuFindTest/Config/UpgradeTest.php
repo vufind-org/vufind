@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -428,6 +428,92 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             'list_test',
             $results[$configName]['General']['default_view']
+        );
+    }
+
+    /**
+     * Test EDS record data formatter upgrade with legacy default configs in EDS.ini.
+     *
+     * @return void
+     */
+    public function testEDSRecordDataFormatterUpgradeSimple(): void
+    {
+        $upgrader = $this->runAndGetConfigUpgrader('eds-record-data-formatter-default');
+        $this->assertEquals([], $upgrader->getWarnings());
+        $results = $upgrader->getNewConfigs();
+        $edsConfig = $results['EDS'];
+        $this->assertArrayNotHasKey('ItemCoreFilter', $edsConfig);
+        $this->assertArrayNotHasKey('ItemResultListFilter', $edsConfig);
+        $this->assertArrayNotHasKey('AuthorDisplay', $edsConfig);
+    }
+
+    /**
+     * Test EDS record data formatter upgrade with changes to legacy configs in EDS.ini.
+     *
+     * @return void
+     */
+    public function testEDSRecordDataFormatterUpgradeAdvanced(): void
+    {
+        $upgrader = $this->runAndGetConfigUpgrader('eds-record-data-formatter-advanced');
+        $this->assertEquals([], $upgrader->getWarnings());
+        $results = $upgrader->getNewConfigs();
+        $edsConfig = $results['EDS'];
+        $edsRecordDataFormatterConfig = $results['RecordDataFormatter/EDS'];
+        $this->assertArrayNotHasKey('ItemCoreFilter', $edsConfig);
+        $this->assertArrayNotHasKey('ItemResultListFilter', $edsConfig);
+        $this->assertArrayNotHasKey('AuthorDisplay', $edsConfig);
+        $this->assertContains(
+            'CoreAuthors',
+            $edsRecordDataFormatterConfig['CoreItems']['extraLineOptions']
+        );
+
+        $this->checkFilterConfig($edsRecordDataFormatterConfig, 'CoreItems', 'Label', 'Availability');
+        $this->checkFilterConfig($edsRecordDataFormatterConfig, 'CoreItems', 'Group', 'URL');
+        $this->checkFilterConfig($edsRecordDataFormatterConfig, 'CoreItems', 'Group', 'AuInfo');
+        $this->checkFilterConfig($edsRecordDataFormatterConfig, 'ResultListItems', 'Label', 'Availability');
+        $this->checkFilterConfig($edsRecordDataFormatterConfig, 'ResultListItems', 'Group', 'Su');
+        $this->checkFilterConfig($edsRecordDataFormatterConfig, 'ResultListItems', 'Group', 'URL');
+
+        $this->assertEquals(
+            'getPrimaryAuthorsWithHighlighting',
+            $edsRecordDataFormatterConfig['CoreAuthors']['multiAltDataMethod']
+        );
+        $this->assertEquals(
+            5,
+            $edsRecordDataFormatterConfig['CoreAuthors']['limit']
+        );
+        $this->assertArrayNotHasKey('multiAltDataMethod', $edsRecordDataFormatterConfig['ResultListAuthors']);
+        $this->assertArrayNotHasKey('limit', $edsRecordDataFormatterConfig['ResultListAuthors']);
+    }
+
+    /**
+     * Check filter config.
+     *
+     * @param array  $recordDataFormatterConfig RecordDataFormatter config
+     * @param string $section                   Section to check
+     * @param string $lineIdentifierKey         Expected identifier key
+     * @param string $lineIdentifierValue       Expected identifier value
+     *
+     * @return void
+     */
+    protected function checkFilterConfig(
+        array $recordDataFormatterConfig,
+        string $section,
+        string $lineIdentifierKey,
+        string $lineIdentifierValue
+    ): void {
+        $filterSection = "{$section}_Filter_{$lineIdentifierKey}_$lineIdentifierValue";
+        $this->assertContains(
+            $filterSection,
+            $recordDataFormatterConfig[$section]['extraLineOptions']
+        );
+        $this->assertEquals(
+            [
+                'lineIdentifierKey' => $lineIdentifierKey,
+                'lineIdentifierValue' => $lineIdentifierValue,
+                'multiEnabled' => false,
+            ],
+            $recordDataFormatterConfig[$filterSection]
         );
     }
 

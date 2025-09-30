@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -76,10 +76,8 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
     {
         $this->expectException(\VuFind\Exception\ILS::class);
 
-        $container = new \VuFindTest\Container\MockContainer($this);
         $test = $this->getDriver(
             [
-                'configLoader' => new \VuFind\Config\PluginManager($container),
                 'driverManager' =>  $this->getMockSM($this->never()),
             ]
         );
@@ -94,7 +92,7 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
      */
     public function testILSConfigurationPathWithoutDriverConfigPath()
     {
-        $mockPM = $this->getMockConfigPluginManager(
+        $mockConfigManager = $this->getMockConfigManager(
             ['d1' => ['config' => 'values']],
             [],
             $this->once()
@@ -102,7 +100,7 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
         $ils = $this->getMockILS('Voyager');
         $driver = $this->initDriver(
             [
-                'configLoader' => $mockPM,
+                'configManager' => $mockConfigManager,
                 'driverManager' => $this->getMockSM(null, 'Voyager', $ils),
             ],
             ['d1' => 'Voyager']
@@ -119,7 +117,7 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
      */
     public function testILSConfigurationPathWithDriverConfigPath()
     {
-        $mockPM = $this->getMockConfigPluginManager(
+        $mockConfigManager = $this->getMockConfigManager(
             ['configpath/d1' => ['config' => 'values']],
             [],
             $this->once()
@@ -127,7 +125,7 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
         $ils = $this->getMockILS('Voyager');
         $driver = $this->initDriver(
             [
-                'configLoader' => $mockPM,
+                'configManager' => $mockConfigManager,
                 'driverManager' => $this->getMockSM(null, 'Voyager', $ils),
             ],
             ['d1' => 'Voyager'],
@@ -150,7 +148,7 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
 
         $driver = $this->initDriver(
             [
-                'configLoader' => $this->getMockFailingConfigPluginManager(new RuntimeException()),
+                'configManager' => $this->getMockFailingConfigManager(new RuntimeException()),
             ]
         );
         $driver->setLogger($logger);
@@ -208,7 +206,7 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
         $this->assertEquals($configData, $val);
 
         $driver = $this->initDriver(
-            ['configLoader' => $this->getMockFailingConfigPluginManager(new RuntimeException())]
+            ['configManager' => $this->getMockFailingConfigManager(new RuntimeException())]
         );
         $val = $this->callMethod($driver, 'getDriverConfig', ['bad']);
         $this->assertEquals([], $val);

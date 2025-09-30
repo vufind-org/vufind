@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -179,5 +179,36 @@ class MigrationManagerTest extends \PHPUnit\Framework\TestCase
                 EXPECTED_RESULT,
             $result
         );
+    }
+
+    /**
+     * Test getShortMigrationName().
+     *
+     * @return void
+     */
+    public function testGetShortMigrationName(): void
+    {
+        $loader = $this->createMock(MigrationLoader::class);
+        $loader->expects($this->once())->method('getMigrationDirForPlatform')->willReturn('/base/path/foo');
+        $manager = $this->getMockMigrationManager([], loader: $loader);
+        $this->assertEquals('10.0/001-foo.sql', $manager->getShortMigrationName('/base/path/foo/10.0/001-foo.sql'));
+    }
+
+    /**
+     * Test markMigrationApplied().
+     *
+     * @return void
+     */
+    public function testMarkMigrationApplied(): void
+    {
+        $shortName = 'foo';
+        $longName = "/base/path/$shortName";
+        $connection = null;
+        $resultSql = 'fake sql goes here';
+        $manager = $this->getMockMigrationManager(['getShortMigrationName', 'logMigrationEvent']);
+        $manager->expects($this->once())->method('getShortMigrationName')->with($longName)->willReturn($shortName);
+        $manager->expects($this->once())->method('logMigrationEvent')->with($connection, $shortName, 'success')
+            ->willReturn($resultSql);
+        $this->assertEquals($resultSql, $manager->markMigrationApplied($longName, $connection));
     }
 }

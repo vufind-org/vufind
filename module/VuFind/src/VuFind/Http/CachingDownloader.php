@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Http
@@ -32,7 +32,7 @@ namespace VuFind\Http;
 use Laminas\Cache\Storage\StorageInterface;
 use Psr\Http\Message\ResponseInterface;
 use VuFind\Cache\Manager as CacheManager;
-use VuFind\Config\PluginManager as ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Exception\HttpDownloadException;
 
 /**
@@ -72,13 +72,13 @@ class CachingDownloader implements GuzzleServiceAwareInterface
     /**
      * Constructor
      *
-     * @param CacheManager  $cacheManager  VuFind Cache Manager
-     * @param ConfigManager $configManager VuFind Config Manager
-     * @param bool          $cacheEnabled  Main toggle for enabling caching
+     * @param CacheManager           $cacheManager  VuFind Cache Manager
+     * @param ConfigManagerInterface $configManager VuFind Config Manager
+     * @param bool                   $cacheEnabled  Main toggle for enabling caching
      */
     public function __construct(
         protected CacheManager $cacheManager,
-        protected ConfigManager $configManager,
+        protected ConfigManagerInterface $configManager,
         protected bool $cacheEnabled = true
     ) {
         $this->setUpCache('default');
@@ -120,8 +120,8 @@ class CachingDownloader implements GuzzleServiceAwareInterface
 
         if (!empty($cacheOptionsSection)) {
             $fullCacheOptionsSection = 'Cache_' . $cacheOptionsSection;
-            $section = $this->configManager->get($cacheOptionsFile ?? 'config')->$fullCacheOptionsSection;
-            $this->cacheOptions = !empty($section) ? $section->toArray() : [];
+            $this->cacheOptions = $this->configManager
+                ->getConfigArray($cacheOptionsFile ?? 'config')[$fullCacheOptionsSection] ?? [];
         }
     }
 

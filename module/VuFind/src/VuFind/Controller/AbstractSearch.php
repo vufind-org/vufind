@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -403,7 +403,11 @@ class AbstractSearch extends AbstractBase
         if ($totalResults > 0 && $page > $lastPage) {
             $queryParams = $request;
             $queryParams['page'] = $lastPage;
-            return $this->redirect()->toRoute('search-results', [], [ 'query' => $queryParams ]);
+            return $this->redirect()->toRoute(
+                $params->getOptions()->getSearchAction(),
+                [],
+                ['query' => $queryParams]
+            );
         }
 
         // If we received an EmptySet back, that indicates that the real search
