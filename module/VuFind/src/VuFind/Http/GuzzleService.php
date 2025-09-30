@@ -29,6 +29,11 @@
 
 namespace VuFind\Http;
 
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\ResponseInterface;
+
+use function strlen;
+
 /**
  * Guzzle service.
  *
@@ -41,15 +46,8 @@ namespace VuFind\Http;
  * @link     https://vufind.org/wiki/development
  * @todo     Merge with PSR-18 HTTP Client Service when implemented
  */
-class GuzzleService
+class GuzzleService implements HttpServiceInterface
 {
-    /**
-     * Default regular expression matching a request to localhost.
-     *
-     * @var string
-     */
-    public const LOCAL_ADDRESS_RE = '@^(localhost|127(\.\d+){3}|\[::1\])@';
-
     /**
      * VuFind configuration
      *
@@ -98,11 +96,112 @@ class GuzzleService
      * @param ?string $url     Target URL (required for proper proxy setup for non-local addresses)
      * @param ?float  $timeout Request timeout in seconds (overrides configuration)
      *
-     * @return \GuzzleHttp\ClientInterface
+     * @return ClientInterface
      */
-    public function createClient(?string $url = null, ?float $timeout = null): \GuzzleHttp\ClientInterface
+    public function createClient(?string $url = null, ?float $timeout = null): \Psr\Http\Client\ClientInterface
     {
         return new \GuzzleHttp\Client($this->getGuzzleConfig($url, $timeout));
+    }
+
+    /**
+     * Perform a GET request.
+     *
+     * @param string $url     Request URL
+     * @param array  $params  Request parameters (query string)
+     * @param float  $timeout Request timeout in seconds
+     * @param array  $headers Request HTTP headers
+     *
+     * @return ResponseInterface
+     */
+    public function get(
+        string $url,
+        array $params = [],
+        ?float $timeout = null,
+        array $headers = []
+    ): ResponseInterface {
+        if ($params) {
+            $query = $this->createQueryString($params);
+            if (str_contains($url, '?')) {
+                $url .= '&' . $query;
+            } else {
+                $url .= '?' . $query;
+            }
+        }
+        $client = $this->createClient($url, $timeout);
+        $options = [];
+
+        if ($headers) {
+            $options['headers'] = $headers;
+        }
+
+        return $client->request('GET', $url, $options);
+    }
+
+    /**
+     * Perform a POST request.
+     *
+     * @param string $url     Request URL
+     * @param mixed  $body    Request body document
+     * @param string $type    Request body content type
+     * @param float  $timeout Request timeout in seconds
+     * @param array  $headers Request HTTP headers
+     *
+     * @return ResponseInterface
+     */
+    public function post(
+        string $url,
+        $body = null,
+        string $type = 'application/octet-stream',
+        ?float $timeout = null,
+        array $headers = []
+    ): ResponseInterface {
+        $client = $this->createClient($url, $timeout);
+
+        $options = [
+            'body' => $body,
+            'headers' => array_merge(
+                [
+                    'Content-Type' => $type,
+                    'Content-Length' => strlen($body ?? ''),
+                ],
+                $headers
+            ),
+        ];
+
+        return $client->request('POST', $url, $options);
+    }
+
+    /**
+     * Create a query string from an array of parameters.
+     *
+     * @param array $params Parameters
+     *
+     * @return string
+     */
+    protected function createQueryString(array $params = []): string
+    {
+        if ($this->isAssocParams($params)) {
+            return http_build_query($params);
+        } else {
+            return implode('&', $params);
+        }
+    }
+
+    /**
+     * Check if an array is associative.
+     *
+     * @param array $array Array to check
+     *
+     * @return bool
+     */
+    public static function isAssocParams(array $array): bool
+    {
+        foreach (array_keys($array) as $key) {
+            if (!is_numeric($key)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
