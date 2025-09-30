@@ -203,4 +203,47 @@ trait FinnaCommonILSTrait
             $nonDefaultFields
         );
     }
+
+    /**
+     * Create a patron array according to patronLogin specs defined in the documentation.
+     * Each value is trimmed if they are string-typed.
+     *
+     * @param string                 $id               The patron's ID in the ILS
+     * @param string                 $cat_username     The username used to log in
+     * @param ?string                $cat_password     The password used to log in or null.
+     * @param Stringable|string|null $email            The patron's email address (null if unavailable)
+     * @param ?string                $firstname        The patron's first name
+     * @param ?string                $lastname         The patron's last name
+     * @param Stringable|string|null $major            The patron's major (null if unavailable)
+     * @param Stringable|string|null $college          The patron's college (null if unavailable)
+     * @param array                  $nonDefaultFields Non default fields not documented in the documentation.
+     *                                                 Merges into the resulting patron array.
+     *
+     * @see https://vufind.org/wiki/development:plugins:ils_drivers#patronlogin
+     *
+     * @return array
+     */
+    protected function createPatronArray(
+        string $id,
+        string $cat_username = '',
+        ?string $cat_password = null,
+        Stringable|string|null $email = null,
+        string|null $firstname = '',
+        string|null $lastname = '',
+        Stringable|string|null $major = null,
+        Stringable|string|null $college = null,
+        array $nonDefaultFields = []
+    ): array {
+        return parent::createPatronArray(
+            id: $id,
+            cat_username: $cat_username,
+            cat_password: $cat_password,
+            email: $email,
+            firstname: (string)$firstname,
+            lastname: (string)$lastname,
+            major: $major,
+            college: $college,
+            nonDefaultFields: $nonDefaultFields
+        );
+    }
 }
