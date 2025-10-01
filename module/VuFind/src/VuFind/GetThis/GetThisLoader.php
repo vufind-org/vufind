@@ -428,6 +428,7 @@ class GetThisLoader implements LoggerAwareInterface
     public function getCopyNumber(?string $itemId = null): ?string
     {
         $item = $this->getItem($itemId);
+        var_dump($item);
         if (isset($item['number'])) {
             return $item['number'];
         }
@@ -759,10 +760,6 @@ class GetThisLoader implements LoggerAwareInterface
                     break;
                 }
             }
-        }
-        // If none matching or parameter is null, select the first one if available
-        if (!isset($this->item) && count($this->items) > 0) {
-            $this->item = $this->items[0];
         }
     }
 
