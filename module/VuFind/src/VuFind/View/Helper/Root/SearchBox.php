@@ -45,8 +45,10 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SearchBox extends \Laminas\View\Helper\AbstractHelper
+class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Laminas\Log\LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * Cache for configurations
      *
@@ -143,10 +145,19 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
             $settings = $this->getCombinedHandlerConfig($activeSearchClass);
             foreach ($settings['target'] ?? [] as $i => $target) {
                 if (($settings['type'][$i] ?? null) === 'VuFind') {
-                    $options = $this->getOptionsForTarget($target);
-                    $handlerRules = $options->getAutocompleteFormattingRules();
-                    foreach ($handlerRules as $key => $val) {
-                        $rules["VuFind:$target|$key"] = $val;
+                    try {
+                        $options = $this->getOptionsForTarget($target);
+                        $handlerRules = $options->getAutocompleteFormattingRules() ?? [];
+                        foreach ($handlerRules as $key => $val) {
+                            $rules["VuFind:$target|$key"] = $val;
+                        }
+                    } catch (\Exception $e) {
+                        // Log a warning and ignore when we can't add the autocomplete rules for
+                        // any of the handlers
+                        $this->logWarning(
+                            "Could not determine autocomplete formatting rules for {$target}. "
+                            . $e->getMessage()
+                        );
                     }
                 }
             }
@@ -478,9 +489,20 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
             $label = $settings['label'][$i];
 
             if ($type == 'VuFind') {
-                $options = $this->getOptionsForTarget($target);
                 $j = 0;
-                $basic = $options->getBasicHandlers();
+                $basic = null;
+                try {
+                    $options = $this->getOptionsForTarget($target);
+                    $basic = $options->getBasicHandlers();
+                } catch (\Exception $e) {
+                    // If we can't get the options or basic handlers for the search
+                    // target, then log it and don't add it to the search box
+                    $this->logError(
+                        "Missing required data for {$target}. Could not add to search box. "
+                        . $e->getMessage()
+                    );
+                    continue;
+                }
                 if (empty($basic)) {
                     $basic = ['' => ''];
                 }
