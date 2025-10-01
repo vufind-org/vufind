@@ -147,16 +147,14 @@ class DatabasesTest extends \PHPUnit\Framework\TestCase
      *
      * @return object
      */
-    protected function buildModuleAndProcessResults($configData, $queryString = 'History')
+    protected function buildModuleAndProcessResults(array $configData, string $queryString = 'History')
     {
-        $configManager = $this->createMock(\VuFind\Config\PluginManager::class);
-        $configManager->expects($this->any())->method('get')
-            ->will($this->returnValue(new \VuFind\Config\Config($configData)));
+        $configManager = $this->createMock(\VuFind\Config\ConfigManagerInterface::class);
+        $configManager->expects($this->any())->method('getConfigArray')
+            ->willReturn($configData);
 
         $libGuidesGetter = function () {
-            $libGuides = $this->getMockBuilder(\VuFind\Connection\LibGuides::class)
-                ->disableOriginalConstructor()
-                ->getMock();
+            $libGuides = $this->createMock(\VuFind\Connection\LibGuides::class);
             $libGuidesData = $this->mockLibGuidesData();
             $libGuides->method('getAZ')->willReturn($libGuidesData);
             return $libGuides;
