@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  AJAX
@@ -257,6 +257,8 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
      * @param string       $navClass      Additional class for the nav element
      *
      * @return ?string
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function renderPagination(
         ParamsHelper $requestParams,
@@ -342,6 +344,8 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
      * @param Results      $results       Search results
      *
      * @return ?string
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function renderAnalytics(ParamsHelper $requestParams, Results $results): ?string
     {

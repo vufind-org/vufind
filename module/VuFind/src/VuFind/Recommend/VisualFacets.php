@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Recommendations
@@ -73,8 +73,8 @@ class VisualFacets extends AbstractFacets
         $iniName = $settings[1] ?? 'facets';
 
         // Load the desired facet information:
-        $config = $this->configLoader->get($iniName);
-        $this->facets = $config->$mainSection->visual_facets
+        $config = $this->configManager->getConfigArray($iniName);
+        $this->facets = $config[$mainSection]['visual_facets']
             ?? 'callnumber-first,topic_facet';
     }
 

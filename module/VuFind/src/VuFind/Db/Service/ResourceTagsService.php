@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -372,10 +372,10 @@ class ResourceTagsService extends AbstractDbService implements
         $list = $this->getDoctrineReference(UserListEntityInterface::class, $listOrId);
         $user = $this->getDoctrineReference(UserEntityInterface::class, $userOrId);
         $dql = 'DELETE FROM ' . ResourceTagsEntityInterface::class . ' rt '
-            . 'WHERE rt.user = :user AND rt.resource IS NULL AND rt.list = :list ';
+            . 'WHERE rt.user = :user AND rt.resource IS NULL AND rt.list = :list';
         $parameters = compact('user', 'list');
         if (null !== $tagId) {
-            $dqlWhere[] = 'AND rt.tag IN (:tag) ';
+            $dql .= ' AND rt.tag IN (:tag) ';
             $parameters['tag'] = (array)$tagId;
         }
         $query = $this->entityManager->createQuery($dql);

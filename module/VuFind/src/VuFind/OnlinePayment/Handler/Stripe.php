@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  OnlinePayment
@@ -98,6 +98,8 @@ class Stripe extends AbstractBase implements
      * @return Response
      *
      * @throws PaymentException
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function startPayment(
         string $returnBaseUrl,
@@ -117,10 +119,6 @@ class Stripe extends AbstractBase implements
 
         $returnUrl = $this->addQueryParams(
             $returnBaseUrl,
-            [$paymentParam => $localIdentifier]
-        );
-        $notifyUrl = $this->addQueryParams(
-            $notifyBaseUrl,
             [$paymentParam => $localIdentifier]
         );
 
@@ -218,6 +216,8 @@ class Stripe extends AbstractBase implements
      * @return int One of the result codes defined in AbstractBase
      *
      * @throws PaymentException
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function processPaymentResponse(
         PaymentEntityInterface $payment,

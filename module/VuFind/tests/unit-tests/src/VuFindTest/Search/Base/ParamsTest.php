@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -53,7 +53,7 @@ use VuFindSearch\Query\Query;
 class ParamsTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\ConfigRelatedServicesTrait;
-    use \VuFindTest\Feature\MockSearchOptionsTrait;
+    use \VuFindTest\Feature\SearchObjectsTrait;
     use \VuFindTest\Feature\ReflectionTrait;
 
     /**
@@ -71,7 +71,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         ?ConfigManagerInterface $configManager = null
     ): Params {
         $configManager ??= $this->getMockConfigManager();
-        return new class ($options ?? $this->getMockOptions($configManager), $configManager) extends Params {
+        return new class ($options ?? $this->getBaseOptionsObject($configManager), $configManager) extends Params {
         };
     }
 

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Base
@@ -295,6 +295,13 @@ abstract class Options implements TranslatorAwareInterface
      * @var bool
      */
     protected $autocompleteAutoSubmit = true;
+
+    /**
+     * Autocomplete max display items setting
+     *
+     * @var int
+     */
+    protected $autocompleteDisplayLimit = 20;
 
     /**
      * Autocomplete query formatting rules
@@ -1048,6 +1055,16 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
+     * Get max number of displayed suggestions
+     *
+     * @return array
+     */
+    public function getAutocompleteDisplayLimit(): int
+    {
+        return $this->autocompleteDisplayLimit;
+    }
+
+    /**
      * Get autocomplete query formatting rules.
      *
      * @return array
@@ -1523,6 +1540,9 @@ abstract class Options implements TranslatorAwareInterface
         }
         if (null !== ($autosubmit = $autocompleteSettings['auto_submit'] ?? null)) {
             $this->autocompleteAutoSubmit = $autosubmit;
+        }
+        if (null !== ($displaylimit = $autocompleteSettings['display_limit'] ?? null)) {
+            $this->autocompleteDisplayLimit = (int)$displaylimit;
         }
         $formattingRules = $autocompleteSettings['formatting_rule'] ?? [];
         if ($formattingRules && is_array($formattingRules)) {
