@@ -713,10 +713,6 @@ class GetThisLoaderTest extends TestCase
     public function testGetCopyNumber()
     {
         $this->getThis->setItems(self::getItems());
-        var_dump($this->getThis->getItems());
-        var_dump($this->getThis->getCopyNumber(1));
-        var_dump($this->getThis->getCopyNumber(2));
-        var_dump($this->getThis->getCopyNumber(3));
         $this->assertEquals(1, $this->getThis->getCopyNumber(1));
         $this->assertEquals(2, $this->getThis->getCopyNumber(2));
         $this->assertNull($this->getThis->getCopyNumber(3));
