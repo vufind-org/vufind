@@ -10,7 +10,7 @@ $(function pageLoad() {
    * @returns {boolean} Whether the dropdown is open
    */
   function isDropdownOpen() {
-    return modal.querySelector(".get-this-dropdown > ul > li > div").classList.contains("active");
+    return modal.querySelector(".get-this-dropdown .dropdown").classList.contains("active");
   }
 
   /**
@@ -19,15 +19,20 @@ $(function pageLoad() {
    * @returns {boolean} Whether the dropdown is targeted by the event
    */
   function isDropdownLinkTargeted(e) {
-    return e.target.matches(".get-this-dropdown > ul > li > a");
+    return e.target.matches(".get-this-dropdown .call-number-display, .get-this-dropdown .call-number-display *");
+  }
+
+  function toggleDropdownArow(open) {
+    document.querySelector(".get-this-dropdown .fa-close-dropdown").style.display = open ? 'block' : 'none';
+    document.querySelector(".get-this-dropdown .fa-open-dropdown").style.display = open ? 'none' : 'block';
   }
 
   /**
    * Open / close the dropdown
    */
   function toggleDropdown() {
-    const a = modal.querySelector(".get-this-dropdown > ul > li > a");
-    const siblingDiv = modal.querySelector(".get-this-dropdown > ul > li > div");
+    const a = modal.querySelector(".get-this-dropdown .call-number-display a");
+    const siblingDiv = modal.querySelector(".get-this-dropdown .dropdown");
 
     if (siblingDiv) {
       siblingDiv.classList.toggle("active");
@@ -36,10 +41,12 @@ $(function pageLoad() {
     const ariaExpanded = a.getAttribute("aria-expanded");
     a.setAttribute("aria-expanded", ariaExpanded === "true" ? "false" : "true");
 
-    if (isDropdownOpen()) {
-      const firstOption = document.querySelector(".get-this-dropdown div a");
+    const isOpen = isDropdownOpen();
+    if (isOpen) {
+      const firstOption = document.querySelector(".get-this-dropdown .dropdown a");
       if (firstOption) firstOption.focus();
     }
+    toggleDropdownArow(isOpen);
   }
 
   /**
@@ -96,7 +103,7 @@ $(function pageLoad() {
    * @param {Event} e Event triggered by the user
    */
   function arrowKeysListener(e) {
-    const dropdown = document.querySelector(".get-this-dropdown div");
+    const dropdown = document.querySelector(".get-this-dropdown .dropdown");
     // If dropdown is not defined or the focus is on an element not in the container
     if (!dropdown || !dropdown.contains(document.activeElement)) return;
 

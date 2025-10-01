@@ -224,7 +224,7 @@ VuFind.register('itemStatuses', function ItemStatuses() {
     if (callnumAndLocationEl) {
       callnumAndLocationEl.classList.remove("hidden");
     }
-    el.querySelectorAll(".callnumAndLocation .ajax-availability").forEach(
+    el.querySelectorAll(".callnumAndLocation .ajax-availability:not(.getThis)").forEach(
       (ajaxEl) => ajaxEl.classList.remove("hidden")
     );
 

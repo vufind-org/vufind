@@ -395,7 +395,7 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
             $navDropdown->click();
 
             // Get the link and click on the next one
-            $links = $navDropdown->find('css', 'ul.dropdown')->findAll('css', 'a');
+            $links = $navDropdown->find('css', '.dropdown')->findAll('css', 'a');
             $links[$i]->click();
 
             // Wait for the lightbox to be refreshed

@@ -37,30 +37,33 @@ function getLink($view, $item)
 
 <strong><?= $this->transEsc('Items') ?> :</strong>
 <nav role="navigation" class="get-this-dropdown">
-  <ul>
-    <li><a href="#" aria-expanded="false"><?= getDisplay($this, $selectedItem) ?></a>
-      <div tabindex="-1">
-        <ul class="dropdown">
-          <?php
-          $selectedItem['item_id'] ??= -1;
-          foreach ($items as $item) {
-            $item['item_id'] ??= null;
-            $itemClass = $selectedItem['item_id'] == $item['item_id'] ? 'current' : '';
-            ?>
-            <li>
-              <a
-                  href="<?= getLink($this, $item) ?>"
-                  class="<?= $this->escapeUrl($itemClass) ?>"
-                  rel="nofollow"
-              >
-                <?= getDisplay($this, $item) ?>
-              </a>
-            </li>
-          <?php } ?>
-        </ul>
-      </div>
-    </li>
-  </ul>
+  <div class="call-number-display">
+    <a href="#" aria-expanded="false">
+      <span><?= getDisplay($this, $selectedItem) ?></span>
+      <?=$this->icon('open-dropdown', 'fa-square-caret-down') ?>
+      <?=$this->icon('close-dropdown', 'fa-square-caret-up') ?>
+    </a>
+  </div>
+  <div class="dropdown" tabindex="-1">
+    <ul>
+      <?php
+      $selectedItem['item_id'] ??= -1;
+      foreach ($items as $item) {
+        $item['item_id'] ??= null;
+        $itemClass = $selectedItem['item_id'] == $item['item_id'] ? 'current' : '';
+        ?>
+        <li>
+          <a
+              href="<?= getLink($this, $item) ?>"
+              class="<?= $this->escapeUrl($itemClass) ?>"
+              rel="nofollow"
+          >
+            <?= getDisplay($this, $item) ?>
+          </a>
+        </li>
+      <?php } ?>
+    </ul>
+  </div>
 </nav>
 <br>
 <?php

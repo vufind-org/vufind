@@ -711,6 +711,9 @@ body.rtl .dropdown-menu {
 .callnumAndLocation .table, .table.holdings-table {
   td {
     word-wrap: break-word;
+    & > * {
+      vertical-align: middle;
+    }
   }
 }
 // No wrapping for fines or staff view table in wide windows
