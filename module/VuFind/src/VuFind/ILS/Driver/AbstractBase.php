@@ -80,8 +80,8 @@ abstract class AbstractBase implements DriverInterface
      * @param string                 $cat_username     The username used to log in
      * @param ?string                $cat_password     The password used to log in or null.
      * @param Stringable|string|null $email            The patron's email address (null if unavailable)
-     * @param string                 $firstname        The patron's first name
-     * @param string                 $lastname         The patron's last name
+     * @param ?string                $firstname        The patron's first name
+     * @param ?string                $lastname         The patron's last name
      * @param Stringable|string|null $major            The patron's major (null if unavailable)
      * @param Stringable|string|null $college          The patron's college (null if unavailable)
      * @param array                  $nonDefaultFields Non default fields not documented in the documentation.
@@ -96,8 +96,8 @@ abstract class AbstractBase implements DriverInterface
         string $cat_username = '',
         ?string $cat_password = null,
         Stringable|string|null $email = null,
-        string $firstname = '',
-        string $lastname = '',
+        ?string $firstname = '',
+        ?string $lastname = '',
         Stringable|string|null $major = null,
         Stringable|string|null $college = null,
         array $nonDefaultFields = []
