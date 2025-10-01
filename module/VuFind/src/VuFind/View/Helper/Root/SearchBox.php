@@ -490,7 +490,6 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Laminas\
 
             if ($type == 'VuFind') {
                 $j = 0;
-                $basic = null;
                 try {
                     $options = $this->getOptionsForTarget($target);
                     $basic = $options->getBasicHandlers();
