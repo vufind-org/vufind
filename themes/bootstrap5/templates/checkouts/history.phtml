@@ -19,15 +19,18 @@
         <div class="search-stats">
           <?php
             $abs = $this->paginator->getAbsoluteItemNumber($this->paginator->getItemCountPerPage());
+            $startRecord = $this->paginator->getAbsoluteItemNumber(1);
             $end = min($abs, $this->paginator->getTotalItemCount());
             $transParams = [
-              '%%start%%' => $this->localizedNumber($this->paginator->getAbsoluteItemNumber(1)),
+              '%%start%%' => $this->localizedNumber($startRecord),
               '%%end%%' => $this->localizedNumber($end),
               '%%total%%' => $this->localizedNumber($this->paginator->getTotalItemCount()),
             ];
           ?>
           <?=$this->translate('showing_items_of_html', $transParams); ?>
         </div>
+      <?php else: ?>
+        <?php $startRecord = 1; ?>
       <?php endif; ?>
       <?php if ($this->sortList): ?>
         <?=$this->context($this)->renderInContext('myresearch/controls/sort.phtml', ['sortList' => $this->sortList]); ?>
@@ -85,8 +88,7 @@
     <?php endif; ?>
 
     <ul class="record-list">
-      <?php $i = 0; ?>
-      <?php foreach ($this->transactions as $resource): ?>
+      <?php foreach ($this->transactions as $i => $resource): ?>
         <?php $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
         <li id="record<?=$this->escapeHtmlAttr($resource->getUniqueId())?>" class="result">
           <?php if ($this->purgeSelectedAllowed): ?>
@@ -101,6 +103,9 @@
               <?php endif; ?>
             </div>
           <?php endif; ?>
+          <div class="record-number">
+            <?=$this->escapeHtml($startRecord + $i) ?>
+          </div>
           <?php
             $coverDetails = $this->record($resource)->getCoverDetails('checkedout', 'small', $this->recordLinker()->getUrl($resource));
             $cover = $coverDetails['html'];
