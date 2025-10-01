@@ -1,0 +1,82 @@
+<?php
+
+/**
+ * Check for outdated strings in code files.
+ *
+ * PHP version 8
+ *
+ * Copyright (C) Villanova University 2025.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
+ *
+ * @category VuFind
+ * @package  Tests
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
+ */
+
+namespace VuFindTest\Files;
+
+use PHPUnit\Framework\ExpectationFailedException;
+
+/**
+ * Check for outdated strings in code files.
+ *
+ * @category VuFind
+ * @package  Tests
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
+ */
+class BadStringsTest extends \PHPUnit\Framework\TestCase
+{
+    /**
+     * Test for bad strings in our source files.
+     *
+     * @return void
+     * @throws ExpectationFailedException
+     */
+    public function testForBadStrings(): void
+    {
+        $badStrings = ['outdated license address' => '51 Franklin'];
+        $filesToCheck = array_diff($this->getAllFiles(APPLICATION_PATH . '/module', '*.php'), [__FILE__]);
+        $problems =  [];
+        foreach ($filesToCheck as $fileToCheck) {
+            foreach ($badStrings as $reason => $string) {
+                if (str_contains(file_get_contents($fileToCheck), $string)) {
+                    $problems[] = str_replace(APPLICATION_PATH . '/', '', $fileToCheck) . " ($reason: $string)";
+                }
+            }
+        }
+        $this->assertEquals('', implode("\n", $problems), 'Found bad strings in files.');
+    }
+
+    /**
+     * Recursively find all files matching a pattern inside a directory.
+     *
+     * @param string $path    Path to search
+     * @param string $pattern Search pattern
+     *
+     * @return string[]
+     */
+    protected function getAllFiles(string $path, string $pattern): array
+    {
+        $files = glob("$path/$pattern");
+        foreach (glob("$path/*", GLOB_ONLYDIR) as $dir) {
+            $files = array_merge($files, $this->getAllFiles($dir, $pattern));
+        }
+        return $files;
+    }
+}
