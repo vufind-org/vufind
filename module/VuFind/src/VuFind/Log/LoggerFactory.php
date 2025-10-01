@@ -33,6 +33,7 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Lmc\Rbac\Mvc\Service\AuthorizationService;
+use Monolog\Handler\DeduplicationHandler;
 use Monolog\Handler\FilterHandler;
 use Monolog\Handler\HandlerInterface;
 use Monolog\Logger as MonologLogger;
@@ -147,8 +148,9 @@ class LoggerFactory implements FactoryInterface
             $this->getEmailSenderAddress($config),
             $container->get(Mailer::class)
         );
+        $deduplicationHandler = new DeduplicationHandler($mailHandler);
 
-        $this->addHandlers($monologLogger, $mailHandler, $error_types);
+        $this->addHandlers($monologLogger, $deduplicationHandler, $error_types);
     }
 
     /**
