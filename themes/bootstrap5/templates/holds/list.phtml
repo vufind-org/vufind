@@ -91,7 +91,9 @@
               <label></label>
             </div>
           <?php endif; ?>
-
+          <div class="record-number">
+            <?=$this->escapeHtml($iteration) ?>
+          </div>
           <?php
             $coverDetails = $this->record($resource)->getCoverDetails('holds', 'small', $this->recordLinker()->getUrl($resource));
             $cover = $coverDetails['html'];
