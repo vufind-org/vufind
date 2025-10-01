@@ -32,6 +32,7 @@ namespace VuFindTest\Recommend;
 use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Recommend\Databases;
+use VuFind\Search\EDS\Results;
 
 /**
  * Databases Test Class
@@ -185,11 +186,11 @@ class DatabasesTest extends \PHPUnit\Framework\TestCase
      * @param $facetList   array Result facets
      * @param $queryString string Query string
      *
-     * @return object
+     * @return MockObject&Results
      */
-    protected function mockResults(array $facetList, string $queryString): MockObject&\VuFind\Search\EDS\Results
+    protected function mockResults(array $facetList, string $queryString): MockObject&Results
     {
-        $results = $this->createMock(\VuFind\Search\EDS\Results::class);
+        $results = $this->createMock(Results::class);
         $results->method('getFacetList')->willReturn($facetList);
 
         $params = $this->createMock(\VuFind\Search\Base\Params::class);
