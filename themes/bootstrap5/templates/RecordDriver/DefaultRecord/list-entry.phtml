@@ -27,6 +27,11 @@
   <input type="hidden" value="<?=$this->escapeHtmlAttr($id) ?>" class="hiddenId">
   <input type="hidden" value="<?=$this->escapeHtmlAttr($source) ?>" class="hiddenSource">
   <?=$this->record($this->driver)->getCheckbox()?>
+  <?php if ($recordNumber): ?>
+    <div class="record-number">
+      <?=$this->escapeHtml($recordNumber) ?>
+    </div>
+  <?php endif; ?>
   <div class="media">
     <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
       <?=$thumbnail ?>
