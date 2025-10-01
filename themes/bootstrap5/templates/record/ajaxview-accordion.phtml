@@ -65,8 +65,9 @@
       </div>
     </div>
   <?php endif; ?>
-  <?php if (count($this->tabs) > 0): ?>
-    <?php foreach ($this->tabs as $tab => $obj): ?>
+  <?php $filteredTabs = array_filter($this->tabs, fn ($obj) => $obj->supportsSearchResultEmbedding()); ?>
+  <?php if (count($filteredTabs) > 0): ?>
+    <?php foreach ($filteredTabs as $tab => $obj): ?>
       <?php // add current tab to breadcrumbs if applicable:
         $desc = $obj->getDescription();
         $tab_classes = [];
