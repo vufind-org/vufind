@@ -79,7 +79,6 @@ class BadStringsTest extends \PHPUnit\Framework\TestCase
                     : str_contains($fileContents, $string);
                 if ($problem) {
                     $reasons[] = "$reason: " . trim($matches[1] ?? $matches[0] ?? $string);
-                    var_dump($reason);
                 }
             }
             if ($reasons) {
