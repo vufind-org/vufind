@@ -148,6 +148,7 @@ class LoggerFactory implements FactoryInterface
             $this->getEmailSenderAddress($config),
             $container->get(Mailer::class)
         );
+        // Do not send an email for each individual log message; instead, bundle them with DeduplicationHandler:
         $deduplicationHandler = new DeduplicationHandler($mailHandler);
 
         $this->addHandlers($monologLogger, $deduplicationHandler, $error_types);
