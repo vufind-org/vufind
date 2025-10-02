@@ -52,16 +52,20 @@ class BadStringsTest extends \PHPUnit\Framework\TestCase
     {
         $badStrings = [
             'outdated license address' => '51 Franklin',
-            'old PHP 5 header' => ' * PHP version 5',
-            'old PHP 7 header' => ' * PHP version 7',
+            'outdated PHP header comment' => '/\\* (PHP version [57])\s*\n/',
         ];
         $filesToCheck = array_diff($this->getAllFiles(APPLICATION_PATH . '/module', '*.php'), [__FILE__]);
         $problems =  [];
         foreach ($filesToCheck as $fileToCheck) {
             $fileContents = file_get_contents($fileToCheck);
             foreach ($badStrings as $reason => $string) {
-                if (str_contains($fileContents, $string)) {
-                    $problems[] = str_replace(APPLICATION_PATH . '/', '', $fileToCheck) . " ($reason: $string)";
+                $matches = null;
+                $problem = str_starts_with($string, '/')
+                    ? preg_match($string, $fileContents, $matches)
+                    : str_contains($fileContents, $string);
+                if ($problem) {
+                    $reason .= ': ' . trim($matches[1] ?? $matches[0] ?? $string);
+                    $problems[] = str_replace(APPLICATION_PATH . '/', '', $fileToCheck) . " ($reason)";
                 }
             }
         }
