@@ -428,7 +428,6 @@ class GetThisLoader implements LoggerAwareInterface
     public function getCopyNumber(?string $itemId = null): ?string
     {
         $item = $this->getItem($itemId);
-        var_dump($item);
         if (isset($item['number'])) {
             return $item['number'];
         }
