@@ -1356,7 +1356,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     public function getMethodTimedBlocks(string $methodName, array $params = []): array
     {
         $functionConfig = $this->checkCapability('getConfig', ['TimedBlocks', $params])
-            ? $this->getDriver()->getConfig('TimedBlocks')
+            ? $this->getDriver()->getConfig('TimedBlocks', $params)
             : [];
 
         if (!isset($functionConfig[$methodName])) {

@@ -45,15 +45,17 @@ class MethodTimedBlocks extends \Laminas\View\Helper\AbstractHelper
      *
      * @param string $methodName        Method to check
      * @param string $methodDisplayName Method display name translation key (Defaults to "This feature")
+     * @param array  $params            Optional parameters passed to getConfig driver function
      *
      * @return string
      */
     public function __invoke(
         string $methodName,
         string $methodDisplayName = '',
+        array $params = []
     ): string {
         $ils = $this->getView()->plugin('ils');
-        if ($block = $ils()->getMethodBlock($methodName)) {
+        if ($block = $ils()->getMethodBlock($methodName, $params)) {
             $transEsc = $this->getView()->plugin('transEsc');
             $dateTime = $this->getView()->plugin('dateTime');
             $transParams = [
