@@ -29,8 +29,9 @@
 
 namespace VuFind\RecordTab;
 
-use VuFind\Config\PluginManager as ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
+use VuFind\RecordTab\PluginManager as RecordTabPluginManager;
 
 use function in_array;
 
@@ -69,28 +70,6 @@ class TabManager
     protected $config = [];
 
     /**
-     * Configuration plugin manager
-     *
-     * @var ConfigManager
-     */
-    protected $configManager;
-
-    /**
-     * RecordTab plugin manager
-     *
-     * @var PluginManager
-     */
-    protected $pluginManager;
-
-    /**
-     * Overall framework configuration (used for fetching configurations "the old
-     * way" -- can eventually be deprecated).
-     *
-     * @var array
-     */
-    protected $legacyConfig;
-
-    /**
      * Current active context (defaults to 'record')
      *
      * @var string
@@ -100,20 +79,16 @@ class TabManager
     /**
      * Constructor
      *
-     * @param PluginManager $pm           RecordTab plugin manager
-     * @param ConfigManager $cm           Configuration plugin manager
-     * @param array         $legacyConfig Overall framework configuration (only
-     * used for legacy config loading; optional)
+     * @param RecordTabPluginManager $recordTabPluginManager RecordTab plugin manager
+     * @param ConfigManagerInterface $configManager          Configuration manager
+     * @param array                  $legacyConfig           Overall framework configuration (used for
+     * fetching configurations "the old way" -- can eventually be deprecated).
      */
     public function __construct(
-        PluginManager $pm,
-        ConfigManager $cm,
-        $legacyConfig = []
+        protected RecordTabPluginManager $recordTabPluginManager,
+        protected ConfigManagerInterface $configManager,
+        protected array $legacyConfig = []
     ) {
-        $this->pluginManager = $pm;
-        $this->configManager = $cm;
-        $this->legacyConfig = $legacyConfig;
-
         // Initialize default context.
         $this->initializeCurrentContext();
     }
@@ -146,9 +121,9 @@ class TabManager
             $key = $this->contextSettings[$this->context]['legacyConfigSection']
                 ?? 'recorddriver_tabs';
             $legacyConfig = $this->legacyConfig['vufind'][$key] ?? [];
-            $iniConfig = $this->configManager->get(
+            $iniConfig = $this->configManager->getConfigArray(
                 $this->contextSettings[$this->context]['configFile']
-            )->toArray();
+            );
             $this->config[$this->context] = array_merge($legacyConfig, $iniConfig);
         }
     }
@@ -288,10 +263,10 @@ class TabManager
     ) {
         $tabs = [];
         foreach ($this->getTabServiceNames($driver) as $tabKey => $svc) {
-            if (!$this->pluginManager->has($svc)) {
+            if (!$this->recordTabPluginManager->has($svc)) {
                 continue;
             }
-            $newTab = $this->pluginManager->get($svc);
+            $newTab = $this->recordTabPluginManager->get($svc);
             if (method_exists($newTab, 'setRecordDriver')) {
                 $newTab->setRecordDriver($driver);
             }
