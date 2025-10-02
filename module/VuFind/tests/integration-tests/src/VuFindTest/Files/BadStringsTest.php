@@ -25,6 +25,8 @@
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
+ *
+ * @VuFind.SkipBadStringCheck
  */
 
 namespace VuFindTest\Files;
@@ -61,10 +63,14 @@ class BadStringsTest extends \PHPUnit\Framework\TestCase
      */
     public function testForBadStrings(): void
     {
-        $filesToCheck = array_diff($this->getAllFiles(APPLICATION_PATH . '/module', '*.php'), [__FILE__]);
+        $filesToCheck = $this->getAllFiles(APPLICATION_PATH . '/module', '*.php');
         $problems =  [];
         foreach ($filesToCheck as $fileToCheck) {
             $fileContents = file_get_contents($fileToCheck);
+            // Use annotation to skip files:
+            if (str_contains($fileContents, '* @VuFind.SkipBadStringTest')) {
+                continue;
+            }
             foreach ($this->badStrings as $reason => $string) {
                 $matches = null;
                 $problem = str_starts_with($string, '/')
