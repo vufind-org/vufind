@@ -312,7 +312,7 @@
   }
 }
 // Custom styles for user account functions
-.template-dir-myresearch, .template-dir-holds, .template-dir-checkouts.template-name-history, .template-dir-search.template-name-history, .template-dir-librarycards {
+.template-dir-myresearch, .template-dir-holds, .template-dir-checkouts.template-name-history, .template-dir-search.template-name-history, .template-dir-librarycards, .template-dir-comments.template-name-userlist, .template-dir-ratings.template-name-userlist {
   &.main {
     padding-bottom: 30px;
   }
@@ -1069,8 +1069,21 @@ form#renewals, form#update_holds, form#purge_history {
         width: 40%;
       }
     }
+    @include media-breakpoint-down(sm) {
+      .checkbox-container {
+        padding: 0px;
+        .checkbox {
+          padding-left: 0px;
+        }
+      }
+    }
   }
   .finna-tooltip-btn {
     color: $red;
+  }
+}
+.template-dir-comments.template-name-userlist, .template-dir-ratings.template-name-userlist {
+  button#cancelSelected {
+    margin: 10px;
   }
 }

@@ -221,6 +221,13 @@
                 </a>
               </li>
             <?php endif; ?>
+            <?php if ($this->accountCapabilities()->getUserContentTabs()): ?>
+              <li>
+                <a <?=($this->url('comments-userlist') === $_SERVER['REQUEST_URI'] || $this->url('ratings-userlist') === $_SERVER['REQUEST_URI']) ? 'class="dropdown-item active" aria-current="page"' : 'class="dropdown-item"'?> href="<?=$this->url('myresearch-usercontent')?>">
+                  <?=$this->transEsc('comments_and_ratings')?>
+                </a>
+              </li>
+            <?php endif; ?>
             <li>
               <a <?=$this->url('myresearch-logout') === $_SERVER['REQUEST_URI'] ? 'class="dropdown-item active" aria-current="page"' : 'class="dropdown-item"'?> href="<?=$this->url('myresearch-logout')?>" title="<?=$this->transEsc('Log Out')?>"><?=$this->transEsc('Log Out')?><?=$this->icon('sign-out', 'sign-out-icon float-end') ?></a>
             </li>

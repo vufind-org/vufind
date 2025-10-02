@@ -39,9 +39,11 @@
       <?php if ($this->accountCapabilities()->isRatingRemovalAllowed()): ?>
         <input type="hidden" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>" name="csrf">
         <label>
-          <div class="checkbox">
-            <input type="checkbox" name="selectAll" class="checkbox-select-all">
-            <?=$this->transEsc('select_all_on_page')?>
+          <div class="checkbox-container">
+            <div class="checkbox">
+              <input type="checkbox" name="selectAll" class="checkbox-select-all">
+              <?=$this->transEsc('select_all_on_page')?>
+            </div>
           </div>
         </label>
         <?=
@@ -71,7 +73,7 @@
         <tbody>
           <?php foreach ($this->ratings as $rating):?>
             <tr>
-              <td class="checkbox-col">
+              <td class="checkbox-col user-account-table-select">
                 <?php if ($this->accountCapabilities()->isRatingRemovalAllowed()):?>
                   <div class="checkbox-container result">
                     <div class="checkbox">
