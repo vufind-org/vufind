@@ -503,7 +503,7 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Laminas\
                     // target, then log it and don't add it to the search box
                     $msg = "Missing required data for {$target}. Could not add to search box. "
                         . "{$e->getMessage()} ";
-                    $this->log('warn', [
+                    $this->log('err', [
                         1 => $msg,
                         2 => $msg,
                         3 => $msg,

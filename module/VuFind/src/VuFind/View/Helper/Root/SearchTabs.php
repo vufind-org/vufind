@@ -169,7 +169,7 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper implements \Laminas
             } catch (\Exception $e) {
                 // Log the error and just don't add tabs that we couldn't get the data for
                 $msg = "Could not add tab for {$key}. {$e->getMessage()} ";
-                $this->log('warn', [
+                $this->log('err', [
                     1 => $msg,
                     2 => $msg,
                     3 => $msg,
