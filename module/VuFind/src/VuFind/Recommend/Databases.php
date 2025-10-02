@@ -29,6 +29,7 @@
 
 namespace VuFind\Recommend;
 
+use Closure;
 use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
 
 use function count;
@@ -60,13 +61,6 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
      * @var \VuFind\Search\Base\Results
      */
     protected $results;
-
-    /**
-     * Configuration manager
-     *
-     * @var ConfigManager
-     */
-    protected $configManager;
 
     /**
      * Number of results to show
@@ -133,26 +127,17 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
     protected $linkToAllDatabases = false;
 
     /**
-     * Callable for LibGuides connector
-     *
-     * @var callable
-     */
-    protected $libGuidesGetter;
-
-    /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configManager   Config PluginManager
-     * @param callable                     $libGuidesGetter Getter for LibGuides API connection
-     * @param CacheAdapter                 $cache           Object cache
+     * @param \VuFind\Config\ConfigManagerInterface $configManager   Config Manager
+     * @param Closure                               $libGuidesGetter Getter for LibGuides API connection
+     * @param CacheAdapter                          $cache           Object cache
      */
     public function __construct(
-        \VuFind\Config\PluginManager $configManager,
-        callable $libGuidesGetter,
+        protected \VuFind\Config\ConfigManagerInterface $configManager,
+        protected Closure $libGuidesGetter,
         CacheAdapter $cache
     ) {
-        $this->configManager = $configManager;
-        $this->libGuidesGetter = $libGuidesGetter;
         $this->setCacheStorage($cache);
     }
 
@@ -173,11 +158,11 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
             ? intval($settings[0]) : $this->limit;
         $databasesConfigFile = $settings[1] ?? 'EDS';
 
-        $databasesConfig = $this->configManager->get($databasesConfigFile)->Databases;
-        if (!$databasesConfig) {
+        $databasesConfig = $this->configManager->getConfigArray($databasesConfigFile)['Databases'] ?? [];
+        if (empty($databasesConfig)) {
             throw new \Exception("Databases config file $databasesConfigFile must have section 'Databases'.");
         }
-        $this->configFileDatabases = $databasesConfig->url?->toArray()
+        $this->configFileDatabases = $databasesConfig['url']
             ?? $this->configFileDatabases;
         array_walk($this->configFileDatabases, function (&$value, $name) {
             $value = [
@@ -186,24 +171,27 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
             ];
         });
 
-        $this->resultFacet = $databasesConfig->resultFacet?->toArray() ?? $this->resultFacet;
-        $this->resultFacetNameKey = $databasesConfig->resultFacetNameKey
+        $this->resultFacet = $databasesConfig['resultFacet']
+            ?? $this->resultFacet;
+        $this->resultFacetNameKey = $databasesConfig['resultFacetNameKey']
             ?? $this->resultFacetNameKey;
 
-        $this->useQuery = $databasesConfig->useQuery ?? $this->useQuery;
-        $this->useQueryMinLength = $databasesConfig->useQueryMinLength
+        $this->useQuery = $databasesConfig['useQuery']
+            ?? $this->useQuery;
+        $this->useQueryMinLength = $databasesConfig['useQueryMinLength']
             ?? $this->useQueryMinLength;
 
-        $this->useLibGuides = $databasesConfig->useLibGuides ?? $this->useLibGuides;
+        $this->useLibGuides = $databasesConfig['useLibGuides']
+            ?? $this->useLibGuides;
         if ($this->useLibGuides) {
             // Cache the data related to profiles for up to 10 minutes:
-            $libGuidesApiConfig = $this->configManager->get('LibGuidesAPI');
-            $this->cacheLifetime = intval($libGuidesApiConfig->GetAZ->cache_lifetime ?? 600);
+            $libGuidesApiConfig = $this->configManager->getConfigArray('LibGuidesAPI');
+            $this->cacheLifetime = intval($libGuidesApiConfig['GetAZ']['cache_lifetime'] ?? 600);
 
-            $this->useLibGuidesAlternateNames = $databasesConfig->useLibGuidesAlternateNames
+            $this->useLibGuidesAlternateNames = $databasesConfig['useLibGuidesAlternateNames']
                 ?? $this->useLibGuidesAlternateNames;
 
-            $this->linkToAllDatabases = $databasesConfig->linkToAllDatabases
+            $this->linkToAllDatabases = $databasesConfig['linkToAllDatabases']
                 ?? $this->linkToAllDatabases;
         }
     }
