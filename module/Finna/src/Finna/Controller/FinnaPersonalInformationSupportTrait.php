@@ -113,8 +113,7 @@ trait FinnaPersonalInformationSupportTrait
             return $aDetail <=> $bDetail;
         };
 
-        $sorter = $this->serviceLocator->get(\VuFind\I18n\Sorter::class);
-        $sortFunc = function ($a, $b) use ($getDetailDiff, $sorter) {
+        $sortFunc = function ($a, $b) use ($getDetailDiff) {
             $aDetails = $a->getExtraDetail('ils_details');
             $bDetails = $b->getExtraDetail('ils_details');
 
@@ -127,14 +126,13 @@ trait FinnaPersonalInformationSupportTrait
             if ($diff = $getDetailDiff($aDetails, $bDetails, 'last_pickup_date', true)) {
                 return $diff;
             }
-            if ($diff = $getDetailDiff($aDetails, $bDetails, 'expiry', true)) {
-                return $diff;
-            }
-            return $sorter->compare(
-                $a->getExtraDetail('ils_details')['title'] ?? $a->getFullTitle() ?? '',
-                $b->getExtraDetail('ils_details')['title'] ?? $b->getFullTitle() ?? ''
-            );
+            return $a->getExtraDetail('__key') - $b->getExtraDetail('__key');
         };
+
+        // Add keys to maintain original order for items in a group:
+        foreach ($recordList as $key => $record) {
+            $record->setExtraDetail('__key', $key);
+        }
 
         usort($recordList, $sortFunc);
 
