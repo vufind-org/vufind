@@ -64,25 +64,30 @@ class BadStringsTest extends \PHPUnit\Framework\TestCase
     public function testForBadStrings(): void
     {
         $filesToCheck = $this->getAllFiles(APPLICATION_PATH . '/module', '*.php');
-        $problems =  [];
+        $failures =  [];
         foreach ($filesToCheck as $fileToCheck) {
             $fileContents = file_get_contents($fileToCheck);
             // Use annotation to skip files:
             if (str_contains($fileContents, '* @VuFind.SkipBadStringTest')) {
                 continue;
             }
+            $reasons = [];
             foreach ($this->badStrings as $reason => $string) {
                 $matches = null;
                 $problem = str_starts_with($string, '/')
                     ? preg_match($string, $fileContents, $matches)
                     : str_contains($fileContents, $string);
                 if ($problem) {
-                    $reason .= ': ' . trim($matches[1] ?? $matches[0] ?? $string);
-                    $problems[] = str_replace(APPLICATION_PATH . '/', '', $fileToCheck) . " ($reason)";
+                    $reasons[] = "$reason: " . trim($matches[1] ?? $matches[0] ?? $string);
+                    var_dump($reason);
                 }
             }
+            if ($reasons) {
+                $reasonMsg = implode('; ', $reasons);
+                $failures[] = str_replace(APPLICATION_PATH . '/', '', $fileToCheck) . " ($reasonMsg)";
+            }
         }
-        $this->assertEquals('', implode("\n", $problems), 'Found bad strings in files.');
+        $this->assertEquals('', implode(PHP_EOL, $failures), 'Found bad strings in files.');
     }
 
     /**
