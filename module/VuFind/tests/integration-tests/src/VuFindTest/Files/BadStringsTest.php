@@ -54,8 +54,9 @@ class BadStringsTest extends \PHPUnit\Framework\TestCase
         $filesToCheck = array_diff($this->getAllFiles(APPLICATION_PATH . '/module', '*.php'), [__FILE__]);
         $problems =  [];
         foreach ($filesToCheck as $fileToCheck) {
+            $fileContents = file_get_contents($fileToCheck);
             foreach ($badStrings as $reason => $string) {
-                if (str_contains(file_get_contents($fileToCheck), $string)) {
+                if (str_contains($fileContents, $string)) {
                     $problems[] = str_replace(APPLICATION_PATH . '/', '', $fileToCheck) . " ($reason: $string)";
                 }
             }
@@ -73,8 +74,10 @@ class BadStringsTest extends \PHPUnit\Framework\TestCase
      */
     protected function getAllFiles(string $path, string $pattern): array
     {
-        $files = glob("$path/$pattern");
-        foreach (glob("$path/*", GLOB_ONLYDIR) as $dir) {
+        $filesMatchingPattern = glob("$path/$pattern");
+        $dirs = glob("$path/*", GLOB_ONLYDIR);
+        $files = array_diff($filesMatchingPattern, $dirs);
+        foreach ($dirs as $dir) {
             $files = array_merge($files, $this->getAllFiles($dir, $pattern));
         }
         return $files;
