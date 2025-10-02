@@ -168,14 +168,16 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper implements \Laminas
                 }
             } catch (\Exception $e) {
                 // Log the error and just don't add tabs that we couldn't get the data for
-                $msg = "Could not add tab for {$key}. {$e->getMessage()} ";
-                $this->log('err', [
-                    1 => $msg,
-                    2 => $msg,
-                    3 => $msg,
-                    4 => $msg . (string)$e,
-                    5 => $msg . (string)$e,
-                ]);
+                $baseMsg = "Could not add tab for {$key}.";
+                $shortDetails = $e->getMessage();
+                $fullDetails = (string)$e;
+                $this->logError([
+                    1 => "$baseMsg $shortDetails",
+                    2 => "$baseMsg $shortDetails",
+                    3 => "$baseMsg $shortDetails",
+                    4 => "$baseMsg $fullDetails",
+                    5 => "$baseMsg $fullDetails",
+                ], prependClass: false);
                 continue;
             }
             $tab = [

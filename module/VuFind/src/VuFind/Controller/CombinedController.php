@@ -176,14 +176,16 @@ class CombinedController extends AbstractSearch implements \Laminas\Log\LoggerAw
             } catch (\Exception $e) {
                 // Prevent errors from any of the combined search results
                 // from raising up to the user interface and instead just skip them
-                $msg = "Failed get combined options for {$searchClassId}. {$e->getMessage()} ";
-                $this->log('err', [
-                    1 => $msg,
-                    2 => $msg,
-                    3 => $msg,
-                    4 => $msg . (string)$e,
-                    5 => $msg . (string)$e,
-                ]);
+                $baseMsg = "Failed get combined options for {$searchClassId}.";
+                $shortDetails = $e->getMessage();
+                $fullDetails = (string)$e;
+                $this->logError([
+                    1 => "$baseMsg $shortDetails",
+                    2 => "$baseMsg $shortDetails",
+                    3 => "$baseMsg $shortDetails",
+                    4 => "$baseMsg $fullDetails",
+                    5 => "$baseMsg $fullDetails",
+                ], prependClass: false);
                 continue;
             }
             $this->adjustQueryForSettings(

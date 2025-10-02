@@ -154,15 +154,16 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Laminas\
                     } catch (\Exception $e) {
                         // Log a warning and ignore when we can't add the autocomplete rules for
                         // any of the handlers
-                        $msg = "Could not determine autocomplete formatting rules for {$target}. "
-                            . "{$e->getMessage()} ";
-                        $this->log('warn', [
-                            1 => $msg,
-                            2 => $msg,
-                            3 => $msg,
-                            4 => $msg . (string)$e,
-                            5 => $msg . (string)$e,
-                        ]);
+                        $baseMsg = "Could not determine autocomplete formatting rules for {$target}.";
+                        $shortDetails = $e->getMessage();
+                        $fullDetails = (string)$e;
+                        $this->logWarning([
+                            1 => "$baseMsg $shortDetails",
+                            2 => "$baseMsg $shortDetails",
+                            3 => "$baseMsg $shortDetails",
+                            4 => "$baseMsg $fullDetails",
+                            5 => "$baseMsg $fullDetails",
+                        ], prependClass: false);
                     }
                 }
             }
@@ -501,15 +502,16 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Laminas\
                 } catch (\Exception $e) {
                     // If we can't get the options or basic handlers for the search
                     // target, then log it and don't add it to the search box
-                    $msg = "Missing required data for {$target}. Could not add to search box. "
-                        . "{$e->getMessage()} ";
-                    $this->log('err', [
-                        1 => $msg,
-                        2 => $msg,
-                        3 => $msg,
-                        4 => $msg . (string)$e,
-                        5 => $msg . (string)$e,
-                    ]);
+                    $baseMsg = "Missing required data for {$target}. Could not add to search box.";
+                    $shortDetails = $e->getMessage();
+                    $fullDetails = (string)$e;
+                    $this->logError([
+                        1 => "$baseMsg $shortDetails",
+                        2 => "$baseMsg $shortDetails",
+                        3 => "$baseMsg $shortDetails",
+                        4 => "$baseMsg $fullDetails",
+                        5 => "$baseMsg $fullDetails",
+                    ], prependClass: false);
                     continue;
                 }
                 if (empty($basic)) {
