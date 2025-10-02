@@ -1,5 +1,6 @@
 ---
 # This file contains the settings for the GetThis feature
+# See Regex.yaml for comment related to regex
 
 # Either to display the copy number (next to the call number), default false
 showCopyNumber: true
@@ -47,11 +48,16 @@ templates:
     enabled: true
 
   micro-form:
+    # Template displayed if the location matches LOCATION_MICROFORMS in Regex.yaml
     condition_function: showMicroForm
     view_variables:
       open_hours: https://your_lib.edu/hours
 
   staff-office-delivery:
+    # Part of the logic to choose whether to display the template belongs in the following regex (Regex.yaml) :
+    #   STATUS_AVAILABLE
+    #   STATUS_CHECKED_OUT
+    #   STATUS_UNAVAILABLE
     condition_function: showStaffDelivery
     view_variables:
       # Has the following placeholders available:
@@ -62,10 +68,16 @@ templates:
       #   %%author%%: Author
       #   %%isbn%%: ISBN
       general_link: https://your_lib.edu/facstaffdelivery
-      request_link: https://interlib.your_lib.edu/request_link/%%title%%?author=%%author%%&rft.isbn=%%isbn%%&loc=%%location%%&callno=%%callNum%%&CAT=1
+      request_link: https://interlib.your_lib.edu/request_link/
 
   inter-library:
     condition_function: showInterLibrary
+    # Part of the logic to choose whether to display the template belongs in the following regex (Regex.yaml) :
+    #   STATUS_AVAILABLE
+    #   STATUS_CHECKED_OUT
+    #   STATUS_UNAVAILABLE
+    #   LOCATION_EXCLUSIVE
+    #   STATUS_LIB_USE_ONLY
     view_variables:
       # Has the following placeholders available:
       #   %%item%% : Item record
@@ -76,10 +88,14 @@ templates:
       #   %%author%%: Author
       #   %%isbn%%: ISBN
       general_link: https://your_lib.edu/ils/
-      request_link: https://interlib.your_lib.edu/request_link/%%title%%?author=%%author%%&rft.isbn=%%isbn%%&loc=%%location%%&callno=%%callNum%%&CAT=1
+      request_link: https://interlib.your_lib.edu/request_link/
 
 
   remote-delivery:
+    # Part of the logic to choose whether to display the template belongs in the following regex (Regex.yaml) :
+    #   STATUS_AVAILABLE
+    #   STATUS_CHECKED_OUT
+    #   STATUS_UNAVAILABLE
     condition_function: showRemoteDelivery
     view_variables:
       # Has the following placeholders available:
@@ -91,7 +107,7 @@ templates:
       #   %%author%%: Author
       #   %%isbn%%: ISBN
       general_link: https://your_lib.edu/ils/distance
-      request_link: https://interlib.your_lib.edu/request_link/%%title%%?author=%%author%%&rft.isbn=%%isbn%%&loc=%%location%%&callno=%%callNum%%&CAT=1
+      request_link: https://interlib.your_lib.edu/request_link/
 
 # The order you want the templates to be displayed
 templates_order:

@@ -1,5 +1,6 @@
 ---
 # This file contains the settings for the Regex feature
+# A header will be considered matching if any of the elements matches
 
 # Status
   # Regex in this section are used to match against the specific item status value

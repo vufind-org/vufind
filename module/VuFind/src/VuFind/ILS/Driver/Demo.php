@@ -2856,7 +2856,6 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * @throws ILSException
      * @return array Status
-     * @throws ILSException
      */
     public function resetPassword(array $details, array $params)
     {
