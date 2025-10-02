@@ -41,13 +41,6 @@ namespace Finna\Search\SolrBrowse;
 class Options extends \Finna\Search\Solr\Options
 {
     /**
-     * Overall default sort option
-     *
-     * @var string
-     */
-    protected $defaultSort = 'title,id asc';
-
-    /**
      * Default search handler
      *
      * @var string
@@ -95,6 +88,19 @@ class Options extends \Finna\Search\Solr\Options
      * @var string
      */
     protected $browseType = '';
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     */
+    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    {
+        parent::__construct($configLoader);
+
+        // Override default sort to always be by title:
+        $this->defaultSort = 'title';
+    }
 
     /**
      * Return the route name for the search results action.
