@@ -43,6 +43,17 @@ use PHPUnit\Framework\ExpectationFailedException;
 class BadStringsTest extends \PHPUnit\Framework\TestCase
 {
     /**
+     * List of bad strings to check for. Will be matched as plain text unless they
+     * start with a '/' character, in which case they will be treated as regex.
+     *
+     * @var array
+     */
+    protected array $badStrings = [
+        'outdated license address' => '51 Franklin',
+        'outdated PHP header comment' => '/\\* (PHP version [^8])\s*\n/',
+    ];
+
+    /**
      * Test for bad strings in our source files.
      *
      * @return void
@@ -50,15 +61,11 @@ class BadStringsTest extends \PHPUnit\Framework\TestCase
      */
     public function testForBadStrings(): void
     {
-        $badStrings = [
-            'outdated license address' => '51 Franklin',
-            'outdated PHP header comment' => '/\\* (PHP version [57])\s*\n/',
-        ];
         $filesToCheck = array_diff($this->getAllFiles(APPLICATION_PATH . '/module', '*.php'), [__FILE__]);
         $problems =  [];
         foreach ($filesToCheck as $fileToCheck) {
             $fileContents = file_get_contents($fileToCheck);
-            foreach ($badStrings as $reason => $string) {
+            foreach ($this->badStrings as $reason => $string) {
                 $matches = null;
                 $problem = str_starts_with($string, '/')
                     ? preg_match($string, $fileContents, $matches)
