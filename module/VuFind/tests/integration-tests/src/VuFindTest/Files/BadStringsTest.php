@@ -50,7 +50,11 @@ class BadStringsTest extends \PHPUnit\Framework\TestCase
      */
     public function testForBadStrings(): void
     {
-        $badStrings = ['outdated license address' => '51 Franklin'];
+        $badStrings = [
+            'outdated license address' => '51 Franklin',
+            'old PHP 5 header' => ' * PHP version 5',
+            'old PHP 7 header' => ' * PHP version 7',
+        ];
         $filesToCheck = array_diff($this->getAllFiles(APPLICATION_PATH . '/module', '*.php'), [__FILE__]);
         $problems =  [];
         foreach ($filesToCheck as $fileToCheck) {
