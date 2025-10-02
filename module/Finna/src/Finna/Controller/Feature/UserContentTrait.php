@@ -83,6 +83,7 @@ trait UserContentTrait
         foreach ($contents as $i => &$c) {
             $c['recordTitle'] = $records[$i]->getTitle() ?? '';
             $c['mergedData'] = $records[$i]->tryMethod('getMergedRecordData');
+            $c['missing'] = $records[$i] instanceof \VuFind\RecordDriver\Missing;
         }
         unset($c);
         return $contents;
