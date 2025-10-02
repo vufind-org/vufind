@@ -154,10 +154,15 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Laminas\
                     } catch (\Exception $e) {
                         // Log a warning and ignore when we can't add the autocomplete rules for
                         // any of the handlers
-                        $this->logWarning(
-                            "Could not determine autocomplete formatting rules for {$target}. "
-                            . $e->getMessage()
-                        );
+                        $msg = "Could not determine autocomplete formatting rules for {$target}. "
+                            . "{$e->getMessage()} ";
+                        $this->log('warn', [
+                            1 => $msg,
+                            2 => $msg,
+                            3 => $msg,
+                            4 => $msg . (string)$e,
+                            5 => $msg . (string)$e,
+                        ]);
                     }
                 }
             }
@@ -496,10 +501,15 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Laminas\
                 } catch (\Exception $e) {
                     // If we can't get the options or basic handlers for the search
                     // target, then log it and don't add it to the search box
-                    $this->logError(
-                        "Missing required data for {$target}. Could not add to search box. "
-                        . $e->getMessage()
-                    );
+                    $msg = "Missing required data for {$target}. Could not add to search box. "
+                        . "{$e->getMessage()} ";
+                    $this->log('warn', [
+                        1 => $msg,
+                        2 => $msg,
+                        3 => $msg,
+                        4 => $msg . (string)$e,
+                        5 => $msg . (string)$e,
+                    ]);
                     continue;
                 }
                 if (empty($basic)) {
