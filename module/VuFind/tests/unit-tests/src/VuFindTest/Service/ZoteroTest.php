@@ -120,7 +120,7 @@ class ZoteroTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('https://localhost/authorization', $zotero->export($user, 'https://localhost/callback'));
         // Check that emulated return from Zotero authorization would throw:
         $this->expectExceptionMessage('An error has occurred');
-        $this->assertEquals('https://localhost/authorization', $zotero->handleAuthCallback($user, $this->oauthParams));
+        $zotero->handleAuthCallback($user, $this->oauthParams);
     }
 
     /**
