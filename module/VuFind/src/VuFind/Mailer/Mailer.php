@@ -36,6 +36,7 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Mime\Exception\RfcComplianceException;
+use Symfony\Component\Mime\Part\DataPart;
 use VuFind\Exception\Mail as MailException;
 use VuFind\RecordDriver\AbstractBase;
 
