@@ -507,7 +507,9 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Get FOLIO records by batches of ids
+     * Get FOLIO records by batches of ids.
+     * When using a unique field for $idField (such as 'id'), this function does not check
+     * if all records are found, and returned records are not guaranteed to be in the order of the given ids.
      *
      * @param string[] $ids         ids to look for in the records
      * @param string   $idField     field to compare to given ids
@@ -552,7 +554,7 @@ class Folio extends AbstractAPI implements
                 if (isset($resultsToCache[$key])) {
                     $resultsToCache[$key][] = $item;
                 } else {
-                    $resultsToCache[$key] = [ $item ];
+                    $resultsToCache[$key] = [$item];
                 }
                 yield $item;
             }
@@ -628,6 +630,7 @@ class Folio extends AbstractAPI implements
 
     /**
      * Retrieve FOLIO instances using VuFind's chosen bibliographic identifiers.
+     * Returned instances may not be in the order of the given ids.
      *
      * @param string[] $bibIds Bib-level ids
      *
