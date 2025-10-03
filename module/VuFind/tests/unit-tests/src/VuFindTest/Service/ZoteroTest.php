@@ -206,8 +206,7 @@ class ZoteroTest extends \PHPUnit\Framework\TestCase
             'failed' => 0,
             'succeeded' => 1,
         ]));
-        $exportClient = $this->getMockBuilder(Client::class)
-            ->getMock();
+        $exportClient = $this->createMock(Client::class);
         $exportClient->expects($expectCounts ? $this->exactly(2) : $this->any())
             ->method('request')
             ->with('POST', $this->zoteroExportUrl)
