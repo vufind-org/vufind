@@ -212,9 +212,7 @@ class ZoteroTest extends \PHPUnit\Framework\TestCase
             ->with('POST', $this->zoteroExportUrl)
             ->willReturn($exportResponse);
 
-        $guzzleService = $this->getMockBuilder(GuzzleService::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $guzzleService = $this->createMock(GuzzleService::class);
         $guzzleService->expects($expectCounts ? $this->exactly(4) : $this->any())
             ->method('createClient')
             ->willReturnCallback(fn ($url) => match ($url) {
