@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Command\Upgrade;
 
+use Closure;
 use Symfony\Component\Console\Tester\CommandTester;
 use VuFind\Db\Connection;
 use VuFind\Db\ConnectionFactory;
@@ -82,7 +83,7 @@ class DatabaseCommandTest extends \PHPUnit\Framework\TestCase
         if (!$sqlOnly) {
             $factory->expects($this->once())->method('getConnection')->with(null, null)->willReturn($connection);
         }
-        $command = new DatabaseCommand($manager, $factory);
+        $command = new DatabaseCommand(Closure::fromCallable(fn () => $manager), $factory);
         $commandTester = new CommandTester($command);
         $commandTester->execute($sqlOnly ? ['--sql-only' => true] : []);
         $this->assertEquals(
@@ -101,7 +102,7 @@ class DatabaseCommandTest extends \PHPUnit\Framework\TestCase
     {
         $manager = $this->createMock(MigrationManager::class);
         $factory = $this->createMock(ConnectionFactory::class);
-        $command = new DatabaseCommand($manager, $factory);
+        $command = new DatabaseCommand(Closure::fromCallable(fn () => $manager), $factory);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
         $this->assertEquals(

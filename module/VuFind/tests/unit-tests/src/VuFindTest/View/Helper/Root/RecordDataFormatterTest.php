@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -96,7 +96,9 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
                 $this->createMock(\VuFind\Auth\ILSAuthenticator::class)
             ),
             'context' => $context,
-            'config' => new \VuFind\View\Helper\Root\Config($container->get(\VuFind\Config\PluginManager::class)),
+            'config' => new \VuFind\View\Helper\Root\Config(
+                $container->get(\VuFind\Config\ConfigManagerInterface::class)
+            ),
             'identifierLinker' => new \VuFind\View\Helper\Root\IdentifierLinker($context),
             'htmlSafeJsonEncode' => new \VuFind\View\Helper\Root\HtmlSafeJsonEncode(),
             'icon' => new \VuFind\View\Helper\Root\Icon(
@@ -236,15 +238,6 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
                 'enabled' => true,
             ],
         ]);
-        $container->set(
-            \VuFind\Config\PluginManager::class,
-            $this->getMockConfigPluginManager([
-                'config' => [
-                    'Record' => [],
-                ],
-                'RecordDataFormatter' => $recordDataFormatterConfig,
-            ])
-        );
         $schemaOrgHelper = new \VuFind\View\Helper\Root\SchemaOrg(
             new \Laminas\View\Helper\HtmlAttributes()
         );

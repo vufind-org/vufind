@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Autocomplete
@@ -83,6 +83,13 @@ class Solr implements AutocompleteInterface
     protected $sortField;
 
     /**
+     * Max number of search result rows
+     *
+     * @var ?int
+     */
+    protected ?int $limit = null;
+
+    /**
      * Filters to apply to Solr search
      *
      * @var array
@@ -140,7 +147,13 @@ class Solr implements AutocompleteInterface
             $params[2] : null;
         $this->filters = [];
         if (count($params) > 3) {
-            for ($x = 3; $x < count($params); $x += 2) {
+            if (ctype_digit($params[3])) {
+                $this->setLimit((int)$params[3]);
+                $filterStartIndex = 4;
+            } else {
+                $filterStartIndex = 3;
+            }
+            for ($x = $filterStartIndex; $x < count($params); $x += 2) {
                 if (isset($params[$x + 1])) {
                     $this->filters[] = $params[$x] . ':' . $params[$x + 1];
                 }
@@ -209,6 +222,9 @@ class Solr implements AutocompleteInterface
             $this->handler
         );
         $this->searchObject->getParams()->setSort($this->sortField);
+        if ($this->limit) {
+            $this->searchObject->getParams()->setLimit($this->limit);
+        }
         foreach ($this->filters as $current) {
             $this->searchObject->getParams()->addFilter($current);
         }
@@ -358,6 +374,19 @@ class Solr implements AutocompleteInterface
     protected function setSortField($new)
     {
         $this->sortField = $new;
+    }
+
+    /**
+     * Set the limit. Useful for child classes.
+     *
+     * @param ?int $limit Limit of search result rows. Can be null to default
+     * to the limit of the search class.
+     *
+     * @return void
+     */
+    protected function setLimit(?int $limit): void
+    {
+        $this->limit = $limit;
     }
 
     /**

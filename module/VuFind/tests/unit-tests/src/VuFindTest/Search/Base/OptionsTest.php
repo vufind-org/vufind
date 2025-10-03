@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -41,7 +41,7 @@ namespace VuFindTest\Search\Base;
 class OptionsTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\ConfigRelatedServicesTrait;
-    use \VuFindTest\Feature\MockSearchOptionsTrait;
+    use \VuFindTest\Feature\SearchObjectsTrait;
 
     /**
      * Test basic search handler behavior.
@@ -60,7 +60,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
             ],
         ];
         $configManager = $this->getMockConfigManager($configs);
-        $options = $this->getMockOptions($configManager);
+        $options = $this->getBaseOptionsObject($configManager);
         $this->assertEquals($handlers, $options->getBasicHandlers());
         $this->assertEquals('foo_label', $options->getLabelForBasicHandler('foo'));
         $this->assertEquals('bar_label', $options->getLabelForBasicHandler('bar'));
