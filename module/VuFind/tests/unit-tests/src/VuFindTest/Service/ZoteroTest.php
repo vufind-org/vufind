@@ -198,8 +198,7 @@ class ZoteroTest extends \PHPUnit\Framework\TestCase
                 $this->storedAccessToken = $accessToken;
             });
 
-        $callbackClient = $this->getMockBuilder(Client::class)
-            ->getMock();
+        $callbackClient = $this->createMock(Client::class);
         $callbackClient->expects($expectCounts ? $this->exactly(2) : $this->any())
             ->method('request')
             ->with('GET', 'https://localhost/callback')
