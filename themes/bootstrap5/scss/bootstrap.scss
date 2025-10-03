@@ -583,11 +583,20 @@ body.rtl .dropdown-menu {
     vertical-align: middle;
   }
 }
+
+#select_all_comments, #select_all_ratings, #select_all_tags {
+  .toolbar {
+    padding: 0 0.9rem;
+    margin-bottom: 0.25rem;
+  }
+}
+
 .usercontent-table {
   tbody > tr > td {
     vertical-align: middle;
     .checkbox-container {
       padding-top: 0rem;
+      padding-bottom: 0rem;
       border-bottom: 0px;
       .checkbox-select-item {
         float: none;
@@ -602,7 +611,19 @@ body.rtl .dropdown-menu {
       }
     }
   }
+  // Display checkbox on narrow screens too:
+  .result .record-checkbox {
+    display: initial;
+  }
+
+  @include media-breakpoint-down(sm) {
+    .checkbox-col {
+      // Account for border to keep alignment:
+      padding: calc(0.5rem - 1px);
+    }
+  }
 }
+
 .fines-total {
   font-weight: bold;
 }
@@ -690,7 +711,7 @@ body.rtl .dropdown-menu {
   td {
     word-wrap: anywhere;
   }
-  td.fullAvailability, td.holdings-table {
+  td.fullAvailability, td.holdings-table, td.date {
     word-wrap: break-word;
   }
 }
@@ -740,7 +761,7 @@ body.rtl .dropdown-menu {
         display: flex;
         align-items: first baseline;
         background: #fff;
-        &:before {
+        &:not(.unlabeled-column):before {
           display: flex;
           flex-basis: 40%;
           flex-shrink: 0;
