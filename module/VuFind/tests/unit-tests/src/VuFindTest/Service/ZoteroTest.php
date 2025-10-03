@@ -176,9 +176,7 @@ class ZoteroTest extends \PHPUnit\Framework\TestCase
                 return $credentials;
             });
 
-        $accessTokenService = $this->getMockBuilder(AccessTokenService::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $accessTokenService = $this->createMock(AccessTokenService::class);
         $accessTokenService->expects($expectCounts ? $this->exactly(4) : $this->any())
             ->method('getByIdAndType')
             ->willReturnCallback(function ($id, $type, $create = true) {
