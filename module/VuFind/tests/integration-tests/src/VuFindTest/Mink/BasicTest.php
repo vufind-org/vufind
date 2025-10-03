@@ -168,6 +168,30 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test graceful handling of failed search handler in the search tabs.
+     *
+     * @return void
+     */
+    public function testBadSearchTabConfig(): void
+    {
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'SearchTabs' => [
+                        'Solr' => 'Catalog',
+                        'INVALID' => 'Other Search',
+                    ],
+                ],
+            ]
+        );
+        $page = $this->getSearchHomePage();
+        $this->assertEquals('200', $this->getMinkSession()->getStatusCode());
+        $this->assertStringContainsString('Catalog', $page->getContent());
+        $this->assertStringNotContainsString('Other Search', $page->getContent());
+        $this->assertStringNotContainsString('ServiceNotFoundException', $page->getContent());
+    }
+
+    /**
      * Test lightbox jump links
      *
      * @return void
