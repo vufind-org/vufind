@@ -221,8 +221,7 @@ class ZoteroTest extends \PHPUnit\Framework\TestCase
             });
 
         $cacheOptions = new AdapterOptions();
-        $cache = $this->getMockBuilder(StorageInterface::class)
-            ->getMock();
+        $cache = $this->createMock(StorageInterface::class);
         $cache->expects($expectCounts ? $this->exactly(2) : $this->any())
             ->method('getOptions')
             ->willReturn($cacheOptions);
