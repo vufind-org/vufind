@@ -219,7 +219,7 @@ class ZoteroService implements LoggerAwareInterface, TranslatorAwareInterface
             $vufindResponse = $this->httpService->createClient($callbackUrl)->request('GET', $callbackUrl);
         } catch (\Exception $e) {
             $this->logError("GET request for '$callbackUrl' failed: " . (string)$e);
-            throw new ZoteroException('Export request failed');
+            throw new ZoteroException('Export request failed', previous: $e);
         }
 
         if ($vufindResponse->getStatusCode() !== 200) {
@@ -263,7 +263,7 @@ class ZoteroService implements LoggerAwareInterface, TranslatorAwareInterface
                 );
             } catch (\Exception $e) {
                 $this->logError("POST request for '$apiUrl' (chunk $chunkCount) failed: " . (string)$e);
-                throw new ZoteroException('Zotero request failed');
+                throw new ZoteroException('Zotero request failed', previous: $e);
             }
             if ($zoteroResponse->getStatusCode() !== 200) {
                 $this->logError(
