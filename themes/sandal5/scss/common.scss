@@ -15,9 +15,6 @@ $btn-border-radius: .25rem;
 mark { background-color: $highlighter-color; }
 
 /* ------ Bootstrap class overrides ------ */
-.badge {
-  margin-bottom: 1px;
-}
 .btn-link,
 .btn-primary { border-color: transparent; }
 .btn-primary:hover {

@@ -149,19 +149,6 @@ h3.popover-header {
 }
 .icon-bar { background-color: #888; }
 
-// Icons vs. Underline fix
-.btn {
-  text-decoration: none;
-}
-.btn-link {
-  @extend .icon-link;
-
-  &.pull-left,
-  &.pull-right {
-    display: flex;
-  }
-}
-
 // More/less buttons
 .more-btn, .less-btn {
   &:not(.facet) {
