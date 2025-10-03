@@ -158,9 +158,7 @@ class ZoteroTest extends \PHPUnit\Framework\TestCase
         $credentials->setIdentifier('identifier');
         $credentials->setSecret('secret');
         $credentials->setUserId('zotero_user_id');
-        $zoteroOAuth = $this->getMockBuilder(ZoteroOAuth::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $zoteroOAuth = $this->createMock(ZoteroOAuth::class);
         $zoteroOAuth->expects($expectCounts ? $this->once() : $this->any())
             ->method('getTemporaryCredentials')
             ->willReturn($tempCredentials);
