@@ -576,7 +576,7 @@ protected function getSignatureJwks(): array
      */
     protected function getJwk(?string $kid): array
     {
-        $jwks = $this->getJwks();
+        $jwks = $this->getSignatureJwks();
         if (null !== $kid) {
             if (!isset($jwks[$kid])) {
                 $this->logError("JWK '$kid' not found");
