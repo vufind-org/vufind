@@ -532,16 +532,11 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     }
 
     /**
-     * Get JWKs from provider
+     * Get signature JWKs from provider
      *
      * @return array
      * @throws AuthException
      */
-    * Get signature JWKs from provider
-    *
-    * @return array
-    * @throws AuthException
-    */
     protected function getSignatureJwks(): array
     {
         if (empty($this->jwks)) {
