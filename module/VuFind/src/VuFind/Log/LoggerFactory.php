@@ -406,11 +406,11 @@ class LoggerFactory implements FactoryInterface
                 }
             }
             $filterHandler = new FilterHandler($newHandler, $min, $max);
-            if (is_a($newHandler, "VuFind\Log\Handler\MailHandler")){
+            if (is_a($newHandler, "VuFind\Log\Handler\MailHandler")) {
                 // Do not send an email for each individual log message; instead, bundle them with DeduplicationHandler:
                 $deduplicationHandler = new DeduplicationHandler($filterHandler);
                 $monologLogger->pushHandler($deduplicationHandler);
-            }else{
+            } else {
                 // Add the fully configured handler (wrapped in its filter) to the Monolog logger.
                 $monologLogger->pushHandler($filterHandler);
             }
