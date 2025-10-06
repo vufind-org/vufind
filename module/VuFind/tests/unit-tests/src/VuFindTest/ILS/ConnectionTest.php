@@ -205,7 +205,7 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
             'only startTime defined' => [
                 [
                     'Renewals' => [
-                        date('H:i', strtotime('now')) . '/'
+                        date('H:i', strtotime('now')) . '/',
                     ],
                 ],
                 [],
@@ -213,7 +213,7 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
             'only endTime defined' => [
                 [
                     'Renewals' => [
-                        '/' . date('H:i', strtotime('now'))
+                        '/' . date('H:i', strtotime('now')),
                     ],
                 ],
                 [],
