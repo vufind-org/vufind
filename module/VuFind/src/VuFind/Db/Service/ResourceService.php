@@ -30,6 +30,7 @@
 
 namespace VuFind\Db\Service;
 
+use DateTime;
 use Doctrine\ORM\EntityManager;
 use Exception;
 use Laminas\Log\LoggerAwareInterface;
@@ -109,18 +110,42 @@ class ResourceService extends AbstractDbService implements
     }
 
     /**
-     * Get a set of records that do not have metadata stored in the resource
-     * table.
+     * Get a set of records that are missing metadata in the resource table. If maxAge is specified, this includes also
+     * records that need to be updated.
+     *
+     * @param ?int    $lastId ID of last checked record, or null to start from beginning
+     * @param int     $limit  Limit for results
+     * @param ?int    $minAge Minimum age (in days) for metadata before it needs to be updated
+     * @param ?string $source Record source filter
      *
      * @return ResourceEntityInterface[]
      */
-    public function findMissingMetadata(): array
+    public function findMetadataToUpdate(?int $lastId, int $limit, ?int $minAge = null, ?string $source = null): array
     {
-        $dql = 'SELECT r '
-            . 'FROM ' . ResourceEntityInterface::class . ' r '
-            . "WHERE r.title = '' OR r.author IS NULL OR r.year IS NULL";
+        $dql = 'SELECT r FROM ' . ResourceEntityInterface::class . ' r';
+        $params = [];
+        if (null !== $minAge) {
+            $date = new DateTime();
+            $date->modify("-$minAge days");
+            $dql .= ' WHERE (r.updated <= :dateThreshold)';
+            $params['dateThreshold'] = $date->format(VUFIND_DATABASE_DATETIME_FORMAT);
+        } else {
+            $dql .= " WHERE (r.title = '' OR r.displayTitle IS NULL OR r.author IS NULL OR r.year IS NULL)";
+        }
+        if ($source) {
+            $dql .= ' AND r.source = :source';
+            $params['source'] = $source;
+        }
+        if (null !== $lastId) {
+            $dql .= ' AND r.id > :lastId';
+            $params['lastId'] = $lastId;
+        }
+        $dql .= ' ORDER BY r.id';
 
         $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($params);
+        $query->setMaxResults($limit);
+
         $result = $query->getResult();
         return $result;
     }

@@ -511,7 +511,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCss($page, '.alert-info')->getText()
         );
         $this->assertStringContainsString(
-            'You are using the following filter - Username: All, Tag: All, Resource: dewey browse test (',
+            'You are using the following filter - Username: All, Tag: All, Resource: Dewey browse test (',
             $this->findCss($page, '.alert-info', index: 1)->getText()
         );
         $this->clickCss($page, 'input[value="No"]');

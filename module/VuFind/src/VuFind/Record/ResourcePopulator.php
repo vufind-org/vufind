@@ -155,8 +155,7 @@ class ResourcePopulator
     }
 
     /**
-     * Use a record driver to assign metadata to the current row. Return the
-     * current object to allow fluent interface.
+     * Use a record driver to assign metadata to the given resource. Return the resource to allow fluent interface.
      *
      * @param ResourceEntityInterface $resource The resource to populate
      * @param RecordDriver            $driver   The record driver to populate from
@@ -167,28 +166,35 @@ class ResourcePopulator
     {
         // Grab title -- we have to have something in this field!
         $title = mb_substr(
-            $driver->tryMethod('getSortTitle'),
+            $driver->tryMethod('getSortTitle', [], ''),
             0,
             255,
             'UTF-8'
         );
-        if (empty($title)) {
+        if ('' === $title) {
             $title = $driver->getBreadcrumb();
         }
         $resource->setTitle($title);
 
-        // Try to find an author; if not available, just leave the default null:
+        $resource->setDisplayTitle(
+            mb_substr(
+                $driver->tryMethod('getTitle', [], ''),
+                0,
+                255,
+                'UTF-8'
+            )
+        );
+
+        // Try to find an author; if not available, just set to an empty string:
         $author = mb_substr(
-            $driver->tryMethod('getPrimaryAuthor'),
+            $driver->tryMethod('getPrimaryAuthor', [], ''),
             0,
             255,
             'UTF-8'
         );
-        if (!empty($author)) {
-            $resource->setAuthor($author);
-        }
+        $resource->setAuthor($author);
 
-        // Try to find a year; if not available, just leave the default null:
+        // Try to find a year; if not available, just set to an empty string:
         $dates = $driver->tryMethod('getPublicationDates');
         if (isset($dates[0]) && strlen($dates[0]) > 4) {
             try {
@@ -200,9 +206,7 @@ class ResourcePopulator
         } else {
             $year = $dates[0] ?? '';
         }
-        if (!empty($year)) {
-            $resource->setYear(intval($year));
-        }
+        $resource->setYear(intval($year));
 
         if ($extra = $driver->tryMethod('getExtraResourceMetadata')) {
             $resource->setExtraMetadata(json_encode($extra));

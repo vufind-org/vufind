@@ -94,12 +94,15 @@ CREATE TABLE `resource` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `record_id` varchar(255) NOT NULL DEFAULT '',
   `title` varchar(255) NOT NULL DEFAULT '',
+  `display_title` varchar(255) DEFAULT NULL,
   `author` varchar(255) DEFAULT NULL,
   `year` mediumint(6) DEFAULT NULL,
   `source` varchar(50) NOT NULL DEFAULT 'Solr',
   `extra_metadata` mediumtext DEFAULT NULL,
+  `updated` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   PRIMARY KEY (`id`),
-  KEY `resource_record_id_idx` (`record_id`(190))
+  KEY `resource_record_id_idx` (`record_id`(190)),
+  KEY `resource_updated_idx` (`updated`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 

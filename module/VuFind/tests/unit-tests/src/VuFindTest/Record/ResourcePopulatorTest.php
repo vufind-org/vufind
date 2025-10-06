@@ -61,6 +61,7 @@ class ResourcePopulatorTest extends \PHPUnit\Framework\TestCase
         $driver->setRawData(
             [
                 'Breadcrumb' => 'Fake Title',
+                'Title' => 'Fake Full Title',
                 'PrimaryAuthor' => 'Fake Author',
                 'PublicationDates' => ['1999'],
                 'UniqueID' => $id,
@@ -71,6 +72,7 @@ class ResourcePopulatorTest extends \PHPUnit\Framework\TestCase
         $resource->expects($this->once())->method('setRecordId')->with($id)->willReturn($resource);
         $resource->expects($this->once())->method('setSource')->with($source)->willReturn($resource);
         $resource->expects($this->once())->method('setTitle')->with('fake title')->willReturn($resource);
+        $resource->expects($this->once())->method('setDisplayTitle')->with('Fake Full Title')->willReturn($resource);
         $resource->expects($this->once())->method('setAuthor')->with('Fake Author')->willReturn($resource);
         $resource->expects($this->once())->method('setYear')->with('1999')->willReturn($resource);
         $service = $this->createMock(ResourceServiceInterface::class);
