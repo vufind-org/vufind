@@ -1383,8 +1383,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
                     'recurring' => false,
                 ];
             } else {
-                $startTime = new \DateTime($start);
-                $endTime = new \DateTime($end);
+                $startTime = $start ? new \DateTime($start) : null;
+                $endTime = $end ? new \DateTime($end) : null;
                 if ($startTime && $endTime) {
                     if ($endTime <= $startTime) {
                         $endTime->modify('+1 day');

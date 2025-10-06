@@ -202,6 +202,22 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
                 ],
                 [],
             ],
+            'only startTime defined' => [
+                [
+                    'Renewals' => [
+                        date('H:i', strtotime('now')) . '/'
+                    ],
+                ],
+                [],
+            ],
+            'only endTime defined' => [
+                [
+                    'Renewals' => [
+                        '/' . date('H:i', strtotime('now'))
+                    ],
+                ],
+                [],
+            ],
         ];
     }
 
