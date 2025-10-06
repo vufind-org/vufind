@@ -552,7 +552,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         );
         // Ensure that the sandal5 theme still exists; if we get rid of it in future, this
         // test will fail as a reminder to update the default in the Upgrade class.
-        $this->assertTrue(is_dir(APPLICATION_PATH . '/themes/sandal5'));
+        $this->assertDirectoryExists(APPLICATION_PATH . '/themes/sandal5');
     }
 
     /**
