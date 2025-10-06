@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -70,7 +70,7 @@ class SolrOverdriveFactory
         if ($options !== null) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $configManager = $container->get(\VuFind\Config\ConfigManager::class);
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
         $config = $configManager->getConfigObject('config');
         $odConfig = $configManager->getConfigObject('Overdrive');
         $connector = $container->get(OverdriveConnector::class);

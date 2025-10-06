@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -33,7 +33,9 @@ namespace VuFindTest\Feature;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\MockObject\Rule\InvocationOrder;
 use VuFind\Config\Config;
+use VuFind\Config\ConfigLoader;
 use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Config\Handler\PluginManager as ConfigHandlerPluginManager;
 use VuFind\Config\PathResolver;
 use VuFind\Config\PluginManager as ConfigPluginManager;
@@ -151,8 +153,18 @@ trait ConfigRelatedServicesTrait
         );
         $container->set(PathResolver::class, $pathResolver);
 
-        $configManager = new ConfigManager($configHandlerPluginManager, $pathResolver);
-        $container->set(ConfigManager::class, $configManager);
+        $configLoader = new ConfigLoader($configHandlerPluginManager, $pathResolver);
+        $container->set(ConfigLoader::class, $configLoader);
+
+        $storage = $this->createMock(\Laminas\Cache\Storage\StorageInterface::class);
+        $options = new \Laminas\Cache\Storage\Adapter\FilesystemOptions();
+        $storage->expects($this->any())->method('getOptions')->willReturn($options);
+        $storage->expects($this->any())->method('getItem')->willReturn(null);
+        $cacheManager = $this->createMock(\VuFind\Cache\Manager::class);
+        $cacheManager->expects($this->any())->method('getCache')->willReturn($storage);
+
+        $configManager = new ConfigManager($configLoader, $configHandlerPluginManager, $cacheManager);
+        $container->set(ConfigManagerInterface::class, $configManager);
 
         $configPluginManager = new ConfigPluginManager($container, $moduleConfig['vufind']['config_reader']);
         $container->set(ConfigPluginManager::class, $configPluginManager);
@@ -162,41 +174,40 @@ trait ConfigRelatedServicesTrait
      * Get a mock configuration plugin manager with the given configuration "files"
      * available.
      *
-     * @param array            $configs              An associative array of configurations
+     * @param array            $configs               An associative array of configurations
      * where key is the file (e.g. 'config') and value an array of configuration
      * sections and directives
-     * @param array            $default              Default configuration to return when no
+     * @param array            $default               Default configuration to return when no
      * entry is found in $configs
-     * @param ?InvocationOrder $getConfigArrayExpect The expected invocation order for the getConfigArray()
+     * @param ?InvocationOrder $getConfigArrayExpect  The expected invocation order for the getConfigArray()
+     * method (null for any)
+     * @param ?InvocationOrder $getConfigObjectExpect The expected invocation order for the getConfigObject()
      * method (null for any)
      *
-     * @return MockObject&ConfigManager
+     * @return MockObject&ConfigManagerInterface
      */
     protected function getMockConfigManager(
-        array $configs,
+        array $configs = [],
         array $default = [],
-        ?InvocationOrder $getConfigArrayExpect = null
-    ): ConfigManager {
-        $manager = $this->createMock(ConfigManager::class);
+        ?InvocationOrder $getConfigArrayExpect = null,
+        ?InvocationOrder $getConfigObjectExpect = null
+    ): ConfigManagerInterface {
+        $manager = $this->createMock(ConfigManagerInterface::class);
         $manager->expects($getConfigArrayExpect ?? $this->any())
             ->method('getConfigArray')
             ->with($this->isType('string'))
-            ->will(
-                $this->returnCallback(
-                    function ($config) use ($configs, $default): array {
-                        return $configs[$config] ?? $default;
-                    }
-                )
+            ->willReturnCallback(
+                function ($config) use ($configs, $default): array {
+                    return $configs[$config] ?? $default;
+                }
             );
-        $manager->expects($this->any())
+        $manager->expects($getConfigObjectExpect ?? $this->any())
             ->method('getConfigObject')
             ->with($this->isType('string'))
-            ->will(
-                $this->returnCallback(
-                    function ($config) use ($configs, $default): Config {
-                        return new Config($configs[$config] ?? $default);
-                    }
-                )
+            ->willReturnCallback(
+                function ($config) use ($configs, $default): Config {
+                    return new Config($configs[$config] ?? $default);
+                }
             );
         return $manager;
     }
@@ -206,12 +217,12 @@ trait ConfigRelatedServicesTrait
      *
      * @param \Throwable $exception Exception to throw
      *
-     * @return MockObject&ConfigManager
+     * @return MockObject&ConfigManagerInterface
      */
     protected function getMockFailingConfigManager(
         \Throwable $exception
-    ): ConfigManager {
-        $manager = $this->createMock(ConfigManager::class);
+    ): ConfigManagerInterface {
+        $manager = $this->createMock(ConfigManagerInterface::class);
         $manager->expects($this->any())
             ->method('getConfig')
             ->with($this->isType('string'))
@@ -245,22 +256,18 @@ trait ConfigRelatedServicesTrait
         $manager->expects($getExpect ?? $this->any())
             ->method('get')
             ->with($this->isType('string'))
-            ->will(
-                $this->returnCallback(
-                    function ($config) use ($configs, $default): Config {
-                        return new Config($configs[$config] ?? $default);
-                    }
-                )
+            ->willReturnCallback(
+                function ($config) use ($configs, $default): Config {
+                    return new Config($configs[$config] ?? $default);
+                }
             );
         $manager->expects($hasExpect ?? $this->any())
             ->method('has')
             ->with($this->isType('string'))
-            ->will(
-                $this->returnCallback(
-                    function ($config) use ($configs): bool {
-                        return isset($configs[$config]);
-                    }
-                )
+            ->willReturnCallback(
+                function ($config) use ($configs): bool {
+                    return isset($configs[$config]);
+                }
             );
         return $manager;
     }

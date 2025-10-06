@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -30,9 +30,11 @@
 namespace VuFind\Auth;
 
 use Laminas\Http\PhpEnvironment\Request;
+use Laminas\Log\LoggerAwareInterface;
 use Laminas\Session\SessionManager;
 use Laminas\View\Renderer\RendererInterface;
-use LmcRbacMvc\Identity\IdentityInterface;
+use Lmc\Rbac\Identity\IdentityInterface;
+use Lmc\Rbac\Mvc\Identity\IdentityProviderInterface;
 use VuFind\Config\Config;
 use VuFind\Cookie\CookieManager;
 use VuFind\Db\Entity\UserEntityInterface;
@@ -56,9 +58,7 @@ use function is_callable;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Manager implements
-    \LmcRbacMvc\Identity\IdentityProviderInterface,
-    \Laminas\Log\LoggerAwareInterface
+class Manager implements IdentityProviderInterface, LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
@@ -257,6 +257,8 @@ class Manager implements
      * the one in config file
      *
      * @return bool
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function supportsEmailChange(?string $authMethod = null): bool
     {

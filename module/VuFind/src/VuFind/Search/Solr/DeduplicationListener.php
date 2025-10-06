@@ -21,8 +21,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -213,7 +213,7 @@ class DeduplicationListener
      */
     protected function fetchLocalRecords($event)
     {
-        $dataSourceConfig = $this->getService(\VuFind\Config\ConfigManager::class)
+        $dataSourceConfig = $this->getService(\VuFind\Config\ConfigManagerInterface::class)
             ->getConfigArray($this->dataSourceConfig);
         $recordSources = $this->getActiveRecordSources($event);
         $sourcePriority = $this->determineSourcePriority($recordSources);
@@ -339,7 +339,8 @@ class DeduplicationListener
      */
     protected function getActiveRecordSources($event): array
     {
-        $searchConfig = $this->getService(\VuFind\Config\ConfigManager::class)->getConfigObject($this->searchConfig);
+        $searchConfig = $this->getService(\VuFind\Config\ConfigManagerInterface::class)
+            ->getConfigObject($this->searchConfig);
         return !empty($searchConfig->Records->sources)
             ? explode(',', $searchConfig->Records->sources)
             : [];

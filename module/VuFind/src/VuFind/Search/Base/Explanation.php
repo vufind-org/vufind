@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Base
@@ -30,6 +30,7 @@
 
 namespace VuFind\Search\Base;
 
+use VuFind\Config\ConfigManagerInterface;
 use VuFindSearch\Service as SearchService;
 
 /**
@@ -91,15 +92,15 @@ abstract class Explanation
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Base\Params   $params        Search Parameter
-     * @param SearchService                $searchService Search Service
-     * @param \VuFind\Config\PluginManager $configLoader  Config Loader
+     * @param \VuFind\Search\Base\Params $params        Search Parameter
+     * @param SearchService              $searchService Search Service
+     * @param ConfigManagerInterface     $configManager Config manager
      */
-    public function __construct($params, $searchService, $configLoader)
+    public function __construct($params, $searchService, $configManager)
     {
         $this->params = $params;
         $this->searchService = $searchService;
-        $this->config = $configLoader->get($this->searchIni);
+        $this->config = $configManager->getConfigObject($this->searchIni);
     }
 
     /**

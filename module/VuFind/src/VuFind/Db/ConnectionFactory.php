@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Db
@@ -103,6 +103,8 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(
         ContainerInterface $container,
@@ -112,7 +114,8 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $this->config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject($this->configName);
+        $this->config = $container->get(\VuFind\Config\ConfigManagerInterface::class)
+            ->getConfigObject($this->configName);
         $this->container = $container;
         return $this->getConnection();
     }

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Config_Location
@@ -247,5 +247,19 @@ abstract class AbstractConfigLocation implements ConfigLocationInterface
     {
         $extension = pathinfo($this->getFileName(), PATHINFO_EXTENSION);
         return !empty($extension) ? $extension : null;
+    }
+
+    /**
+     * Get cache key.
+     *
+     * @return string
+     */
+    public function getCacheKey(): string
+    {
+        $path = $this->getPath();
+        if ($realPath = realpath($path)) {
+            $path = $realPath;
+        }
+        return $path . '_' . implode('_', $this->getSubsection());
     }
 }

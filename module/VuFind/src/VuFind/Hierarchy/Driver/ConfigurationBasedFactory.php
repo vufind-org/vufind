@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Hierarchy_Drivers
@@ -69,7 +69,7 @@ class ConfigurationBasedFactory
         $parts = explode('\\', $requestedName);
         $config = end($parts);
         // Set up options based on global VuFind settings:
-        $configManager = $container->get(\VuFind\Config\ConfigManager::class);
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
         $globalConfig = $configManager->getConfigArray('config');
         $options = [
             'enabled' => $globalConfig['Hierarchy']['showTree'] ?? false,

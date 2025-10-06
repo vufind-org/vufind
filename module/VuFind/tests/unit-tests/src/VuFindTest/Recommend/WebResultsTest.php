@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -30,6 +30,7 @@
 namespace VuFindTest\Recommend;
 
 use VuFind\Recommend\WebResults;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
  * WebResults Test Class
@@ -42,6 +43,8 @@ use VuFind\Recommend\WebResults;
  */
 class WebResultsTest extends \PHPUnit\Framework\TestCase
 {
+    use ConfigRelatedServicesTrait;
+
     /**
      * Test getting search class id.
      *
@@ -55,10 +58,7 @@ class WebResultsTest extends \PHPUnit\Framework\TestCase
         $runner = $this->getMockBuilder(\VuFind\Search\SearchRunner::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $configManager = $this->getMockBuilder(\VuFind\Config\PluginManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $obj = new WebResults($runner, $configManager);
+        $obj = new WebResults($runner, $this->getMockConfigManager());
 
         $this->assertSame('SolrWeb', $method->invoke($obj));
     }

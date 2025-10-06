@@ -34,7 +34,8 @@
     </li>
   <?php endif; ?>
 
-  <?php foreach ($this->tabs as $tab => $obj): ?>
+  <?php $filteredTabs = array_filter($this->tabs, fn ($obj) => $obj->supportsSearchResultEmbedding()); ?>
+  <?php foreach ($filteredTabs as $tab => $obj): ?>
     <?php // add current tab to breadcrumbs if applicable:
       $desc = $obj->getDescription();
       $liAttrs = $this->htmlAttributes([
@@ -89,7 +90,7 @@
       <?php endforeach; ?>
     </div>
   <?php endif; ?>
-  <?php foreach ($this->tabs as $tab => $obj): ?>
+  <?php foreach ($filteredTabs as $tab => $obj): ?>
     <div class="list-tab-content tab-pane<?php if ($this->defaultTab === strtolower($tab)): ?> active<?php endif; ?>" id="<?=strtolower($tab)?>_<?=$idSuffixEsc?>-content"></div>
   <?php endforeach; ?>
 </div>

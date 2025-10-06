@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ServiceManager
@@ -30,6 +30,8 @@
 namespace VuFind\ServiceManager;
 
 use Laminas\ServiceManager\Initializer\InitializerInterface;
+use Lmc\Rbac\Mvc\Service\AuthorizationService;
+use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareInterface;
 use Psr\Container\ContainerInterface;
 
 /**
@@ -56,7 +58,7 @@ class ServiceInitializer implements InitializerInterface
         static $enabled = null;
         if (null === $enabled) {
             // Return true if Record Cache is enabled for any data source
-            $cacheConfig = $sm->get(\VuFind\Config\ConfigManager::class)->getConfigArray('RecordCache');
+            $cacheConfig = $sm->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('RecordCache');
             $enabled = false;
             foreach ($cacheConfig as $section) {
                 foreach ($section as $setting) {
@@ -96,6 +98,9 @@ class ServiceInitializer implements InitializerInterface
         }
         if ($instance instanceof \VuFindHttp\HttpServiceAwareInterface) {
             $instance->setHttpService($sm->get(\VuFindHttp\HttpService::class));
+        }
+        if ($instance instanceof AuthorizationServiceAwareInterface) {
+            $instance->setAuthorizationService($sm->get(AuthorizationService::class));
         }
         // Only inject cache if configuration enabled (to save resources):
         if (

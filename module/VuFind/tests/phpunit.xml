@@ -6,6 +6,7 @@
   xsi:noNamespaceSchemaLocation="https://schema.phpunit.de/10.5/phpunit.xsd"
   displayDetailsOnTestsThatTriggerWarnings="true"
   displayDetailsOnTestsThatTriggerDeprecations="true"
+  displayDetailsOnPhpunitDeprecations="true"
   cacheDirectory=".phpunit.cache">
   <testsuites>
     <testsuite name="AllUnitTests">

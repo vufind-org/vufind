@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Error_Logging
@@ -243,7 +243,7 @@ class LoggerFactory implements FactoryInterface
             PHP_SAPI !== 'cli'
             && $container->get('Request')->getQuery()->get('debug')
         ) {
-            return $container->get(\LmcRbacMvc\Service\AuthorizationService::class)
+            return $container->get(\Lmc\Rbac\Mvc\Service\AuthorizationService::class)
                 ->isGranted('access.DebugMode');
         }
         return false;
@@ -259,7 +259,7 @@ class LoggerFactory implements FactoryInterface
      */
     protected function configureLogger(ContainerInterface $container, Logger $logger)
     {
-        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
 
         // Add a no-op writer so fatal errors are not triggered if log messages are
         // sent during the initialization process.
@@ -311,7 +311,7 @@ class LoggerFactory implements FactoryInterface
                 $authManager = $container->get(\VuFind\Auth\Manager::class);
                 if ($user = $authManager->getUserObject()) {
                     $processor = new \Laminas\Log\Processor\ReferenceId();
-                    $processor->setReferenceId($user->username);
+                    $processor->setReferenceId($user->getUsername());
                     $logger->addProcessor($processor);
                 }
             }
@@ -459,6 +459,8 @@ class LoggerFactory implements FactoryInterface
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(
         ContainerInterface $container,

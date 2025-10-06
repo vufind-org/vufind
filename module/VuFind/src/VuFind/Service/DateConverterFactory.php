@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Service
@@ -70,7 +70,8 @@ class DateConverterFactory implements FactoryInterface
         }
         // Pass along key [Site] settings: displayDateFormat, displayTimeFormat,
         // timezone
-        $settings = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config')['Site'] ?? [];
+        $settings = $container->get(\VuFind\Config\ConfigManagerInterface::class)
+            ->getConfigArray('config')['Site'] ?? [];
         return new $requestedName($settings);
     }
 }

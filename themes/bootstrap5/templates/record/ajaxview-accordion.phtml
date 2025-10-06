@@ -65,29 +65,28 @@
       </div>
     </div>
   <?php endif; ?>
-  <?php if (count($this->tabs) > 0): ?>
-    <?php foreach ($this->tabs as $tab => $obj): ?>
-      <?php // add current tab to breadcrumbs if applicable:
-        $desc = $obj->getDescription();
-        $tab_classes = [];
-        if (!$obj->isVisible()) {
-          $tab_classes[] = 'hidden';
-        }
-        if (!$obj->supportsAjax()) {
-          $tab_classes[] = 'noajax';
-        }
-        if ($this->defaultTab === strtolower($tab)) {
-          $tab_classes[] = 'default';
-        }
-      ?>
-      <div class="panel panel-default <?=implode(' ', $tab_classes) ?>">
-        <div id="<?=$this->escapeHtmlAttr(strtolower($tab))?>_<?=$idSuffixEsc?>" class="list-tab-toggle panel-heading" data-bs-toggle="collapse" data-bs-target="#<?=strtolower($tab)?>_<?=$idSuffixEsc?>-content"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>>
-          <h4 class="panel-title">
-            <a class="accordion-toggle" data-href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, $tab))?>#tabnav"><?=$this->transEsc($desc) ?></a>
-          </h4>
-        </div>
-        <div id="<?=$this->escapeHtmlAttr(strtolower($tab))?>_<?=$idSuffixEsc?>-content" class="list-tab-content panel-collapse collapse<?php if ($this->defaultTab === strtolower($tab)): ?> show<?php endif; ?>" data-bs-parent="#<?=$parentIdEsc?>"></div>
+  <?php $filteredTabs = array_filter($this->tabs, fn ($obj) => $obj->supportsSearchResultEmbedding()); ?>
+  <?php foreach ($filteredTabs as $tab => $obj): ?>
+    <?php // add current tab to breadcrumbs if applicable:
+      $desc = $obj->getDescription();
+      $tab_classes = [];
+      if (!$obj->isVisible()) {
+        $tab_classes[] = 'hidden';
+      }
+      if (!$obj->supportsAjax()) {
+        $tab_classes[] = 'noajax';
+      }
+      if ($this->defaultTab === strtolower($tab)) {
+        $tab_classes[] = 'default';
+      }
+    ?>
+    <div class="panel panel-default <?=implode(' ', $tab_classes) ?>">
+      <div id="<?=$this->escapeHtmlAttr(strtolower($tab))?>_<?=$idSuffixEsc?>" class="list-tab-toggle panel-heading" data-bs-toggle="collapse" data-bs-target="#<?=strtolower($tab)?>_<?=$idSuffixEsc?>-content"<?php if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)):?> data-background<?php endif ?>>
+        <h4 class="panel-title">
+          <a class="accordion-toggle" data-href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, $tab))?>#tabnav"><?=$this->transEsc($desc) ?></a>
+        </h4>
       </div>
-    <?php endforeach; ?>
-  <?php endif; ?>
+      <div id="<?=$this->escapeHtmlAttr(strtolower($tab))?>_<?=$idSuffixEsc?>-content" class="list-tab-content panel-collapse collapse<?php if ($this->defaultTab === strtolower($tab)): ?> show<?php endif; ?>" data-bs-parent="#<?=$parentIdEsc?>"></div>
+    </div>
+  <?php endforeach; ?>
 </div>

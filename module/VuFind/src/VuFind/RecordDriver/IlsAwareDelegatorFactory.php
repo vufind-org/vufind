@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -92,7 +92,8 @@ class IlsAwareDelegatorFactory implements DelegatorFactoryInterface
         // Get a list of ILS-compatible backends.
         static $ilsBackends = null;
         if (!is_array($ilsBackends)) {
-            $settings = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config')['Catalog'] ?? [];
+            $settings = $container->get(\VuFind\Config\ConfigManagerInterface::class)
+                ->getConfigArray('config')['Catalog'] ?? [];
 
             // If the setting is missing, default to the default backend; if it
             // is present but empty, don't put an empty string in the final array!

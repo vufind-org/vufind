@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authorization
@@ -29,7 +29,8 @@
 
 namespace VuFind\Role\PermissionProvider;
 
-use LmcRbacMvc\Service\AuthorizationService;
+use Lmc\Rbac\Mvc\Service\AuthorizationService;
+use VuFind\Db\Entity\UserEntityInterface;
 
 use function in_array;
 
@@ -74,7 +75,7 @@ class Username implements PermissionProviderInterface
         // If no user is logged in, or the user doesn't match the passed-in
         // filter, we can't grant the permission to any roles.
         $user = $this->auth->getIdentity();
-        if (!$user || !in_array($user->username, (array)$options)) {
+        if (!$user || !($user instanceof UserEntityInterface) || !in_array($user->getUsername(), (array)$options)) {
             return [];
         }
 

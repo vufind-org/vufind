@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Solr
@@ -29,6 +29,9 @@
 
 namespace VuFind\Search\Solr;
 
+use VuFind\Config\ConfigManagerInterface;
+use VuFind\Search\Base\DateRangeOptionsInterface;
+
 /**
  * Solr Search Options
  *
@@ -38,7 +41,7 @@ namespace VuFind\Search\Solr;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Options extends \VuFind\Search\Base\Options
+class Options extends \VuFind\Search\Base\Options implements DateRangeOptionsInterface
 {
     use \VuFind\Search\Options\ViewOptionsTrait;
 
@@ -75,11 +78,11 @@ class Options extends \VuFind\Search\Base\Options
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(ConfigManagerInterface $configManager)
     {
-        parent::__construct($configLoader);
+        parent::__construct($configManager);
 
         $this->sortTieBreaker = $this->searchSettings['General']['tie_breaker_sort'] ?? null;
         $this->emptySearchRelevanceOverride
@@ -222,5 +225,35 @@ class Options extends \VuFind\Search\Base\Options
     {
         // Solr supports this!
         return true;
+    }
+
+    /**
+     * Get date range facets.
+     *
+     * @return array
+     */
+    public function getDateRangeFacets(): array
+    {
+        return (array)($this->facetSettings['SpecialFacets']['dateRange'] ?? []);
+    }
+
+    /**
+     * Get full date range facets.
+     *
+     * @return array
+     */
+    public function getFullDateRangeFacets(): array
+    {
+        return (array)($this->facetSettings['SpecialFacets']['fullDateRange'] ?? []);
+    }
+
+    /**
+     * Get date range field types in the search index.
+     *
+     * @return array
+     */
+    public function getDateRangeFieldTypes(): array
+    {
+        return (array)($this->facetSettings['SpecialFacets']['dateRangeFieldType'] ?? []);
     }
 }

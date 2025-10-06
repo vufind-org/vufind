@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authorization
@@ -70,7 +70,7 @@ class DynamicRoleProviderFactory implements FactoryInterface
      * Get a configuration array.
      *
      * @param ContainerInterface $container  Service container
-     * @param array              $rbacConfig LmcRbacMvc configuration
+     * @param array              $rbacConfig Lmc\Rbac\Mvc configuration
      *
      * @return array
      */
@@ -78,12 +78,12 @@ class DynamicRoleProviderFactory implements FactoryInterface
         ContainerInterface $container,
         array $rbacConfig
     ) {
-        // Get role provider settings from the LmcRbacMvc configuration:
+        // Get role provider settings from the Lmc\Rbac\Mvc configuration:
         $config = $rbacConfig['role_provider']['VuFind\Role\DynamicRoleProvider'];
 
         // Load the permissions:
         $configLoader = $container->get(\VuFind\Config\PluginManager::class);
-        $permissions = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('permissions');
+        $permissions = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('permissions');
 
         // If we're configured to map legacy settings, do so now:
         if (

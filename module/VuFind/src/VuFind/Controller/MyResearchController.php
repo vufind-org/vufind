@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -41,6 +41,7 @@ use VuFind\Account\UserAccountService;
 use VuFind\Auth\EmailAuthenticator;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Controller\Feature\ListItemSelectionTrait;
+use VuFind\Controller\Feature\OnlinePaymentTrait;
 use VuFind\Crypt\SecretCalculator;
 use VuFind\Db\Entity\SearchEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
@@ -90,6 +91,7 @@ class MyResearchController extends AbstractBase
     use Feature\CatchIlsExceptionsTrait;
     use \VuFind\ILS\Logic\SummaryTrait;
     use ListItemSelectionTrait;
+    use OnlinePaymentTrait;
 
     /**
      * Default life time for recovery hashes (one hour)
@@ -97,13 +99,6 @@ class MyResearchController extends AbstractBase
      * @var int
      */
     public const DEFAULT_RECOVERY_HASH_LIFE_TIME = 3600;
-
-    /**
-     * Configuration loader
-     *
-     * @var \VuFind\Config\PluginManager
-     */
-    protected $configLoader;
 
     /**
      * Permission that must be granted to access this module (false for no
@@ -119,13 +114,6 @@ class MyResearchController extends AbstractBase
     protected $accessPermission = false;
 
     /**
-     * Export support class
-     *
-     * @var \VuFind\Export
-     */
-    protected $export;
-
-    /**
      * ILS Pagination Helper
      *
      * @var PaginationHelper
@@ -133,30 +121,20 @@ class MyResearchController extends AbstractBase
     protected $paginationHelper = null;
 
     /**
-     * Session container
-     *
-     * @var Container
-     */
-    protected $session;
-
-    /**
      * Constructor
      *
-     * @param ServiceLocatorInterface      $sm           Service locator
-     * @param Container                    $container    Session container
-     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
-     * @param \VuFind\Export               $export       Export support class
+     * @param ServiceLocatorInterface               $sm            Service locator
+     * @param Container                             $session       Session container
+     * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
+     * @param \VuFind\Export                        $export        Export support class
      */
     public function __construct(
         ServiceLocatorInterface $sm,
-        Container $container,
-        \VuFind\Config\PluginManager $configLoader,
-        \VuFind\Export $export
+        protected Container $session,
+        protected \VuFind\Config\ConfigManagerInterface $configManager,
+        protected \VuFind\Export $export
     ) {
         parent::__construct($sm);
-        $this->session = $container;
-        $this->configLoader = $configLoader;
-        $this->export = $export;
     }
 
     /**
@@ -549,7 +527,7 @@ class MyResearchController extends AbstractBase
         }
 
         // If we didn't find an already-saved row, let's save and retry:
-        if (!($savedRow->saved ?? false)) {
+        if (!($savedRow->getSaved() ?? false)) {
             $this->setSavedFlagSecurely($sid, true, $user);
             $savedRow = $this->getSearchRowSecurely($sid, $userId);
         }
@@ -1729,7 +1707,12 @@ class MyResearchController extends AbstractBase
             $accountStatus = null;
         }
 
-        return $this->createViewModel(compact('fines', 'accountStatus'));
+        $view = $this->createViewModel(compact('fines', 'accountStatus'));
+        // Handle online payment and return any response (redirect, receipt):
+        if ($paymentResponse = $this->handleOnlinePayment($patron, $view->fines, $view)) {
+            return $paymentResponse;
+        }
+        return $view;
     }
 
     /**
@@ -1762,11 +1745,16 @@ class MyResearchController extends AbstractBase
                 $csrf->trimTokenList(0);
             }
 
+            $config = $this->getConfig();
             try {
                 if ($recoveryData = $authManager->getPasswordRecoveryData($this->params()->fromPost())) {
                     $this->sendRecoveryEmail($recoveryData);
                 } else {
-                    $this->flashMessenger()->addErrorMessage('recovery_user_not_found');
+                    if (!empty($config->Authentication->recover_be_honest)) {
+                        $this->flashMessenger()->addErrorMessage('recovery_user_not_found');
+                    } else {
+                        $this->flashMessenger()->addSuccessMessage('recovery_email_sent');
+                    }
                 }
             } catch (AuthException $e) {
                 $this->flashMessenger()->addErrorMessage($e->getMessage());
@@ -2335,7 +2323,7 @@ class MyResearchController extends AbstractBase
                 'error_inconsistent_parameters'
             );
         }
-        $this->getAuthManager()->deleteUserLoginTokens($this->getUser()->id);
+        $this->getAuthManager()->deleteUserLoginTokens($this->getUser()->getId());
 
         $this->getAuditEventService()->addEvent(
             AuditEventType::User,

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -57,6 +57,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         FeedbackServiceInterface::class => FeedbackService::class,
         LoginTokenServiceInterface::class => LoginTokenService::class,
         OaiResumptionServiceInterface::class => OaiResumptionService::class,
+        PaymentServiceInterface::class => PaymentService::class,
+        PaymentFeeServiceInterface::class => PaymentFeeService::class,
         RatingsServiceInterface::class => RatingsService::class,
         RecordServiceInterface::class => RecordService::class,
         ResourceServiceInterface::class => ResourceService::class,
@@ -87,6 +89,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         FeedbackService::class => AbstractDbServiceFactory::class,
         LoginTokenService::class => AbstractDbServiceFactory::class,
         OaiResumptionService::class => AbstractDbServiceFactory::class,
+        PaymentService::class => AbstractDbServiceFactory::class,
+        PaymentFeeService::class => AbstractDbServiceFactory::class,
         RatingsService::class => AbstractDbServiceFactory::class,
         RecordService::class => AbstractDbServiceFactory::class,
         ResourceService::class => ResourceServiceFactory::class,

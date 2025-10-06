@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  HierarchyTree_DataSource
@@ -76,7 +76,7 @@ class SolrFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         }
         $cacheDir = $container->get(\VuFind\Cache\Manager::class)
             ->getCacheDir(false);
-        $configManager = $container->get(\VuFind\Config\ConfigManager::class);
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
         $filters = $configManager->getConfigArray('HierarchyDefault')['HierarchyTree']['filterQueries'] ?? [];
         $batchSize = $configManager->getConfigArray('config')['Index']['cursor_batch_size'] ?? 1000;
         $searchService = $container->get(\VuFindSearch\Service::class);

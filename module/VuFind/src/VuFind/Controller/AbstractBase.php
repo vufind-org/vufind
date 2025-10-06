@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -301,11 +301,11 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      * rather than through injection with the AuthorizationServiceAwareInterface
      * to minimize expensive initialization when authorization is not needed.
      *
-     * @return \LmcRbacMvc\Service\AuthorizationService
+     * @return \Lmc\Rbac\Mvc\Service\AuthorizationService
      */
     protected function getAuthorizationService()
     {
-        return $this->getService(\LmcRbacMvc\Service\AuthorizationService::class);
+        return $this->getService(\Lmc\Rbac\Mvc\Service\AuthorizationService::class);
     }
 
     /**
@@ -462,7 +462,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     public function getConfig($id = 'config')
     {
-        return $this->getService(\VuFind\Config\ConfigManager::class)->getConfigObject($id);
+        return $this->getService(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject($id);
     }
 
     /**

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,7 +29,7 @@
 
 namespace VuFindTest\Config;
 
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Config\PathResolver;
 use VuFind\Config\Upgrade;
 use VuFindTest\Integration\ConfigTestCase;
@@ -65,7 +65,7 @@ class ConfigUpgradeTest extends ConfigTestCase
         $container = $this->getContainerWithConfigRelatedServices();
         return new Upgrade(
             $container->get(PathResolver::class),
-            $container->get(ConfigManager::class),
+            $container->get(ConfigManagerInterface::class),
         );
     }
 

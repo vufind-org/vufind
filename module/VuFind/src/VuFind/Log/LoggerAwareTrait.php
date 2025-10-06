@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Error_Logging
@@ -57,6 +57,20 @@ trait LoggerAwareTrait
     protected function logError($msg, array $context = [], $prependClass = true)
     {
         $this->log('err', $msg, $context, $prependClass);
+    }
+
+    /**
+     * Log an exception
+     *
+     * @param \Exception $exception Exception to log
+     *
+     * @return void
+     */
+    public function logException(\Exception $exception): void
+    {
+        if ($this->logger instanceof \VuFind\Log\Logger) {
+            $this->logger->logException($exception, new \Laminas\Stdlib\Parameters());
+        }
     }
 
     /**
