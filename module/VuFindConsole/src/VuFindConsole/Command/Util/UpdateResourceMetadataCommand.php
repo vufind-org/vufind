@@ -42,8 +42,6 @@ use VuFind\Record\Loader;
 use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\Missing as MissingRecord;
 
-use function sprintf;
-
 /**
  * Command for updating metadata in the resource table.
  *
@@ -122,6 +120,7 @@ class UpdateResourceMetadataCommand extends Command
         $this->recordLoader->setCacheContext(Cache::CONTEXT_FAVORITE);
 
         $updated = 0;
+        $redirected = 0;
         $missing = 0;
         $errors = 0;
         $lastId = null;
@@ -150,6 +149,11 @@ class UpdateResourceMetadataCommand extends Command
                     } else {
                         $this->resourcePopulator->assignMetadata($resource, $driver);
                         $resource->setUpdated(new DateTime());
+                        $driverRecordId = $driver->getUniqueId();
+                        if ($recordId != $driverRecordId) {
+                            $resource->setRecordId($driverRecordId);
+                            ++$redirected;
+                        }
                         ++$updated;
                     }
                     $this->resourceService->persistEntity($resource);
@@ -165,7 +169,9 @@ class UpdateResourceMetadataCommand extends Command
                     ++$errors;
                 }
             }
-            $output->writeln("<info>$updated records updated, $missing missing, $errors errors</info>");
+            $output->writeln(
+                "<info>$updated records updated ($redirected redirects), $missing missing, $errors errors</info>"
+            );
         }
 
         $output->writeln('<info>Resource metadata update completed</info>');
