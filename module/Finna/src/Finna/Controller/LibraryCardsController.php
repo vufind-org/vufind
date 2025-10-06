@@ -213,9 +213,16 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
      */
     public function recoverAction()
     {
+        $params = [
+            'target' => $this->params()->fromQuery('target') ?? $this->params()->fromPost('target'),
+            'auth_method' => $this->params()->fromQuery('auth_method')
+                ?? $this->params()->fromPost('auth_method')
+                ?? 'MultiILS',
+        ];
         return $this->redirect()->toRoute(
             'default',
-            ['controller' => 'MyResearch', 'action' => 'Recover']
+            ['controller' => 'MyResearch', 'action' => 'Recover'],
+            ['query' => $params]
         );
     }
 
