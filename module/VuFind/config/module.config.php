@@ -1009,7 +1009,6 @@ $staticRoutes = [
     'Upgrade/FixDuplicateTags',
     'Upgrade/FixConfig',
     'Upgrade/FixDatabase',
-    'Upgrade/FixMetadata',
     'Upgrade/GetDBCredentials',
     'Upgrade/GetDbEncodingPreference',
     'Upgrade/GetSourceDir',

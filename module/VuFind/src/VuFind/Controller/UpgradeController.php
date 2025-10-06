@@ -54,8 +54,6 @@ use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Db\Service\ShortlinksServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
-use VuFind\Exception\RecordMissing as RecordMissingException;
-use VuFind\Record\ResourcePopulator;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFind\Tags\TagsService;
 
@@ -530,59 +528,6 @@ class UpgradeController extends AbstractBase
     }
 
     /**
-     * Fix missing metadata in the resource table.
-     *
-     * @return mixed
-     * @throws Exception
-     */
-    public function fixmetadataAction()
-    {
-        // User requested skipping this step?  No need to do further work:
-        if (strlen($this->params()->fromPost('skip', '')) > 0) {
-            $this->cookie->metadataOkay = true;
-            return $this->forwardTo('Upgrade', 'Home');
-        }
-
-        // This can take a while -- don't time out!
-        set_time_limit(0);
-
-        // Check for problems:
-        $resourceService = $this->getDbService(ResourceServiceInterface::class);
-        $problems = $resourceService->findMissingMetadata();
-
-        // No problems?  We're done here!
-        if (count($problems) == 0) {
-            $this->cookie->metadataOkay = true;
-            return $this->forwardTo('Upgrade', 'Home');
-        }
-
-        // Process submit button:
-        if ($this->formWasSubmitted()) {
-            $resourcePopulator = $this->getService(ResourcePopulator::class);
-            foreach ($problems as $problem) {
-                $recordId = $problem->getRecordId();
-                $source = $problem->getSource();
-                try {
-                    $driver = $this->getRecordLoader()->load($recordId, $source);
-                    $resourceService->persistEntity(
-                        $resourcePopulator->assignMetadata($problem, $driver)
-                    );
-                } catch (RecordMissingException $e) {
-                    $this->session->warnings->append(
-                        "Unable to load metadata for record {$source}:{$recordId}"
-                    );
-                } catch (\Exception $e) {
-                    $this->session->warnings->append(
-                        "Problem saving metadata updates for record {$source}:{$recordId}"
-                    );
-                }
-            }
-            $this->cookie->metadataOkay = true;
-            return $this->forwardTo('Upgrade', 'Home');
-        }
-    }
-
-    /**
      * Make sure we only skip the actions the user wants us to.
      *
      * @return void
@@ -674,13 +619,6 @@ class UpgradeController extends AbstractBase
         // Now make sure the database is up to date:
         if (!isset($this->cookie->databaseOkay) || !$this->cookie->databaseOkay) {
             return $this->redirect()->toRoute('upgrade-fixdatabase');
-        }
-
-        // Check for missing metadata in the resource table; note that we do a
-        // redirect rather than a forward here so that a submit button clicked
-        // in the database action doesn't cause the metadata action to also submit!
-        if (!isset($this->cookie->metadataOkay) || !$this->cookie->metadataOkay) {
-            return $this->redirect()->toRoute('upgrade-fixmetadata');
         }
 
         // We're finally done -- display any warnings that we collected during
