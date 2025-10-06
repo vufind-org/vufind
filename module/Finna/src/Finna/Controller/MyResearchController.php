@@ -1561,7 +1561,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $runner = $this->serviceLocator->get(\VuFind\Search\SearchRunner::class);
 
         $getTag = function ($tag) {
-            return $tag->getTag();
+            return $tag['tag'] ?? '';
         };
 
         $setupCallback = function ($searchRunner, $params, $runningSearchId) {

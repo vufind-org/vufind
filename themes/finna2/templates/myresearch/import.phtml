@@ -15,11 +15,13 @@
     </form>
 </div>
 <?php
-    echo $this->assetManager()->appendScriptLink('finna-favorites.js');
     $script = <<<JS
-        $('.btn-upload').on('click', function () {
-          finna.favorites.upload();
-        });
+        finna.scriptLoader.load(
+            {'finna-favorites': 'finna-favorites.js'},
+            () => {
+                document.querySelector('#favorites-import-dialog .btn-upload').addEventListener('click', finna.favorites.upload);
+            }
+        )
         JS;
     echo $this->assetManager()->outputInlineScriptString($script);
 ?>
