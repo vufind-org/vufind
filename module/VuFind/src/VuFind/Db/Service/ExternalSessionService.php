@@ -103,7 +103,7 @@ class ExternalSessionService extends AbstractDbService implements
      */
     public function destroySession(string $sid): void
     {
-        $dql = 'DELETE FROM ' . ExternalSessionEntityInterface::class . ' es'
+        $dql = 'DELETE FROM ' . \VuFind\Db\Entity\ExternalSession::class . ' es'
             . ' WHERE es.sessionId = :sid';
         $query = $this->entityManager->createQuery($dql);
         $query->setParameter('sid', $sid);

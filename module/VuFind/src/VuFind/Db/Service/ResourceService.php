@@ -38,7 +38,6 @@ use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\ResourceTagsEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
-use VuFind\Db\Entity\UserResourceEntityInterface;
 use VuFind\Db\PersistenceManager;
 use VuFind\Log\LoggerAwareTrait;
 
@@ -213,15 +212,15 @@ class ResourceService extends AbstractDbService implements
         ?int $limit = null,
         bool $caseSensitiveTags = false
     ): array {
-        $user = $this->getDoctrineReference(UserEntityInterface::class, $userOrId);
+        $user = $this->getDoctrineReference(\VuFind\Db\Entity\User::class, $userOrId);
         $list = $listOrId ? $this->getDoctrineReference(UserListEntityInterface::class, $listOrId) : null;
         $orderByDetails = empty($sort) ? [] : $this->getResourceOrderByClause($sort);
         $dql = 'SELECT DISTINCT r';
         if (!empty($orderByDetails['extraSelect'])) {
             $dql .= ', ' . $orderByDetails['extraSelect'];
         }
-        $dql .= ' FROM ' . ResourceEntityInterface::class . ' r '
-            . 'JOIN ' . UserResourceEntityInterface::class . ' ur WITH r.id = ur.resource ';
+        $dql .= ' FROM ' . \VuFind\Db\Entity\Resource::class . ' r '
+            . 'JOIN ' . \VuFind\Db\Entity\UserResource::class . ' ur WITH r.id = ur.resource ';
         $dqlWhere = [];
         $dqlWhere[] = 'ur.user = :user';
         $parameters = compact('user');

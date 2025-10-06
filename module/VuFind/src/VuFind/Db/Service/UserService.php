@@ -104,7 +104,7 @@ class UserService extends AbstractDbService implements
     public function deleteUser(UserEntityInterface|int $userOrId): void
     {
         $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
-        $dql = 'DELETE FROM ' . UserEntityInterface::class . ' u'
+        $dql = 'DELETE FROM ' . \VuFind\Db\Entity\User::class . ' u'
             . ' WHERE u.id = :id';
         $query = $this->entityManager->createQuery($dql);
         $query->setParameter('id', $userId);
@@ -121,7 +121,7 @@ class UserService extends AbstractDbService implements
     public function getUserById(int $id): ?UserEntityInterface
     {
         $dql = 'SELECT u '
-                . 'FROM ' . UserEntityInterface::class . ' u '
+                . 'FROM ' . \VuFind\Db\Entity\User::class . ' u '
                 . 'WHERE u.id = :id';
         $query = $this->entityManager->createQuery($dql);
         $query->setParameter('id', $id);
@@ -158,7 +158,7 @@ class UserService extends AbstractDbService implements
             $where = $caseInsensitive
                 ? 'LOWER(U.' . $legalFieldMap[$fieldName] . ') = LOWER(:fieldValue)'
                 : 'U.' . $legalFieldMap[$fieldName] . ' = :fieldValue';
-            $dql = 'SELECT U FROM ' . UserEntityInterface::class . ' U '
+            $dql = 'SELECT U FROM ' . \VuFind\Db\Entity\User::class . ' U '
                 . 'WHERE ' . $where;
             $parameters = compact('fieldValue');
             $query = $this->entityManager->createQuery($dql);
@@ -318,7 +318,7 @@ class UserService extends AbstractDbService implements
     public function getAllUsersWithCatUsernames(): array
     {
         $dql = 'SELECT u '
-                . 'FROM ' . UserEntityInterface::class . ' u '
+                . 'FROM ' . \VuFind\Db\Entity\User::class . ' u '
                 . 'WHERE u.catUsername IS NOT NULL';
         $query = $this->entityManager->createQuery($dql);
         $result = $query->getResult();
@@ -333,7 +333,7 @@ class UserService extends AbstractDbService implements
     public function getInsecureRows(): array
     {
         $dql = 'SELECT u '
-                . 'FROM ' . UserEntityInterface::class . ' u '
+                . 'FROM ' . \VuFind\Db\Entity\User::class . ' u '
                 . "WHERE u.password != '' "
                 . 'AND u.catPassword IS NOT NULL';
         $query = $this->entityManager->createQuery($dql);
