@@ -126,9 +126,7 @@ class UpdateResourceMetadataCommand extends Command
         $errors = 0;
         $lastId = null;
         $output->writeln('<info>Updating resource metadata</info>');
-        $starttime = microtime(true);
         while ($resources = $this->resourceService->findMetadataToUpdate($lastId, $batch, $minAge, $backend)) {
-            $output->writeln(sprintf('%0.4f', microtime(true) - $starttime));
             foreach ($resources as $resource) {
                 $lastId = $resource->getId();
                 $recordId = $resource->getRecordId();
@@ -168,7 +166,6 @@ class UpdateResourceMetadataCommand extends Command
                 }
             }
             $output->writeln("<info>$updated records updated, $missing missing, $errors errors</info>");
-            $starttime = microtime(true);
         }
 
         $output->writeln('<info>Resource metadata update completed</info>');
