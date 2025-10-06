@@ -1,7 +1,5 @@
 <!-- START of: finna - Related/RecordDriverRelated.phtml -->
 <?php if ($this->related->hasRelatedRecords()): ?>
-<div class="record-driver-related-records" data-id="<?=$this->escapeHtmlAttr($this->related->getRecordId())?>" data-source="<?=$this->escapeHtmlAttr($this->related->getRecordSource())?>">
-  <?=$this->icon('spinner') ?>
-</div>
+  <?=$this->component('finna-js-record-container', ['class' => 'record-driver-related-records', 'method' => 'getRecordDriverRelatedRecords', 'recordId' => $this->related->getRecordId(), 'source' => $this->related->getRecordSource()])?>
 <?php endif; ?>
 <!-- END of: finna - Related/RecordDriverRelated.phtml -->

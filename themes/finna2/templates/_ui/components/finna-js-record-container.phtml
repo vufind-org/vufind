@@ -1,0 +1,31 @@
+<?php
+    /**
+     * Component for fetching record driver related or similar deferred contents.
+     *
+     * @param string class Class for the container. Default is "vc-invocation-{n} vc-finna-js-record-container".
+     * @param string recordId Record id.
+     * @param string source Record backend source identifier.
+     */
+    $containerAttributes = [
+        'class' => trim(($this->class ?? '') . " vc-invocation-$this->_invocation $this->_componentClass"),
+        'data-method' => $this->method ?? '',
+    ];
+    if ($recordId = $this->recordId ?? null) {
+        $containerAttributes['data-record-id'] = $recordId;
+    }
+    if ($dataSource = $this->source ?? null) {
+        $containerAttributes['data-source'] = $dataSource;
+    }
+    $jsSelector = '.' . str_replace(' ', '.', $containerAttributes['class']);
+?>
+<div<?=$this->htmlAttributes($containerAttributes);?>>
+</div>
+<?php
+$js = <<<JS
+    finna.scriptLoader.load(
+        {'finna-js-record-container': 'finna-js-record-container.js'},
+        () => {finna.jsRecordContainer.loadContents('{$jsSelector}')}
+    )
+    JS;
+?>
+<?=$this->assetManager()->outputInlineScriptString($js);?>
