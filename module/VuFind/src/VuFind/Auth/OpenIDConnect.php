@@ -473,7 +473,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     {
         [$headerEncoded] = explode('.', $jwt);
         $header = json_decode(base64_decode(strtr($headerEncoded, '-_', '+/')));
-        $key = JWK::parseKey($this->getJwk($header->kid ?? null), $header->alg);
+        $key = JWK::parseKey($this->getSignatureJwk($header->kid ?? null), $header->alg);
         return JWT::decode($jwt, $key);
     }
 
@@ -562,14 +562,14 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     }
 
     /**
-     * Get JWK data
+     * Get signature JWK data
      *
      * @param ?string $kid Key id or null for first (default)
      *
      * @return array
      * @throws AuthException
      */
-    protected function getJwk(?string $kid): array
+    protected function getSignatureJwk(?string $kid): array
     {
         $jwks = $this->getSignatureJwks();
         if (null !== $kid) {
