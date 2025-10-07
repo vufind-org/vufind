@@ -1,0 +1,5 @@
+{"identifier":{"oclcNumber":"foo"},"contributor": {"creators":[
+    {"firstName": {"text": "First"}, "secondName": {"text": "Last"}, "isPrimary": true, "type": "person", "creatorNotes": ["Title, author"], "relators": [{"term": "Author"}]},
+    {"firstName": {"text": "1st"}, "secondName": {"text": "Lst"}, "type": "person", "creatorNotes": ["1900-1960, aut aut"], "relators": [{"term": "Author", "alternateTerm": "aut"}]},
+    {"firstName": {"text": "1st2"}, "secondName": {"text": "Lst2"}, "type": "person", "creatorNotes": ["1900-1960 author aut"], "relators": [{"term": "Author", "alternateTerm": "aut"}]}
+]}}

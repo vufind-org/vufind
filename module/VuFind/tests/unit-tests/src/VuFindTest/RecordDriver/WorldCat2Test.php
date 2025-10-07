@@ -101,7 +101,11 @@ class WorldCat2Test extends \PHPUnit\Framework\TestCase
             'non-default places of publication' => ['getPlacesOfPublication', ['Oxford :'], 'worldcat2/pride.json'],
             'non-default primary authors' =>
                 ['getPrimaryAuthors', ['Austen, Jane, 1775-1817.'], 'worldcat2/pride.json'],
+            'non-default primary author with relator code in notes' =>
+                ['getPrimaryAuthor', 'Last, First, Title', 'worldcat2/authors.json'],
             'non-default secondary authors' => ['getSecondaryAuthors', ['Kinsley, James'], 'worldcat2/pride.json'],
+            'non-default secondary authors with relator codes in notes' =>
+                ['getSecondaryAuthors', ['Lst, 1st, 1900-1960', 'Lst2, 1st2, 1900-1960'], 'worldcat2/authors.json'],
             'non-default publication dates' => ['getPublicationDates', ['1990'], 'worldcat2/pride.json'],
             'non-default human-readable dates' =>
                 ['getHumanReadablePublicationDates', ['1990'], 'worldcat2/pride.json'],
