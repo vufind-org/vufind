@@ -243,23 +243,23 @@ final class LoggingTest extends MinkTestCase
     ): array {
         $startTime = time();
         $loggedEmails = [];
-        
+
         while (true) {
-             try {
+            try {
                 $loggedEmails = $this->getLoggedEmails();
             } catch (\Exception $e) {
                 $loggedEmails = [];
             }
-            
+
             if (count($loggedEmails) >= $minEmails) {
                 return $loggedEmails;
             }
-            
+
             $elapsed = time() - $startTime;
             if ($elapsed >= $maxWaitSecs) {
                 return $loggedEmails;
             }
-            
+
             sleep($checkInterval);
         }
     }
@@ -305,14 +305,14 @@ final class LoggingTest extends MinkTestCase
         $this->resetEmailLog();
 
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Results?lookfor='.$uniqid);
+        $session->visit($this->getVuFindUrl() . '/Search/Results?lookfor=' . $uniqid);
         $page = $session->getPage();
 
         // Wait for logging to complete
         $this->findCss($page, 'body');
-        
+
         $loggedEmails = $this->waitForMinimumEmails($minEmails, 90);
-        
+
         $this->assertGreaterThanOrEqual($minEmails, count($loggedEmails));
         $allEmailContent = preg_replace(
             '/=[\r\n]+/',

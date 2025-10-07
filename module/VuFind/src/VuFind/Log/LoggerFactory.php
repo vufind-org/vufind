@@ -409,7 +409,7 @@ class LoggerFactory implements FactoryInterface
             if ($newHandler instanceof MailHandler) {
                 // Do not send an email for each individual log message; instead, bundle them with DeduplicationHandler:
                 $deduplicationHandler = new DeduplicationHandler($filterHandler);
-                register_shutdown_function(function() use ($deduplicationHandler){
+                register_shutdown_function(function () use ($deduplicationHandler) {
                     $deduplicationHandler->close();
                 });
                 $monologLogger->pushHandler($deduplicationHandler);
