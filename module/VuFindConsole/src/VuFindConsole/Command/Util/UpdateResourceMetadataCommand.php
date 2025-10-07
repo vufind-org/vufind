@@ -63,13 +63,16 @@ class UpdateResourceMetadataCommand extends Command
      * @param ResourceServiceInterface $resourceService   Resource service
      * @param Loader                   $recordLoader      Record loader
      * @param ResourcePopulator        $resourcePopulator Resource pop
+     * @param ?string                  $name              The name of the command; passing null means
+     * it must be set in configure()
      */
     public function __construct(
         protected ResourceServiceInterface $resourceService,
         protected Loader $recordLoader,
-        protected ResourcePopulator $resourcePopulator
+        protected ResourcePopulator $resourcePopulator,
+        ?string $name = null,
     ) {
-        parent::__construct();
+        parent::__construct($name);
     }
 
     /**
