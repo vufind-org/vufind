@@ -120,6 +120,9 @@ main:
       - label: Expire old sessions in the database
         type: internal-command
         command: util/expire_sessions
+      - label: Expire old harvesting resumption tokens in the database
+        type: internal-command
+        command: util/expire_resumption_tokens
     - label: Data Management Tools
       type: menu
       contents:

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Recommendations
@@ -52,14 +52,14 @@ class FavoriteFacets extends SideFacets
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
-     * @param string                       $tagSetting   Tag capability setting
+     * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
+     * @param string                                $tagSetting    Tag capability setting
      */
     public function __construct(
-        \VuFind\Config\PluginManager $configLoader,
+        \VuFind\Config\ConfigManagerInterface $configManager,
         $tagSetting = 'enabled'
     ) {
-        parent::__construct($configLoader);
+        parent::__construct($configManager);
         $this->tagSetting = $tagSetting;
     }
 

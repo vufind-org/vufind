@@ -20,8 +20,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -817,6 +817,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      *
      * @return mixed On success, an associative array with specific function keys
      * and values for login; on failure, false.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function checkMethodpatronLogin($functionConfig, $params)
     {
@@ -829,7 +831,9 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * @param array $functionConfig Function configuration values
      * @param array $params         An array of function-specific params (or null)
      *
-     * @return boolean
+     * @return bool
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function checkMethodregisterPayment($functionConfig, $params)
     {

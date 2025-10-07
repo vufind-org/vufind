@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  OAuth2
@@ -80,12 +80,13 @@ class ClientRepository implements ClientRepositoryInterface
     /**
      * Validate a client's secret.
      *
-     * @param string      $clientIdentifier The client's identifier
-     * @param null|string $clientSecret     The client's secret (if sent)
-     * @param null|string $grantType        The type of grant the client is using (if
-     * sent)
+     * @param string  $clientIdentifier The client's identifier
+     * @param ?string $clientSecret     The client's secret (if sent)
+     * @param ?string $grantType        The type of grant the client is using (if sent)
      *
      * @return bool
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function validateClient($clientIdentifier, $clientSecret, $grantType): bool
     {
