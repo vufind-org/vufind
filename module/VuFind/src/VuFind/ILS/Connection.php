@@ -362,7 +362,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
             if (!method_exists($this, $checkMethod)) {
                 return false;
             }
-            if (!empty($this->getMethodBlock($function, $params ?? []))) {
+            if (!empty($this->getMethodBlock($function, $paramsArray))) {
                 return false;
             }
 
