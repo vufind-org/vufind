@@ -125,8 +125,7 @@ class ResourceService extends AbstractDbService implements
         $dql = 'SELECT r FROM ' . ResourceEntityInterface::class . ' r';
         $params = [];
         if (null !== $minAge) {
-            $date = new DateTime();
-            $date->modify("-$minAge days");
+            $date = new DateTime("now - $minAge days");
             $dql .= ' WHERE (r.updated <= :dateThreshold)';
             $params['dateThreshold'] = $date->format(VUFIND_DATABASE_DATETIME_FORMAT);
         } else {
