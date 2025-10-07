@@ -17,9 +17,9 @@ jobs:
         # same on all platforms, we don't need to repeat them.
         include:
           - php-version: 8.2
-            phing_tasks: "qa-console"
-          - php-version: 8.3
             phing_tasks: "qa-php"
+          - php-version: 8.3
+            phing_tasks: "qa-console"
           - php-version: 8.4
             phing_tasks: "qa-php"
 
