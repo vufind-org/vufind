@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -195,6 +195,38 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
     }
 
     /**
+     * Testing getCourses
+     *
+     * @return void
+     */
+    public function testGetCourses()
+    {
+        $this->createConnector('get-courses');
+        $result = $this->driver->getCourses();
+        $expected = [
+            '1234' => 'VuFind Basics',
+            '5678' => 'Advanced VuFind',
+        ];
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Testing getFunds
+     *
+     * @return void
+     */
+    public function testGetFunds()
+    {
+        $this->createConnector('get-funds');
+        $result = $this->driver->getFunds();
+        $expected = [
+            'FUND-01' => 'VuFind Community',
+            'FUND-02' => 'VuFind Sponsors',
+        ];
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
      * Test getHolding
      *
      * @return void
@@ -333,6 +365,20 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
             ],
             'fixtureKey' => 'test patron login password',
         ];
+        yield 'Test with login method password and password is null' => [
+            'config' => $localConfig,
+            'expected' => [
+                'id' => '21991',
+                'email' => null,
+                'firstname' => 'Sauna',
+                'lastname' => 'Tonttu',
+                'major' => null,
+                'college' => null,
+                'cat_username' => '1111',
+                'cat_password' => null,
+            ],
+            'fixtureKey' => 'test patron login password and password is null',
+        ];
     }
 
     /**
@@ -348,7 +394,7 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
     public function testPatronLogin(array $config, array $expected, string $fixtureKey): void
     {
         $this->createConnector('get-patron-response', $config, $fixtureKey);
-        $result = $this->driver->patronLogin('1111', '1212');
+        $result = $this->driver->patronLogin($expected['cat_username'], $expected['cat_password']);
         $this->assertEquals($expected, $result);
     }
 

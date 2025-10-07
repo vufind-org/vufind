@@ -6,7 +6,7 @@
  * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
- * Copyright (C) The National Library of Finland 2023.
+ * Copyright (C) The National Library of Finland 2023-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -175,14 +175,34 @@ class SearchSortTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test publication date sort order
+     *
+     * @return void
+     */
+    public function testPublicationDateSort(): void
+    {
+        $page = $this->setUpSearch('publishDate', 'publishDate', ['geo.mrc', 'really_old.xml']);
+
+        // Check expected first and last record on first page:
+        $this->assertResultTitles(
+            $page,
+            20,
+            first: 'Pyrgi Gold Tablets',
+            second: 'Book of Kells',
+            last: 'Test Publication 20018'
+        );
+    }
+
+    /**
      * Set up a search page with sorting configured
      *
      * @param string $sortParam Requested sort option
      * @param string $default   default_sort setting for searches.ini
+     * @param array  $buildings building filters to use
      *
      * @return Element
      */
-    protected function setUpSearch(string $sortParam, string $default): Element
+    protected function setUpSearch(string $sortParam, string $default, array $buildings = ['geo.mrc']): Element
     {
         $this->changeConfigs(
             [
@@ -197,8 +217,12 @@ class SearchSortTest extends \VuFindTest\Integration\MinkTestCase
                 ],
             ]
         );
+        $filters = [];
+        foreach ($buildings as $building) {
+            $filters[] = 'filter[]=' . urlencode("~building:\"$building\"");
+        }
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . "/Search/Results?filter[]=building%3A%22geo.mrc%22&sort=$sortParam");
+        $session->visit($this->getVuFindUrl() . '/Search/Results?' . implode('&', $filters) . "&sort=$sortParam");
         return $session->getPage();
     }
 

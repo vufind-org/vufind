@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_ProQuestFSG
@@ -29,6 +29,8 @@
  */
 
 namespace VuFind\Search\ProQuestFSG;
+
+use VuFind\Config\ConfigManagerInterface;
 
 /**
  * ProQuest Federated Search Gateway Search Options
@@ -45,9 +47,9 @@ class Options extends \VuFind\Search\Base\Options
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(ConfigManagerInterface $configManager)
     {
         $this->searchIni = $this->facetsIni = 'ProQuestFSG';
 
@@ -56,7 +58,7 @@ class Options extends \VuFind\Search\Base\Options
         $this->maxResultLimit = 1000;
 
         // Request a result limit that we can support:
-        parent::__construct($configLoader);
+        parent::__construct($configManager);
 
         // Search handler setup:
         $this->defaultHandler = 'cql.serverChoice';

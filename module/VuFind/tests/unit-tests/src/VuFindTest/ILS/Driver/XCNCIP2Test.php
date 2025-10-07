@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -168,6 +168,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'id' => '8071750247', 'duedate' => '', 'amount' => 25,
                     'balance' => 25, 'checkout' => '', 'fine' => 'Service Charge',
                     'createdate' => '11-14-2014',
+                    'description' => 'Please note that there is an additional accrued overdue items fine of: 0.00.',
                 ],
             ],
         ], [
@@ -177,6 +178,7 @@ class XCNCIP2Test extends \VuFindTest\Unit\ILSDriverTestCase
                     'id' => '', 'duedate' => '', 'amount' => 25, 'balance' => 25,
                     'checkout' => '', 'fine' => 'Service Charge',
                     'createdate' => '11-14-2014',
+                    'description' => 'Please note that there is an additional accrued overdue items fine of: 0.00.',
                 ],
             ],
         ],

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ServiceManager
@@ -64,18 +64,18 @@ class PluginFactory implements AbstractFactoryInterface
      *
      * @param ContainerInterface $container     Service container
      * @param string             $requestedName Name of service
-     * @param array              $options       Options (unused)
+     * @param array              $options       Options
      *
      * @return object
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
         ?array $options = null
     ) {
-        $configManager = $container->get(ConfigManager::class);
-        return $configManager->getConfigObject($requestedName);
+        return $container->get(ConfigManagerInterface::class)->getConfigObject(
+            $requestedName,
+            forceReload: $options['forceReload'] ?? false
+        );
     }
 }

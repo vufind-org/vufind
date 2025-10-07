@@ -1,0 +1,38 @@
+<?php
+  $data = $this->data;
+  if (!isset($data['Data']) && !isset($data['Elements'])) {
+    if (is_array($data)) {
+      $data = ['Elements' => array_map(fn ($element) => ['Data' => $element], $data)];
+    } else {
+      $data = ['Data' => $data];
+    }
+  }
+  $elements = $data['Elements'] ?? ['Data' => $data['Data']];
+  $useSearchLink = $this->options['useSearchLink'] ?? false;
+  $searchLinkType = $this->options['searchLinkType'] ?? 'generic';
+  $limit = $this->options['limit'] ?? null;
+  $prefix = $this->options['elementPrefix'] ?? '';
+  $suffix = $this->options['elementSuffix'] ?? '';
+  $separator = $this->options['separator'] ?? ', ';
+  $abbreviation = ($this->options['abbreviationPrefix'] ?? '')
+    . $this->transEsc($this->options['abbreviation'] ?? 'eol_ellipsis')
+    . ($this->options['abbreviationSuffix'] ?? '');
+  $entries = array_map(function ($element) use ($useSearchLink, $searchLinkType) {
+    if ($useSearchLink) {
+      if (!empty($element['SearchLink'])) {
+        return $element['SearchLink'];
+      }
+      $elementData = $element['Data'];
+      return '<a href="'
+        . $this->record($this->driver)->getLink($searchLinkType, $this->highlight($elementData, null, true, false))
+        . '">' . $this->highlight($elementData) . '</a>';
+    }
+    return $element['Link'] ?? $element['Data'];
+  }, $elements);
+  $entries = array_map(fn ($element) => $prefix . $this->linkify($element, includeEmail: false) . $suffix, $entries);
+  if ($limit !== null && count($entries) > $limit) {
+    $entries = array_slice($entries, 0, $limit);
+    echo implode($separator, $entries) . $abbreviation;
+  } else {
+    echo implode($separator, $entries);
+  }

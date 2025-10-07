@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -68,13 +68,13 @@ class OpenIDConnectFactory implements FactoryInterface
         ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
         $session = new \Laminas\Session\Container(
             'OpenIDConnect',
             $container->get(\Laminas\Session\SessionManager::class)
         );
-        $config = $container->get(\VuFind\Config\PluginManager::class)->get('OpenIDConnectClient')->toArray();
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('OpenIDConnectClient');
         $ilsAuthenticator = $container->get(\VuFind\Auth\ILSAuthenticator::class);
         return new $requestedName($session, $config, $ilsAuthenticator);
     }

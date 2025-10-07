@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,7 +29,7 @@
 
 namespace VuFindTest\Search;
 
-use VuFind\Search\SearchTabsHelper;
+use VuFind\Config\ConfigManagerInterface;
 
 /**
  * SearchTabsHelper unit tests.
@@ -220,7 +220,7 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo('hiddenFilters'))
             ->willReturn($filters);
 
-        $configManager = $this->createMock(\VuFind\Config\PluginManager::class);
+        $configManager = $this->createMock(ConfigManagerInterface::class);
 
         $mockSolrOptions = $this->getMockBuilder(\VuFind\Search\Solr\Options::class)
             ->disableOriginalConstructor()->getMock();

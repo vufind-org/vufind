@@ -6,9 +6,11 @@ $config = [
     'controllers' => [
         'factories' => [
             'VuFindDevTools\Controller\DevtoolsController' => 'VuFind\Controller\AbstractBaseFactory',
+            \VuFindDevTools\Controller\PaymentServiceController::class => \VuFind\Controller\AbstractBaseFactory::class,
         ],
         'aliases' => [
             'DevTools' => 'VuFindDevTools\Controller\DevtoolsController',
+            'PaymentService' => \VuFindDevTools\Controller\PaymentServiceController::class,
         ],
     ],
     'router' => [
@@ -50,6 +52,36 @@ $config = [
                     'defaults' => [
                         'controller' => 'DevTools',
                         'action'     => 'Language',
+                    ],
+                ],
+            ],
+            'devtools-payment-init' => [
+                'type' => 'Laminas\Router\Http\Literal',
+                'options' => [
+                    'route'    => '/devtools/payment/init',
+                    'defaults' => [
+                        'controller' => 'PaymentService',
+                        'action'     => 'Init',
+                    ],
+                ],
+            ],
+            'devtools-payment-handle' => [
+                'type' => 'Laminas\Router\Http\Literal',
+                'options' => [
+                    'route'    => '/devtools/payment/handle',
+                    'defaults' => [
+                        'controller' => 'PaymentService',
+                        'action'     => 'Handle',
+                    ],
+                ],
+            ],
+            'devtools-payment-get-status' => [
+                'type' => 'Laminas\Router\Http\Literal',
+                'options' => [
+                    'route'    => '/devtools/payment/status',
+                    'defaults' => [
+                        'controller' => 'PaymentService',
+                        'action'     => 'Status',
                     ],
                 ],
             ],

@@ -1,17 +1,11 @@
-<?php $this->assetManager()->appendStyleLink('EDS.css'); ?>
 <?php
-    $items = $this->driver->getItems('core');
-    $dbLabel = $this->driver->getDbLabel();
-    $customLinks = $this->driver->getCustomLinks();
-    $accessLevel = $this->driver->getAccessLevel();
-    $restrictedView = empty($accessLevel) ? false : true;
-    $coverDetails = $this->record($this->driver)->getCoverDetails('core', 'medium');
-    $cover = $coverDetails['html'];
-    $edsConfig = $this->config()->get('EDS');
-    $authorDisplay = strtolower($edsConfig->AuthorDisplay->DetailPageFormat ?? 'Long');
-    $searchOptions = $this->searchOptions($this->driver->getSourceIdentifier());
+  $this->assetManager()->appendStyleLink('EDS.css');
 ?>
 <div class="media"<?=$this->schemaOrg()->getAttributes(['vocab' => 'http://schema.org/', 'resource' => '#record', 'typeof' => $this->schemaOrg()->getRecordTypes($this->driver)])?>>
+  <?php
+    $coverDetails = $this->record($this->driver)->getCoverDetails('core', 'medium');
+    $cover = $coverDetails['html'];
+  ?>
   <div class="media-left medium img-col">
     <?php if ($cover): ?>
       <?=$cover?>
@@ -60,15 +54,9 @@
       <?php endif; ?>
     </div>
   </div>
-  <div class="media-body info-col">
-    <h1<?=$this->schemaOrg()->getAttributes(['property' => 'name'])?>><?=$this->driver->getTitle()?></h1>
+  <div class="media-body">
 
-    <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
-      <?php /* Display the lists that this record is saved to */ ?>
-      <div class="savedLists">
-        <strong><?=$this->transEsc('Saved in')?>:</strong>
-      </div>
-    <?php endif; ?>
+    <h1<?=$this->schemaOrg()->getAttributes(['property' => 'name'])?>><?=$this->driver->getTitle()?></h1>
 
     <?php if ($this->driver->getExtraDetail('cached_record') && !$this->translationEmpty('cached_record_warning')): ?>
       <div class="alert alert-warning">
@@ -77,75 +65,48 @@
     <?php endif; ?>
     <?=$this->record($this->driver)->getLabelList() ?>
 
-    <?php if ($searchOptions->showRestrictedViewWarning() && $restrictedView): ?>
-      <?=$this->render('error/restrictedViewWarning.phtml')?>
+    <?php foreach ($this->driver->tryMethod('getFullTitlesAltScript', [], []) as $altTitle): ?>
+      <div class="title-alt">
+        <?=$this->escapeHtml($altTitle)?>
+      </div>
+    <?php endforeach; ?>
+
+    <?php if (!empty($this->extraControls)): ?>
+      <?=$this->extraControls['actionControls'] ?? ''?>
+      <?=$this->extraControls['availabilityInfo'] ?? ''?>
     <?php endif; ?>
 
-    <table class="table table-striped">
-      <caption class="visually-hidden"><?=$this->transEsc('Bibliographic Details')?></caption>
-      <?php foreach ($items as $key => $item): ?>
-        <?php if (!empty($item['Data'])): ?>
-          <?php if ('Au' == $item['Group'] && $authorDisplay == 'short'): ?>
-            <tr>
-              <th><?=empty($item['Label']) ? '' : $this->transEsc($item['Label']) . ':'?></th>
-              <?php
-                $authors = $driver->getPrimaryAuthorsWithHighlighting();
-                $authorCount = count($authors);
-                $authorNameLimit = $edsConfig->AuthorDisplay->ShortAuthorLimit ?? 3;
-              ?>
-              <?php if ($authorCount > 1): ?>
-                <td class="record__biblio-value">
-                <?php foreach ($authors as $i => $author): ?>
-                  <span class="author"><a href="<?=$this->record($driver)->getLink('author', $this->highlight($author, null, true, false))?>"><?=$this->highlight($author)?></a></span><?php
-                    if ($authorCount == ($i + 1)) {
-                      break;
-                    } elseif (($i + 1) >= $authorNameLimit) {
-                      echo ' ' . $this->transEsc('more_authors_abbrev');
-                      break;
-                    }
-                  ?><?php endforeach; ?>
-                </td>
-              <?php else: ?>
-                <?=$this->driver->linkUrls($item['Data'])?>
-              <?php endif; ?>
-            </tr>
-          <?php elseif ('AuInfo' == $item['Group'] && $authorDisplay == 'short'): ?>
-            <?php /* Do nothing: skip AuInfo data in short author mode... */ ?>
-          <?php else: ?>
-            <tr>
-              <th><?=empty($item['Label']) ? '' : $this->transEsc($item['Label']) . ':'?></th>
-              <td class="record__biblio-value"><?=$this->driver->linkUrls($item['Data'])?></td>
-            </tr>
-          <?php endif; ?>
-        <?php endif; ?>
-      <?php endforeach; ?>
+    <?php if ($this->searchOptions($this->driver->getSourceIdentifier())->getVersionsAction()): ?>
+      <?=$this->record($this->driver)->renderTemplate('versions-link.phtml')?>
+    <?php endif; ?>
 
-      <?php if ($dbLabel): ?>
-        <tr>
-          <th><?=$this->transEsc('Database')?>:</th>
-          <td><?=$this->escapeHtml($dbLabel)?></td>
-        </tr>
+    <?php $summary = $this->driver->getSummary(); ?>
+    <?php if ($summary = isset($summary[0]) ? $this->escapeHtml($summary[0]) : false): ?>
+      <p><?=$this->truncate($summary, 300)?></p>
+
+      <?php if (strlen($summary) > 300): ?>
+        <p><a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getTabUrl($this->driver, 'Description'))?>#tabnav"><?=$this->transEsc('Full description')?></a></p>
       <?php endif; ?>
+    <?php endif; ?>
 
-      <?php if ($this->driver->hasHTMLFullTextAvailable() && !$restrictedView): ?>
-        <?php $fullText = $this->driver->getHtmlFullText(); ?>
-        <tr id="html">
-          <td colspan="2">
-            <?=$fullText?>
-          </td>
-        </tr>
-      <?php elseif ($this->driver->hasHTMLFullTextAvailable() && $restrictedView): ?>
-        <tr id="html">
-          <td colspan="2">
-            <div class="alert alert-info">
-              <?=$this->transEsc('Full text is not displayed to guests')?>
-              <?=$this->render('error/loginForAccess.phtml')?>
-            </div>
-          </td>
-        </tr>
-      <?php endif; ?>
-    </table>
+    <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
+      <?php /* Display the lists that this record is saved to */ ?>
+      <div class="savedLists">
+        <strong><?=$this->transEsc('Saved in')?>:</strong>
+      </div>
+    <?php endif; ?>
 
+    <?php /* Display Main Details */ ?>
+    <?=
+      $this->record($this->driver)->renderTemplate(
+          'core-fields.phtml',
+          [
+            'driver' => $this->driver,
+            'defaults' => 'core',
+          ]
+      );
+    ?>
+    <?php /* End Main Details */ ?>
     <div class="resultItemLine4 custom-links">
 
     <?php $customLinks = array_merge($this->driver->getFTCustomLinks(), $this->driver->getCustomLinks());

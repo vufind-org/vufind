@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -1256,10 +1256,14 @@ class XCNCIP2 extends AbstractBase implements
             $amount = (string)($amount[0] ?? '');
             $date = $current->xpath('ns1:AccrualDate');
             $date = $this->displayDate(!empty($date) ? (string)$date[0] : null);
-            $desc = $current->xpath(
+            $fineType = $current->xpath(
                 'ns1:FiscalTransactionInformation/ns1:FiscalTransactionType'
             );
-            $desc = (string)($desc[0] ?? '');
+            $fineType = (string)($fineType[0] ?? '');
+            $description = $current->xpath(
+                'ns1:FiscalTransactionInformation/ns1:FiscalTransactionDescription'
+            );
+            $description = (string)($description[0] ?? '');
 
             $bibId = $current->xpath(
                 'ns1:FiscalTransactionInformation/ns1:ItemDetails/' .
@@ -1275,7 +1279,8 @@ class XCNCIP2 extends AbstractBase implements
                 'amount' => $amount,
                 'balance' => $amount,
                 'checkout' => '',
-                'fine' => $desc,
+                'fine' => $fineType,
+                'description' => $description,
                 'duedate' => '',
                 'createdate' => $date,
                 'id' => $id,
@@ -2889,6 +2894,8 @@ class XCNCIP2 extends AbstractBase implements
      * @param string $key     Cache key (For LookupUser its cat_username)
      *
      * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function invalidateResponseCache(string $message, string $key): void
     {
