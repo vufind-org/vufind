@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -527,7 +527,7 @@ class MyResearchController extends AbstractBase
         }
 
         // If we didn't find an already-saved row, let's save and retry:
-        if (!($savedRow->saved ?? false)) {
+        if (!($savedRow->getSaved() ?? false)) {
             $this->setSavedFlagSecurely($sid, true, $user);
             $savedRow = $this->getSearchRowSecurely($sid, $userId);
         }
@@ -1745,11 +1745,16 @@ class MyResearchController extends AbstractBase
                 $csrf->trimTokenList(0);
             }
 
+            $config = $this->getConfig();
             try {
                 if ($recoveryData = $authManager->getPasswordRecoveryData($this->params()->fromPost())) {
                     $this->sendRecoveryEmail($recoveryData);
                 } else {
-                    $this->flashMessenger()->addErrorMessage('recovery_user_not_found');
+                    if (!empty($config->Authentication->recover_be_honest)) {
+                        $this->flashMessenger()->addErrorMessage('recovery_user_not_found');
+                    } else {
+                        $this->flashMessenger()->addSuccessMessage('recovery_email_sent');
+                    }
                 }
             } catch (AuthException $e) {
                 $this->flashMessenger()->addErrorMessage($e->getMessage());
@@ -2318,7 +2323,7 @@ class MyResearchController extends AbstractBase
                 'error_inconsistent_parameters'
             );
         }
-        $this->getAuthManager()->deleteUserLoginTokens($this->getUser()->id);
+        $this->getAuthManager()->deleteUserLoginTokens($this->getUser()->getId());
 
         $this->getAuditEventService()->addEvent(
             AuditEventType::User,

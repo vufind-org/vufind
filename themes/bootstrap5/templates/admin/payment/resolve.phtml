@@ -1,6 +1,6 @@
 <h2><?=$this->transEsc('Payment::Mark Payment Resolved')?></h2>
 
-<?=$this->render('admin/payment/details-table.phtml')?>
+<?=$this->render('admin/payment/details-payment.phtml')?>
 
 <form method="POST">
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>" name="csrf">

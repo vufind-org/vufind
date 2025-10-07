@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Content
@@ -235,11 +235,7 @@ class ObalkyKnihService implements
                 ? $ids['uuid']
                 : ('uuid:' . $ids['uuid']);
         }
-        foreach (['isbn', 'oclc', 'ismn', 'nbn', 'uuid'] as $identifier) {
-            if (isset($$identifier)) {
-                $query[$identifier] = $$identifier;
-            }
-        }
+        $query = array_filter(compact('isbn', 'oclc', 'ismn', 'nbn', 'uuid'), fn ($v) => null !== $v);
 
         return $query;
     }

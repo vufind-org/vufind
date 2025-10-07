@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -107,6 +107,17 @@ abstract class AbstractBase implements
     public function supportsAjax()
     {
         // Assume we can load by AJAX; subclasses may add rules.
+        return true;
+    }
+
+    /**
+     * Can this tab be embedded in search results (via tab/accordion)?
+     *
+     * @return bool
+     */
+    public function supportsSearchResultEmbedding(): bool
+    {
+        // Assume it works, subclasses may add rules.
         return true;
     }
 

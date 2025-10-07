@@ -283,6 +283,7 @@ expires timestamp NOT NULL default '2000-01-01 00:00:00',
 PRIMARY KEY (id)
 );
 CREATE UNIQUE INDEX oai_resumption_token_idx ON oai_resumption (token);
+CREATE INDEX oai_resumption_expires_idx on oai_resumption(expires);
 
 -- --------------------------------------------------------
 
@@ -483,6 +484,30 @@ CREATE TABLE audit_event (
 CREATE INDEX audit_event_user_id_idx ON audit_event (user_id);
 CREATE INDEX audit_event_payment_id_idx ON audit_event (payment_id);
 
+
+--
+-- Table structure for table `migrations`
+
+CREATE TABLE migrations (
+  id SERIAL,
+  name varchar(255),
+  status varchar(50) NOT NULL,
+  target_version varchar(50) NOT NULL,
+  date timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+);
+
+--
+-- Table structure for table `log_table`
+
+CREATE TABLE log_table (
+  id SERIAL,
+  logtime timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  ident char(16) NOT NULL DEFAULT '',
+  priority int NOT NULL DEFAULT '0',
+  message text,
+  PRIMARY KEY (id)
+);
 
 -- --------------------------------------------------------
 

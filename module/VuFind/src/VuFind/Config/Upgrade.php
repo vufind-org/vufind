@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Config
@@ -167,7 +167,7 @@ class Upgrade implements LoggerAwareInterface
         $this->saveModifiedConfig('permissions', $this->permissionsModified);
 
         // Make sure to update any remaining configurations that were not explicitly updated above.
-        foreach ($this->newConfigs as $configName => $newConfig) {
+        foreach (array_keys($this->newConfigs) as $configName) {
             if (!in_array($configName, $this->writtenConfig)) {
                 $this->applyOldSettings($configName);
                 $this->saveModifiedConfig($configName);
@@ -559,7 +559,7 @@ class Upgrade implements LoggerAwareInterface
         unset($newConfig['Index']['local']);
 
         // Warn the user if they are using an unsupported theme:
-        $this->checkTheme('theme', 'bootprint3');
+        $this->checkTheme('theme', 'sandal5');
         $this->checkTheme('mobile_theme', null);
 
         // Translate legacy auth settings:
@@ -831,16 +831,93 @@ class Upgrade implements LoggerAwareInterface
         // we want to retain the old installation's search and facet settings
         // exactly as-is
         $this->applyOldSettings($configName);
+        $this->applyOldSettings('RecordDataFormatter/' . $configName);
 
         // Fix default view settings in case they use the old style:
-        $newConfig = & $this->newConfigs[$configName]['General'];
+        $newBaseConfig = & $this->newConfigs[$configName];
+        $newRecordDataFormatterConfig = & $this->newConfigs['RecordDataFormatter/' . $configName];
+        $recordDataFormatterConfigModified = false;
 
-        if (!str_contains($newConfig['default_view'], '_')) {
-            $newConfig['default_view'] = 'list_' . $newConfig['default_view'];
+        if (!str_contains($newBaseConfig['General']['default_view'], '_')) {
+            $newBaseConfig['General']['default_view'] = 'list_' . $newBaseConfig['General']['default_view'];
         }
+
+        // Move several settings to RecordDataFormatter/EDS
+        foreach ($newBaseConfig['ItemCoreFilter']['excludeLabel'] ?? [] as $label) {
+            $this->setEbscoItemFilter($newRecordDataFormatterConfig, 'CoreItems', 'Label', $label);
+            $recordDataFormatterConfigModified = true;
+        }
+        foreach ($newBaseConfig['ItemCoreFilter']['excludeGroup'] ?? [] as $group) {
+            $this->setEbscoItemFilter($newRecordDataFormatterConfig, 'CoreItems', 'Group', $group);
+            $recordDataFormatterConfigModified = true;
+        }
+        unset($newBaseConfig['ItemCoreFilter']);
+
+        foreach ($newBaseConfig['ItemResultListFilter']['excludeLabel'] ?? [] as $label) {
+            $this->setEbscoItemFilter($newRecordDataFormatterConfig, 'ResultListItems', 'Label', $label);
+            $recordDataFormatterConfigModified = true;
+        }
+        foreach ($newBaseConfig['ItemResultListFilter']['excludeGroup'] ?? [] as $group) {
+            $this->setEbscoItemFilter($newRecordDataFormatterConfig, 'ResultListItems', 'Group', $group);
+            $recordDataFormatterConfigModified = true;
+        }
+        unset($newBaseConfig['ItemResultListFilter']);
+
+        if (
+            isset($newBaseConfig['AuthorDisplay']['DetailPageFormat'])
+            && $newBaseConfig['AuthorDisplay']['DetailPageFormat'] === 'Short'
+        ) {
+            $this->setEbscoItemFilter($newRecordDataFormatterConfig, 'CoreItems', 'Group', 'AuInfo');
+            $newRecordDataFormatterConfig['CoreItems']['extraLineOptions'][] = 'CoreAuthors';
+            $newRecordDataFormatterConfig['CoreAuthors']['multiAltDataMethod'] =
+                'getPrimaryAuthorsWithHighlighting';
+            $newRecordDataFormatterConfig['CoreAuthors']['limit'] =
+                $newBaseConfig['AuthorDisplay']['ShortAuthorLimit'] ?? 3;
+            $recordDataFormatterConfigModified = true;
+        }
+
+        if (
+            isset($newBaseConfig['AuthorDisplay']['ResultListFormat'])
+        ) {
+            if ($newBaseConfig['AuthorDisplay']['ResultListFormat'] === 'Short') {
+                $newRecordDataFormatterConfig['ResultListAuthors']['limit']
+                    = $newBaseConfig['AuthorDisplay']['ShortAuthorLimit'] ?? 3;
+            } else {
+                unset($newRecordDataFormatterConfig['ResultListAuthors']['limit']);
+                unset($newRecordDataFormatterConfig['ResultListAuthors']['multiAltDataMethod']);
+            }
+            $recordDataFormatterConfigModified = true;
+        }
+        unset($newBaseConfig['AuthorDisplay']);
 
         // save the configuration
         $this->saveModifiedConfig($configName);
+        $this->saveModifiedConfig('RecordDataFormatter/' . $configName, $recordDataFormatterConfigModified);
+    }
+
+    /**
+     * Set EBSCO item filter.
+     *
+     * @param array  $newRecordDataFormatterConfig New RecordDataFormatter config
+     * @param string $section                      Section to change
+     * @param string $lineIdentifierKey            Identifier key to filter
+     * @param string $lineIdentifierValue          Identifier value to filter
+     *
+     * @return void
+     */
+    protected function setEbscoItemFilter(
+        array &$newRecordDataFormatterConfig,
+        string $section,
+        string $lineIdentifierKey,
+        string $lineIdentifierValue
+    ): void {
+        $filterSection = "{$section}_Filter_{$lineIdentifierKey}_$lineIdentifierValue";
+        $newRecordDataFormatterConfig[$section]['extraLineOptions'][] = $filterSection;
+        $newRecordDataFormatterConfig[$filterSection] = [
+            'lineIdentifierKey' => $lineIdentifierKey,
+            'lineIdentifierValue' => $lineIdentifierValue,
+            'multiEnabled' => false,
+        ];
     }
 
     /**

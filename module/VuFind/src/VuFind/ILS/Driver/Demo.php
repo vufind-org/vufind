@@ -22,8 +22,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -1224,6 +1224,11 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             ];
         }
 
+        // Delay for a bit to avoid a race condition with session updates during CI. When this method is called via the
+        // OnlinePaymentRegister AJAX handler, the "main" request that initiated the AJAX request may be slower to shut
+        // down and write the session data due to code coverage analysis. Since we also update the session with the new
+        // fines, we need to ensure it happens later.
+        sleep(2);
         return [
             'success' => true,
         ];
