@@ -58,10 +58,11 @@ class DownloadCommand extends Command
      * Constructor
      *
      * @param GuzzleService $guzzleService Guzzle service
+     * @param ?string       $name          The name of the command; passing null means it must be set in configure()
      */
-    public function __construct(protected GuzzleService $guzzleService)
+    public function __construct(protected GuzzleService $guzzleService, ?string $name = null)
     {
-        parent::__construct();
+        parent::__construct($name);
     }
 
     /**
@@ -90,6 +91,11 @@ class DownloadCommand extends Command
                 description: 'Username for authentication'
             )
             ->addOption(
+                'overwrite',
+                mode: InputOption::VALUE_NONE,
+                description: 'Overwrite any existing destination file'
+            )
+            ->addOption(
                 'password',
                 mode: InputOption::VALUE_REQUIRED,
                 description: 'Password for authentication'
@@ -103,13 +109,13 @@ class DownloadCommand extends Command
             ->addOption(
                 'read-timeout',
                 mode: InputOption::VALUE_REQUIRED,
-                description: 'Read timeout',
+                description: 'Read timeout in seconds',
                 default: 30
             )
             ->addOption(
                 'timeout',
                 mode: InputOption::VALUE_REQUIRED,
-                description: 'Total request timeout',
+                description: 'Total request timeout in seconds (0 = no timeout)',
                 default: 0
             )
             ->addOption(
@@ -136,8 +142,13 @@ class DownloadCommand extends Command
         $password = $input->getOption('password');
         $authType = $input->getOption('auth-type');
         $statusInterval = $input->getOption('status-interval');
+        $overwrite = $input->getOption('overwrite');
 
         if (file_exists($targetFile)) {
+            if (!$overwrite) {
+                $output->writeln("<error>Target file $targetFile already exists</error>");
+                return Command::FAILURE;
+            }
             if (!unlink($targetFile)) {
                 $output->writeln("<error>Could not remove existing target file $targetFile</error>");
                 return Command::FAILURE;
