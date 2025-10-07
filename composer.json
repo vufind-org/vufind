@@ -10,7 +10,7 @@
     "license": "GPL-2.0",
     "config": {
         "platform": {
-            "php": "8.1"
+            "php": "8.2"
         },
         "process-timeout": 0,
         "allow-plugins": {
@@ -44,7 +44,7 @@
         "ext-sodium": "*"
     },
     "require": {
-        "php": ">=8.1",
+        "php": ">=8.2",
         "ahand/mobileesp": "dev-master",
         "apereo/phpcas": "1.6.1",
         "browscap/browscap-php": "^7.2",
