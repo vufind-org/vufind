@@ -181,13 +181,10 @@ class WorldCat2 extends DefaultRecord
         return implode(
             ', ',
             array_filter(
-                array_merge(
-                    [
-                        $data['secondName']['text'] ?? null,
-                        $data['firstName']['text'] ?? null,
-                    ],
-                    $data['creatorNotes'] ?? []
-                )
+                [
+                    $data['secondName']['text'] ?? null,
+                    $data['firstName']['text'] ?? null,
+                ]
             )
         );
     }
