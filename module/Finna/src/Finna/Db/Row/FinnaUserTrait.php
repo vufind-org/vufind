@@ -305,8 +305,12 @@ trait FinnaUserTrait
         } else {
             $username = $this->username;
         }
-        $parts = explode('.', $username, 2);
-        $displayedName = $parts[1] ?? $parts[0];
+        if ($this->auth_method === 'multiils') {
+            $parts = explode('.', $username, 2);
+            $displayedName = $parts[1] ?? $parts[0];
+        } else {
+            $displayedName = $username;
+        }
         if (isset($view)) {
             $displayedName .= ' (' . $view . ')';
         }
