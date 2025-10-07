@@ -178,13 +178,36 @@ class WorldCat2 extends DefaultRecord
         if (!empty($data['nonPersonName']['text'])) {
             return $data['nonPersonName']['text'];
         }
+        $rawCreatorNotes = $data['creatorNotes'] ?? [];
+        // The creatorNotes field may include useful information like author birth/death dates, but
+        // also useless information like redundant relator information. We need to strip out the
+        // relator terms so that author search will work correctly.
+        $relatorTerms = array_map(
+            fn ($relator) => strtolower($relator['term'] ?? ''),
+            $data['relators'] ?? []
+        );
+        $creatorNotes = array_map(
+            function ($note) use ($relatorTerms) {
+                return implode(
+                    ', ',
+                    array_diff(
+                        explode(', ', trim($note, '.')),
+                        $relatorTerms
+                    )
+                ) . (str_ends_with($note, '.') ? '.' : '');
+            },
+            $rawCreatorNotes
+        );
         return implode(
             ', ',
             array_filter(
-                [
-                    $data['secondName']['text'] ?? null,
-                    $data['firstName']['text'] ?? null,
-                ]
+                array_merge(
+                    [
+                        $data['secondName']['text'] ?? null,
+                        $data['firstName']['text'] ?? null,
+                    ],
+                    $creatorNotes
+                )
             )
         );
     }
