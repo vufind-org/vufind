@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Generic base class for Solr commands.
+ * Console command: populate hierarchy tree cache.
  *
  * PHP version 8
  *
@@ -40,7 +40,7 @@ use VuFind\Search\Results\PluginManager;
 use function count;
 
 /**
- * Generic base class for Solr commands.
+ * Console command: populate hierarchy tree cache.
  *
  * @category VuFind
  * @package  Console
