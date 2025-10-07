@@ -713,8 +713,7 @@ class EDS extends DefaultRecord
         $doi = $this->getItem('Name', 'DOI');
         if (isset($doi[0]['Data'])) {
             $cleanDoi = strip_tags($doi[0]['Data']);
-            $cleanDoi = str_replace('http://dx.doi.org/', '', $cleanDoi);
-            $cleanDoi = str_replace('http://doi.org/', '', $cleanDoi);
+            $cleanDoi = preg_replace('/http:\/\/.*.doi.org\//', '', $cleanDoi);
             return $cleanDoi;
         }
         $dois = $this->getFilteredIdentifiers(['doi']);
