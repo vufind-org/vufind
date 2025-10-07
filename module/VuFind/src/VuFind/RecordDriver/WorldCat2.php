@@ -30,6 +30,7 @@
 namespace VuFind\RecordDriver;
 
 use function count;
+use function in_array;
 
 /**
  * Model for WorldCat v2 records.
@@ -182,21 +183,49 @@ class WorldCat2 extends DefaultRecord
         // The creatorNotes field may include useful information like author birth/death dates, but
         // also useless information like redundant relator information. We need to strip out the
         // relator terms so that author search will work correctly.
-        $relatorTerms = array_map(
-            fn ($relator) => strtolower($relator['term'] ?? ''),
-            $data['relators'] ?? []
-        );
-        $creatorNotes = array_map(
-            function ($note) use ($relatorTerms) {
-                return implode(
-                    ', ',
-                    array_diff(
-                        explode(', ', trim($note, '.')),
-                        $relatorTerms
-                    )
-                ) . (str_ends_with($note, '.') ? '.' : '');
-            },
-            $rawCreatorNotes
+        $relatorTerms = [];
+        foreach ($data['relators'] ?? [] as $relator) {
+            if ($term = strtolower($relator['term'] ?? '')) {
+                $relatorTerms[] = $term;
+            }
+            if ($altTerm = strtolower($relator['alternateTerm'] ?? '')) {
+                $relatorTerms[] = $altTerm;
+            }
+        }
+        $creatorNotes = array_diff(
+            array_map(
+                function ($note) use ($relatorTerms) {
+                    return implode(
+                        ', ',
+                        array_filter(
+                            array_map(
+                                function ($value) use ($relatorTerms) {
+                                    // Skip note segments that are relators:
+                                    if (in_array(strtolower($value), $relatorTerms)) {
+                                        return '';
+                                    }
+                                    foreach ($relatorTerms as $term) {
+                                        $escapedTerm = preg_quote($term, '/');
+                                        // Skip note segments that are a relator term followed by a 3-character code:
+                                        if (preg_match("/^$escapedTerm( \\w{3})?$/i", $value)) {
+                                            return '';
+                                        }
+                                        // If a note segment starts with a date range and ends in a relator term
+                                        // (possibly followed by a 3-letter code), we should skip it:
+                                        if (preg_match("/^(\d{4}-\d{4}) $escapedTerm( \\w{3})?$/i", $value, $matches)) {
+                                            return $matches[1];
+                                        }
+                                    }
+                                    return $value;
+                                },
+                                explode(', ', trim($note, '.')),
+                            )
+                        )
+                    ) . (str_ends_with($note, '.') ? '.' : '');
+                },
+                $rawCreatorNotes
+            ),
+            ['.'] // Strip out any empty values
         );
         return implode(
             ', ',
