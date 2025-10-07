@@ -469,10 +469,6 @@
         <not><available file="${srcdir}/solr/.disableAutomaticInstall" /></not>
       </and>
       <then>
-        <!-- make sure we don't run out of memory or time during installation: -->
-        <php expression="ini_set('memory_limit', '1G');" />
-        <php expression="ini_set('default_socket_timeout', '600');" />
-
         <!-- download from Apache if not already present in the downloads cache -->
         <if>
           <not><available file="${downloadsdir}/solr-${solr_version}.tgz" /></not>
