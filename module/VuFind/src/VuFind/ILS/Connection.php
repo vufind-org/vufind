@@ -341,7 +341,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * if the system supports a particular function.
      *
      * @param string $function The name of the function to check.
-     * @param array  $params   (optional) An array of function-specific parameters
+     * @param ?array $params   (optional) An array of function-specific parameters
      *
      * @return mixed On success, an associative array with specific function keys
      * and values; on failure, false.
@@ -350,11 +350,12 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     {
         try {
             // Extract the configuration from the driver if available:
+            $paramsArray = $params ?? [];
             $functionConfig = $this->checkCapability(
                 'getConfig',
-                [$function, $params],
+                [$function, $paramsArray],
                 true
-            ) ? $this->getDriver()->getConfig($function, $params) : false;
+            ) ? $this->getDriver()->getConfig($function, $paramsArray) : false;
 
             // See if we have a corresponding check method to analyze the response:
             $checkMethod = 'checkMethod' . $function;
@@ -379,8 +380,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * A support method for checkFunction(). This is responsible for checking
      * the driver configuration to determine if the system supports Holds.
      *
-     * @param array $functionConfig The Hold configuration values
-     * @param array $params         An array of function-specific params (or null)
+     * @param array  $functionConfig The Hold configuration values
+     * @param ?array $params         An array of function-specific params (or null)
      *
      * @return mixed On success, an associative array with specific function keys
      * and values either for placing holds via a form or a URL; on failure, false.
@@ -437,8 +438,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * A support method for checkFunction(). This is responsible for checking
      * the driver configuration to determine if the system supports Cancelling Holds.
      *
-     * @param array $functionConfig The Cancel Hold configuration values
-     * @param array $params         An array of function-specific params (or null)
+     * @param array  $functionConfig The Cancel Hold configuration values
+     * @param ?array $params         An array of function-specific params (or null)
      *
      * @return mixed On success, an associative array with specific function keys
      * and values either for cancelling holds via a form or a URL;
@@ -475,8 +476,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * A support method for checkFunction(). This is responsible for checking
      * the driver configuration to determine if the system supports Renewing Items.
      *
-     * @param array $functionConfig The Renewal configuration values
-     * @param array $params         An array of function-specific params (or null)
+     * @param array  $functionConfig The Renewal configuration values
+     * @param ?array $params         An array of function-specific params (or null)
      *
      * @return mixed On success, an associative array with specific function keys
      * and values either for renewing items via a form or a URL; on failure, false.
@@ -513,9 +514,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * the driver configuration to determine if the system supports storage
      * retrieval requests.
      *
-     * @param array $functionConfig The storage retrieval request configuration
-     * values
-     * @param array $params         An array of function-specific params (or null)
+     * @param array  $functionConfig The storage retrieval request configuration values
+     * @param ?array $params         An array of function-specific params (or null)
      *
      * @return mixed On success, an associative array with specific function keys
      * and values either for placing requests via a form; on failure, false.
@@ -549,8 +549,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * the driver configuration to determine if the system supports Cancelling
      * Storage Retrieval Requests.
      *
-     * @param array $functionConfig The Cancel function configuration values
-     * @param array $params         An array of function-specific params (or null)
+     * @param array  $functionConfig The Cancel function configuration values
+     * @param ?array $params         An array of function-specific params (or null)
      *
      * @return mixed On success, an associative array with specific function keys
      * and values either for cancelling requests via a form or a URL;
@@ -600,8 +600,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * the driver configuration to determine if the system supports storage
      * retrieval requests.
      *
-     * @param array $functionConfig The ILL request configuration values
-     * @param array $params         An array of function-specific params (or null)
+     * @param array  $functionConfig The ILL request configuration values
+     * @param ?array $params         An array of function-specific params (or null)
      *
      * @return mixed On success, an associative array with specific function keys
      * and values either for placing requests via a form; on failure, false.
@@ -638,8 +638,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * the driver configuration to determine if the system supports Cancelling
      * ILL Requests.
      *
-     * @param array $functionConfig The Cancel function configuration values
-     * @param array $params         An array of function-specific params (or null)
+     * @param array  $functionConfig The Cancel function configuration values
+     * @param ?array $params         An array of function-specific params (or null)
      *
      * @return mixed On success, an associative array with specific function keys
      * and values either for cancelling requests via a form or a URL;
@@ -707,8 +707,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     /**
      * Check if initiating of password recovery is supported.
      *
-     * @param array $functionConfig Function configuration values
-     * @param array $params         An array of function-specific params (or null)
+     * @param array  $functionConfig Function configuration values
+     * @param ?array $params         An array of function-specific params (or null)
      *
      * @return array|false
      */
@@ -723,8 +723,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     /**
      * Check if password recovery is supported.
      *
-     * @param array $functionConfig Function configuration values
-     * @param array $params         An array of function-specific params (or null)
+     * @param array  $functionConfig Function configuration values
+     * @param ?array $params         An array of function-specific params (or null)
      *
      * @return array|false
      */
@@ -812,8 +812,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * the driver configuration to determine if the system supports patron login.
      * It is currently assumed that all drivers do.
      *
-     * @param array $functionConfig The patronLogin configuration values
-     * @param array $params         An array of function-specific params (or null)
+     * @param array  $functionConfig The patronLogin configuration values
+     * @param ?array $params         An array of function-specific params (or null)
      *
      * @return mixed On success, an associative array with specific function keys
      * and values for login; on failure, false.
@@ -828,8 +828,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
     /**
      * Check if online payment is supported.
      *
-     * @param array $functionConfig Function configuration values
-     * @param array $params         An array of function-specific params (or null)
+     * @param array  $functionConfig Function configuration values
+     * @param ?array $params         An array of function-specific params (or null)
      *
      * @return bool
      *
