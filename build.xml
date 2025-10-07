@@ -479,7 +479,7 @@
            <then>
             <mkdir dir="${downloadsdir}" />
             <exec executable="php" checkreturn="true" passthru="true">
-              <arg line="${srcdir}/public/index.php util/download https://archive.apache.org/dist/solr/solr/${solr_version}/solr-${solr_version}.tgz downloads/solr-${solr_version}.tgz" />
+              <arg line="${srcdir}/public/index.php util/download https://archive.apache.org/dist/solr/solr/${solr_version}/solr-${solr_version}.tgz ${downloadsdir}/solr-${solr_version}.tgz" />
               <env key="VUFIND_HOME" value="${srcdir}" />
               <env key="VUFIND_LOCAL_DIR" value="${localdir}" />
             </exec>
