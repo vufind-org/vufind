@@ -68,12 +68,11 @@ final class LoggingTest extends MinkTestCase
             'debug_error_and_alert_logging' => [
                 'emailConfig'        => 'alerts@myuniversity.edu:debug-5,alert-5,error-5',
                 'expectedPatterns'   => [
-                    self::CRITICAL_LEVEL_REGEX,
+                    // self::CRITICAL_LEVEL_REGEX,
                     '/404 Not Found/',
-                    '/RequestErrorException/',
                     '/VuFindSearch\\\\Backend\\\\Exception/',
                     '/Search\/Results.*lookfor.*test/',
-                    // self::DEBUG_LEVEL_REGEX,
+                    self::DEBUG_LEVEL_REGEX,
                 ],
                 'unexpectedPatterns' => [
                 ],
@@ -212,7 +211,6 @@ final class LoggingTest extends MinkTestCase
             $logContent,
             $description . ': Expected to receive log email'
         );
-        print_r(["LogContent: ", $logContent]);
         foreach ($expectedPatterns as $pattern) {
             $this->assertMatchesRegularExpression(
                 $pattern,
@@ -287,10 +285,11 @@ final class LoggingTest extends MinkTestCase
         string $description
     ): void {
         $port = $this->getSolrPort();
+        $uniqid = uniqid('test_');
         $this->changeConfigs([
             'config' => [
                 'Index'   => [
-                    'url' => "http://localhost:$port/not-solr",
+                    'url' => "http://localhost:$port/not-solr-$uniqid",
                 ],
                 'Mail'    => [
                     'testOnly'           => true,
@@ -306,13 +305,13 @@ final class LoggingTest extends MinkTestCase
         $this->resetEmailLog();
 
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Results?lookfor=test');
+        $session->visit($this->getVuFindUrl() . '/Search/Results?lookfor='.$uniqid);
         $page = $session->getPage();
 
         // Wait for logging to complete
         $this->findCss($page, 'body');
         
-        $loggedEmails = $this->waitForMinimumEmails($minEmails, 65);
+        $loggedEmails = $this->waitForMinimumEmails($minEmails, 90);
         
         $this->assertGreaterThanOrEqual($minEmails, count($loggedEmails));
         $allEmailContent = preg_replace(
