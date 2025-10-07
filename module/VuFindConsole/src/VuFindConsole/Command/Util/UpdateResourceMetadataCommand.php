@@ -96,7 +96,7 @@ class UpdateResourceMetadataCommand extends Command
                 null,
                 InputOption::VALUE_REQUIRED,
                 'Minimum age of a record (in days) before it is refreshed even if metadata is not missing.'
-                . ' By default records with missing metadata are updated, but using this option allows to update all'
+                . ' By default records with missing metadata are updated, but using this option allows updates to all'
                 . ' records periodically.'
             )->addOption(
                 'backend',
