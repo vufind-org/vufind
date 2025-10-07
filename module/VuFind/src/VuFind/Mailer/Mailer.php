@@ -36,6 +36,7 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Mime\Exception\RfcComplianceException;
+use Symfony\Component\Mime\Part\DataPart;
 use VuFind\Exception\Mail as MailException;
 use VuFind\RecordDriver\AbstractBase;
 
@@ -209,6 +210,7 @@ class Mailer implements
      * none)
      * @param bool                                   $subjectInBody Allow subject to be extracted from body when
      * body text begins with "Subject: " and $body is a string (ignored when $body is an Email object)
+     * @param DataPart[]                             $parts         Data parts to add
      *
      * @throws MailException
      * @return void
@@ -220,7 +222,8 @@ class Mailer implements
         string|Email $body,
         string|Address|array|null $cc = null,
         string|Address|array|null $replyTo = null,
-        bool $subjectInBody = true
+        bool $subjectInBody = true,
+        array $parts = []
     ) {
         try {
             if (!($from instanceof Address)) {
@@ -307,6 +310,9 @@ class Mailer implements
             }
             foreach ($replyTo as $current) {
                 $email->addReplyTo($current);
+            }
+            foreach ($parts as $part) {
+                $email->addPart($part);
             }
             $this->getTransport()->send($email);
             if ($logFile = $this->options['message_log'] ?? null) {

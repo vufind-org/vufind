@@ -111,6 +111,17 @@ abstract class AbstractBase implements
     }
 
     /**
+     * Can this tab be embedded in search results (via tab/accordion)?
+     *
+     * @return bool
+     */
+    public function supportsSearchResultEmbedding(): bool
+    {
+        // Assume it works, subclasses may add rules.
+        return true;
+    }
+
+    /**
      * Set the record driver
      *
      * @param \VuFind\RecordDriver\AbstractBase $driver Record driver

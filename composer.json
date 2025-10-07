@@ -89,6 +89,7 @@
         "laminas/laminas-validator": "2.64.4",
         "laminas/laminas-view": "2.36.0",
         "league/commonmark": "2.7.1",
+        "league/oauth1-client": "1.11.0",
         "league/oauth2-client": "^2.7",
         "league/oauth2-server": "^9.2",
         "lm-commons/lmc-rbac-mvc": "4.1.1",

@@ -53,4 +53,25 @@ interface TabInterface
      * @return bool
      */
     public function isActive();
+
+    /**
+     * Is this tab initially visible?
+     *
+     * @return bool
+     */
+    public function isVisible();
+
+    /**
+     * Can this tab be loaded via AJAX?
+     *
+     * @return bool
+     */
+    public function supportsAjax();
+
+    /**
+     * Can this tab be embedded in search results (via tab/accordion)?
+     *
+     * @return bool
+     */
+    public function supportsSearchResultEmbedding(): bool;
 }

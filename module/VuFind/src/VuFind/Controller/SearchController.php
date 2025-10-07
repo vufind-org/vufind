@@ -352,15 +352,25 @@ class SearchController extends AbstractSolrSearch
         }
 
         // If we got this far, we're using driver-based searching and need to
-        // send options to the view:
+        // send options to the view (but we should tolerate drivers that do not
+        // define all of the department/instructor/courses getters):
         $catalog = $this->getILS();
-        return $this->createViewModel(
-            [
-                'deptList' => $catalog->getDepartments(),
-                'instList' => $catalog->getInstructors(),
-                'courseList' =>  $catalog->getCourses(),
-            ]
-        );
+        try {
+            $deptList = $catalog->getDepartments();
+        } catch (\VuFind\Exception\ILS $e) {
+            $deptList = [];
+        }
+        try {
+            $instList = $catalog->getInstructors();
+        } catch (\VuFind\Exception\ILS $e) {
+            $instList = [];
+        }
+        try {
+            $courseList =  $catalog->getCourses();
+        } catch (\VuFind\Exception\ILS $e) {
+            $courseList = [];
+        }
+        return $this->createViewModel(compact('deptList', 'instList', 'courseList'));
     }
 
     /**

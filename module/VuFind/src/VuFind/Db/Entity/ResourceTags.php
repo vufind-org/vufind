@@ -33,7 +33,7 @@ use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * ResourceTags
+ * Entity model for resource_tags table
  *
  * @category VuFind
  * @package  Database

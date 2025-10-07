@@ -83,4 +83,13 @@ interface AccessTokenServiceInterface extends DbServiceInterface
      * @return ?string
      */
     public function getNonce(int $userId): ?string;
+
+    /**
+     * Delete an access_token entity object.
+     *
+     * @param AccessTokenEntityInterface $accessToken AccessToken object to delete
+     *
+     * @return void
+     */
+    public function deleteAccessToken(AccessTokenEntityInterface $accessToken): void;
 }
