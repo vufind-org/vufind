@@ -67,14 +67,15 @@ interface ResourceServiceInterface extends DbServiceInterface
      * Get a set of records that are missing metadata in the resource table. If maxAge is specified, this includes also
      * records that need to be updated.
      *
-     * @param ?int    $lastId ID of last checked record, or null to start from beginning
-     * @param int     $limit  Limit for results
-     * @param ?int    $minAge Minimum age (in days) for metadata before it needs to be updated
-     * @param ?string $source Record source filter
+     * @param ?int  $lastId  ID of last checked record, or null to start from beginning
+     * @param int   $limit   Limit for results
+     * @param ?int  $minAge  Minimum age (in days) for metadata before it needs to be updated, or null to search for
+     * records that are missing metadata
+     * @param array $sources Record source filter
      *
      * @return ResourceEntityInterface[]
      */
-    public function findMetadataToUpdate(?int $lastId, int $limit, ?int $minAge = null, ?string $source = null): array;
+    public function findMetadataToUpdate(?int $lastId, int $limit, ?int $minAge = null, array $sources = []): array;
 
     /**
      * Retrieve a single resource row by record ID/source. Return null if it does not exist.

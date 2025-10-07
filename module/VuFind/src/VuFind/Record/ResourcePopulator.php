@@ -35,7 +35,6 @@ use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
-use function intval;
 use function strlen;
 
 /**
@@ -194,19 +193,19 @@ class ResourcePopulator
         );
         $resource->setAuthor($author);
 
-        // Try to find a year; if not available, just set to an empty string:
+        // Try to find a year; if not available, just set to zero (not a perfect option but avoids the entry from
+        // being detected as missing metadata again and again):
         $dates = $driver->tryMethod('getPublicationDates');
         if (isset($dates[0]) && strlen($dates[0]) > 4) {
             try {
                 $year = $this->dateConverter->convertFromDisplayDate('Y', $dates[0]);
             } catch (DateException) {
-                // If conversion fails, don't store a date:
-                $year = '';
+                $year = 0;
             }
         } else {
-            $year = $dates[0] ?? '';
+            $year = (int)($dates[0] ?? 0);
         }
-        $resource->setYear(intval($year));
+        $resource->setYear($year);
 
         if ($extra = $driver->tryMethod('getExtraResourceMetadata')) {
             $resource->setExtraMetadata(json_encode($extra));

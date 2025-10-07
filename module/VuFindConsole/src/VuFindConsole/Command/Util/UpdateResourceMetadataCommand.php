@@ -101,7 +101,7 @@ class UpdateResourceMetadataCommand extends Command
             )->addOption(
                 'backend',
                 null,
-                InputOption::VALUE_REQUIRED,
+                InputOption::VALUE_REQUIRED | InputOption::VALUE_IS_ARRAY,
                 'Record backend (source) to check. By default resources for all backends are checked.'
             );
     }

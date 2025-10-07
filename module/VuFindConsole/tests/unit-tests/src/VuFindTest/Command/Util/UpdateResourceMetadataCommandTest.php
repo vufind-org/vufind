@@ -56,11 +56,11 @@ class UpdateResourceMetadataCommandTest extends \PHPUnit\Framework\TestCase
         return [
             [
                 [],
-                [null, 1000, null, null],
+                [null, 1000, null, []],
             ],
             [
-                ['--min-age' => '30', '--backend' => 'solr', '--batch' => '100'],
-                [null, 100, 30, 'solr'],
+                ['--min-age' => '30', '--backend' => ['solr'], '--batch' => '100'],
+                [null, 100, 30, ['solr']],
             ],
         ];
     }
