@@ -155,9 +155,16 @@ class DownloadCommand extends Command
             }
         }
 
+        $partialFile = $targetFile . '.partial';
+        if (file_exists($partialFile)) {
+            if (!unlink($partialFile)) {
+                $output->writeln("<error>Could not remove existing partial file $partialFile</error>");
+                return Command::FAILURE;
+            }
+        }
+
         $client = $this->guzzleService->createClient($url);
 
-        $partial = $targetFile . '.partial';
         $progressBar = null;
         if (!$output->isQuiet()) {
             $output->writeln("Downloading $url to $targetFile");
@@ -165,7 +172,7 @@ class DownloadCommand extends Command
         $options = [
             RequestOptions::READ_TIMEOUT => $input->getOption('read-timeout'),
             RequestOptions::TIMEOUT => $input->getOption('timeout'),
-            RequestOptions::SINK => $partial,
+            RequestOptions::SINK => $partialFile,
         ];
         if (!$output->isQuiet()) {
             $options[RequestOptions::PROGRESS] = function (
@@ -205,11 +212,11 @@ class DownloadCommand extends Command
             $progressBar->finish();
         }
         if ($response->getStatusCode() !== 200) {
-            $output->writeLn("<error>Download failed: '$partial' to '$targetFile'</error>");
+            $output->writeLn("<error>Download failed: '$partialFile' to '$targetFile'</error>");
             return Command::FAILURE;
         }
-        if (!rename($partial, $targetFile)) {
-            $output->writeLn("<error>Could not rename '$partial' to '$targetFile'</error>");
+        if (!rename($partialFile, $targetFile)) {
+            $output->writeLn("<error>Could not rename '$partialFile' to '$targetFile'</error>");
             return Command::FAILURE;
         }
         if (!$output->isQuiet()) {
