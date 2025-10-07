@@ -32,7 +32,7 @@ declare(strict_types=1);
 namespace VuFind\Export\Zotero;
 
 use Laminas\Cache\Storage\StorageInterface;
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use Laminas\Session\Container as SessionContainer;
 use League\OAuth1\Client\Credentials\CredentialsException;
 use VuFind\Cache\CacheTrait;
