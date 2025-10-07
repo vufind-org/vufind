@@ -92,7 +92,7 @@ class DeveloperSettingsController extends AbstractBase
             $successMsg = $this->translate('Developer::api_key_generation_success', ['%%TOKEN%%' => $token]);
             $this->flashMessenger()->addMessage($successMsg, 'success');
         } else {
-            $this->flashMessenger()->addMessage('Developer::api_key_generation_failed', 'error');
+            $this->flashMessenger()->addMessage('An error has occurred', 'error');
         }
         return $this->redirect()->toRoute('developersettings-displaysettings');
     }
@@ -122,7 +122,7 @@ class DeveloperSettingsController extends AbstractBase
         if ($apiKeyService->deleteApiKeyForUser($user)) {
             $this->flashMessenger()->addMessage('Developer::api_key_deletion_success', 'success');
         } else {
-            $this->flashMessenger()->addMessage('Developer::api_key_deletion_failed', 'error');
+            $this->flashMessenger()->addMessage('An error has occurred', 'error');
         }
         return $this->redirect()->toRoute('developersettings-displaysettings');
     }

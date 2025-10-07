@@ -96,41 +96,21 @@ trait ApiKeyTrait
     }
 
     /**
-     * Set API key mode.
+     * Init API key settings
      *
-     * @param $apiKeyMode API key mode, disabled, enabled, enforced.
+     * @param array $settings API key settings from config.ini
      *
-     * @return void
+     * @return void;
      */
-    protected function setApiKeyMode(string $apiKeyMode): void
+    protected function initAPIKeySettings(array $settings):void
     {
-        $this->apiKeyMode = $apiKeyMode;
+        $this->apiKeyMode = $settings['mode'] ?? 'disabled';
+        if ($this->isApiKeyEnabled() && is_callable([$this, 'getService'])) {
+            $this->apiKeyService = $this->getService(\VuFind\ApiKey\ApiKeyService::class);
+            $this->apiKeyHeaderField = $settings['header_field'] ?? 'X-API-KEY';
+            $this->logApiKeyRequests = (bool)($settings['log_requests'] ?? false);
+        }
     }
-
-    /**
-     * Set API key header field.
-     *
-     * @param string $header Header field name for the API key.
-     *
-     * @return void
-     */
-    protected function setApiKeyHeader(string $header): void
-    {
-        $this->apiKeyHeaderField = $header;
-    }
-
-    /**
-     * Set if API key requests can be logged.
-     *
-     * @param bool $log Should requests with API keys be logged.
-     *
-     * @return void
-     */
-    protected function setApiKeyLogging(bool $log = false): void
-    {
-        $this->logApiKeyRequests = $log;
-    }
-
     /**
      * Is API key enabled?
      *

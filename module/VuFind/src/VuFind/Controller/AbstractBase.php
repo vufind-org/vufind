@@ -459,10 +459,24 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      * @param string $id Configuration identifier (default = main VuFind config)
      *
      * @return \VuFind\Config\Config
+     *
+     * @deprecated Use AbstractBase::getConfigArray
      */
     public function getConfig($id = 'config')
     {
         return $this->getService(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject($id);
+    }
+
+    /**
+     * Get a VuFind configuration as an associative array.
+     *
+     * @param string $id Configuration identifier (default = config)
+     *
+     * @return array
+     */
+    public function getConfigArray(string $id = 'config'): array
+    {
+        return $this->getService(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray($id);
     }
 
     /**

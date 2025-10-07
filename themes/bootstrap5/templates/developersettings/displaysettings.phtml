@@ -13,9 +13,9 @@
     <div id="developer-settings">
         <table class="table table-striped">
             <?php if (isset($this->apiKey)): ?>
-            <tr>
-                <th class="vertical-center"><?=$this->transEsc('Developer::api_key')?></th>
-                <td class="flex align-center justify-end">
+            <tr class="d-flex flex-row">
+                <th class="d-flex align-items-center justify-content-center"><span><?=$this->transEsc('Developer::api_key')?></span></th>
+                <td class="d-flex flex-fill align-items-center justify-content-end">
                     <div>
                         <?php if (false !== $this->apiKey && $this->apiKey->isRevoked()): ?>
                             <span><?=$this->transEsc('Developer::api_key_locked');?></span>
