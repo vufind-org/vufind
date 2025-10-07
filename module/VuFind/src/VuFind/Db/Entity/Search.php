@@ -38,7 +38,7 @@ use function is_object;
 use function is_resource;
 
 /**
- * Search
+ * Entity model for search table
  *
  * @category VuFind
  * @package  Database

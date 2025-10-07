@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Console command: expire sessions.
+ * Console command: expire external sessions.
  *
  * PHP version 8
  *
@@ -32,7 +32,7 @@ namespace VuFindConsole\Command\Util;
 use Symfony\Component\Console\Attribute\AsCommand;
 
 /**
- * Console command: expire sessions.
+ * Console command: expire external sessions.
  *
  * @category VuFind
  * @package  Console

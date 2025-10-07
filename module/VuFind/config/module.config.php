@@ -232,6 +232,7 @@ $config = [
             'VuFind\Controller\WorldcatController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\Worldcat2Controller' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\Worldcat2recordController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFind\Controller\ZoteroController' => 'VuFind\Controller\ZoteroControllerFactory',
         ],
         'initializers' => [
             'VuFind\ServiceManager\ServiceInitializer',
@@ -374,6 +375,8 @@ $config = [
             'worldcat2' => 'VuFind\Controller\Worldcat2Controller',
             'Worldcat2Record' => 'VuFind\Controller\Worldcat2recordController',
             'worldcat2record' => 'VuFind\Controller\Worldcat2recordController',
+            'Zotero' => 'VuFind\Controller\ZoteroController',
+            'zotero' => 'VuFind\Controller\ZoteroController',
         ],
     ],
     'controller_plugins' => [
@@ -476,6 +479,7 @@ $config = [
             'VuFind\DigitalContent\OverdriveConnector' => 'VuFind\DigitalContent\OverdriveConnectorFactory',
             'VuFind\Escaper\Escaper' => 'VuFind\Escaper\EscaperFactory',
             'VuFind\Export' => 'VuFind\ExportFactory',
+            'VuFind\Export\Zotero\ZoteroService' => 'VuFind\Export\Zotero\ZoteroServiceFactory',
             'VuFind\Favorites\FavoritesService' => 'VuFind\Favorites\FavoritesServiceFactory',
             'VuFind\Form\Form' => 'VuFind\Form\FormFactory',
             'VuFind\Form\Handler\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
@@ -1024,6 +1028,8 @@ $staticRoutes = [
     'Worldcat2/Advanced',
     'Worldcat2/Home',
     'Worldcat2/Search',
+    'Zotero/AuthCallback',
+    'Zotero/Export',
 ];
 
 $routeGenerator = new \VuFind\Route\RouteGenerator();

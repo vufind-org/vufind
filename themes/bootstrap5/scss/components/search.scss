@@ -169,6 +169,12 @@ header .container.navbar { margin-bottom: 0; }
   .search-controls { text-align: right; }
 }
 
+// Hide record versions in embedded accordions/tabs:
+.record-list .panel-group .record-versions,
+.record-list .tab-content .record-versions {
+  display: none;
+}
+
 .versions-tab {
   .search-controls {
     padding-top: 0.5rem;
