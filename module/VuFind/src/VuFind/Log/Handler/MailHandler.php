@@ -114,7 +114,7 @@ class MailHandler extends MonologMailHandler
      */
     protected function buildMessage(array $records): string
     {
-        $message = "";
+        $message = '';
 
         foreach ($records as $record) {
             $recordData = $record->toArray();
