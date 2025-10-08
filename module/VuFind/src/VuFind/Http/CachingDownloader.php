@@ -160,18 +160,20 @@ class CachingDownloader implements GuzzleServiceAwareInterface
                 $e
             );
         }
+        
+        $body = $response->getBody()->getContents();
         if ($response->getStatusCode() < 200 || $response->getStatusCode() >= 300) {
             throw new HttpDownloadException(
                 'HttpService download failed (not ok)',
                 $url,
                 $response->getStatusCode(),
                 $response->getHeaders(),
-                $response->getBody()->getContents()
+                $body
             );
         }
-
+        
         $finalValue = $decodeCallback !== null
-            ? $decodeCallback($response, $url) : $response->getBody()->getContents();
+            ? $decodeCallback($body, $url, $response) : $body;
         if ($cache) {
             $cache->addItem($cacheItemKey, $finalValue);
         }
@@ -190,15 +192,15 @@ class CachingDownloader implements GuzzleServiceAwareInterface
      */
     public function downloadJson($url, $params = [], $associative = null)
     {
-        $decodeJson = function (ResponseInterface $response, $url) use ($associative) {
-            $decodedJson = json_decode($response->getBody()->getContents(), $associative);
+        $decodeJson = function (string $body, string $url, ResponseInterface $response) use ($associative) {
+            $decodedJson = json_decode($body, $associative);
             if ($decodedJson === null) {
                 throw new HttpDownloadException(
                     'Invalid response body',
                     $url,
                     $response->getStatusCode(),
                     $response->getHeaders(),
-                    $response->getBody()->getContents()
+                    $body
                 );
             } else {
                 return $decodedJson;
