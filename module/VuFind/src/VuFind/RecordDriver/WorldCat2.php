@@ -195,26 +195,45 @@ class WorldCat2 extends DefaultRecord
         $creatorNotes = array_diff(
             array_map(
                 function ($note) use ($relatorTerms) {
-                    return implode(
+                    $result = implode(
                         ', ',
                         array_filter(
                             array_map(
                                 function ($value) use ($relatorTerms) {
+                                    // Regex for capturing useful patterns at the beginning of creatorNotes
+                                    $datesRegex = '((ca\. )?\d{4}-(\d{4})?)';
+                                    $parensRegex = '(\\([^)]+\\)\\.?)';
+                                    $startRegex = "^($datesRegex|$parensRegex)";
+                                    // Regex for capturing a code or URI:
+                                    $codeRegex = '(https?:[^\s]+|\\w{3})';
+
                                     // Skip note segments that are relators:
                                     if (in_array(strtolower($value), $relatorTerms)) {
                                         return '';
                                     }
+                                    $allEscapedTerms = [];
                                     foreach ($relatorTerms as $term) {
-                                        $escapedTerm = preg_quote($term, '/');
+                                        $allEscapedTerms[] = $escapedTerm = preg_quote($term, '/');
                                         // Skip note segments that are a relator term followed by a 3-character code:
-                                        if (preg_match("/^$escapedTerm( \\w{3})?$/i", $value)) {
+                                        if (preg_match("/^$escapedTerm\\.?( $codeRegex)?$/i", $value)) {
                                             return '';
                                         }
                                         // If a note segment starts with a date range and ends in a relator term
                                         // (possibly followed by a 3-letter code), we should skip it:
-                                        if (preg_match("/^(\d{4}-\d{4}) $escapedTerm( \\w{3})?$/i", $value, $matches)) {
+                                        $singleTermRegex = "/$startRegex $escapedTerm\\.?( $codeRegex)*$/i";
+                                        if (preg_match($singleTermRegex, $value, $matches)) {
                                             return $matches[1];
                                         }
+                                    }
+                                    // If there are multiple relator terms, they may all be concatenated together;
+                                    // strip them off in that case as well:
+                                    $allEscapedTermsStr = implode(
+                                        '',
+                                        array_map(fn ($term) => "( ($codeRegex )?$term\\.?)?", $allEscapedTerms)
+                                    );
+                                    $allEscapedTermsRegex = "/$startRegex$allEscapedTermsStr( $codeRegex)*$/i";
+                                    if (preg_match($allEscapedTermsRegex, $value, $matches)) {
+                                        return $matches[1];
                                     }
                                     return $value;
                                 },
@@ -222,6 +241,8 @@ class WorldCat2 extends DefaultRecord
                             )
                         )
                     ) . (str_ends_with($note, '.') ? '.' : '');
+                    // Collapse redundant periods:
+                    return preg_replace('/\\.+$/', '.', $result);
                 },
                 $rawCreatorNotes
             ),
