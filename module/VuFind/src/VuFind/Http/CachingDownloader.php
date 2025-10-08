@@ -160,7 +160,7 @@ class CachingDownloader implements GuzzleServiceAwareInterface
                 $e
             );
         }
-        
+
         $body = $response->getBody()->getContents();
         if ($response->getStatusCode() < 200 || $response->getStatusCode() >= 300) {
             throw new HttpDownloadException(
@@ -171,7 +171,7 @@ class CachingDownloader implements GuzzleServiceAwareInterface
                 $body
             );
         }
-        
+
         $finalValue = $decodeCallback !== null
             ? $decodeCallback($body, $url, $response) : $body;
         if ($cache) {

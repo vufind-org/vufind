@@ -84,7 +84,7 @@ class HttpDownloadException extends \Exception implements HttpStatusInterface
         string $message,
         string $url,
         ?int $statusCode = null,
-        ?Headers $responseHeaders = null,
+        Headers|array|null $responseHeaders = null,
         ?string $responseBody = null,
         ?\Throwable $previous = null
     ) {
@@ -120,7 +120,7 @@ class HttpDownloadException extends \Exception implements HttpStatusInterface
      *
      * @return ?Headers
      */
-    public function getResponseHeaders(): ?Headers
+    public function getResponseHeaders(): Headers|array|null
     {
         return $this->responseHeaders;
     }
