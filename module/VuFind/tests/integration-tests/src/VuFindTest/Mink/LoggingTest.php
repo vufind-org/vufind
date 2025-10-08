@@ -68,7 +68,7 @@ final class LoggingTest extends MinkTestCase
             'debug_error_and_alert_logging' => [
                 'emailConfig'        => 'alerts@myuniversity.edu:debug-5,alert-5,error-5',
                 'expectedPatterns'   => [
-                    // self::CRITICAL_LEVEL_REGEX,
+                    self::CRITICAL_LEVEL_REGEX,
                     '/404 Not Found/',
                     '/VuFindSearch\\\\Backend\\\\Exception/',
                     '/Search\/Results.*lookfor.*test/',
@@ -76,7 +76,7 @@ final class LoggingTest extends MinkTestCase
                 ],
                 'unexpectedPatterns' => [
                 ],
-                'minEmails'          => 1,
+                'minEmails'          => 2,
                 'description'         => 'Should log critical errors when Solr connection fails',
             ],
             'error_and_alert_logging_only' => [
@@ -211,6 +211,7 @@ final class LoggingTest extends MinkTestCase
             $logContent,
             $description . ': Expected to receive log email'
         );
+
         foreach ($expectedPatterns as $pattern) {
             $this->assertMatchesRegularExpression(
                 $pattern,
@@ -218,6 +219,7 @@ final class LoggingTest extends MinkTestCase
                 $description . ': Expected pattern not found: ' . $pattern
             );
         }
+
         foreach ($unexpectedPatterns as $pattern) {
             $this->assertDoesNotMatchRegularExpression(
                 $pattern,
@@ -238,7 +240,7 @@ final class LoggingTest extends MinkTestCase
      */
     protected function waitForMinimumEmails(
         int $minEmails,
-        int $maxWaitSecs = 65,
+        int $maxWaitSecs = 10,
         int $checkInterval = 1
     ): array {
         $startTime = time();
@@ -311,7 +313,7 @@ final class LoggingTest extends MinkTestCase
         // Wait for logging to complete
         $this->findCss($page, 'body');
 
-        $loggedEmails = $this->waitForMinimumEmails($minEmails, 90);
+        $loggedEmails = $this->waitForMinimumEmails($minEmails);
 
         $this->assertGreaterThanOrEqual($minEmails, count($loggedEmails));
         $allEmailContent = preg_replace(
@@ -323,7 +325,6 @@ final class LoggingTest extends MinkTestCase
         $allEmailBodies = implode('', array_map(fn ($email) => $email->getBody()->getBody(), $loggedEmails));
 
         // Basic assertions
-        $expectedPatterns[] = '/VuFind Log Alert/'; // every email contains this string
         $this->assertPatternsInLog($allEmailContent, $expectedPatterns, $unexpectedPatterns, $description);
 
         // Email subject assertion
