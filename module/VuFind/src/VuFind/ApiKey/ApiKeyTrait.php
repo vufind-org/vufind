@@ -77,13 +77,6 @@ trait ApiKeyTrait
     protected string $apiKeyHeader;
 
     /**
-     * Log requests with API keys
-     *
-     * @var bool
-     */
-    protected bool $logApiKeyRequests = false;
-
-    /**
      * Set API key service
      *
      * @param ApiKeyService $apiKeyService API key service
@@ -102,13 +95,12 @@ trait ApiKeyTrait
      *
      * @return void;
      */
-    protected function initAPIKeySettings(array $settings): void
+    protected function initApiKeySettings(array $settings): void
     {
         $this->apiKeyMode = $settings['mode'] ?? 'disabled';
         if ($this->isApiKeyEnabled() && is_callable([$this, 'getService'])) {
             $this->apiKeyService = $this->getService(\VuFind\ApiKey\ApiKeyService::class);
             $this->apiKeyHeaderField = $settings['header_field'] ?? 'X-API-KEY';
-            $this->logApiKeyRequests = (bool)($settings['log_requests'] ?? false);
         }
     }
 
@@ -134,7 +126,6 @@ trait ApiKeyTrait
         }
         if ($apiKey = $this->getRequest()->getHeader($this->apiKeyHeaderField)) {
             $apiKey = $apiKey->getFieldValue();
-            $this->logApiKeyRequest($apiKey);
         }
         return match ($this->apiKeyMode) {
             'enabled' => true,
@@ -154,20 +145,5 @@ trait ApiKeyTrait
         $response->setStatusCode(401);
         $response->setContent('Provided API key is missing or invalid.');
         return $response;
-    }
-
-    /**
-     * Log a request, which contains an API key.
-     *
-     * @param string $apiKey API key to log
-     *
-     * @return void
-     */
-    protected function logApiKeyRequest(string $apiKey): void
-    {
-        if (!$this->logApiKeyRequests || !is_callable([$this, 'debug']) || !isset($this->logger)) {
-            return;
-        }
-        $this->debug('API_KEY_REQUEST:', ['key' => $apiKey]);
     }
 }

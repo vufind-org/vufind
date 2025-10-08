@@ -78,7 +78,7 @@ class ApiKeyService
     {
         $salt = $this->apiKeySettings['token_salt'] ?? null;
         if (!$salt) {
-            throw new \Exception('APIKeyService: Salt missing');
+            throw new \Exception('ApiKeyService: Salt missing');
         }
         $valuesForToken = [
             $user->getEmailVerified()->format('Y-m-d'),

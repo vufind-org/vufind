@@ -72,7 +72,7 @@ class DeveloperSettingsController extends AbstractBase
      *
      * @return mixed
      */
-    public function generateAPIKeyAction()
+    public function generateApiKeyAction()
     {
         if (!$user = $this->getUser()) {
             return $this->forceLogin();
@@ -101,7 +101,7 @@ class DeveloperSettingsController extends AbstractBase
      *
      * @return mixed
      */
-    public function deleteAPIKeyAction()
+    public function deleteApiKeyAction()
     {
         if (!$user = $this->getUser()) {
             return $this->forceLogin();
