@@ -117,7 +117,7 @@ class ResourceService extends AbstractDbService implements
      * @param int   $limit   Limit for results
      * @param ?int  $minAge  Minimum age (in days) for metadata before it needs to be updated, or null to search for
      * records that are missing metadata
-     * @param array $sources Record source filter
+     * @param string[] $sources Record source filter
      *
      * @return ResourceEntityInterface[]
      */
