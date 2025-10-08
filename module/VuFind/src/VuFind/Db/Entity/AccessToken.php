@@ -111,6 +111,14 @@ class AccessToken implements AccessTokenEntityInterface
     protected bool $expires = true;
 
     /**
+     * Token title.
+     *
+     * @var string
+     */
+    #[ORM\Column(name: 'title', type: 'string', length: 255, nullable: false)]
+    protected string $title = '';
+
+    /**
      * Constructor.
      */
     public function __construct()
@@ -140,6 +148,29 @@ class AccessToken implements AccessTokenEntityInterface
     public function getId(): ?string
     {
         return $this->id;
+    }
+
+    /**
+     * Get title.
+     *
+     * @return string
+     */
+    public function getTitle(): string
+    {
+        return $this->title;
+    }
+
+    /**
+     * Set title
+     *
+     * @param string $title Title
+     *
+     * @return string
+     */
+    public function setTitle(string $title): static
+    {
+        $this->title = $title;
+        return $this;
     }
 
     /**

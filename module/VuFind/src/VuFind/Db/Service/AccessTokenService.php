@@ -32,6 +32,7 @@ namespace VuFind\Db\Service;
 use DateTime;
 use VuFind\Db\Entity\AccessTokenEntityInterface;
 use VuFind\Db\Entity\User;
+use VuFind\Db\Entity\UserEntityInterface;
 
 /**
  * Database service for access tokens.
@@ -95,6 +96,50 @@ class AccessTokenService extends AbstractDbService implements
         }
 
         return $result;
+    }
+
+    /**
+     * Get tokens for a user.
+     *
+     * @param UserEntityInterface $user User
+     * @param string              $type Type of the token. Default is self::TYPE_OPEN_ID_NONCE.
+     *
+     * @return AccessTokenEntityInterface[]
+     */
+    public function getTokensForUser(UserEntityInterface $user, string $type = self::TYPE_OPEN_ID_NONCE): array
+    {
+        $dql = 'SELECT at '
+            . 'FROM ' . AccessTokenEntityInterface::class . ' at '
+            . 'WHERE at.user = :user';
+        if ($type) {
+            $dql .= ' AND at.type = :type';
+        }
+        $dql .= ' ORDER BY at.id';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters(compact('user', 'type'));
+        return $query->getResult();
+    }
+
+    /**
+     * Retrieve an object from the database based on user, title and type.
+     *
+     * @param UserEntityInterface $user User
+     * @param string              $id   Token id
+     * @param string              $type Type of the token. Default is self::TYPE_API_KEY.
+     *
+     * @return ?AccessTokenEntityInterface
+     */
+    public function getByUserIdAndType(
+        UserEntityInterface $user,
+        string $id,
+        string $type = self::TYPE_API_KEY
+    ): ?AccessTokenEntityInterface {
+        $dql = 'SELECT at '
+            . 'FROM ' . AccessTokenEntityInterface::class . ' at '
+            . 'WHERE at.id = :id AND at.type = :type AND at.user = :user';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters(compact('user', 'id', 'type'));
+        return $query->getOneOrNullResult();
     }
 
     /**

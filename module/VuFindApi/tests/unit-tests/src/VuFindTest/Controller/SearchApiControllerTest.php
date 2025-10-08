@@ -31,16 +31,12 @@ declare(strict_types=1);
 
 namespace VuFindTest\Controller;
 
-use Doctrine\ORM\EntityManager;
 use Generator;
 use Laminas\Http\Header\HeaderInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Stdlib\Parameters;
-use Lmc\Rbac\Service\AuthorizationService;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\ApiKey\ApiKeyService;
-use VuFind\Db\Entity\PluginManager;
-use VuFind\Db\PersistenceManager;
 use VuFind\Db\Service\OaiResumptionService;
 use VuFind\Db\Service\OaiResumptionServiceInterface;
 use VuFind\Db\Service\PluginManager as DbPluginManager;
@@ -216,7 +212,6 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
         $logger = $this->createMock(Logger::class);
         $this->setProperty($logger, 'writers', []);
 
-
         $resumptionService = $this->getMockBuilder(OaiResumptionService::class)->disableOriginalConstructor()
             ->onlyMethods([])->getMock();
         $dbServiceMap = [
@@ -236,18 +231,17 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
                 'getConfig',
                 'getConfigArray',
                 'getService',
-                'setResumptionService'
+                'setResumptionService',
             ])->disableOriginalConstructor()->getMock();
         $controller->expects($this->any())->method('getService')->willReturnMap([
             [SearchPluginManager::class, $optionsPluginManager],
             [Loader::class, $recordLoader],
             [ApiKeyService::class, $apiKeyService],
             [Logger::class, $logger],
-            [DbPluginManager::class, $dbPluginManager]
+            [DbPluginManager::class, $dbPluginManager],
         ]);
         $controller->expects($this->any())->method('getConfigArray')->willReturn($config);
         $controller->expects($this->any())->method('isAccessDenied')->willReturn(false);
-
 
         $request ??= $this->createMock(Request::class);
         $controller->expects($this->any())->method('getRequest')->willReturn($request);

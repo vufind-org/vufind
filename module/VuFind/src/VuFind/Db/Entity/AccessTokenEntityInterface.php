@@ -153,4 +153,20 @@ interface AccessTokenEntityInterface extends EntityInterface
      * @return static
      */
     public function setExpires(bool $expires): static;
+
+    /**
+     * Get title.
+     *
+     * @return string
+     */
+    public function getTitle(): string;
+
+    /**
+     * Set title
+     *
+     * @param string $title Title
+     *
+     * @return string
+     */
+    public function setTitle(string $title): static;
 }

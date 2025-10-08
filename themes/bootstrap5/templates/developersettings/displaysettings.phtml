@@ -10,26 +10,37 @@
     <?=$this->component('page-title', ['title' => $this->translate('Developer::settings'), 'headTitle' => $this->translate('Developer::settings')]);?>
     <?=$this->flashmessages();?>
 
-    <div id="developer-settings">
+    <div>
+        <h3><?=$this->transEsc('Developer::api_keys')?></h3>
         <table class="table table-striped">
-            <?php if (isset($this->apiKey)): ?>
-            <tr class="d-flex flex-row">
-                <th class="d-flex align-items-center justify-content-center"><span><?=$this->transEsc('Developer::api_key')?></span></th>
-                <td class="d-flex flex-fill align-items-center justify-content-end">
-                    <div>
-                        <?php if (false !== $this->apiKey && $this->apiKey->isRevoked()): ?>
-                            <span><?=$this->transEsc('Developer::api_key_locked');?></span>
-                        <?php else: ?>
-                            <a class="btn btn-primary" href="<?=$this->url('developersettings-generateapikey')?>"><?=$this->transEsc('Developer::api_key_generate')?></a>
-                            <?php if ($this->apiKey): ?>
-                                <a class="btn btn-secondary" href="<?=$this->url('developersettings-deleteapikey')?>"><?=$this->transEsc('Developer::api_key_delete')?></a>
+            <?php foreach ($this->apiKeys as $apiKey): ?>
+                <tr class="d-flex flex-row">
+                    <th class="d-flex align-items-center justify-content-center"><?=$this->escapeHtml($apiKey->getTitle());?></th>
+                    <td class="d-flex flex-fill align-items-center justify-content-end">
+                        <div>
+                            <?php if ($apiKey->isRevoked()): ?>
+                                <span><?=$this->transEsc('Developer::api_key_locked');?></span>
+                            <?php else: ?>
+                                <?=
+                                    $this->component(
+                                        'confirm-button',
+                                        [
+                                            'buttonLink' => $this->url('developersettings-deleteapikey', [], ['query' => ['id' => $apiKey->getId()]]),
+                                            'buttonLabel' => 'Delete',
+                                            'confirmLink' => $this->url('developersettings-deleteapikey', [], ['query' => ['id' => $apiKey->getId(), 'confirm' => 1]]),
+                                            'header' => 'confirm_delete',
+                                        ]
+                                    )
+                                ?>
                             <?php endif; ?>
-                        <?php endif; ?>
-                    </div>
-                </td>
-            </tr>
-            <?php endif; ?>
+                        </div>
+                    </td>
+                </tr>
+            <?php endforeach; ?>
         </table>
+        <?php if ($this->createAllowed): ?>
+            <a class="btn btn-primary" href="<?=$this->url('developersettings-generateapikey')?>" data-lightbox><?=$this->transEsc('Developer::api_key_generate')?></a>
+        <?php endif; ?>
     </div>
 </div>
 

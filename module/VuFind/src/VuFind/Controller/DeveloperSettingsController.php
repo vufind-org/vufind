@@ -62,7 +62,8 @@ class DeveloperSettingsController extends AbstractBase
 
         $apiKeyService = $this->getService(ApiKeyService::class);
         $view = $this->createViewModel();
-        $view->apiKey = $apiKeyService->getApiKeyForUser($user) ?: false;
+        $view->apiKeys = $apiKeyService->getApiKeysForUser($user);
+        $view->createAllowed = !$apiKeyService->apiKeysBlocked($view->apiKeys);
         return $view;
     }
 
@@ -81,20 +82,18 @@ class DeveloperSettingsController extends AbstractBase
             throw new Forbidden('Access denied.');
         }
 
-        $apiKeyService = $this->getService(ApiKeyService::class);
-        if ($apiKeyService->getApiKeyForUser($user)?->isRevoked()) {
-            $this->flashMessenger()->addMessage('Developer::api_key_locked', 'error');
-            return $this->inLightbox()
-                ? $this->getRefreshResponse()
-                : $this->redirect()->toRoute('developersettings-displaysettings');
+        if ($this->formWasSubmitted()) {
+            $title = $this->params()->fromPost('title') ?? $this->params()->fromQuery('title', '');
+            if ($title && $token = $this->getService(ApiKeyService::class)->generateApiKeyForUser($user, $title)) {
+                $successMsg = $this->translate('Developer::api_key_generation_success', ['%%TOKEN%%' => $token]);
+                $this->flashMessenger()->addMessage($successMsg, 'success');
+            } else {
+                $this->flashMessenger()->addMessage('An error has occurred', 'error');
+            }
+            return $this->redirect()->toRoute('developersettings-displaysettings');
         }
-        if ($token = $apiKeyService->generateApiKeyForUser($user)) {
-            $successMsg = $this->translate('Developer::api_key_generation_success', ['%%TOKEN%%' => $token]);
-            $this->flashMessenger()->addMessage($successMsg, 'success');
-        } else {
-            $this->flashMessenger()->addMessage('An error has occurred', 'error');
-        }
-        return $this->redirect()->toRoute('developersettings-displaysettings');
+        $view = $this->createViewModel();
+        return $view;
     }
 
     /**
@@ -111,18 +110,13 @@ class DeveloperSettingsController extends AbstractBase
         if (!$this->apiKeysEnabled() || !$this->permission()->isAuthorized('feature.Developer')) {
             throw new Forbidden('Access denied.');
         }
-
-        $apiKeyService = $this->getService(ApiKeyService::class);
-        if ($apiKeyService->getApiKeyForUser($user)?->isRevoked()) {
-            $this->flashMessenger()->addMessage('Developer::api_key_locked', 'error');
-            return $this->inLightbox()
-                ? $this->getRefreshResponse()
-                : $this->redirect()->toRoute('developersettings-displaysettings');
-        }
-        if ($apiKeyService->deleteApiKeyForUser($user)) {
-            $this->flashMessenger()->addMessage('Developer::api_key_deletion_success', 'success');
-        } else {
-            $this->flashMessenger()->addMessage('An error has occurred', 'error');
+        if ($this->params()->fromQuery('confirm', '') === '1') {
+            $id = $this->params()->fromPost('id') ?? $this->params()->fromQuery('id', '');
+            if ($this->getService(ApiKeyService::class)->deleteApiKeyForUser($user, $id)) {
+                $this->flashMessenger()->addMessage('Developer::api_key_deletion_success', 'success');
+            } else {
+                $this->flashMessenger()->addMessage('An error has occurred', 'error');
+            }
         }
         return $this->redirect()->toRoute('developersettings-displaysettings');
     }

@@ -1,0 +1,13 @@
+<?php
+    // Set up breadcrumbs:
+    $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
+      ->add($this->translate('Profile'), active: true);
+?>
+<?=$this->component('page-title', ['title' => $this->translate('Developer::api_key_generate'), 'headTitle' => $this->translate('Developer::api_key_generate')]);?>
+
+<?=$this->flashmessages()?>
+
+<form method="POST" action="<?=$this->url('developersettings-generateapikey')?>" name="generateAPIKey" title="<?=$this->transEscAttr('Export Items')?>" data-lightbox-onclose="VuFind.refreshPage">
+    <?=$this->component('input-text', ['name' => 'title', 'label' => $this->translate('Identifier'), 'maxlength' => 10, 'minlength' => 3]);?>
+    <input class="btn btn-primary" type="submit" name="submitButton" value="<?=$this->transEscAttr('Developer::api_key_generate')?>">
+</form>

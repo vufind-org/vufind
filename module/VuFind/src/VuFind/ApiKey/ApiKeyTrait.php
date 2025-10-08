@@ -111,6 +111,7 @@ trait ApiKeyTrait
             $this->logApiKeyRequests = (bool)($settings['log_requests'] ?? false);
         }
     }
+
     /**
      * Is API key enabled?
      *
