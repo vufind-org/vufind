@@ -102,7 +102,7 @@ trait ApiKeyTrait
      *
      * @return void;
      */
-    protected function initAPIKeySettings(array $settings):void
+    protected function initAPIKeySettings(array $settings): void
     {
         $this->apiKeyMode = $settings['mode'] ?? 'disabled';
         if ($this->isApiKeyEnabled() && is_callable([$this, 'getService'])) {

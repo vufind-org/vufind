@@ -162,7 +162,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements
             }
         }
         // Load configurations from the search options class:
-        $options = $sm->get(\VuFind\Search\Options\PluginManager::class)->get($this->searchClassId);
+        $options = $this->getService(\VuFind\Search\Options\PluginManager::class)->get($this->searchClassId);
         $settings = $options->getAPISettings();
         $this->facetConfig = $this->getConfig($options->getFacetsIni());
         $this->hierarchicalFacets = $this->facetConfig?->SpecialFacets?->hierarchical?->toArray() ?? [];

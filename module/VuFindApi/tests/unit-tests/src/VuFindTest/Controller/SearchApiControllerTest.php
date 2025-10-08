@@ -31,15 +31,16 @@ declare(strict_types=1);
 
 namespace VuFindTest\Controller;
 
+use Doctrine\ORM\EntityManager;
 use Generator;
-use Laminas\Http\Headers;
-use Laminas\ServiceManager\ServiceManager;
+use Laminas\Http\Header\HeaderInterface;
+use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Stdlib\Parameters;
+use Lmc\Rbac\Service\AuthorizationService;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\ApiKey\ApiKeyService;
-use VuFind\Config\Config;
-use VuFind\Config\ConfigManager;
-use VuFind\Config\ConfigManagerInterface;
+use VuFind\Db\Entity\PluginManager;
+use VuFind\Db\PersistenceManager;
 use VuFind\Db\Service\OaiResumptionService;
 use VuFind\Db\Service\OaiResumptionServiceInterface;
 use VuFind\Db\Service\PluginManager as DbPluginManager;
@@ -164,15 +165,25 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
      */
     protected function createRequest(array $requestParams = []): MockObject&Request
     {
-        $request = $this->getMockBuilder(Request::class)->onlyMethods([])
-            ->disableOriginalConstructor()->getMock();
-        $headers = new Headers();
-        $headers->addHeaders($requestParams['headers'] ?? []);
-        $request->setHeaders($headers);
-        $queryParams = new Parameters($requestParams['query'] ?? []);
-        $postParams = new Parameters($requestParams['post'] ?? []);
-        $request->setQuery($queryParams);
-        $request->setPost($postParams);
+        $request = $this->createMock(Request::class);
+        $queryParams = $this->createMock(Parameters::class);
+        $queryParams->expects($this->any())->method('toArray')->willReturn($requestParams['query'] ?? []);
+        $postParams = $this->createMock(Parameters::class);
+        $postParams->expects($this->any())->method('toArray')->willReturn($requestParams['post'] ?? []);
+        $request->expects($this->any())->method('getPost')->willReturn($postParams);
+        $request->expects($this->any())->method('getQuery')->willReturn($queryParams);
+
+        $request->expects($this->any())->method('getHeader')->willReturnCallback(
+            function ($key) use ($requestParams) {
+                $value = $requestParams['headers'][$key] ?? null;
+                if (null === $value) {
+                    return $value;
+                }
+                $mock = $this->createMock(HeaderInterface::class);
+                $mock->expects($this->any())->method('getFieldValue')->willReturn($value);
+                return $mock;
+            }
+        );
         return $request;
     }
 
@@ -186,31 +197,28 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
      */
     protected function createController(array $config = [], ?MockObject $request = null): MockObject&SearchApiController
     {
-        $configurationMap = [
-            ['config', null, new Config($config)],
-            ['facets', null, new Config([])],
-        ];
-
-        $configPluginManager = $this->getMockBuilder(ConfigManager::class)->disableOriginalConstructor()
-            ->onlyMethods(['getConfigObject'])->getMock();
-        $configPluginManager->expects($this->any())->method('getConfigObject')->willReturnMap($configurationMap);
-
-        $solrOptions = $this->getMockBuilder(Options::class)->disableOriginalConstructor()
-            ->onlyMethods(['getAPISettings'])->getMock();
+        $solrOptions = $this->createMock(Options::class);
         $solrOptions->expects($this->any())->method('getAPISettings')->willReturn([]);
-        $optionsMap = [
-            ['Solr', null, $solrOptions],
+        $optionsPluginManager = $this->createMock(SearchPluginManager::class);
+        $optionsPluginManager->expects($this->any())->method('get')->willReturn($solrOptions);
+
+        $apiKeyService = $this->createMock(ApiKeyService::class);
+        $apiKeyService->expects($this->any())->method('isTokenValid')->willReturn(true);
+
+        $mockRecord = $this->createMock(SolrMarc::class);
+        $recordMap = [
+            ['record.1111', DEFAULT_SEARCH_BACKEND, false, null, $mockRecord],
         ];
-        $optionsPluginManager = $this->getMockBuilder(SearchPluginManager::class)->disableOriginalConstructor()
-            ->onlyMethods(['get'])->getMock();
-        $optionsPluginManager->expects($this->any())->method('get')->willReturnMap($optionsMap);
+
+        $recordLoader = $this->createMock(Loader::class);
+        $recordLoader->expects($this->any())->method('load')->willReturn($recordMap);
+        $recordLoader->expects($this->any())->method('loadBatchForSource')->willReturn($recordMap);
+        $logger = $this->createMock(Logger::class);
+        $this->setProperty($logger, 'writers', []);
+
 
         $resumptionService = $this->getMockBuilder(OaiResumptionService::class)->disableOriginalConstructor()
             ->onlyMethods([])->getMock();
-
-        $apiKeyService = $this->getMockBuilder(ApiKeyService::class)->disableOriginalConstructor()
-            ->onlyMethods(['isTokenValid'])->getMock();
-        $apiKeyService->expects($this->any())->method('isTokenValid')->willReturn(true);
         $dbServiceMap = [
             [OaiResumptionServiceInterface::class, null, $resumptionService],
         ];
@@ -218,64 +226,31 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
         $dbPluginManager = $this->getMockBuilder(DbPluginManager::class)->disableOriginalConstructor()
             ->onlyMethods(['get'])->getMock();
         $dbPluginManager->expects($this->any())->method('get')->willReturnMap($dbServiceMap);
-
-        $mockRecord = $this->getMockBuilder(SolrMarc::class)->disableOriginalConstructor()->getMock();
-        $recordMap = [
-            ['record.1111', DEFAULT_SEARCH_BACKEND, false, null, $mockRecord],
-        ];
-
-        $recordLoader = $this->getMockBuilder(Loader::class)->disableOriginalConstructor()
-            ->onlyMethods(['load'])->getMock();
-        $recordLoader->expects($this->any())->method('load')->willReturn($recordMap);
-
-        $dbPluginManager->expects($this->any())->method('get')->willReturnMap($dbServiceMap);
-        $logger = $this->getMockBuilder(Logger::class)->disableOriginalConstructor()
-            ->onlyMethods(['debug'])->getMock();
-        $this->setProperty($logger, 'writers', []);
-        $serviceLocatorMap = [
-            [ConfigManagerInterface::class, $configPluginManager],
-            [SearchPluginManager::class, $optionsPluginManager],
-            [DbPluginManager::class, $dbPluginManager],
-            [Loader::class, $recordLoader],
-            [ApiKeyService::class, $apiKeyService],
-            [Logger::class, $logger],
-        ];
-
-        $serviceLocator = $this->getMockBuilder(ServiceManager::class)->disableOriginalConstructor()
-            ->onlyMethods(['get'])->getMock();
-        $serviceLocator->expects($this->any())->method('get')->willReturnMap($serviceLocatorMap);
-
-        $recordFormatter = $this->getMockBuilder(RecordFormatter::class)->disableOriginalConstructor()
-            ->onlyMethods(['getRecordFields', 'format'])->getMock();
-        $recordFormatter->expects($this->any())->method('getRecordFields')->willReturn([]);
-        $recordFormatter->expects($this->any())->method('format')->willReturn([
-            [
-                'id' => 'record.1111',
-                'title' => 'hai!',
-            ],
-        ]);
-
-        $facetFormatter = $this->getMockBuilder(FacetFormatter::class)->disableOriginalConstructor()
-            ->onlyMethods([])->getMock();
-
-        $controller = $this->getMockBuilder(SearchApiController::class)->setConstructorArgs([
-            $serviceLocator,
-            $recordFormatter,
-            $facetFormatter,
-        ])->onlyMethods(
-            [
+        $controller = $this->getMockBuilder(SearchApiController::class)->onlyMethods([
                 'getRequest',
                 'disableSessionWrites',
                 'determineOutputMode',
                 'isAccessDenied',
                 'doCursorSearch',
                 'doDefaultSearch',
-            ]
-        )->getMock();
-        $request ??= $this->getMockBuilder(Request::class)->disableOriginalConstructor()
-            ->onlyMethods([])->getMock();
-        $controller->expects($this->any())->method('getRequest')->willReturn($request);
+                'getConfig',
+                'getConfigArray',
+                'getService',
+                'setResumptionService'
+            ])->disableOriginalConstructor()->getMock();
+        $controller->expects($this->any())->method('getService')->willReturnMap([
+            [SearchPluginManager::class, $optionsPluginManager],
+            [Loader::class, $recordLoader],
+            [ApiKeyService::class, $apiKeyService],
+            [Logger::class, $logger],
+            [DbPluginManager::class, $dbPluginManager]
+        ]);
+        $controller->expects($this->any())->method('getConfigArray')->willReturn($config);
         $controller->expects($this->any())->method('isAccessDenied')->willReturn(false);
+
+
+        $request ??= $this->createMock(Request::class);
+        $controller->expects($this->any())->method('getRequest')->willReturn($request);
         $searchResponse = [
             'resultCount' => 1,
             'records' => [
@@ -283,6 +258,21 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
             ],
         ];
         $controller->expects($this->any())->method('doDefaultSearch')->willReturn($searchResponse);
+        $facetFormatter = $this->getMockBuilder(FacetFormatter::class)
+            ->disableOriginalConstructor()->getMock();
+        $recordFormatter = $this->createMock(RecordFormatter::class);
+        $recordFormatter->expects($this->any())->method('getRecordFields')->willReturn([]);
+        $recordFormatter->expects($this->any())->method('format')->willReturn([
+            [
+                'id' => 'record.1111',
+                'title' => 'hai!',
+            ],
+        ]);
+        $controller->__construct(
+            $this->createMock(ServiceLocatorInterface::class),
+            $recordFormatter,
+            $facetFormatter
+        );
         return $controller;
     }
 
