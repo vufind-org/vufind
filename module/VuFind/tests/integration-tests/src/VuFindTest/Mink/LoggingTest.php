@@ -245,8 +245,6 @@ final class LoggingTest extends MinkTestCase
         int $checkInterval = 1
     ): array {
         $startTime = time();
-        $loggedEmails = [];
-
         while (true) {
             try {
                 $loggedEmails = $this->getLoggedEmails();
