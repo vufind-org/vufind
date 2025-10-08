@@ -46,9 +46,8 @@ VuFind.register('covers', function covers() {
           }
         }
         if (inlink === true) {
-          img.parentNode.removeChild(img);
           var mediumLink = medium.querySelector('a');
-          mediumLink.parentNode.insertBefore(img, mediumLink);
+          mediumLink.appendChild(img);
           container.closest('.ajaxcover').remove();
         }
       } else {
