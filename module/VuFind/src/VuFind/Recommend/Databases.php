@@ -50,7 +50,7 @@ use function strlen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
+class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Cache\CacheTrait;
     use \VuFind\Log\LoggerAwareTrait;

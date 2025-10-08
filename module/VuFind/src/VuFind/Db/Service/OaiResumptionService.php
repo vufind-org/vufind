@@ -32,7 +32,7 @@
 namespace VuFind\Db\Service;
 
 use DateTime;
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\OaiResumptionEntityInterface;
 use VuFind\Log\LoggerAwareTrait;
 

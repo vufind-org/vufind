@@ -32,7 +32,7 @@
 namespace VuFind\Connection;
 
 use Exception;
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 
 /**
  * LibGuides API connection class.

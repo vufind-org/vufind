@@ -231,6 +231,41 @@ final class LoggingTest extends MinkTestCase
     }
 
     /**
+     * Wait for a minimum number of emails to be logged, with retry logic
+     *
+     * @param int $minEmails     Minimum number of emails expected
+     * @param int $maxWaitSecs   Maximum time to wait in seconds
+     * @param int $checkInterval Check interval in seconds
+     *
+     * @return array Array of logged emails
+     */
+    protected function waitForMinimumEmails(
+        int $minEmails,
+        int $maxWaitSecs = 10,
+        int $checkInterval = 1
+    ): array {
+        $startTime = time();
+        while (true) {
+            try {
+                $loggedEmails = $this->getLoggedEmails();
+            } catch (\Exception $e) {
+                $loggedEmails = [];
+            }
+
+            if (count($loggedEmails) >= $minEmails) {
+                return $loggedEmails;
+            }
+
+            $elapsed = time() - $startTime;
+            if ($elapsed >= $maxWaitSecs) {
+                return $loggedEmails;
+            }
+
+            sleep($checkInterval);
+        }
+    }
+
+    /**
      * Test email logging functionality with various configurations
      *
      * @param string $emailConfig        Email configuration string
@@ -276,7 +311,8 @@ final class LoggingTest extends MinkTestCase
         // Wait for logging to complete
         $this->findCss($page, 'body');
 
-        $loggedEmails = $this->getLoggedEmails();
+        $loggedEmails = $this->waitForMinimumEmails($minEmails);
+
         $this->assertGreaterThanOrEqual($minEmails, count($loggedEmails));
         $allEmailContent = preg_replace(
             '/=[\r\n]+/',
@@ -303,7 +339,6 @@ final class LoggingTest extends MinkTestCase
                 $allEmailBodies,
                 'Email body should contain debug messages'
             );
-
             $this->assertStringContainsString(
                 'not-solr',
                 $allEmailBodies,
@@ -316,7 +351,6 @@ final class LoggingTest extends MinkTestCase
                 'Email body should contain the specific exception type'
             );
         }
-
         $this->assertStringContainsString(
             '404 Not Found',
             $allEmailBodies,
@@ -431,7 +465,6 @@ final class LoggingTest extends MinkTestCase
         $emailLogPath = $this->getEmailLogPath();
         if (file_exists($emailLogPath)) {
             $loggedEmails = trim(file_get_contents($emailLogPath));
-            print_r($loggedEmails);
             $this->assertEmpty(
                 $loggedEmails,
                 'No emails should be sent when email logging is not configured'

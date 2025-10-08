@@ -53,8 +53,7 @@ class CurrencyFormatterTest extends \PHPUnit\Framework\TestCase
     public function testFormatting()
     {
         // test default settings
-        $locale = setlocale(LC_MONETARY, '');
-        $formatter = new NumberFormatter($locale, NumberFormatter::CURRENCY);
+        $formatter = new NumberFormatter('', NumberFormatter::CURRENCY);
         $defaultCurrencyCode = trim($formatter->getTextAttribute(NumberFormatter::CURRENCY_CODE) ?: '') ?: 'USD';
         $cc = new \VuFind\Service\CurrencyFormatter();
         $this->assertEquals(
