@@ -1793,6 +1793,9 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc implements \Laminas\Log\Log
                                 break;
                             }
                         }
+                        if (($note = $this->getSubfield($url, 'z')) === $desc) {
+                            $note = '';
+                        }
                         $part = '';
                         if ($desc) {
                             // Check for subfield 3 and include it as the part
@@ -1807,7 +1810,7 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc implements \Laminas\Log\Log
                         }
 
                         $data = [
-                            'url' => $address, 'desc' => $desc, 'part' => $part,
+                            'url' => $address, 'desc' => $desc, 'part' => $part, 'note' => $note,
                         ];
                         if (
                             !$this->urlBlocked($address, $desc)

@@ -20,7 +20,10 @@
   <div class="holdings-urls">
     <?php foreach ($urls ?? [] as $current): ?>
       <?php if (!$this->driver->tryMethod('urlBlocked', [$current['url'], $current['desc']])): ?>
-        <a class="holdings-url-link" href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" target="_blank" aria-label="<?=$this->transEscAttr('external_online_link')?>"><?=$this->icon($current['linkType'] ?? 'external-link')?> <?=$this->transEsc('default::link_' . $current['desc'], null, $current['desc'])?> <?=$current['part'] ?? ''?></a>
+        <div>
+          <a class="holdings-url-link" href="<?=$this->escapeHtmlAttr($this->proxyUrl($current['url']))?>" target="_blank" aria-label="<?=$this->transEscAttr('external_online_link')?>"><?=$this->icon($current['linkType'] ?? 'external-link')?> <?=$this->transEsc('default::link_' . $current['desc'], null, $current['desc'])?> <?=$current['part'] ?? ''?></a>
+          <?php if (!empty($current['note'])): ?> <span class="url-public-note"><?=$this->escapeHtml($current['note'])?></span><?php endif; ?>
+        </div>
       <?php endif; ?>
     <?php endforeach; ?>
     <?=$identifierLinks?>
