@@ -32,7 +32,6 @@ namespace VuFindApi\Controller;
 
 use Exception;
 use Laminas\Http\Exception\InvalidArgumentException;
-use Laminas\Log\LoggerAwareInterface;
 use Laminas\Mvc\Exception\DomainException;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFindApi\Formatter\FacetFormatter;
@@ -54,13 +53,11 @@ use function is_array;
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
 class SearchApiController extends \VuFind\Controller\AbstractSearch implements
-    ApiInterface,
-    LoggerAwareInterface
+    ApiInterface
 {
     use ApiTrait;
     use \VuFind\ResumptionToken\ResumptionTokenTrait;
     use \VuFind\ApiKey\ApiKeyTrait;
-    use \VuFind\Log\LoggerAwareTrait;
 
     /**
      * Default record fields to return if a request does not define the fields
