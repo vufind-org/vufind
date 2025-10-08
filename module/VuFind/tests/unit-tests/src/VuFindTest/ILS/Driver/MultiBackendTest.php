@@ -57,7 +57,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     public function testMissingILSConfiguration()
     {
         $driver = new MultiBackend(
-            $this->getMockFailingConfigPluginManager(new RuntimeException()),
+            $this->getMockFailingConfigManager(new RuntimeException()),
             $this->getMockILSAuthenticator(),
             $this->getMockSM()
         );
