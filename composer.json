@@ -20,13 +20,13 @@
     },
     "autoload": {
         "psr-4": {
-            "VuFind\\": "module/VuFind/src/VuFind",
-            "VuFindAdmin\\": "module/VuFindAdmin/src/VuFindAdmin",
-            "VuFindApi\\": "module/VuFindApi/src/VuFindApi",
-            "VuFindConsole\\": "module/VuFindConsole/src/VuFindConsole",
-            "VuFindDevTools\\": "module/VuFindDevTools/src/VuFindDevTools",
-            "VuFindSearch\\": "module/VuFindSearch/src/VuFindSearch",
-            "VuFindTheme\\": "module/VuFindTheme/src/VuFindTheme"
+            "VuFind\\": ["module/VuFind/src/VuFind", "module/VuFind"],
+            "VuFindAdmin\\": ["module/VuFindAdmin/src/VuFindAdmin", "module/VuFindAdmin"],
+            "VuFindApi\\": ["module/VuFindApi/src/VuFindApi", "module/VuFindApi"],
+            "VuFindConsole\\": ["module/VuFindConsole/src/VuFindConsole", "module/VuFindConsole"],
+            "VuFindDevTools\\": ["module/VuFindDevTools/src/VuFindDevTools", "module/VuFindDevTools"],
+            "VuFindSearch\\": ["module/VuFindSearch/src/VuFindSearch", "module/VuFindSearch"],
+            "VuFindTheme\\": ["module/VuFindTheme/src/VuFindTheme", "module/VuFindTheme"]
         },
         "psr-0": {
             "minSO": "module/VuFind/src/VuFind/Search"

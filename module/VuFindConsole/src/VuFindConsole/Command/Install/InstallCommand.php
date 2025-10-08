@@ -891,7 +891,7 @@ class InstallCommand extends Command
         if (!is_array($json)) {
             return "Unable to parse $localComposer.";
         }
-        $json['autoload']['psr-4'][$module . '\\'] = "module/$module/src/$module";
+        $json['autoload']['psr-4'][$module . '\\'] = ["module/$module/src/$module", "module/$module"];
         if (!file_put_contents($localComposer, json_encode($json, JSON_PRETTY_PRINT))) {
             return "Cannot write to $localComposer.";
         }
