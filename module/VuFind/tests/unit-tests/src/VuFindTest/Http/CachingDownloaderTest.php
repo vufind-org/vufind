@@ -34,6 +34,7 @@ use Psr\Http\Message\StreamInterface;
 use VuFind\Exception\HttpDownloadException;
 use VuFind\Http\CachingDownloader;
 use VuFind\Http\GuzzleService;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
  * CachingDownloader Test Class
@@ -46,6 +47,8 @@ use VuFind\Http\GuzzleService;
  */
 class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
 {
+    use ConfigRelatedServicesTrait;
+
     /**
      * Data provider for testDownload
      *
@@ -119,7 +122,7 @@ class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
         }
 
         // configManager
-        $configManagerMock = $this->createMock(\VuFind\Config\PluginManager::class);
+        $configManagerMock = $this->getMockConfigManager();
 
         // downloader
         $downloader = new CachingDownloader($cacheManagerMock, $configManagerMock, $cacheEnabled);
@@ -168,7 +171,7 @@ class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
             ->willReturn($storage);
 
         // configManager
-        $configManagerMock = $this->createMock(\VuFind\Config\PluginManager::class);
+        $configManagerMock = $this->getMockConfigManager();
 
         // downloader
         $downloader = new CachingDownloader($cacheManagerMock, $configManagerMock, true);

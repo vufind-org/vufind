@@ -43,8 +43,8 @@ use Psr\Container\ContainerInterface;
 use Psr\Log\LogLevel;
 use VuFind\Auth\Manager as AuthManager;
 use VuFind\Config\Config;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Config\Feature\EmailSettingsTrait;
-use VuFind\Config\PluginManager as ConfigPluginManager;
 use VuFind\Db\Connection;
 use VuFind\Log\Handler\DatabaseHandler;
 use VuFind\Log\Handler\MailHandler;
@@ -243,7 +243,7 @@ class LoggerFactory implements FactoryInterface
      */
     protected function configureMonologLogger(ContainerInterface $container, MonologLogger $monologLogger): void
     {
-        $configManager = $container->get(ConfigPluginManager::class);
+        $configManager = $container->get(ConfigManagerInterface::class);
         $config = $configManager->getConfigObject('config');
 
         // Add specific handlers based on config:
