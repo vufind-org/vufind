@@ -288,11 +288,10 @@ final class LoggingTest extends MinkTestCase
         string $description
     ): void {
         $port = $this->getSolrPort();
-        $uniqid = uniqid('test_');
         $this->changeConfigs([
             'config' => [
                 'Index'   => [
-                    'url' => "http://localhost:$port/not-solr-$uniqid",
+                    'url' => "http://localhost:$port/not-solr",
                 ],
                 'Mail'    => [
                     'testOnly'           => true,
@@ -308,7 +307,7 @@ final class LoggingTest extends MinkTestCase
         $this->resetEmailLog();
 
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Results?lookfor=' . $uniqid);
+        $session->visit($this->getVuFindUrl() . '/Search/Results?lookfor=test');
         $page = $session->getPage();
 
         // Wait for logging to complete
