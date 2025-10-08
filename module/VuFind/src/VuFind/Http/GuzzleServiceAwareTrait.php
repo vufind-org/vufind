@@ -45,7 +45,7 @@ trait GuzzleServiceAwareTrait
      *
      * @var GuzzleService
      */
-    protected $guzzleService;
+    protected $guzzleService = null;
 
     /**
      * Set the GuzzleService
