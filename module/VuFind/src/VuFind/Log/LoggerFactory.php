@@ -33,7 +33,7 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Lmc\Rbac\Mvc\Service\AuthorizationService;
-use Monolog\Handler\DeduplicationHandler;
+use Monolog\Handler\BufferHandler;
 use Monolog\Handler\FilterHandler;
 use Monolog\Handler\HandlerInterface;
 use Monolog\Logger as MonologLogger;
@@ -407,12 +407,9 @@ class LoggerFactory implements FactoryInterface
             }
             $filterHandler = new FilterHandler($newHandler, $min, $max);
             if ($newHandler instanceof MailHandler) {
-                // Do not send an email for each individual log message; instead, bundle them with DeduplicationHandler:
-                $deduplicationHandler = new DeduplicationHandler($filterHandler);
-                register_shutdown_function(function () use ($deduplicationHandler) {
-                    $deduplicationHandler->close();
-                });
-                $monologLogger->pushHandler($deduplicationHandler);
+                // Do not send an email for each individual log message; instead, bundle them with BufferHandler:
+                $bufferHandler = new BufferHandler($filterHandler);
+                $monologLogger->pushHandler($bufferHandler);
             } else {
                 // Add the fully configured handler (wrapped in its filter) to the Monolog logger.
                 $monologLogger->pushHandler($filterHandler);
