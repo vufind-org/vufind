@@ -29,8 +29,8 @@
 
 namespace VuFind\Controller;
 
-use Laminas\Log\LoggerAwareInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Crypt\HMAC;
 use VuFind\Log\LoggerAwareTrait;
 use VuFind\RateLimiter\RateLimiterManager;

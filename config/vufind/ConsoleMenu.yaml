@@ -218,6 +218,9 @@ main:
           - label: Specify ID prefix
             switch: --id-prefix
             type: string
+      - label: Download a file
+        type: internal-command
+        command: util/download
     - label: Import Tools
       type: menu
       contents:

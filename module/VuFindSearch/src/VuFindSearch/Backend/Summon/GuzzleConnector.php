@@ -22,7 +22,7 @@
  *
  * @category VuFind
  * @package  Search
- * @author   Sambhav Pokharel <sambhavpokharel@gmail.com>
+ * @author   Sambhav Pokharel <sambhav.pokharel@gmail.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
@@ -39,7 +39,7 @@ use SerialsSolutions_Summon_Exception;
  *
  * @category VuFind
  * @package  Search
- * @author   Sambhav Pokharel <sambhavpokharel@gmail.com>
+ * @author   Sambhav Pokharel <sambhav.pokharel@gmail.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */

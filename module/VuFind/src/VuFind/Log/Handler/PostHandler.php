@@ -1,11 +1,11 @@
 <?php
 
 /**
- * HTTP POST log writer
+ * HTTP POST log handler
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,47 +23,37 @@
  * @category VuFind
  * @package  Error_Logging
  * @author   Chris Hallberg <challber@villanova.edu>
+ * @author   Sambhav Pokharel <sambhav.pokharel@gmail.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Log\Writer;
+namespace VuFind\Log\Handler;
 
 use Laminas\Http\Client;
+use Monolog\Handler\AbstractProcessingHandler;
+use Monolog\LogRecord;
 
 use function is_array;
 
 /**
- * This class extends the Laminas Logging to sent POST messages over HTTP
+ * This class extends the Monolog Logging to sent POST messages over HTTP
  *
  * @category VuFind
  * @package  Error_Logging
  * @author   Chris Hallberg <challber@villanova.edu>
+ * @author   Sambhav Pokharel <sambhav.pokharel@gmail.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Post extends \Laminas\Log\Writer\AbstractWriter
+class PostHandler extends AbstractProcessingHandler
 {
     use VerbosityTrait;
 
     /**
-     * Holds the verbosity level
+     * Content type header
      *
-     * @var int
-     */
-    protected $url = null;
-
-    /**
-     * Pre-configured http client
-     *
-     * @var \Laminas\Http\Client
-     */
-    protected $client = null;
-
-    /**
-     * Content type
-     *
-     * @var string
+     * @var string Content type
      */
     protected $contentType = 'application/x-www-form-urlencoded';
 
@@ -73,14 +63,12 @@ class Post extends \Laminas\Log\Writer\AbstractWriter
      * @param string $url    URL to open as a stream
      * @param Client $client Pre-configured http client
      */
-    public function __construct($url, Client $client)
+    public function __construct(protected string $url, protected Client $client)
     {
-        $this->url = $url;
-        $this->client = $client;
     }
 
     /**
-     * Set verbosity
+     * Set content type
      *
      * @param int $type content type string
      *
@@ -101,26 +89,29 @@ class Post extends \Laminas\Log\Writer\AbstractWriter
     protected function getBody($event)
     {
         return json_encode(
-            ['message' => $this->formatter->format($event) . PHP_EOL]
+            ['message' => $event['message'] . PHP_EOL]
         );
     }
 
     /**
-     * Write a message to the log.
+     * Writes the record down to the log
      *
-     * @param array $event event data
+     * @param LogRecord $record LogRecord
      *
      * @return void
-     * @throws \Laminas\Log\Exception\RuntimeException
      */
-    protected function doWrite(array $event)
+    protected function write(LogRecord $record): void
     {
-        // Apply verbosity filter:
-        if (is_array($event['message'])) {
-            $event['message'] = $event['message'][$this->verbosity];
-        }
+        $event = [
+            'timestamp' => $record->datetime,
+            'priority' => $record->level->value,
+            'priorityName' => $record->level->getName(),
+            'message' => is_array($record->formatted) ? $record->formatted[$this->verbosity] : $record->formatted,
+            'extra' => $record->extra,
+            'context' => $record->context,
+            'channel' => $record->channel,
+        ];
 
-        // Create request
         $this->client->setUri($this->url);
         $this->client->setMethod('POST');
         $this->client->setEncType($this->contentType);
