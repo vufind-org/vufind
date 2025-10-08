@@ -43,48 +43,15 @@ use VuFind\View\Helper\Root\SafeMoneyFormat;
 class SafeMoneyFormatTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Locale (for restoration after testing)
-     *
-     * @var string
-     */
-    protected $locale;
-
-    /**
-     * Standard setup method
-     *
-     * @return void
-     */
-    public function setUp(): void
-    {
-        // store current default and set a value for consistency in testing
-        $this->locale = setlocale(LC_MONETARY, 0);
-        $locales = ['en_US.UTF8', 'en_US.UTF-8', 'en_US'];
-        if (false === setlocale(LC_MONETARY, $locales)) {
-            $this->markTestSkipped('Problem setting up locale');
-        }
-    }
-
-    /**
-     * Standard teardown method
-     *
-     * @return void
-     */
-    public function tearDown(): void
-    {
-        // restore current default
-        setlocale(LC_MONETARY, $this->locale);
-    }
-
-    /**
      * Test the helper
      *
      * @return void
      */
     public function testFormatting()
     {
-        // test default settings
+        // test default currency in en_US locale
         $smf = new SafeMoneyFormat(
-            new \VuFind\Service\CurrencyFormatter(),
+            new \VuFind\Service\CurrencyFormatter(null, 'en_US'),
             new \Laminas\View\Helper\EscapeHtml()
         );
         $this->assertEquals('$3.00', $smf(3));
@@ -92,7 +59,7 @@ class SafeMoneyFormatTest extends \PHPUnit\Framework\TestCase
 
         // test override default currency
         $smf = new SafeMoneyFormat(
-            new \VuFind\Service\CurrencyFormatter('EUR'),
+            new \VuFind\Service\CurrencyFormatter('EUR', 'en_US'),
             new \Laminas\View\Helper\EscapeHtml()
         );
         $this->assertEquals('€3.00', $smf(3));
