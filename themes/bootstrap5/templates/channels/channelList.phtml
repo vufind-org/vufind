@@ -66,7 +66,14 @@
         </button>
         <ul class="dropdown-menu">
           <?php foreach ($channel['relatedTokens'] as $related): ?>
-            <li><a class="channel-add-link dropdown-item" href="<?=$channelRoot ?>channelProvider=<?=urlencode($related['providerId']) ?>&channelToken=<?=urlencode($related['token']) ?>" data-token="<?=$this->escapeHtmlAttr($related['token']) ?>"><?=$this->escapeHtml($this->truncate($related['title'], 100)) ?></a></li>
+            <?php
+              $linkAttrs = $this->htmlAttributes([
+                'class' => 'channel-add-link dropdown-item',
+                'data-token' => $related['token'],
+                'href' => $channelRoot . 'channelProvider=' . urlencode($related['providerId']) . '&channelToken=' . urlencode($related['token']),
+              ]);
+            ?>
+            <li><a <?=$linkAttrs ?>><?=$this->escapeHtml($this->truncate($related['title'], 100)) ?></a></li>
           <?php endforeach; ?>
         </ul>
       </div>
@@ -74,9 +81,9 @@
 
     <ul
       class="channel-list"
-      id="<?=$channelID ?>"
-      data-group="<?=$groupId ?>"
-      style="--limit:<?=$channel['limit'] ?>"
+      id="<?=$this->escapeHtmlAttr($channelID) ?>"
+      data-group="<?=$this->escapeHtmlAttr($groupId) ?>"
+      style="--limit:<?=$this->escapeHtmlAttr($channel['limit']) ?>"
     >
       <?php foreach ($channel['contents'] as $item): ?>
         <?php
@@ -88,7 +95,7 @@
           class="channel-item"
           data-channel-id="<?=$this->escapeHtmlAttr($channelID)?>"
           data-record-id="<?=$this->escapeHtmlAttr($item['id']) ?>"
-          data-record-source="<?=$item['source'] ?>"
+          data-record-source="<?=$this->escapeHtmlAttr($item['source']) ?>"
         >
           <div class="channel-item-thumb">
             <img
@@ -122,7 +129,7 @@
         href="<?=$channelRoot ?>&channelProvider=<?=urlencode($channel['providerId']) ?><?=isset($channel['token']) ? '&channelToken=' . urlencode($channel['token']) : '' ?>&page=1&limit=<?=$limit ?>"
         <?=$disabled ? 'aria-disabled="true"' : ''?>
       >
-        <?=$this->translate('channel_more_items') ?>
+        <?=$this->transEsc('channel_more_items') ?>
       </a>
     </div>
   </div>
@@ -137,18 +144,18 @@
     <h2 class="ql-title"></h2>
 
     <a class="ql-view-record-btn btn btn-primary" href="${href}" data-lightbox-ignore>
-      <?=$this->translate('View Record') ?>
+      <?=$this->transEsc('View Record') ?>
     </a>
 
     <div class="ql-btn-group btn-group">
       <button class="ql-prev-item-btn btn btn-default">
-        <?=$this->translate('Prev Search Result') ?>
+        <?=$this->transEsc('Previous Record') ?>
       </button>
       <a class="ql-expand-btn btn btn-default" href="${expandUrl}" data-lightbox-ignore>
-        <?=$this->translate('channel_expand') ?>
+        <?=$this->transEsc('channel_expand') ?>
       </a>
       <button class="ql-next-item-btn btn btn-default">
-        <?=$this->translate('Next Search Result') ?>
+        <?=$this->transEsc('Next Record') ?>
       </button>
     </div>
   </div>
