@@ -65,7 +65,7 @@ trait LiveSolrTrait
     {
         $container = new \VuFindTest\Container\MockContainer($this);
         $config = include APPLICATION_PATH . '/module/VuFind/config/module.config.php';
-        $container->set(\VuFind\Log\Logger::class, $this->createMock(\Laminas\Log\LoggerInterface::class));
+        $container->set(\VuFind\Log\Logger::class, $this->createMock(\Psr\Log\LoggerInterface::class));
         $this->addConfigRelatedServicesToContainer($container, moduleConfig: $config);
         $httpFactory = new \VuFind\Service\HttpServiceFactory();
         $container->set(

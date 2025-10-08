@@ -51,7 +51,7 @@ use function is_callable;
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 
-abstract class AbstractMultiDriver extends AbstractBase implements \Laminas\Log\LoggerAwareInterface
+abstract class AbstractMultiDriver extends AbstractBase implements \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait {
         logError as error;

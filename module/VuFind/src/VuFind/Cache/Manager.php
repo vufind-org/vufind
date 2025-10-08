@@ -36,7 +36,7 @@ namespace VuFind\Cache;
 use Laminas\Cache\Service\StorageAdapterFactory;
 use Laminas\Cache\Storage\Capabilities;
 use Laminas\Cache\Storage\StorageInterface;
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use stdClass;
 use VuFind\Log\LoggerAwareTrait;
 

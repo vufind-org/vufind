@@ -33,8 +33,8 @@
 
 namespace VuFind\ILS;
 
-use Laminas\Log\LoggerAwareInterface;
 use Laminas\Session\Container;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Exception\BadConfig;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;

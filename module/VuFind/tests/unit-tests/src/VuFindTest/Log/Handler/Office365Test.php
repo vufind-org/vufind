@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Office 365 Log Writer Test Class
+ * Office 365 Log Handler Test Class
  *
  * PHP version 8
  *
@@ -27,14 +27,15 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 
-namespace VuFindTest\Log\Writer;
+namespace VuFindTest\Log\Handler;
 
 use Laminas\Http\Client;
-use Laminas\Log\Formatter\Simple;
-use VuFind\Log\Writer\Office365;
+use Monolog\Level;
+use Monolog\LogRecord;
+use VuFind\Log\Handler\Office365Handler;
 
 /**
- * Office 365 Log Writer Test Class
+ * Office 365 Log Handler Test Class
  *
  * @category VuFind
  * @package  Tests
@@ -45,21 +46,27 @@ use VuFind\Log\Writer\Office365;
 class Office365Test extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test writer functionality
+     * Test handler functionality
      *
      * @return void
      */
-    public function testWriter(): void
+    public function testHandler(): void
     {
-        // Set up data and expectations:
         $fakeUri = 'http://fake';
         $expectedBody = '{"@context":"https:\/\/schema.org\/extensions",'
             . '"@type":"MessageCard","themeColor":"0072C6",'
-            . '"title":"Test Title","text":"Formatted message."}';
-        $message = ['message' => 'test', 'priority' => 1];
-        $options = ['title' => 'Test Title'];
+            . '"title":"Test Title","text":"[2025-07-09T14:55:20+00:00] test.INFO: test [] []\n"}';
 
-        // Set up mock client:
+        $options = ['title' => 'Test Title'];
+        $logRecord = new LogRecord(
+            datetime: new \DateTimeImmutable('2025-07-09T14:55:20+00:00'),
+            channel: 'test',
+            level: Level::Info,
+            message: 'test',
+            context: [],
+            extra: []
+        );
+
         $client = $this->getMockBuilder(Client::class)
             ->disableOriginalConstructor()->getMock();
         $client->expects($this->once())->method('setUri')
@@ -72,17 +79,7 @@ class Office365Test extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo($expectedBody));
         $client->expects($this->once())->method('send');
 
-        // Set up mock formatter:
-        $formatter = $this->getMockBuilder(Simple::class)
-            ->disableOriginalConstructor()->getMock();
-        $formatter->expects($this->once())->method('format')
-            ->with($this->equalTo($message))
-            ->will($this->returnValue('Formatted message.'));
-
-        // Run the test!
-        $writer = new Office365($fakeUri, $client, $options);
-        $writer->setContentType('application/json');
-        $writer->setFormatter($formatter);
-        $writer->write($message);
+        $handler = new Office365Handler($fakeUri, $client, $options);
+        $handler->handle($logRecord);
     }
 }

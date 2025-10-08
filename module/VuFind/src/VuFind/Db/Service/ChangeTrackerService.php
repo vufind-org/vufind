@@ -31,7 +31,7 @@
 namespace VuFind\Db\Service;
 
 use DateTime;
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\ChangeTracker;
 use VuFind\Db\Entity\ChangeTrackerEntityInterface;
 use VuFind\Log\LoggerAwareTrait;
