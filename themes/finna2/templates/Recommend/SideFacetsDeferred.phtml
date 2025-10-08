@@ -38,9 +38,10 @@
         ]
   );
         ?>
-        <?php endif; ?>
-        <button class="visible-xs sidebar-close-btn" aria-label="<?=$this->transEsc('close')?>"><?=$this->icon('sidefacets-close', 'sidefacets-close-icon') ?></button><?php endif; ?>
+      <?php endif; ?>
+      <button class="visible-xs sidebar-close-btn" aria-label="<?=$this->transEsc('close')?>"><?=$this->icon('sidefacets-close', 'sidefacets-close-icon') ?></button>
     </div>
+<?php endif; ?>
 <?php $checkboxFilters = $params->getCheckboxFacets(); ?>
 <?php $checkboxesShown = false; ?>
 <?php if (count($checkboxFilters) > 0):

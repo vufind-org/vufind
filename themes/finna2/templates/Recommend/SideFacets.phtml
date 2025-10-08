@@ -9,8 +9,23 @@
   $resultsTotal = $results->getResultTotal();
 ?>
 <?php if ($resultsTotal > 0): ?>
-  <h2><?=$this->transEsc($this->slot('side-facet-caption')->get('Narrow Search')) ?><?php if (null === $this->slot('side-facet-caption')->get() && !$this->translationEmpty('tooltip_facet_html')): ?><span class="tooltip-facet float-end" data-bs-toggle="tooltip" data-placement="auto" data-html="true" data-original-title="<?=$this->transEsc('tooltip_facet_html')?>"><?=$this->icon('help') ?></span><?php endif; ?><span role="button" class="visible-xs sidebar-close-btn" aria-label="<?=$this->transEsc('close')?>"><?=$this->icon('sidefacets-close', 'sidefacets-close-icon') ?></span></h2>
-  <span class="visually-hidden"><?=$this->transEsc('page_reload_on_select_hint') ?></span>
+  <div class="side-facets-container" aria-label="<?=$this->transEsc($this->slot('side-facet-caption')->get('Narrow Search')) ?>">
+    <div class="side-facets-header-container">
+      <h1><?=$this->transEsc($this->slot('side-facet-caption')->get('Narrow Search')) ?></h1>
+      <?php if (null === $this->slot('side-facet-caption')->get() && !$this->translationEmpty('tooltip_facet_html')): ?>
+        <?=$this->component(
+          'finna-toggletip',
+          [
+            'icon' => 'help',
+            'aria-label' => $this->translate('Help'),
+            'contentHtml' => $this->translate('tooltip_facet_html'),
+          ]
+        );
+        ?>
+      <?php endif; ?>
+      <button role="button" class="visible-xs sidebar-close-btn" aria-label="<?=$this->transEsc('close')?>"><?=$this->icon('sidefacets-close', 'sidefacets-close-icon') ?></button>
+      <span class="visually-hidden"><?=$this->transEsc('page_reload_on_select_hint') ?></span>
+    </div>
 <?php endif; ?>
 <?php $checkboxFilters = $results->getParams()->getCheckboxFacets(); ?>
 <?php $checkboxesShown = false; ?>
@@ -76,6 +91,9 @@
       </div>
     </div>
   <?php endforeach; ?>
+<?php endif; ?>
+<?php if ($resultsTotal > 0): ?>
+  </div>
 <?php endif; ?>
 <?=$this->assetManager()->outputInlineScriptString('registerSideFacetTruncation();');?>
 <!-- END of: finna - Recommend/SideFacets.phtml -->
