@@ -29,7 +29,7 @@
 
 namespace VuFind\Controller;
 
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 
 /**
  * External Authentication/Authorization Controller

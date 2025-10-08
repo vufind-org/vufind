@@ -30,6 +30,7 @@
 namespace VuFind\RecordDriver;
 
 use function count;
+use function in_array;
 
 /**
  * Model for WorldCat v2 records.
@@ -178,6 +179,75 @@ class WorldCat2 extends DefaultRecord
         if (!empty($data['nonPersonName']['text'])) {
             return $data['nonPersonName']['text'];
         }
+        $rawCreatorNotes = $data['creatorNotes'] ?? [];
+        // The creatorNotes field may include useful information like author birth/death dates, but
+        // also useless information like redundant relator information. We need to strip out the
+        // relator terms so that author search will work correctly.
+        $relatorTerms = [];
+        foreach ($data['relators'] ?? [] as $relator) {
+            if ($term = strtolower($relator['term'] ?? '')) {
+                $relatorTerms[] = $term;
+            }
+            if ($altTerm = strtolower($relator['alternateTerm'] ?? '')) {
+                $relatorTerms[] = $altTerm;
+            }
+        }
+        $creatorNotes = array_diff(
+            array_map(
+                function ($note) use ($relatorTerms) {
+                    $result = implode(
+                        ', ',
+                        array_filter(
+                            array_map(
+                                function ($value) use ($relatorTerms) {
+                                    // Regex for capturing useful patterns at the beginning of creatorNotes
+                                    $datesRegex = '((ca\. )?\d{4}-(\d{4})?)';
+                                    $parensRegex = '(\\([^)]+\\)\\.?)';
+                                    $startRegex = "^($datesRegex|$parensRegex)";
+                                    // Regex for capturing a code or URI:
+                                    $codeRegex = '(https?:[^\s]+|\\w{3})';
+
+                                    // Skip note segments that are relators:
+                                    if (in_array(strtolower($value), $relatorTerms)) {
+                                        return '';
+                                    }
+                                    $allEscapedTerms = [];
+                                    foreach ($relatorTerms as $term) {
+                                        $allEscapedTerms[] = $escapedTerm = preg_quote($term, '/');
+                                        // Skip note segments that are a relator term followed by a 3-character code:
+                                        if (preg_match("/^$escapedTerm\\.?( $codeRegex)*$/i", $value)) {
+                                            return '';
+                                        }
+                                        // If a note segment starts with a date range and ends in a relator term
+                                        // (possibly followed by a 3-letter code), we should skip it:
+                                        $singleTermRegex = "/$startRegex $escapedTerm\\.?( $codeRegex)*$/i";
+                                        if (preg_match($singleTermRegex, $value, $matches)) {
+                                            return $matches[1];
+                                        }
+                                    }
+                                    // If there are multiple relator terms, they may all be concatenated together;
+                                    // strip them off in that case as well:
+                                    $allEscapedTermsStr = implode(
+                                        '',
+                                        array_map(fn ($term) => "( ($codeRegex )?$term\\.?)?", $allEscapedTerms)
+                                    );
+                                    $allEscapedTermsRegex = "/$startRegex$allEscapedTermsStr( $codeRegex)*$/i";
+                                    if (preg_match($allEscapedTermsRegex, $value, $matches)) {
+                                        return $matches[1];
+                                    }
+                                    return $value;
+                                },
+                                explode(', ', trim($note, '.')),
+                            )
+                        )
+                    ) . (str_ends_with($note, '.') ? '.' : '');
+                    // Collapse redundant periods:
+                    return preg_replace('/\\.+$/', '.', $result);
+                },
+                $rawCreatorNotes
+            ),
+            ['.'] // Strip out any empty values
+        );
         return implode(
             ', ',
             array_filter(
@@ -186,7 +256,7 @@ class WorldCat2 extends DefaultRecord
                         $data['secondName']['text'] ?? null,
                         $data['firstName']['text'] ?? null,
                     ],
-                    $data['creatorNotes'] ?? []
+                    $creatorNotes
                 )
             )
         );

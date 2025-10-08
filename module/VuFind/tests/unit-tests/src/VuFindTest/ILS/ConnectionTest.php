@@ -31,6 +31,7 @@ namespace VuFindTest\ILS;
 
 use VuFind\Config\Config;
 use VuFind\ILS\Connection;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
  * Connnection test
@@ -43,6 +44,8 @@ use VuFind\ILS\Connection;
  */
 class ConnectionTest extends \PHPUnit\Framework\TestCase
 {
+    use ConfigRelatedServicesTrait;
+
     /**
      * Connection object
      *
@@ -60,11 +63,11 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
         $config = new Config(['driver' => 'Demo']);
         $driverManager = $this->createMock(\VuFind\ILS\Driver\PluginManager::class);
         $driverManager->method('has')->willReturn('Demo');
-        $configReader = $this->createMock(\VuFind\Config\PluginManager::class);
+        $mockConfigManager = $this->getMockConfigManager();
         $this->connection = new Connection(
             $config,
             $driverManager,
-            $configReader
+            $mockConfigManager
         );
     }
 

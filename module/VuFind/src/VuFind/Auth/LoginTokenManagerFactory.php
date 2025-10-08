@@ -31,7 +31,6 @@ namespace VuFind\Auth;
 
 use BrowscapPHP\Browscap;
 use Laminas\Cache\Psr\SimpleCache\SimpleCacheDecorator;
-use Laminas\Log\PsrLoggerAdapter;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
@@ -102,7 +101,7 @@ class LoginTokenManagerFactory implements \Laminas\ServiceManager\Factory\Factor
     public function getBrowscap(): Browscap
     {
         $cache = new SimpleCacheDecorator($this->container->get(\VuFind\Cache\Manager::class)->getCache('browscap'));
-        $logger = new PsrLoggerAdapter($this->container->get(\VuFind\Log\Logger::class));
+        $logger = $this->container->get(\VuFind\Log\Logger::class);
         return new Browscap($cache, $logger);
     }
 }

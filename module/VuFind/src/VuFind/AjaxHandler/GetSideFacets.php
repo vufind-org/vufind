@@ -52,7 +52,7 @@ use function is_callable;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas\Log\LoggerAwareInterface
+class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 

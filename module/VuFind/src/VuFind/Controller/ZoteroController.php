@@ -31,9 +31,9 @@ declare(strict_types=1);
 
 namespace VuFind\Controller;
 
-use Laminas\Log\LoggerAwareInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container as SessionContainer;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Exception\ZoteroException;
 use VuFind\Export\Zotero\ZoteroService;
 use VuFind\I18n\Translator\TranslatorAwareInterface;

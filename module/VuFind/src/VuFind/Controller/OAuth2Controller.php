@@ -31,7 +31,6 @@ namespace VuFind\Controller;
 
 use Laminas\Http\Exception\InvalidArgumentException;
 use Laminas\Http\Response;
-use Laminas\Log\LoggerAwareInterface;
 use Laminas\Mvc\Exception\DomainException;
 use Laminas\Psr7Bridge\Psr7Response;
 use Laminas\Psr7Bridge\Psr7ServerRequest;
@@ -39,6 +38,7 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container as SessionContainer;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use OpenIDConnectServer\ClaimExtractor;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Config\PathResolver;
 use VuFind\Db\Service\AccessTokenServiceInterface;
 use VuFind\Exception\BadRequest as BadRequestException;

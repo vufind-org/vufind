@@ -33,7 +33,7 @@ declare(strict_types=1);
 namespace VuFind\OnlinePayment\Handler;
 
 use Laminas\Http\PhpEnvironment\Response;
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\PaymentEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\AuditEventServiceInterface;
