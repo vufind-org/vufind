@@ -215,7 +215,7 @@ class WorldCat2 extends DefaultRecord
                                     foreach ($relatorTerms as $term) {
                                         $allEscapedTerms[] = $escapedTerm = preg_quote($term, '/');
                                         // Skip note segments that are a relator term followed by a 3-character code:
-                                        if (preg_match("/^$escapedTerm\\.?( $codeRegex)?$/i", $value)) {
+                                        if (preg_match("/^$escapedTerm\\.?( $codeRegex)*$/i", $value)) {
                                             return '';
                                         }
                                         // If a note segment starts with a date range and ends in a relator term

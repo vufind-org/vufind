@@ -116,6 +116,7 @@ class WorldCat2Test extends \PHPUnit\Framework\TestCase
                     'Lst7, 1st7, (1900-...).',
                     'Lst8, 1st8, 1900-',
                     'Lst9, 1st9, (First M.)',
+                    'Lst10, 1st10',
                 ],
                 'worldcat2/authors.json',
             ],

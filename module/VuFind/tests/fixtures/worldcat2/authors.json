@@ -8,5 +8,6 @@
     {"firstName": {"text": "1st6"}, "secondName": {"text": "Lst6"}, "type": "person", "creatorNotes": ["1900- author. aut"], "relators": [{"term": "Author", "alternateTerm": "aut"}]},
     {"firstName": {"text": "1st7"}, "secondName": {"text": "Lst7"}, "type": "person", "creatorNotes": ["(1900-...). aut author."], "relators": [{"term": "Author", "alternateTerm": "aut"}]},
     {"firstName": {"text": "1st8"}, "secondName": {"text": "Lst8"}, "type": "person", "creatorNotes": ["1900- author. http://id.loc.gov/vocabulary/relators/aut"], "relators": [{"term": "Author", "alternateTerm": "aut"}]},
-    {"firstName": {"text": "1st9"}, "secondName": {"text": "Lst9"}, "type": "person", "creatorNotes": ["(First M.), author. http://id.loc.gov/vocabulary/relators/aut"], "relators": [{"term": "Author", "alternateTerm": "aut"}]}
+    {"firstName": {"text": "1st9"}, "secondName": {"text": "Lst9"}, "type": "person", "creatorNotes": ["(First M.), author. http://id.loc.gov/vocabulary/relators/aut"], "relators": [{"term": "Author", "alternateTerm": "aut"}]},
+    {"firstName": {"text": "1st10"}, "secondName": {"text": "Lst10"}, "type": "person", "creatorNotes": ["author. aut http://id.loc.gov/vocabulary/relators/aut"], "relators": [{"term": "Author", "alternateTerm": "aut"}]}
 ]}}
