@@ -70,6 +70,7 @@ final class LoggingTest extends MinkTestCase
                 'expectedPatterns'   => [
                     self::CRITICAL_LEVEL_REGEX,
                     '/404 Not Found/',
+                    '/RequestErrorException/',
                     '/VuFindSearch\\\\Backend\\\\Exception/',
                     '/Search\/Results.*lookfor.*test/',
                     self::DEBUG_LEVEL_REGEX,
