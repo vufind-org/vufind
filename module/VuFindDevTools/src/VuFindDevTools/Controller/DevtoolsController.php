@@ -78,7 +78,7 @@ class DevtoolsController extends \VuFind\Controller\AbstractBase
      */
     public function deminifyAction()
     {
-        $min = trim($this->params()->fromPost('min'));
+        $min = trim($this->params()->fromPost('min', ''));
         $view = $this->createViewModel();
         if (!empty($min)) {
             $view->min = unserialize($min);

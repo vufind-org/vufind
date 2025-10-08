@@ -30,8 +30,8 @@
 namespace VuFind\RateLimiter\Turnstile;
 
 use Laminas\Cache\Storage\StorageInterface;
-use Laminas\Log\LoggerAwareInterface;
 use Laminas\Mvc\MvcEvent;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Log\LoggerAwareTrait;
 use VuFindHttp\HttpServiceAwareInterface;
 use VuFindHttp\HttpServiceAwareTrait;

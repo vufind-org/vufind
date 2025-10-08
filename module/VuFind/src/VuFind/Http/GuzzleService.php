@@ -37,8 +37,6 @@ use function strlen;
 /**
  * Guzzle service.
  *
- * N.B. Use only for dependencies that require Guzzle.
- *
  * @category VuFind
  * @package  Http
  * @author   Ere Maijala <ere.maijala@helsinki.fi>

@@ -33,9 +33,9 @@ declare(strict_types=1);
 namespace VuFind\Auth;
 
 use BrowscapPHP\BrowscapInterface;
-use Laminas\Log\LoggerAwareInterface;
 use Laminas\Session\SessionManager;
 use Laminas\View\Renderer\RendererInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Config\Config;
 use VuFind\Config\Feature\EmailSettingsTrait;
 use VuFind\Cookie\CookieManager;

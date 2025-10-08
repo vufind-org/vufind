@@ -21,13 +21,13 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  Log
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 
-namespace VuFind\Log\Writer;
+namespace VuFind\Log\Handler;
 
 use function is_array;
 
@@ -35,7 +35,7 @@ use function is_array;
  * Trait to add configurable verbosity settings to loggers
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  Log
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
@@ -47,7 +47,7 @@ trait VerbosityTrait
      *
      * @var int
      */
-    protected $verbosity = 1;
+    protected int $verbosity = 1;
 
     /**
      * Set verbosity
@@ -56,24 +56,29 @@ trait VerbosityTrait
      *
      * @return void
      */
-    public function setVerbosity($verb)
+    public function setVerbosity(int $verb): void
     {
         $this->verbosity = $verb;
     }
 
     /**
-     * Apply verbosity setting to message.
+     * Apply verbosity setting to the log record's message.
      *
-     * @param array $event event data
+     * This method is designed to be called within a Monolog handler's write method
+     * to process the log record *before* it's formatted.
      *
-     * @return array
+     * @param array $record The log record data, where the detailed message array
+     * is expected in $record['context']['vufind_log_details'].
+     *
+     * @return array The modified log record data.
      */
-    protected function applyVerbosity(array $event)
+    protected function applyVerbosity(array $record): array
     {
-        // Apply verbosity filter:
-        if (is_array($event['message'])) {
-            $event['message'] = $event['message'][$this->verbosity];
+        $vufindDetails = $record['context']['details'] ?? null;
+        if (is_array($vufindDetails) && isset($vufindDetails[$this->verbosity])) {
+            $record['message'] = $vufindDetails[$this->verbosity];
+            unset($record['context']['details']);
         }
-        return $event;
+        return $record;
     }
 }

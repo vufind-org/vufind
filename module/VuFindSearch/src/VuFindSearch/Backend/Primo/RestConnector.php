@@ -57,7 +57,7 @@ use function strlen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class RestConnector implements ConnectorInterface, \Laminas\Log\LoggerAwareInterface
+class RestConnector implements ConnectorInterface, \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
     use \VuFindSearch\Backend\Feature\ConnectorCacheTrait;

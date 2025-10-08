@@ -2979,6 +2979,10 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             return $this->config['OnlinePayment'] ?? [];
         }
 
+        if ('TimedBlocks' === $function) {
+            return $this->config['TimedBlocks'] ?? [];
+        }
+
         return [];
     }
 

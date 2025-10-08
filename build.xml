@@ -77,7 +77,7 @@
   <property name="marc_bib_dir" value="${srcdir}/tests/data" /><!-- directory containing MARC bib records for test environment -->
   <property name="marc_authority_dir" value="${marc_bib_dir}/authority" /><!-- directory containing MARC authority records for test environment -->
 
-  <property name="version" value="10.2.0" />
+  <property name="version" value="10.2.1" />
 
   <property name="mysqlconnectionargs" value="-h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser}" />
   <!-- Add password if not empty -->
@@ -469,16 +469,16 @@
         <not><available file="${srcdir}/solr/.disableAutomaticInstall" /></not>
       </and>
       <then>
-        <!-- make sure we don't run out of memory or time during installation: -->
-        <php expression="ini_set('memory_limit', '1G');" />
-        <php expression="ini_set('default_socket_timeout', '600');" />
-
         <!-- download from Apache if not already present in the downloads cache -->
         <if>
           <not><available file="${downloadsdir}/solr-${solr_version}.tgz" /></not>
            <then>
             <mkdir dir="${downloadsdir}" />
-            <httpget url="https://archive.apache.org/dist/solr/solr/${solr_version}/solr-${solr_version}.tgz" dir="${downloadsdir}" />
+            <exec executable="php" checkreturn="true" passthru="true">
+              <arg line="${srcdir}/public/index.php util/download https://archive.apache.org/dist/solr/solr/${solr_version}/solr-${solr_version}.tgz ${downloadsdir}/solr-${solr_version}.tgz" />
+              <env key="VUFIND_HOME" value="${srcdir}" />
+              <env key="VUFIND_LOCAL_DIR" value="${localdir}" />
+            </exec>
           </then>
         </if>
         <!-- unpack the archive into solr/vendor -->

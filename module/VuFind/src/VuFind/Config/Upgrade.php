@@ -30,7 +30,7 @@
 
 namespace VuFind\Config;
 
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Config\Location\ConfigDirectory;
 use VuFind\Config\Location\ConfigLocationInterface;
 use VuFind\Exception\FileAccess as FileAccessException;
@@ -559,7 +559,7 @@ class Upgrade implements LoggerAwareInterface
         unset($newConfig['Index']['local']);
 
         // Warn the user if they are using an unsupported theme:
-        $this->checkTheme('theme', 'bootprint3');
+        $this->checkTheme('theme', 'sandal5');
         $this->checkTheme('mobile_theme', null);
 
         // Translate legacy auth settings:
