@@ -50,6 +50,9 @@
             & .range-type {
                 margin: 5px 0px;
                 clear: both;
+                label {
+                    display: inline;
+                }
             }
             & .form-ui {
 

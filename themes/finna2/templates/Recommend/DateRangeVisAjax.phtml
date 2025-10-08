@@ -5,7 +5,7 @@
 	  <div class="year-range">
       <label for="year-from" class="visually-hidden"><?=$this->transEsc('year_from');?></label>
 	    <input id="year-from" class="form-control form-inline input-year year-from" type="number" value="<?=$this->escapeHtmlAttr($this->from) ?>">
-	    <span class="year-separator">&ndash;</span>
+	    <span class="year-separator" aria-hidden="true">&ndash;</span>
       <label for="year-to" class="visually-hidden"><?=$this->transEsc('year_to');?></label>
 	    <input id="year-to" class="form-control form-inline input-year year-to" type="number" value="<?=$this->escapeHtmlAttr($this->to) ?>">
 	  </div>
@@ -13,7 +13,7 @@
       <?=$this->icon('search') ?><span><?= $this->transEsc($this->submitLabel); ?></span>
     </button>
     </div>
-    <div class="content">
+    <div class="content" aria-hidden="true">
       <?php $this->assetManager()->appendScriptLink('vendor/jquery.colorhelpers.min.js'); ?>
       <?php $this->assetManager()->appendScriptLink('vendor/jquery.flot.min.js'); ?>
       <?php $this->assetManager()->appendScriptLink('vendor/jquery.flot.selection.min.js'); ?>
@@ -21,7 +21,7 @@
       <div class="date-vis"></div>
       <?=$this->icon('spinner') ?>
     </div>
-    <div class="navigation">
+    <div class="navigation" aria-hidden="true">
       <div class="zoom-in"><?=$this->icon('daterange-zoom-in') ?></div>
       <div class="zoom-out"><?=$this->icon('daterange-zoom-out') ?></div>
       <div class="prev"><?=$this->icon('daterange-prev') ?></div>
@@ -29,13 +29,15 @@
       <div class="expand-modal"><?=$this->icon('daterange-expand') ?></div>
     </div>
     <?php if ($backend != 'primo' && (!isset($hideType) || !$hideType)): ?>
-    <div class="range-type">
-      <label class="radiobutton" for="radio_overlap">
-        <input class="timeline_overlap" type="radio" name="type" id="radio_overlap" value="overlap"<?= !$this->type || $this->type == 'overlap' ? ' checked="checked"' : ''; ?>><?= $this->translate('Timeline overlap'); ?>
-      </label>
-      <label class="radiobutton" for="radio_within">
-        <input class="timeline_within" type="radio" name="type" id="radio_within" value="within"<?= $this->type == 'within' ? ' checked="checked"' : ''; ?>><?= $this->translate('Timeline within'); ?>
-      </label>
+    <div class="range-type" role="radiogroup" aria-label="<?=$this->transEsc('Search Type')?>">
+      <div class="radiobutton">
+          <input id="radio_overlap" class="timeline_overlap" type="radio" name="type" aria-label="<?= $this->translate('Timeline overlap'); ?>" value="overlap"<?= !$this->type || $this->type == 'overlap' ? ' checked="checked"' : ''; ?>>
+          <label aria-hidden="true"><?= $this->translate('Timeline overlap'); ?></label>
+      </div>
+      <div class="radiobutton">
+        <input id="radio_within" class="timeline_within" type="radio" name="type" aria-label="<?= $this->translate('Timeline within'); ?>" value="within"<?= $this->type == 'within' ? ' checked="checked"' : ''; ?>>
+        <label aria-hidden="true"><?= $this->translate('Timeline within'); ?></label>
+      </div>
     </div>
     <?php endif; ?>
   </form>
