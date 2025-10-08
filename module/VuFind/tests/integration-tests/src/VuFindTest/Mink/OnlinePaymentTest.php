@@ -297,6 +297,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @depends testPayment
      */
+    #[\VuFindTest\Attribute\HtmlValidation(false)] // No validation, returns plain text
     public function testNotify(): bool
     {
         $this->changeConfigs($this->getConfigs(false, []));
@@ -327,7 +328,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
         // Send notify event:
         $this->clickCss($page, '.button-notify');
         $this->assertEqualsWithTimeout(
-            'Notify done',
+            'OK Notify done',
             function () use ($page) {
                 return $this->findCssAndGetText($page, 'body');
             }
@@ -405,6 +406,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
      * @dataProvider receiptProvider
      * @depends      testPayment
      */
+    #[\VuFindTest\Attribute\HtmlValidation(false)] // No validation, returns HTML meant for PDF generation
     public function testReceipt(bool $vatBreakdown): void
     {
         $this->changeConfigs(
