@@ -305,8 +305,6 @@ $config = [
             // Alias for the browse record route (that must not clash with normal
             // record route for getMatchedRouteName to return correct value):
             'BrowseRecord' => 'Record',
-            'Comments' => 'Finna\Controller\CommentsController',
-            'comments' => 'Finna\Controller\CommentsController',
             'FeedContent' => 'Finna\Controller\FeedContentController',
             'feedcontent' => 'Finna\Controller\FeedContentController',
             'L1' => 'Finna\Controller\L1Controller',
@@ -322,8 +320,6 @@ $config = [
             'MetaLibRecord' => 'Finna\Controller\MetaLibrecordController',
             'metalibrecord' => 'Finna\Controller\MetaLibrecordController',
             'OrganisationInfo' => 'Finna\Controller\OrganisationInfoController',
-            'ratings' => 'Finna\Controller\RatingsController',
-            'Ratings' => 'Finna\Controller\RatingsController',
             'RecordPreview' => \Finna\Controller\RecordPreviewController::class,
             'recordPreview' => \Finna\Controller\RecordPreviewController::class,
             'ReservationList' => \Finna\Controller\ReservationListController::class,
@@ -337,6 +333,7 @@ $config = [
             'VuFind\Controller\CartController' => 'Finna\Controller\CartController',
             'VuFind\Controller\CombinedController' => 'Finna\Controller\CombinedController',
             'VuFind\Controller\CollectionController' => 'Finna\Controller\CollectionController',
+            'VuFind\Controller\CommentsController' => 'Finna\Controller\CommentsController',
             'VuFind\Controller\ContentController' => 'Finna\Controller\ContentController',
             'VuFind\Controller\CoverController' => 'Finna\Controller\CoverController',
             'VuFind\Controller\EdsController' => 'Finna\Controller\EdsController',
@@ -350,6 +347,7 @@ $config = [
             \VuFind\Controller\OAuth2Controller::class => \Finna\Controller\OAuth2Controller::class,
             'VuFind\Controller\PrimoController' => 'Finna\Controller\PrimoController',
             'VuFind\Controller\PrimorecordController' => 'Finna\Controller\PrimorecordController',
+            'VuFind\Controller\RatingsController' => 'Finna\Controller\RatingsController',
             'VuFind\Controller\RecordController' => 'Finna\Controller\RecordController',
             'VuFind\Controller\SearchController' => 'Finna\Controller\SearchController',
 
