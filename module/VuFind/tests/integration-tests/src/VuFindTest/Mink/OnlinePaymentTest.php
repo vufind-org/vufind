@@ -296,8 +296,10 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
      * @return bool
      *
      * @depends testPayment
+     *
+     * Excluded from HTML validation, returns plain text.
      */
-    #[\VuFindTest\Attribute\HtmlValidation(false)] // No validation, returns plain text
+    #[\VuFindTest\Attribute\HtmlValidation(false)]
     public function testNotify(): bool
     {
         $this->changeConfigs($this->getConfigs(false, []));
@@ -405,8 +407,10 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @dataProvider receiptProvider
      * @depends      testPayment
+     *
+     * Excluded from HTML validation, returns HTML used for PDF creation.
      */
-    #[\VuFindTest\Attribute\HtmlValidation(false)] // No validation, returns HTML meant for PDF generation
+    #[\VuFindTest\Attribute\HtmlValidation(false)]
     public function testReceipt(bool $vatBreakdown): void
     {
         $this->changeConfigs(
