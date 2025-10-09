@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2025.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -43,7 +43,6 @@ use VuFind\Db\Service\OaiResumptionServiceInterface;
 use VuFind\Db\Service\PluginManager as DbPluginManager;
 use VuFind\DeveloperSettings\DeveloperSettingsService;
 use VuFind\Http\PhpEnvironment\Request;
-use VuFind\Log\Logger;
 use VuFind\Record\Loader;
 use VuFind\RecordDriver\SolrMarc;
 use VuFind\Search\Options\PluginManager as SearchPluginManager;
@@ -225,8 +224,6 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
         $recordLoader = $this->createMock(Loader::class);
         $recordLoader->expects($this->any())->method('load')->willReturn($recordMap);
         $recordLoader->expects($this->any())->method('loadBatchForSource')->willReturn($recordMap);
-        $logger = $this->createMock(Logger::class);
-        $this->setProperty($logger, 'writers', []);
 
         $resumptionService = $this->getMockBuilder(OaiResumptionService::class)->disableOriginalConstructor()
             ->onlyMethods([])->getMock();
@@ -253,7 +250,6 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
             [SearchPluginManager::class, $optionsPluginManager],
             [Loader::class, $recordLoader],
             [DeveloperSettingsService::class, $developerSettingsService],
-            [Logger::class, $logger],
             [DbPluginManager::class, $dbPluginManager],
         ]);
         $controller->expects($this->any())->method('getConfigArray')->willReturn($config);

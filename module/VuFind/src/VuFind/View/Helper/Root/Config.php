@@ -34,7 +34,6 @@ use VuFindApi\Controller\ApiInterface;
 
 use function in_array;
 
-
 /**
  * Config view helper
  *
