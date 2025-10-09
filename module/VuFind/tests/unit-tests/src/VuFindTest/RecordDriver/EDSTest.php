@@ -666,15 +666,15 @@ class EDSTest extends \PHPUnit\Framework\TestCase
 
         $cleanDoi = '10.1016/j.jveb.2025.02.006';
         $fields = $driver->getRawData();
-
-        foreach ([
+        $doiVariations = [
             $cleanDoi,
             'http://doi.org/' . $cleanDoi,     // http, and no subdomain
             'https://dx.doi.org/' . $cleanDoi, // https, and subdomain
             '&lt;link linkTarget="URL" linkWindow="_blank" linkTerm="http://dx.doi.org/'
                 . $cleanDoi
                 . '"&gt;http://dx.doi.org/' . $cleanDoi . '&lt;/link&gt;',  // link wrapper
-        ] as $testDoi) {
+        ];
+        foreach ($doiVariations as $testDoi) {
             $fields['Items'][10]['Data'] = $testDoi;
             $driver->setRawData($fields);
             $this->assertEquals($cleanDoi, $driver->getCleanDOI());
