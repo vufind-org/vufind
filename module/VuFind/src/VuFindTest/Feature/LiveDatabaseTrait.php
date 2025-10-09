@@ -19,8 +19,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -185,7 +185,7 @@ trait LiveDatabaseTrait
         // Set up the bare minimum services to actually load real configs:
         $config = $this->getMergedConfig();
         $container = new \VuFindTest\Container\MockContainer($this);
-        $container->set(\VuFind\Log\Logger::class, $this->createMock(\Laminas\Log\LoggerInterface::class));
+        $container->set(\VuFind\Log\Logger::class, $this->createMock(\Psr\Log\LoggerInterface::class));
         $container->set('config', $config);
         $this->addConfigRelatedServicesToContainer($container, moduleConfig: $config);
         $this->addDoctrineDependenciesToContainer($container);
@@ -201,7 +201,7 @@ trait LiveDatabaseTrait
     {
         if (!$this->liveDatabaseContainer) {
             $container = $this->getMockContainerWithDoctrineDependencies();
-            $container->set(\VuFind\Log\Logger::class, $this->createMock(\Laminas\Log\LoggerInterface::class));
+            $container->set(\VuFind\Log\Logger::class, $this->createMock(\Psr\Log\LoggerInterface::class));
             $liveServiceManager = new ServiceManager($container, []);
             $container->set(ServiceManager::class, $liveServiceManager);
             $container->set(

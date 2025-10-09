@@ -21,8 +21,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -36,7 +36,7 @@ namespace VuFindSearch\Backend\Feature;
 use Laminas\Cache\Storage\Adapter\Memcached;
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\Http\Client as HttpClient;
-use Laminas\Log\LoggerInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Caching support trait for connectors.

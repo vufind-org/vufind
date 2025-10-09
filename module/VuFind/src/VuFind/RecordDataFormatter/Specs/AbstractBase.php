@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDataFormatter
@@ -162,6 +162,22 @@ abstract class AbstractBase implements SpecInterface, \VuFind\I18n\Translator\Tr
             });
             $options = array_merge($options, $contextOptions);
         }
+
+        foreach ($options['extraLineOptions'] ?? [] as $lineOptionSection) {
+            $extraLineOption = $this->config[$lineOptionSection] ?? [];
+            $lineIdentifierKey = $extraLineOption['lineIdentifierKey'] ?? 'label';
+            $lineIdentifierValue = $extraLineOption['lineIdentifierValue'] ?? null;
+            unset($extraLineOption['lineIdentifierKey']);
+            unset($extraLineOption['lineIdentifierValue']);
+            if ($lineIdentifierValue === null) {
+                continue;
+            }
+            $options['lineOptions'][$lineIdentifierKey][$lineIdentifierValue] = array_merge(
+                $options['lineOptions'][$lineIdentifierKey][$lineIdentifierValue] ?? [],
+                $extraLineOption,
+            );
+        }
+        unset($options['extraLineOptions']);
 
         return $options;
     }

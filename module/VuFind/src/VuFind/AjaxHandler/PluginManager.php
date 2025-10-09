@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  AJAX
@@ -73,6 +73,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'getUserTransactions' => GetUserTransactions::class,
         'getVisData' => GetVisData::class,
         'keepAlive' => KeepAlive::class,
+        'onlinePaymentNotify' => OnlinePaymentNotify::class,
+        'onlinePaymentRegister' => OnlinePaymentRegister::class,
         'recommend' => Recommend::class,
         'relaisAvailability' => RelaisAvailability::class,
         'relaisInfo' => RelaisInfo::class,
@@ -115,6 +117,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         GetUserTransactions::class => AbstractIlsUserAndRendererActionFactory::class,
         GetVisData::class => GetVisDataFactory::class,
         KeepAlive::class => KeepAliveFactory::class,
+        OnlinePaymentNotify::class => AbstractOnlinePaymentActionFactory::class,
+        OnlinePaymentRegister::class => AbstractOnlinePaymentActionFactory::class,
         Recommend::class => RecommendFactory::class,
         RelaisAvailability::class => AbstractRelaisActionFactory::class,
         RelaisInfo::class =>  AbstractRelaisActionFactory::class,

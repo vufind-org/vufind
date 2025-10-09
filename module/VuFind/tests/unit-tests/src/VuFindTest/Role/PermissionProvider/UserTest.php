@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,7 +29,7 @@
 
 namespace VuFindTest\Role\PermissionProvider;
 
-use LmcRbacMvc\Service\AuthorizationService;
+use Lmc\Rbac\Mvc\Service\AuthorizationService;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Db\Entity\UserEntityInterface;
 
@@ -138,13 +138,10 @@ class UserTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockAuthorizationService()
     {
-        $authorizationService
-            = $this->getMockBuilder(AuthorizationService::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $authorizationService = $this->createMock(AuthorizationService::class);
         $authorizationService
             ->method('getIdentity')
-            ->will($this->returnValue($this->getMockUser()));
+            ->willReturn($this->getMockUser());
 
         return $authorizationService;
     }

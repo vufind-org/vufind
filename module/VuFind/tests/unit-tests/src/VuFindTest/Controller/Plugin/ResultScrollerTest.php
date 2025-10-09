@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -409,11 +409,11 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         $firstLast = true,
         $sort = null
     ): \VuFindTest\Search\TestHarness\Results {
-        $pm = $this->getMockConfigPluginManager(
+        $mockConfigManager = $this->getMockConfigManager(
             ['config' => $firstLast ? $this->getFirstLastConfig() : []]
         );
-        $options = new \VuFindTest\Search\TestHarness\Options($pm);
-        $params = new \VuFindTest\Search\TestHarness\Params($options, $pm);
+        $options = new \VuFindTest\Search\TestHarness\Options($mockConfigManager);
+        $params = new \VuFindTest\Search\TestHarness\Params($options, $mockConfigManager);
         $params->setPage($page);
         $params->setLimit($limit);
         if (null !== $sort) {

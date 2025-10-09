@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -75,12 +75,23 @@ final class DoctrineSchemaValidationTest extends \PHPUnit\Framework\TestCase
         $entityManager = $container->get('doctrine.entitymanager.orm_vufind');
         $platform = $entityManager->getConnection()->getDatabasePlatform()->getName();
         $validator = new SchemaValidator($entityManager);
+        $errorList = $validator->validateMapping();
         $schemaList = $validator->getUpdateSchemaList();
         if ($platform === 'postgresql') {
             $schemaList = $this->filterIndexRecreation($schemaList);
         }
-        $this->assertEquals([], $validator->validateMapping(), 'Unexpected validation error');
-        $this->assertEquals([], $schemaList, 'Unexpected schema updates pending');
+        $this->assertEquals(
+            [],
+            $errorList,
+            'Unexpected validation error'
+            . (($firstError = reset($errorList)) ? "; first error: $firstError" : '')
+        );
+        $this->assertEquals(
+            [],
+            $schemaList,
+            'Unexpected schema updates pending'
+            . (($firstUpdate = reset($schemaList)) ? "; first update: $firstUpdate" : '')
+        );
     }
 
     /**

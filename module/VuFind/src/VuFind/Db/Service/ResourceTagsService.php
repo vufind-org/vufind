@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -53,8 +53,7 @@ use function in_array;
  */
 class ResourceTagsService extends AbstractDbService implements
     DbServiceAwareInterface,
-    ResourceTagsServiceInterface,
-    Feature\TransactionInterface
+    ResourceTagsServiceInterface
 {
     use DbServiceAwareTrait;
 
@@ -82,39 +81,6 @@ class ResourceTagsService extends AbstractDbService implements
             }
         }
         return $newOrder;
-    }
-
-    /**
-     * Begin a database transaction.
-     *
-     * @return void
-     * @throws Exception
-     */
-    public function beginTransaction(): void
-    {
-        $this->entityManager->getConnection()->beginTransaction();
-    }
-
-    /**
-     * Commit a database transaction.
-     *
-     * @return void
-     * @throws Exception
-     */
-    public function commitTransaction(): void
-    {
-        $this->entityManager->getConnection()->commit();
-    }
-
-    /**
-     * Roll back a database transaction.
-     *
-     * @return void
-     * @throws Exception
-     */
-    public function rollBackTransaction(): void
-    {
-        $this->entityManager->getConnection()->rollBack();
     }
 
     /**
@@ -406,10 +372,10 @@ class ResourceTagsService extends AbstractDbService implements
         $list = $this->getDoctrineReference(UserListEntityInterface::class, $listOrId);
         $user = $this->getDoctrineReference(UserEntityInterface::class, $userOrId);
         $dql = 'DELETE FROM ' . ResourceTagsEntityInterface::class . ' rt '
-            . 'WHERE rt.user = :user AND rt.resource IS NULL AND rt.list = :list ';
+            . 'WHERE rt.user = :user AND rt.resource IS NULL AND rt.list = :list';
         $parameters = compact('user', 'list');
         if (null !== $tagId) {
-            $dqlWhere[] = 'AND rt.tag IN (:tag) ';
+            $dql .= ' AND rt.tag IN (:tag) ';
             $parameters['tag'] = (array)$tagId;
         }
         $query = $this->entityManager->createQuery($dql);

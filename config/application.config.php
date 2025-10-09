@@ -13,7 +13,8 @@ $modules = [
     'Laminas\Cache\Storage\Adapter\Memory',
     'Laminas\Form',
     'Laminas\Router',
-    'LmcRbacMvc',
+    'Lmc\Rbac',
+    'Lmc\Rbac\Mvc',
     'Laminas\I18n',
     'Laminas\Mvc\I18n',
     'SlmLocale',
@@ -34,9 +35,6 @@ if (APPLICATION_ENV === 'development' || APPLICATION_ENV === 'testing') {
     if (!isset($_SERVER['HTTP_X_VUFIND_DISABLE_WHOOPS'])) {
         $modules[] = 'WhoopsErrorHandler';
     }
-    $modules[] = 'VuFindDevTools';
-}
-if (APPLICATION_ENV === 'development') {
     $modules[] = 'VuFindDevTools';
 }
 if ($localModules = getenv('VUFIND_LOCAL_MODULES')) {
