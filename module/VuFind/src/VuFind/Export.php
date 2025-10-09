@@ -107,6 +107,10 @@ class Export
         foreach ($matches[1] as $current) {
             $parts = explode('|', $current);
             switch ($parts[0]) {
+                case 'route':
+                    $urlHelper = $this->viewRenderer->plugin('url');
+                    $template = str_replace('{' . $current . '}', $urlHelper($parts[1] ?? '??'), $template);
+                    break;
                 case 'config':
                 case 'encodedConfig':
                     if (null !== ($configValue = $this->mainConfig[$parts[1]][$parts[2]] ?? null)) {
@@ -186,8 +190,11 @@ class Export
                 }
             }
             return $retVal->asXML();
+        } elseif (in_array('Content-type: application/json', $this->getHeaders($format))) {
+            // JSON mode -- create a JSON array from the individual JSON documents:
+            return json_encode(array_map('json_decode', $parts));
         } else {
-            // Not in XML mode -- just concatenate everything together:
+            // Not in XML or JSON mode -- just concatenate everything together:
             return implode('', $parts);
         }
     }

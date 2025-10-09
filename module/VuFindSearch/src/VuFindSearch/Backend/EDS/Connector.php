@@ -32,7 +32,7 @@
 namespace VuFindSearch\Backend\EDS;
 
 use Laminas\Http\Client as HttpClient;
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 
 /**
  * EBSCO EDS API Connector

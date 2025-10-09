@@ -71,7 +71,7 @@ class FavoriteFacetsFactory implements \Laminas\ServiceManager\Factory\FactoryIn
         }
         $capabilities = $container->get(\VuFind\Config\AccountCapabilities::class);
         return new $requestedName(
-            $container->get(\VuFind\Config\PluginManager::class),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class),
             $capabilities->getTagSetting()
         );
     }

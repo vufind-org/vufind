@@ -137,7 +137,7 @@ class OnlinePaymentController extends AbstractAdmin
      */
     public function resolveAction()
     {
-        $id = $this->params()->fromRoute('id');
+        $id = (int)$this->params()->fromRoute('id');
         $paymentService = $this->getDbService(PaymentServiceInterface::class);
         $paymentEntity = $paymentService->getPaymentById($id);
         if ($this->formWasSubmitted('resolve-confirm')) {

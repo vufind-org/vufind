@@ -62,32 +62,16 @@ class ExpandFacets implements RecommendInterface
     protected $searchObject;
 
     /**
-     * Configuration loader
-     *
-     * @var \VuFind\Config\PluginManager
-     */
-    protected $configLoader;
-
-    /**
-     * Empty result set (used by the template as the basis for URL generation)
-     *
-     * @var \VuFind\Search\Solr\Results
-     */
-    protected $emptyResults;
-
-    /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
-     * @param \VuFind\Search\Solr\Results  $emptyResults Empty result set (used
+     * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
+     * @param \VuFind\Search\Solr\Results           $emptyResults  Empty result set (used
      * by the template as the basis for URL generation)
      */
     public function __construct(
-        \VuFind\Config\PluginManager $configLoader,
-        \VuFind\Search\Solr\Results $emptyResults
+        protected \VuFind\Config\ConfigManagerInterface $configManager,
+        protected \VuFind\Search\Solr\Results $emptyResults
     ) {
-        $this->configLoader = $configLoader;
-        $this->emptyResults = $emptyResults;
     }
 
     /**
@@ -108,11 +92,10 @@ class ExpandFacets implements RecommendInterface
         $iniName = $settings[1] ?? 'facets';
 
         // Load the desired facet information...
-        $config = $this->configLoader->get($iniName);
+        $config = $this->configManager->getConfigArray($iniName);
 
         // All standard facets to display:
-        $this->facets = isset($config->$mainSection) ?
-            $config->$mainSection->toArray() : [];
+        $this->facets = $config[$mainSection] ?? [];
     }
 
     /**

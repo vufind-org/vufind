@@ -70,7 +70,7 @@ class RelatedFactory implements FactoryInterface
         }
         return new $requestedName(
             $container->get(\VuFind\Related\PluginManager::class),
-            $container->get(\VuFind\Config\PluginManager::class),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class),
             $container->get(\VuFind\Search\Options\PluginManager::class)
         );
     }

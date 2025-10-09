@@ -90,29 +90,15 @@ abstract class AbstractSearchObject implements RecommendInterface
     protected $requestParam;
 
     /**
-     * Search runner
-     *
-     * @var SearchRunner
-     */
-    protected $runner;
-
-    /**
-     * Config PluginManager
-     *
-     * @var \VuFind\Config\PluginManager
-     */
-    protected $configManager;
-
-    /**
      * Constructor
      *
-     * @param SearchRunner                 $runner        Search runner
-     * @param \VuFind\Config\PluginManager $configManager Config manager
+     * @param SearchRunner                          $runner        Search runner
+     * @param \VuFind\Config\ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(SearchRunner $runner, \VuFind\Config\PluginManager $configManager)
-    {
-        $this->runner = $runner;
-        $this->configManager = $configManager;
+    public function __construct(
+        protected SearchRunner $runner,
+        protected \VuFind\Config\ConfigManagerInterface $configManager
+    ) {
     }
 
     /**
@@ -179,14 +165,13 @@ abstract class AbstractSearchObject implements RecommendInterface
             // Set any filters configured for this search
             if (!empty($this->filterIniSection)) {
                 $ini = $params->getOptions()->getSearchIni();
-                $config = $this->configManager->get($ini);
-                try {
-                    $filters = $config->{$this->filterIniSection}->toArray() ?? [];
-                } catch (\Error $e) {
+                $config = $this->configManager->getConfigArray($ini);
+                if (!isset($config[$this->filterIniSection])) {
                     throw new \Exception(
                         "No section found matching '$this->filterIniSection' in $ini.ini."
                     );
                 }
+                $filters = $config[$this->filterIniSection] ?? [];
                 foreach ($filters as $filter) {
                     $params->addFilter($filter);
                 }

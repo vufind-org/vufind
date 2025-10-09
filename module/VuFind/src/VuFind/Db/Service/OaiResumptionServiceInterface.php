@@ -30,6 +30,7 @@
 
 namespace VuFind\Db\Service;
 
+use DateTime;
 use VuFind\Db\Entity\OaiResumptionEntityInterface;
 
 /**
@@ -95,13 +96,13 @@ interface OaiResumptionServiceInterface
     /**
      * Create and persist a new resumption token.
      *
-     * @param array $params Parameters associated with the token.
-     * @param int   $expire Expiration time for token (Unix timestamp).
+     * @param array    $params Parameters associated with the token.
+     * @param DateTime $expiry Expiration time for the token.
      *
      * @return OaiResumptionEntityInterface
      * @throws \Exception
      */
-    public function createAndPersistToken(array $params, int $expire): OaiResumptionEntityInterface;
+    public function createAndPersistToken(array $params, DateTime $expiry): OaiResumptionEntityInterface;
 
     /**
      * Create a OaiResumption entity object.

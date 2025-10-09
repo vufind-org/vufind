@@ -44,7 +44,7 @@ use function intval;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class ProxyUrl extends \Laminas\View\Helper\AbstractHelper implements
-    \Laminas\Log\LoggerAwareInterface,
+    \Psr\Log\LoggerAwareInterface,
     \VuFindHttp\HttpServiceAwareInterface
 {
     use \VuFind\Cache\CacheTrait;

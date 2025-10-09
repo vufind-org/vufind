@@ -29,7 +29,7 @@
 
 namespace VuFind\View\Helper\Root;
 
-use VuFind\Config\PluginManager;
+use VuFind\Config\ConfigManagerInterface;
 
 /**
  * Config view helper
@@ -42,13 +42,6 @@ use VuFind\Config\PluginManager;
  */
 class Config extends \Laminas\View\Helper\AbstractHelper
 {
-    /**
-     * Configuration plugin manager
-     *
-     * @var PluginManager
-     */
-    protected $configLoader;
-
     /**
      * Display date format
      *
@@ -66,11 +59,10 @@ class Config extends \Laminas\View\Helper\AbstractHelper
     /**
      * Config constructor.
      *
-     * @param PluginManager $configLoader Configuration loader
+     * @param ConfigManagerInterface $configManager Configuration manager
      */
-    public function __construct(PluginManager $configLoader)
+    public function __construct(protected ConfigManagerInterface $configManager)
     {
-        $this->configLoader = $configLoader;
     }
 
     /**
@@ -82,7 +74,7 @@ class Config extends \Laminas\View\Helper\AbstractHelper
      */
     public function get($config)
     {
-        return $this->configLoader->get($config);
+        return $this->configManager->getConfigObject($config);
     }
 
     /**

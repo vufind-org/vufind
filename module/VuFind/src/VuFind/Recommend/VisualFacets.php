@@ -73,8 +73,8 @@ class VisualFacets extends AbstractFacets
         $iniName = $settings[1] ?? 'facets';
 
         // Load the desired facet information:
-        $config = $this->configLoader->get($iniName);
-        $this->facets = $config->$mainSection->visual_facets
+        $config = $this->configManager->getConfigArray($iniName);
+        $this->facets = $config[$mainSection]['visual_facets']
             ?? 'callnumber-first,topic_facet';
     }
 

@@ -65,9 +65,9 @@ class AbstractExpireCommand extends Command
     protected $rowLabel = 'rows';
 
     /**
-     * Minimum legal age (in days) of rows to delete.
+     * Minimum legal age (in days) of rows to delete or null if age isn't applicable.
      *
-     * @var int
+     * @var int|float|null
      */
     protected $minAge = 2;
 
@@ -75,7 +75,7 @@ class AbstractExpireCommand extends Command
      * Default age of rows (in days) to delete. $minAge is used if $defaultAge is
      * null.
      *
-     * @var int|null
+     * @var int|float|null
      */
     protected $defaultAge = null;
 
@@ -120,7 +120,9 @@ class AbstractExpireCommand extends Command
                 InputOption::VALUE_REQUIRED,
                 'Milliseconds to sleep between batches',
                 100
-            )->addArgument(
+            );
+        if (null !== $this->minAge) {
+            $this->addArgument(
                 'age',
                 InputArgument::OPTIONAL,
                 'Minimum age (in days, starting from '
@@ -128,6 +130,7 @@ class AbstractExpireCommand extends Command
                     . ") of {$this->rowLabel} to expire",
                 $this->defaultAge ?? $this->minAge
             );
+        }
     }
 
     /**
@@ -153,12 +156,12 @@ class AbstractExpireCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         // Collect arguments/options:
-        $daysOld = floatval($input->getArgument('age'));
+        $daysOld = $input->hasArgument('age') ? floatval($input->getArgument('age')) : 0;
         $batchSize = $input->getOption('batch');
         $sleepTime = $input->getOption('sleep');
 
         // Abort if we have an invalid expiration age.
-        if ($daysOld < $this->minAge) {
+        if (null !== $this->minAge && $daysOld < $this->minAge) {
             $output->writeln(
                 str_replace(
                     '%%age%%',

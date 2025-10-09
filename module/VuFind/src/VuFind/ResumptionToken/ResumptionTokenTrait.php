@@ -29,6 +29,7 @@
 
 namespace VuFind\ResumptionToken;
 
+use DateTime;
 use VuFind\Db\Entity\OaiResumptionEntityInterface;
 use VuFind\Db\Service\OaiResumptionServiceInterface;
 
@@ -80,8 +81,8 @@ trait ResumptionTokenTrait
     ): OaiResumptionEntityInterface {
         $params['cursor'] = $cursor;
         $params['cursorMark'] = $cursorMark;
-        $expire = time() + $lifetime;
-        return $this->resumptionService->createAndPersistToken($params, $expire);
+        $expiry = new DateTime("now + $lifetime seconds");
+        return $this->resumptionService->createAndPersistToken($params, $expiry);
     }
 
     /**

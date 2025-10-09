@@ -29,7 +29,7 @@
 
 namespace VuFindSearch\Backend\EDS;
 
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Config\Config;
 
 use function array_key_exists;

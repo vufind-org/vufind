@@ -29,7 +29,7 @@
 
 namespace VuFind\View\Helper\Root;
 
-use VuFind\Config\PluginManager as ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Related\PluginManager as RelatedManager;
 use VuFind\Search\Options\PluginManager as OptionsManager;
 
@@ -47,41 +47,17 @@ class Related extends \Laminas\View\Helper\AbstractHelper
     use ClassBasedTemplateRendererTrait;
 
     /**
-     * Config manager
-     *
-     * @var ConfigManager
-     */
-    protected $configManager;
-
-    /**
-     * Plugin manager for search options.
-     *
-     * @var OptionsManager
-     */
-    protected $optionsManager;
-
-    /**
-     * Plugin manager for related record modules.
-     *
-     * @var RelatedManager
-     */
-    protected $pluginManager;
-
-    /**
      * Constructor
      *
-     * @param RelatedManager $pluginManager Plugin manager for related record modules
-     * @param ConfigManager  $cm            Configuration manager
-     * @param OptionsManager $om            Search options manager
+     * @param RelatedManager         $relatedPluginManager Plugin manager for related record modules
+     * @param ConfigManagerInterface $configManager        Configuration manager
+     * @param OptionsManager         $optionsManager       Search options plugin manager
      */
     public function __construct(
-        RelatedManager $pluginManager,
-        ConfigManager $cm,
-        OptionsManager $om
+        protected RelatedManager $relatedPluginManager,
+        protected ConfigManagerInterface $configManager,
+        protected OptionsManager $optionsManager
     ) {
-        $this->pluginManager = $pluginManager;
-        $this->configManager = $cm;
-        $this->optionsManager = $om;
     }
 
     /**
@@ -91,7 +67,7 @@ class Related extends \Laminas\View\Helper\AbstractHelper
      *
      * @return array
      */
-    protected function getConfigForSource($source)
+    protected function getConfigForSource(string $source): array
     {
         $options = $this->optionsManager->get($source);
         $configName = $options->getSearchIni();
@@ -99,8 +75,8 @@ class Related extends \Laminas\View\Helper\AbstractHelper
         if ($configName === 'searches') {
             $configName = 'config';
         }
-        $config = $this->configManager->get($configName);
-        return $config->Record->related ?? [];
+        $config = $this->configManager->getConfigArray($configName);
+        return $config['Record']['related'] ?? [];
     }
 
     /**
@@ -110,7 +86,7 @@ class Related extends \Laminas\View\Helper\AbstractHelper
      *
      * @return array
      */
-    public function getList(\VuFind\RecordDriver\AbstractBase $driver)
+    public function getList(\VuFind\RecordDriver\AbstractBase $driver): array
     {
         $retVal = [];
         $config = $this->getConfigForSource($driver->getSearchBackendIdentifier());
@@ -118,8 +94,8 @@ class Related extends \Laminas\View\Helper\AbstractHelper
             $parts = explode(':', $current, 2);
             $type = $parts[0];
             $params = $parts[1] ?? null;
-            if ($this->pluginManager->has($type)) {
-                $plugin = $this->pluginManager->get($type);
+            if ($this->relatedPluginManager->has($type)) {
+                $plugin = $this->relatedPluginManager->get($type);
                 $plugin->init($params, $driver);
                 $retVal[] = $plugin;
             } else {
@@ -137,7 +113,7 @@ class Related extends \Laminas\View\Helper\AbstractHelper
      *
      * @return string
      */
-    public function render($related)
+    public function render(\VuFind\Related\RelatedInterface $related): string
     {
         $template = 'Related/%s.phtml';
         $className = $related::class;
