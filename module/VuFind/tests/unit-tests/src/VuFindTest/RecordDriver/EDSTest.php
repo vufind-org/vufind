@@ -655,6 +655,33 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test getCleanDOI for a record when it's in the [Items] block but
+     * is formatted as a URL.
+     *
+     * @return void
+     */
+    public function testGetCleanDOIFromUrl(): void
+    {
+        $driver = $this->getDriver('valid-eds-record-2');
+
+        $cleanDoi = '10.1016/j.jveb.2025.02.006';
+        $fields = $driver->getRawData();
+
+        foreach([
+            $cleanDoi,
+            'http://doi.org/' . $cleanDoi,      # http, and no subdomain
+            'https://dx.doi.org/' . $cleanDoi,  # https, and subdomain
+            '&lt;link linkTarget="URL" linkWindow="_blank" linkTerm="http://dx.doi.org/' 
+                . $cleanDoi 
+                . '"&gt;http://dx.doi.org/'.$cleanDoi.'&lt;/link&gt;',  # link wrapper
+        ] as $testDoi) {
+            $fields['Items'][10]['Data'] = $testDoi;
+            $driver->setRawData($fields);
+            $this->assertEquals($cleanDoi, $driver->getCleanDOI());
+        }
+    }
+
+    /**
      * Test getCleanDOI for a record when DOI is in bib data.
      *
      * @return void
