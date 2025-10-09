@@ -76,8 +76,8 @@ class TitleHolds
     /**
      * Public method for getting title level holds
      *
-     * @param string $id A Bib ID
-     * @param array $linkOverrides   Optional id and source to override standard record driver
+     * @param string $id            A Bib ID
+     * @param array  $linkOverrides Optional id and source to override standard record driver
      *
      * @return string|bool URL to place hold, or false if hold option unavailable
      *
@@ -195,11 +195,12 @@ class TitleHolds
     /**
      * Protected method for vufind (i.e. User) defined holds
      *
-     * @param string $id     A Bib ID
-     * @param string $type   The holds mode to be applied from:
-     * (disabled, always, availability, driver)
-     * @param array  $patron Patron
-     * @param array  $linkOverrides   Optional id and source to override standard record driver
+     * @param string $id            A Bib ID
+     * @param string $type          The holds mode to be applied from:
+     *                              (disabled, always, availability,
+     *                              driver)
+     * @param array  $patron        Patron
+     * @param array  $linkOverrides Optional id and source to override standard record driver
      *
      * @return mixed A url on success, boolean false on failure
      */
@@ -252,9 +253,9 @@ class TitleHolds
      *
      * Supplies the form details required to place a hold
      *
-     * @param array $data     An array of item data
-     * @param array $HMACKeys An array of keys to hash
-     * @param array $linkOverrides   Optional id and source to override standard record driver
+     * @param array $data          An array of item data
+     * @param array $HMACKeys      An array of keys to hash
+     * @param array $linkOverrides Optional id and source to override standard record driver
      *
      * @return array          Details for generating URL
      */
