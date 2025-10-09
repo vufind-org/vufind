@@ -70,7 +70,8 @@ class FacetsFactory implements FactoryInterface
         }
         return new $requestedName(
             $container->get(\VuFind\Search\Results\PluginManager::class),
-            $container->get('ControllerPluginManager')->get('url')
+            $container->get('ControllerPluginManager')->get('url'),
+            $container->get('Request'),
         );
     }
 }

@@ -95,16 +95,25 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
     protected $url;
 
     /**
+     * Request
+     *
+     * @var HttpRequest
+     */
+    protected $request;
+
+    /**
      * Constructor
      *
      * @param ResultsManager $rm      Results manager
      * @param Url            $url     URL helper
+     * @param HttpRequest    $req     Request for parameters
      * @param array          $options Settings (optional)
      */
-    public function __construct(ResultsManager $rm, Url $url, array $options = [])
+    public function __construct(ResultsManager $rm, Url $url, HttpRequest $req, array $options = [])
     {
         $this->resultsManager = $rm;
         $this->url = $url;
+        $this->request = $req;
         $this->setOptions($options);
     }
 
@@ -139,9 +148,8 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
         }
 
         // Add pagination params
-        $request = new HttpRequest();
-        $params->setPage($request->getQuery('page', 1));
-        if ($limit = $request->getQuery('limit', false)) {
+        $params->setPage($this->request->getQuery('page', 1));
+        if ($limit = $this->request->getQuery('limit', false)) {
             $params->setLimit($limit);
         }
     }

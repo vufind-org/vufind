@@ -32,7 +32,9 @@
   <?php
     $groupId = $channel['groupId'] ?? $channel['providerId'];
     $channelID = 'channel-' . md5(serialize($channel));
-        $channelRoot = $this->url('channels-home') . '?' . (empty($queryParams) ? '' : $this->escapeHtmlAttr($queryParams . '&')) . 'layout=lightbox';
+    $channelRoot = $this->url('channels-home') . '?' .
+      (empty($queryParams) ? '' : $this->escapeHtmlAttr($queryParams . '&')) .
+      'layout=lightbox';
   ?>
   <div class="channel">
     <div class="channel-title">
@@ -40,7 +42,7 @@
       <?php if (!empty($channel['links'])): ?>
         <div class="dropdown">
           <button class="btn btn-default dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-            <span class="visually-hidden">Channel Options</span>
+            <span class="visually-hidden"><?=$this->transEsc('channel_options') ?></span>
             <span aria-hidden="true"><?=$this->icon('ui-dots-menu') ?></span>
           </button>
           <ul class="dropdown-menu">
