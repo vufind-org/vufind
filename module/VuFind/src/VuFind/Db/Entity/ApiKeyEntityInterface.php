@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Entity model interface for access tokens.
+ * Entity model interface for api_key table
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2024.
+ * Copyright (C) Villanova University 2023.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,7 +22,7 @@
  *
  * @category VuFind
  * @package  Database
- * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
@@ -32,20 +32,20 @@ namespace VuFind\Db\Entity;
 use DateTime;
 
 /**
- * Entity model interface for access tokens.
+ * Entity model interface for api_key table
  *
  * @category VuFind
  * @package  Database
- * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-interface AccessTokenEntityInterface extends EntityInterface
+interface ApiKeyEntityInterface extends EntityInterface
 {
     /**
-     * Set access token identifier.
+     * Set API key identifier.
      *
-     * @param string $id Access Token Identifier
+     * @param string $id API Key Identifier
      *
      * @return static
      */
@@ -59,20 +59,20 @@ interface AccessTokenEntityInterface extends EntityInterface
     public function getId(): ?string;
 
     /**
-     * Get type of access token.
+     * Get title.
      *
-     * @return ?string
+     * @return string
      */
-    public function getType(): ?string;
+    public function getTitle(): string;
 
     /**
-     * Set type of access token.
+     * Set title
      *
-     * @param ?string $type Access Token Type
+     * @param string $title Title
      *
-     * @return static
+     * @return string
      */
-    public function setType(?string $type): static;
+    public function setTitle(string $title): static;
 
     /**
      * Set user.
@@ -84,7 +84,7 @@ interface AccessTokenEntityInterface extends EntityInterface
     public function setUser(?UserEntityInterface $user): static;
 
     /**
-     * Get user.
+     * Get user ID.
      *
      * @return ?UserEntityInterface
      */
@@ -107,23 +107,23 @@ interface AccessTokenEntityInterface extends EntityInterface
     public function setCreated(DateTime $dateTime): static;
 
     /**
-     * Get data.
+     * Get token.
      *
-     * @return ?string
+     * @return string
      */
-    public function getData(): ?string;
+    public function getToken(): string;
 
     /**
-     * Set data.
+     * Set token.
      *
-     * @param ?string $data Data
+     * @param string $token Token
      *
      * @return static
      */
-    public function setData(?string $data): static;
+    public function setToken(string $token): static;
 
     /**
-     * Is the access token revoked?
+     * Is the API key revoked?
      *
      * @return bool
      */
@@ -137,4 +137,20 @@ interface AccessTokenEntityInterface extends EntityInterface
      * @return static
      */
     public function setRevoked(bool $revoked): static;
+
+    /**
+     * Get last used date.
+     *
+     * @return DateTime
+     */
+    public function getLastUsed(): DateTime;
+
+    /**
+     * Set last used date.
+     *
+     * @param DateTime $dateTime Last used date
+     *
+     * @return static
+     */
+    public function setLastUsed(DateTime $dateTime): static;
 }

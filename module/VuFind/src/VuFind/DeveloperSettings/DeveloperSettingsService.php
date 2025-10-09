@@ -27,14 +27,16 @@
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
-namespace VuFind\ApiKey;
+namespace VuFind\DeveloperSettings;
 
 use DateTime;
-use VuFind\Db\Entity\AccessTokenEntityInterface;
+use VuFind\Db\Entity\ApiKeyEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Service\AccessTokenService;
+use VuFind\Db\Service\ApiKeyService;
+use VuFindApi\Controller\ApiInterface;
 
 use function count;
+use function in_array;
 
 /**
  * Service for managing API keys
@@ -45,7 +47,7 @@ use function count;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class ApiKeyService
+class DeveloperSettingsService
 {
     /**
      * Limit for how many API keys can a user have. Default is 10.
@@ -55,13 +57,20 @@ class ApiKeyService
     protected int $keyLimitPerUser;
 
     /**
+     * Update interval to update last_used values in the database.
+     *
+     * @var int
+     */
+    protected int $updateInterval = 5;
+
+    /**
      * Constructor.
      *
-     * @param AccessTokenService $accessTokenService Access token service
-     * @param array              $apiKeySettings     Section API_Keys from main configuration.
+     * @param ApiKeyService $apiKeyService  API key database service
+     * @param array         $apiKeySettings Section API_Keys from main configuration.
      */
     public function __construct(
-        protected AccessTokenService $accessTokenService,
+        protected ApiKeyService $apiKeyService,
         protected array $apiKeySettings
     ) {
         $this->keyLimitPerUser = $apiKeySettings['key_limit'] ?? 5;
@@ -78,7 +87,7 @@ class ApiKeyService
     {
         $salt = $this->apiKeySettings['token_salt'] ?? null;
         if (!$salt) {
-            throw new \Exception('ApiKeyService: Salt missing');
+            throw new \Exception('DeveloperSettingsService: Salt missing');
         }
         $valuesForToken = [
             $user->getEmailVerified()->format('Y-m-d'),
@@ -95,30 +104,27 @@ class ApiKeyService
      *
      * @param UserEntityInterface $user User
      *
-     * @return AccessTokenEntityInterface[]
+     * @return ApiKeyEntityInterface[]
      */
     public function getApiKeysForUser(UserEntityInterface $user): array
     {
-        return $this->accessTokenService->getTokensForUser(
-            $user,
-            AccessTokenService::TYPE_API_KEY
-        );
+        return $this->apiKeyService->getApiKeysForUser($user);
     }
 
     /**
-     * Check if API key is valid to be used.
+     * Get API key using token.
      *
      * @param string $token Token to search for.
      *
-     * @return bool If exists and the access token has not been revoked.
+     * @return ?ApiKeyEntityInterface
      */
-    public function isTokenValid(string $token): bool
+    public function getApiKeyByToken(string $token): ?ApiKeyEntityInterface
     {
-        $key = $this->accessTokenService->getByDataAndType(
-            $token,
-            AccessTokenService::TYPE_API_KEY
-        );
-        return $key && !$key->isRevoked();
+        $apiKey = $this->apiKeyService->getByToken($token);
+        if ($apiKey) {
+            $this->updateApiKeyTimeStamp($apiKey);
+        }
+        return $apiKey;
     }
 
     /**
@@ -127,37 +133,43 @@ class ApiKeyService
      * @param UserEntityInterface $user  User
      * @param string              $title Title for the API key
      *
-     * @return string|false API key token on success, false on failure
+     * @return ApiKeyEntityInterface|false API key entity on success, false on failure.
      */
-    public function generateApiKeyForUser(UserEntityInterface $user, string $title): string|false
+    public function generateApiKeyForUser(UserEntityInterface $user, string $title): ApiKeyEntityInterface|false
     {
-        $tokens = $this->accessTokenService->getTokensForUser(
-            $user,
-            AccessTokenService::TYPE_API_KEY
-        );
+        $tokens = $this->apiKeyService->getApiKeysForUser($user);
         if ($this->apiKeysBlocked($tokens)) {
             return false;
         }
         // Generate unique id from date and users id.
-        $date = new DateTime();
-        $id = hash('sha256', $date->format('Y-m-d H:i:s') . '||' . $user->getId() . '||' . $title);
-        $newKey = $this->accessTokenService->createEntity();
-        $newKey->setId($id);
-        $tokenHash = $this->createRandomToken($user);
-        $newKey->setData($tokenHash)
+        $newKey = $this->apiKeyService->createEntity();
+        $newKey->setToken($this->createRandomToken($user))
             ->setUser($user)
-            ->setExpires(false)
-            ->setType(AccessTokenService::TYPE_API_KEY)
-            ->setCreated($date)
+            ->setCreated(new DateTime())
+            ->setLastUsed(new DateTime())
             ->setTitle($title);
-        $this->accessTokenService->persistEntity($newKey);
-        return $tokenHash;
+        $this->apiKeyService->persistEntity($newKey);
+        return $newKey;
+    }
+
+    /**
+     * Set the last used value to the API key, do this only every 5 minutes
+     * to avoid excessive database queries.
+     *
+     * @param ApiKeyEntityInterface $apiKey API key
+     *
+     * @return void
+     */
+    public function updateApiKeyTimeStamp(ApiKeyEntityInterface $apiKey): void
+    {
+        if (time() - $apiKey->getCreated()->getTimestamp() < $this->updateInterval * 60) {
+        }
     }
 
     /**
      * Can the user generate more API keys.
      *
-     * @param AccessTokenEntityInterface[] $keys Users keys
+     * @param ApiKeyEntityInterface[] $keys Users keys
      *
      * @return bool
      */
@@ -175,20 +187,54 @@ class ApiKeyService
      * Delete an API key for a user
      *
      * @param UserEntityInterface $user User
-     * @param string              $id   API key id
+     * @param int                 $id   API key id
      *
      * @return bool
      */
-    public function deleteApiKeyForUser(UserEntityInterface $user, string $id): bool
+    public function deleteApiKeyForUser(UserEntityInterface $user, int $id): bool
     {
-        $key = $this->accessTokenService->getByUserIdAndType(
+        $key = $this->apiKeyService->getByUserAndId(
             $user,
-            (string)$id,
-            AccessTokenService::TYPE_API_KEY
+            $id
         );
-        if ($key && !$key->isRevoked()) {
-            $this->accessTokenService->deleteEntity($key);
+        if (false === $key?->isRevoked()) {
+            $this->apiKeyService->deleteEntity($key);
             return true;
+        }
+        return false;
+    }
+
+    /**
+     * Check if API keys are enabled.
+     *
+     * @return bool
+     */
+    public function apiKeysEnabled(): bool
+    {
+        return in_array(
+            $this->apiKeySettings['mode'] ?? ApiInterface::API_KEYS_DISABLED,
+            [
+                ApiInterface::API_KEYS_ENABLED,
+                ApiInterface::API_KEYS_ENFORCED,
+            ]
+        );
+    }
+
+    /**
+     * Check provided token.
+     *
+     * @param ?string $token Token to search for API key
+     *
+     * @return bool
+     */
+    public function isTokenValid(?string $token): bool
+    {
+        $apiKey = $token ? $this->getApiKeyByToken($token) : null;
+        if ($this->apiKeySettings['mode'] === ApiInterface::API_KEYS_ENABLED) {
+            return true;
+        }
+        if ($this->apiKeySettings['mode'] === ApiInterface::API_KEYS_ENFORCED) {
+            return $apiKey && !$apiKey->isRevoked();
         }
         return false;
     }

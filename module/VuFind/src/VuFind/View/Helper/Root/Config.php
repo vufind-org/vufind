@@ -30,6 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 use VuFind\Config\PluginManager;
+use VuFindApi\Controller\ApiInterface;
 
 use function in_array;
 
@@ -215,6 +216,12 @@ class Config extends \Laminas\View\Helper\AbstractHelper
      */
     public function apiKeysEnabled(): bool
     {
-        return in_array($this->get('config')->API_Keys->mode ?? 'disabled', ['enabled', 'enforced']);
+        return in_array(
+            $this->get('config')->API_Keys->mode ?? ApiInterface::API_KEYS_DISABLED,
+            [
+                ApiInterface::API_KEYS_ENABLED,
+                ApiInterface::API_KEYS_ENFORCED,
+            ]
+        );
     }
 }

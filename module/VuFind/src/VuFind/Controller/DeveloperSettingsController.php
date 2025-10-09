@@ -29,10 +29,8 @@
 
 namespace VuFind\Controller;
 
-use VuFind\ApiKey\ApiKeyService;
+use VuFind\DeveloperSettings\DeveloperSettingsService;
 use VuFind\Exception\Forbidden;
-
-use function in_array;
 
 /**
  * Controller for developer settings i.e API keys
@@ -55,15 +53,14 @@ class DeveloperSettingsController extends AbstractBase
         if (!$user = $this->getUser()) {
             return $this->forceLogin();
         }
+        $developerSettingsService = $this->getService(DeveloperSettingsService::class);
         // If not submitted, are we logged in?
-        if (!$this->apiKeysEnabled()) {
+        if (!$developerSettingsService->apiKeysEnabled()) {
             throw new Forbidden('Developer settings disabled.');
         }
-
-        $apiKeyService = $this->getService(ApiKeyService::class);
         $view = $this->createViewModel();
-        $view->apiKeys = $apiKeyService->getApiKeysForUser($user);
-        $view->createAllowed = !$apiKeyService->apiKeysBlocked($view->apiKeys);
+        $view->apiKeys = $developerSettingsService->getApiKeysForUser($user);
+        $view->createAllowed = !$developerSettingsService->apiKeysBlocked($view->apiKeys);
         return $view;
     }
 
@@ -77,22 +74,28 @@ class DeveloperSettingsController extends AbstractBase
         if (!$user = $this->getUser()) {
             return $this->forceLogin();
         }
+        $developerSettingsService = $this->getService(DeveloperSettingsService::class);
         // If not submitted, are we logged in?
-        if (!$this->apiKeysEnabled() || !$this->permission()->isAuthorized('feature.Developer')) {
+        if (!$developerSettingsService->apiKeysEnabled() || !$this->permission()->isAuthorized('feature.Developer')) {
             throw new Forbidden('Access denied.');
         }
 
-        if ($this->formWasSubmitted()) {
-            $title = $this->params()->fromPost('title') ?? $this->params()->fromQuery('title', '');
-            if ($title && $token = $this->getService(ApiKeyService::class)->generateApiKeyForUser($user, $title)) {
-                $successMsg = $this->translate('Developer::api_key_generation_success', ['%%TOKEN%%' => $token]);
-                $this->flashMessenger()->addMessage($successMsg, 'success');
-            } else {
-                $this->flashMessenger()->addMessage('An error has occurred', 'error');
-            }
-            return $this->redirect()->toRoute('developersettings-displaysettings');
-        }
         $view = $this->createViewModel();
+        if ($this->formWasSubmitted()) {
+            if ($title = $this->fromPostAndQuery('title')) {
+                $apiKey = $developerSettingsService->generateApiKeyForUser($user, $title);
+                if ($apiKey) {
+                    $successMsg = $this->translate(
+                        'Developer::api_key_generation_success',
+                        ['%%TOKEN%%' => $apiKey->getToken()]
+                    );
+                    $this->flashMessenger()->addMessage($successMsg, 'success');
+                    return $view;
+                }
+            }
+            $this->flashMessenger()->addMessage('An error has occurred', 'error');
+        }
+
         return $view;
     }
 
@@ -106,28 +109,22 @@ class DeveloperSettingsController extends AbstractBase
         if (!$user = $this->getUser()) {
             return $this->forceLogin();
         }
+        $developerSettingsService = $this->getService(DeveloperSettingsService::class);
         // If not submitted, are we logged in?
-        if (!$this->apiKeysEnabled() || !$this->permission()->isAuthorized('feature.Developer')) {
+        if (!$developerSettingsService->apiKeysEnabled() || !$this->permission()->isAuthorized('feature.Developer')) {
             throw new Forbidden('Access denied.');
         }
-        if ($this->params()->fromQuery('confirm', '') === '1') {
-            $id = $this->params()->fromPost('id') ?? $this->params()->fromQuery('id', '');
-            if ($this->getService(ApiKeyService::class)->deleteApiKeyForUser($user, $id)) {
+        if ($this->fromPostAndQuery('confirm') === '1') {
+            $id = $this->fromPostAndQuery('id', false);
+            if (
+                false !== $id
+                && $developerSettingsService->deleteApiKeyForUser($user, $id)
+            ) {
                 $this->flashMessenger()->addMessage('Developer::api_key_deletion_success', 'success');
             } else {
                 $this->flashMessenger()->addMessage('An error has occurred', 'error');
             }
         }
         return $this->redirect()->toRoute('developersettings-displaysettings');
-    }
-
-    /**
-     * Check if API keys are enabled.
-     *
-     * @return bool
-     */
-    protected function apiKeysEnabled(): bool
-    {
-        return in_array($this->getConfig()->API_Keys?->mode ?? 'disabled', ['enabled', 'enforced']);
     }
 }

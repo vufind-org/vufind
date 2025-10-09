@@ -27,7 +27,7 @@
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
-namespace VuFind\ApiKey;
+namespace VuFind\DeveloperSettings;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -35,7 +35,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 use VuFind\Config\ConfigManagerInterface;
-use VuFind\Db\Service\AccessTokenService;
+use VuFind\Db\Service\ApiKeyService;
 use VuFind\Db\Service\PluginManager;
 
 /**
@@ -47,7 +47,7 @@ use VuFind\Db\Service\PluginManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class ApiKeyServiceFactory implements FactoryInterface
+class DeveloperSettingsServiceFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -71,8 +71,9 @@ class ApiKeyServiceFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory!');
         }
+
         return new $requestedName(
-            $container->get(PluginManager::class)->get(AccessTokenService::class),
+            $container->get(PluginManager::class)->get(ApiKeyService::class),
             $container->get(ConfigManagerInterface::class)->getConfigArray('config')['API_Keys'] ?? []
         );
     }

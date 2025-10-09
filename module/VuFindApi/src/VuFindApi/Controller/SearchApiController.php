@@ -57,7 +57,6 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements
 {
     use ApiTrait;
     use \VuFind\ResumptionToken\ResumptionTokenTrait;
-    use \VuFind\ApiKey\ApiKeyTrait;
 
     /**
      * Default record fields to return if a request does not define the fields
@@ -263,7 +262,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements
             + $this->getRequest()->getPost()->toArray();
 
         if (!$this->checkRequestForApiKey()) {
-            return $this->getBadApiKeyResponse();
+            return $this->outputMissingAPIKey();
         }
         if (!isset($request['id'])) {
             return $this->output([], self::STATUS_ERROR, 400, 'Missing id');
@@ -319,7 +318,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements
             return $result;
         }
         if (!$this->checkRequestForApiKey()) {
-            return $this->getBadApiKeyResponse();
+            return $this->outputMissingAPIKey();
         }
         // Send both GET and POST variables to search class:
         $request = $this->getRequest()->getQuery()->toArray()

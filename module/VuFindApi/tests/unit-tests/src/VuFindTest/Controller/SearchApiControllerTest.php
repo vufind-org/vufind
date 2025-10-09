@@ -36,10 +36,12 @@ use Laminas\Http\Header\HeaderInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Stdlib\Parameters;
 use PHPUnit\Framework\MockObject\MockObject;
-use VuFind\ApiKey\ApiKeyService;
+use VuFind\Db\Entity\ApiKeyEntityInterface;
+use VuFind\Db\Service\ApiKeyService;
 use VuFind\Db\Service\OaiResumptionService;
 use VuFind\Db\Service\OaiResumptionServiceInterface;
 use VuFind\Db\Service\PluginManager as DbPluginManager;
+use VuFind\DeveloperSettings\DeveloperSettingsService;
 use VuFind\Http\PhpEnvironment\Request;
 use VuFind\Log\Logger;
 use VuFind\Record\Loader;
@@ -147,7 +149,7 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
             ],
             [
                 'code' => 401,
-                'content' => 'Provided API key is missing or invalid.',
+                'content' => '{"status":"UNAUTHORIZED","statusMessage":"Missing or invalid API key"}',
             ],
         ];
     }
@@ -198,8 +200,22 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
         $optionsPluginManager = $this->createMock(SearchPluginManager::class);
         $optionsPluginManager->expects($this->any())->method('get')->willReturn($solrOptions);
 
-        $apiKeyService = $this->createMock(ApiKeyService::class);
-        $apiKeyService->expects($this->any())->method('isTokenValid')->willReturn(true);
+        $developerSettingsService = $this->getMockBuilder(DeveloperSettingsService::class)
+            ->disableOriginalConstructor()->onlyMethods(['getApiKeyByToken'])->getMock();
+        $developerSettingsService->__construct(
+            $this->createMock(ApiKeyService::class),
+            $config['API_Keys'] ?? [],
+        );
+        $developerSettingsService->expects($this->any())->method('getApiKeyByToken')->willReturnCallback(
+            function ($token) {
+                if ($token) {
+                    $mock = $this->createMock(ApiKeyEntityInterface::class);
+                    $mock->expects($this->any())->method('isRevoked')->willReturn(false);
+                    return $mock;
+                }
+                return null;
+            }
+        );
 
         $mockRecord = $this->createMock(SolrMarc::class);
         $recordMap = [
@@ -236,7 +252,7 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
         $controller->expects($this->any())->method('getService')->willReturnMap([
             [SearchPluginManager::class, $optionsPluginManager],
             [Loader::class, $recordLoader],
-            [ApiKeyService::class, $apiKeyService],
+            [DeveloperSettingsService::class, $developerSettingsService],
             [Logger::class, $logger],
             [DbPluginManager::class, $dbPluginManager],
         ]);

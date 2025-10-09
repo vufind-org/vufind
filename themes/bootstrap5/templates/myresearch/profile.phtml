@@ -171,7 +171,7 @@
     <?=$this->partial($this->patronLoginView);?>
   <?php endif; ?>
 
-  <?php if ($this->developer()->isEnabled()): ?>
+  <?php if ($this->config()->apiKeysEnabled()): ?>
     <?php if ($this->permission()->allowDisplay('feature.Developer')): ?>
       <a href="<?=$this->url('developersettings-displaysettings');?>"><?=$this->icon('options') . ' ' . $this->transEsc('Developer::settings');?></a>
     <?php elseif ($block = $this->permission()->getAlternateContent('feature.Developer')): ?>

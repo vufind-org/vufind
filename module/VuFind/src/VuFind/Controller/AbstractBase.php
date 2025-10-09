@@ -932,4 +932,21 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         }
         return $this->auditEventService;
     }
+
+    /**
+     * Get params from post or query.
+     *
+     * @param ?string $key     Parameter key to get. If omitted and no default value
+     *                         is set, will return all parameters as an associative array.
+     * @param mixed   $default Default value to return if not found. If $key is omitted, has no effect.
+     *
+     * @return mixed
+     */
+    protected function fromPostAndQuery(?string $key = null, mixed $default = null): mixed
+    {
+        if (!$key) {
+            return $this->params()->fromPost() + $this->params()->fromQuery();
+        }
+        return $this->params()->fromPost($key) ?? $this->params()->fromQuery($key) ?? $default;
+    }
 }

@@ -379,18 +379,14 @@ DROP TABLE IF EXISTS "access_token";
 
 CREATE TABLE access_token (
 id varchar(255) NOT NULL,
-type varchar(128) NOT NULL,
 user_id int DEFAULT NULL,
 created timestamp NOT NULL default '2000-01-01 00:00:00',
 data text,
 revoked boolean NOT NULL DEFAULT '0',
-expires NOT NULL DEFAULT '1',
-title varchar(255) NOT NULL default '',
 PRIMARY KEY (id, type)
 );
 CREATE INDEX access_token_user_id_idx ON access_token (user_id);
-CREATE INDEX access_token_expires_idx ON access_token (expires);
-CREATE INDEX access_token_title_idx ON access_token (title);
+
 --
 -- Table structure for table `login_token`
 --

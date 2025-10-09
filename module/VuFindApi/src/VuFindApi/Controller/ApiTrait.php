@@ -33,6 +33,7 @@ use Exception;
 use Laminas\Http\Exception\InvalidArgumentException;
 use Laminas\Http\Header\ContentType;
 use Laminas\Mvc\Exception\DomainException;
+use VuFind\DeveloperSettings\DeveloperSettingsService;
 
 /**
  * Additional functionality for API controllers.
@@ -72,6 +73,27 @@ trait ApiTrait
      * @var bool
      */
     protected bool $returnUnicode = false;
+
+    /**
+     * Name of HTTP header
+     *
+     * @var string
+     */
+    protected string $apiKeyHeaderField = '';
+
+    /**
+     * API key service
+     *
+     * @var ?DeveloperSettingsService
+     */
+    protected ?DeveloperSettingsService $developerSettingsService = null;
+
+    /**
+     * Key for header to look for an API key
+     *
+     * @var string
+     */
+    protected string $apiKeyHeader;
 
     /**
      * Execute the request
@@ -201,5 +223,43 @@ trait ApiTrait
         }
         $headers->addHeader($contentTypeHeader);
         return $response;
+    }
+
+    /**
+     * Init API key settings
+     *
+     * @param array $settings API key settings from config.ini
+     *
+     * @return void;
+     */
+    protected function initApiKeySettings(array $settings): void
+    {
+        $this->developerSettingsService = $this->getService(DeveloperSettingsService::class);
+        $this->apiKeyHeaderField = $settings['header_field'] ?? 'X-API-KEY';
+    }
+
+    /**
+     * Check request for API key if mode is not set to disabled.
+     *
+     * @return bool
+     */
+    protected function checkRequestForApiKey(): bool
+    {
+        if ($this->developerSettingsService?->apiKeysEnabled()) {
+            $tokenField = $this->getRequest()->getHeader($this->apiKeyHeaderField);
+            $token = $tokenField ? $tokenField->getFieldValue() : null;
+            return $this->developerSettingsService->isTokenValid($token);
+        }
+        return true;
+    }
+
+    /**
+     * Return output if request is missing an API key and API keys are enforced
+     *
+     * @return \Laminas\Http\Response
+     */
+    protected function outputMissingAPIKey(): \Laminas\Http\Response
+    {
+        return $this->output([], ApiInterface::STATUS_UNAUTHORIZED, 401, 'Missing or invalid API key');
     }
 }

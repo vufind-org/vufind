@@ -49,6 +49,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         AccessTokenEntityInterface::class => AccessToken::class,
+        ApiKeyEntityInterface::class => ApiKey::class,
         AuthHashEntityInterface::class => AuthHash::class,
         ChangeTrackerEntityInterface::class => ChangeTracker::class,
         CommentsEntityInterface::class => Comments::class,
@@ -80,6 +81,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $factories = [
         AccessToken::class => InvokableFactory::class,
+        ApiKey::class => InvokableFactory::class,
         AuthHash::class => InvokableFactory::class,
         ChangeTracker::class => InvokableFactory::class,
         Comments::class => InvokableFactory::class,

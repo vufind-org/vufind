@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model for access_token table
+ * Entity model for api_key table
  *
  * PHP version 8
  *
@@ -22,7 +22,7 @@
  *
  * @category VuFind
  * @package  Database
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
@@ -34,40 +34,30 @@ use Doctrine\ORM\Mapping as ORM;
 use VuFind\Db\Feature\DateTimeTrait;
 
 /**
- * Entity model for access_token table
+ * Entity model for api_key table
  *
  * @category VuFind
  * @package  Database
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-#[ORM\Table(name: 'access_token')]
-#[ORM\Index(name: 'access_token_user_id_idx', columns: ['user_id'])]
+#[ORM\Table(name: 'api_key')]
+#[ORM\Index(name: 'api_key_user_id_idx', columns: ['user_id'])]
 #[ORM\Entity]
-class AccessToken implements AccessTokenEntityInterface
+class ApiKey implements ApiKeyEntityInterface
 {
     use DateTimeTrait;
 
     /**
      * Unique ID.
      *
-     * @var string
+     * @var int
      */
-    #[ORM\Column(name: 'id', type: 'string', length: 255, nullable: false)]
+    #[ORM\Column(name: 'id', type: 'integer', nullable: false)]
     #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'NONE')]
-    protected string $id;
-
-    /**
-     * Token type.
-     *
-     * @var string
-     */
-    #[ORM\Column(name: 'type', type: 'string', length: 128, nullable: false)]
-    #[ORM\Id]
-    #[ORM\GeneratedValue(strategy: 'NONE')]
-    protected string $type;
+    #[ORM\GeneratedValue(strategy: 'IDENTITY')]
+    protected int $id;
 
     /**
      * User.
@@ -87,12 +77,20 @@ class AccessToken implements AccessTokenEntityInterface
     protected DateTime $created;
 
     /**
+     * Last used date.
+     *
+     * @var DateTime
+     */
+    #[ORM\Column(name: 'last_used', type: 'datetime', nullable: false, options: ['default' => '2000-01-01 00:00:00'])]
+    protected DateTime $lastUsed;
+
+    /**
      * Data.
      *
-     * @var ?string
+     * @var string
      */
-    #[ORM\Column(name: 'data', type: 'text', length: 16777215, nullable: true)]
-    protected ?string $data = null;
+    #[ORM\Column(name: 'token', type: 'string', length: 255, nullable: false)]
+    protected string $token;
 
     /**
      * Flag indicating status of the token.
@@ -101,6 +99,14 @@ class AccessToken implements AccessTokenEntityInterface
      */
     #[ORM\Column(name: 'revoked', type: 'boolean', nullable: false, options: ['default' => false])]
     protected bool $revoked = false;
+
+    /**
+     * Token title.
+     *
+     * @var string
+     */
+    #[ORM\Column(name: 'title', type: 'string', length: 255, nullable: false)]
+    protected string $title = '';
 
     /**
      * Constructor.
@@ -112,9 +118,9 @@ class AccessToken implements AccessTokenEntityInterface
     }
 
     /**
-     * Set access token identifier.
+     * Set API key identifier.
      *
-     * @param string $id Access Token Identifier
+     * @param string $id API Key Identifier
      *
      * @return static
      */
@@ -135,25 +141,25 @@ class AccessToken implements AccessTokenEntityInterface
     }
 
     /**
-     * Get type of access token.
+     * Get title.
      *
-     * @return ?string
+     * @return string
      */
-    public function getType(): ?string
+    public function getTitle(): string
     {
-        return $this->type;
+        return $this->title;
     }
 
     /**
-     * Set type of access token.
+     * Set title
      *
-     * @param ?string $type Access Token Type
+     * @param string $title Title
      *
-     * @return static
+     * @return string
      */
-    public function setType(?string $type): static
+    public function setTitle(string $title): static
     {
-        $this->type = $type;
+        $this->title = $title;
         return $this;
     }
 
@@ -204,30 +210,53 @@ class AccessToken implements AccessTokenEntityInterface
     }
 
     /**
-     * Get data.
+     * Get last used date.
      *
-     * @return ?string
+     * @return DateTime
      */
-    public function getData(): ?string
+    public function getLastUsed(): DateTime
     {
-        return $this->data;
+        return $this->lastUsed;
     }
 
     /**
-     * Set data.
+     * Set last used date.
      *
-     * @param ?string $data Data
+     * @param DateTime $dateTime Last used date
      *
      * @return static
      */
-    public function setData(?string $data): static
+    public function setLastUsed(DateTime $dateTime): static
     {
-        $this->data = $data;
+        $this->lastUsed = $dateTime;
         return $this;
     }
 
     /**
-     * Is the access token revoked?
+     * Get token.
+     *
+     * @return string
+     */
+    public function getToken(): string
+    {
+        return $this->token;
+    }
+
+    /**
+     * Set token.
+     *
+     * @param string $token Token
+     *
+     * @return static
+     */
+    public function setToken(string $token): static
+    {
+        $this->token = $token;
+        return $this;
+    }
+
+    /**
+     * Is the API key revoked?
      *
      * @return bool
      */
