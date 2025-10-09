@@ -32,7 +32,7 @@ namespace VuFind\DeveloperSettings;
 use DateTime;
 use VuFind\Db\Entity\ApiKeyEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Service\ApiKeyService;
+use VuFind\Db\Service\ApiKeyServiceInterface;
 use VuFindApi\Controller\ApiInterface;
 
 use function count;
@@ -66,11 +66,11 @@ class DeveloperSettingsService
     /**
      * Constructor.
      *
-     * @param ApiKeyService $apiKeyService  API key database service
-     * @param array         $apiKeySettings Section API_Keys from main configuration.
+     * @param ApiKeyServiceInterface $apiKeyService  API key database service
+     * @param array                  $apiKeySettings Section API_Keys from main configuration.
      */
     public function __construct(
-        protected ApiKeyService $apiKeyService,
+        protected ApiKeyServiceInterface $apiKeyService,
         protected array $apiKeySettings
     ) {
         $this->keyLimitPerUser = $apiKeySettings['key_limit'] ?? 5;
@@ -167,7 +167,7 @@ class DeveloperSettingsService
     }
 
     /**
-     * Can the user generate more API keys.
+     * Is the user blocked from generating new API keys?
      *
      * @param ApiKeyEntityInterface[] $keys Users keys
      *
@@ -198,7 +198,7 @@ class DeveloperSettingsService
             $id
         );
         if (false === $key?->isRevoked()) {
-            $this->apiKeyService->deleteEntity($key);
+            $this->apiKeyService->deleteApiKey($key);
             return true;
         }
         return false;

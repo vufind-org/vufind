@@ -89,4 +89,13 @@ interface ApiKeyServiceInterface extends DbServiceInterface
      * @return int Number of rows deleted
      */
     public function deleteExpired(DateTime $dateLimit, ?int $limit = null): int;
+
+    /**
+     * Delete API key
+     *
+     * @param ApiKeyEntityInterface $apiKey API key entity
+     *
+     * @return void
+     */
+    public function deleteApiKey(ApiKeyEntityInterface $apiKey): void;
 }

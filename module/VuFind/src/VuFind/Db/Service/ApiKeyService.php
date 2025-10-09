@@ -111,6 +111,18 @@ class ApiKeyService extends AbstractDbService implements
     }
 
     /**
+     * Delete API key
+     *
+     * @param ApiKeyEntityInterface $apiKey API key entity
+     *
+     * @return void
+     */
+    public function deleteApiKey(ApiKeyEntityInterface $apiKey): void
+    {
+        $this->deleteEntity($apiKey);
+    }
+
+    /**
      * Delete expired API keys. Allows setting a limit so that rows can be deleted in small batches.
      * API keys only "expire" if they are not used in a certain amount of time.
      *

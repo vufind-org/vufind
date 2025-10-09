@@ -37,8 +37,7 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Stdlib\Parameters;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Db\Entity\ApiKeyEntityInterface;
-use VuFind\Db\Service\ApiKeyService;
-use VuFind\Db\Service\OaiResumptionService;
+use VuFind\Db\Service\ApiKeyServiceInterface;
 use VuFind\Db\Service\OaiResumptionServiceInterface;
 use VuFind\Db\Service\PluginManager as DbPluginManager;
 use VuFind\DeveloperSettings\DeveloperSettingsService;
@@ -50,7 +49,6 @@ use VuFind\Search\Solr\Options;
 use VuFindApi\Controller\SearchApiController;
 use VuFindApi\Formatter\FacetFormatter;
 use VuFindApi\Formatter\RecordFormatter;
-use VuFindTest\Feature\ReflectionTrait;
 
 /**
  * Search api controller tests
@@ -63,8 +61,6 @@ use VuFindTest\Feature\ReflectionTrait;
  */
 class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
 {
-    use ReflectionTrait;
-
     /**
      * Data provider for testApiKeys functions
      *
@@ -75,10 +71,9 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
         yield 'test keys disabled' => [
             [],
             [
-                'query' => [
+                'fromPostAndQuery' => [
                     'id' => 'record.1111',
                 ],
-                'post' => [],
             ],
             [
                 'code' => 200,
@@ -95,10 +90,9 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
         yield 'test keys enabled and provided' => [
             $config,
             [
-                'query' => [
+                'fromPostAndQuery' => [
                     'id' => 'record.1111',
                 ],
-                'post' => [],
                 'headers' => [
                     'test-field' => '999999',
                 ],
@@ -111,10 +105,9 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
         yield 'test keys enabled and not provided' => [
             $config,
             [
-                'query' => [
+                'fromPostAndQuery' => [
                     'id' => 'record.1111',
                 ],
-                'post' => [],
             ],
             [
                 'code' => 200,
@@ -125,10 +118,9 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
         yield 'test keys enforced and provided' => [
             $config,
             [
-                'query' => [
+                'fromPostAndQuery' => [
                     'id' => 'record.1111',
                 ],
-                'post' => [],
                 'headers' => [
                     'test-field' => '999999',
                 ],
@@ -141,10 +133,9 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
         yield 'test keys enforced and not provided' => [
             $config,
             [
-                'query' => [
+                'fromPostAndQuery' => [
                     'id' => 'record.1111',
                 ],
-                'post' => [],
             ],
             [
                 'code' => 401,
@@ -163,13 +154,6 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
     protected function createRequest(array $requestParams = []): MockObject&Request
     {
         $request = $this->createMock(Request::class);
-        $queryParams = $this->createMock(Parameters::class);
-        $queryParams->expects($this->any())->method('toArray')->willReturn($requestParams['query'] ?? []);
-        $postParams = $this->createMock(Parameters::class);
-        $postParams->expects($this->any())->method('toArray')->willReturn($requestParams['post'] ?? []);
-        $request->expects($this->any())->method('getPost')->willReturn($postParams);
-        $request->expects($this->any())->method('getQuery')->willReturn($queryParams);
-
         $request->expects($this->any())->method('getHeader')->willReturnCallback(
             function ($key) use ($requestParams) {
                 $value = $requestParams['headers'][$key] ?? null;
@@ -187,13 +171,17 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
     /**
      * Get an instance of a searchApiController
      *
-     * @param array       $config  Main config
-     * @param ?MockObject $request Request object
+     * @param array       $config      Main config
+     * @param array       $paramsArray Parameters obtained from fromPostAndQuery
+     * @param ?MockObject $request     Request object
      *
      * @return MockObject&SearchApiController
      */
-    protected function createController(array $config = [], ?MockObject $request = null): MockObject&SearchApiController
-    {
+    protected function createController(
+        array $config = [],
+        array $paramsArray = [],
+        ?MockObject $request = null
+    ): MockObject&SearchApiController {
         $solrOptions = $this->createMock(Options::class);
         $solrOptions->expects($this->any())->method('getAPISettings')->willReturn([]);
         $optionsPluginManager = $this->createMock(SearchPluginManager::class);
@@ -202,7 +190,7 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
         $developerSettingsService = $this->getMockBuilder(DeveloperSettingsService::class)
             ->disableOriginalConstructor()->onlyMethods(['getApiKeyByToken'])->getMock();
         $developerSettingsService->__construct(
-            $this->createMock(ApiKeyService::class),
+            $this->createMock(ApiKeyServiceInterface::class),
             $config['API_Keys'] ?? [],
         );
         $developerSettingsService->expects($this->any())->method('getApiKeyByToken')->willReturnCallback(
@@ -225,7 +213,7 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
         $recordLoader->expects($this->any())->method('load')->willReturn($recordMap);
         $recordLoader->expects($this->any())->method('loadBatchForSource')->willReturn($recordMap);
 
-        $resumptionService = $this->getMockBuilder(OaiResumptionService::class)->disableOriginalConstructor()
+        $resumptionService = $this->getMockBuilder(OaiResumptionServiceInterface::class)->disableOriginalConstructor()
             ->onlyMethods([])->getMock();
         $dbServiceMap = [
             [OaiResumptionServiceInterface::class, null, $resumptionService],
@@ -245,6 +233,7 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
                 'getConfigArray',
                 'getService',
                 'setResumptionService',
+                'fromPostAndQuery',
             ])->disableOriginalConstructor()->getMock();
         $controller->expects($this->any())->method('getService')->willReturnMap([
             [SearchPluginManager::class, $optionsPluginManager],
@@ -254,6 +243,7 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
         ]);
         $controller->expects($this->any())->method('getConfigArray')->willReturn($config);
         $controller->expects($this->any())->method('isAccessDenied')->willReturn(false);
+        $controller->expects($this->any())->method('fromPostAndQuery')->willReturn($paramsArray);
 
         $request ??= $this->createMock(Request::class);
         $controller->expects($this->any())->method('getRequest')->willReturn($request);
@@ -295,7 +285,7 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
     public function testApiKeysRecord(array $config, array $requestParams, array $expected): void
     {
         $request = $this->createRequest($requestParams);
-        $controller = $this->createController($config, $request);
+        $controller = $this->createController($config, $requestParams['fromPostAndQuery'], $request);
         $result = $controller->recordAction();
         $this->assertEquals($expected['code'], $result->getStatusCode());
         $this->assertEquals($expected['content'], $result->getContent());
@@ -314,7 +304,7 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
     public function testApiKeysSearch(array $config, array $requestParams, array $expected): void
     {
         $request = $this->createRequest($requestParams);
-        $controller = $this->createController($config, $request);
+        $controller = $this->createController($config, $requestParams['fromPostAndQuery'], $request);
         $result = $controller->searchAction();
         $this->assertEquals($expected['code'], $result->getStatusCode());
         $this->assertEquals($expected['content'], $result->getContent());
