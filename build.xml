@@ -348,8 +348,23 @@
     </if>
   </target>
 
+  <target name="prepare-html-validation-log" description="Prepare HTML validation log file">
+    <if>
+      <istrue value="${html_validator_log_file}" />
+      <then>
+        <if>
+          <available file="${html_validator_log_file}" />
+          <then>
+            <move file="${html_validator_log_file}" tofile="${html_validator_log_file}.1" overwrite="true" />
+          </then>
+        </if>
+        <touch file="${html_validator_log_file}" />
+      </then>
+    </if>
+  </target>
+
   <!-- PHPUnit -->
-  <target name="phpunit" description="Run tests">
+  <target name="phpunit" description="Run tests" depends="prepare-html-validation-log">
     <!-- Clean up any previous tmp files but keep the directory if it exists to avoid changing its permissions -->
     <property name="coveragedir" value="${builddir}/reports/coverage" />
     <if>
@@ -375,13 +390,6 @@
       <else>
         <property name="remote_coverage_dir" value="" />
       </else>
-    </if>
-    <if>
-      <istrue value="${html_validator_log_file}" />
-      <then>
-        <move file="${html_validator_log_file}" tofile="${html_validator_log_file}.1" overwrite="true" />
-        <touch file="${html_validator_log_file}" />
-      </then>
     </if>
     <exec dir="${srcdir}/module/VuFind/tests" executable="${sh}" passthru="true" checkreturn="true">
       <arg line="-c &apos;${phpunit_command} --log-junit ${builddir}/reports/phpunit.xml --coverage-php ${coveragedir}/tmp/unit.cov ${phpunit_extra_params}&apos;" />
@@ -421,14 +429,7 @@
   </target>
 
   <!-- PHPUnit without logging output -->
-  <target name="phpunitfast" description="Run tests">
-    <if>
-      <istrue value="${html_validator_log_file}" />
-      <then>
-        <move file="${html_validator_log_file}" tofile="${html_validator_log_file}.1" overwrite="true" />
-        <touch file="${html_validator_log_file}" />
-      </then>
-    </if>
+  <target name="phpunitfast" description="Run tests" depends="prepare-html-validation-log">
     <exec dir="${srcdir}/module/VuFind/tests" executable="${sh}" passthru="true" checkreturn="true">
       <arg line="-c &apos;${phpunit_command} ${phpunit_extra_params}&apos;" />
       <env key="VUFIND_MINK_DRIVER" value="${mink_driver}" />
@@ -448,14 +449,7 @@
   </target>
 
   <!-- PHPUnit without logging output, stopping at first error or failure -->
-  <target name="phpunitfaster" description="Run tests until first failure">
-    <if>
-      <istrue value="${html_validator_log_file}" />
-      <then>
-        <move file="${html_validator_log_file}" tofile="${html_validator_log_file}.1" overwrite="true" />
-        <touch file="${html_validator_log_file}" />
-      </then>
-    </if>
+  <target name="phpunitfaster" description="Run tests until first failure" depends="prepare-html-validation-log">
     <exec dir="${srcdir}/module/VuFind/tests" executable="${sh}" passthru="true" checkreturn="true">
       <arg line="-c &apos;${phpunit_command} --stop-on-defect ${phpunit_extra_params}&apos;" />
       <env key="VUFIND_MINK_DRIVER" value="${mink_driver}" />
