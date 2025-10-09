@@ -62,7 +62,7 @@
                 </field>
 
                 <!-- LANGUAGE -->
-                <xsl:for-each select="/oai_doaj:doajArticle/oai_doaj:language">
+                <xsl:for-each select="oai_doaj:language">
                     <xsl:if test="string-length() > 0">
                         <field name="language">
                             <xsl:value-of select="php:function('VuFind::mapString', normalize-space(string(.)), 'language_map.properties')"/>
@@ -135,6 +135,9 @@
                 <!-- PUBLISHDATE -->
                 <xsl:if test="oai_doaj:publicationDate">
                     <field name="publishDate">
+                        <xsl:value-of select="oai_doaj:publicationDate"/>
+                    </field>
+                    <field name="publishDateRange">
                         <xsl:value-of select="oai_doaj:publicationDate"/>
                     </field>
                     <field name="publishDateSort">

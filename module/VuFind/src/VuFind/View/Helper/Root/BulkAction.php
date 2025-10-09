@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -50,29 +50,15 @@ class BulkAction extends \Laminas\View\Helper\AbstractHelper
     protected $buttonClass = null;
 
     /**
-     * Configuration loader
-     *
-     * @var \VuFind\Config\PluginManager
-     */
-    protected $configLoader;
-
-    /**
-     * Export support class
-     *
-     * @var \VuFind\Export
-     */
-    protected $export;
-
-    /**
      * Constructor
      *
-     * @param \VuFind\Export               $export       Export support class
-     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
+     * @param \VuFind\Export                        $export        Export support class
+     * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
      */
-    public function __construct(\VuFind\Export $export, \VuFind\Config\PluginManager $configLoader)
-    {
-        $this->export = $export;
-        $this->configLoader = $configLoader;
+    public function __construct(
+        protected \VuFind\Export $export,
+        protected \VuFind\Config\ConfigManagerInterface $configManager
+    ) {
     }
 
     /**

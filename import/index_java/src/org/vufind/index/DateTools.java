@@ -14,8 +14,8 @@ package org.vufind.index;
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 import org.marc4j.marc.Record;
@@ -26,12 +26,17 @@ import org.solrmarc.tools.DataUtil;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Date indexing routines.
  */
 public class DateTools
 {
+    private final static Pattern YEAR_PATTERN = Pattern.compile("-?\\d{1,4}");
+    private final static Pattern BC_YEAR_PATTERN = Pattern.compile("([0-9]+) [Bb][.]?\\s?[Cc][.]?");
+
     /**
      * Get all available dates from the record.
      *
@@ -39,6 +44,27 @@ public class DateTools
      * @return set of dates
      */
     public Set<String> getDates(final Record record) {
+        return this.getDates(record, true);
+    }
+
+    /**
+     * Get all available dates from the record with a more lenient validity check.
+     *
+     * @param  record MARC record
+     * @return set of dates
+     */
+    public Set<String> getDatesRelaxed(final Record record) {
+        return this.getDates(record, false);
+    }
+
+    /**
+     * Get all available dates from the record.
+     *
+     * @param  record MARC record
+     * @param  strict use strict date validity checks?
+     * @return set of dates
+     */
+    public Set<String> getDates(final Record record, final Boolean strict) {
         Set<String> dates = new LinkedHashSet<String>();
 
         // First check old-style 260c date:
@@ -47,7 +73,7 @@ public class DateTools
             DataField df = (DataField) vf;
             List<Subfield> currentDates = df.getSubfields('c');
             for (Subfield sf : currentDates) {
-                String currentDateStr = DataUtil.cleanDate(sf.getData());
+                String currentDateStr = strict ? DataUtil.cleanDate(sf.getData()) : this.extractYear(sf.getData());
                 if (currentDateStr != null) dates.add(currentDateStr);
             }
         }
@@ -62,7 +88,7 @@ public class DateTools
             DataField df = (DataField) vf;
             List<Subfield> currentDates = df.getSubfields('c');
             for (Subfield sf : currentDates) {
-                String currentDateStr = DataUtil.cleanDate(sf.getData());
+                String currentDateStr = strict ? DataUtil.cleanDate(sf.getData()) : this.extractYear(sf.getData());
                 char ind2 = df.getIndicator2();
                 switch (ind2)
                 {
@@ -91,13 +117,57 @@ public class DateTools
      * @return earliest date
      */
     public String getFirstDate(final Record record) {
+        return getFirstDate(record, true);
+    }
+
+    /**
+     * Get the earliest publication date from the record with a more lenient validity check.
+     *
+     * @param  record MARC record
+     * @return earliest date
+     */
+    public String getFirstDateRelaxed(final Record record) {
+        return getFirstDate(record, false);
+    }
+
+    /**
+     * Get the earliest publication date from the record.
+     *
+     * @param  record MARC record
+     * @param  strict use strict date validity checks?
+     * @return earliest date
+     */
+    public String getFirstDate(final Record record, final Boolean strict) {
         String result = null;
-        Set<String> dates = getDates(record);
+        Set<String> dates = getDates(record, strict);
         for(String current: dates) {
             if (result == null || Integer.parseInt(current) < Integer.parseInt(result)) {
                 result = current;
             }
         }
         return result;
+    }
+
+    /**
+     * Extract a year from a string
+     *
+     * @param year year that can contain braces etc.
+     * @return year with leading zeroes for four digits, if found
+     */
+    protected String extractYear(final String year) {
+        String prefix = "";
+        String found_year = null;
+        Matcher bc_matcher = BC_YEAR_PATTERN.matcher(year);
+        if (bc_matcher.find()) {
+            prefix = "-";
+            found_year = bc_matcher.group(1);
+        } else {
+            Matcher matcher = YEAR_PATTERN.matcher(year);
+            if (matcher.find()) {
+                found_year = matcher.group();
+            }
+        }
+
+        return null != found_year ? prefix + String.format("%04d", Integer.parseInt(found_year)) : null;
     }
 }

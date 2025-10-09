@@ -2,6 +2,9 @@
     // Set up breadcrumbs:
     $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
       ->add($this->translate('Fines'), active: true);
+
+    $currencyTemplate = $this->safeMoneyFormat(11.22);
+    $this->assetManager()->appendScriptLink('fines.js');
 ?>
 
 <?=$this->component('show-account-menu-button')?>
@@ -10,7 +13,30 @@
   <?=$this->component('page-title', ['title' => $this->translate('Your Fines'), 'headTitle' => $this->translate('My Fines')]);?>
   <?=$this->flashmessages()?>
 
+  <?php // Online payment registration notification: ?>
+  <?php if (!empty($this->registerPaymentLocalIdentifier)): ?>
+    <div class="alert alert-info">
+      <span class="register-payment-spinner"><?=$this->icon('spinner') ?> <?=$this->transEsc('Processing Payment');?></span>
+    </div>
+  <?php endif; ?>
+
   <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->getUserObject()]); ?>
+
+  <?php if (!empty($this->lastPayment)): ?>
+    <div class="last-payment-information">
+      <div>
+        <?=$this->transEsc('Payment::Last Paid')?>:
+        <span class="amount"><?=$this->safeMoneyFormat($this->lastPayment->getAmount() / 100.00)?></span>
+        <?=$this->lastPayment->getPaidDate()->format($this->config()->dateTimeFormat())?>
+      </div>
+      <div class="text-end">
+        <a href="?paymentReceipt=true" class="btn btn-sm btn-primary" target="_blank">
+          <?=$this->transEsc('Payment::download_receipt_pdf')?>
+          <span class="visually-hidden"><?=$this->transEscAttr('Open in a new window')?></span>
+        </a>
+      </div>
+    </div>
+  <?php endif; ?>
 
   <?php if (empty($this->fines)): ?>
     <?=$this->transEsc('You do not have any fines')?>
@@ -31,16 +57,45 @@
                   . $this->escapeHtmlAttr($this->recordLinker()->getUrl($record['driver']))
                   . '">' . $this->escapeHtml(trim($record['title'], '/:')) . '</a>';
           }
+          $fine = $record['fine'] ?? '';
+
+          // Handle online payment fine selection and balance check:
+          $select = '';
+          if ($this->onlinePaymentEnabled && $this->selectFees) {
+            if ($record['payableOnline'] ?? false) {
+              ob_start();
+              ?>
+                <div class="checkbox">
+                  <label>
+                    <span class="visually-hidden">
+                      <?=$this->transEsc('Select')?>
+                      <?=$this->escapeHtml(trim($record['title'] ?? '', '/: '))?>
+                      <?=isset($fine) ? ('(' . $this->transEsc($fine) . ')') : ''?>
+                      <?=$this->safeMoneyFormat($record['balance'] / 100.00)?>
+                    </span>
+                    <input class="checkbox-select-item js-select-item" type="checkbox" name="selectedIDS[]" value="<?=$this->escapeHtmlAttr($record['fineId'])?>" data-amount="<?=$this->escapeHtmlAttr($record['balance'])?>">
+                  </label>
+                </div>
+              <?php
+              $select .= ob_get_clean();
+            }
+          }
+          $balance = isset($record['balance']) ? $this->safeMoneyFormat($record['balance'] / 100.00) : '';
+          if ($this->onlinePayment && !($record['payableOnline'] ?? false)) {
+            $balance = '<span class="online-payment-nonpayable">' . $balance
+              . '<br><span class="online-payment-status-note"> ' . $this->transEsc('Payment::nonpayable_fee') . '</span></span>';
+          }
+
+          $tableData['Select'][] = $select;
           $tableData['Title'][] = $title;
           $tableData['Checked Out'][] = $this->escapeHtml($record['checkout'] ?? '');
           $tableData['Due Date'][] = $this->escapeHtml($record['duedate'] ?? '');
-          $tableData['Fine'][] = $this->transEsc($record['fine'] ?? '');
+          $tableData['Fine'][] = $this->transEsc($fine);
           $tableData['Fine Description'][] = $this->transEsc($record['description'] ?? '');
           $tableData['Fine Date'][] = $this->escapeHtml($record['createdate'] ?? '');
-          $tableData['Fee'][] = isset($record['amount'])
-              ? $this->safeMoneyFormat($record['amount'] / 100.00) : '';
-          $tableData['Balance'][] = isset($record['balance'])
-              ? $this->safeMoneyFormat($record['balance'] / 100.00) : '';
+          $tableData['Fee'][] = isset($record['amount']) ? $this->safeMoneyFormat($record['amount'] / 100.00) : '';
+          $tableData['Balance'][] = $balance;
+
           $totalDue += $record['balance'] ?? 0;
       }
 
@@ -62,7 +117,83 @@
       $columns = array_keys($tableData);
       $rowCount = count($this->fines);
     ?>
-    <table class="table table-striped table-responsive fines-table">
+
+    <?php // Online payment information area: ?>
+    <div class="fines-info-area" tabindex="0">
+      <div class="online-payment-total-due js-payment-total-due" data-raw="<?=$this->escapeHtmlAttr($totalDue)?>">
+        <?=$this->transEsc('Total Balance Due')?> (<?=count($this->fines ?? []);?>):
+        <span class="amount"><?=$this->safeMoneyFormat($totalDue / 100.00) ?></span>
+      </div>
+      <?php if ($this->onlinePayment && $this->onlinePaymentEnabled): ?>
+        <div class="online-payment-info">
+          <div class="online-payment-payable-info">
+            <div class="online-payment-payable">
+              <?=$this->transEsc('Payment::payable_online'); ?> (<?=$payableOnlineCnt ?>):
+              <span class="amount"><?=$this->safeMoneyFormat($payableOnline / 100.00);?></span>
+            </div>
+            <div class="online-payment-minimum-payment js-minimum-payment hidden" data-raw="<?=$this->escapeHtmlAttr($minimumFee)?>">
+              <?=$this->transEsc('Payment::minimum_payment'); ?>:
+              <span class="amount"><?=$this->safeMoneyFormat($minimumFee / 100.00)?></span>
+            </div>
+          </div>
+          <?php if (!empty($serviceFee)): ?>
+            <div class="online-payment-service-fee js-service-fee" data-raw="<?=$this->escapeHtmlAttr($serviceFee)?>">
+              <?=$this->transEsc('Payment::Service Fee'); ?>:
+              <span class="amount"><?=$this->safeMoneyFormat($serviceFee / 100.00);?></span>
+            </div>
+          <?php endif; ?>
+          <?php if ($this->selectFees): ?>
+            <div class="online-payment-remaining-after">
+              <?=$this->transEsc('Payment::remaining_balance_after_payment'); ?>:
+              <span class="amount js-payment-remaining-amount" data-template="<?=$this->escapeHtmlAttr($currencyTemplate)?>">
+                <?=$this->safeMoneyFormat(($this->selectFees ? $totalDue : $totalDue - $payableOnline) / 100)?>
+              </span>
+            </div>
+          <?php endif; ?>
+        </div>
+      <?php endif; ?>
+    </div>
+    <?php if ($this->onlinePayment): ?>
+      <?php if ($this->startedPayment): ?>
+        <div class="alert alert-danger">
+          <?=$this->transEsc('Payment::in_progress_warning', ['%%startDateTime%%' => $this->startedPayment->getCreated()->format($this->config()->dateTimeFormat())]); ?>
+        </div>
+      <?php endif; ?>
+      <?php if ($this->onlinePaymentEnabled): ?>
+        <form id="online_payment_form" class="online-payment-form" action="<?=$this->url('myresearch-fines')?>" method="post" data-lightbox data-clear-account-cache="fines" data-disable-on-submit>
+          <input type="hidden" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>" name="csrf">
+          <input name="paymentId" type="hidden" value="<?=$this->escapeHtmlAttr($this->paymentId)?>">
+          <?php if ($this->selectFees): ?>
+            <div class="myresearch-table online-payment" aria-label="<?=$this->transEscAttr('Actions');?>">
+              <div class="toolbar">
+                <div class="checkbox">
+                  <label>
+                    <input type="checkbox" name="selectAll" class="checkbox-select-all js-select-all">
+                    <?=$this->transEsc('select_all')?>
+                    <span class="selected"></span>
+                  </label>
+                </div>
+                <div class="payment-row">
+                  <span class="visually-hidden js-selected-to-pay-sr" data-template="<?=$this->transEscAttr('Payment::selected_to_pay') . ' ' . $this->transEscAttr($currencyTemplate)?>">
+                    <?=$this->transEscAttr('Payment::selected_to_pay') . ' ' . $this->safeMoneyFormat(0)?>
+                  </span>
+                  <input type="submit" name="pay" class="btn btn-primary js-pay-selected" value="<?=$this->transEscAttr('Payment::start_payment', ['%%amount%%' => ''])?>" data-template="<?=$this->transEscAttr('Payment::start_payment', ['%%amount%%' => $currencyTemplate])?>" disabled>
+                </div>
+              </div>
+            </div>
+          <?php else: ?>
+            <div class="fines-info-area payment-row">
+              <input type="submit" name="pay" class="btn btn-primary btn-lg" value="<?=$this->transEscAttr('Payment::start_payment', ['%%amount%%' => $this->safeMoneyFormat(($payableOnline + ($serviceFee ?? 0)) / 100.00)])?>">
+            </div>
+          <?php endif; ?>
+      <?php elseif (!empty($this->nonPayableReason) && !empty($this->fines)): ?>
+        <div class="fines-info-area fines-info-area__blocked">
+          <?=$this->transEsc($this->nonPayableReason); ?><?=$this->nonPayableReason == 'Payment::minimum_payment' ? (': <span class="amount">' . $this->safeMoneyFormat($this->minimumFee / 100.00)) . '</span>' : '';?>
+        </div>
+      <?php endif; ?>
+    <?php endif; ?>
+
+    <table class="table table-striped table-responsive fines-table<?=$this->onlinePayment ? ' fines-table__online-payment' : ''?>">
       <caption class="visually-hidden"><?=$this->transEsc('Your Fines')?></caption>
       <thead>
         <tr>
@@ -97,5 +228,12 @@
 <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
   <?=$this->accountMenu()->render('fines')?>
 </div>
+
+<?php
+  if ($this->registerPaymentLocalIdentifier) {
+    $identifierJson = json_encode($this->registerPaymentLocalIdentifier);
+    echo $this->assetManager()->outputInlineScriptString("VuFind.fines.registerPayment($identifierJson);");
+  }
+?>
 
 <?=$this->render('myresearch/notify-account-status.phtml', ['method' => 'fines', 'accountStatus' => $this->accountStatus]); ?>

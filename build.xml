@@ -5,7 +5,7 @@
   <property name="package"  value="${phing.project.name}" override="true" />
   <property name="builddir" value="${tmp}/build/${phing.project.name}" override="true" />
   <property name="srcdir"   value="${project.basedir}" override="true" />
-  <property name="downloadsdir" value="${srcdir}/downloads" override="true" />
+  <property name="downloadsdir" value="${srcdir}/downloads" />
   <!--
     Use builddir/local-symlink that points to builddir/local as the local directory
     if defaultconfigs=true. This allows the tests to be run without any custom
@@ -39,6 +39,7 @@
   <property name="vufinddb" value="vufind_test" />
   <property name="vufinddbuser" value="vufindtest" />
   <property name="vufinddbpass" value="vufindtestpass" />
+  <property name="vufind_env" value="testing" />
   <property name="dbtype" value="mysql" /><!-- use pgsql for PostgreSQL -->
   <property name="mysqlhost" value="localhost" />
   <property name="mysqlport" value="3306" />
@@ -48,6 +49,7 @@
   <property name="pgsqlhost" value="localhost" />
   <property name="pgsqlrootuser" value="postgres" />
   <property name="disable_csp" value="false" /> <!-- set value to "true" to disable Content Security Policy -->
+  <property name="phpmd_cache_params" value="--cache" />
   <property name="phpunit_command" value="${srcdir}/vendor/bin/phpunit" />
   <property name="phpunit_extra_params" value="" />
   <property name="composer_version" value="2.7.7" />
@@ -75,7 +77,7 @@
   <property name="marc_bib_dir" value="${srcdir}/tests/data" /><!-- directory containing MARC bib records for test environment -->
   <property name="marc_authority_dir" value="${marc_bib_dir}/authority" /><!-- directory containing MARC authority records for test environment -->
 
-  <property name="version" value="10.2.0" />
+  <property name="version" value="10.2.1" />
 
   <property name="mysqlconnectionargs" value="-h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser}" />
   <!-- Add password if not empty -->
@@ -180,14 +182,14 @@
 
   <!-- Report rule violations with PHPMD (mess detector) -->
   <target name="phpmd">
-    <exec executable="${srcdir}/vendor/bin/phpmd">
-      <arg line="${srcdir}/module xml ${srcdir}/tests/phpmd.xml --exclude ${srcdir}/module/VuFind/tests,${srcdir}/module/VuFindSearch/tests --reportfile ${builddir}/reports/phpmd.xml" />
+    <exec executable="${srcdir}/vendor/bin/phpmd" passthru="true">
+      <arg line="${srcdir}/module xml ${srcdir}/tests/phpmd.xml --exclude ${srcdir}/module/VuFind/tests,${srcdir}/module/VuFindSearch/tests --reportfile ${builddir}/reports/phpmd.xml ${phpmd_cache_params}" />
     </exec>
   </target>
 
   <!-- PHP_Depend code analysis -->
   <target name="pdepend">
-    <exec executable="${srcdir}/vendor/bin/pdepend">
+    <exec executable="${srcdir}/vendor/bin/pdepend" passthru="true" checkreturn="true">
       <arg line="--jdepend-xml=${builddir}/reports/jdepend.xml --jdepend-chart=${builddir}/reports/dependencies.svg --overview-pyramid=${builddir}/reports/pdepend-pyramid.svg ${srcdir}/module" />
     </exec>
   </target>
@@ -223,7 +225,7 @@
     </if>
   </target>
   <target name="phpcs">
-    <exec executable="${srcdir}/vendor/bin/phpcs" escape="false">
+    <exec executable="${srcdir}/vendor/bin/phpcs" escape="false" passthru="true" checkreturn="true">
       <arg line="--cache=${srcdir}/tests/phpcs.cache.json --standard=${srcdir}/tests/phpcs.xml --report=checkstyle &gt; ${builddir}/reports/checkstyle.xml" />
     </exec>
   </target>
@@ -374,6 +376,13 @@
         <property name="remote_coverage_dir" value="" />
       </else>
     </if>
+    <if>
+      <istrue value="${html_validator_log_file}" />
+      <then>
+        <move file="${html_validator_log_file}" tofile="${html_validator_log_file}.1" overwrite="true" />
+        <touch file="${html_validator_log_file}" />
+      </then>
+    </if>
     <exec dir="${srcdir}/module/VuFind/tests" executable="${sh}" passthru="true" checkreturn="true">
       <arg line="-c &apos;${phpunit_command} --log-junit ${builddir}/reports/phpunit.xml --coverage-php ${coveragedir}/tmp/unit.cov ${phpunit_extra_params}&apos;" />
       <env key="XDEBUG_MODE" value="coverage" />
@@ -413,6 +422,13 @@
 
   <!-- PHPUnit without logging output -->
   <target name="phpunitfast" description="Run tests">
+    <if>
+      <istrue value="${html_validator_log_file}" />
+      <then>
+        <move file="${html_validator_log_file}" tofile="${html_validator_log_file}.1" overwrite="true" />
+        <touch file="${html_validator_log_file}" />
+      </then>
+    </if>
     <exec dir="${srcdir}/module/VuFind/tests" executable="${sh}" passthru="true" checkreturn="true">
       <arg line="-c &apos;${phpunit_command} ${phpunit_extra_params}&apos;" />
       <env key="VUFIND_MINK_DRIVER" value="${mink_driver}" />
@@ -433,6 +449,13 @@
 
   <!-- PHPUnit without logging output, stopping at first error or failure -->
   <target name="phpunitfaster" description="Run tests until first failure">
+    <if>
+      <istrue value="${html_validator_log_file}" />
+      <then>
+        <move file="${html_validator_log_file}" tofile="${html_validator_log_file}.1" overwrite="true" />
+        <touch file="${html_validator_log_file}" />
+      </then>
+    </if>
     <exec dir="${srcdir}/module/VuFind/tests" executable="${sh}" passthru="true" checkreturn="true">
       <arg line="-c &apos;${phpunit_command} --stop-on-defect ${phpunit_extra_params}&apos;" />
       <env key="VUFIND_MINK_DRIVER" value="${mink_driver}" />
@@ -467,16 +490,16 @@
         <not><available file="${srcdir}/solr/.disableAutomaticInstall" /></not>
       </and>
       <then>
-        <!-- make sure we don't run out of memory or time during installation: -->
-        <php expression="ini_set('memory_limit', '1G');" />
-        <php expression="ini_set('default_socket_timeout', '600');" />
-
         <!-- download from Apache if not already present in the downloads cache -->
         <if>
           <not><available file="${downloadsdir}/solr-${solr_version}.tgz" /></not>
            <then>
             <mkdir dir="${downloadsdir}" />
-            <httpget url="https://archive.apache.org/dist/solr/solr/${solr_version}/solr-${solr_version}.tgz" dir="${downloadsdir}" />
+            <exec executable="php" checkreturn="true" passthru="true">
+              <arg line="${srcdir}/public/index.php util/download https://archive.apache.org/dist/solr/solr/${solr_version}/solr-${solr_version}.tgz ${downloadsdir}/solr-${solr_version}.tgz" />
+              <env key="VUFIND_HOME" value="${srcdir}" />
+              <env key="VUFIND_LOCAL_DIR" value="${localdir}" />
+            </exec>
           </then>
         </if>
         <!-- unpack the archive into solr/vendor -->
@@ -538,6 +561,8 @@
       </else>
     </if>
     <echo message="Installing dependencies..." />
+    <!-- in order to respect the ${downloadsdir} property, we should install Solr here before running composer. -->
+    <phingcall target="installsolr" />
     <exec executable="sh" passthru="true" checkreturn="true">
       <arg line="-c 'cd ${workdir}; php ${downloadsdir}/${composer_filename} install ${composer_extra_params}'" />
     </exec>
@@ -622,11 +647,19 @@
         <equals arg1="${apachectl}" arg2="" />
       </not>
       <then>
-        <copy file="${localdir}/httpd-vufind.conf" tofile="${apacheconfdir}/vufindtest.conf" />
+        <!-- Enable testing mode -->
+        <reflexive file="${localdir}/httpd-vufind.conf">
+          <filterchain>
+            <replaceregexp>
+              <regexp pattern="#SetEnv VUFIND_ENV development" replace="SetEnv VUFIND_ENV ${vufind_env}" />
+            </replaceregexp>
+          </filterchain>
+        </reflexive>
         <if>
           <istrue value="${phpunit_remote_coverage}" />
           <then>
-            <reflexive file="${apacheconfdir}/vufindtest.conf">
+            <!-- Enable code coverage support -->
+            <reflexive file="${localdir}/httpd-vufind.conf">
               <filterchain>
                 <replaceregexp>
                   <regexp pattern="#SetEnv VUFIND_CODE_COVERAGE 1" replace="SetEnv VUFIND_CODE_COVERAGE 1" />
@@ -635,6 +668,8 @@
             </reflexive>
           </then>
         </if>
+        <!-- Copy the file and restart Apache -->
+        <copy file="${localdir}/httpd-vufind.conf" tofile="${apacheconfdir}/vufindtest.conf" />
         <exec executable="${sh}" passthru="true">
           <arg line="-c &apos;${apachectl} restart&apos;" />
         </exec>
@@ -798,11 +833,10 @@ return [
     <echo file="${contentdir}/test/sub/test.phtml">&lt;h1&gt;SUB SUB LEVEL PHTML&lt;/h1&gt;</echo>
   </target>
 
-  <target name="setup_database" description="setup demo database">
+  <target name="teardown_database" description="clean up existing database and users">
     <if>
       <equals arg1="${dbtype}" arg2="pgsql" />
       <then>
-        <!-- build database -->
         <if>
           <equals arg1="${psql_needs_sudo}" arg2="false" />
           <then>
@@ -812,18 +846,6 @@ return [
             <exec executable="psql">
               <arg line="-c &quot;DROP USER ${vufinddbuser};&quot; ${pgsqlrootuser}" />
             </exec>
-            <exec executable="psql" checkreturn="true">
-              <arg line="-c &quot;CREATE DATABASE ${vufinddb};&quot; ${pgsqlrootuser}" />
-            </exec>
-            <exec executable="psql" checkreturn="true">
-              <arg line="-c &quot;CREATE USER ${vufinddbuser} PASSWORD '${vufinddbpass}';&quot; ${pgsqlrootuser}" />
-            </exec>
-            <exec executable="psql" checkreturn="true">
-              <arg line="-c &quot;GRANT ALL ON DATABASE ${vufinddb} TO ${vufinddbuser};&quot; ${pgsqlrootuser}" />
-            </exec>
-            <exec executable="psql" checkreturn="true">
-              <arg line="-c &quot;ALTER DATABASE ${vufinddb} OWNER TO ${vufinddbuser};&quot; ${pgsqlrootuser}" />
-            </exec>
           </then>
           <else>
             <exec executable="sudo">
@@ -832,50 +854,60 @@ return [
             <exec executable="sudo">
               <arg line="su -c &quot;psql -c 'DROP USER ${vufinddbuser};'&quot; ${pgsqlrootuser}" />
             </exec>
-            <exec executable="sudo" checkreturn="true">
-              <arg line="su -c &quot;psql -c 'CREATE DATABASE ${vufinddb};'&quot; ${pgsqlrootuser}" />
-            </exec>
-            <exec executable="sudo" checkreturn="true">
-              <!-- due to deep quote nesting and Phing bugs, we need to use a variable to make this work -->
-              <env key="PG_COMMAND" value="&quot;\&quot;CREATE USER ${vufinddbuser} PASSWORD '${vufinddbpass}';\&quot;&quot;" />
-              <arg line="su -c &quot;psql -c $PG_COMMAND &quot; ${pgsqlrootuser}" />
-            </exec>
-            <exec executable="sudo" checkreturn="true">
-              <arg line="su -c &quot;psql -c 'GRANT ALL ON DATABASE ${vufinddb} TO ${vufinddbuser};'&quot; ${pgsqlrootuser}" />
-            </exec>
-            <exec executable="sudo" checkreturn="true">
-              <arg line="su -c &quot;psql -c 'ALTER DATABASE ${vufinddb} OWNER TO ${vufinddbuser};'&quot; ${pgsqlrootuser}" />
-            </exec>
           </else>
         </if>
-
-        <exec executable="psql" checkreturn="true">
-          <arg line="-U ${vufinddbuser} -f ${srcdir}/module/VuFind/sql/pgsql.sql ${vufinddb}" />
-          <env key="PGPASSWORD" value="${vufinddbpass}" />
-        </exec>
       </then>
       <else>
-        <!-- build database -->
         <exec executable="mysql" passthru="true">
           <arg line="${mysqlconnectionargs} -e &quot;DROP DATABASE IF EXISTS ${vufinddb}&quot;" />
-        </exec>
-        <exec executable="mysql" checkreturn="true" passthru="true">
-          <arg line="${mysqlconnectionargs} -e &quot;CREATE DATABASE ${vufinddb}&quot;" />
         </exec>
         <exec executable="mysql" passthru="true">
           <arg line="${mysqlconnectionargs} -e &quot;DROP USER IF EXISTS '${vufinddbuser}'@'%'&quot;" />
         </exec>
-        <exec executable="mysql" checkreturn="true" passthru="true">
-          <arg line="${mysqlconnectionargs} -e &quot;CREATE USER '${vufinddbuser}'@'%' IDENTIFIED BY '${vufinddbpass}'&quot;" />
+      </else>
+    </if>
+  </target>
+
+  <target name="setup_database" description="setup demo database">
+    <phingcall target="teardown_database" />
+    <if>
+      <equals arg1="${dbtype}" arg2="pgsql" />
+      <then>
+        <!-- build database -->
+        <property name="pgsqldatabaseprecommands" value="${tmp}/create-pgsql1.sql" />
+        <exec executable="php" passthru="true" checkreturn="true">
+          <arg line="${srcdir}/public/index.php install/database --steps=pre --driver=pgsql --sql-only ${vufinddb} ${vufinddbuser} ${vufinddbpass} > ${pgsqldatabaseprecommands}" />
         </exec>
-        <exec executable="mysql" checkreturn="true" passthru="true">
-          <arg line="${mysqlconnectionargs} -e &quot;GRANT SELECT,INSERT,UPDATE,DELETE ON ${vufinddb}.* TO '${vufinddbuser}'@'%' WITH GRANT OPTION&quot;" />
+        <property name="pgsqldatabasemainpostcommands" value="${tmp}/create-pgsql2.sql" />
+        <exec executable="php" passthru="true" checkreturn="true">
+          <arg line="${srcdir}/public/index.php install/database --steps=main,post --driver=pgsql --sql-only ${vufinddb} ${vufinddbuser} ${vufinddbpass} > ${pgsqldatabasemainpostcommands}" />
         </exec>
-        <exec executable="mysql" checkreturn="true" passthru="true">
-          <arg line="${mysqlconnectionargs} -e &quot;FLUSH PRIVILEGES&quot;" />
-        </exec>
-        <exec executable="mysql" checkreturn="true" passthru="true">
-          <arg line="${mysqlconnectionargs} -D ${vufinddb} &lt; ${srcdir}/module/VuFind/sql/mysql.sql" />
+        <if>
+          <equals arg1="${psql_needs_sudo}" arg2="false" />
+          <then>
+            <exec executable="psql" passthru="true" checkreturn="true">
+              <arg line="-f ${pgsqldatabaseprecommands} ${pgsqlrootuser}" />
+            </exec>
+            <exec executable="psql" passthru="true" checkreturn="true">
+              <arg line="-f ${pgsqldatabasemainpostcommands} --dbname=${vufinddb}" />
+            </exec>
+          </then>
+          <else>
+            <exec executable="sudo" checkreturn="true">
+              <arg line="su -c &quot;psql -f ${pgsqldatabaseprecommands}&quot; ${pgsqlrootuser}" />
+            </exec>
+            <exec executable="sudo" checkreturn="true">
+              <arg line="su -c &quot;psql -f ${pgsqldatabasemainpostcommands} --dbname=${vufinddb}&quot; ${pgsqlrootuser}" />
+            </exec>
+          </else>
+        </if>
+        <delete file="${pgsqldatabaseprecommands}" />
+        <delete file="${pgsqldatabasemainpostcommands}" />
+      </then>
+      <else>
+        <!-- build database -->
+        <exec executable="php" passthru="true" checkreturn="true">
+          <arg line="${srcdir}/public/index.php install/database --dbHost=${mysqlhost}:${mysqlport} --vufindHost=% --rootUser=${mysqlrootuser} --rootPass=${mysqlrootpass} ${vufinddb} ${vufinddbuser} ${vufinddbpass}" />
         </exec>
       </else>
     </if>
@@ -1003,25 +1035,7 @@ ${git_status}
     </if>
 
     <!-- drop database -->
-    <if>
-      <equals arg1="${dbtype}" arg2="pgsql" />
-      <then>
-        <exec executable="sudo" checkreturn="true">
-          <arg line="su -c &quot;psql -c 'DROP DATABASE ${vufinddb};'&quot; ${pgsqlrootuser}" />
-        </exec>
-        <exec executable="sudo" checkreturn="true">
-          <arg line="su -c &quot;psql -c 'DROP USER ${vufinddbuser};'&quot; ${pgsqlrootuser}" />
-        </exec>
-      </then>
-      <else>
-        <exec executable="mysql">
-          <arg line="${mysqlconnectionargs} -e &quot;DROP USER IF EXISTS '${vufinddbuser}'@'%'&quot;" />
-        </exec>
-        <exec executable="mysql">
-          <arg line="${mysqlconnectionargs} -e &quot;DROP DATABASE IF EXISTS ${vufinddb}&quot;" />
-        </exec>
-      </else>
-    </if>
+    <phingcall target="teardown_database" />
 
     <!-- stop Solr -->
     <if>

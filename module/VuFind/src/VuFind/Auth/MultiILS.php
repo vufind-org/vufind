@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -139,7 +139,7 @@ class MultiILS extends ILS
         if (!$target) {
             throw new \Exception(__METHOD__ . ' requires the target parameter!');
         }
-        // If a target is specified, use an arbitrary cat_username with the corrent target prefix:
+        // If a target is specified, use an arbitrary cat_username with the correct target prefix:
         $recoveryConfig = $this->getCatalog()->checkFunction(
             'resetPassword',
             ['cat_username' => "$target.123"]

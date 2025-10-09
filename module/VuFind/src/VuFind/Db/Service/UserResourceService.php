@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -29,7 +29,7 @@
 
 namespace VuFind\Db\Service;
 
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
@@ -233,7 +233,7 @@ class UserResourceService extends AbstractDbService implements
         $repo = $this->entityManager->getRepository(UserResourceEntityInterface::class);
         foreach ($this->getDuplicates() as $dupe) {
             // Do this as a transaction to prevent odd behavior:
-            $this->entityManager->getConnection()->beginTransaction();
+            $this->beginTransaction();
 
             // Merge notes together...
             $mainCriteria = [
@@ -265,10 +265,10 @@ class UserResourceService extends AbstractDbService implements
                 $query->setParameters($mainCriteria);
                 $query->execute();
                 // Done -- commit the transaction:
-                $this->entityManager->getConnection()->commit();
+                $this->commitTransaction();
             } catch (\Exception $e) {
                 // If something went wrong, roll back the transaction and rethrow the error:
-                $this->entityManager->getConnection()->rollBack();
+                $this->rollBackTransaction();
                 throw $e;
             }
         }

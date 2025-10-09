@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -155,6 +155,18 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
             $rules = $options->getAutocompleteFormattingRules();
         }
         return json_encode($rules);
+    }
+
+    /**
+     * Get limit of items in autocomplete list
+     *
+     * @param string $activeSearchClass Active search class ID
+     *
+     * @return bool
+     */
+    public function autocompleteDisplayLimit($activeSearchClass)
+    {
+        return $this->getOptionsForTarget($activeSearchClass)->getAutocompleteDisplayLimit();
     }
 
     /**

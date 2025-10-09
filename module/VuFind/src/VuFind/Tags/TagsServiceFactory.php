@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tags
@@ -70,17 +70,17 @@ class TagsServiceFactory implements FactoryInterface
         ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         $serviceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         return new $requestedName(
             $serviceManager->get(TagServiceInterface::class),
             $serviceManager->get(ResourceTagsServiceInterface::class),
             $serviceManager->get(UserListServiceInterface::class),
             $container->get(ResourcePopulator::class),
-            $config->Social->max_tag_length ?? 64,
-            $config->Social->case_sensitive_tags ?? false
+            $config['Social']['max_tag_length'] ?? 64,
+            $config['Social']['case_sensitive_tags'] ?? false
         );
     }
 }

@@ -20,8 +20,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -35,7 +35,7 @@
 namespace VuFind\ILS\Driver;
 
 use DOMDocument;
-use Laminas\Log\LoggerAwareInterface as LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Exception\ILS as ILSException;
 use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
 
@@ -422,6 +422,8 @@ class DAIA extends AbstractBase implements
      *
      * @throws ILSException
      * @return array     An array with the acquisitions data on success.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPurchaseHistory($id)
     {
@@ -978,6 +980,8 @@ class DAIA extends AbstractBase implements
      * @param array $item Array with DAIA item data
      *
      * @return array
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function getCustomData($item)
     {
@@ -990,6 +994,8 @@ class DAIA extends AbstractBase implements
      * @param array $item Array with DAIA item data
      *
      * @return string
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function getStatusString($item)
     {
@@ -999,7 +1005,7 @@ class DAIA extends AbstractBase implements
 
     /**
      * Helper function to determine if item is recallable.
-     * DAIA does not genuinly allow distinguishing between holdable and recallable
+     * DAIA does not genuinely allow distinguishing between holdable and recallable
      * items. This could be achieved by usage of limitations but this would not be
      * shared functionality between different DAIA implementations (thus should be
      * implemented in custom drivers). Therefore this returns whether an item
@@ -1096,7 +1102,7 @@ class DAIA extends AbstractBase implements
 
     /**
      * Helper function to determine the holdtype available for current item.
-     * DAIA does not genuinly allow distinguishing between holdable and recallable
+     * DAIA does not genuinely allow distinguishing between holdable and recallable
      * items. This could be achieved by usage of limitations but this would not be
      * shared functionality between different DAIA implementations (thus should be
      * implemented in custom drivers). Therefore getHoldType always returns recall.
@@ -1262,6 +1268,8 @@ class DAIA extends AbstractBase implements
      * @param int   $counter Integer counting items as alternative return value
      *
      * @return mixed
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function getItemNumber($item, $counter)
     {
@@ -1274,6 +1282,8 @@ class DAIA extends AbstractBase implements
      * @param array $item Array with DAIA item data
      *
      * @return string
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function getItemBarcode($item)
     {
@@ -1286,6 +1296,8 @@ class DAIA extends AbstractBase implements
      * @param array $item Array with DAIA item data
      *
      * @return string
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function getItemReserveStatus($item)
     {

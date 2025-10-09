@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -121,6 +121,19 @@ class AccessTokenService extends AbstractDbService implements
     }
 
     /**
+     * Delete an access token.
+     *
+     * @param AccessTokenEntityInterface $accessToken AccessToken object to delete
+     *
+     * @return void
+     */
+    public function deleteAccessToken(AccessTokenEntityInterface $accessToken): void
+    {
+        $this->entityManager->remove($accessToken);
+        $this->entityManager->flush();
+    }
+
+    /**
      * Delete expired records. Allows setting a limit so that rows can be deleted in small batches.
      *
      * @param DateTime $dateLimit Date threshold of an "expired" record.
@@ -134,7 +147,7 @@ class AccessTokenService extends AbstractDbService implements
         $subQueryBuilder->select('CONCAT(a.id, a.type)')
             ->from(AccessTokenEntityInterface::class, 'a')
             ->where('a.created < :latestCreated')
-            ->setParameter('latestCreated', $dateLimit->format('Y-m-d H:i:s'));
+            ->setParameter('latestCreated', $dateLimit->format(VUFIND_DATABASE_DATETIME_FORMAT));
         if ($limit) {
             $subQueryBuilder->setMaxResults($limit);
         }
