@@ -379,6 +379,7 @@ DROP TABLE IF EXISTS "access_token";
 
 CREATE TABLE access_token (
 id varchar(255) NOT NULL,
+type varchar(128) NOT NULL,
 user_id int DEFAULT NULL,
 created timestamp NOT NULL default '2000-01-01 00:00:00',
 data text,
@@ -386,6 +387,24 @@ revoked boolean NOT NULL DEFAULT '0',
 PRIMARY KEY (id, type)
 );
 CREATE INDEX access_token_user_id_idx ON access_token (user_id);
+
+DROP TABLE IF EXISTS "api_key";
+
+CREATE TABLE api_key (
+  id int(11) unsigned NOT NULL AUTO_INCREMENT,
+  user_id int(11) DEFAULT NULL,
+  title varchar(255) NOT NULL,
+  token varchar(255) NOT NULL,
+  revoked tinyint(1) NOT NULL DEFAULT '0',
+  created timestamp NOT NULL default '2000-01-01 00:00:00',
+  last_used timestamp NOT NULL default '2000-01-01 00:00:00',
+  PRIMARY KEY (id),
+);
+CREATE INDEX api_key_user_id_idx ON api_key (user_id);
+CREATE INDEX api_key_token_idx ON api_key (token);
+CREATE INDEX api_key_created_idx ON api_key (created);
+CREATE INDEX api_key_revoked_idx ON api_key (revoked);
+CREATE INDEX api_key_last_used_idx ON api_key (last_used);
 
 --
 -- Table structure for table `login_token`
