@@ -174,6 +174,28 @@ class EDS extends DefaultRecord
     }
 
     /**
+     * Get a link for placing a title level hold.
+     *
+     * @return mixed A url if a hold is possible, boolean false if not
+     */
+    public function getRealTimeTitleHold()
+    {
+        if ($this->hasILS() && $this->hasCatalog() && $this->pubTypeRtacEnabled()) {
+            $supportedPubTypes = ['book'];
+            $pubType = $this->fields['Header']['PubTypeId'];
+            if (in_array($pubType, $supportedPubTypes)) {
+                if ($this->ils->getTitleHoldsMode() != 'disabled') {
+                    $bibId = $this->getUniqueIDOverrideForRequest();
+                    $overrides = ['source' => 'EDS', 'id' => $this->getUniqueID()];
+                    return $this->titleHoldLogic->getHold($bibId, $overrides);
+                }
+            }
+        }
+
+        return false;
+    }
+
+    /**
      * Get the short (pre-subtitle) title of the record.
      *
      * @return string
