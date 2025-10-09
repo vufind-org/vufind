@@ -57,11 +57,11 @@ class DeveloperSettingsService
     protected int $keyLimitPerUser;
 
     /**
-     * Update interval to update last_used values in the database.
+     * Update interval to update last_used values in minutes.
      *
      * @var int
      */
-    protected int $updateInterval = 5;
+    protected int $updateInterval = 60;
 
     /**
      * Constructor.
@@ -153,16 +153,17 @@ class DeveloperSettingsService
     }
 
     /**
-     * Set the last used value to the API key, do this only every 5 minutes
-     * to avoid excessive database queries.
+     * Set the last used value to the API key. At default this will be only updated once every hour.
      *
      * @param ApiKeyEntityInterface $apiKey API key
      *
      * @return void
      */
-    public function updateApiKeyTimeStamp(ApiKeyEntityInterface $apiKey): void
+    protected function updateApiKeyTimeStamp(ApiKeyEntityInterface $apiKey): void
     {
         if (time() - $apiKey->getCreated()->getTimestamp() < $this->updateInterval * 60) {
+            $apiKey->setLastUsed(new \DateTime());
+            $this->apiKeyService->persistEntity($apiKey);
         }
     }
 
