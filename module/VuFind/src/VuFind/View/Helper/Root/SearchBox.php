@@ -45,7 +45,7 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Laminas\Log\LoggerAwareInterface
+class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
@@ -157,13 +157,18 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Laminas\
                         $baseMsg = "Could not determine autocomplete formatting rules for {$target}.";
                         $shortDetails = $e->getMessage();
                         $fullDetails = (string)$e;
-                        $this->logWarning([
-                            1 => "$baseMsg $shortDetails",
-                            2 => "$baseMsg $shortDetails",
-                            3 => "$baseMsg $shortDetails",
-                            4 => "$baseMsg $fullDetails",
-                            5 => "$baseMsg $fullDetails",
-                        ], prependClass: false);
+                        $this->logWarning(
+                            $baseMsg,
+                            [
+                                'details' => [
+                                    1 => "$baseMsg $shortDetails",
+                                    2 => "$baseMsg $shortDetails",
+                                    3 => "$baseMsg $shortDetails",
+                                    4 => "$baseMsg $fullDetails",
+                                    5 => "$baseMsg $fullDetails",
+                                ],
+                            ]
+                        );
                     }
                 }
             }
@@ -505,13 +510,18 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Laminas\
                     $baseMsg = "Missing required data for {$target}. Could not add to search box.";
                     $shortDetails = $e->getMessage();
                     $fullDetails = (string)$e;
-                    $this->logError([
-                        1 => "$baseMsg $shortDetails",
-                        2 => "$baseMsg $shortDetails",
-                        3 => "$baseMsg $shortDetails",
-                        4 => "$baseMsg $fullDetails",
-                        5 => "$baseMsg $fullDetails",
-                    ], prependClass: false);
+                    $this->logError(
+                        $baseMsg,
+                        [
+                            'details' => [
+                                1 => "$baseMsg $shortDetails",
+                                2 => "$baseMsg $shortDetails",
+                                3 => "$baseMsg $shortDetails",
+                                4 => "$baseMsg $fullDetails",
+                                5 => "$baseMsg $fullDetails",
+                            ],
+                        ]
+                    );
                     continue;
                 }
                 if (empty($basic)) {

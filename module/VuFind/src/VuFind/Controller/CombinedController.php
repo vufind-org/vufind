@@ -50,7 +50,7 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class CombinedController extends AbstractSearch implements \Laminas\Log\LoggerAwareInterface
+class CombinedController extends AbstractSearch implements \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
     use AjaxResponseTrait;
@@ -179,13 +179,18 @@ class CombinedController extends AbstractSearch implements \Laminas\Log\LoggerAw
                 $baseMsg = "Failed get combined options for {$searchClassId}.";
                 $shortDetails = $e->getMessage();
                 $fullDetails = (string)$e;
-                $this->logError([
-                    1 => "$baseMsg $shortDetails",
-                    2 => "$baseMsg $shortDetails",
-                    3 => "$baseMsg $shortDetails",
-                    4 => "$baseMsg $fullDetails",
-                    5 => "$baseMsg $fullDetails",
-                ], prependClass: false);
+                $this->logError(
+                    $baseMsg,
+                    [
+                        'details' => [
+                            1 => "$baseMsg $shortDetails",
+                            2 => "$baseMsg $shortDetails",
+                            3 => "$baseMsg $shortDetails",
+                            4 => "$baseMsg $fullDetails",
+                            5 => "$baseMsg $fullDetails",
+                        ],
+                    ]
+                );
                 continue;
             }
             $this->adjustQueryForSettings(

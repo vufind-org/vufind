@@ -48,7 +48,7 @@ use VuFind\Search\UrlQueryHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SearchTabs extends \Laminas\View\Helper\AbstractHelper implements \Laminas\Log\LoggerAwareInterface
+class SearchTabs extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
@@ -171,13 +171,18 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper implements \Laminas
                 $baseMsg = "Could not add tab for {$key}.";
                 $shortDetails = $e->getMessage();
                 $fullDetails = (string)$e;
-                $this->logError([
-                    1 => "$baseMsg $shortDetails",
-                    2 => "$baseMsg $shortDetails",
-                    3 => "$baseMsg $shortDetails",
-                    4 => "$baseMsg $fullDetails",
-                    5 => "$baseMsg $fullDetails",
-                ], prependClass: false);
+                $this->logError(
+                    $baseMsg,
+                    [
+                        'details' => [
+                            1 => "$baseMsg $shortDetails",
+                            2 => "$baseMsg $shortDetails",
+                            3 => "$baseMsg $shortDetails",
+                            4 => "$baseMsg $fullDetails",
+                            5 => "$baseMsg $fullDetails",
+                        ],
+                    ]
+                );
                 continue;
             }
             $tab = [
