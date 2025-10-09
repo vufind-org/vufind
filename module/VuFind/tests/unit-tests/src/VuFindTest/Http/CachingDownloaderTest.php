@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -33,6 +33,7 @@ use Laminas\Http\Response;
 use VuFind\Exception\HttpDownloadException;
 use VuFind\Http\CachingDownloader;
 use VuFindHttp\HttpService;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
  * CachingDownloader Test Class
@@ -45,6 +46,8 @@ use VuFindHttp\HttpService;
  */
 class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
 {
+    use ConfigRelatedServicesTrait;
+
     /**
      * Data provider for testDownload
      *
@@ -114,7 +117,7 @@ class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
         }
 
         // configManager
-        $configManagerMock = $this->createMock(\VuFind\Config\PluginManager::class);
+        $configManagerMock = $this->getMockConfigManager();
 
         // downloader
         $downloader = new CachingDownloader($cacheManagerMock, $configManagerMock, $cacheEnabled);
@@ -163,7 +166,7 @@ class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
             ->willReturn($storage);
 
         // configManager
-        $configManagerMock = $this->createMock(\VuFind\Config\PluginManager::class);
+        $configManagerMock = $this->getMockConfigManager();
 
         // downloader
         $downloader = new CachingDownloader($cacheManagerMock, $configManagerMock, true);

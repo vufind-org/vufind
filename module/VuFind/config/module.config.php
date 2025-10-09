@@ -233,6 +233,7 @@ $config = [
             'VuFind\Controller\WorldcatController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\Worldcat2Controller' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\Worldcat2recordController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFind\Controller\ZoteroController' => 'VuFind\Controller\ZoteroControllerFactory',
         ],
         'initializers' => [
             'VuFind\ServiceManager\ServiceInitializer',
@@ -377,6 +378,8 @@ $config = [
             'worldcat2' => 'VuFind\Controller\Worldcat2Controller',
             'Worldcat2Record' => 'VuFind\Controller\Worldcat2recordController',
             'worldcat2record' => 'VuFind\Controller\Worldcat2recordController',
+            'Zotero' => 'VuFind\Controller\ZoteroController',
+            'zotero' => 'VuFind\Controller\ZoteroController',
         ],
     ],
     'controller_plugins' => [
@@ -419,7 +422,7 @@ $config = [
     'service_manager' => [
         'allow_override' => true,
         'factories' => [
-            'League\CommonMark\ConverterInterface' => 'VuFind\Service\MarkdownFactory',
+            'League\CommonMark\MarkdownConverter' => 'VuFind\Service\MarkdownFactory',
             'VuFind\Account\UserAccountService' => 'VuFind\Account\UserAccountServiceFactory',
             'VuFind\AjaxHandler\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\DeveloperSettings\DeveloperSettingsService' => 'VuFind\DeveloperSettings\DeveloperSettingsServiceFactory',
@@ -480,6 +483,7 @@ $config = [
             'VuFind\DigitalContent\OverdriveConnector' => 'VuFind\DigitalContent\OverdriveConnectorFactory',
             'VuFind\Escaper\Escaper' => 'VuFind\Escaper\EscaperFactory',
             'VuFind\Export' => 'VuFind\ExportFactory',
+            'VuFind\Export\Zotero\ZoteroService' => 'VuFind\Export\Zotero\ZoteroServiceFactory',
             'VuFind\Favorites\FavoritesService' => 'VuFind\Favorites\FavoritesServiceFactory',
             'VuFind\Form\Form' => 'VuFind\Form\FormFactory',
             'VuFind\Form\Handler\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
@@ -646,7 +650,7 @@ $config = [
             // Overrides:
             'Laminas\Escaper\Escaper' => 'VuFind\Escaper\Escaper',
             'Laminas\Validator\Csrf' => 'VuFind\Validator\SessionCsrf',
-            'League\CommonMark\MarkdownConverterInterface' => 'League\CommonMark\ConverterInterface',
+            'League\CommonMark\ConverterInterface' => 'League\CommonMark\MarkdownConverter',
             'Request' => 'VuFind\Http\PhpEnvironment\Request',
         ],
         'shared' => [
@@ -1040,6 +1044,8 @@ $staticRoutes = [
     'Worldcat2/Advanced',
     'Worldcat2/Home',
     'Worldcat2/Search',
+    'Zotero/AuthCallback',
+    'Zotero/Export',
 ];
 
 $routeGenerator = new \VuFind\Route\RouteGenerator();

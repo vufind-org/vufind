@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -29,10 +29,11 @@
 
 namespace VuFind\View\Helper\Root;
 
-use VuFind\Config\PluginManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFindApi\Controller\ApiInterface;
 
 use function in_array;
+
 
 /**
  * Config view helper
@@ -45,13 +46,6 @@ use function in_array;
  */
 class Config extends \Laminas\View\Helper\AbstractHelper
 {
-    /**
-     * Configuration plugin manager
-     *
-     * @var PluginManager
-     */
-    protected $configLoader;
-
     /**
      * Display date format
      *
@@ -69,11 +63,10 @@ class Config extends \Laminas\View\Helper\AbstractHelper
     /**
      * Config constructor.
      *
-     * @param PluginManager $configLoader Configuration loader
+     * @param ConfigManagerInterface $configManager Configuration manager
      */
-    public function __construct(PluginManager $configLoader)
+    public function __construct(protected ConfigManagerInterface $configManager)
     {
-        $this->configLoader = $configLoader;
     }
 
     /**
@@ -85,7 +78,7 @@ class Config extends \Laminas\View\Helper\AbstractHelper
      */
     public function get($config)
     {
-        return $this->configLoader->get($config);
+        return $this->configManager->getConfigObject($config);
     }
 
     /**

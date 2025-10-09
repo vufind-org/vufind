@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -210,10 +210,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#modal .btn.btn-primary', null, 1);
         $localIdentifier = $this->getLocalIdentifierFromReturnUrl($page);
         $this->clickCss($page, '.button-success');
-        $this->assertEquals(
-            'Payment successful',
-            $this->findCssAndGetText($page, '.alert.alert-success')
-        );
+        $this->waitForPageLoad($page);
         // Wait for the "Processing Payment" info alert to disappear:
         $this->unFindCss($page, '.alert.alert-info');
         $this->waitForPageLoad($page);
@@ -299,7 +296,10 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
      * @return bool
      *
      * @depends testPayment
+     *
+     * Excluded from HTML validation, returns plain text.
      */
+    #[\VuFindTest\Attribute\HtmlValidation(false)]
     public function testNotify(): bool
     {
         $this->changeConfigs($this->getConfigs(false, []));
@@ -330,7 +330,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
         // Send notify event:
         $this->clickCss($page, '.button-notify');
         $this->assertEqualsWithTimeout(
-            'Notify done',
+            'OK Notify done',
             function () use ($page) {
                 return $this->findCssAndGetText($page, 'body');
             }
@@ -407,7 +407,10 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @dataProvider receiptProvider
      * @depends      testPayment
+     *
+     * Excluded from HTML validation, returns HTML used for PDF creation.
      */
+    #[\VuFindTest\Attribute\HtmlValidation(false)]
     public function testReceipt(bool $vatBreakdown): void
     {
         $this->changeConfigs(

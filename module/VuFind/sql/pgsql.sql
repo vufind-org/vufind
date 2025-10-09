@@ -283,6 +283,7 @@ expires timestamp NOT NULL default '2000-01-01 00:00:00',
 PRIMARY KEY (id)
 );
 CREATE UNIQUE INDEX oai_resumption_token_idx ON oai_resumption (token);
+CREATE INDEX oai_resumption_expires_idx on oai_resumption(expires);
 
 -- --------------------------------------------------------
 

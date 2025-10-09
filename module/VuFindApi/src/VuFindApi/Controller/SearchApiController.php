@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -349,6 +349,8 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements
      *               - records: Records found
      *               - resultCount: Total result count
      *               - facets: array containing facets for the result
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function doDefaultSearch(array $request): array
     {
@@ -423,12 +425,12 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements
      *               - resultCount: Total result count
      *               - resumptionToken: Array containing info about resumption token
      *                  - token
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function doCursorSearch(array $request): array
     {
         unset($request['page']);
-        // Always discard cursors from requests
-        $request['cursor'] = 0;
         if ('*' !== $request['resumptionToken']) {
             // Try to load a resumption token for this request
             $resumptionTokenParams = $this->loadResumptionToken($request['resumptionToken']);
@@ -438,7 +440,6 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements
             $request = array_merge($request, $resumptionTokenParams);
         }
         $limit = $this->cursorLimit;
-        $cursor = $request['cursor'];
         $cursorMark = $request['cursorMark'] ?? '';
         $recordFields = $this->getFieldList($request);
         // Throw an error here, as there is no reason to search for anything, if no record fields were defined
@@ -478,7 +479,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements
         if ($records) {
             $response['records'] = $records;
             // Save resumption token if results were found
-            $nextCursor = $cursor += count($records);
+            $nextCursor = count($records);
             $nextCursorMark = $results->getCursorMark();
             $resumptionToken = $this->createResumptionToken($request, $nextCursor, $nextCursorMark);
             $response['resumptionToken'] = [

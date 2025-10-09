@@ -1,0 +1,438 @@
+[
+    {
+        "expectedMethod": "GET",
+        "expectedPath": "\/instance-storage\/instances",
+        "expectedParams": {
+            "query": "hrid == (\"foo\" OR \"bar\")",
+            "offset": 0,
+            "limit": 1000
+        },
+        "body": {
+            "instances": [
+                {
+                    "id": "c522c2fe-0450-429a-ae72-82b25a096e38",
+                    "_version": 1,
+                    "hrid": "foo",
+                    "source": "MARC",
+                    "title": "The bride of the tomb; or, Lancelot Darling's betrothed \/ By Mrs. Alex. McVeigh Miller.",
+                    "indexTitle": "Bride of the tomb; or, lancelot darling's betrothed",
+                    "editions": [],
+                    "series": [
+                        "Munro's library ; v. 1, no. 2"
+                    ],
+                    "identifiers": [],
+                    "contributors": [
+                        {
+                            "name": "Miller, Alex. McVeigh, Mrs",
+                            "contributorTypeId": "contypeID",
+                            "contributorTypeText": "Contributor",
+                            "contributorNameTypeId": "conNameTypeID",
+                            "primary": true
+                        }
+                    ],
+                    "subjects": [
+                        "Dime novels Specimens",
+                        "Genre: Popular literature Specimens",
+                        "Genre: Mystery and detective fiction"
+                    ],
+                    "classifications": [
+                        {
+                            "classificationNumber": "PS2394 .M643 1883",
+                            "classificationTypeId": "ctypeId"
+                        }
+                    ],
+                    "publication": [
+                        {
+                            "publisher": "Norman L. Munro",
+                            "place": "New York",
+                            "dateOfPublication": "1883"
+                        }
+                    ],
+                    "publicationFrequency": [],
+                    "publicationRange": [],
+                    "publicationPeriod": {
+                        "start": 1883
+                    },
+                    "electronicAccess": [],
+                    "instanceTypeId": "insttypeID",
+                    "instanceFormatIds": [],
+                    "instanceFormats": [],
+                    "physicalDescriptions": [
+                        "144 p.  ; 19 cm."
+                    ],
+                    "languages": [
+                        "eng"
+                    ],
+                    "notes": [],
+                    "modeOfIssuanceId": "moiid",
+                    "previouslyHeld": false,
+                    "staffSuppress": false,
+                    "discoverySuppress": false,
+                    "statisticalCodeIds": [],
+                    "statusUpdatedDate": "2022-12-22T23:34:26.209+0000",
+                    "holdingsRecords2": [],
+                    "natureOfContentTermIds": []
+                },
+                {
+                    "id": "9c9a1716-ccff-4e0a-befd-86fbbf2bad1a",
+                    "_version": 2,
+                    "hrid": "bar",
+                    "source": "MARC",
+                    "title": "The robots of dawn / Isaac Asimov.",
+                    "indexTitle": "Robots of dawn",
+                    "alternativeTitles": [],
+                    "editions": [
+                        "First edition"
+                    ],
+                    "series": [],
+                    "identifiers": [
+                        {
+                        "value": "83008960",
+                        "identifierTypeId": "cdd8efb7-10fb-4b95-9677-9119a96f8fdd"
+                        }
+                    ],
+                    "contributors": [
+                        {
+                        "name": "Asimov, Isaac, 1920-1992",
+                        "contributorTypeId": "5432c72d-cc8f-4549-95b5-9dcb4e3895d6",
+                        "contributorTypeText": "Contributor",
+                        "contributorNameTypeId": "faa2386c-7d3b-4a81-9573-9e43ece4388e",
+                        "primary": true
+                        }
+                    ],
+                    "subjects": [],
+                    "classifications": [
+                        {
+                        "classificationNumber": "PS3551.S5 R6 1983",
+                        "classificationTypeId": "c698eb52-9c18-4b3c-b578-38ea1fccb064"
+                        },
+                        {
+                        "classificationNumber": "813.54",
+                        "classificationTypeId": "765a3445-f0c3-4fba-aef4-b492aae3755c"
+                        }
+                    ],
+                    "publication": [
+                        {
+                        "publisher": "Doubleday",
+                        "place": "Garden City, N.Y",
+                        "dateOfPublication": "1983"
+                        }
+                    ],
+                    "publicationFrequency": [],
+                    "publicationRange": [],
+                    "electronicAccess": [],
+                    "dates": {
+                        "dateTypeId": "ed3822dd-e448-40e3-a8b2-2b0f231373cc",
+                        "date1": "1983"
+                    },
+                    "instanceTypeId": "f7e6cb2b-4628-40f6-9b72-5e81befeca87",
+                    "instanceFormatIds": [
+                        "22c022ab-837c-49ab-b010-0971e89a22eb"
+                    ],
+                    "instanceFormats": [],
+                    "physicalDescriptions": [
+                        "419 pages ; 22 cm"
+                    ],
+                    "languages": [
+                        "eng"
+                    ],
+                    "notes": [],
+                    "administrativeNotes": [],
+                    "modeOfIssuanceId": "e5257f9a-fea9-45b9-badb-a628fd28773b",
+                    "catalogedDate": "980604",
+                    "previouslyHeld": false,
+                    "staffSuppress": false,
+                    "discoverySuppress": false,
+                    "statisticalCodeIds": [],
+                    "statusUpdatedDate": "2022-06-22T15:47:43.736+0000",
+                    "metadata": {
+                        "createdDate": "2022-06-22T15:47:43.000+00:00",
+                        "createdByUserId": "02af31a0-ffbb-4138-9e36-d94c4e985628",
+                        "updatedDate": "2022-06-22T15:47:43.000+00:00",
+                        "updatedByUserId": "16f84c58-64b3-4ac9-bc05-4248a04481a1"
+                    },
+                    "holdingsRecords2": [],
+                    "natureOfContentTermIds": []
+                }
+            ],
+            "totalRecords": 2,
+            "resultInfo": {
+                "totalRecords": 2,
+                "facets": [],
+                "diagnostics": []
+            }
+        },
+        "bodyType": "json",
+        "status": 200
+    },
+    {
+        "expectedMethod": "GET",
+        "expectedPath": "\/holdings-storage\/holdings",
+        "expectedParams": {
+            "query": "instanceId == (\"c522c2fe-0450-429a-ae72-82b25a096e38\" OR \"9c9a1716-ccff-4e0a-befd-86fbbf2bad1a\") NOT discoverySuppress==true",
+            "offset": 0,
+            "limit": 1000
+        },
+        "body": {
+            "holdingsRecords": [
+                {
+                    "id": "abbd2c2b-b2a1-4324-bd24-10f990cfc594",
+                    "_version": 1,
+                    "hrid": "hr-holdingid",
+                    "holdingsTypeId": "holdingtypeid",
+                    "instanceId": "c522c2fe-0450-429a-ae72-82b25a096e38",
+                    "permanentLocationId": "location-id",
+                    "effectiveLocationId": "location-id",
+                    "electronicAccess": [],
+                    "callNumberTypeId": "cntypeid",
+                    "callNumber": "PS2394 .M643 1883",
+                    "administrativeNotes": [],
+                    "notes": [],
+                    "holdingsStatements": [
+                        { "statement": "foo", "note": "foo" },
+                        { "statement": "bar", "note": "baz" }
+                    ],
+                    "holdingsStatementsForIndexes": [],
+                    "holdingsStatementsForSupplements": [],
+                    "discoverySuppress": false,
+                    "statisticalCodeIds": [],
+                    "holdingsItems": [],
+                    "bareHoldingsItems": [],
+                    "sourceId": "sourceid"
+                },
+                {
+                    "holdingsItems": [],
+                    "bareHoldingsItems": [],
+                    "id": "2216df84-b841-490c-8bde-b83076c5c4f4",
+                    "_version": 5,
+                    "sourceId": "db908d41-98ee-4c5b-9e24-1c4cc61a2b9d",
+                    "hrid": "ho00000001234",
+                    "holdingsTypeId": "6848b952-69a4-410a-88dd-fb63cf031b22",
+                    "formerIds": [
+                        "i00000456"
+                    ],
+                    "instanceId": "9c9a1716-ccff-4e0a-befd-86fbbf2bad1a",
+                    "permanentLocationId": "1a9efad5-d360-49c7-9d32-3dc502e13979",
+                    "effectiveLocationId": "1a9efad5-d360-49c7-9d32-3dc502e13979",
+                    "electronicAccess": [],
+                    "callNumber": "PS3551.S5 R6 1983",
+                    "administrativeNotes": [],
+                    "notes": [],
+                    "holdingsStatements": [],
+                    "holdingsStatementsForIndexes": [],
+                    "holdingsStatementsForSupplements": [],
+                    "statisticalCodeIds": [],
+                    "metadata": {
+                        "createdDate": "2022-06-23T08:29:25.895+00:00",
+                        "createdByUserId": "02af31a0-ffbb-4138-9e36-d94c4e985628",
+                        "updatedDate": "2022-06-23T08:29:25.895+00:00",
+                        "updatedByUserId": "02af31a0-ffbb-4138-9e36-d94c4e985628"
+                    }
+                }
+            ],
+            "totalRecords": 2,
+            "resultInfo": {
+                "totalRecords": 2,
+                "facets": [],
+                "diagnostics": []
+            }
+        },
+        "bodyType": "json",
+        "status": 200
+    },
+    {
+        "expectedMethod": "GET",
+        "expectedPath": "\/inventory\/items",
+        "expectedParams": {
+            "query": "holdingsRecordId == (\"abbd2c2b-b2a1-4324-bd24-10f990cfc594\" OR \"2216df84-b841-490c-8bde-b83076c5c4f4\")",
+            "offset": 0,
+            "limit": 1000
+        },
+        "body": {
+            "items": [
+                {
+                    "id": "itemid",
+                    "_version": 1,
+                    "hrid": "hr-itemid",
+                    "holdingsRecordId": "abbd2c2b-b2a1-4324-bd24-10f990cfc594",
+                    "barcode": "barcode-test",
+                    "effectiveShelvingOrder": "PS 42394 M643 41883 11",
+                    "yearCaption": [],
+                    "copyNumber": "1",
+                    "numberOfPieces": "1",
+                    "descriptionOfPieces": "1",
+                    "administrativeNotes": [],
+                    "circulationNotes": [],
+                    "status": {
+                        "name": "Available",
+                        "date": "2022-12-22T20:25:19.050+00:00"
+                    },
+                    "materialTypeId": "materialid",
+                    "permanentLoanTypeId": "loantypeid",
+                    "permanentLocationId": "location-id",
+                    "effectiveLocation": {
+                        "id": "location-id"
+                    },
+                    "electronicAccess": [],
+                    "statisticalCodeIds": []
+                },
+                {
+                    "id" : "3258389f-ed1a-406f-8627-97a78d832003",
+                    "_version" : "1",
+                    "status" : {
+                        "name" : "Available",
+                        "date" : "2022-06-25T06:25:41.551+00:00"
+                    },
+                    "administrativeNotes" : [ ],
+                    "title" : "The robots of dawn / Isaac Asimov.",
+                    "callNumber" : "PS3551.S5 R6 1983",
+                    "hrid" : "it00000001111",
+                    "contributorNames" : [ {
+                        "name" : "Asimov, Isaac, 1920-1992"
+                    } ],
+                    "formerIds" : [ "i10000001" ],
+                    "discoverySuppress" : null,
+                    "holdingsRecordId" : "2216df84-b841-490c-8bde-b83076c5c4f4",
+                    "barcode" : "12345678901234",
+                    "itemLevelCallNumber" : "PS3551.S5 R6 1983",
+                    "itemLevelCallNumberTypeId" : "7b83d42e-91ae-4447-baa5-944558277a19",
+                    "copyNumber" : "2",
+                    "notes" : [ {
+                        "itemNoteTypeId" : "3b9a3be3-8a96-4cda-a015-c0c1e54af284",
+                        "note" : "06-13-98",
+                        "staffOnly" : true
+                    }, {
+                        "itemNoteTypeId" : "f5e4ed5a-da60-4070-85f8-d64e1c4c5e52",
+                        "note" : "04-14-2012 17:32",
+                        "staffOnly" : true
+                    } ],
+                    "circulationNotes" : [ ],
+                    "tags" : {
+                        "tagList" : [ ]
+                    },
+                    "yearCaption" : [ ],
+                    "electronicAccess" : [ ],
+                    "statisticalCodeIds" : [ ],
+                    "purchaseOrderLineIdentifier" : null,
+                    "materialType" : {
+                        "id" : "ee8ef550-f7ec-436d-8f46-bda56d1c9f06",
+                        "name" : "Printed Material"
+                    },
+                    "permanentLoanType" : {
+                        "id" : "d012791f-4e26-4dc2-a279-b6a42b1df315",
+                        "name" : "Can Circulate"
+                    },
+                    "permanentLocation" : {
+                        "id" : "1a9efad5-d360-49c7-9d32-3dc502e13979",
+                        "name" : "MSU Main Library [mnmn]"
+                    },
+                    "metadata" : {
+                        "createdDate" : "2022-06-25T11:54:53.311+00:00",
+                        "createdByUserId" : "02af31a0-ffbb-4138-9e36-d94c4e985628",
+                        "updatedDate" : "2022-06-25T11:54:53.311+00:00",
+                        "updatedByUserId" : "02af31a0-ffbb-4138-9e36-d94c4e985628"
+                    },
+                    "effectiveCallNumberComponents" : {
+                        "callNumber" : "PS3551.S5 R6 1983",
+                        "prefix" : null,
+                        "suffix" : null,
+                        "typeId" : "5063b20c-6ee9-4e58-80b0-695adbd48627"
+                    },
+                    "effectiveShelvingOrder" : "PS 43551 S5 R6 41983 12",
+                    "isBoundWith" : false,
+                    "effectiveLocation" : {
+                        "id" : "1a9efad5-d360-49c7-9d32-3dc502e13979",
+                        "name" : "MSU Main Library [mnmn]"
+                    }
+                }
+            ],
+            "totalRecords": 2,
+            "resultInfo": {
+                "totalRecords": 2,
+                "facets": [],
+                "diagnostics": []
+            }
+        },
+        "bodyType": "json",
+        "status": 200
+    },
+    {
+        "expectedMethod": "GET",
+        "expectedPath": "\/locations",
+        "expectedParams": {
+            "offset": 0,
+            "limit": 1000
+        },
+        "body": {
+            "locations": [
+                {
+                    "id": "location-id",
+                    "name": "Spec Coll",
+                    "code": "DCOC",
+                    "discoveryDisplayName": "Special Collections",
+                    "isActive": true,
+                    "institutionId": "fakeinst",
+                    "campusId": "fakecamp",
+                    "libraryId": "fakelib",
+                    "details": {},
+                    "primaryServicePoint": "fakepsp",
+                    "servicePointIds": [
+                        "fakepsp"
+                    ],
+                    "servicePoints": []
+                },
+                {
+                    "id": "1a9efad5-d360-49c7-9d32-3dc502e13979",
+                    "name": "MSU Main Library [mnmn]",
+                    "code": "mnmn",
+                    "discoveryDisplayName": "MSU Main Library",
+                    "isActive": true,
+                    "institutionId": "36e4348f-9f47-4181-bd06-736f9d081766",
+                    "campusId": "085b4924-e163-4ee6-9924-67cf5b55da39",
+                    "libraryId": "9bed63aa-0cfc-4083-be56-4a0cf51d1f70",
+                    "details": {},
+                    "primaryServicePoint": "73445289-9d16-4377-aacd-f9f1462789fb",
+                    "servicePointIds": [
+                        "8bd1b763-7e10-4239-8415-b586bccbdbc6",
+                        "5d7de547-ebf0-4c12-805c-1a7c5ad08403"
+                    ],
+                    "servicePoints": [],
+                    "metadata": {
+                        "createdDate": "2021-06-21T16:17:43.283+00:00",
+                        "createdByUserId": "0f00e412-815d-44d5-9ceb-576cdcda0059",
+                        "updatedDate": "2023-08-16T20:01:54.344+00:00",
+                        "updatedByUserId": "0f00e412-815d-44d5-9ceb-576cdcda0059"
+                    }
+                }
+           ],
+            "totalRecords": 2
+        },
+        "bodyType": "json",
+        "status": 200
+    },
+    {
+        "expectedMethod": "GET",
+        "expectedPath": "\/loan-types",
+        "expectedParams": {
+            "offset": 0,
+            "limit": 1000
+        },
+        "body": {
+            "loantypes": [
+                {
+                    "id": "d012791f-4e26-4dc2-a279-b6a42b1df315",
+                    "name": "Can Circulate",
+                    "metadata": {
+                        "createdDate": "2022-04-19T13:51:21.880+00:00",
+                        "createdByUserId": "549180bd-7810-4879-aecb-31001236e501",
+                        "updatedDate": "2022-04-19T13:51:21.880+00:00",
+                        "updatedByUserId": "549180bd-7810-4879-aecb-31001236e501"
+                    }
+                }
+           ],
+            "totalRecords": 1
+        },
+        "bodyType": "json",
+        "status": 200
+    }
+]

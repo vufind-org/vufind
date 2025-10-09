@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -531,6 +531,28 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             'http://my-id.hosted.exlibrisgroup.com:1701',
             $results['Primo']['General']['url']
         );
+    }
+
+    /**
+     * Test bad theme warning.
+     *
+     * @return void
+     */
+    public function testBadThemeWarning(): void
+    {
+        $upgrader = $this->runAndGetConfigUpgrader('badtheme');
+        $expectedWarning = 'WARNING: This version of VuFind does not support the doesnotexist theme. '
+            . 'Your config.ini [Site] theme setting has been reset to the default: sandal5. '
+            . 'You may need to reimplement your custom theme.';
+        $this->assertEquals([$expectedWarning], $upgrader->getWarnings());
+        $results = $upgrader->getNewConfigs();
+        $this->assertEquals(
+            'sandal5',
+            $results['config']['Site']['theme']
+        );
+        // Ensure that the sandal5 theme still exists; if we get rid of it in future, this
+        // test will fail as a reminder to update the default in the Upgrade class.
+        $this->assertDirectoryExists(APPLICATION_PATH . '/themes/sandal5');
     }
 
     /**

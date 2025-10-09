@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -101,7 +101,25 @@ class WorldCat2Test extends \PHPUnit\Framework\TestCase
             'non-default places of publication' => ['getPlacesOfPublication', ['Oxford :'], 'worldcat2/pride.json'],
             'non-default primary authors' =>
                 ['getPrimaryAuthors', ['Austen, Jane, 1775-1817.'], 'worldcat2/pride.json'],
+            'non-default primary author with relator code in notes' =>
+                ['getPrimaryAuthor', 'Last, First, Title', 'worldcat2/authors.json'],
             'non-default secondary authors' => ['getSecondaryAuthors', ['Kinsley, James'], 'worldcat2/pride.json'],
+            'non-default secondary authors with relator codes in notes' => [
+                'getSecondaryAuthors',
+                [
+                    'Lst, 1st, 1900-1960',
+                    'Lst2, 1st2, 1900-1960',
+                    'Lst3, 1st3, 1900-',
+                    'Lst4, 1st4, 1900-',
+                    'Lst5, 1st5, ca. 1900-1970',
+                    'Lst6, 1st6, 1900-',
+                    'Lst7, 1st7, (1900-...).',
+                    'Lst8, 1st8, 1900-',
+                    'Lst9, 1st9, (First M.)',
+                    'Lst10, 1st10',
+                ],
+                'worldcat2/authors.json',
+            ],
             'non-default publication dates' => ['getPublicationDates', ['1990'], 'worldcat2/pride.json'],
             'non-default human-readable dates' =>
                 ['getHumanReadablePublicationDates', ['1990'], 'worldcat2/pride.json'],
