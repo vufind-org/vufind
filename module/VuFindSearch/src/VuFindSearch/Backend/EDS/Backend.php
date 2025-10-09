@@ -33,7 +33,6 @@ namespace VuFindSearch\Backend\EDS;
 use Exception;
 use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
 use Laminas\Session\Container as SessionContainer;
-use Psr\Log\InvalidArgumentException;
 use VuFind\Config\Config;
 use VuFind\Config\Feature\SecretTrait;
 use VuFindSearch\Backend\AbstractBackend;
@@ -317,7 +316,6 @@ class Backend extends AbstractBackend
      *
      * @return array
      * @throws BackendException
-     * @throws InvalidArgumentException
      * @throws ApiException
      */
     protected function performEbscoRetrieval(
