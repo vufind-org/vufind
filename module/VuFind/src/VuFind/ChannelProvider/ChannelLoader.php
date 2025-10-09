@@ -69,6 +69,20 @@ class ChannelLoader
     ) {
     }
 
+	protected function addConfigToContext($context) {
+		for ($i=0; $i < count($context['channels']); $i++) {
+			[, $configSection] = explode(':', $context['channels'][$i]['providerId'] . ':');
+			$config = $this->config->$configSection;
+
+			$context['channels'][$i]['config'] = [
+				'batchSize' => $config['batchSize'] ?? 24,
+				'pageSize' => $config['pageSize'] ?? 12,
+				'rowSize' => $config['rowSize'] ?? 6,
+			];
+		}
+		return $context;
+	}
+
     /**
      * Get a search results object configured by channel providers.
      *
@@ -210,7 +224,7 @@ class ChannelLoader
         }
 
         // Return context array:
-        return compact('token', 'channels');
+        return $this->addConfigToContext(compact('token', 'channels'));
     }
 
     /**
@@ -253,7 +267,7 @@ class ChannelLoader
         }
 
         // Return context array:
-        return compact('driver', 'channels', 'token');
+        return $this->addConfigToContext(compact('driver', 'channels', 'token'));
     }
 
     /**
@@ -283,6 +297,6 @@ class ChannelLoader
         $channels = $this->getChannelsFromResults($providers, $results, $token);
 
         // Return context array:
-        return compact('results', 'lookfor', 'channels', 'token');
+        return $this->addConfigToContext(compact('results', 'lookfor', 'channels', 'token'));
     }
 }

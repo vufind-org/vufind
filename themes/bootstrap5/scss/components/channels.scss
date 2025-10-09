@@ -3,14 +3,6 @@
 }
 
 .channel {
-  display: grid;
-  grid-template-columns: 1fr auto;
-  grid-template-areas:
-    "title menu"
-    "channel channel"
-    "bottom bottom";
-  align-items: center;
-  gap: 1rem;
   margin-block: 1rem;
   padding: 1rem;
   background-color: #eee;
@@ -28,23 +20,19 @@
   }
 }
 
-.channel-title {
-  grid-area: title;
+.channel-header {
   display: flex;
   align-items: center;
   gap: 1rem;
-
-  h2 {
-    margin: 0;
-  }
 }
 
-.channel-add-menu {
-  grid-area: menu;
-}
-
-.channel-bottom-menu {
-  grid-area: bottom;
+.channel-title {
+  flex: 1 1 0%;
+  width: 100%;
+  margin: 0;
+  white-space: nowrap;
+  overflow-x: hidden;
+  text-overflow: ellipsis;
 }
 
 .tab-pane {
@@ -54,10 +42,10 @@
   position: relative;
   grid-area: channel;
   display: grid;
-  grid-template-columns: repeat(var(--limit, 6), 1fr);
+  grid-template-columns: repeat(var(--row-size, 6), 1fr);
   gap: 1rem;
   width: 100%;
-  margin: 0;
+  margin-block: 1rem;
   padding: 0;
   border-radius: $border-radius;
 
@@ -117,6 +105,10 @@
 }
 .channel-item:is(:hover, :focus) .channel-quick-look-btn {
   display: block;
+}
+
+.hidden-batch-item {
+  display: none;
 }
 
 .ql-view-record-btn {

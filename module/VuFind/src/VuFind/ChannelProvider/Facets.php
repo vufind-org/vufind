@@ -60,11 +60,11 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
     protected $fields;
 
     /**
-     * Maximum number of results to suggest in the channel list.
+     * Number of results to retrieve at a time
      *
      * @var int
      */
-    protected $channelSize;
+    protected $batchSize;
 
     /**
      * Maximum number of different fields to suggest in the channel list.
@@ -126,12 +126,10 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
      */
     public function setOptions(array $options)
     {
-        $this->channelSize = $options['channelSize'] ?? 6;
-        $this->fields = $options['fields']
-            ?? ['topic_facet' => 'Topic', 'author_facet' => 'Author'];
+		$this->batchSize = $options['batchSize'] ?? 24;
+        $this->fields = $options['fields'] ?? ['topic_facet' => 'Topic', 'author_facet' => 'Author'];
         $this->maxFieldsToSuggest = $options['maxFieldsToSuggest'] ?? 2;
-        $this->maxValuesToSuggestPerField
-            = $options['maxValuesToSuggestPerField'] ?? 2;
+        $this->maxValuesToSuggestPerField = $options['maxValuesToSuggestPerField'] ?? 2;
     }
 
     /**
@@ -280,7 +278,6 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
             'providerId' => $this->providerId,
             'groupId' => current(explode(':', $filter)),
             'token' => $this->getToken($filter, $title),
-            'limit' => $this->channelSize,
             'links' => [],
         ];
         if ($tokenOnly) {
@@ -312,7 +309,7 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
         if ($page = $this->request->getQuery('page', 1)) {
             $pagedParams->setPage($page);
         }
-        if ($limit = $this->request->getQuery('limit', $this->channelSize ?? 6)) {
+        if ($limit = $this->request->getQuery('limit', $this->batchSize)) {
             $pagedParams->setLimit($limit);
         }
         $newResults->setParams($pagedParams);

@@ -133,16 +133,25 @@ VuFind.register("channels", function Channels() {
       return false;
     }
 
+    // Reveal hidden items
+    const targetChannel = btn.closest(".channel");
+    const hiddenItems = targetChannel.querySelectorAll(".hidden-batch-item");
+    hiddenItems.forEach((item) => item.classList.remove("hidden-batch-item"));
+
+    // How many more records do we need?
+    const neededCount = Number(targetChannel.dataset.pageSize) - hiddenItems.length;
+    if (neededCount === 0) {
+      return; // skip loading more records
+    }
+
     // Set button to next, next page
     const url = new URL(btn.href);
     url.searchParams.set("page", Number(url.searchParams.get("page")) + 1);
     btn.setAttribute("href", url.toString());
 
-    // Get and parse results
+    // AJAX load more records
     fetch(btn.href + "&layout=lightbox")
-      .then(function loadMoreItemsResponse(res) {
-        return res.text();
-      })
+      .then((res) => res.text())
       .then(function loadMoreItemsParseHTML(resHTML) {
         const parser = new DOMParser();
         const resDom = parser.parseFromString(resHTML, "text/html");
@@ -152,20 +161,28 @@ VuFind.register("channels", function Channels() {
           ? firstChannel.querySelectorAll(".channel-item")
           : [];
 
-        const targetList = btn.closest(".channel").querySelector(".channel-list");
-        for (const record of records) {
+        const targetList = targetChannel.querySelector(".channel-list");
+        for (let i = 0; i < records.length; i++) {
+          const record = records[i];
           record.classList.remove("hidden");
+          if (i >= neededCount) {
+            record.classList.add("hidden-batch-item");
+          }
           targetList.append(record);
-          clampLines(record.querySelector(".channel-item-title"), 3);
+          clampLines(record.querySelector(".channel-item-title"));
         }
 
         // Disable button
-        if (records.length < 6) {
-          btn.classList.add("disabled");
-          btn.removeAttribute("href");
-          btn.setAttribute("aria-disabled", true);
+        if (records.length < Number(targetChannel.dataset.batchSize)) {
+          disableLoadMoreBtn(btn);
         }
       });
+  }
+
+  function disableLoadMoreBtn(loadMoreBtn) {
+    loadMoreBtn.classList.add("disabled");
+    loadMoreBtn.removeAttribute("href");
+    loadMoreBtn.setAttribute("aria-disabled", 1);
   }
 
   /**
@@ -195,13 +212,30 @@ VuFind.register("channels", function Channels() {
    * Setup the channels module and events
    */
   function init() {
+    // Initial manipulations
+    for (const channelEl of document.querySelectorAll(".channel")) {
+      // Disable the load more button is there are less items than the batchSize
+      const allItems = channelEl.querySelectorAll(".channel-item");
+      if (allItems.length < Number(channelEl.dataset.batchSize)) {
+        disableLoadMoreBtn(channelEl.querySelector(".channel-load-more-btn"));
+      }
+
+      // Clamp titles to 3 lines
+      for (const title of channelEl.querySelectorAll(".channel-item-title")) {
+        clampLines(title);
+      }
+    }
+
+    // Global button listener
     document.addEventListener("click", function channelsClickHandler(event) {
-      // Add channel buttons
+      // More channels dropdown links
       if (event.target.closest(".channel-add-link")) {
         addChannel(event);
         event.preventDefault();
         return false;
       }
+
+      // More channels button (first two dropdown links)
       if (event.target.closest(".channel-add-more-btn")) {
         const addLinks = Array.from(
           event.target
@@ -257,11 +291,6 @@ VuFind.register("channels", function Channels() {
         }
       }
     });
-
-    // Clamp lines
-    for (const title of document.querySelectorAll(".channel-item-title")) {
-      clampLines(title, 3);
-    }
   }
 
   return { init };
