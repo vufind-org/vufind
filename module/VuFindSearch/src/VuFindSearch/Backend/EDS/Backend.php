@@ -314,7 +314,6 @@ class Backend extends AbstractBackend
      * @param string    $authenticationToken Authentication token
      * @param string    $sessionToken        Session token
      * @param ?ParamBag $params              Search backend parameters
-     * @param ParamBag  $params
      *
      * @return array
      * @throws BackendException
@@ -325,7 +324,7 @@ class Backend extends AbstractBackend
         string $id,
         string $authenticationToken,
         string $sessionToken,
-        ParamBag $params
+        ?ParamBag $params
     ): array {
         if ('EDS' === $this->backendType) {
             $parts = explode(',', $id, 2);
@@ -335,8 +334,7 @@ class Backend extends AbstractBackend
                 );
             }
             [$dbId, $an] = $parts;
-            $hlTerms = (null !== $params)
-                ? $params->get('highlightterms') : null;
+            $hlTerms = $params?->get('highlightterms') ?? null;
             $extras = [];
             if (
                 null !== $params
