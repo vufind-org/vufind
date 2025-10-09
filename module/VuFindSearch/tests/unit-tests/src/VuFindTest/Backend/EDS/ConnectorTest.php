@@ -78,15 +78,15 @@ class ConnectorTest extends TestCase
         $cache->expects($this->exactly(1))
             ->method('setItem')
             ->with($keyConstraint, json_encode($this->response))
-            ->will($this->returnValue(true));
+            ->willReturn(true);
 
         $conn->setCache($cache);
 
-        $resp = $conn->retrieve('id', 'db', 'token', 'session');
+        $resp = $conn->retrieveEdsItem('id', 'db', 'token', 'session');
         $this->assertEquals($this->response, $resp);
-        $resp = $conn->retrieve('id', 'db', 'token', 'session');
+        $resp = $conn->retrieveEdsItem('id', 'db', 'token', 'session');
         $this->assertEquals($this->response, $resp);
-        $resp = $conn->retrieve('id', 'db', 'token', 'session');
+        $resp = $conn->retrieveEdsItem('id', 'db', 'token', 'session');
         $this->assertEquals(['foo' => 1], $resp);
 
         // Make sure that authentication and session creation don't access the cache.
