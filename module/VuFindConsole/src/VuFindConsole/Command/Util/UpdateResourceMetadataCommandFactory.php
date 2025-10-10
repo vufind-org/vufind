@@ -34,6 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Db\PersistenceManager;
 use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Record\Loader;
 use VuFind\Record\ResourcePopulator;
@@ -73,6 +74,7 @@ class UpdateResourceMetadataCommandFactory implements FactoryInterface
             $serviceManager->get(ResourceServiceInterface::class),
             $container->get(Loader::class),
             $container->get(ResourcePopulator::class),
+            $container->get(PersistenceManager::class),
             ...($options ?? [])
         );
     }

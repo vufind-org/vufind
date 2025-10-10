@@ -130,7 +130,7 @@ class ResourceService extends AbstractDbService implements
             $dql .= ' WHERE (r.updated <= :dateThreshold)';
             $params['dateThreshold'] = $date->format(VUFIND_DATABASE_DATETIME_FORMAT);
         } else {
-            $dql .= " WHERE (r.title = '' OR r.displayTitle IS NULL OR r.author IS NULL)";
+            $dql .= ' WHERE (r.displayTitle IS NULL OR r.author IS NULL)';
         }
         if ($sources) {
             $dql .= ' AND r.source IN (:sources)';
