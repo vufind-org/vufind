@@ -29,14 +29,9 @@
 
 namespace VuFind\Record;
 
-use VuFind\Date\Converter as DateConverter;
-use VuFind\Date\DateException;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
-
-use function intval;
-use function strlen;
 
 /**
  * Class for populating record rows in the resource table of the database
@@ -54,14 +49,12 @@ class ResourcePopulator
      *
      * @param ResourceServiceInterface $resourceService Resource database service
      * @param Loader                   $loader          Record loader
-     * @param DateConverter            $dateConverter   Date converter
      *
      * @return void
      */
     public function __construct(
         protected ResourceServiceInterface $resourceService,
-        protected Loader $loader,
-        protected DateConverter $dateConverter
+        protected Loader $loader
     ) {
     }
 
@@ -194,20 +187,21 @@ class ResourcePopulator
         );
         $resource->setAuthor($author);
 
-        // Try to find a year; if not available, just leave the default null:
-        $dates = $driver->tryMethod('getPublicationDates');
-        $year = $dates[0] ?? null;
-        if ($year && strlen($year) > 4) {
-            try {
-                $year = $this->dateConverter->convertFromDisplayDate('Y', $dates[0]);
-            } catch (DateException) {
-                // If conversion fails, don't store a date
-                $year = null;
+        // Try to find a year; if not available, just set to null:
+        $year = null;
+        foreach ($driver->tryMethod('getPublicationDates', [], []) as $pubDate) {
+            // Try to extract a year from a string like '2025', 'Ⓟ2025' or 'copyright 2025':
+            if (preg_match('/^[^\d]*?(-?\d+)$/', $pubDate, $matches)) {
+                $year = (int)$matches[1];
+                break;
+            }
+            // Try to parse the string as a date:
+            if (false !== ($date = strtotime($pubDate))) {
+                $year = (int)date('Y', $date);
+                break;
             }
         }
-        if (null !== $year) {
-            $resource->setYear(intval($year));
-        }
+        $resource->setYear($year);
 
         if ($extra = $driver->tryMethod('getExtraResourceMetadata')) {
             $resource->setExtraMetadata(json_encode($extra));

@@ -71,8 +71,7 @@ class ResourcePopulatorFactory implements FactoryInterface
         }
         return new $requestedName(
             $container->get(\VuFind\Db\Service\PluginManager::class)->get(ResourceServiceInterface::class),
-            $container->get(\VuFind\Record\Loader::class),
-            $container->get(\VuFind\Date\Converter::class)
+            $container->get(\VuFind\Record\Loader::class)
         );
     }
 }

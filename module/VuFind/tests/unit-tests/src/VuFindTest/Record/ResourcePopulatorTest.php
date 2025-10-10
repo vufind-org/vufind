@@ -48,12 +48,36 @@ use VuFindTest\RecordDriver\TestHarness;
 class ResourcePopulatorTest extends \PHPUnit\Framework\TestCase
 {
     /**
+     * Data provider for testCreateAndPersistResourceForRecordId
+     *
+     * @return array
+     */
+    public static function createAndPersistResourceForRecordIdProvider(): array
+    {
+        return [
+            [['1999'], 1999],
+            [['2025-10-10'], 2025],
+            [['-100'], -100],
+            [['0'], 0],
+            [['foo', '1999'], 1999],
+            [['©1999'], 1999],
+            [['Ⓟ1999'], 1999],
+            [['copyright 1999'], 1999],
+        ];
+    }
+
+    /**
      * Test creating and persisting a resource from a record ID; this will in turn
      * test most of the other functionality of the class.
      *
+     * @param array $pubDates     Publication dates
+     * @param int   $expectedYear Expected parsed year
+     *
      * @return void
+     *
+     * @dataProvider createAndPersistResourceForRecordIdProvider
      */
-    public function testCreateAndPersistResourceForRecordId(): void
+    public function testCreateAndPersistResourceForRecordId(array $pubDates, int $expectedYear): void
     {
         $id = 'fake-id';
         $source = 'fake-source';
@@ -63,7 +87,7 @@ class ResourcePopulatorTest extends \PHPUnit\Framework\TestCase
                 'Breadcrumb' => 'Fake Title',
                 'Title' => 'Fake Full Title',
                 'PrimaryAuthor' => 'Fake Author',
-                'PublicationDates' => ['1999'],
+                'PublicationDates' => $pubDates,
                 'UniqueID' => $id,
                 'SourceIdentifier' => $source,
             ]
@@ -74,7 +98,7 @@ class ResourcePopulatorTest extends \PHPUnit\Framework\TestCase
         $resource->expects($this->once())->method('setTitle')->with('fake title')->willReturn($resource);
         $resource->expects($this->once())->method('setDisplayTitle')->with('Fake Full Title')->willReturn($resource);
         $resource->expects($this->once())->method('setAuthor')->with('Fake Author')->willReturn($resource);
-        $resource->expects($this->once())->method('setYear')->with('1999')->willReturn($resource);
+        $resource->expects($this->once())->method('setYear')->with($expectedYear)->willReturn($resource);
         $service = $this->createMock(ResourceServiceInterface::class);
         $service->expects($this->once())->method('createEntity')->willReturn($resource);
         $service->expects($this->once())->method('persistEntity')->with($resource);
