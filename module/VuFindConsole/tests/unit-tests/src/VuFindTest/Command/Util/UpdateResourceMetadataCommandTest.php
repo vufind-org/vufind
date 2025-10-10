@@ -30,6 +30,7 @@
 namespace VuFindTest\Command\Util;
 
 use Symfony\Component\Console\Tester\CommandTester;
+use VuFind\Db\PersistenceManager;
 use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Record\Loader;
 use VuFind\Record\ResourcePopulator;
@@ -56,11 +57,11 @@ class UpdateResourceMetadataCommandTest extends \PHPUnit\Framework\TestCase
         return [
             [
                 [],
-                [null, 1000, null, []],
+                [null, 100, null, []],
             ],
             [
-                ['--min-age' => '30', '--backend' => ['solr'], '--batch' => '100'],
-                [null, 100, 30, ['solr']],
+                ['--min-age' => '30', '--backend' => ['solr'], '--batch' => '10'],
+                [null, 10, 30, ['solr']],
             ],
         ];
     }
@@ -85,7 +86,8 @@ class UpdateResourceMetadataCommandTest extends \PHPUnit\Framework\TestCase
         $command = new UpdateResourceMetadataCommand(
             $resourceService,
             $this->createMock(Loader::class),
-            $this->createMock(ResourcePopulator::class)
+            $this->createMock(ResourcePopulator::class),
+            $this->createMock(PersistenceManager::class)
         );
         $commandTester = new CommandTester($command);
         $commandTester->execute($commandParams);
