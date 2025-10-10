@@ -29,7 +29,6 @@
 
 namespace VuFindTest\Record;
 
-use VuFind\Date\Converter;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Record\Loader;
@@ -104,7 +103,7 @@ class ResourcePopulatorTest extends \PHPUnit\Framework\TestCase
         $service->expects($this->once())->method('persistEntity')->with($resource);
         $loader = $this->createMock(Loader::class);
         $loader->expects($this->once())->method('load')->with($id, $source)->willReturn($driver);
-        $populator = new ResourcePopulator($service, $loader, new Converter());
+        $populator = new ResourcePopulator($service, $loader);
         $this->assertEquals(
             $resource,
             $populator->createAndPersistResourceForRecordId($id, $source)
