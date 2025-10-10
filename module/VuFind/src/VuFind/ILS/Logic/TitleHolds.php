@@ -95,7 +95,7 @@ class TitleHolds
                 if (!$patron) {
                     return false;
                 }
-                return $this->driverHold($id, $patron);
+                return $this->driverHold($id, $patron, $linkOverrides);
             } catch (ILSException $e) {
                 return false;
             }
@@ -168,10 +168,11 @@ class TitleHolds
      *
      * @param string $id     A Bib ID
      * @param array  $patron An Array of patron data
+     * @param array  $linkOverrides Optional id and source to override standard record driver
      *
      * @return mixed A url on success, boolean false on failure
      */
-    protected function driverHold($id, $patron)
+    protected function driverHold($id, $patron, array $linkOverrides = [])
     {
         // Get Hold Details
         $checkHolds = $this->catalog->checkFunction(
@@ -186,7 +187,7 @@ class TitleHolds
                 (is_array($result) && $result['valid'])
                 || (is_bool($result) && $result)
             ) {
-                return $this->getHoldDetails($data, $checkHolds['HMACKeys']);
+                return $this->getHoldDetails($data, $checkHolds['HMACKeys'], $linkOverrides);
             }
         }
         return false;
