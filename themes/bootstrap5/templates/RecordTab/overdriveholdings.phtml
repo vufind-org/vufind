@@ -1,11 +1,14 @@
-<?php $access = $this->driver->getOverdriveAccess(); ?>
-<?php if ($access->code == 'od_account_noaccess'): ?>
+<?php
+  $access = $this->driver->getOverdriveAccess();
+  $accessCode = $access->code ?? '';
+?>
+<?php if ($accessCode == 'od_account_noaccess'): ?>
   <div class="hold">
     <div class="alert alert-warning">
       <?=$this->translate('od_code_contentnotavail')?>
     </div>
   </div>
-<?php elseif ($access->code == 'od_code_login_for_avail'): ?>
+<?php elseif ($accessCode == 'od_code_login_for_avail'): ?>
   <p class='alert-info'><strong>
       <?=$this->transEsc('od_code_login_for_avail')?>
     </strong></p>
@@ -20,10 +23,8 @@
     $copiesAvailable = $avail->data->copiesAvailable ?? 0;
     $copiesOwned = $avail->data->copiesOwned ?? 0;
     $urls = $this->driver->getURLs();
-    if (!$checkedOut):
-        $hold = $this->driver->isHeld();
-    endif; ?>
-
+    $hold = $checkedOut ? false : $this->driver->isHeld();
+  ?>
   <div class="internetDetails">
     <div class="odbrand float-start media-left">
       <img alt="OverDrive" src="<?=$this->imageLink('OverDrive_Logo_28x28_rgb.jpg')?>">
@@ -152,7 +153,7 @@
             <div class="btn-group">
               <button class="btn btn-primary " type="button" id="dropdownMenu1" data-bs-toggle="dropdown" aria-haspopup="true"
                 aria-expanded="true">
-                <?=$this->transEsc('od_but_edit_hold')?> <span class="caret"></span>
+                <?=$this->transEsc('od_but_edit_hold')?> <?=$this->icon('dropdown-caret')?>
               </button>
               <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
                 <li><a class="cancelhold" data-lightbox title="<?=$this->transEsc('od_but_cancel_hold')?>"
