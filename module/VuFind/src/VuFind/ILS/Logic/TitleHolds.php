@@ -166,8 +166,8 @@ class TitleHolds
     /**
      * Protected method for driver defined title holds
      *
-     * @param string $id     A Bib ID
-     * @param array  $patron An Array of patron data
+     * @param string $id            A Bib ID
+     * @param array  $patron        An Array of patron data
      * @param array  $linkOverrides Optional id and source to override standard record driver
      *
      * @return mixed A url on success, boolean false on failure
