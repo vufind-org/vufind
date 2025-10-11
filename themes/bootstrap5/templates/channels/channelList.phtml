@@ -134,7 +134,7 @@
           $pageHref .= '&channelToken=' . urlencode($channel['token']);
         }
       ?>
-      <a class="channel-load-more-btn btn btn-default" href="<?=$pageHref ?>">
+      <a class="channel-load-more-btn btn btn-default" href="<?=$pageHref ?>" aria-label="<?=$this->transEsc('channel_more_items_extended', ['%%channel%%' => $channel['title']])?>">
         <?=$this->transEsc('channel_more_items') ?>
       </a>
     </div>
