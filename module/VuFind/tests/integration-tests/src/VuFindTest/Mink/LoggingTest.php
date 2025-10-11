@@ -298,6 +298,7 @@ final class LoggingTest extends MinkTestCase
                 ],
                 'Logging' => [
                     'email' => $emailConfig,
+                    'file' => null,
                 ],
             ],
         ]);
@@ -449,6 +450,7 @@ final class LoggingTest extends MinkTestCase
                 ],
                 'Logging' => [
                     'email' => '',
+                    'file' => null,
                 ],
             ],
         ]);
@@ -523,6 +525,7 @@ final class LoggingTest extends MinkTestCase
                 ],
                 'Logging' => [
                     'database' => $loggingConfig,
+                    'file' => null,
                 ],
             ],
         ]);
