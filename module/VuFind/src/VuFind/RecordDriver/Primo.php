@@ -236,7 +236,7 @@ class Primo extends DefaultRecord
         }
         
         if ($issn = $this->getCleanISSN()) {
-            $params['issn'] = $issn; 
+            $params['issn'] = $issn;
         }
         
         if (empty($params['isbn']) && empty($params['issn'])) {
