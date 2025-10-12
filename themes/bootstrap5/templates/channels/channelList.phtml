@@ -111,7 +111,7 @@
               src="<?=$this->escapeHtmlAttr($item['thumbnail'] ? $item['thumbnail'] : $this->url('cover-unavailable'))?>"
               alt="" loading="lazy"
             >
-            <button class="channel-quick-look-btn"><?=$this->transEsc('Quick Look') ?></button>
+            <button class="channel-quick-look-btn" aria-label="<?=$this->transEsc('channel_quick_look_extended', ['%%title%%' => $item['title']])?>"><?=$this->transEsc('channel_quick_look') ?></button>
           </div>
 
           <a
