@@ -49,7 +49,7 @@
         <div class="channel-add-menu btn-group" data-group="<?=$this->escapeHtmlAttr($groupId) ?>">
           <button type="button" class="channel-add-more-btn btn btn-default"><?=$this->transEsc('channel_add_more') ?></button>
           <button type="button" class="btn btn-default dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
-            <span class="visually-hidden"><?=$this->transEscAttr('toggle_dropdown') ?></span>
+            <span class="visually-hidden"><?=$this->transEscAttr('channel_list_dropdown_toggle', ['%%channel%%' => $channel['title']]) ?></span>
             <span aria-hidden="true"><?=$this->icon('dropdown-caret') ?></span>
           </button>
           <ul class="dropdown-menu">
@@ -69,7 +69,7 @@
 
       <?php if (!empty($channel['links'])): ?>
         <div class="dropdown">
-          <button class="btn btn-default dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <button class="btn btn-default dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="<?=$this->transEsc('channel_options_dropdown_toggle', ['%%channel%%' => $channel['title']])?>">
             <?=$this->transEsc('channel_options') ?>
           </button>
           <ul class="dropdown-menu">
@@ -111,13 +111,19 @@
               src="<?=$this->escapeHtmlAttr($item['thumbnail'] ? $item['thumbnail'] : $this->url('cover-unavailable'))?>"
               alt="" loading="lazy"
             >
+<<<<<<< HEAD
             <a
               class="channel-quick-look-btn"
               href="<?=$this->escapeHtmlAttr($url)?>"
-              aria-label="<?=$this->transEscAttr('channel_quick_look_extended', ['title' => $item['title']]) ?>"
+              aria-label="<?=$this->transEscAttr('channel_quick_look_extended', ['%%title%%' => $item['title']]) ?>"
             >
               <?=$this->transEsc('channel_quick_look') ?>
             </a>
+||||||| 4b92e84a43
+            <button class="channel-quick-look-btn"><?=$this->transEsc('Quick Look') ?></button>
+=======
+            <button class="channel-quick-look-btn" aria-label="<?=$this->transEsc('channel_quick_look_extended', ['%%title%%' => $item['title']])?>"><?=$this->transEsc('channel_quick_look') ?></button>
+>>>>>>> 20301ddf9cc8287dc5bfb79c848b9392fc24ab1b
           </div>
 
           <a
@@ -143,7 +149,7 @@
       <button
         class="channel-load-more-btn btn btn-default"
         data-href="<?=$pageHref ?>"
-        aria-label="<?=$this->transEscAttr('channel_more_items_extended', ['title' => $channel['title']]) ?>"
+        aria-label="<?=$this->transEscAttr('channel_more_items_extended', ['%%channel%%' => $channel['title']]) ?>"
       >
         <?=$this->transEsc('channel_more_items') ?>
       </button>
