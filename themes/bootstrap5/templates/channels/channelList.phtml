@@ -93,7 +93,7 @@
       data-group="<?=$this->escapeHtmlAttr($groupId) ?>"
       style="--row-size:<?=$this->escapeHtmlAttr($channel['config']['rowSize']) ?>"
     >
-      <?php for ($index=0; $index < count($channel['contents']); $index++): ?>
+      <?php for ($index = 0; $index < count($channel['contents']); $index++): ?>
         <?php
           $item = $channel['contents'][$index];
           $url = empty($item['routeDetails'])

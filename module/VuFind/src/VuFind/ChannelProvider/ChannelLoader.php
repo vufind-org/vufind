@@ -36,6 +36,7 @@ use VuFind\Record\Loader as RecordLoader;
 use VuFind\Search\Base\Results;
 use VuFind\Search\SearchRunner;
 
+use function count;
 use function in_array;
 
 /**
@@ -69,19 +70,27 @@ class ChannelLoader
     ) {
     }
 
-	protected function addConfigToContext($context) {
-		for ($i=0; $i < count($context['channels']); $i++) {
-			[, $configSection] = explode(':', $context['channels'][$i]['providerId'] . ':');
-			$config = $this->config->$configSection;
+    /**
+     * Add configuration values needed by the templates to the view context
+     *
+     * @param array $context String-keyed map of values for the View
+     *
+     * @return array
+     */
+    protected function addConfigToContext($context)
+    {
+        for ($i = 0; $i < count($context['channels']); $i++) {
+            [, $configSection] = explode(':', $context['channels'][$i]['providerId'] . ':');
+            $config = $this->config->$configSection;
 
-			$context['channels'][$i]['config'] = [
-				'batchSize' => $config['batchSize'] ?? 24,
-				'pageSize' => $config['pageSize'] ?? 12,
-				'rowSize' => $config['rowSize'] ?? 6,
-			];
-		}
-		return $context;
-	}
+            $context['channels'][$i]['config'] = [
+                'batchSize' => $config['batchSize'] ?? 24,
+                'pageSize' => $config['pageSize'] ?? 12,
+                'rowSize' => $config['rowSize'] ?? 6,
+            ];
+        }
+        return $context;
+    }
 
     /**
      * Get a search results object configured by channel providers.
