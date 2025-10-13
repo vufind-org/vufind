@@ -153,7 +153,7 @@ class DeveloperSettingsService
     }
 
     /**
-     * Set the last used value to the API key. At default this will be only updated once every hour.
+     * Set the last used value to the API key. By default this will be only updated once every hour.
      *
      * @param ApiKeyEntityInterface $apiKey API key
      *
