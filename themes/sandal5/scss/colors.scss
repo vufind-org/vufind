@@ -1,3 +1,5 @@
+@use "sass:color";
+
 @import 'vendor/tachyons-colors'; // Import colors from the tachyons library
 
 /* Material Colors can be found here: https://material.io/guidelines/style/color.html */
@@ -51,3 +53,5 @@ $table-bg-hover:            $header-light;
 $pagination-color:          $header-bg;
 $pagination-hover-bg:       #eee;
 $nav-link-hover-bg:         $header-light;
+
+$focus-ring-color:          $gold;
