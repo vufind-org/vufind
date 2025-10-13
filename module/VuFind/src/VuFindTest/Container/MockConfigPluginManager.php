@@ -37,6 +37,9 @@ namespace VuFindTest\Container;
  * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
+ *
+ * @deprecated Use ConfigRelatedServicesTrait to create config related mocks. Also, \VuFind\Config\PluginManager is
+ * deprecated and replaced by \VuFind\Config\ConfigManager.
  */
 class MockConfigPluginManager extends \VuFind\Config\PluginManager
 {

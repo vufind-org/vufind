@@ -1,7 +1,7 @@
 <?php
 
 /**
- * POST Log Writer Test Class
+ * POST Log Handler Test Class
  *
  * PHP version 8
  *
@@ -27,14 +27,15 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 
-namespace VuFindTest\Log\Writer;
+namespace VuFindTest\Log\Handler;
 
 use Laminas\Http\Client;
-use Laminas\Log\Formatter\Simple;
-use VuFind\Log\Writer\Post;
+use Monolog\Level;
+use Monolog\LogRecord;
+use VuFind\Log\Handler\PostHandler;
 
 /**
- * POST Log Writer Test Class
+ * POST Log Handler Test Class
  *
  * @category VuFind
  * @package  Tests
@@ -42,23 +43,29 @@ use VuFind\Log\Writer\Post;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
+
 class PostTest extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Test writer functionality
+     * Test handler functionality
      *
      * @return void
      */
-    public function testWriter(): void
+    public function testHandler(): void
     {
-        // Set up data and expectations:
         $fakeUri = 'http://fake';
-        $expectedBody = json_encode(
-            ['message' => 'Formatted message.' . PHP_EOL]
-        );
-        $message = ['message' => 'test', 'priority' => 1];
+        $message = '[2025-07-09T14:57:30+00:00] test.INFO: test [] []' . PHP_EOL . PHP_EOL;
+        $expectedBody = json_encode(['message' => $message]);
 
-        // Set up mock client:
+        $logRecord = new LogRecord(
+            datetime: new \DateTimeImmutable('2025-07-09T14:57:30+00:00'),
+            channel: 'test',
+            level: Level::Info,
+            message: 'test',
+            context: [],
+            extra: []
+        );
+
         $client = $this->getMockBuilder(Client::class)
             ->disableOriginalConstructor()->getMock();
         $client->expects($this->once())->method('setUri')
@@ -66,22 +73,12 @@ class PostTest extends \PHPUnit\Framework\TestCase
         $client->expects($this->once())->method('setMethod')
             ->with($this->equalTo('POST'));
         $client->expects($this->once())->method('setEncType')
-            ->with($this->equalTo('application/json'));
+            ->with($this->equalTo('application/x-www-form-urlencoded'));
         $client->expects($this->once())->method('setRawBody')
             ->with($this->equalTo($expectedBody));
         $client->expects($this->once())->method('send');
 
-        // Set up mock formatter:
-        $formatter = $this->getMockBuilder(Simple::class)
-            ->disableOriginalConstructor()->getMock();
-        $formatter->expects($this->once())->method('format')
-            ->with($this->equalTo($message))
-            ->will($this->returnValue('Formatted message.'));
-
-        // Run the test!
-        $writer = new Post($fakeUri, $client);
-        $writer->setContentType('application/json');
-        $writer->setFormatter($formatter);
-        $writer->write($message);
+        $handler = new PostHandler($fakeUri, $client);
+        $handler->handle($logRecord);
     }
 }

@@ -46,7 +46,7 @@ use VuFind\Session\Settings as SessionSettings;
  * @link     https://vufind.org/wiki/development Wiki
  */
 abstract class AbstractOnlinePaymentAction extends \VuFind\AjaxHandler\AbstractBase implements
-    \Laminas\Log\LoggerAwareInterface
+    \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
     use \VuFind\OnlinePayment\OnlinePaymentEventTrait;

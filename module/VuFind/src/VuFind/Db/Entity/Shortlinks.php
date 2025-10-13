@@ -33,7 +33,7 @@ use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Shortlinks
+ * Entity model for shortlinks table
  *
  * @category VuFind
  * @package  Database

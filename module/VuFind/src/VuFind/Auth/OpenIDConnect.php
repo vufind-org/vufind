@@ -522,7 +522,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     {
         [$headerEncoded] = explode('.', $jwt);
         $header = json_decode(base64_decode(strtr($headerEncoded, '-_', '+/')));
-        $key = JWK::parseKey($this->getJwk($header->kid ?? null), $header->alg);
+        $key = JWK::parseKey($this->getSignatureJwk($header->kid ?? null), $header->alg);
         return JWT::decode($jwt, $key);
     }
 
@@ -581,12 +581,12 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     }
 
     /**
-     * Get JWKs from provider
+     * Get signature JWKs from provider
      *
      * @return array
      * @throws AuthException
      */
-    protected function getJwks(): array
+    protected function getSignatureJwks(): array
     {
         if (empty($this->jwks)) {
             try {
@@ -601,23 +601,26 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
             }
             $jwks = json_decode($response->getBody(), true);
             foreach ($jwks['keys'] as $i => $jwk) {
-                $this->jwks[$jwk['kid'] ?? $i] = $jwk;
+                // Filter for signature keys only.
+                if (($jwk['use'] ?? '') === 'sig') {
+                    $this->jwks[$jwk['kid'] ?? $i] = $jwk;
+                }
             }
         }
         return $this->jwks;
     }
 
     /**
-     * Get JWK data
+     * Get signature JWK data
      *
      * @param ?string $kid Key id or null for first (default)
      *
      * @return array
      * @throws AuthException
      */
-    protected function getJwk(?string $kid): array
+    protected function getSignatureJwk(?string $kid): array
     {
-        $jwks = $this->getJwks();
+        $jwks = $this->getSignatureJwks();
         if (null !== $kid) {
             if (!isset($jwks[$kid])) {
                 $this->logError("JWK '$kid' not found");

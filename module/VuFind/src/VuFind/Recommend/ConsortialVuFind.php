@@ -49,7 +49,7 @@ use function is_callable;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-class ConsortialVuFind implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
+class ConsortialVuFind implements RecommendInterface, \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 

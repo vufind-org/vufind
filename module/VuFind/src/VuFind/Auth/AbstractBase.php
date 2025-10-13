@@ -54,7 +54,7 @@ abstract class AbstractBase implements
     AuthInterface,
     \VuFind\Db\Service\DbServiceAwareInterface,
     \VuFind\I18n\Translator\TranslatorAwareInterface,
-    \Laminas\Log\LoggerAwareInterface
+    \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Db\Service\DbServiceAwareTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;

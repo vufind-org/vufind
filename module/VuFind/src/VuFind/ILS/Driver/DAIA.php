@@ -35,7 +35,7 @@
 namespace VuFind\ILS\Driver;
 
 use DOMDocument;
-use Laminas\Log\LoggerAwareInterface as LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Exception\ILS as ILSException;
 use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
 
