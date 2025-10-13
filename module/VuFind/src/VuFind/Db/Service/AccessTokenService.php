@@ -121,6 +121,19 @@ class AccessTokenService extends AbstractDbService implements
     }
 
     /**
+     * Delete an access token.
+     *
+     * @param AccessTokenEntityInterface $accessToken AccessToken object to delete
+     *
+     * @return void
+     */
+    public function deleteAccessToken(AccessTokenEntityInterface $accessToken): void
+    {
+        $this->entityManager->remove($accessToken);
+        $this->entityManager->flush();
+    }
+
+    /**
      * Delete expired records. Allows setting a limit so that rows can be deleted in small batches.
      *
      * @param DateTime $dateLimit Date threshold of an "expired" record.

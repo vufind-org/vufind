@@ -1,11 +1,11 @@
 <?php
 
 /**
- * HTTP POST log writer for Office365 webhooks.
+ * HTTP POST log handler for Office365 webhooks.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2020.
+ * Copyright (C) Villanova University 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -23,46 +23,48 @@
  * @category VuFind
  * @package  Error_Logging
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Sambhav Pokharel <sambhav.pokharel@gmail.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Log\Writer;
+namespace VuFind\Log\Handler;
 
 use Laminas\Http\Client;
 
 /**
- * This class extends the Laminas Logging to send errors to Office365 webhooks.
+ * This class extends the Monolog Logging to send errors to Office365 webhooks.
  *
  * @category VuFind
  * @package  Error_Logging
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Sambhav Pokharel <sambhav.pokharel@gmail.com>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Office365 extends Post
+class Office365Handler extends PostHandler
 {
     /**
      * The title for generated cards.
      *
      * @var string
      */
-    protected $title;
+    protected string $title;
 
     /**
      * Constructor
      *
      * @param string $url     URL to open as a stream
      * @param Client $client  Pre-configured http client
-     * @param array  $options Optional settings (may contain 'channel' for the
-     * Slack channel to use and/or 'name' for the username messages are posted under)
+     * @param array  $options Optional settings
      *
      * @throws \Exception
      */
-    public function __construct($url, Client $client, array $options = [])
+    public function __construct(string $url, Client $client, array $options = [])
     {
         $this->title = $options['title'] ?? 'VuFind Log';
         parent::__construct($url, $client);
+        $this->setContentType('application/json');
     }
 
     /**
@@ -79,8 +81,9 @@ class Office365 extends Post
             '@type' => 'MessageCard',
             'themeColor' => '0072C6',
             'title' => $this->title,
-            'text' => $this->formatter->format($event),
+            'text' => $event['message'],
         ];
+
         return json_encode($data);
     }
 }

@@ -97,4 +97,15 @@ class Versions extends \VuFind\RecordTab\AbstractBase implements TranslatorAware
         $count = $this->getRecordDriver()->tryMethod('getOtherVersionCount');
         return $this->translate('other_versions_title', ['%%count%%' => $count]);
     }
+
+    /**
+     * Can this tab be embedded in search results (via tab/accordion)?
+     *
+     * @return bool
+     */
+    public function supportsSearchResultEmbedding(): bool
+    {
+        // This tab causes problems when embedded in search results due to nested results in results.
+        return false;
+    }
 }

@@ -47,6 +47,6 @@ class RecordMissing extends NotFound implements SeverityLevelInterface
      */
     public function getSeverityLevel()
     {
-        return \Laminas\Log\Logger::DEBUG;
+        return \Psr\Log\LogLevel::DEBUG;
     }
 }

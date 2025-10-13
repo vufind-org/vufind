@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Entity model for access_token table
+ * Entity model for login_token table
  *
  * PHP version 8
  *

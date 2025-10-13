@@ -30,7 +30,7 @@
 
 namespace VuFind\ILS\Driver;
 
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use SoapClient;
 use SoapFault;
 use SoapHeader;

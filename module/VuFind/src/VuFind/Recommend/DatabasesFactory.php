@@ -71,12 +71,12 @@ class DatabasesFactory implements \Laminas\ServiceManager\Factory\FactoryInterfa
         }
 
         // LibGuides connection should only be instantiated if used
-        $libGuidesGetter =  function () use ($container) {
+        $libGuidesGetter = (function () use ($container) {
             return $container->get(\VuFind\Connection\LibGuides::class);
-        };
+        })(...);
 
         return new $requestedName(
-            $container->get(\VuFind\Config\PluginManager::class),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class),
             $libGuidesGetter,
             $container->get(\VuFind\Cache\Manager::class)
                 ->getCache('object'),

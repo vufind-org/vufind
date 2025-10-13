@@ -33,7 +33,7 @@ use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * AuthHash
+ * Entity model for auth_hash table
  *
  * @category VuFind
  * @package  Database

@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Stream writer
+ * Zotero Export Exception
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) The National Library of Finland 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,38 +21,23 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Error_Logging
- * @author   Chris Hallberg <challber@villanova.edu>
+ * @package  Exceptions
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Log\Writer;
+namespace VuFind\Exception;
 
 /**
- * This class extends the Laminas Logging towards streams
+ * Zotero Export Exception
  *
  * @category VuFind
- * @package  Error_Logging
- * @author   Chris Hallberg <challber@villanova.edu>
+ * @package  Exceptions
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class Stream extends \Laminas\Log\Writer\Stream
+class ZoteroException extends \Exception
 {
-    use VerbosityTrait;
-
-    /**
-     * Write a message to the log.
-     *
-     * @param array $event event data
-     *
-     * @return void
-     * @throws \Laminas\Log\Exception\RuntimeException
-     */
-    protected function doWrite(array $event)
-    {
-        // Apply verbosity, Call parent method:
-        parent::doWrite($this->applyVerbosity($event));
-    }
 }

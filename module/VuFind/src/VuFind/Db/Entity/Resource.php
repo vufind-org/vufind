@@ -32,7 +32,7 @@ namespace VuFind\Db\Entity;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * Resource
+ * Entity model for resource table
  *
  * @category VuFind
  * @package  Database
