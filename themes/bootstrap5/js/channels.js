@@ -144,13 +144,9 @@ VuFind.register("channels", function Channels() {
       return; // skip loading more records
     }
 
-    // Set button to next, next page
-    const url = new URL(btn.href);
-    url.searchParams.set("page", Number(url.searchParams.get("page")) + 1);
-    btn.setAttribute("href", url.toString());
-
     // AJAX load more records
-    fetch(btn.href + "&layout=lightbox")
+    const url = new URL(decodeURIComponent(btn.dataset.href), location.origin);
+    fetch(url.toString() + "&layout=lightbox")
       .then((res) => res.text())
       .then(function loadMoreItemsParseHTML(resHTML) {
         const parser = new DOMParser();
@@ -177,11 +173,14 @@ VuFind.register("channels", function Channels() {
           disableLoadMoreBtn(btn);
         }
       });
+
+    // Set button to next, next page
+    url.searchParams.set("page", Number(url.searchParams.get("page")) + 1);
+    btn.setAttribute("data-href", url.toString());
   }
 
   function disableLoadMoreBtn(loadMoreBtn) {
     loadMoreBtn.classList.add("disabled");
-    loadMoreBtn.removeAttribute("href");
     loadMoreBtn.setAttribute("aria-disabled", 1);
   }
 

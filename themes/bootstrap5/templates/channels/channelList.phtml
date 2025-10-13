@@ -111,12 +111,13 @@
               src="<?=$this->escapeHtmlAttr($item['thumbnail'] ? $item['thumbnail'] : $this->url('cover-unavailable'))?>"
               alt="" loading="lazy"
             >
-            <button
+            <a
               class="channel-quick-look-btn"
-              aria-label="<?=$this->escapeHtmlAttr($this->translate('channel_quick_look_extended', ['title' => $item['title']])) ?>"
+              href="<?=$this->escapeHtmlAttr($url)?>"
+              aria-label="<?=$this->transEscAttr('channel_quick_look_extended', ['title' => $item['title']]) ?>"
             >
               <?=$this->transEsc('channel_quick_look') ?>
-            </button>
+            </a>
           </div>
 
           <a
@@ -139,13 +140,13 @@
           $pageHref .= '&channelToken=' . urlencode($channel['token']);
         }
       ?>
-      <a
+      <button
         class="channel-load-more-btn btn btn-default"
-        href="<?=$pageHref ?>"
-        aria-label="<?=$this->escapeHtmlAttr($this->translate('channel_more_items_extended', ['title' => $channel['title']])) ?>"
+        data-href="<?=$pageHref ?>"
+        aria-label="<?=$this->transEscAttr('channel_more_items_extended', ['title' => $channel['title']]) ?>"
       >
         <?=$this->transEsc('channel_more_items') ?>
-      </a>
+      </button>
     </div>
   </div>
 <?php endforeach; ?>
