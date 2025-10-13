@@ -6,7 +6,7 @@
     $coverDetails = $this->record($this->driver)->getCoverDetails('core', 'medium');
     $cover = $coverDetails['html'];
   ?>
-  <div class="media-left medium img-col">
+  <div class="media-left <?=$this->escapeHtmlAttr($coverDetails['size'])?> img-col">
     <?php if ($cover): ?>
       <?=$cover?>
     <?php endif; ?>
