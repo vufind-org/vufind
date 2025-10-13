@@ -170,9 +170,7 @@ class UpdateResourceMetadataCommand extends Command
                 }
             }
             $this->persistenceManager->flushEntities();
-            foreach ($resources as $resource) {
-                $this->persistenceManager->detachEntity($resource);
-            }
+            array_walk($resources, [$this->persistenceManager, 'detachEntity']);
             $output->writeln(
                 "<info>$updated records updated ($redirected redirects), $missing records missing</info>"
             );
