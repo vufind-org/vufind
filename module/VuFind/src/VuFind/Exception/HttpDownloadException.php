@@ -84,7 +84,7 @@ class HttpDownloadException extends \Exception implements HttpStatusInterface
         string $message,
         string $url,
         ?int $statusCode = null,
-        Headers|array|null $responseHeaders = null,
+        ?array $responseHeaders = null,
         ?string $responseBody = null,
         ?\Throwable $previous = null
     ) {
