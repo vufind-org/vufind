@@ -124,6 +124,16 @@ VuFind.register("channels", function Channels() {
   }
 
   /**
+   * Helper function to disable the Load more items button
+   * @param {HTMLButtonElement} loadMoreBtn The button
+   * @returns {void}
+   */
+  function disableLoadMoreBtn(loadMoreBtn) {
+    loadMoreBtn.classList.add("disabled");
+    loadMoreBtn.setAttribute("aria-disabled", 1);
+  }
+
+  /**
    * @param {Event} event Click event from .channel-load-more-btn
    * @returns {void}
    */
@@ -177,11 +187,6 @@ VuFind.register("channels", function Channels() {
     // Set button to next, next page
     url.searchParams.set("page", Number(url.searchParams.get("page")) + 1);
     btn.setAttribute("data-href", url.toString());
-  }
-
-  function disableLoadMoreBtn(loadMoreBtn) {
-    loadMoreBtn.classList.add("disabled");
-    loadMoreBtn.setAttribute("aria-disabled", 1);
   }
 
   /**
