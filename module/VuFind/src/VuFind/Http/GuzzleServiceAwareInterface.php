@@ -54,5 +54,5 @@ interface GuzzleServiceAwareInterface
      *
      * @return GuzzleService
      */
-    public function getGuzzleService(): GuzzleService;
+    public function getGuzzleService(): ?GuzzleService;
 }

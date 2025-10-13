@@ -45,7 +45,7 @@ use function strlen;
  * @link     https://vufind.org/wiki/development
  * @todo     Merge with PSR-18 HTTP Client Service when implemented
  */
-class GuzzleService implements HttpServikceInterface
+class GuzzleService implements HttpServiceInterface
 {
     /**
      * VuFind configuration

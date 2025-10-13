@@ -89,6 +89,7 @@ class Google extends \VuFind\Content\AbstractCover implements \VuFind\Http\Cachi
             . urlencode(implode(',', $identifiers)) . '&callback=addTheCover';
 
         $decodeCallback = function (ResponseInterface $response, string $url) {
+            $body = $response->getBody()->getContents();
             if (
                 !preg_match(
                     '/^[^{]*({.*})[^}]*$/',
