@@ -99,7 +99,7 @@ class GuzzleService implements HttpServiceInterface
      */
     public function createClient(?string $url = null, ?float $timeout = null): \Psr\Http\Client\ClientInterface
     {
-        return new $this->createGuzzleClient($url, $timeout);
+        return $this->createGuzzleClient($url, $timeout);
     }
 
     /**
