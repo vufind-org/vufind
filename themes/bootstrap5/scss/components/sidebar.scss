@@ -31,7 +31,7 @@
 .facet-load-failed,
 .sidebar .datevis-form {
   // Reduce border and .text padding from the padding for good alignment:
-  padding: calc(0.5rem - 2px);
+  padding: 0.5rem calc(0.5rem - 2px);
   line-height: 1.5;
   background-color: transparent;
 }
