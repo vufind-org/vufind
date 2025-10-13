@@ -81,7 +81,7 @@ class DeveloperSettingsService
      *
      * @return string
      */
-    protected function createRandomToken(UserEntityInterface $user): string
+    protected function createNewToken(UserEntityInterface $user): string
     {
         $salt = $this->apiKeySettings['token_salt'] ?? null;
         if (!$salt) {
@@ -126,7 +126,7 @@ class DeveloperSettingsService
         // Generate unique id from date and users id.
         $newKey = $this->apiKeyService->createEntity();
         $date = new DateTime();
-        $newKey->setToken($this->createRandomToken($user))
+        $newKey->setToken($this->createNewToken($user))
             ->setUser($user)
             ->setCreated($date)
             ->setLastUsed($date)
@@ -209,12 +209,13 @@ class DeveloperSettingsService
     public function isTokenValid(?string $token): bool
     {
         if (!$this->apiKeysEnabled()) {
-            return false;
+            return true;
         }
         if ($apiKey = $this->apiKeyService->getByToken((string)$token)) {
+            $this->updateLastUsed($apiKey);
             return !$apiKey->isRevoked();
         }
         // The token counts as valid if user did not provide one and mode is optional.
-        return null === $token && $this->apiKeySettings['mode'] === DeveloperSettingsStatus::OPTIONAL;
+        return null === $token && $this->apiKeySettings['mode'] === DeveloperSettingsStatus::OPTIONAL->value;
     }
 }

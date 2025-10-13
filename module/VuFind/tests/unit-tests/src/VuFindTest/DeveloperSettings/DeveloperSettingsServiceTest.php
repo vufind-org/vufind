@@ -1,0 +1,344 @@
+<?php
+
+/**
+ * DeveloperSettingsService Test Class
+ *
+ * PHP version 8
+ *
+ * Copyright (C) Villanova University 2025.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
+ *
+ * @category VuFind
+ * @package  Tests
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
+ */
+
+namespace VuFindTest\DeveloperSettings;
+
+use DateTime;
+use Generator;
+use VuFind\Db\Entity\ApiKeyEntityInterface;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\ApiKeyServiceInterface;
+use VuFind\DeveloperSettings\DeveloperSettingsService;
+use VuFind\DeveloperSettings\DeveloperSettingsStatus;
+
+/**
+ * DeveloperSettingsService Test Class
+ *
+ * @category VuFind
+ * @package  Tests
+ * @author   Demian Katz <demian.katz@villanova.edu>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
+ */
+class DeveloperSettingsServiceTest extends \PHPUnit\Framework\TestCase
+{
+    /**
+     * Get a FavoritesService object.
+     *
+     * @param array                   $config        Configuration file presenting the API_Keys section
+     * @param ?ApiKeyServiceInterface $apiKeyService ApiKeyService mocked with methods
+     *
+     * @return DeveloperSettingsService
+     */
+    protected function getService(
+        array $config,
+        ?ApiKeyServiceInterface $apiKeyService = null
+    ): DeveloperSettingsService {
+        return new DeveloperSettingsService(
+            $apiKeyService ??= $this->createMock(ApiKeyServiceInterface::class),
+            $config
+        );
+    }
+
+    /**
+     * Returns mocked entities with given methods and returns
+     *
+     * @param class-string<T> $name              Classname
+     * @param array           $methodsAndReturns Methods and returns for the mock as associative array
+     *
+     * @template T
+     * @return   mixed
+     */
+    protected function getMockEntity(string $name, array $methodsAndReturns = []): mixed
+    {
+        $mockEntity = $this->createMock($name);
+        foreach ($methodsAndReturns as $method => $return) {
+            $mockEntity->expects($this->any())->method($method)->willReturn($return);
+        }
+        return $mockEntity;
+    }
+
+    /**
+     * Get apiKey mock entitie.
+     *
+     * @param array $
+     */
+
+    /**
+     * Get test generate new key data
+     *
+     * @return Generator
+     */
+    public static function getTestGenerateApiKeyForUserData(): Generator
+    {
+        $user = [
+            'getEmailVerified' => new DateTime('1990-1-1'),
+            'getFirstname' => 'Test',
+            'getLastname' => 'Tester',
+        ];
+        yield 'user has no existing tokens' => [
+            ['token_salt' => 'RandomTestSalt'],
+            [],
+            $user,
+            [
+                'result' => ApiKeyEntityInterface::class,
+            ],
+        ];
+        yield 'user has no revoked tokens' => [
+            ['token_salt' => 'RandomTestSalt'],
+            [
+                [
+                    'isRevoked' => false,
+                ],
+                [
+                    'isRevoked' => false,
+                ],
+                [
+                    'isRevoked' => false,
+                ],
+            ],
+            $user,
+            [
+                'result' => ApiKeyEntityInterface::class,
+            ],
+        ];
+        yield 'user has five tokens' => [
+            ['token_salt' => 'RandomTestSalt'],
+            [
+                [
+                    'isRevoked' => false,
+                ],
+                [
+                    'isRevoked' => false,
+                ],
+                [
+                    'isRevoked' => false,
+                ],
+                [
+                    'isRevoked' => false,
+                ],
+                [
+                    'isRevoked' => false,
+                ],
+            ],
+            $user,
+            [
+                'result' => false,
+            ],
+        ];
+        yield 'user has a revoked token' => [
+            ['token_salt' => 'RandomTestSalt'],
+            [
+                [
+                    'isRevoked' => false,
+                ],
+                [
+                    'isRevoked' => true,
+                ],
+                [
+                    'isRevoked' => false,
+                ],
+            ],
+            $user,
+            [
+                'result' => false,
+            ],
+        ];
+        yield 'salt is missing from the configuration' => [
+            [],
+            [],
+            $user,
+            [
+                'error' => 'DeveloperSettingsService: Salt missing',
+            ],
+        ];
+    }
+
+    /**
+     * Test generating new apiKey for user
+     *
+     * @param array $config   Config
+     * @param array $tokens   Token methods and returns
+     * @param array $user     User data
+     * @param array $expected Expected value in result key, omit when error expected.
+     *
+     * @dataProvider getTestGenerateApiKeyForUserData
+     * @return       void
+     */
+    public function testGenerateApiKeyForUser(
+        array $config,
+        array $tokens,
+        array $user,
+        array $expected
+    ): void {
+        if (isset($expected['error'])) {
+            $this->expectExceptionMessage($expected['error']);
+        }
+        $apiKeyNew = $this->getMockEntity(ApiKeyEntityInterface::class, ['getTitle' => 'test']);
+
+        $apiKeys = array_map(
+            fn ($apiKey) => $this->getMockEntity(ApiKeyEntityInterface::class, $apiKey),
+            $tokens
+        );
+        $apiKeyService = $this->getMockEntity(
+            ApiKeyServiceInterface::class,
+            [
+                'getApiKeysForUser' => $apiKeys,
+                'createEntity' => $apiKeyNew,
+            ]
+        );
+
+        $userEntity = $this->getMockEntity(UserEntityInterface::class, $user);
+
+        $result = $this->getService($config, $apiKeyService)->generateApiKeyForUser($userEntity, 'test');
+        if (!isset($expected['result'])) {
+            return;
+        } elseif ($expected['result'] === false) {
+            $this->assertEquals($expected['result'], $result);
+        } else {
+            $this->assertEquals('test', $result->getTitle());
+        }
+    }
+
+    /**
+     * Get testIsTokenValid data
+     *
+     * @return Generator
+     */
+    public static function getTestIsTokenValidData(): Generator
+    {
+        yield 'API keys disabled' => [
+            null,
+            [
+                'mode' => DeveloperSettingsStatus::DISABLED->value,
+            ],
+            null,
+            true,
+        ];
+        yield 'API keys disabled and provided' => [
+            'testtoken',
+            [
+                'mode' => DeveloperSettingsStatus::DISABLED->value,
+            ],
+            null,
+            true,
+        ];
+        yield 'API keys optional and not provided' => [
+            null,
+            [
+                'mode' => DeveloperSettingsStatus::OPTIONAL->value,
+            ],
+            null,
+            true,
+        ];
+        yield 'API keys optional and provided' => [
+            'testtoken',
+            [
+                'mode' => DeveloperSettingsStatus::OPTIONAL->value,
+            ],
+            [
+                'isRevoked' => false,
+            ],
+            true,
+        ];
+        yield 'API keys optional and revoked' => [
+            'testtoken',
+            [
+                'mode' => DeveloperSettingsStatus::OPTIONAL->value,
+            ],
+            [
+                'isRevoked' => true,
+            ],
+            false,
+        ];
+        yield 'API keys optional and provided missing' => [
+            'testtoken',
+            [
+                'mode' => DeveloperSettingsStatus::OPTIONAL->value,
+            ],
+            null,
+            false,
+        ];
+        yield 'API keys enforced and not provided' => [
+            null,
+            [
+                'mode' => DeveloperSettingsStatus::ENFORCED->value,
+            ],
+            null,
+            false,
+        ];
+        yield 'API keys enforced and provided' => [
+            'testtoken',
+            [
+                'mode' => DeveloperSettingsStatus::ENFORCED->value,
+            ],
+            [
+                'isRevoked' => false,
+            ],
+            true,
+        ];
+        yield 'API keys enforced and revoked' => [
+            'testtoken',
+            [
+                'mode' => DeveloperSettingsStatus::ENFORCED->value,
+            ],
+            [
+                'isRevoked' => true,
+            ],
+            false,
+        ];
+        yield 'API keys enforced and provided missing' => [
+            'testtoken',
+            [
+                'mode' => DeveloperSettingsStatus::ENFORCED->value,
+            ],
+            null,
+            false,
+        ];
+    }
+
+    /**
+     * Test token is valid method
+     *
+     * @param ?string $token    Token provided in request or null
+     * @param array   $config   Config
+     * @param ?array  $apiKey   Methods and returns for API key entity
+     * @param bool    $expected Expected value
+     *
+     * @dataProvider getTestIsTokenValidData
+     * @return       void
+     */
+    public function testIsTokenValid(?string $token, array $config, ?array $apiKey, bool $expected): void
+    {
+        $apiKey = $apiKey ? $this->getMockEntity(ApiKeyEntityInterface::class, $apiKey) : null;
+        $apiKeyService = $this->getMockEntity(ApiKeyServiceInterface::class, ['getByToken' => $apiKey]);
+        $result = $this->getService($config, $apiKeyService)->isTokenValid($token);
+        $this->assertEquals($expected, $result);
+    }
+}
