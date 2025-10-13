@@ -55,7 +55,7 @@ class Random extends AbstractChannelProvider implements TranslatorAwareInterface
      *
      * @var int
      */
-    protected $channelSize;
+    protected $batchSize;
 
     /**
      * Mode
@@ -104,7 +104,7 @@ class Random extends AbstractChannelProvider implements TranslatorAwareInterface
      */
     public function setOptions(array $options)
     {
-        $this->channelSize = $options['channelSize'] ?? 20;
+        $this->batchSize = $options['batchSize'] ?? 20;
         $this->mode = $options['mode'] ?? 'retain';
     }
 
@@ -162,14 +162,14 @@ class Random extends AbstractChannelProvider implements TranslatorAwareInterface
         $retVal = [
             'title' => $this->translate('random_recommendation_title'),
             'providerId' => $this->providerId,
-            'limit' => $this->channelSize ?? 6,
+            'limit' => $this->batchSize,
         ];
         $query = $params->getQuery();
         $paramBag = $params->getBackendParameters();
         $command = new RandomCommand(
             $params->getSearchClassId(),
             $query,
-            $this->channelSize,
+            $this->batchSize,
             $paramBag
         );
         $random = $this->searchService->invoke($command)->getResult()->getRecords();

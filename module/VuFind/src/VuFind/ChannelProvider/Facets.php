@@ -147,7 +147,7 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
 
         // Add pagination params
         $params->setPage($this->request->getQuery('page', 1));
-        if ($limit = $this->request->getQuery('limit', false)) {
+        if ($limit = $this->request->getQuery('limit', $this->batchSize)) {
             $params->setLimit($limit);
         }
     }

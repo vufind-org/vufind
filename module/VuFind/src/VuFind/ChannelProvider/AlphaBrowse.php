@@ -60,7 +60,7 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
      *
      * @var int
      */
-    protected $channelSize;
+    protected $batchSize;
 
     /**
      * Maximum number of records to examine for similar results.
@@ -147,7 +147,7 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
      */
     public function setOptions(array $options)
     {
-        $this->channelSize = $options['channelSize'] ?? 20;
+        $this->batchSize = $options['batchSize'] ?? 20;
         $this->maxRecordsToExamine = $options['maxRecordsToExamine'] ?? 2;
         $this->browseIndex = $options['browseIndex'] ?? 'lcc';
         $this->solrField = $options['solrField'] ?? 'callnumber-raw';
@@ -282,7 +282,7 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
             ),
             'providerId' => $this->providerId,
             'links' => [],
-            'limit' => $this->channelSize ?? 6,
+            'limit' => $this->batchSize,
         ];
         $raw = $driver->getRawData();
         $from = isset($raw[$this->solrField]) ? (array)$raw[$this->solrField] : null;
@@ -299,7 +299,7 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
                 // If we got this far, we can safely assume that $from[0] is set
                 $from[0],
                 0,
-                $this->channelSize,
+                $this->batchSize,
                 new ParamBag(['extras' => 'title:author:isbn:id']),
                 -$this->rowsBefore
             );

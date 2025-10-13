@@ -58,7 +58,7 @@ class SimilarItems extends AbstractChannelProvider implements TranslatorAwareInt
      *
      * @var int
      */
-    protected $channelSize;
+    protected $batchSize;
 
     /**
      * Maximum number of records to examine for similar results.
@@ -117,7 +117,7 @@ class SimilarItems extends AbstractChannelProvider implements TranslatorAwareInt
      */
     public function setOptions(array $options)
     {
-        $this->channelSize = $options['channelSize'] ?? 6;
+        $this->batchSize = $options['batchSize'] ?? 24;
         $this->maxRecordsToExamine = $options['maxRecordsToExamine'] ?? 2;
     }
 
@@ -210,14 +210,14 @@ class SimilarItems extends AbstractChannelProvider implements TranslatorAwareInt
             'providerId' => $this->providerId,
             'links' => [],
             'token' => $driver->getUniqueID(),
-            'limit' => $this->channelSize ?? 6,
+            'limit' => $this->batchSize,
         ];
 
         if ($tokenOnly) {
             return $retVal;
         }
 
-        $params = new \VuFindSearch\ParamBag(['rows' => $this->channelSize]);
+        $params = new \VuFindSearch\ParamBag(['rows' => $this->batchSize]);
         $command = new SimilarCommand(
             $driver->getSourceIdentifier(),
             $driver->getUniqueID(),
