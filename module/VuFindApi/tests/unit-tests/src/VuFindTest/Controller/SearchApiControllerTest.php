@@ -36,11 +36,10 @@ use Laminas\Http\Header\HeaderInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Stdlib\Parameters;
 use PHPUnit\Framework\MockObject\MockObject;
-use VuFind\Db\Entity\ApiKeyEntityInterface;
-use VuFind\Db\Service\ApiKeyServiceInterface;
 use VuFind\Db\Service\OaiResumptionServiceInterface;
 use VuFind\Db\Service\PluginManager as DbPluginManager;
 use VuFind\DeveloperSettings\DeveloperSettingsService;
+use VuFind\DeveloperSettings\DeveloperSettingsStatus;
 use VuFind\Http\PhpEnvironment\Request;
 use VuFind\Record\Loader;
 use VuFind\RecordDriver\SolrMarc;
@@ -82,7 +81,7 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
         ];
         $config = [
             'API_Keys' => [
-                'mode' => 'enabled',
+                'mode' => DeveloperSettingsStatus::OPTIONAL->value,
                 'log_requests' => true,
                 'header_field' => 'test-field',
             ],
@@ -114,7 +113,7 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
                 'content' => '{"resultCount":1,"records":[{"id":"record.1111","title":"hai!"}],"status":"OK"}',
             ],
         ];
-        $config['API_Keys']['mode'] = 'enforced';
+        $config['API_Keys']['mode'] = DeveloperSettingsStatus::ENFORCED->value;
         yield 'test keys enforced and provided' => [
             $config,
             [
@@ -186,21 +185,19 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
         $solrOptions->expects($this->any())->method('getAPISettings')->willReturn([]);
         $optionsPluginManager = $this->createMock(SearchPluginManager::class);
         $optionsPluginManager->expects($this->any())->method('get')->willReturn($solrOptions);
-
-        $developerSettingsService = $this->getMockBuilder(DeveloperSettingsService::class)
-            ->disableOriginalConstructor()->onlyMethods(['getApiKeyByToken'])->getMock();
-        $developerSettingsService->__construct(
-            $this->createMock(ApiKeyServiceInterface::class),
-            $config['API_Keys'] ?? [],
-        );
-        $developerSettingsService->expects($this->any())->method('getApiKeyByToken')->willReturnCallback(
-            function ($token) {
-                if ($token) {
-                    $mock = $this->createMock(ApiKeyEntityInterface::class);
-                    $mock->expects($this->any())->method('isRevoked')->willReturn(false);
-                    return $mock;
+        $apiKeyMode = DeveloperSettingsStatus::from($config['API_Keys']['mode'] ?? 'disabled');
+        $apiKeysEnabled = DeveloperSettingsStatus::settingEnabled($apiKeyMode->value);
+        $developerSettingsService = $this->createMock(DeveloperSettingsService::class);
+        $developerSettingsService->expects($this->any())->method('apiKeysEnabled')->willReturn($apiKeysEnabled);
+        $developerSettingsService->expects($this->any())->method('isTokenValid')->willReturnCallback(
+            function ($token) use ($apiKeyMode, $apiKeysEnabled) {
+                if (!$apiKeysEnabled) {
+                    return true;
                 }
-                return null;
+                if ($apiKeyMode === DeveloperSettingsStatus::ENFORCED) {
+                    return $token === '999999';
+                }
+                return null === $token || $token === '999999';
             }
         );
 

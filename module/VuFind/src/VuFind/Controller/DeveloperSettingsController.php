@@ -54,7 +54,6 @@ class DeveloperSettingsController extends AbstractBase
             return $this->forceLogin();
         }
         $developerSettingsService = $this->getService(DeveloperSettingsService::class);
-        // If not submitted, are we logged in?
         if (!$developerSettingsService->apiKeysEnabled()) {
             throw new Forbidden('Developer settings disabled.');
         }
@@ -75,7 +74,6 @@ class DeveloperSettingsController extends AbstractBase
             return $this->forceLogin();
         }
         $developerSettingsService = $this->getService(DeveloperSettingsService::class);
-        // If not submitted, are we logged in?
         if (!$developerSettingsService->apiKeysEnabled() || !$this->permission()->isAuthorized('feature.Developer')) {
             throw new Forbidden('Access denied.');
         }
@@ -83,17 +81,16 @@ class DeveloperSettingsController extends AbstractBase
         $view = $this->createViewModel();
         if ($this->formWasSubmitted()) {
             if ($title = $this->fromPostAndQuery('title')) {
-                $apiKey = $developerSettingsService->generateApiKeyForUser($user, $title);
-                if ($apiKey) {
+                if ($apiKey = $developerSettingsService->generateApiKeyForUser($user, $title)) {
                     $successMsg = $this->translate(
                         'Developer::api_key_generation_success',
                         ['%%TOKEN%%' => $apiKey->getToken()]
                     );
-                    $this->flashMessenger()->addMessage($successMsg, 'success');
+                    $this->flashMessenger()->addSuccessMessage($successMsg);
                     return $view;
                 }
             }
-            $this->flashMessenger()->addMessage('An error has occurred', 'error');
+            $this->flashMessenger()->addErrorMessage('An error has occurred');
         }
 
         return $view;
@@ -110,19 +107,18 @@ class DeveloperSettingsController extends AbstractBase
             return $this->forceLogin();
         }
         $developerSettingsService = $this->getService(DeveloperSettingsService::class);
-        // If not submitted, are we logged in?
         if (!$developerSettingsService->apiKeysEnabled() || !$this->permission()->isAuthorized('feature.Developer')) {
             throw new Forbidden('Access denied.');
         }
         if ($this->fromPostAndQuery('confirm') === '1') {
-            $id = $this->fromPostAndQuery('id', false);
+            $id = $this->fromPostAndQuery('id');
             if (
                 false !== $id
                 && $developerSettingsService->deleteApiKeyForUser($user, $id)
             ) {
-                $this->flashMessenger()->addMessage('Developer::api_key_deletion_success', 'success');
+                $this->flashMessenger()->addSuccessMessage('Developer::api_key_deletion_success');
             } else {
-                $this->flashMessenger()->addMessage('An error has occurred', 'error');
+                $this->flashMessenger()->addErrorMessage('An error has occurred');
             }
         }
         return $this->redirect()->toRoute('developersettings-displaysettings');

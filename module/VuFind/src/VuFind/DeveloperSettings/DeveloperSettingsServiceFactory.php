@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Database API key service factory
+ * Developer settings service factory
  *
  * PHP version 8
  *
@@ -21,7 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Database
+ * @package  Developer_Settings
  * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
@@ -39,10 +39,10 @@ use VuFind\Db\Service\ApiKeyService;
 use VuFind\Db\Service\PluginManager;
 
 /**
- * Database API key service factory
+ * Developer settings service factory
  *
  * @category VuFind
- * @package  Database
+ * @package  Developer_Settings
  * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki

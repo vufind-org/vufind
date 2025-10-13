@@ -21,7 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Service
+ * @package  Developer_Settings
  * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
@@ -33,16 +33,14 @@ use DateTime;
 use VuFind\Db\Entity\ApiKeyEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\ApiKeyServiceInterface;
-use VuFindApi\Controller\ApiInterface;
 
 use function count;
-use function in_array;
 
 /**
  * Service for managing API keys
  *
  * @category VuFind
- * @package  Service
+ * @package  Developer_Settings
  * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
@@ -112,22 +110,6 @@ class DeveloperSettingsService
     }
 
     /**
-     * Get API key using token.
-     *
-     * @param string $token Token to search for.
-     *
-     * @return ?ApiKeyEntityInterface
-     */
-    public function getApiKeyByToken(string $token): ?ApiKeyEntityInterface
-    {
-        $apiKey = $this->apiKeyService->getByToken($token);
-        if ($apiKey) {
-            $this->updateApiKeyTimeStamp($apiKey);
-        }
-        return $apiKey;
-    }
-
-    /**
      * Generate an API key for a user.
      *
      * @param UserEntityInterface $user  User
@@ -143,10 +125,11 @@ class DeveloperSettingsService
         }
         // Generate unique id from date and users id.
         $newKey = $this->apiKeyService->createEntity();
+        $date = new DateTime();
         $newKey->setToken($this->createRandomToken($user))
             ->setUser($user)
-            ->setCreated(new DateTime())
-            ->setLastUsed(new DateTime())
+            ->setCreated($date)
+            ->setLastUsed($date)
             ->setTitle($title);
         $this->apiKeyService->persistEntity($newKey);
         return $newKey;
@@ -159,9 +142,9 @@ class DeveloperSettingsService
      *
      * @return void
      */
-    protected function updateApiKeyTimeStamp(ApiKeyEntityInterface $apiKey): void
+    protected function updateLastUsed(ApiKeyEntityInterface $apiKey): void
     {
-        if (time() - $apiKey->getCreated()->getTimestamp() < $this->updateInterval * 60) {
+        if (time() - $apiKey->getLastUsed()->getTimestamp() < $this->updateInterval * 60) {
             $apiKey->setLastUsed(new \DateTime());
             $this->apiKeyService->persistEntity($apiKey);
         }
@@ -212,17 +195,12 @@ class DeveloperSettingsService
      */
     public function apiKeysEnabled(): bool
     {
-        return in_array(
-            $this->apiKeySettings['mode'] ?? ApiInterface::API_KEYS_DISABLED,
-            [
-                ApiInterface::API_KEYS_ENABLED,
-                ApiInterface::API_KEYS_ENFORCED,
-            ]
-        );
+        return DeveloperSettingsStatus::settingEnabled($this->apiKeySettings['mode'] ?? '');
     }
 
     /**
-     * Check provided token.
+     * Check if the provided token is valid. If user provides an API key token
+     * in optional mode, it will act the same way even if
      *
      * @param ?string $token Token to search for API key
      *
@@ -230,13 +208,13 @@ class DeveloperSettingsService
      */
     public function isTokenValid(?string $token): bool
     {
-        $apiKey = $token ? $this->getApiKeyByToken($token) : null;
-        if ($this->apiKeySettings['mode'] === ApiInterface::API_KEYS_ENABLED) {
-            return true;
+        if (!$this->apiKeysEnabled()) {
+            return false;
         }
-        if ($this->apiKeySettings['mode'] === ApiInterface::API_KEYS_ENFORCED) {
-            return $apiKey && !$apiKey->isRevoked();
+        if ($apiKey = $this->apiKeyService->getByToken((string)$token)) {
+            return !$apiKey->isRevoked();
         }
-        return false;
+        // The token counts as valid if user did not provide one and mode is optional.
+        return null === $token && $this->apiKeySettings['mode'] === DeveloperSettingsStatus::OPTIONAL;
     }
 }

@@ -79,7 +79,7 @@ trait ApiTrait
      *
      * @var string
      */
-    protected string $apiKeyHeaderField = '';
+    protected string $apiKeyHeaderField = 'X-API-KEY';
 
     /**
      * API key service
@@ -245,12 +245,8 @@ trait ApiTrait
      */
     protected function checkRequestForApiKey(): bool
     {
-        if ($this->developerSettingsService?->apiKeysEnabled()) {
-            $tokenField = $this->getRequest()->getHeader($this->apiKeyHeaderField);
-            $token = $tokenField ? $tokenField->getFieldValue() : null;
-            return $this->developerSettingsService->isTokenValid($token);
-        }
-        return true;
+        $tokenField = $this->getRequest()->getHeader($this->apiKeyHeaderField);
+        return $this->developerSettingsService->isTokenValid($tokenField?->getFieldValue());
     }
 
     /**

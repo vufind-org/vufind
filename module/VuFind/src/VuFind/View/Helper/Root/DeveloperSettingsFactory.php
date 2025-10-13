@@ -1,11 +1,11 @@
 <?php
 
 /**
- * OAI Server factory.
+ * Developer settings helper factory
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,30 +21,27 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  OAI_Server
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  View_Helpers
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     http://vufind.org/wiki/ Wiki
  */
 
-namespace VuFind\OAI;
+namespace VuFind\View\Helper\Root;
 
-use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
-use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
-use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * OAI Server factory.
+ * Developer settings helper factory
  *
  * @category VuFind
- * @package  OAI_Server
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  View_Helpers
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     http://vufind.org/wiki/ Wiki
  */
-class ServerFactory implements FactoryInterface
+class DeveloperSettingsFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -68,14 +65,8 @@ class ServerFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $servicePluginManager = $container->get(
-            \VuFind\Db\Service\PluginManager::class
-        );
         return new $requestedName(
-            $container->get(\VuFind\Search\Results\PluginManager::class),
-            $container->get(\VuFind\Record\Loader::class),
-            $servicePluginManager->get(\VuFind\Db\Service\ChangeTrackerServiceInterface::class),
-            $servicePluginManager->get(\VuFind\Db\Service\OaiResumptionServiceInterface::class)
+            $container->get(\VuFind\DeveloperSettings\DeveloperSettingsService::class)
         );
     }
 }
