@@ -191,7 +191,7 @@ class ResourcePopulator
         $year = null;
         foreach ($driver->tryMethod('getPublicationDates', [], []) as $pubDate) {
             // Try to extract a year from a string like '2025', 'Ⓟ2025' or 'copyright 2025':
-            if (preg_match('/^[^\d]*?(-?\d+)$/', $pubDate, $matches)) {
+            if (preg_match('/^[^\d]*?(-?\d+)/', $pubDate, $matches)) {
                 $year = (int)$matches[1];
                 break;
             }
