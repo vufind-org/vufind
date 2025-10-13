@@ -27,13 +27,6 @@
         text-decoration: none;
       }
     }
-    i {
-      font-size: 12px;
-      position: absolute;
-      top: 8px;
-      right: 11px;
-    }
-
     .dropdown-menu {
       @include media-breakpoint-down(md) {
         right: 0;

@@ -417,10 +417,6 @@
     padding-left: 2.5em;
     margin-bottom: 1em;
   }
-
-  .profile-status i::before {
-    display: inline-block;
-  }
 }
 
 .useraccount-header {
@@ -787,12 +783,6 @@ form#renewals, form#update_holds, form#purge_history {
         margin-bottom: 0px;
         span {
           float: right;
-          > i {
-            color: $myresearch-menu-header-font-color;
-            font-size: 25px;
-            margin-top: -4px;
-            cursor: pointer;
-          }
         }
       }
     }
@@ -859,7 +849,7 @@ form#renewals, form#update_holds, form#purge_history {
     &:focus {
       background-color: $nav-link-hover-bg;
     }
-    &.user-list-link i {
+    &.user-list-link .icon {
       margin-left: 0.5rem;
     }
     &.active {

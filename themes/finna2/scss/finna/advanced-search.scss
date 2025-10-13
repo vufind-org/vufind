@@ -50,19 +50,13 @@
       display: inline;
     }
     button {
-      float: right;
-      border: none;
-      background: transparent;
       padding: 6px;
-      i {
-        cursor: pointer;
-      }
 
       @include media-breakpoint-down(xs) {
-        i {
+        .icon {
           font-size: 24px;
         }
-        span {
+        .finna-toggletip__label {
           display: none;
         }
       }

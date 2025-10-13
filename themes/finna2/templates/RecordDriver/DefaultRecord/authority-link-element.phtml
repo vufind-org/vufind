@@ -12,7 +12,7 @@
   $srLabel = $this->transEscAttr($this->authorityType);
   $authorityIcon = $this->icon('authority-' . $this->escapeHtmlAttr($this->record($this->record)->getFormatClass($this->authorityType)));
 ?>
-<a<?=$titleAttr?> href="<?=$this->escapedUrl?>"<?=$linkClassesAttr?>><?php if ($isAuthorityLink): ?><?=$authorityIcon?>"<span class="visually-hidden"><?=$srLabel?></span> <?php endif; ?>
+<a<?=$titleAttr?> href="<?=$this->escapedUrl?>"<?=$linkClassesAttr?>><?php if ($isAuthorityLink): ?><?=$authorityIcon?><span class="visually-hidden"><?=$srLabel?></span> <?php endif; ?>
   <span class="authority-label"><?=$this->escapeHtml($this->label)?></span></a><?=$additionalDataEl?>
 <?php if (!empty($this->description)): ?>
   <span class="authority-description"><?="({$this->escapeHtml($this->description)})"?></span>

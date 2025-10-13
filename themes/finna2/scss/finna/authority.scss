@@ -36,7 +36,7 @@ a.authority-link {
   &::after {
     margin-left: 5px;
   }
-  i {
+  .icon {
     margin-right: 0.1em;
     font-size: $iconFontSize;
   }
@@ -108,7 +108,7 @@ a.authority-link {
     .link-text {
       font-size: 0.9em;
     }
-    i {
+    .icon {
       margin-right: 0.1em;
       font-size: $iconFontSize;
     }
@@ -172,10 +172,6 @@ a.authority-link {
     }
     .resultItemFormat {
       margin-bottom: 0.3em;
-      i {
-        vertical-align: middle;
-        font-size: $iconFontSize;
-      }
     }
     h3 {
       margin-top: 0.3em;

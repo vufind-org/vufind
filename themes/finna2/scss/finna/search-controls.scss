@@ -67,20 +67,7 @@
       background: $action-link-color;
       color: $body-bg;
       transition: background 0.2s linear;
-      i {
-        color: $body-bg;
-      }
     }
-  }
-  i {
-    font-size: 1.3em;
-    color: $action-link-color;
-    margin-right: 0;
-    border-radius: $finna-button-radius;
-  }
-  i.fa-arrow-down {
-    font-size: 1em;
-    margin-left: -18px;
   }
   .dropdown-menu {
     border-radius: $border-radius-base;
@@ -91,13 +78,6 @@
       color: $gray;
       padding-top: 10px;
       padding-bottom: 10px;
-      i {
-        color: $gray;
-      }
-      i.fa-available {
-        font-size: 1em;
-        float: right;
-      }
     }
   }
   @include media-breakpoint-up(lg) {

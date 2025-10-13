@@ -61,31 +61,6 @@
     font-weight: 500;
   }
 }
-.tooltip-image {
-  .tooltip {
-    overflow: hidden;
-  }
-  .tooltip-arrow {
-    display: none;
-  }
-  i {
-    margin-left: 0;
-    position: relative;
-    text-align: center;
-    cursor: pointer;
-    font-style: normal;
-    padding: 3px;
-    color: $action-link-color;
-    font-size: 24px;
-    &:before {
-      color: mix($background-color, contrast($background-color), 5%);
-      opacity: 0.8;
-    }
-  }
-  @include media-breakpoint-down(md) {
-    display: none;
-   }
-}
 
 .tooltip-myaccount {
   margin-left: 10px;

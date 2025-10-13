@@ -162,15 +162,6 @@ button.list-group-item {
     a {
       line-height: 1em;
     }
-    .open-link a {
-      line-height: normal;
-      i {
-        color: mix(#ffffff, $action-link-color, 22%);
-        :before {
-          vertical-align: middle;
-        }
-      }
-    }
     .more-link, .less-link, .less-link-top {
       padding-left: 10px;
     }
@@ -182,7 +173,7 @@ button.list-group-item {
 
 .similar-records,
 .related-records,
-.similar-records, .work-expressions {
+.work-expressions {
   .list-group-item {
     border: $sidebar-border;
   }

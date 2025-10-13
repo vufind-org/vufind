@@ -33,12 +33,11 @@
     font-size: 1em;
     font-weight: 600;
 
-    & :hover {
+    &:hover {
       color: darken($action-link-color,10%);
     }
 
-    & i {
-      color: mix(#ffffff, $action-link-color, 22%);
+    & .icon {
       padding-left: 3px;
       padding-right: 3px;
     }
@@ -70,18 +69,6 @@
       a[href]::after {
         content: " (" attr(href) ")";
       }
-    }
-  }
-  finna-video.videourl, button.videourl {
-    display: flex;
-    align-items: center;
-    text-transform: uppercase;
-    font-weight: bold;
-    color: $btn-default-color;
-    margin-bottom: 6px;
-    i {
-      margin-right: 4px;
-      font-size: 24px;
     }
   }
 
@@ -132,7 +119,7 @@ a.authority {
   margin-bottom: 20px;
 }
 
-.image-details, .model-details {
+.image-details {
   table {
     margin-left: 20px;
   }
@@ -182,18 +169,6 @@ a.authority {
       .open-link {
         margin-top: 10px;
       }
-      .record-image-container {
-        .open-link {
-          margin-top: 10px;
-        }
-        .open-link, .model-link {
-          i, b {
-            color: mix(#ffffff, $action-link-color, 22%);
-            margin-right: 0;
-            font-style: normal;
-          }
-        }
-      }
     }
   }
   .smaller-image-sidebar {
@@ -209,23 +184,14 @@ a.authority {
   }
 }
 
-.model-link {
-  .download-link {
-    text-align: left;
-    color: #007c90;
-    font-size: 1em;
-    font-weight: 600;
-    text-transform: uppercase;
-  }
-}
-
 .image-link, .model-link {
   display: flex;
   align-items: center;
   font-size: 1em;
   position: relative;
-  .fa.fa-download {
-    margin-right: 4px;
+  margin-top: 0.3rem;
+  .icon {
+    margin-right: 0.3rem;
     color: $action-link-color;
     &:hover, &:focus {
       color: $action-link-color;
@@ -349,7 +315,7 @@ a.authority {
         top: $navbar-height;
       }
     }
-    i {
+    .icon {
       padding-left: 2px;
     }
   }
@@ -810,14 +776,6 @@ a.authority {
 // Record feedback
 .feedback-record {
   margin-top: 0.3em;
-}
-
-.model-details {
-  .model-download {
-    i {
-      padding-right: 2px;
-    }
-  }
 }
 
 finna-model-viewer {

@@ -227,7 +227,7 @@ span.badge.cb-facet {
     margin-left: 5px;
     flex-shrink: 0;
     text-align: center;
-    i  {
+    .icon  {
       font-size: 0.8em;
     }
   }
@@ -360,9 +360,6 @@ span.badge.cb-facet {
       float: left;
       padding: 10px 5px;
       font-size: 0.9em;
-      i {
-        color: #fff;
-      }
       &:last-child {
         border-left: 0;
       }

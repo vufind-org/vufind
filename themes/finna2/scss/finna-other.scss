@@ -138,16 +138,6 @@ section.main.template-dir-feedcontent.template-name-content > .container {
   }
 }
 
-i.fa.fa-search.backgrounding {
-  position: absolute;
-  right: 30px;
-  top: 30px;
-}
-i.fa.fa-search.backgrounding:before {
-  font-size: 100px;
-  color: rgba(255,255,255,0.5);
-}
-
 /* Input styles */
 input[type=number].input-year {
   -moz-appearance:textfield !important;

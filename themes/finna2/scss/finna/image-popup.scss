@@ -23,17 +23,6 @@
             padding: 40px;
         }
     }
-    >.large-spinner {
-        position: absolute;
-        left: 50%;
-        top: 50%;
-        transform: translate(-50%, -50%);
-        .fa-spinner::before {
-            font-size: 80px;
-            color: white;
-            text-shadow: 2px 2px #565656;
-        }
-    }
     &.content {
         width: 100%;
         @include media-breakpoint-up(sm) {
@@ -151,15 +140,9 @@
         &.inactive {
             color: $gray-lighter;
             cursor: not-allowed;
-            i {
-                cursor: not-allowed;
-            }
         }
         &:focus-visible {
             box-shadow: $focus-ring-light-box-shadow;
-        }
-        i {
-            cursor: pointer;
         }
     }
 }
@@ -342,11 +325,16 @@
             border-left: 1px solid #ccc;
         }
         .popup-link-buttons {
-            margin: 2px 0px;
+            margin: 2px 0px 20px 0px;
             .videourl {
+                display: inline-flex;
                 text-transform: uppercase;
                 font-weight: bold;
-                margin: 2px 0;
+                margin-bottom: 0.5rem;
+                .icon {
+                    margin-right: 0.3rem;
+                    font-size: $font-size-icon-large;
+                }
             }
         }
         .collapse-content-holder {
@@ -361,7 +349,7 @@
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                i::before {
+                .icon {
                     font-size: 64px;
                 }
             }
@@ -415,12 +403,6 @@
             &.loading {
                 max-height: 100px;
                 overflow: hidden;
-            }
-        }
-        .popup-link-buttons {
-            margin-bottom: 20px;
-            i {
-                margin-right: 2px;
             }
         }
         .record-link {
@@ -678,16 +660,12 @@
     &.paginated {
         display: flex;
         > button {
-                appearance: none;
-                height: 44px;
-                border: none;
-                background-color: transparent;
-                padding: 0 2px;
-                flex: 0 0 0;
-            i {
-                cursor: pointer;
-                font-size: 24px;
-            }
+            appearance: none;
+            height: 44px;
+            border: none;
+            background-color: transparent;
+            padding: 0 2px;
+            flex: 0 0 0;
             .finna-popup &:not(:disabled){
                 color: white;
 
@@ -699,9 +677,6 @@
             &:disabled {
                 background-color: #d6d6d600;
                 color: transparent;
-                i {
-                    cursor: not-allowed;
-                }
             }
         }
         .track-holder {
@@ -786,11 +761,5 @@
         flex: 1;
         appearance: none;
         border: none;
-        i {
-            cursor: pointer;
-        }
-    }
-    button:disabled i {
-        cursor: initial;
     }
 }

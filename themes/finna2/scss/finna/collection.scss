@@ -46,12 +46,6 @@
   }
   .view-option-container, .sort-option-container {
     margin: auto 0 auto 5px;
-    .view-dropdown i:first-child {
-      margin-right: 5px;
-      @include media-breakpoint-down(md) {
-        margin-right: 20px;
-      }
-    }
   }
 }
 

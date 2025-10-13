@@ -141,13 +141,13 @@ h2.introductionText {
   & p,li {
     font-size: 1.2em;
   }
-  & i,a {
+  & .icon, a {
     color: $link-color;
     text-shadow: none;
   }
   & a.btn-primary {
     color: #fff;
-    i {
+    .icon {
       color: #fff;
     }
   }
