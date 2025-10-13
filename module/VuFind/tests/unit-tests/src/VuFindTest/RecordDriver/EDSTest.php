@@ -655,30 +655,45 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Data provider for testGetCleanDOIFromUrl().
+     *
+     * @return array[]
+     */
+    public static function getCleanDOIFromUrlProvider(): array
+    {
+        $cleanDoi = '10.1016/j.jveb.2025.02.006';
+        return [
+            'plain DOI' => [$cleanDoi, $cleanDoi],
+            'URL: http, and no subdomain' => ['http://doi.org/' . $cleanDoi, $cleanDoi],
+            'URL: https, and subdomain' => ['https://dx.doi.org/' . $cleanDoi, $cleanDoi],
+            'link wrapper' => [
+                '&lt;link linkTarget="URL" linkWindow="_blank" linkTerm="http://dx.doi.org/'
+                . $cleanDoi
+                . '"&gt;http://dx.doi.org/' . $cleanDoi . '&lt;/link&gt;',
+                $cleanDoi,
+            ],
+        ];
+    }
+
+    /**
      * Test getCleanDOI for a record when it's in the [Items] block but
      * is formatted as a URL.
      *
+     * @param string $testDoi  DOI value to test with
+     * @param string $cleanDoi Expected value
+     *
      * @return void
+     *
+     * @dataProvider getCleanDOIFromUrlProvider
      */
-    public function testGetCleanDOIFromUrl(): void
+    public function testGetCleanDOIFromUrl(string $testDoi, string $cleanDoi): void
     {
         $driver = $this->getDriver('valid-eds-record-2');
 
-        $cleanDoi = '10.1016/j.jveb.2025.02.006';
         $fields = $driver->getRawData();
-        $doiVariations = [
-            $cleanDoi,
-            'http://doi.org/' . $cleanDoi,     // http, and no subdomain
-            'https://dx.doi.org/' . $cleanDoi, // https, and subdomain
-            '&lt;link linkTarget="URL" linkWindow="_blank" linkTerm="http://dx.doi.org/'
-                . $cleanDoi
-                . '"&gt;http://dx.doi.org/' . $cleanDoi . '&lt;/link&gt;',  // link wrapper
-        ];
-        foreach ($doiVariations as $testDoi) {
-            $fields['Items'][10]['Data'] = $testDoi;
-            $driver->setRawData($fields);
-            $this->assertEquals($cleanDoi, $driver->getCleanDOI());
-        }
+        $fields['Items'][10]['Data'] = $testDoi;
+        $driver->setRawData($fields);
+        $this->assertEquals($cleanDoi, $driver->getCleanDOI());
     }
 
     /**
