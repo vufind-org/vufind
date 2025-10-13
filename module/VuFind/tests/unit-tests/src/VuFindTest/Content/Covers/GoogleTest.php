@@ -66,10 +66,10 @@ class GoogleTest extends \PHPUnit\Framework\TestCase
                 $url
             );
             $this->assertEquals([], $params);
-            
+
             $mockStream = $this->createMock(\Psr\Http\Message\StreamInterface::class);
             $mockStream->method('getContents')->willReturn($body);
-            
+
             $response = $this->createMock(\Psr\Http\Message\ResponseInterface::class);
             $response->method('getBody')->willReturn($mockStream);
             $response->method('getStatusCode')->willReturn(200);
