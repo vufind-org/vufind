@@ -173,7 +173,7 @@ class CachingDownloader implements GuzzleServiceAwareInterface
         }
 
         $finalValue = $decodeCallback !== null
-            ? $decodeCallback($body, $url, $response) : $body;
+            ? $decodeCallback($response, $url) : $body;
         if ($cache) {
             $cache->addItem($cacheItemKey, $finalValue);
         }

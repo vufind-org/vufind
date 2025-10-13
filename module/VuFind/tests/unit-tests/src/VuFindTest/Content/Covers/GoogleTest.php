@@ -67,7 +67,6 @@ class GoogleTest extends \PHPUnit\Framework\TestCase
             );
             $this->assertEquals([], $params);
             $response = $this->createMock(\Psr\Http\Message\ResponseInterface::class);
-            // The callback now receives body string, url, and response
             return $callback($body, $url, $response);
         };
     }

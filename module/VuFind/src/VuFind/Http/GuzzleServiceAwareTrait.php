@@ -43,7 +43,7 @@ trait GuzzleServiceAwareTrait
     /**
      * GuzzleService
      *
-     * @var GuzzleService
+     * @var ?GuzzleService
      */
     protected $guzzleService = null;
 
@@ -62,9 +62,9 @@ trait GuzzleServiceAwareTrait
     /**
      * Get the GuzzleService
      *
-     * @return GuzzleService
+     * @return ?GuzzleService
      */
-    public function getGuzzleService(): GuzzleService
+    public function getGuzzleService(): ?GuzzleService
     {
         return $this->guzzleService;
     }

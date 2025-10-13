@@ -59,7 +59,7 @@ class HttpDownloadException extends \Exception implements HttpStatusInterface
     /**
      * HTTP response headers associated with this exception.
      *
-     * @var ?Headers
+     * @var ?array
      */
     protected $responseHeaders;
 
@@ -118,9 +118,9 @@ class HttpDownloadException extends \Exception implements HttpStatusInterface
     /**
      * Get HTTP response headers.
      *
-     * @return ?Headers
+     * @return ?array
      */
-    public function getResponseHeaders(): Headers|array|null
+    public function getResponseHeaders(): ?array
     {
         return $this->responseHeaders;
     }

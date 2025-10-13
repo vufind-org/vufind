@@ -32,6 +32,7 @@ namespace VuFind\Http;
 use Psr\Http\Client\ClientInterface;
 use Psr\Http\Message\ResponseInterface;
 
+use function array_is_list;
 use function strlen;
 
 /**
@@ -44,7 +45,7 @@ use function strlen;
  * @link     https://vufind.org/wiki/development
  * @todo     Merge with PSR-18 HTTP Client Service when implemented
  */
-class GuzzleService implements HttpServiceInterface
+class GuzzleService implements HttpServikceInterface
 {
     /**
      * VuFind configuration
@@ -89,7 +90,7 @@ class GuzzleService implements HttpServiceInterface
     }
 
     /**
-     * Return a new Guzzle client.
+     * Return a generic PSR-compliant client.
      *
      * @param ?string $url     Target URL (required for proper proxy setup for non-local addresses)
      * @param ?float  $timeout Request timeout in seconds (overrides configuration)
@@ -97,6 +98,19 @@ class GuzzleService implements HttpServiceInterface
      * @return ClientInterface
      */
     public function createClient(?string $url = null, ?float $timeout = null): \Psr\Http\Client\ClientInterface
+    {
+        return new \GuzzleHttp\Client($this->getGuzzleConfig($url, $timeout));
+    }
+
+    /**
+     * Return a new Guzzle client.
+     *
+     * @param ?string $url     Target URL (required for proper proxy setup for non-local addresses)
+     * @param ?float  $timeout Request timeout in seconds (overrides configuration)
+     *
+     * @return \GuzzleHttp\ClientInterface
+     */
+    public function createGuzzleClient(?string $url = null, ?float $timeout = null): \GuzzleHttp\ClientInterface
     {
         return new \GuzzleHttp\Client($this->getGuzzleConfig($url, $timeout));
     }
@@ -125,7 +139,7 @@ class GuzzleService implements HttpServiceInterface
                 $url .= '?' . $query;
             }
         }
-        $client = $this->createClient($url, $timeout);
+        $client = $this->createGuzzleClient($url, $timeout);
         $options = [];
 
         if ($headers) {
@@ -139,7 +153,7 @@ class GuzzleService implements HttpServiceInterface
      * Perform a POST request.
      *
      * @param string $url     Request URL
-     * @param mixed  $body    Request body document
+     * @param string $body    Request body document
      * @param string $type    Request body content type
      * @param float  $timeout Request timeout in seconds
      * @param array  $headers Request HTTP headers
@@ -153,7 +167,7 @@ class GuzzleService implements HttpServiceInterface
         ?float $timeout = null,
         array $headers = []
     ): ResponseInterface {
-        $client = $this->createClient($url, $timeout);
+        $client = $this->createGuzzleClient($url, $timeout);
 
         $options = [
             'body' => $body,
@@ -172,34 +186,16 @@ class GuzzleService implements HttpServiceInterface
     /**
      * Create a query string from an array of parameters.
      *
-     * @param array $params Parameters
+     * @param array $params Parameters (either an associative key=>value array,
+     *                      or a regular array of preformatted key=value strings)
      *
      * @return string
      */
     protected function createQueryString(array $params = []): string
     {
-        if ($this->isAssocParams($params)) {
-            return http_build_query($params);
-        } else {
-            return implode('&', $params);
-        }
-    }
-
-    /**
-     * Check if an array is associative.
-     *
-     * @param array $array Array to check
-     *
-     * @return bool
-     */
-    public static function isAssocParams(array $array): bool
-    {
-        foreach (array_keys($array) as $key) {
-            if (!is_numeric($key)) {
-                return true;
-            }
-        }
-        return false;
+        return array_is_list($params)
+            ? http_build_query($params)
+            : implode('&', $params);
     }
 
     /**

@@ -88,7 +88,7 @@ class Google extends \VuFind\Content\AbstractCover implements \VuFind\Http\Cachi
         $url = 'https://books.google.com/books?jscmd=viewapi&bibkeys='
             . urlencode(implode(',', $identifiers)) . '&callback=addTheCover';
 
-        $decodeCallback = function (string $body, string $url, ResponseInterface $response) {
+        $decodeCallback = function (ResponseInterface $response, string $url) {
             if (
                 !preg_match(
                     '/^[^{]*({.*})[^}]*$/',
