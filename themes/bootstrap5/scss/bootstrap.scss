@@ -89,6 +89,7 @@ $fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
 @import "components/sidebar";
 @import "components/similar-carousel";
 @import "components/sliders";
+@import "components/tables";
 @import "components/trees";
 
 /**
@@ -584,10 +585,10 @@ body.rtl .dropdown-menu {
   }
 }
 
-#select_all_comments, #select_all_ratings, #select_all_tags {
-  .toolbar {
-    padding: 0 0.9rem;
-    margin-bottom: 0.25rem;
+.toolbar {
+  margin: 0.5rem 0;
+  .checkbox {
+    padding: 0.5rem;
   }
 }
 
@@ -610,10 +611,6 @@ body.rtl .dropdown-menu {
         width: 15%;
       }
     }
-  }
-  // Display checkbox on narrow screens too:
-  .result .record-checkbox {
-    display: initial;
   }
 
   @include media-breakpoint-down(sm) {
@@ -668,6 +665,14 @@ body.rtl .dropdown-menu {
     div {
       flex: 1 1;
     }
+  }
+}
+.online-payment .toolbar {
+  .checkbox {
+    display: inline-flex;
+  }
+  .payment-row {
+    display: inline-flex;
   }
 }
 .terms-of-service__text {
@@ -735,49 +740,15 @@ body.rtl .dropdown-menu {
 @include media-breakpoint-down(sm) {
   @media screen {
     .table-responsive {
-      border: none;
-      thead, tfoot > tr > th {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        margin: -1px;
-        padding: 0;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        border: 0;
-      }
-      tbody > tr {
-        display: block;
-        margin-bottom: #{$line-height-base * $font-size-base};
-        border-left: 1px solid $table-border-color;
-        border-right: 1px solid $table-border-color;
-        border-bottom: 4px solid $table-border-color;
-
-        > :first-child {
-          border-top: var(--#{$prefix}border-width) solid var(--#{$prefix}table-border-color);
-        }
-      }
-      td, tbody > tr > th {
-        display: flex;
-        align-items: first baseline;
-        background: #fff;
-        &:not(.unlabeled-column):before {
-          display: flex;
-          flex-basis: 40%;
-          flex-shrink: 0;
-          font-weight: bold;
-          content: attr(data-label);
-        }
-      }
-      tbody > tr > td:nth-child(even) {
-        background-color: var(--bs-table-striped-bg);
-      }
-      tfoot > tr > td {
-        border-top: none;
-      }
-      > :not(caption) > * > * {
-        box-shadow: none;
-      }
+      @include table-responsive;
+    }
+  }
+}
+/* ------ Responsive table for non-ultrawide screen size ------ */
+@include media-breakpoint-down(xl) {
+  @media screen {
+    .table-responsive.table-responsive__lg {
+      @include table-responsive;
     }
   }
 }
