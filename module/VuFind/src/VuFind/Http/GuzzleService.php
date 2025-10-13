@@ -99,7 +99,7 @@ class GuzzleService implements HttpServiceInterface
      */
     public function createClient(?string $url = null, ?float $timeout = null): \Psr\Http\Client\ClientInterface
     {
-        return new \GuzzleHttp\Client($this->getGuzzleConfig($url, $timeout));
+        return new $this->createGuzzleClient($url, $timeout);
     }
 
     /**
@@ -152,17 +152,17 @@ class GuzzleService implements HttpServiceInterface
     /**
      * Perform a POST request.
      *
-     * @param string $url     Request URL
-     * @param string $body    Request body document
-     * @param string $type    Request body content type
-     * @param float  $timeout Request timeout in seconds
-     * @param array  $headers Request HTTP headers
+     * @param string  $url     Request URL
+     * @param ?string $body    Request body document
+     * @param string  $type    Request body content type
+     * @param float   $timeout Request timeout in seconds
+     * @param array   $headers Request HTTP headers
      *
      * @return ResponseInterface
      */
     public function post(
         string $url,
-        $body = null,
+        ?string $body = null,
         string $type = 'application/octet-stream',
         ?float $timeout = null,
         array $headers = []
@@ -187,13 +187,13 @@ class GuzzleService implements HttpServiceInterface
      * Create a query string from an array of parameters.
      *
      * @param array $params Parameters (either an associative key=>value array,
-     *                      or a regular array of preformatted key=value strings)
+     * or a regular array of preformatted key=value strings)
      *
      * @return string
      */
     protected function createQueryString(array $params = []): string
     {
-        return array_is_list($params)
+        return !array_is_list($params)
             ? http_build_query($params)
             : implode('&', $params);
     }
