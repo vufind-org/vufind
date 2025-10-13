@@ -528,6 +528,25 @@ class UpgradeController extends AbstractBase
     }
 
     /**
+     * Check for missing metadata in the resource table.
+     *
+     * @return mixed
+     * @throws Exception
+     */
+    public function fixmetadataAction()
+    {
+        // Check for problems:
+        $resourceService = $this->getDbService(ResourceServiceInterface::class);
+        $problems = $resourceService->findMetadataToUpdate(null, 1);
+
+        // No problems or form submitted?  We're done here!
+        if (count($problems) == 0 || $this->formWasSubmitted()) {
+            $this->cookie->metadataOkay = true;
+            return $this->forwardTo('Upgrade', 'Home');
+        }
+    }
+
+    /**
      * Make sure we only skip the actions the user wants us to.
      *
      * @return void
@@ -619,6 +638,13 @@ class UpgradeController extends AbstractBase
         // Now make sure the database is up to date:
         if (!isset($this->cookie->databaseOkay) || !$this->cookie->databaseOkay) {
             return $this->redirect()->toRoute('upgrade-fixdatabase');
+        }
+
+        // Check for missing metadata in the resource table; note that we do a
+        // redirect rather than a forward here so that a submit button clicked
+        // in the database action doesn't cause the metadata action to also submit!
+        if (!isset($this->cookie->metadataOkay) || !$this->cookie->metadataOkay) {
+            return $this->redirect()->toRoute('upgrade-fixmetadata');
         }
 
         // We're finally done -- display any warnings that we collected during

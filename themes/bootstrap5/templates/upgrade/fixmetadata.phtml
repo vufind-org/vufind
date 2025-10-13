@@ -1,0 +1,18 @@
+<?php
+    // Set up breadcrumbs:
+    $this->breadcrumbs()->set($this->translate('Upgrade'), $this->url('upgrade-home'))
+      ->add($this->translate('Upgrade VuFind'), active: true);
+?>
+<?=$this->component('page-title', ['title' => $this->translate('Upgrade VuFind')]);?>
+<?=$this->flashmessages()?>
+
+<p>
+  Some of the items in your resource table appear to be missing metadata. It is recommended to run the
+  <strong>util/update_resource_metadata</strong> utility to update the resources. It can be a time-consuming process,
+  but it will improve the user experience by allowing proper sorting of favorites and tagged records, as well as
+  displaying basic metadata for records that are not available in the search index.
+</p>
+
+<form method="post" action="<?=$this->url('upgrade-fixmetadata')?>">
+  <input class="btn btn-primary" type="submit" name="submitButton" value="<?=$this->transEscAttr('Next') ?>"><br><br>
+</form>
