@@ -62,7 +62,8 @@ class ResourcePopulatorTest extends \PHPUnit\Framework\TestCase
             [['©1999'], 1999],
             [['Ⓟ1999'], 1999],
             [['copyright 1999'], 1999],
-            [['copyright 1999-2000'], 1999],
+            [['2020-2025'], 2025],
+            [['copyright 2020-2025'], 2025],
         ];
     }
 
