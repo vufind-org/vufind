@@ -133,12 +133,9 @@ class UpdateResourceMetadataCommand extends Command
         $lastId = null;
         $output->writeln('<info>Updating resource metadata</info>');
         while ($resources = $this->resourceService->findMetadataToUpdate($lastId, $batch, $minAge, $backend)) {
-            $recordIds = [];
-            array_walk(
-                $resources,
-                function ($resource) use (&$recordIds) {
-                    $recordIds[] = ['id' => $resource->getRecordId(), 'source' => $resource->getSource()];
-                }
+            $recordIds = array_map(
+                fn ($resource) => ['id' => $resource->getRecordId(), 'source' => $resource->getSource()],
+                $resources
             );
             $records = $this->recordLoader->loadBatch($recordIds, true);
             foreach ($resources as $i => $resource) {
