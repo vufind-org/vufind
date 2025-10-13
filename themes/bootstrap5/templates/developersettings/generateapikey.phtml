@@ -8,6 +8,9 @@
 <?= $this->flashmessages() ?>
 
 <form method="POST" action="<?= $this->url('developersettings-generateapikey') ?>" name="generateAPIKey" title="<?= $this->transEscAttr('Developer::api_key_generate') ?>" data-lightbox-onclose="VuFind.refreshPage">
-  <?= $this->component('input-text', ['name' => 'title', 'label' => $this->translate('Identifier')]); ?>
+  <div class="form-group">
+    <label class="form-label" for="api-key-title"><?=$this->transEsc('Identifier')?>:</label>
+    <input type="text" name="title" id="api-key-title" class="form-control">
+  </div>
   <input class="btn btn-primary" type="submit" name="submitButton" value="<?= $this->transEscAttr('Developer::api_key_generate') ?>">
 </form>
