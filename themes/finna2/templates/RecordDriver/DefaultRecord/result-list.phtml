@@ -152,6 +152,10 @@
           <?php endif; ?>
         <?php endif; ?>
 
+        <?php if (($edition = $this->driver->tryMethod('getEdition'))): ?>
+          <div class="result-edition"><?=$this->escapeHtml($edition)?></div>
+        <?php endif; ?>
+
         <?php if ($this->driver->tryMethod('getWorkKeys') && $this->searchOptions($this->driver->getSourceIdentifier())->getVersionsAction()): ?>
           <div class="record-versions ajax hidden-print"></div>
         <?php endif; ?>
