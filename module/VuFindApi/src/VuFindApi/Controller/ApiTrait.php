@@ -235,7 +235,7 @@ trait ApiTrait
     protected function initApiKeySettings(array $settings): void
     {
         $this->developerSettingsService = $this->getService(DeveloperSettingsService::class);
-        $this->apiKeyHeaderField = $settings['header_field'] ?? 'X-API-KEY';
+        $this->apiKeyHeaderField = $settings['header_field'] ?? $this->apiKeyHeaderField;
     }
 
     /**
