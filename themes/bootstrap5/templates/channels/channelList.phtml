@@ -3,6 +3,7 @@
   $this->jsTranslations()->addStrings([
     'channel_browse' => 'channel_browse',
     'channel_expand' => 'channel_expand',
+    'channel_load_more' => 'channel_load_more',
     'channel_search' => 'channel_search',
     'nohit_heading' => 'nohit_heading',
     'View Record' => 'View Record',
@@ -111,7 +112,6 @@
               src="<?=$this->escapeHtmlAttr($item['thumbnail'] ? $item['thumbnail'] : $this->url('cover-unavailable'))?>"
               alt="" loading="lazy"
             >
-<<<<<<< HEAD
             <a
               class="channel-quick-look-btn"
               href="<?=$this->escapeHtmlAttr($url)?>"
@@ -119,11 +119,6 @@
             >
               <?=$this->transEsc('channel_quick_look') ?>
             </a>
-||||||| 4b92e84a43
-            <button class="channel-quick-look-btn"><?=$this->transEsc('Quick Look') ?></button>
-=======
-            <button class="channel-quick-look-btn" aria-label="<?=$this->transEsc('channel_quick_look_extended', ['%%title%%' => $item['title']])?>"><?=$this->transEsc('channel_quick_look') ?></button>
->>>>>>> 20301ddf9cc8287dc5bfb79c848b9392fc24ab1b
           </div>
 
           <a

@@ -124,6 +124,16 @@ VuFind.register("channels", function Channels() {
   }
 
   /**
+   * Helper function to enable the Load more items button
+   * @param {HTMLButtonElement} loadMoreBtn The button
+   * @returns {void}
+   */
+  function enableLoadMoreBtn(loadMoreBtn) {
+    loadMoreBtn.classList.remove("disabled");
+    loadMoreBtn.removeAttribute("aria-disabled");
+  }
+
+  /**
    * Helper function to disable the Load more items button
    * @param {HTMLButtonElement} loadMoreBtn The button
    * @returns {void}
@@ -156,6 +166,9 @@ VuFind.register("channels", function Channels() {
 
     // AJAX load more records
     const url = new URL(decodeURIComponent(btn.dataset.href), location.origin);
+    btn.textContent = VuFind.translate("loading_ellipsis");
+    disableLoadMoreBtn(btn);
+
     fetch(url.toString() + "&layout=lightbox")
       .then((res) => res.text())
       .then(function loadMoreItemsParseHTML(resHTML) {
@@ -187,6 +200,8 @@ VuFind.register("channels", function Channels() {
     // Set button to next, next page
     url.searchParams.set("page", Number(url.searchParams.get("page")) + 1);
     btn.setAttribute("data-href", url.toString());
+    btn.textContent = VuFind.translate("channel_load_more");
+    enableLoadMoreBtn(btn);
   }
 
   /**
