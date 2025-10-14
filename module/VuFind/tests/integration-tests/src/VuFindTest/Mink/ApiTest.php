@@ -122,6 +122,7 @@ final class ApiTest extends \VuFindTest\Integration\MinkTestCase
                     'default.Developer' => [
                         'permission' => 'feature.Developer',
                         'role' => 'loggedin',
+                        'assertion' => 'VerifiedEmail',
                     ],
                     'enable-record-api' => [
                         'permission' => 'access.api.Record',
@@ -209,6 +210,27 @@ final class ApiTest extends \VuFindTest\Integration\MinkTestCase
         $session->visit($this->getVuFindUrl());
         $page = $session->getPage();
         $this->createAndLoginUser($page);
+
+        // Go to profile page:
+        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $this->waitForPageLoad($page);
+
+        $this->findAndAssertLink($page, 'Email Verification');
+        $this->clickCss($page, '.alert-info div a');
+        $this->waitForPageLoad($page);
+
+        // Extract the link from the provided message:
+        $email = $this->getLoggedEmail();
+        preg_match(
+            '/You can verify your email address with this link: <(http.*)>/',
+            $email->getBody()->getBody(),
+            $matches
+        );
+        $verifyLink = $matches[1];
+
+        // Follow the verification link:
+        $session->visit($verifyLink);
+        $this->waitForPageLoad($page);
 
         // Go to profile page:
         $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
