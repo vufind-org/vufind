@@ -46,16 +46,6 @@ interface ApiInterface
     public const STATUS_UNAUTHORIZED = 'UNAUTHORIZED';
 
     /**
-     * Constants for mapping setting values for API key mode.
-     * 'disabled', 'enabled', 'enforced'.
-     *
-     * @var string
-     */
-    public const API_KEYS_DISABLED = 'disabled',
-        API_KEYS_ENABLED = 'enabled',
-        API_KEYS_ENFORCED = 'enforced';
-
-    /**
      * Get API specification JSON fragment for services provided by the
      * controller
      *

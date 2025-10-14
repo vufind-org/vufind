@@ -175,7 +175,15 @@ class DeveloperSettingsServiceTest extends \PHPUnit\Framework\TestCase
             [],
             $user,
             [
-                'error' => 'DeveloperSettingsService: Salt missing',
+                'error' => 'DeveloperSettingsService: Invalid token_salt provided',
+            ],
+        ];
+        yield 'salt is under 10 characters long' => [
+            ['token_salt' => '123456'],
+            [],
+            $user,
+            [
+                'error' => 'DeveloperSettingsService: Invalid token_salt provided',
             ],
         ];
     }

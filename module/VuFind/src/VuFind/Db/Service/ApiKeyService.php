@@ -124,7 +124,6 @@ class ApiKeyService extends AbstractDbService implements
 
     /**
      * Delete expired API keys. Allows setting a limit so that rows can be deleted in small batches.
-     * API keys only "expire" if they are not used in a certain amount of time.
      *
      * @param DateTime $dateLimit Date threshold of an "expired" record.
      * @param ?int     $limit     Maximum number of rows to delete or null for no limit.
@@ -133,22 +132,6 @@ class ApiKeyService extends AbstractDbService implements
      */
     public function deleteExpired(DateTime $dateLimit, ?int $limit = null): int
     {
-        $dql = 'SELECT ak '
-            . 'FROM ' . ApiKeyEntityInterface::class . ' ak '
-            . 'WHERE ak.lastUsed < :dateLimit';
-        $query = $this->entityManager->createQuery($dql);
-        if ($limit) {
-            $query->setMaxResults($limit);
-        }
-        $query->setParameters(compact('dateLimit'));
-        $result = $query->getResult();
-        if ($result) {
-            $queryBuilder = $this->entityManager->createQueryBuilder();
-            $queryBuilder->delete(ApiKeyEntityInterface::class, 'ak')
-                ->where('ak IN (:apiKeys)')
-                ->setParameter('apiKeys', $result);
-            return $queryBuilder->getQuery()->execute();
-        }
         return 0;
     }
 }

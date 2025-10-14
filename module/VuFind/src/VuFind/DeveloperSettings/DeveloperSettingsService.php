@@ -35,6 +35,7 @@ use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\ApiKeyServiceInterface;
 
 use function count;
+use function strlen;
 
 /**
  * Service for managing API keys
@@ -84,8 +85,8 @@ class DeveloperSettingsService
     protected function createNewToken(UserEntityInterface $user): string
     {
         $salt = $this->apiKeySettings['token_salt'] ?? null;
-        if (!$salt) {
-            throw new \Exception('DeveloperSettingsService: Salt missing');
+        if (!$salt || strlen($salt) < 10) {
+            throw new \Exception('DeveloperSettingsService: Invalid token_salt provided');
         }
         $valuesForToken = [
             $user->getEmail(),
