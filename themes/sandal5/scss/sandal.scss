@@ -118,7 +118,7 @@ header {
   }
   .btn-link {
     color: $white;
-    &:hover {
+    &:hover, &:focus-visible {
       background: rgba(0, 0, 0, .1);
     }
   }
