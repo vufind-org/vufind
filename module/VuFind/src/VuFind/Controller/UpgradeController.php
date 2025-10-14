@@ -355,6 +355,12 @@ class UpgradeController extends AbstractBase
                 }
             }
 
+            // Clear Doctrine's metadata cache to ensure it's refreshed after any database changes:
+            $entityManager = $this->getService('doctrine.entitymanager.orm_vufind');
+            if ($cacheDriver = $entityManager->getConfiguration()->getMetadataCache()) {
+                $cacheDriver->clear();
+            }
+
             // If we have SQL to show, stop at this point to allow the changes to be made before progressing any
             // further:
             if (!empty($this->session->sql)) {
