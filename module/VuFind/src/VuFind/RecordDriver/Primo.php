@@ -239,7 +239,12 @@ class Primo extends DefaultRecord
             $params['issn'] = $issn;
         }
 
-        if (empty($params['isbn']) && empty($params['issn'])) {
+        $formats = $this->getFormats();
+        if (!empty($formats)) {
+            $params['contenttype'] = $formats[0];
+        }
+
+        if (empty($params['isn']) && empty($params['issn']) && empty($params['contenttype'])) {
             $params['contenttype'] = 'JournalArticle';
         }
 
