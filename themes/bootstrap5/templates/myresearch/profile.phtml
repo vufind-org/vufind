@@ -173,7 +173,7 @@
 
   <?php if ($this->developerSettings()->isEnabled()): ?>
     <?php if ($this->permission()->allowDisplay('feature.Developer')): ?>
-      <a href="<?=$this->url('developersettings-displaysettings');?>"><?=$this->icon('options') . ' ' . $this->transEsc('Developer::settings');?></a>
+      <a class="btn btn-link" href="<?=$this->url('developersettings-displaysettings');?>"><?=$this->icon('options') . ' ' . $this->transEsc('Developer::settings');?></a>
     <?php elseif ($block = $this->permission()->getAlternateContent('feature.Developer')): ?>
       <?=$block?>
     <?php endif; ?>

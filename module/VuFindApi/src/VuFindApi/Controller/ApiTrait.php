@@ -246,7 +246,8 @@ trait ApiTrait
     protected function checkRequestForApiKey(): bool
     {
         $tokenField = $this->getRequest()->getHeader($this->apiKeyHeaderField);
-        return $this->developerSettingsService->isTokenValid($tokenField?->getFieldValue());
+        $token = is_callable([$tokenField, 'getFieldValue']) ? $tokenField->getFieldValue() : null;
+        return $this->developerSettingsService->isTokenValid($token);
     }
 
     /**

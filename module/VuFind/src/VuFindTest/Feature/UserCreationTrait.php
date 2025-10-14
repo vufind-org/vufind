@@ -162,4 +162,40 @@ trait UserCreationTrait
         $button = $this->findCss($page, $prefix . 'input.btn.btn-primary');
         $button->click();
     }
+
+    /**
+     * Function to press the login button and create a default user
+     *
+     * @return void
+     */
+    protected function createAndLoginUser($page): void
+    {
+        $this->clickCss($page, '#loginOptions a');
+        $this->clickCss($page, '.modal-body .createAccountLink');
+        $this->fillInAccountForm($page);
+
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
+        $this->waitForPageLoad($page);
+
+    }
+
+    /**
+     * Function to verify email for user
+     *
+     * @return void
+     */
+    protected function verifyUserEmail($session): void
+    {
+        // Extract the link from the provided message:
+        $email = $this->getLoggedEmail();
+        preg_match(
+            '/You can verify your email address with this link: <(http.*)>/',
+            $email->getBody()->getBody(),
+            $matches
+        );
+        $verifyLink = $matches[1];
+
+        // Follow the verification link:
+        $session->visit($verifyLink);
+    }
 }

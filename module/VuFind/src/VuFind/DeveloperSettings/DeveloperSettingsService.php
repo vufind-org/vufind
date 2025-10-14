@@ -88,7 +88,7 @@ class DeveloperSettingsService
             throw new \Exception('DeveloperSettingsService: Salt missing');
         }
         $valuesForToken = [
-            $user->getEmailVerified()->format('Y-m-d'),
+            $user->getEmail(),
             $user->getFirstname(),
             $user->getLastname(),
             time(),
