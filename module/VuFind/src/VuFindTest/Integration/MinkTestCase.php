@@ -1230,6 +1230,14 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             return;
         }
 
+        $page ??= $this->session->getPage();
+        // Don't validate Whoops error pages:
+        if (str_contains($page->getOuterHtml(), '<div class="Whoops container')) {
+            return;
+        }
+
+        $this->waitForPageLoad($page);
+
         $http = new \VuFindHttp\HttpService();
         $client = $http->createClient(
             $nuAddress,
@@ -1241,8 +1249,6 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
                 'out' => 'json',
             ]
         );
-        $page ??= $this->session->getPage();
-        $this->waitForPageLoad($page);
         $client->setFileUpload(
             $this->session->getCurrentUrl(),
             'file',
