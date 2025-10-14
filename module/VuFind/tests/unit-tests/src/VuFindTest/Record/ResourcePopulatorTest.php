@@ -55,6 +55,7 @@ class ResourcePopulatorTest extends \PHPUnit\Framework\TestCase
     {
         return [
             [['1999'], 1999],
+            [['1999?'], 1999],
             [['2025-10-10'], 2025],
             [['-100'], -100],
             [['0'], 0],
@@ -66,6 +67,7 @@ class ResourcePopulatorTest extends \PHPUnit\Framework\TestCase
             [['2020 - 2025'], 2025],
             [['copyright 2020-2025'], 2025],
             [['copyright 2020 -2025'], 2025],
+            [['copyright 2020?-2025?'], 2025],
         ];
     }
 
