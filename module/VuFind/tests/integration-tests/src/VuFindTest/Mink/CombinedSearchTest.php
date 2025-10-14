@@ -49,6 +49,9 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function getCombinedIniOverrides(): array
     {
+        // Include 2 valid combined handlers, and one invalid one
+        // to ensure that the exception handling correctly filters
+        // it out from the final results.
         return [
             'Solr:one' => [
                 'label' => 'Solr One',
