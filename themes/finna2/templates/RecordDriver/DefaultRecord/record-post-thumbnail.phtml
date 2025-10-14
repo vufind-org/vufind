@@ -12,16 +12,3 @@
     </div>
   </div>
 <?php endif; ?>
-<?php
-  $script = <<<JS
-      $('.rating-link').on('click', function () {
-        $('a.usercomments').click();
-        $('html, body').animate(
-          {
-            scrollTop: $('.record-tabs').offset().top
-          }, 500
-        );
-      });
-      JS;
-  echo $this->assetManager()->outputInlineScriptString($script);
-?>
