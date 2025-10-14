@@ -166,6 +166,8 @@ trait UserCreationTrait
     /**
      * Function to press the login button and create a default user
      *
+     * @param Element $page Page element.
+     *
      * @return void
      */
     protected function createAndLoginUser($page): void
@@ -176,26 +178,5 @@ trait UserCreationTrait
 
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->waitForPageLoad($page);
-
-    }
-
-    /**
-     * Function to verify email for user
-     *
-     * @return void
-     */
-    protected function verifyUserEmail($session): void
-    {
-        // Extract the link from the provided message:
-        $email = $this->getLoggedEmail();
-        preg_match(
-            '/You can verify your email address with this link: <(http.*)>/',
-            $email->getBody()->getBody(),
-            $matches
-        );
-        $verifyLink = $matches[1];
-
-        // Follow the verification link:
-        $session->visit($verifyLink);
     }
 }

@@ -36,6 +36,8 @@ use VuFind\Db\Service\UserServiceInterface;
 use VuFind\DeveloperSettings\DeveloperSettingsService;
 use VuFind\DeveloperSettings\DeveloperSettingsStatus;
 
+use function strlen;
+
 /**
  * Mink test class for the VuFind APIs.
  *
@@ -45,9 +47,10 @@ use VuFind\DeveloperSettings\DeveloperSettingsStatus;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class ApiTest extends \VuFindTest\Integration\MinkTestCase
+final class ApiTest extends \VuFindTest\Integration\MinkTestCase
 {
     use \VuFindTest\Feature\LiveDatabaseTrait;
+    use \VuFindTest\Feature\LiveDetectionTrait;
     use \VuFindTest\Feature\UserCreationTrait;
     use \VuFindTest\Feature\DemoDriverTestTrait;
     use \VuFindTest\Feature\EmailTrait;
@@ -221,12 +224,10 @@ class ApiTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '#api-key-title', 'test token');
         $this->clickCss($page, '.btn.btn-primary[name="submitButton"]');
         $text = $this->findCssAndGetText($page, '.alert-success');
-        $testToken = trim(substr($text, strpos($text, ":") + 1));
-        $this->assertTrue(
-            str_starts_with(
-                $text,
-                'API key was generated successfully. Key will be displayed only once, so save it now:'
-            )
+        $testToken = trim(substr($text, strpos($text, ':') + 1));
+        $this->assertStringStartsWith(
+            'API key was generated successfully. Key will be displayed only once, so save it now:',
+            $text
         );
         $this->assertTrue(strlen($testToken) > 0);
 

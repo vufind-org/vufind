@@ -35,6 +35,8 @@ use Laminas\Http\Header\ContentType;
 use Laminas\Mvc\Exception\DomainException;
 use VuFind\DeveloperSettings\DeveloperSettingsService;
 
+use function is_callable;
+
 /**
  * Additional functionality for API controllers.
  *

@@ -48,8 +48,6 @@ use VuFind\DeveloperSettings\DeveloperSettingsServiceFactory;
 use VuFind\Favorites\FavoritesService;
 use VuFind\Favorites\FavoritesServiceFactory;
 use VuFind\Record\ResourcePopulator;
-use VuFind\View\Helper\Root\DeveloperSettings;
-use VuFind\View\Helper\Root\DeveloperSettingsFactory;
 use VuFindTest\Container\MockContainer;
 
 /**
