@@ -1,2 +1,7 @@
 <h3><?=$this->transEsc('Developer::settings')?></h3>
-<div class="alert alert-info"><?=$this->transEsc('Developer::verify_email_address')?></div>
+<div class="alert alert-info">
+    <?=$this->transEsc('Developer::verify_email_address')?>
+    <?php if ($isLoggedin = $this->auth()->getUserObject()): ?>
+        <div><a href="<?=$this->url('myresearch-emailnotverified', [], ['query' => ['reverify' => 'true']])?>"><?=$this->transEsc('verification_email_subject')?></a></div>
+    <?php endif; ?>
+</div>
