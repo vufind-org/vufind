@@ -33,9 +33,10 @@ namespace VuFindTest\Controller;
 
 use Generator;
 use Laminas\Http\Header\HeaderInterface;
-use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Stdlib\Parameters;
 use PHPUnit\Framework\MockObject\MockObject;
+use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Db\Service\OaiResumptionServiceInterface;
 use VuFind\Db\Service\PluginManager as DbPluginManager;
 use VuFind\DeveloperSettings\DeveloperSettingsService;
@@ -48,6 +49,7 @@ use VuFind\Search\Solr\Options;
 use VuFindApi\Controller\SearchApiController;
 use VuFindApi\Formatter\FacetFormatter;
 use VuFindApi\Formatter\RecordFormatter;
+use VuFindTest\Container\MockContainer;
 
 /**
  * Search api controller tests
@@ -219,26 +221,39 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
         $dbPluginManager = $this->getMockBuilder(DbPluginManager::class)->disableOriginalConstructor()
             ->onlyMethods(['get'])->getMock();
         $dbPluginManager->expects($this->any())->method('get')->willReturnMap($dbServiceMap);
-        $controller = $this->getMockBuilder(SearchApiController::class)->onlyMethods([
-                'getRequest',
-                'disableSessionWrites',
-                'determineOutputMode',
-                'isAccessDenied',
-                'doCursorSearch',
-                'doDefaultSearch',
-                'getConfig',
-                'getConfigArray',
-                'getService',
-                'setResumptionService',
-                'fromPostAndQuery',
-            ])->disableOriginalConstructor()->getMock();
-        $controller->expects($this->any())->method('getService')->willReturnMap([
-            [SearchPluginManager::class, $optionsPluginManager],
-            [Loader::class, $recordLoader],
-            [DeveloperSettingsService::class, $developerSettingsService],
-            [DbPluginManager::class, $dbPluginManager],
+        $facetFormatter = $this->createMock(FacetFormatter::class);
+        $recordFormatter = $this->createMock(RecordFormatter::class);
+        $recordFormatter->expects($this->any())->method('getRecordFields')->willReturn([]);
+        $recordFormatter->expects($this->any())->method('format')->willReturn([
+            [
+                'id' => 'record.1111',
+                'title' => 'hai!',
+            ],
         ]);
-        $controller->expects($this->any())->method('getConfigArray')->willReturn($config);
+        $configManager = $this->getMockBuilder(ConfigManager::class)->disableOriginalConstructor()->getMock();
+        $configManager->expects($this->any())->method('getConfigArray')->with('config')->willReturn($config);
+
+        $container = new MockContainer($this);
+        $container->set(SearchPluginManager::class, $optionsPluginManager);
+        $container->set(Loader::class, $recordLoader);
+        $container->set(DeveloperSettingsService::class, $developerSettingsService);
+        $container->set(DbPluginManager::class, $dbPluginManager);
+        $container->set(ConfigManagerInterface::class, $configManager);
+        $controller = $this->getMockBuilder(SearchApiController::class)
+            ->onlyMethods(
+                [
+                    'getRequest',
+                    'disableSessionWrites',
+                    'determineOutputMode',
+                    'isAccessDenied',
+                    'doCursorSearch',
+                    'doDefaultSearch',
+                    'getConfig',
+                    'setResumptionService',
+                    'fromPostAndQuery',
+                ]
+            )->setConstructorArgs([$container, $recordFormatter, $facetFormatter])
+            ->getMock();
         $controller->expects($this->any())->method('isAccessDenied')->willReturn(false);
         $controller->expects($this->any())->method('fromPostAndQuery')->willReturn($paramsArray);
 
@@ -251,21 +266,6 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
             ],
         ];
         $controller->expects($this->any())->method('doDefaultSearch')->willReturn($searchResponse);
-        $facetFormatter = $this->getMockBuilder(FacetFormatter::class)
-            ->disableOriginalConstructor()->getMock();
-        $recordFormatter = $this->createMock(RecordFormatter::class);
-        $recordFormatter->expects($this->any())->method('getRecordFields')->willReturn([]);
-        $recordFormatter->expects($this->any())->method('format')->willReturn([
-            [
-                'id' => 'record.1111',
-                'title' => 'hai!',
-            ],
-        ]);
-        $controller->__construct(
-            $this->createMock(ServiceLocatorInterface::class),
-            $recordFormatter,
-            $facetFormatter
-        );
         return $controller;
     }
 

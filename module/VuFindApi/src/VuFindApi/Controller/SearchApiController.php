@@ -171,7 +171,8 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements
                 $this->$key = $settings[$key];
             }
         }
-        $this->initApiKeySettings($this->getConfigArray('config')['API_Keys'] ?? []);
+        $config = $this->getConfigArray('config')['API_Keys'] ?? [];
+        $this->initApiKeySettings($config);
     }
 
     /**
