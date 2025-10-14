@@ -30,6 +30,7 @@
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
+use VuFind\DeveloperSettings\DeveloperSettingsStatus;
 
 /**
  * Mink test class for the VuFind APIs.
@@ -45,13 +46,17 @@ class ApiTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Make a record retrieval API call and return the resulting page object.
      *
-     * @param string $id Record ID to retrieve.
+     * @param string  $id          Record    ID to retrieve.
+     * @param ?string $apiKeyToken API key token.
      *
      * @return Element
      */
-    protected function makeRecordApiCall($id = 'testbug2'): Element
+    protected function makeRecordApiCall($id = 'testbug2', ?string $apiKeyToken = null): Element
     {
         $session = $this->getMinkSession();
+        if ($apiKeyToken) {
+            $session->setApiKeyToken($apiKeyToken);
+        }
         $session->visit($this->getVuFindUrl() . '/api');
         $page = $session->getPage();
         $this->clickCss($page, '#operations-Record-get_record button');
@@ -100,5 +105,77 @@ class ApiTest extends \VuFindTest\Integration\MinkTestCase
             '200',
             $this->findCssAndGetText($page, '.live-responses-table .response td.response-col_status')
         );
+    }
+
+    /**
+     * Test API keys disabled
+     *
+     * @return void
+     */
+    public function testApiKeys(): void
+    {
+        $testValues = [
+            [
+                'mode' => DeveloperSettingsStatus::DISABLED->value,
+                'token' => '',
+                'status' => 200,
+            ],
+            [
+                'mode' => DeveloperSettingsStatus::OPTIONAL->value,
+                'token' => '',
+                'status' => 200,
+            ],
+            [
+                'mode' => DeveloperSettingsStatus::ENFORCED->value,
+                'token' => '',
+                'status' => 401,
+            ],
+            [
+                'mode' => DeveloperSettingsStatus::OPTIONAL->value,
+                'token' => 'set_token',
+                'status' => 200,
+            ],
+            [
+                'mode' => DeveloperSettingsStatus::OPTIONAL->value,
+                'token' => 'missing_token',
+                'status' => 401,
+            ],
+            [
+                'mode' => DeveloperSettingsStatus::OPTIONAL->value,
+                'token' => 'revoked_token',
+                'status' => 401,
+            ],
+            [
+                'mode' => DeveloperSettingsStatus::ENFORCED->value,
+                'token' => 'set_token',
+                'status' => 200,
+            ],
+            [
+                'mode' => DeveloperSettingsStatus::ENFORCED->value,
+                'token' => 'missing_token',
+                'status' => 401,
+            ],
+            [
+                'mode' => DeveloperSettingsStatus::ENFORCED->value,
+                'token' => 'revoked_token',
+                'status' => 401,
+            ],
+        ];
+        foreach ($testValues as $value) {
+            $this->changeConfigs(
+                [
+                    'config' => [
+                        'API_Keys' => [
+                            'mode' => $value['mode'],
+                        ],
+                    ],
+                ]
+            );
+            $page = $this->makeRecordApiCall(apiKeyToken: $value['token']);
+            $this->assertEquals(
+                $value['status'],
+                $this->findCssAndGetText($page, '.live-responses-table .response td.response-col_status')
+            );
+        }
     }
 }

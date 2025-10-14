@@ -91,7 +91,7 @@ class DeveloperSettingsService
             $user->getEmailVerified()->format('Y-m-d'),
             $user->getFirstname(),
             $user->getLastname(),
-            (string)strtotime('now'),
+            time(),
             $salt,
         ];
         return hash('sha256', implode('|', $valuesForToken));

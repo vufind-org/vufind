@@ -112,10 +112,7 @@ class DeveloperSettingsController extends AbstractBase
         }
         if ($this->fromPostAndQuery('confirm') === '1') {
             $id = $this->fromPostAndQuery('id');
-            if (
-                false !== $id
-                && $developerSettingsService->deleteApiKeyForUser($user, $id)
-            ) {
+            if ($id && $developerSettingsService->deleteApiKeyForUser($user, $id)) {
                 $this->flashMessenger()->addSuccessMessage('Developer::api_key_deletion_success');
             } else {
                 $this->flashMessenger()->addErrorMessage('An error has occurred');

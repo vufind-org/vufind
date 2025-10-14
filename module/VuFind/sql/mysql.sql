@@ -423,7 +423,7 @@ CREATE TABLE `access_token` (
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE IF NOT EXISTS `api_key` (
+CREATE TABLE `api_key` (
   `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
   `user_id` int(11) DEFAULT NULL,
   `title` varchar(255) NOT NULL,
@@ -434,8 +434,6 @@ CREATE TABLE IF NOT EXISTS `api_key` (
   PRIMARY KEY (`id`),
   KEY `api_key_user_id_idx` (`user_id`),
   KEY `api_key_token_idx` (`token`),
-  KEY `api_key_created_idx` (`created`),
-  KEY `api_key_revoked_idx` (`revoked`),
   KEY `api_key_last_used_idx` (`last_used`),
   CONSTRAINT `api_key_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
