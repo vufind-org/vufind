@@ -316,6 +316,7 @@ class UpgradeController extends AbstractBase
      */
     public function applyDatabaseMigrations(): ?ViewModel
     {
+        $this->clearDoctrineMetadataCache();
         $migrationManager = $this->getService(MigrationManager::class);
         $migrations = $migrationManager->getMigrations($this->cookie->oldVersion);
         $failedMigrations = $migrationManager->getFailedMigrations();
@@ -337,6 +338,7 @@ class UpgradeController extends AbstractBase
         } else {
             $this->session->sql = $migrationManager->applyMigrations($migrations, null);
         }
+        $this->clearDoctrineMetadataCache();
         return null;
     }
 
@@ -353,12 +355,6 @@ class UpgradeController extends AbstractBase
                 if ($result = $this->applyDatabaseMigrations()) {
                     return $result;
                 }
-            }
-
-            // Clear Doctrine's metadata cache to ensure it's refreshed after any database changes:
-            $entityManager = $this->getService('doctrine.entitymanager.orm_vufind');
-            if ($cacheDriver = $entityManager->getConfiguration()->getMetadataCache()) {
-                $cacheDriver->clear();
             }
 
             // If we have SQL to show, stop at this point to allow the changes to be made before progressing any
@@ -542,6 +538,7 @@ class UpgradeController extends AbstractBase
     public function fixmetadataAction()
     {
         // Check for problems:
+        $this->clearDoctrineMetadataCache();
         $resourceService = $this->getDbService(ResourceServiceInterface::class);
         $problems = $resourceService->findMetadataToUpdate(null, 1);
 
@@ -781,5 +778,18 @@ class UpgradeController extends AbstractBase
         return $this->createViewModel(
             compact('newAlgorithm', 'exampleKey', 'blowfishIsWorking')
         );
+    }
+
+    /**
+     * Clear Doctrine's metadata cache to ensure the schema information is up to date.
+     *
+     * @return void
+     */
+    protected function clearDoctrineMetadataCache(): void
+    {
+        $entityManager = $this->getService('doctrine.entitymanager.orm_vufind');
+        if ($cacheDriver = $entityManager->getConfiguration()->getMetadataCache()) {
+            $cacheDriver->clear();
+        }
     }
 }
