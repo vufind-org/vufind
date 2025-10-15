@@ -68,6 +68,9 @@ class CitationFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        return new $requestedName($container->get(\VuFind\Date\Converter::class));
+        return new $requestedName(
+            $container->get(\VuFind\Date\Converter::class),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config')
+        );
     }
 }

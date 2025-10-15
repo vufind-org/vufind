@@ -18,6 +18,32 @@
             "wikimedia/composer-merge-plugin": true
         }
     },
+    "repositories": [
+        {
+            "type": "package",
+            "package": {
+                "name": "citation-style-language/locales",
+                "version":"0.0.999",
+                "source": {
+                    "type": "git",
+                    "url": "https://github.com/citation-style-language/locales.git",
+                    "reference": "master"
+                }
+            }
+        },
+        {
+            "type": "package",
+            "package": {
+                "name": "citation-style-language/styles",
+                "version":"0.0.999",
+                "source": {
+                    "type": "git",
+                    "url": "https://github.com/citation-style-language/styles.git",
+                    "reference": "master"
+                }
+            }
+        }
+    ],
     "autoload": {
         "psr-4": {
             "VuFind\\": ["module/VuFind/src/VuFind", "module/VuFind"],
