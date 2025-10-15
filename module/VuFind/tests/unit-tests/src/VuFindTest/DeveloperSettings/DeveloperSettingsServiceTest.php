@@ -236,11 +236,11 @@ class DeveloperSettingsServiceTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get testIsTokenValid data
+     * Get testIsApiKeyAllowed data
      *
      * @return Generator
      */
-    public static function getTestIsTokenValidData(): Generator
+    public static function getTestIsApiKeyAllowedData(): Generator
     {
         yield 'API keys disabled' => [
             null,
@@ -340,14 +340,14 @@ class DeveloperSettingsServiceTest extends \PHPUnit\Framework\TestCase
      * @param ?array  $apiKey   Methods and returns for API key entity
      * @param bool    $expected Expected value
      *
-     * @dataProvider getTestIsTokenValidData
+     * @dataProvider getTestIsApiKeyAllowedData
      * @return       void
      */
-    public function testIsTokenValid(?string $token, array $config, ?array $apiKey, bool $expected): void
+    public function testIsApiKeyAllowed(?string $token, array $config, ?array $apiKey, bool $expected): void
     {
         $apiKey = $apiKey ? $this->getMockEntity(ApiKeyEntityInterface::class, $apiKey) : null;
         $apiKeyService = $this->getMockEntity(ApiKeyServiceInterface::class, ['getByToken' => $apiKey]);
-        $result = $this->getService($config, $apiKeyService)->isTokenValid($token);
+        $result = $this->getService($config, $apiKeyService)->isApiKeyAllowed($token);
         $this->assertEquals($expected, $result);
     }
 
@@ -374,7 +374,7 @@ class DeveloperSettingsServiceTest extends \PHPUnit\Framework\TestCase
                 );
             }
         );
-        $result = $this->getService($config, $apiKeyService)->isTokenValid('test');
+        $result = $this->getService($config, $apiKeyService)->isApiKeyAllowed('test');
         $this->assertTrue($result);
     }
 }

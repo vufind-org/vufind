@@ -249,7 +249,7 @@ trait ApiTrait
     {
         $tokenField = $this->getRequest()->getHeader($this->apiKeyHeaderField);
         $token = is_callable([$tokenField, 'getFieldValue']) ? $tokenField->getFieldValue() : null;
-        return $this->developerSettingsService->isTokenValid($token);
+        return $this->developerSettingsService->isApiKeyAllowed($token);
     }
 
     /**

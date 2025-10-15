@@ -200,16 +200,18 @@ class DeveloperSettingsService
     }
 
     /**
-     * Check if the provided token is valid.
-     * Disabled mode returns true for any token.
-     * Optional mode returns true for null token or for tokens which are for valid API keys.
-     * Enforced mode returns true for tokens which are for valid API keys.
+     * Get API key with provided token and check if the API key is allowed.
+     * API key is not allowed if it has been marked as revoked.
+     * 
+     * Disabled mode returns always true for any token.
+     * Optional mode returns true for null token or for tokens which are for allowed API keys.
+     * Enforced mode returns true only for tokens which are for allowed API keys.
      *
      * @param ?string $token Token to search for API key
      *
      * @return bool
      */
-    public function isTokenValid(?string $token): bool
+    public function isApiKeyAllowed(?string $token): bool
     {
         if (!$this->apiKeysEnabled()) {
             return true;
@@ -219,6 +221,9 @@ class DeveloperSettingsService
             return !$apiKey->isRevoked();
         }
         // The token counts as valid if user did not provide one and mode is optional.
-        return null === $token && $this->apiKeySettings['mode'] === DeveloperSettingsStatus::OPTIONAL->value;
+        if ($this->apiKeySettings['mode'] === DeveloperSettingsStatus::OPTIONAL->value) {
+            return null === $token;
+        }
+        return false;
     }
 }
