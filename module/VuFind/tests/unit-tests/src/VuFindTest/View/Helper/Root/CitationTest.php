@@ -54,6 +54,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
         // @codingStandardsIgnoreStart
         [
             'raw' => [
+                'Formats' => ['Book'],
                 'SecondaryAuthors' => ['Shafer, Kathleen Newton'],
                 'ShortTitle' => 'Medical-surgical nursing',
                 'Subtitle' => '',
@@ -68,6 +69,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
         ],
         [
             'raw' => [
+                'Formats' => ['Book'],
                 'SecondaryAuthors' => ['Lewis, S.M.'],
                 'ShortTitle' => 'Medical-surgical nursing',
                 'Subtitle' => 'assessment and management of clinical problems.',
@@ -82,6 +84,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
         ],
         [  // subtitle embedded in title, with multi-word uncapped phrase, quoted word, and DOI added
             'raw' => [
+                'Formats' => ['Book'],
                 'SecondaryAuthors' => ['Lewis, S.M.'],
                 'Title' => 'Even if you "test" Medical-surgical nursing: assessment and management of clinical problems on top of crazy capitalization.',
                 'Edition' => '7th ed. /',
@@ -96,6 +99,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
         ],
         [
             'raw' => [
+                'Formats' => ['Book'],
                 'SecondaryAuthors' => ['Lewis, S.M.'],
                 'ShortTitle' => 'Medical-surgical nursing',
                 'Subtitle' => 'assessment and management of clinical problems.',
@@ -110,6 +114,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
         ],
         [
             'raw' => [
+                'Formats' => ['Book'],
                 'SecondaryAuthors' => ['Lewis, S.M., Weirdlynamed'],
                 'ShortTitle' => 'Medical-surgical nursing',
                 'Subtitle' => 'why?',
@@ -124,6 +129,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
         ],
         [
             'raw' => [
+                'Formats' => ['Book'],
                 'SecondaryAuthors' => ['Lewis, S.M., IV'],
                 'ShortTitle' => 'Medical-surgical nursing',
                 'Subtitle' => 'why?',
@@ -138,6 +144,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
         ],
         [
             'raw' => [
+                'Formats' => ['Book'],
                 'SecondaryAuthors' => ['Burch, Philip H., Jr.'],
                 'ShortTitle' => 'The New Deal to the Carter administration',
                 'Subtitle' => '',
@@ -152,6 +159,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
         ],
         [
             'raw' => [
+                'Formats' => ['Book'],
                 'SecondaryAuthors' => ['Burch, Philip H., Jr.', 'Coauthor, Fictional', 'Fakeperson, Third, III'],
                 'ShortTitle' => 'The New Deal to the Carter administration',
                 'Subtitle' => '',
@@ -166,6 +174,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
         ],
         [
             'raw' => [
+                'Formats' => ['Book'],
                 'SecondaryAuthors' => ['Burch, Philip H., Jr.', 'Coauthor, Fictional', 'Fakeperson, Third, III', 'Mob, Writing', 'Manypeople, Letsmakeup'],
                 'ShortTitle' => 'The New Deal to the Carter administration',
                 'Subtitle' => '',
@@ -180,6 +189,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
         ],
         [
             'raw' => [
+                'Formats' => ['Book'],
                 'SecondaryAuthors' => ['Burch, Philip H., Jr.', 'Anonymous, 1971-1973', 'Elseperson, Firstnamery, 1971-1973'],
                 'ShortTitle' => 'The New Deal to the Carter administration',
                 'Subtitle' => '',
@@ -193,6 +203,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
         ],
         [  // eight authors, with a blend of formatting and extra punctuation/malformed dates
             'raw' => [
+                'Formats' => ['Article'],
                 'SecondaryAuthors' => ['One, Person.', 'Person Two', 'Three, Person', 'Person Four.', 'Five, Person, 1900-1950', 'Six, Person 1910-1963', 'Person Seven', 'Person Eight 1900-1999'],
                 'ShortTitle' => 'Test Article',
                 'ContainerTitle' => 'Test Journal',
@@ -208,6 +219,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
         ],
         [  // eight authors
             'raw' => [
+                'Formats' => ['Article'],
                 'SecondaryAuthors' => ['One, Person', 'Two, Person', 'Three, Person', 'Four, Person', 'Five, Person', 'Six, Person', 'Seven, Person', 'Eight, Person'],
                 'ShortTitle' => 'Test Article',
                 'ContainerTitle' => 'Test Journal',
@@ -223,6 +235,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
         ],
         [  // seven authors
             'raw' => [
+                'Formats' => ['Article'],
                 'SecondaryAuthors' => ['One, Person', 'Two, Person', 'Three, Person', 'Four, Person', 'Five, Person', 'Six, Person', 'Seven, Person'],
                 'ShortTitle' => 'Test Article',
                 'ContainerTitle' => 'Test Journal',
@@ -238,6 +251,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
         ],
         [  // six authors
             'raw' => [
+                'Formats' => ['Article'],
                 'SecondaryAuthors' => ['One, Person', 'Two, Person', 'Three, Person', 'Four, Person', 'Five, Person', 'Six, Person'],
                 'ShortTitle' => 'Test Article',
                 'ContainerTitle' => 'Test Journal',
@@ -253,6 +267,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
         ],
         [  // three authors, including one with a random trailing comma
             'raw' => [
+                'Formats' => ['Article'],
                 'SecondaryAuthors' => ['One, Person,', 'Two, Person', 'Three, Person'],
                 'ShortTitle' => 'Test Article',
                 'ContainerTitle' => 'Test Journal',
@@ -268,6 +283,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
         ],
         [  // two authors with birth dates in different formats, single-page article
             'raw' => [
+                'Formats' => ['Article'],
                 'SecondaryAuthors' => ['One, Person, b. 1960', 'Two, Person, 1970-'],
                 'ShortTitle' => 'Test Article',
                 'ContainerTitle' => 'Test Journal',
@@ -284,6 +300,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
         [  // two authors with no comma in first author's name (test no comma before and)
             // and parenthetical note on second author (test it is removed)
             'raw' => [
+                'Formats' => ['Article'],
                 'SecondaryAuthors' => ['IBM', 'Two, Person (Director), 1970-'],
                 'ShortTitle' => 'Test Article',
                 'ContainerTitle' => 'Test Journal',
@@ -299,6 +316,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
         ],
         [  // one author
             'raw' => [
+                'Formats' => ['Article'],
                 'SecondaryAuthors' => ['One, Person'],
                 'ShortTitle' => 'Test Article',
                 'ContainerTitle' => 'Test Journal',
@@ -314,6 +332,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
         ],
         [  // eight authors in "first name first" format.
             'raw' => [
+                'Formats' => ['Article'],
                 'SecondaryAuthors' => ['Person One b. 1960', 'Person Two 1869-', 'Person Three', 'Person Four', 'Person Five', 'Person Six', 'Person Seven', 'Person Eight'],
                 'ShortTitle' => 'Test Article',
                 'ContainerTitle' => 'Test Journal',
@@ -329,6 +348,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
         ],
         [  // ten authors in "first name first" format.
             'raw' => [
+                'Formats' => ['Article'],
                 'SecondaryAuthors' => ['Person One', 'Person Two', 'Person Three', 'Person Four', 'Person Five', 'Person Six', 'Person Seven', 'Person Eight', 'Person Nine', 'Person Ten'],
                 'ShortTitle' => 'Test Article',
                 'ContainerTitle' => 'Test Journal',
@@ -344,6 +364,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
         ],
         [  // DOI
             'raw' => [
+                'Formats' => ['Article'],
                 'SecondaryAuthors' => ['One, Person'],
                 'ShortTitle' => 'Test Article',
                 'ContainerTitle' => 'Test Journal',
@@ -368,7 +389,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
      */
     public function testCitations()
     {
-        $citation = new Citation(new \VuFind\Date\Converter());
+        $citation = new Citation(new \VuFind\Date\Converter(), ['Site' => ['language' => 'en']]);
         $citation->setView($this->getPhpRenderer());
         $driver = new \VuFindTest\RecordDriver\TestHarness();
         foreach ($this->citations as $current) {
@@ -376,15 +397,18 @@ class CitationTest extends \PHPUnit\Framework\TestCase
             $cb = $citation($driver);
 
             // Normalize whitespace:
-            $apa = trim(preg_replace("/\s+/", ' ', $cb->getCitation('APA')));
+            $apa = $cb->getCitation('apa');
+            $apa = trim(preg_replace("/\s+/", ' ', $apa));
             $this->assertEquals($current['apa'], $apa);
 
             // Normalize whitespace:
-            $mla = trim(preg_replace("/\s+/", ' ', $cb->getCitation('MLA')));
+            $mla = $cb->getCitation('modern-language-association');
+            $mla = trim(preg_replace("/\s+/", ' ', $mla));
             $this->assertEquals($current['mla'], $mla);
 
             // Normalize whitespace:
-            $chicago = trim(preg_replace("/\s+/", ' ', $cb->getCitation('Chicago')));
+            $chicago = $cb->getCitation('chicago-annotated-bibliography');
+            $chicago = trim(preg_replace("/\s+/", ' ', $chicago));
             $this->assertEquals($current['chicago'], $chicago);
         }
 

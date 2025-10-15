@@ -33,7 +33,9 @@ use VuFind\Db\Service\CommentsServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\XSLT\Import\VuFind as ArticleStripper;
 
+use function is_array;
 use function is_callable;
+use function is_string;
 
 /**
  * Abstract base record model.
@@ -303,39 +305,109 @@ abstract class AbstractBase implements
     }
 
     /**
+     * Check for and expand deprecated abbreviations to library format.
+     *
+     * @param string $abbr ALA, MLA, Chicago (returns all others as-is).
+     *
+     * @return string
+     */
+    protected function expandLegacyAbbreviation(string $abbr)
+    {
+        switch (trim($abbr)) {
+            case 'APA':
+                return 'APA:apa';
+            case 'Chicago':
+                return 'Chicago:chicago-notes-bibliography-annotated';
+            case 'MLA':
+                return 'MLA:modern-language-association';
+        }
+
+        return trim($abbr);
+    }
+
+    /**
+     * Get an array of strings representing citation formats supported
+     * by this driver's available data (empty if none).
+     *
+     * Values in the array should be CSL style names.
+     * - see the repository: https://github.com/citation-style-language/styles
+     *
+     * Return true to use all formats in config.ini.
+     *   With default settings, this is equivalent to:
+     *   ['apa', 'chicago-notes-bibliography-annotated', 'modern-language-association']
+     *
+     * @return array|boolean Strings representing citation formats.
+     */
+    protected function getSupportedCitationFormats()
+    {
+        return [];
+    }
+
+    /**
      * Get an array of supported, user-activated citation formats.
      *
      * @return array Strings representing citation formats.
      */
     public function getCitationFormats()
     {
-        $formatSetting = $this->mainConfig->Record->citation_formats ?? true;
+        $formatSetting = $this->mainConfig->Record->get('citation_formats', true);
 
-        // Default behavior: use all supported options.
-        if ($formatSetting === true || $formatSetting === 'true') {
-            return $this->getSupportedCitationFormats();
-        }
-
-        // Citations disabled:
+        // Citations disabled
         if ($formatSetting === false || $formatSetting === 'false') {
             return [];
+            // Legacy: use all supported options.
+        } elseif ($formatSetting === true || $formatSetting === 'true') {
+            // Defaults
+            $formatSetting = [
+                'APA Citation:apa',
+                'Chicago Style Citation:chicago-notes-bibliography-annotated',
+                'MLA Citation:modern-language-association',
+            ];
+            // Legacy: convert to array
+        } elseif (is_string($formatSetting)) {
+            $formatSetting = explode(',', $formatSetting);
+        } elseif (!is_array($formatSetting)) {
+            $formatSetting = $formatSetting->toArray();
         }
 
-        // Filter based on include list:
-        $allowed = array_map('trim', explode(',', $formatSetting));
-        return array_intersect($allowed, $this->getSupportedCitationFormats());
-    }
+        // Trim and convert legacy to 11.x format
+        $formatSetting = array_map([$this, 'expandLegacyAbbreviation'], $formatSetting);
 
-    /**
-     * Get an array of strings representing citation formats supported
-     * by this record's data (empty if none). For possible legal values,
-     * see /application/themes/root/helpers/Citation.php.
-     *
-     * @return array Strings representing citation formats.
-     */
-    protected function getSupportedCitationFormats()
-    {
-        return [];
+        // Remove empty settings
+        $formatSetting = array_filter($formatSetting);
+
+        $supportedFormats = $this->getSupportedCitationFormats();
+
+        // True = use all configured formats
+        if ($supportedFormats === true) {
+            return $formatSetting;
+        }
+
+        // Trim and convert legacy to 11.x format
+        if (is_array($supportedFormats)) {
+            $supportedFormats = array_map([$this, 'expandLegacyAbbreviation'], $supportedFormats);
+        }
+
+        // Trim and remove empty elements:
+        return array_filter(
+            $formatSetting,
+            function ($setting) use ($supportedFormats) {
+                $trimmed = trim($setting);
+
+                if (empty($trimmed)) {
+                    return false;
+                }
+
+                foreach ($supportedFormats as $supported) {
+                    // setting contains supported style ([label:]style).
+                    if (str_contains($trimmed, $supported)) {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+        );
     }
 
     /**

@@ -30,6 +30,8 @@
 
 namespace VuFind\View\Helper\Root;
 
+use Seboettg\CiteProc\CiteProc;
+use Seboettg\CiteProc\StyleSheet;
 use VuFind\Date\DateException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 
@@ -53,6 +55,13 @@ use function strlen;
 class Citation extends \Laminas\View\Helper\AbstractHelper implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
+
+    /**
+     * VuFind configuration
+     *
+     * @var array
+     */
+    protected $config;
 
     /**
      * Citation details
@@ -108,10 +117,12 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
      * Constructor
      *
      * @param \VuFind\Date\Converter $converter Date converter
+     * @param array                  $config    VuFind configuration
      */
-    public function __construct(\VuFind\Date\Converter $converter)
+    public function __construct(\VuFind\Date\Converter $converter, array $config)
     {
         $this->dateConverter = $converter;
+        $this->config = $config;
     }
 
     /**
@@ -272,16 +283,217 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
      */
     public function getCitation($format)
     {
+        $data = $this->getDataCSL();
+
+        $locale = $this->config['Site']['language']; //'en';
+
+        try {
+            // will fail during unit tests
+            $locale = $this->getView()->layout()->userLang;
+        } catch (\Exception $e) {
+            // pass
+        }
+
+        $processor = new CiteProc(StyleSheet::loadStyleSheet($format), $locale);
+
+        // DEBUG
+
         // Construct method name for requested format:
-        $method = 'getCitation' . $format;
+        $formatFirst = explode('-', $format, 2)[0];
+        $methodKey = ($formatFirst == 'modern') ? 'MLA' : ucfirst($formatFirst);
+
+        $method = 'getCitation' . $methodKey;
 
         // Avoid calls to inappropriate/missing methods:
         if (!empty($format) && method_exists($this, $method)) {
-            return $this->$method();
+            return
+                '<div><kbd>Old</kbd> <div class="csl-entry">' . $this->$method() . '</div></div>' .
+                '<div><kbd>New</kbd> ' . $processor->render(json_decode($data), 'bibliography') . '</div>'
+            ;
         }
 
-        // Return blank string if no valid method found:
-        return '';
+        return $processor->render(json_decode($data), 'bibliography');
+    }
+
+    /**
+     * Remove punctuation from both ends
+     *
+     * @param string|number $text text to be trimmed
+     *
+     * @return string trimmed text
+     */
+    protected function trimPunctuation($text): string
+    {
+        return trim((string)$text, " \n\r\t\v\0,:;/");
+    }
+
+    /**
+     * From hyphenated date ranges (XXXX-XXXX)
+     *
+     * @param string $name text with a date range
+     *
+     * @return string text without date range
+     */
+    protected function removeDateRange(string $name): string
+    {
+        return preg_replace('/\d+[ ]*\-[ ]*\d*/', '', $name);
+    }
+
+    /**
+     * Split author string into given and family parts
+     *
+     * @param string $name full name with given and family name
+     *
+     * @return array (associative) of given and family
+     */
+    protected function nameToGivenFamily(string $name)
+    {
+        if (str_contains($name, ', ')) {
+            [$family, $given] = explode(', ', $this->removeDateRange($name));
+
+            return [
+                'given' => $this->trimPunctuation($given),
+                'family' => $this->trimPunctuation($family),
+            ];
+        }
+
+        $parts = explode(' ', $this->removeDateRange($name));
+
+        $family = array_pop($parts);
+        $given = implode(' ', $parts);
+
+        return [
+            'given' => $this->trimPunctuation($given),
+            'family' => $this->trimPunctuation($family),
+        ];
+    }
+
+    /**
+     * Util function to normalize and add data to citation object if non-empty
+     *
+     * @param array $item  item reference to add data to
+     * @param array $pairs citation name => value (array|string) from driver
+     *
+     * @return void
+     */
+    protected function addIfNotEmpty(&$item, $pairs)
+    {
+        foreach ($pairs as $key => $value) {
+            if (empty($value)) {
+                continue;
+            }
+
+            $trimmed = $this->trimPunctuation(((array)$value)[0]);
+
+            if (!empty($trimmed)) {
+                $item[$key] = $trimmed;
+            }
+        }
+    }
+
+    /**
+     * Map data about the current record to the CSL JSON schema defined here:
+     * https://github.com/citation-style-language/schema/blob/master/csl-data.json
+     *
+     * @return string
+     */
+    public function getDataCSL()
+    {
+        // id
+        $item = ['id' => $this->driver->getUniqueID()];
+
+        // type
+        switch ($this->driver->getFormats()[0]) {
+            case 'Thesis':
+                $item['type'] = 'thesis';
+                break;
+            case 'Video':
+                $item['type'] = 'motion_picture';
+                break;
+            case 'Score':
+                $item['type'] = 'musical_score';
+                break;
+            case 'Map':
+                $item['type'] = 'map';
+                break;
+            case 'Book':
+            default:
+                $item['type'] = 'book';
+        }
+
+        // title
+        $this->addIfNotEmpty(
+            $item,
+            [
+                'title' => $this->driver->tryMethod('getTitle'),
+                'title-short' => $this->driver->tryMethod('getShortTitle'),
+            ]
+        );
+
+        // meta
+        $this->addIfNotEmpty(
+            $item,
+            [
+                'call-number' => $this->driver->getCallNumbers(),
+                'doi' => $this->driver->tryMethod('getCleanDOI'),
+                'edition' => $this->details['edition'],
+                'ISBN' => $this->driver->getISBNs(),
+                'language' => $this->driver->getLanguages(),
+                'publisher' => $this->driver->getPublishers(),
+                'publisher-place' => $this->driver->getPlacesOfPublication(),
+            ]
+        );
+
+        // journal meta
+        $this->addIfNotEmpty(
+            $item,
+            [
+                'ISSN' => $this->driver->getISSNs(),
+                'volume' => $this->driver->getContainerIssue(),
+                'volume-title' => $this->driver->getContainerVolume(),
+                // TODO: journalAbbreviation
+            ]
+        );
+        $pageFirst = $this->driver->tryMethod('getContainerStartPage');
+        $pageLast = $this->driver->tryMethod('getContainerEndPage');
+        if (!empty($pageFirst)) {
+            if (!empty($pageLast)) {
+                $item['page-first'] = $pageFirst;
+                $item['number-of-pages'] = $pageLast - $pageFirst;
+            } else {
+                $item['page'] = $pageFirst;
+            }
+        }
+
+        // pubDate -> issued (date)
+        if (!empty($this->details['pubDate'])) {
+            $item['issued'] = ['date-parts' => [[$this->getYear()]]];
+        }
+
+        // today -> accessed (date)
+        $item['accessed'] = ['raw' => date('Y-m-d\TH:i:s')];
+
+        // authors
+        if (!empty($this->details['authors'])) {
+            foreach ($this->details['authors'] as $i => $author) {
+                $item['author'][] = array_merge(
+                    ['literal' => $author],
+                    $this->nameToGivenFamily($author)
+                );
+            }
+        }
+
+        // TODO: editors
+        // var_dump($this->driver->getProductionCredits());
+
+        // TODO: directors
+
+        // URL
+        if (!empty($this->driver->getURLs())) {
+            $item['URL'] = $this->driver->getURLs()[0]['url'];
+        }
+
+        return json_encode([$item]);
     }
 
     /**
