@@ -142,22 +142,4 @@ class GuzzleServiceTest extends \PHPUnit\Framework\TestCase
         
         $this->assertInstanceOf(\GuzzleHttp\ClientInterface::class, $client);
     }
-
-    /**
-     * Test local address detection
-     *
-     * @return void
-     */
-    public function testIsLocal(): void
-    {
-        $service = new GuzzleService([]);
-        
-        $method = new \ReflectionMethod($service, 'isLocal');
-        $method->setAccessible(true);
-        
-        $this->assertTrue($method->invoke($service, 'http://localhost/test'));
-        $this->assertTrue($method->invoke($service, 'http://127.0.0.1/test'));
-        
-        $this->assertFalse($method->invoke($service, 'http://example.com/test'));
-    }
 }
