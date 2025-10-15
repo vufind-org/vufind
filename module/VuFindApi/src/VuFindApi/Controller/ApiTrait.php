@@ -237,7 +237,9 @@ trait ApiTrait
     protected function initApiKeySettings(array $settings): void
     {
         $this->developerSettingsService = $this->getService(DeveloperSettingsService::class);
-        $this->apiKeyHeaderField = $settings['header_field'] ?? $this->apiKeyHeaderField;
+        if ($field = $settings['header_field'] ?? null) {
+            $this->apiKeyHeaderField = $field;
+        }
     }
 
     /**
