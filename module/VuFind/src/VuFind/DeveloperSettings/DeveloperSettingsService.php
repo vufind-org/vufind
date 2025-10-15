@@ -202,7 +202,7 @@ class DeveloperSettingsService
     /**
      * Get API key with provided token and check if the API key is allowed.
      * API key is not allowed if it has been marked as revoked.
-     * 
+     *
      * Disabled mode returns always true for any token.
      * Optional mode returns true for null token or for tokens which are for allowed API keys.
      * Enforced mode returns true only for tokens which are for allowed API keys.
