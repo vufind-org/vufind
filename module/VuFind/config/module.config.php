@@ -676,7 +676,7 @@ $config = [
         'driver' => [
             'vufind_attribute_driver' => [
                 'class' => \Doctrine\ORM\Mapping\Driver\AttributeDriver::class,
-                'cache' => 'filesystem',
+                'cache' => $doctrineCacheType,
                 'paths' => [
                     'module/VuFind/src/VuFind/Db/Entity',
                 ],
