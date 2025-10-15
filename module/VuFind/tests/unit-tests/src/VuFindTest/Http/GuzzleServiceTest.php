@@ -29,10 +29,6 @@
 
 namespace VuFindTest\Http;
 
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
-use GuzzleHttp\Psr7\Response;
-use GuzzleHttp\Middleware;
 use VuFind\Http\GuzzleService;
 
 /**
@@ -54,13 +50,13 @@ class GuzzleServiceTest extends \PHPUnit\Framework\TestCase
     public function testGetWithAssociativeParams(): void
     {
         $service = new GuzzleService([]);
-        
+
         $method = new \ReflectionMethod($service, 'createQueryString');
         $method->setAccessible(true);
-        
+
         $params = ['foo' => 'bar', 'baz' => 'qux'];
         $result = $method->invoke($service, $params);
-        
+
         $this->assertEquals('foo=bar&baz=qux', $result);
     }
 
@@ -72,13 +68,13 @@ class GuzzleServiceTest extends \PHPUnit\Framework\TestCase
     public function testGetWithPreformattedParams(): void
     {
         $service = new GuzzleService([]);
-        
+
         $method = new \ReflectionMethod($service, 'createQueryString');
         $method->setAccessible(true);
-        
+
         $params = ['foo=bar', 'baz=qux'];
         $result = $method->invoke($service, $params);
-        
+
         $this->assertEquals('foo=bar&baz=qux', $result);
     }
 
@@ -90,13 +86,13 @@ class GuzzleServiceTest extends \PHPUnit\Framework\TestCase
     public function testGetWithSpecialCharacters(): void
     {
         $service = new GuzzleService([]);
-        
+
         $method = new \ReflectionMethod($service, 'createQueryString');
         $method->setAccessible(true);
-        
+
         $params = ['query' => 'hello world', 'filter' => 'a&b'];
         $result = $method->invoke($service, $params);
-        
+
         $this->assertEquals('query=hello+world&filter=a%26b', $result);
     }
 
@@ -108,12 +104,12 @@ class GuzzleServiceTest extends \PHPUnit\Framework\TestCase
     public function testGetWithEmptyParams(): void
     {
         $service = new GuzzleService([]);
-        
+
         $method = new \ReflectionMethod($service, 'createQueryString');
         $method->setAccessible(true);
-        
+
         $result = $method->invoke($service, []);
-        
+
         $this->assertEquals('', $result);
     }
 
@@ -126,7 +122,7 @@ class GuzzleServiceTest extends \PHPUnit\Framework\TestCase
     {
         $service = new GuzzleService([]);
         $client = $service->createClient();
-        
+
         $this->assertInstanceOf(\Psr\Http\Client\ClientInterface::class, $client);
     }
 
@@ -139,7 +135,7 @@ class GuzzleServiceTest extends \PHPUnit\Framework\TestCase
     {
         $service = new GuzzleService([]);
         $client = $service->createGuzzleClient();
-        
+
         $this->assertInstanceOf(\GuzzleHttp\ClientInterface::class, $client);
     }
 }
