@@ -155,7 +155,7 @@ class ApiKey implements ApiKeyEntityInterface
      *
      * @param string $title Title
      *
-     * @return string
+     * @return static
      */
     public function setTitle(string $title): static
     {

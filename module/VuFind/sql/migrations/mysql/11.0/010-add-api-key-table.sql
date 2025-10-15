@@ -9,6 +9,5 @@ CREATE TABLE IF NOT EXISTS `api_key` (
   PRIMARY KEY (`id`),
   KEY `api_key_user_id_idx` (`user_id`),
   KEY `api_key_token_idx` (`token`),
-  KEY `api_key_last_used_idx` (`last_used`),
   CONSTRAINT `api_key_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;

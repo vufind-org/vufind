@@ -145,7 +145,7 @@ class DeveloperSettingsService
      */
     protected function updateLastUsed(ApiKeyEntityInterface $apiKey): void
     {
-        if (time() - $apiKey->getLastUsed()->getTimestamp() < $this->updateInterval * 60) {
+        if (time() - $apiKey->getLastUsed()->getTimestamp() >= $this->updateInterval * 60) {
             $apiKey->setLastUsed(new \DateTime());
             $this->apiKeyService->persistEntity($apiKey);
         }
@@ -200,8 +200,10 @@ class DeveloperSettingsService
     }
 
     /**
-     * Check if the provided token is valid. If user provides an API key token
-     * in optional mode, it will act the same way even if
+     * Check if the provided token is valid.
+     * Disabled mode returns true for any token.
+     * Optional mode returns true for null token or for tokens which are for valid API keys.
+     * Enforced mode returns true for tokens which are for valid API keys.
      *
      * @param ?string $token Token to search for API key
      *

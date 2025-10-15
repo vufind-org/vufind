@@ -31,6 +31,7 @@ namespace VuFindTest\DeveloperSettings;
 
 use DateTime;
 use Generator;
+use VuFind\Db\Entity\ApiKey;
 use VuFind\Db\Entity\ApiKeyEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\ApiKeyServiceInterface;
@@ -348,5 +349,32 @@ class DeveloperSettingsServiceTest extends \PHPUnit\Framework\TestCase
         $apiKeyService = $this->getMockEntity(ApiKeyServiceInterface::class, ['getByToken' => $apiKey]);
         $result = $this->getService($config, $apiKeyService)->isTokenValid($token);
         $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Test update last used.
+     *
+     * @return void
+     */
+    public function testUpdateLastUsed(): void
+    {
+        $config = [
+            'mode' => DeveloperSettingsStatus::OPTIONAL->value,
+            'token_salt' => 'test_salt_thing',
+        ];
+        $apiKey = new ApiKey();
+        $date = new DateTime('01-01-1999');
+        $apiKey->setTitle('heitest')->setCreated($date)->setLastUsed($date)->setRevoked(false);
+        $apiKeyService = $this->getMockEntity(ApiKeyServiceInterface::class, ['getByToken' => $apiKey]);
+        $apiKeyService->expects($this->once())->method('persistEntity')->willReturnCallback(
+            function ($apiKey) use ($date) {
+                $this->assertNotEquals(
+                    $apiKey->getLastUsed()->getTimestamp(),
+                    $date->getTimestamp()
+                );
+            }
+        );
+        $result = $this->getService($config, $apiKeyService)->isTokenValid('test');
+        $this->assertTrue($result);
     }
 }
