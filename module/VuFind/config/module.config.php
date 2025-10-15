@@ -2,6 +2,8 @@
 
 namespace VuFind\Module\Config;
 
+$doctrineCacheType = PHP_SAPI == 'cli' ? 'array' : 'filesystem';
+
 $config = [
     'router' => [
         'routes' => [
@@ -664,10 +666,10 @@ $config = [
     'doctrine' => [
         'configuration' => [
             'orm_vufind' => [
-                'query_cache' => 'filesystem',
-                'result_cache' => 'filesystem',
-                'metadata_cache' => 'filesystem',
-                'hydration_cache' => 'filesystem',
+                'query_cache' => $doctrineCacheType,
+                'result_cache' => $doctrineCacheType,
+                'metadata_cache' => $doctrineCacheType,
+                'hydration_cache' => $doctrineCacheType,
                 'proxy_dir' => LOCAL_CACHE_DIR . (PHP_SAPI == 'cli' ? '/cli' : '') . '/doctrine-proxies',
             ],
         ],
