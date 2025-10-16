@@ -22,14 +22,14 @@
               <?php else: ?>
                 <?=
                   $this->component(
-                      'confirm-button',
-                      [
+                    'confirm-button',
+                    [
                       'buttonLink' => $this->url('developersettings-deleteapikey', [], ['query' => ['id' => $apiKey->getId()]]),
                       'buttonLabel' => 'Delete',
                       'confirmLink' => $this->url('developersettings-deleteapikey', [], ['query' => ['id' => $apiKey->getId(), 'confirm' => 1]]),
                       'header' => 'confirm_delete',
                     ]
-                  )
+                  );
                 ?>
               <?php endif; ?>
             </div>

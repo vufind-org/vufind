@@ -1,10 +1,10 @@
-<h3><?=$this->transEsc('Developer::settings')?></h3>
+<h3><?= $this->transEsc('Developer::settings') ?></h3>
 <div class="alert alert-info">
-    <?=$this->transEsc('Developer::verify_email_address')?>
-    <?php
-        $isLoggedin = $this->auth()->getUserObject();
-        if ($isLoggedin && !$isLoggedin->getEmailVerified()):
-    ?>
-        <div><a href="<?=$this->url('myresearch-emailnotverified', [], ['query' => ['reverify' => 'true']])?>"><?=$this->transEsc('verification_email_subject')?></a></div>
-    <?php endif; ?>
+  <?= $this->transEsc('Developer::verify_email_address') ?>
+  <?php
+    $isLoggedin = $this->auth()->getUserObject();
+    if ($isLoggedin && !$isLoggedin->getEmailVerified()):
+  ?>
+    <div><a href="<?= $this->url('myresearch-emailnotverified', [], ['query' => ['reverify' => 'true']]) ?>"><?= $this->transEsc('verification_email_subject') ?></a></div>
+  <?php endif; ?>
 </div>
