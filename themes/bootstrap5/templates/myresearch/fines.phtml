@@ -86,7 +86,7 @@
               . '<br><span class="online-payment-status-note"> ' . $this->transEsc('Payment::nonpayable_fee') . '</span></span>';
           }
 
-          $tableData['Select'][] = $select;
+          $tableData['.Select'][] = $select;
           $tableData['Title'][] = $title;
           $tableData['Checked Out'][] = $this->escapeHtml($record['checkout'] ?? '');
           $tableData['Due Date'][] = $this->escapeHtml($record['duedate'] ?? '');
@@ -193,12 +193,12 @@
       <?php endif; ?>
     <?php endif; ?>
 
-    <table class="table table-striped table-responsive fines-table<?=$this->onlinePayment ? ' fines-table__online-payment' : ''?>">
+    <table class="table table-striped table-responsive table-responsive__lg fines-table<?=$this->onlinePayment ? ' fines-table__online-payment' : ''?>">
       <caption class="visually-hidden"><?=$this->transEsc('Your Fines')?></caption>
       <thead>
         <tr>
           <?php foreach ($columns as $header): ?>
-            <th scope="col"><?=$this->transEsc($header)?></th>
+            <th scope="col"><?=str_starts_with($header, '.') ? '' : $this->transEsc($header)?></th>
           <?php endforeach; ?>
         </tr>
       </thead>
@@ -208,6 +208,8 @@
             <?php foreach ($columns as $column): ?>
               <?php if ('Title' == $column): ?>
                 <th data-label="<?=$this->transEscAttr($column)?>" scope="row"><?=$tableData[$column][$row]?></th>
+              <?php elseif (str_starts_with($column, '.')): ?>
+                <td class="unlabeled-column"><?=$tableData[$column][$row]?></td>
               <?php else: ?>
                 <td data-label="<?=$this->transEscAttr($column)?>"><?=$tableData[$column][$row]?></td>
               <?php endif; ?>

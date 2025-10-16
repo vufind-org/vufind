@@ -34,26 +34,28 @@
     </nav>
     <form action="<?=$this->url('tag-deletetags')?>" name="updateForm" id="select_all_tags" method="post">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>" name="csrf">
-      <label>
-        <div class="checkbox">
-          <input type="checkbox" name="selectAll" class="checkbox-select-all">
-          <?=$this->transEsc('select_all_on_page')?>
-        </div>
-      </label>
-      <?=
-        $this->component(
-            'confirm-button',
-            [
-                'buttonId' => 'cancelSelected',
-                'buttonName' => 'cancelSelected',
-                'buttonLabel' => 'delete_selected',
-                'header' => 'confirm_usertag_delete_selected_text',
-                'confirmId' => 'confirm_cancel_selected_yes',
-                'cancelClass' => 'confirm_cancel_no',
-                'ignoreLightbox' => true,
-            ]
-        )
-      ?>
+      <div class="toolbar">
+        <label>
+          <div class="checkbox">
+            <input type="checkbox" name="selectAll" class="checkbox-select-all">
+            <?=$this->transEsc('select_all_on_page')?>
+          </div>
+        </label>
+        <?=
+          $this->component(
+              'confirm-button',
+              [
+                  'buttonId' => 'cancelSelected',
+                  'buttonName' => 'cancelSelected',
+                  'buttonLabel' => 'delete_selected',
+                  'header' => 'confirm_usertag_delete_selected_text',
+                  'confirmId' => 'confirm_cancel_selected_yes',
+                  'cancelClass' => 'confirm_cancel_no',
+                  'ignoreLightbox' => true,
+              ]
+          )
+        ?>
+      </div>
       <table class="usercontent-table table-striped table table-responsive">
         <thead>
           <tr>
@@ -66,17 +68,17 @@
         <tbody>
           <?php foreach ($this->tags as $tag):?>
             <tr>
-              <td class="checkbox-col">
+              <td class="checkbox-col unlabeled-column">
                 <div class="checkbox-container result">
                   <div class="checkbox">
-                    <label class="record-checkbox">
+                    <label>
                       <span class="sr-only"><?=$this->transEsc('Select');?></span>
                       <input class="checkbox-select-item" type="checkbox" name="deleteSelectedtag[]" value="<?=$this->escapeHtmlAttr(($tag['id']))?>" id="checkbox_tag_<?=$tag['id']?>">
                     </label>
                   </div>
                 </div>
               </td>
-              <td data-label="<?=$this->transEscAttr('Created')?>"><?=$this->dateTime()->convertToDisplayDateAndTime('U', $tag['posted']->getTimestamp())?></td>
+              <td class="date" data-label="<?=$this->transEscAttr('Created')?>"><?=$this->dateTime()->convertToDisplayDateAndTime('U', $tag['posted']->getTimestamp())?></td>
               <td data-label="<?=$this->transEscAttr('Title')?>">
                 <a href="<?=$this->url('record', ['id' => $tag['record_id']])?>"><?=$this->escapeHtml($tag['recordTitle'])?></a>
               </td>
