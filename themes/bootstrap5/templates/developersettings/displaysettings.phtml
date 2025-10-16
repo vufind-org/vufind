@@ -20,17 +20,13 @@
               <?php if ($apiKey->isRevoked()): ?>
                 <span><?= $this->transEsc('Developer::api_key_locked'); ?></span>
               <?php else: ?>
-                <?=
-                  $this->component(
-                    'confirm-button',
-                    [
+                <?=$this->component('confirm-button', [
                       'buttonLink' => $this->url('developersettings-deleteapikey', [], ['query' => ['id' => $apiKey->getId()]]),
                       'buttonLabel' => 'Delete',
                       'confirmLink' => $this->url('developersettings-deleteapikey', [], ['query' => ['id' => $apiKey->getId(), 'confirm' => 1]]),
                       'header' => 'confirm_delete',
                     ]
-                  );
-                ?>
+                  );?>
               <?php endif; ?>
             </div>
           </td>
