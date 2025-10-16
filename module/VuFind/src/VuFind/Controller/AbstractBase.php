@@ -38,6 +38,7 @@ use Laminas\Uri\Http;
 use Laminas\View\Model\ViewModel;
 use VuFind\Config\Feature\EmailSettingsTrait;
 use VuFind\Controller\Feature\AccessPermissionInterface;
+use VuFind\Controller\Feature\RequestHelperTrait;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\AuditEventServiceInterface;
 use VuFind\Db\Service\PluginManager as DatabaseServiceManager;
@@ -82,6 +83,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     use EmailSettingsTrait;
     use GetServiceTrait;
     use TranslatorAwareTrait;
+    use RequestHelperTrait;
 
     /**
      * Permission that must be granted to access this module (false for no
@@ -931,22 +933,5 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
             $this->auditEventService = $dbServiceManager->get(AuditEventServiceInterface::class);
         }
         return $this->auditEventService;
-    }
-
-    /**
-     * Get params from post or query.
-     *
-     * @param ?string $key     Parameter key to get. If omitted and no default value
-     *                         is set, will return all parameters as an associative array.
-     * @param mixed   $default Default value to return if not found. If $key is omitted, has no effect.
-     *
-     * @return mixed
-     */
-    protected function fromPostAndQuery(?string $key = null, mixed $default = null): mixed
-    {
-        if (!$key) {
-            return $this->params()->fromPost() + $this->params()->fromQuery();
-        }
-        return $this->params()->fromPost($key) ?? $this->params()->fromQuery($key) ?? $default;
     }
 }

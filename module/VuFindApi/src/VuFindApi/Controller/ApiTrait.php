@@ -35,8 +35,6 @@ use Laminas\Http\Header\ContentType;
 use Laminas\Mvc\Exception\DomainException;
 use VuFind\DeveloperSettings\DeveloperSettingsService;
 
-use function is_callable;
-
 /**
  * Additional functionality for API controllers.
  *
@@ -249,9 +247,7 @@ trait ApiTrait
      */
     protected function checkRequestForApiKey(): bool
     {
-        $tokenField = $this->getRequest()->getHeader($this->apiKeyHeaderField);
-        $token = is_callable([$tokenField, 'getFieldValue']) ? $tokenField->getFieldValue() : null;
-        return $this->developerSettingsService->isApiKeyAllowed($token);
+        return $this->developerSettingsService->isApiKeyAllowed($this->getHeader($this->apiKeyHeaderField));
     }
 
     /**

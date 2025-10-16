@@ -80,7 +80,7 @@ class DeveloperSettingsController extends AbstractBase
 
         $view = $this->createViewModel();
         if ($this->formWasSubmitted()) {
-            if ($title = $this->fromPostAndQuery('title')) {
+            if ($title = $this->getParam('title', true)) {
                 if ($apiKey = $developerSettingsService->generateApiKeyForUser($user, $title)) {
                     $successMsg = $this->translate(
                         'Developer::api_key_generation_success',
@@ -110,8 +110,8 @@ class DeveloperSettingsController extends AbstractBase
         if (!$developerSettingsService->apiKeysEnabled() || !$this->permission()->isAuthorized('feature.Developer')) {
             throw new Forbidden('Access denied.');
         }
-        if ($this->fromPostAndQuery('confirm') === '1') {
-            $id = $this->fromPostAndQuery('id');
+        if ($this->getParam('confirm') === '1') {
+            $id = $this->getParam('id');
             if ($id && $developerSettingsService->deleteApiKeyForUser($user, $id)) {
                 $this->flashMessenger()->addSuccessMessage('Developer::api_key_deletion_success');
             } else {

@@ -259,7 +259,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements
             return $result;
         }
 
-        $request = $this->fromPostAndQuery();
+        $request = $this->getParamArray();
 
         if (!$this->checkRequestForApiKey()) {
             return $this->outputMissingAPIKey();
@@ -321,7 +321,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements
             return $this->outputMissingAPIKey();
         }
         // Send both GET and POST variables to search class:
-        $request = $this->fromPostAndQuery();
+        $request = $this->getParamArray();
 
         $isCursorSearch = ($request['resumptionToken'] ?? false);
         try {
