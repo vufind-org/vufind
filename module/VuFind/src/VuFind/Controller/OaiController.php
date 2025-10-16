@@ -29,6 +29,7 @@
 
 namespace VuFind\Controller;
 
+use VuFind\Config\Config;
 use VuFindApi\Formatter\RecordFormatter;
 
 /**
@@ -85,9 +86,9 @@ class OaiController extends AbstractBase
     protected function handleOAI($serverClass)
     {
         // Check if the OAI Server is enabled before continuing
-        $config = $this->getConfig();
+        $config = $this->getConfigArray();
         $response = $this->getResponse();
-        if (!isset($config->OAI)) {
+        if (!isset($config['OAI'])) {
             $response->setStatusCode(404);
             $response->setContent('OAI Server Not Configured.');
             return $response;
@@ -104,7 +105,7 @@ class OaiController extends AbstractBase
                 $this->getRequest()->getPost()->toArray()
             );
             $server = $this->getService($serverClass);
-            $server->init($config, $baseURL, $params);
+            $server->init(new Config($config), $baseURL, $params);
             $server->setRecordLinkerHelper(
                 $this->getViewRenderer()->plugin('recordLinker')
             );

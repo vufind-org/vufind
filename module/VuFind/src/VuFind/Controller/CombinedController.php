@@ -292,8 +292,8 @@ class CombinedController extends AbstractSearch implements \Psr\Log\LoggerAwareI
                 if ($fullSearchClassId !== $searchClassId) {
                     // Try to find matching filter settings first in [SearchTabsFilters] in config.ini, and then
                     // in the combined.ini filters setting.
-                    $hiddenFilters = $this->getConfig()->SearchTabsFilters->$fullSearchClassId
-                        ?? $this->getConfig('combined')->$fullSearchClassId->filter
+                    $hiddenFilters = $this->getConfigArray()['SearchTabsFilters'][$fullSearchClassId]
+                        ?? $this->getConfigArray('combined')[$fullSearchClassId]['filter']
                         ?? [];
                     // Account for all possible configuration formats -- a Config object, an array, or a string:
                     $params['hiddenFilters']
