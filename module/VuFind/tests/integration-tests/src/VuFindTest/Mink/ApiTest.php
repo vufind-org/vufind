@@ -224,11 +224,12 @@ final class ApiTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '#api-key-title', 'test token');
         $this->clickCss($page, '.btn.btn-primary[name="submitButton"]');
         $text = $this->findCssAndGetText($page, '.alert-success');
-        $testToken = trim(substr($text, strpos($text, ':') + 1));
+
         $this->assertStringStartsWith(
             'API key was generated successfully. Key will be displayed only once, so save it now:',
             $text
         );
+        $testToken = trim(substr($text, strpos($text, ':') + 1));
         $this->assertTrue(strlen($testToken) > 0);
 
         $this->clickCss($page, '.btn-default[data-bs-dismiss="modal"]');
