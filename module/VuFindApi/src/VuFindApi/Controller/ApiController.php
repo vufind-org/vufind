@@ -104,9 +104,8 @@ class ApiController extends \VuFind\Controller\AbstractBase
      */
     protected function getApiSpecFragment()
     {
-        $config = $this->getConfig();
         $params = [
-            'config' => $config,
+            'config' => $this->getConfigArray(),
             'version' => \VuFind\Config\Version::getBuildVersion(),
         ];
         return $this->getViewRenderer()->render('api/openapi', $params);
