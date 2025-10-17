@@ -556,39 +556,45 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test deprecated Amazon cover content warning.
+     * Test deprecated Amazon/BookSite cover content warnings.
      *
      * @return void
      */
-    public function testAmazonCoverWarning(): void
+    public function testObsoleteCoverWarning(): void
     {
         $upgrader = $this->runAndGetConfigUpgrader('amazoncover');
         $warnings = $upgrader->getWarnings();
-        $this->assertTrue(
-            in_array(
-                'WARNING: You have Amazon content enabled, but VuFind no longer sup'
-                . 'ports it. You should remove Amazon references from config.ini.',
-                $warnings
-            )
-        );
+        foreach (['Amazon', 'BookSite'] as $service) {
+            $this->assertTrue(
+                in_array(
+                    "WARNING: You have $service content enabled, but VuFind no longer sup"
+                    . "ports it. You should remove $service references from config.ini.",
+                    $warnings
+                ),
+                "Missing $service warning"
+            );
+        }
     }
 
     /**
-     * Test deprecated Amazon review content warning.
+     * Test deprecated Amazon/BookSite review content warnings.
      *
      * @return void
      */
-    public function testAmazonReviewWarning(): void
+    public function testObsoleteReviewWarnings(): void
     {
         $upgrader = $this->runAndGetConfigUpgrader('amazonreview');
         $warnings = $upgrader->getWarnings();
-        $this->assertTrue(
-            in_array(
-                'WARNING: You have Amazon content enabled, but VuFind no longer sup'
-                . 'ports it. You should remove Amazon references from config.ini.',
-                $warnings
-            )
-        );
+        foreach (['Amazon', 'BookSite'] as $service) {
+            $this->assertTrue(
+                in_array(
+                    "WARNING: You have $service content enabled, but VuFind no longer sup"
+                    . "ports it. You should remove $service references from config.ini.",
+                    $warnings
+                ),
+                "Missing $service warning"
+            );
+        }
     }
 
     /**
