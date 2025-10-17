@@ -147,12 +147,20 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
      */
     public function setOptions(array $options)
     {
-        $this->batchSize = $options['batchSize'] ?? 20;
         $this->maxRecordsToExamine = $options['maxRecordsToExamine'] ?? 2;
         $this->browseIndex = $options['browseIndex'] ?? 'lcc';
         $this->solrField = $options['solrField'] ?? 'callnumber-raw';
         $this->rowsBefore = $options['rows_before'] ?? 10;
         $this->source = $options['source'] ?? 'Solr';
+
+        // Calculate batch size
+        $itemsPerRow = $options['itemsPerRow'] ?? 6;
+        $rowsPerPage = $options['rowsPerPage'] ?? 2;
+        $this->batchSize = $itemsPerRow * $rowsPerPage;
+        // Set a minimum of 20 to make sure the server isn't hit too often
+        while ($this->batchSize <= 20) {
+            $this->batchSize *= 2;
+        }
     }
 
     /**

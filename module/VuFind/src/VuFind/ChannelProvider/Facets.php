@@ -126,10 +126,18 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
      */
     public function setOptions(array $options)
     {
-        $this->batchSize = $options['batchSize'] ?? 24;
         $this->fields = $options['fields'] ?? ['topic_facet' => 'Topic', 'author_facet' => 'Author'];
         $this->maxFieldsToSuggest = $options['maxFieldsToSuggest'] ?? 2;
         $this->maxValuesToSuggestPerField = $options['maxValuesToSuggestPerField'] ?? 2;
+
+        // Calculate batch size
+        $itemsPerRow = $options['itemsPerRow'] ?? 6;
+        $rowsPerPage = $options['rowsPerPage'] ?? 2;
+        $this->batchSize = $itemsPerRow * $rowsPerPage;
+        // Set a minimum of 20 to make sure the server isn't hit too often
+        while ($this->batchSize <= 20) {
+            $this->batchSize *= 2;
+        }
     }
 
     /**

@@ -98,9 +98,17 @@ class NewSearchItems extends AbstractChannelProvider implements TranslatorAwareI
      */
     public function setOptions(array $options)
     {
-        $this->batchSize = $options['batchSize'] ?? 24;
         $this->maxAge = $options['maxAge'] ?? 30;
         $this->sort = $options['sort'] ?? 'first_indexed desc';
+
+        // Calculate batch size
+        $itemsPerRow = $options['itemsPerRow'] ?? 6;
+        $rowsPerPage = $options['rowsPerPage'] ?? 2;
+        $this->batchSize = $itemsPerRow * $rowsPerPage;
+        // Set a minimum of 20 to make sure the server isn't hit too often
+        while ($this->batchSize <= 20) {
+            $this->batchSize *= 2;
+        }
     }
 
     /**

@@ -83,10 +83,21 @@ class ChannelLoader
             [, $configSection] = explode(':', $context['channels'][$i]['providerId'] . ':');
             $config = $this->config->$configSection;
 
+            // Calculate batch size
+            $itemsPerRow = $options['itemsPerRow'] ?? 6;
+            $rowsPerPage = $options['rowsPerPage'] ?? 2;
+            $pageSize = $itemsPerRow * $rowsPerPage;
+            $batchSize = $pageSize;
+            // Set a minimum of 20 to make sure the server isn't hit too often
+            while ($batchSize <= 20) {
+                $batchSize *= 2;
+            }
+
+            // Pass to view
             $context['channels'][$i]['config'] = [
-                'batchSize' => $config['batchSize'] ?? 24,
-                'pageSize' => $config['pageSize'] ?? 12,
-                'rowSize' => $config['rowSize'] ?? 6,
+                'batchSize' => $batchSize,
+                'pageSize' => $pageSize,
+                'rowSize' => $itemsPerRow,
             ];
         }
         return $context;

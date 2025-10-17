@@ -104,8 +104,16 @@ class Random extends AbstractChannelProvider implements TranslatorAwareInterface
      */
     public function setOptions(array $options)
     {
-        $this->batchSize = $options['batchSize'] ?? 20;
         $this->mode = $options['mode'] ?? 'retain';
+
+        // Calculate batch size
+        $itemsPerRow = $options['itemsPerRow'] ?? 6;
+        $rowsPerPage = $options['rowsPerPage'] ?? 2;
+        $this->batchSize = $itemsPerRow * $rowsPerPage;
+        // Set a minimum of 20 to make sure the server isn't hit too often
+        while ($this->batchSize <= 20) {
+            $this->batchSize *= 2;
+        }
     }
 
     /**
