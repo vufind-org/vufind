@@ -573,7 +573,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test deprecated Amazon/BookSite cover content warnings.
+     * Test deprecated Amazon/Booksite cover content warnings.
      *
      * @return void
      */
@@ -594,7 +594,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test deprecated Amazon/BookSite review content warnings.
+     * Test deprecated Amazon/Booksite review content warnings.
      *
      * @return void
      */
