@@ -94,21 +94,4 @@ class AbstractAdmin extends \VuFind\Controller\AbstractBase
     {
         return $this->createViewModel();
     }
-
-    /**
-     * Get the url parameters
-     *
-     * @param string $param          A key to check the url params for
-     * @param bool   $prioritizePost If true, check the POST params first
-     * @param mixed  $default        Default value if no value found
-     *
-     * @return string|array
-     */
-    protected function getParam($param, $prioritizePost = true, $default = null)
-    {
-        $primary = $prioritizePost ? 'fromPost' : 'fromQuery';
-        $secondary = $prioritizePost ? 'fromQuery' : 'fromPost';
-        return $this->params()->$primary($param)
-            ?? $this->params()->$secondary($param, $default);
-    }
 }

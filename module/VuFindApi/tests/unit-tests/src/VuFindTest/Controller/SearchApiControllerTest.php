@@ -223,13 +223,13 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
                     'doDefaultSearch',
                     'getConfig',
                     'setResumptionService',
-                    'getParamArray',
+                    'getAllRequestParams',
                     'getHeader',
                 ]
             )->setConstructorArgs([$container, $recordFormatter, $facetFormatter])
             ->getMock();
         $controller->expects($this->any())->method('isAccessDenied')->willReturn(false);
-        $controller->expects($this->any())->method('getParamArray')->willReturn($paramsArray['queryAndPost']);
+        $controller->expects($this->any())->method('getAllRequestParams')->willReturn($paramsArray['queryAndPost']);
         $controller->expects($this->any())->method('getHeader')->willReturnMap($paramsArray['headers'] ?? []);
         $searchResponse = [
             'resultCount' => 1,

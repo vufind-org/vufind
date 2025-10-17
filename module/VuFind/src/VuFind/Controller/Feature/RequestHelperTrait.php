@@ -1,8 +1,7 @@
 <?php
 
 /**
- * VuFind Action Feature Trait - Alphabetic browse support
- * Depends on direct access to the Service Manager.
+ * Request helper trait.
  *
  * PHP version 8
  *
@@ -33,7 +32,7 @@ namespace VuFind\Controller\Feature;
 use function is_callable;
 
 /**
- * VuFind Action Feature Trait - Alphabetic browse support
+ * Request helper trait
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -46,12 +45,11 @@ trait RequestHelperTrait
     /**
      * Get the url parameters
      *
-     * @param string $param          A key to check the url params for. If set to null, will return array
-     *                               with combined keys and values from both post and query.
+     * @param string $param          A key to check the url params for.
      * @param bool   $prioritizePost If true, check the POST params first
-     * @param mixed  $default        Default value if no value found
+     * @param mixed  $default        Value to return if no param found. Default is null.
      *
-     * @return string|array
+     * @return mixed
      */
     protected function getParam($param, $prioritizePost = true, $default = null)
     {
@@ -67,7 +65,7 @@ trait RequestHelperTrait
      *
      * @return array
      */
-    protected function getParamArray(): array
+    protected function getAllRequestParams(): array
     {
         return $this->params()->fromPost() + $this->params()->fromQuery();
     }
