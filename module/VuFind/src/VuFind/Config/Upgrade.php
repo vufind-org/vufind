@@ -423,7 +423,8 @@ class Upgrade implements LoggerAwareInterface
     /**
      * Add warnings if obsolete cover/review problems were found.
      *
-     * @param array $config Configuration to check
+     * @param array  $config Configuration to check
+     * @param string $site   Site name to check
      *
      * @return void
      */
@@ -468,7 +469,13 @@ class Upgrade implements LoggerAwareInterface
 
         // Warn the user about Amazon configuration issues:
         $this->checkObsoleteCoverOrReviewConfig($newConfig, 'Amazon');
-        $this->checkObsoleteCoverOrReviewConfig($newConfig, 'BookSite');
+
+        // Warn the user about BookSite configuration issues:
+        $this->checkObsoleteCoverOrReviewConfig($newConfig, 'Booksite');
+        if (isset($newConfig['Booksite'])) {
+            unset($newConfig['Booksite']);
+            $this->addWarning('The [Booksite] section of config.ini is no longer supported.');
+        }
 
         // Warn the user if they have enabled a deprecated Google API:
         if (isset($newConfig['GoogleSearch'])) {

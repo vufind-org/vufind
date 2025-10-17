@@ -333,6 +333,23 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test Booksite section warning.
+     *
+     * @return void
+     */
+    public function testBooksiteWarning(): void
+    {
+        $upgrader = $this->runAndGetConfigUpgrader('booksite');
+        $warnings = $upgrader->getWarnings();
+        $this->assertTrue(
+            in_array(
+                'The [Booksite] section of config.ini is no longer supported.',
+                $warnings
+            )
+        );
+    }
+
+    /**
      * Test Google-related warnings.
      *
      * @return void
@@ -564,7 +581,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     {
         $upgrader = $this->runAndGetConfigUpgrader('amazoncover');
         $warnings = $upgrader->getWarnings();
-        foreach (['Amazon', 'BookSite'] as $service) {
+        foreach (['Amazon', 'Booksite'] as $service) {
             $this->assertTrue(
                 in_array(
                     "WARNING: You have $service content enabled, but VuFind no longer sup"
@@ -585,7 +602,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     {
         $upgrader = $this->runAndGetConfigUpgrader('amazonreview');
         $warnings = $upgrader->getWarnings();
-        foreach (['Amazon', 'BookSite'] as $service) {
+        foreach (['Amazon', 'Booksite'] as $service) {
             $this->assertTrue(
                 in_array(
                     "WARNING: You have $service content enabled, but VuFind no longer sup"
