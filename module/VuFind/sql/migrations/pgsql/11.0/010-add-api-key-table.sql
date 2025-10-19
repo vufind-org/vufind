@@ -10,3 +10,4 @@ CREATE TABLE api_key (
 );
 CREATE INDEX api_key_user_id_idx ON api_key (user_id);
 CREATE INDEX api_key_token_idx ON api_key (token);
+ADD CONSTRAINT api_key_ibfk_1 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE,

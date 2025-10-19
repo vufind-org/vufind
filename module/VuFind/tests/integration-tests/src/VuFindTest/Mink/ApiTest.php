@@ -41,6 +41,8 @@ use function strlen;
 /**
  * Mink test class for the VuFind APIs.
  *
+ * Class must be final due to use of "new static()" by LiveDatabaseTrait.
+ *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
@@ -111,11 +113,6 @@ final class ApiTest extends \VuFindTest\Integration\MinkTestCase
                         'mode' => $mode,
                         'token_salt' => 'test_token_salt',
                         'key_limit' => 10,
-                    ],
-                    'Mail' => [
-                        'testOnly' => true,
-                        'message_log' => $this->getEmailLogPath(),
-                        'message_log_format' => $this->getEmailLogFormat(),
                     ],
                 ],
                 'permissions' => [
@@ -221,7 +218,7 @@ final class ApiTest extends \VuFindTest\Integration\MinkTestCase
         // Now click the Generate new key button:
         $this->findAndAssertLink($page, 'Generate new key')->click();
 
-        $this->findCssAndSetValue($page, '#api-key-title', 'test token');
+        $this->findCssAndSetValue($page, '#api-key-title', 'test title');
         $this->clickCss($page, '.btn.btn-primary[name="submitButton"]');
         $text = $this->findCssAndGetText($page, '.alert-success');
 
@@ -233,6 +230,12 @@ final class ApiTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertTrue(strlen($testToken) > 0);
 
         $this->clickCss($page, '.btn-default[data-bs-dismiss="modal"]');
+
+        $this->waitForPageLoad($page);
+        $this->assertEquals(
+            'test title',
+            $this->findCssAndGetText($page, '.table.table-striped th', index: 0)
+        );
     }
 
     /**
@@ -246,6 +249,12 @@ final class ApiTest extends \VuFindTest\Integration\MinkTestCase
         $this->setApiKeyConfigs();
 
         $page = $this->makeRecordApiCall();
+        $this->assertEquals(
+            '200',
+            $this->findCssAndGetText($page, '.live-responses-table .response td.response-col_status')
+        );
+
+        $page = $this->makeRecordApiCall(apiKeyToken: 'failing_token_123');
         $this->assertEquals(
             '200',
             $this->findCssAndGetText($page, '.live-responses-table .response td.response-col_status')

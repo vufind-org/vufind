@@ -29,7 +29,6 @@
 
 namespace VuFind\Db\Service;
 
-use DateTime;
 use VuFind\Db\Entity\ApiKeyEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 
@@ -78,17 +77,6 @@ interface ApiKeyServiceInterface extends DbServiceInterface
      * @return ?ApiKeyEntityInterface
      */
     public function getByToken(string $token): ?ApiKeyEntityInterface;
-
-    /**
-     * Delete expired API keys. Allows setting a limit so that rows can be deleted in small batches.
-     * API keys only "expire" if they are not used in a certain amount of time.
-     *
-     * @param DateTime $dateLimit Date threshold of an "expired" record.
-     * @param ?int     $limit     Maximum number of rows to delete or null for no limit.
-     *
-     * @return int Number of rows deleted
-     */
-    public function deleteExpired(DateTime $dateLimit, ?int $limit = null): int;
 
     /**
      * Delete API key

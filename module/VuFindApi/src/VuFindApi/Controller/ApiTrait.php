@@ -244,9 +244,13 @@ trait ApiTrait
      * Check request for API key if mode is not set to disabled.
      *
      * @return bool
+     * @throws \Exception
      */
     protected function checkRequestForApiKey(): bool
     {
+        if (!$this->developerSettingsService) {
+            throw new \Exception('ApiTrait: Developer settings service not initialized');
+        }
         return $this->developerSettingsService->isApiKeyAllowed($this->getHeader($this->apiKeyHeaderField));
     }
 

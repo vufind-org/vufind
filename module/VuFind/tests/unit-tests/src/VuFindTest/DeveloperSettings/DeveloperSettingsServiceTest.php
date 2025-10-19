@@ -31,12 +31,15 @@ namespace VuFindTest\DeveloperSettings;
 
 use DateTime;
 use Generator;
+use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Db\Entity\ApiKey;
 use VuFind\Db\Entity\ApiKeyEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\ApiKeyServiceInterface;
 use VuFind\DeveloperSettings\DeveloperSettingsService;
 use VuFind\DeveloperSettings\DeveloperSettingsStatus;
+
+use function is_bool;
 
 /**
  * DeveloperSettingsService Test Class
@@ -62,21 +65,21 @@ class DeveloperSettingsServiceTest extends \PHPUnit\Framework\TestCase
         ?ApiKeyServiceInterface $apiKeyService = null
     ): DeveloperSettingsService {
         return new DeveloperSettingsService(
-            $apiKeyService ??= $this->createMock(ApiKeyServiceInterface::class),
+            $apiKeyService ?? $this->createMock(ApiKeyServiceInterface::class),
             $config
         );
     }
 
     /**
-     * Returns mocked entities with given methods and returns
+     * Create a mock of a class with methods.
      *
-     * @param class-string<T> $name              Classname
-     * @param array           $methodsAndReturns Methods and returns for the mock as associative array
+     * @param class-string<T> $name              Class name.
+     * @param array           $methodsAndReturns Methods and returns for the mock as an associative array.
      *
      * @template T
-     * @return   mixed
+     * @return   T
      */
-    protected function getMockEntity(string $name, array $methodsAndReturns = []): mixed
+    protected function createMockWithMethods(string $name, array $methodsAndReturns = []): MockObject
     {
         $mockEntity = $this->createMock($name);
         foreach ($methodsAndReturns as $method => $return) {
@@ -84,12 +87,6 @@ class DeveloperSettingsServiceTest extends \PHPUnit\Framework\TestCase
         }
         return $mockEntity;
     }
-
-    /**
-     * Get apiKey mock entitie.
-     *
-     * @param array $
-     */
 
     /**
      * Get test generate new key data
@@ -209,13 +206,13 @@ class DeveloperSettingsServiceTest extends \PHPUnit\Framework\TestCase
         if (isset($expected['error'])) {
             $this->expectExceptionMessage($expected['error']);
         }
-        $apiKeyNew = $this->getMockEntity(ApiKeyEntityInterface::class, ['getTitle' => 'test']);
+        $apiKeyNew = $this->createMockWithMethods(ApiKeyEntityInterface::class, ['getTitle' => 'test']);
 
         $apiKeys = array_map(
-            fn ($apiKey) => $this->getMockEntity(ApiKeyEntityInterface::class, $apiKey),
+            fn ($apiKey) => $this->createMockWithMethods(ApiKeyEntityInterface::class, $apiKey),
             $tokens
         );
-        $apiKeyService = $this->getMockEntity(
+        $apiKeyService = $this->createMockWithMethods(
             ApiKeyServiceInterface::class,
             [
                 'getApiKeysForUser' => $apiKeys,
@@ -223,12 +220,14 @@ class DeveloperSettingsServiceTest extends \PHPUnit\Framework\TestCase
             ]
         );
 
-        $userEntity = $this->getMockEntity(UserEntityInterface::class, $user);
+        $userEntity = $this->createMockWithMethods(UserEntityInterface::class, $user);
 
         $result = $this->getService($config, $apiKeyService)->generateApiKeyForUser($userEntity, 'test');
-        if (!isset($expected['result'])) {
+        // No need to assert if test expects an error to be thrown.
+        if (isset($expected['error'])) {
             return;
-        } elseif ($expected['result'] === false) {
+        }
+        if (is_bool($result)) {
             $this->assertEquals($expected['result'], $result);
         } else {
             $this->assertEquals('test', $result->getTitle());
@@ -345,8 +344,8 @@ class DeveloperSettingsServiceTest extends \PHPUnit\Framework\TestCase
      */
     public function testIsApiKeyAllowed(?string $token, array $config, ?array $apiKey, bool $expected): void
     {
-        $apiKey = $apiKey ? $this->getMockEntity(ApiKeyEntityInterface::class, $apiKey) : null;
-        $apiKeyService = $this->getMockEntity(ApiKeyServiceInterface::class, ['getByToken' => $apiKey]);
+        $apiKey = $apiKey ? $this->createMockWithMethods(ApiKeyEntityInterface::class, $apiKey) : null;
+        $apiKeyService = $this->createMockWithMethods(ApiKeyServiceInterface::class, ['getByToken' => $apiKey]);
         $result = $this->getService($config, $apiKeyService)->isApiKeyAllowed($token);
         $this->assertEquals($expected, $result);
     }
@@ -365,7 +364,7 @@ class DeveloperSettingsServiceTest extends \PHPUnit\Framework\TestCase
         $apiKey = new ApiKey();
         $date = new DateTime('01-01-1999');
         $apiKey->setTitle('heitest')->setCreated($date)->setLastUsed($date)->setRevoked(false);
-        $apiKeyService = $this->getMockEntity(ApiKeyServiceInterface::class, ['getByToken' => $apiKey]);
+        $apiKeyService = $this->createMockWithMethods(ApiKeyServiceInterface::class, ['getByToken' => $apiKey]);
         $apiKeyService->expects($this->once())->method('persistEntity')->willReturnCallback(
             function ($apiKey) use ($date) {
                 $this->assertNotEquals(

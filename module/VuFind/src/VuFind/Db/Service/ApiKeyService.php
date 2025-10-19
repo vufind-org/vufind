@@ -29,7 +29,6 @@
 
 namespace VuFind\Db\Service;
 
-use DateTime;
 use VuFind\Db\Entity\ApiKeyEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 
@@ -42,9 +41,7 @@ use VuFind\Db\Entity\UserEntityInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class ApiKeyService extends AbstractDbService implements
-    ApiKeyServiceInterface,
-    Feature\DeleteExpiredInterface
+class ApiKeyService extends AbstractDbService implements ApiKeyServiceInterface
 {
     /**
      * Create an api_key entity object.
@@ -120,18 +117,5 @@ class ApiKeyService extends AbstractDbService implements
     public function deleteApiKey(ApiKeyEntityInterface $apiKey): void
     {
         $this->deleteEntity($apiKey);
-    }
-
-    /**
-     * Delete expired API keys. Allows setting a limit so that rows can be deleted in small batches.
-     *
-     * @param DateTime $dateLimit Date threshold of an "expired" record.
-     * @param ?int     $limit     Maximum number of rows to delete or null for no limit.
-     *
-     * @return int Number of rows deleted
-     */
-    public function deleteExpired(DateTime $dateLimit, ?int $limit = null): int
-    {
-        return 0;
     }
 }
