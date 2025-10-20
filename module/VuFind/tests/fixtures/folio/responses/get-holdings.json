@@ -378,12 +378,7 @@
                     }
                 }
             ],
-            "totalRecords": 1,
-            "resultInfo": {
-                "totalRecords": 0,
-                "facets": [],
-                "diagnostics": []
-            }
+            "totalRecords": 1
         },
         "bodyType": "json",
         "status": 200
