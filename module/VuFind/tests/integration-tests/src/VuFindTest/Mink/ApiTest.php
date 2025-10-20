@@ -126,6 +126,9 @@ final class ApiTest extends \VuFindTest\Integration\MinkTestCase
                         'role' => 'guest',
                     ],
                 ],
+            ],
+            [
+                'permissions',
             ]
         );
     }
