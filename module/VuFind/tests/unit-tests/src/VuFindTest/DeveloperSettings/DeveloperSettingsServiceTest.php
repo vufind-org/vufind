@@ -73,6 +73,19 @@ class DeveloperSettingsServiceTest extends \PHPUnit\Framework\TestCase
     /**
      * Create a mock of a class with methods.
      *
+     * An example of how to use the method to create a mocked user entity with three methods:
+     *
+     * ```
+     * $mockUser = $this->createMockWithMethods(
+     *  UserEntityInterface::class,
+     *  [
+     *    'getId' => 1,
+     *    'getFirstname' => 'Test',
+     *    'getLastname' => 'Tester',
+     *  ]
+     * );
+     * ```
+     *
      * @param class-string<T> $name              Class name.
      * @param array           $methodsAndReturns Methods and returns for the mock as an associative array.
      *
@@ -81,11 +94,11 @@ class DeveloperSettingsServiceTest extends \PHPUnit\Framework\TestCase
      */
     protected function createMockWithMethods(string $name, array $methodsAndReturns = []): MockObject
     {
-        $mockEntity = $this->createMock($name);
+        $mockObject = $this->createMock($name);
         foreach ($methodsAndReturns as $method => $return) {
-            $mockEntity->expects($this->any())->method($method)->willReturn($return);
+            $mockObject->expects($this->any())->method($method)->willReturn($return);
         }
-        return $mockEntity;
+        return $mockObject;
     }
 
     /**
