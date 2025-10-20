@@ -412,7 +412,7 @@ abstract class AbstractBase implements HandlerInterface, \Laminas\Log\LoggerAwar
             'institution' => $list->getInstitution(),
             'listIdentifier' => $list->getListConfigIdentifier(),
             'full_name' => $requestValues['full_name'] ?? $cardInfo['full_name'],
-            'email' => $requestValues['email'] ?? $user->getEmail(),
+            'email' => $requestValues['email'] ?? $cardInfo['email'],
             'phone' => $requestValues['phone'] ?? null,
             'pickup_date' => $requestValues['pickup_date'] ?? null,
             'message' => $requestValues['message'] ?? null,
@@ -448,32 +448,24 @@ abstract class AbstractBase implements HandlerInterface, \Laminas\Log\LoggerAwar
     {
         $patron = $this->getService(ILSAuthenticator::class)->storedCatalogLogin();
         $cardService = $this->getService(\VuFind\Db\Service\PluginManager::class)->get(UserCardServiceInterface::class);
-        $catUsername = $patron['cat_username'] ?? '';
-        $cardName = $patron['__local_cat_username'] ?? $catUsername;
-        if ($cardEntity = $cardService->getLibraryCards($user, null, $user->getCatUsername())) {
-            $cardEntity = reset($cardEntity);
-            if ($dbCardName = $cardEntity->getCardName()) {
-                $cardName = $dbCardName === $catUsername ? $cardName : $dbCardName;
+        $cardName = $patron['__local_cat_username'] ?? $patron['cat_username'];
+        if ($cards = $cardService->getLibraryCards($user, null, $patron['cat_username'])) {
+            $dbCardName = reset($cards)->getCardName();
+            if ($dbCardName !== $patron['cat_username']) {
+                $cardName = $dbCardName;
             }
         }
-        // Prioritize name from patron
-        $firstName = $patron['firstname'] ?? null;
-        $lastName = $patron['lastname'] ?? null;
 
-        // If either field from patron is empty, then use name from db
-        if (!$firstName || !$lastName) {
-            $firstName = $user->getFirstname();
-            $lastName = $user->getLastname();
-        }
-
-        // Form full name from the obtained data
+        $firstName = $patron['firstname'];
+        $lastName = $patron['lastname'];
         $fullName = trim("$firstName $lastName");
 
         return [
             'first_name' => $firstName,
             'last_name' => $lastName,
             'full_name' => $fullName,
-            'patron_id' => $patron['__local_id'] ?? $patron['id'] ?? '',
+            'patron_id' => $patron['__local_id'] ?? $patron['id'],
+            'email' => $patron['email'],
             'card_name' => $cardName,
         ];
     }

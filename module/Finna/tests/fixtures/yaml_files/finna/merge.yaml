@@ -1,0 +1,17 @@
+Section:
+  SubSection:
+    second_test:
+      Title: Yaml finna title
+      Description: Yaml finna Description
+    test:
+      Title: should not be displayed
+      Description: should not be disblayed
+      Index: 5
+Section_2:
+  SubSection_2:
+    some:
+      Value: cat
+      Yes: no
+    where:
+      Up: down
+      Right: Left

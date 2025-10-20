@@ -1,0 +1,18 @@
+# See local/config/finna/CookieConsent.yaml for more information.
+
+"@parent_yaml": "../finna/merge.yaml"
+"@merge_sections":
+  - [Section, SubSection]
+
+Section:
+  SubSection:
+    test:
+      Title: Yaml vufind title
+      Description: Yaml vufind Description
+Section_2:
+  SubSection_2:
+    some:
+      nope: nope
+    where:
+      - array
+      - here

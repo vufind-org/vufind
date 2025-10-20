@@ -70,7 +70,7 @@ class Email extends AbstractBase
         $cardInfo = $this->getPreferredCardInfo($user);
 
         $replyToName = $formValues['full_name'] ?: $cardInfo['full_name'];
-        $replyToEmail = $formValues['email'] ?: $user->getEmail();
+        $replyToEmail = $formValues['email'] ?: $cardInfo['email'];
 
         $result = true;
         foreach ($this->getRecipient() as $recipient) {

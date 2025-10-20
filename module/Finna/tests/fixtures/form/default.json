@@ -1,0 +1,39 @@
+{
+    "forms": {
+        "test": {
+            "title": "Test title",
+            "onlyForLoggedUsers": true,
+            "emailSubject": "Test email subject",
+            "help": {
+                "pre": "Pre test",
+                "post": [
+                    "Post array 1",
+                    "Post array 2"
+                ]
+            },
+            "fields": [
+                {
+                    "name": "f1",
+                    "type": "select",
+                    "label": "test select label",
+                    "required": true,
+                    "options": {
+                        "o1": {
+                            "value": "value1",
+                            "label": "label1"
+                        },
+                        "o2": {
+                            "value": "value2",
+                            "label": "label2"
+                        }
+                    }
+                },
+                {
+                    "name": "f2",
+                    "type": "text",
+                    "label": "test text label"
+                }
+            ]
+        }
+    }
+}

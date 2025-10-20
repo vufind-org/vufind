@@ -17,6 +17,10 @@
 #   title (string) Form title (translation key)
 #   onlyForLoggedUsers (boolean) Require the user to be logged in to see the form
 #                                (default = false)
+#   preferPatronInformation (boolean) Should user information be filled using patron instead
+#                                     of database? Default is false.
+#                                     If includeBarcode or includePatronId values are set to true,
+#                                     this option will be set to true
 #   emailSubject (string) Email subject (translation key). (default = email_subject
 #                         value from config.ini [Feedback] section, or 'VuFind Feedback')
 #                         The subject may contain placeholders (for example %%receiver%%)

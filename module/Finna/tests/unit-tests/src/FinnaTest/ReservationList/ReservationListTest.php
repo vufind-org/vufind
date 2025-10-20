@@ -476,8 +476,7 @@ class ReservationListTest extends \PHPUnit\Framework\TestCase
             'Example Institution',
             'list_with_email',
             [
-              'firstName' => 'Testaaja',
-              'lastName' => 'von Testaaja',
+              'full_name' => 'Test Tester',
               'email' => 'testaaja@testeri.fi',
               'pickup_date' => '2025-01-01',
               'message' => 'Test message',
@@ -486,14 +485,14 @@ class ReservationListTest extends \PHPUnit\Framework\TestCase
               'listId' => null,
               'institution' => 'Example Institution',
               'listIdentifier' => 'list_with_email',
-              'full_name' => 'Testaaja von Testaaja',
+              'full_name' => 'Test Tester',
               'email' => 'testaaja@testeri.fi',
               'record_ids_text' => '',
               'record_source_and_ids' => [],
               'pickup_date' => '2025-01-01',
               'message' => 'Test message',
               'phone' => null,
-              'card_info' => 'test_cat_username',
+              'card_info' => 'Patron card name',
             ],
           ],
           'different name given' => [
@@ -509,13 +508,13 @@ class ReservationListTest extends \PHPUnit\Framework\TestCase
               'institution' => 'Example Institution',
               'listIdentifier' => 'list_with_email',
               'full_name' => 'Pouta Pakkanen',
-              'email' => 'testaaja@testeri.fi',
+              'email' => 'patronemail@email.fi',
               'record_ids_text' => '',
               'record_source_and_ids' => [],
               'pickup_date' => '2025-01-01',
               'message' => 'Test message',
               'phone' => null,
-              'card_info' => 'test_cat_username',
+              'card_info' => 'Patron card name',
             ],
           ],
           'disec get list values' => [
@@ -531,13 +530,13 @@ class ReservationListTest extends \PHPUnit\Framework\TestCase
               'institution' => 'Example Institution',
               'listIdentifier' => 'list_with_disec',
               'full_name' => 'Pouta Pekkanen',
-              'email' => 'testaaja@testeri.fi',
+              'email' => 'patronemail@email.fi',
               'record_ids_text' => '',
               'record_source_and_ids' => [],
               'pickup_date' => '2025-01-01',
               'message' => 'Test message',
               'phone' => null,
-              'card_info' => 'test_cat_username',
+              'card_info' => 'Patron card name',
             ],
           ],
         ];
@@ -619,31 +618,45 @@ class ReservationListTest extends \PHPUnit\Framework\TestCase
 
         if (!$handlerServices) {
             $handlerServices = [
-            [\Finna\Config\YamlReader::class, $yamlReader],
-            [\VuFindHttp\HttpService::class, $httpService],
-            [\VuFind\Record\Loader::class, $this->getFinnaRecordLoader()],
-            [\Finna\ReservationList\Form\Form::class, $mockForm],
-            [ILSAuthenticator::class, $ilsAuthenticator],
-            [PluginManager::class, $dbPluginManager],
-            ['ViewRenderer', $viewRenderer],
-            [
-              \Finna\ReservationList\ReservationListService::class,
-              $this->getReservationListService(reservationListConfig: $listConfig),
-            ],
+              [\Finna\Config\YamlReader::class, $yamlReader],
+              [\VuFindHttp\HttpService::class, $httpService],
+              [\VuFind\Record\Loader::class, $this->getFinnaRecordLoader()],
+              [\Finna\ReservationList\Form\Form::class, $mockForm],
+              [ILSAuthenticator::class, $ilsAuthenticator],
+              [PluginManager::class, $dbPluginManager],
+              ['ViewRenderer', $viewRenderer],
+              [
+                \Finna\ReservationList\ReservationListService::class,
+                $this->getReservationListService(reservationListConfig: $listConfig),
+              ],
             ];
         }
 
         if ($mockDisec === null) {
-            $mockDisec = $this->getMockBuilder(Disec::class)->onlyMethods(['getService', 'debug'])
+            $mockDisec = $this->getMockBuilder(Disec::class)
+              ->onlyMethods(['getService', 'debug', 'getPreferredCardInfo'])
               ->disableOriginalConstructor()->getMock();
             $mockDisec->expects($this->any())->method('getService')->willReturnMap($handlerServices);
+            $mockDisec->expects($this->any())->method('getPreferredCardInfo')->willReturn([
+              'patron_id' => '11',
+              'full_name' => 'Test Tester',
+              'email' => 'patronemail@email.fi',
+              'card_name' => 'Patron card name',
+            ]);
         }
 
         if ($mockEmail === null) {
-            $mockEmail = $this->getMockBuilder(Email::class)->onlyMethods(['getService', 'debug', 'sendEmail'])
+            $mockEmail = $this->getMockBuilder(Email::class)
+              ->onlyMethods(['getService', 'debug', 'sendEmail', 'getPreferredCardInfo'])
               ->disableOriginalConstructor()->getMock();
             $mockEmail->expects($this->any())->method('getService')->willReturnMap($handlerServices);
             $mockEmail->expects($this->any())->method('sendEmail')->willReturn(true);
+            $mockEmail->expects($this->any())->method('getPreferredCardInfo')->willReturn([
+              'patron_id' => '11',
+              'full_name' => 'Test Tester',
+              'email' => 'patronemail@email.fi',
+              'card_name' => 'Patron card name',
+            ]);
         }
 
         $listPluginMap = [
