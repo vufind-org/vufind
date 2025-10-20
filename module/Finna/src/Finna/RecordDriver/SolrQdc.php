@@ -777,4 +777,16 @@ class SolrQdc extends \VuFind\RecordDriver\SolrDefault implements \Laminas\Log\L
         }
         return [];
     }
+
+    /**
+     * Given a Solr field name, return an appropriate caption.
+     *
+     * @param string $field Solr field name
+     *
+     * @return mixed        Caption if found, false if none available.
+     */
+    public function getSnippetCaption($field)
+    {
+        return $field !== 'contents' ? parent::getSnippetCaption($field) : false;
+    }
 }
