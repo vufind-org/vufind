@@ -50,11 +50,11 @@ class UserList implements UserListEntityInterface
     use DateTimeTrait;
 
     /**
-     * Constant for default type of user list i.e favorites.
+     * Constant for default type of user list.
      *
      * @var string
      */
-    public const TYPE_USERLIST = 'userlist';
+    public const TYPE_DEFAULT = 'default';
 
     /**
      * Unique ID.
@@ -112,8 +112,8 @@ class UserList implements UserListEntityInterface
      *
      * @var string
      */
-    #[ORM\Column(name: 'type', type: 'text', length: 200, nullable: false, options: ['default' => self::TYPE_USERLIST])]
-    protected string $type = self::TYPE_USERLIST;
+    #[ORM\Column(name: 'type', type: 'text', length: 200, nullable: false, options: ['default' => self::TYPE_DEFAULT])]
+    protected string $type = self::TYPE_DEFAULT;
 
     /**
      * Constructor.
@@ -187,7 +187,7 @@ class UserList implements UserListEntityInterface
      */
     public function getType(): string
     {
-        return $this->type ?? self::TYPE_USERLIST;
+        return $this->type ?? self::TYPE_DEFAULT;
     }
 
     /**
