@@ -24,3 +24,7 @@ $btn-default-border:     #ccc !default;
     @extend .toolbar-btn;
   }
 }
+
+.btn-link:hover {
+  color: var(--#{$prefix}link-hover-color);
+}

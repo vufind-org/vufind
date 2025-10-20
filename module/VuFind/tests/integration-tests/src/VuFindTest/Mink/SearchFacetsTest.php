@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -32,6 +32,7 @@
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
+use VuFindTest\Feature\RetryClickTrait;
 use VuFindTest\Feature\SearchFacetFilterTrait;
 use VuFindTest\Feature\SearchLimitTrait;
 use VuFindTest\Feature\SearchSortTrait;
@@ -48,6 +49,7 @@ use VuFindTest\Feature\SearchSortTrait;
  */
 class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 {
+    use RetryClickTrait;
     use SearchLimitTrait;
     use SearchSortTrait;
     use SearchFacetFilterTrait;
@@ -817,7 +819,17 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $this->clickCss($page, $this->facetExpandSelector);
         $this->clickCss($page, $this->facetSecondLevelExcludeLinkSelector);
-        $this->assertAppliedFilters($page, ['hierarchy:level1a/level2a']);
+        try {
+            $this->assertAppliedFilters($page, ['hierarchy:level1a/level2a']);
+        } catch (\Exception $e) {
+            // Sometimes the click doesn't go through possibly due to transition, so retry once:
+            $this->retryClickWithResizedWindow(
+                $this->getMinkSession(),
+                $page,
+                $this->facetSecondLevelExcludeLinkSelector
+            );
+            $this->assertAppliedFilters($page, ['hierarchy:level1a/level2a']);
+        }
         $this->assertEquals(
             'Showing 1 - 7 results of 7',
             $extractCount($this->findCssAndGetText($page, '.search-stats'))

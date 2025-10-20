@@ -17,7 +17,7 @@ VuFind.register('channels', function Channels() {
     }
     var $cont = $(
       '<div class="dropdown">' +
-        '<button class="btn btn-link" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true" aria-label="' + VuFind.translate('toggle_dropdown') + '">' +
+        '<button class="btn btn-link" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true" aria-label="' + VuFind.translate('channel_options_dropdown_toggle', {'%%channel%%': elem.closest('.channel-wrapper').getElementsByTagName('h2')[0].textContent}) + '">' +
           VuFind.icon("ui-dots-menu") +
         '</button>' +
       '</div>'

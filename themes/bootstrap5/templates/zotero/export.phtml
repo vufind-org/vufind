@@ -1,0 +1,10 @@
+<?php
+    // Set page title.
+    $this->headTitle($this->translate('Export'));
+
+    // Set up breadcrumbs:
+    $this->breadcrumbs()->set($this->translate('Export'));
+?>
+<?=$this->component('page-title', ['title' => $this->translate('Export')]);?>
+
+<?=$this->flashmessages()?>

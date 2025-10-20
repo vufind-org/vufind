@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -712,7 +712,9 @@ class EDS extends DefaultRecord
     {
         $doi = $this->getItem('Name', 'DOI');
         if (isset($doi[0]['Data'])) {
-            return strip_tags($doi[0]['Data']);
+            $cleanDoi = strip_tags($doi[0]['Data']);
+            $cleanDoi = preg_replace('/https?:\/\/.*doi.org\//', '', $cleanDoi);
+            return $cleanDoi;
         }
         $dois = $this->getFilteredIdentifiers(['doi']);
         return $dois[0] ?? false;

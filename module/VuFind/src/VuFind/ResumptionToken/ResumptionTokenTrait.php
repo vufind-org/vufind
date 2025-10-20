@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -29,6 +29,7 @@
 
 namespace VuFind\ResumptionToken;
 
+use DateTime;
 use VuFind\Db\Entity\OaiResumptionEntityInterface;
 use VuFind\Db\Service\OaiResumptionServiceInterface;
 
@@ -80,8 +81,8 @@ trait ResumptionTokenTrait
     ): OaiResumptionEntityInterface {
         $params['cursor'] = $cursor;
         $params['cursorMark'] = $cursorMark;
-        $expire = time() + $lifetime;
-        return $this->resumptionService->createAndPersistToken($params, $expire);
+        $expiry = new DateTime("now + $lifetime seconds");
+        return $this->resumptionService->createAndPersistToken($params, $expiry);
     }
 
     /**

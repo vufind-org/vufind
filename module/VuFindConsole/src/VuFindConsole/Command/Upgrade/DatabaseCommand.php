@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -29,6 +29,7 @@
 
 namespace VuFindConsole\Command\Upgrade;
 
+use Closure;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -59,13 +60,13 @@ class DatabaseCommand extends Command
     /**
      * Constructor
      *
-     * @param MigrationManager  $migrationManager  Database migration manager
-     * @param ConnectionFactory $connectionFactory Database connection factory
-     * @param ?string           $name              The name of the command; passing null means it
+     * @param Closure           $migrationManagerFactory Database migration manager factory
+     * @param ConnectionFactory $connectionFactory       Database connection factory
+     * @param ?string           $name                    The name of the command; passing null means it
      * must be set in configure()
      */
     public function __construct(
-        protected MigrationManager $migrationManager,
+        protected Closure $migrationManagerFactory,
         protected ConnectionFactory $connectionFactory,
         $name = null
     ) {
@@ -115,21 +116,23 @@ class DatabaseCommand extends Command
     /**
      * Support method for "interactive mode."
      *
-     * @param string[]        $migrations Migrations to apply
-     * @param Connection      $connection Active database connection
-     * @param InputInterface  $input      Input object
-     * @param OutputInterface $output     Output object
+     * @param MigrationManager $migrationManager Migration manager
+     * @param string[]         $migrations       Migrations to apply
+     * @param Connection       $connection       Active database connection
+     * @param InputInterface   $input            Input object
+     * @param OutputInterface  $output           Output object
      *
      * @return void
      */
     protected function applyMigrationsInteractively(
+        MigrationManager $migrationManager,
         array $migrations,
         Connection $connection,
         InputInterface $input,
         OutputInterface $output
     ): void {
         foreach ($migrations as $migration) {
-            $output->writeln('Working on migration: ' . $this->migrationManager->getShortMigrationName($migration));
+            $output->writeln('Working on migration: ' . $migrationManager->getShortMigrationName($migration));
             $question = new ChoiceQuestion(
                 'Choose an option:',
                 [
@@ -146,12 +149,12 @@ class DatabaseCommand extends Command
                         $output->writeln(file_get_contents($migration));
                         break;
                     case 'Appl':
-                        $this->migrationManager->applyMigrations([$migration], $connection);
+                        $migrationManager->applyMigrations([$migration], $connection);
                         break 2;
                     case 'Skip':
                         break 2;
                     case 'Mark':
-                        $this->migrationManager->markMigrationApplied($migration, $connection);
+                        $migrationManager->markMigrationApplied($migration, $connection);
                         break 2;
                 }
             }
@@ -180,12 +183,12 @@ class DatabaseCommand extends Command
 
         try {
             $connection = $sqlOnly ? null : $this->connectionFactory->getConnection($rootUser, $rootPass);
-            $migrations = $this->migrationManager
-                ->getMigrations($fromVersion ?? $this->migrationManager->determineOldVersion());
+            $migrationManager = ($this->migrationManagerFactory)();
+            $migrations = $migrationManager->getMigrations($fromVersion ?? $migrationManager->determineOldVersion());
             if ($interactive) {
-                $this->applyMigrationsInteractively($migrations, $connection, $input, $output);
+                $this->applyMigrationsInteractively($migrationManager, $migrations, $connection, $input, $output);
             } else {
-                $result = $this->migrationManager->applyMigrations($migrations, $connection);
+                $result = $migrationManager->applyMigrations($migrations, $connection);
                 if ($sqlOnly) {
                     $output->writeln($result);
                 }

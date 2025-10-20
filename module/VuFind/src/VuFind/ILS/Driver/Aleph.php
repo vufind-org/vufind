@@ -23,8 +23,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -63,7 +63,7 @@ use function strlen;
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class Aleph extends AbstractBase implements
-    \Laminas\Log\LoggerAwareInterface,
+    \Psr\Log\LoggerAwareInterface,
     \VuFindHttp\HttpServiceAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
@@ -1070,7 +1070,7 @@ class Aleph extends AbstractBase implements
         $items = [];
         foreach ($details['details'] as $id) {
             try {
-                $result = $this->doRestDLFRequest(
+                $this->doRestDLFRequest(
                     [
                         'patron', $patronId, 'circulationActions', 'requests',
                         'holds', $id,
@@ -1514,6 +1514,7 @@ class Aleph extends AbstractBase implements
                     }
                 }
             } catch (\Exception $ex) {
+                // Fall through to throw the exception below
             }
         }
         throw new ILSException('barcode not found');
