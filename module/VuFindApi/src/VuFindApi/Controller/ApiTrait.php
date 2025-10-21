@@ -79,7 +79,7 @@ trait ApiTrait
      *
      * @var string
      */
-    protected string $apiKeyHeaderField = 'X-API-KEY';
+    protected string $apiKeyHeaderField = VUFIND_API_KEY_DEFAULT_HEADER_FIELD;
 
     /**
      * API key service
@@ -87,13 +87,6 @@ trait ApiTrait
      * @var ?DeveloperSettingsService
      */
     protected ?DeveloperSettingsService $developerSettingsService = null;
-
-    /**
-     * Key for header to look for an API key
-     *
-     * @var string
-     */
-    protected string $apiKeyHeader;
 
     /**
      * Execute the request
@@ -258,9 +251,18 @@ trait ApiTrait
      * Return output if request is missing an API key and API keys are enforced
      *
      * @return \Laminas\Http\Response
+     * @throws \Exception
      */
     protected function outputMissingAPIKey(): \Laminas\Http\Response
     {
-        return $this->output([], ApiInterface::STATUS_UNAUTHORIZED, 401, 'Missing or invalid API key');
+        if (!$this->developerSettingsService) {
+            throw new \Exception('ApiTrait: Developer settings service not initialized');
+        }
+        return $this->output(
+            [],
+            ApiInterface::STATUS_UNAUTHORIZED,
+            401,
+            $this->developerSettingsService->getApiKeyMode()->getUnauthorizedMessage()
+        );
     }
 }

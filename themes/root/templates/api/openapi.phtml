@@ -24,6 +24,15 @@
         }
     ],
     "components": {
+<?php if ($this->apiKeysEnabled): ?>
+        "securitySchemes": {
+            "ApiKeyAuth": {
+                "type": "apiKey",
+                "in": "header",
+                "name": <?=json_encode($this->apiKeyHeaderField)?>
+            }
+        },
+<?php endif; ?>
         "schemas": {
             "Success": {
                 "type": "object",
@@ -47,6 +56,21 @@
                         "description": "Status code",
                         "type": "string",
                         "enum": ["ERROR"]
+                    },
+                    "statusMessage": {
+                        "description": "A descriptive error message",
+                        "type": "string"
+                    }
+                },
+                "required": ["status", "statusMessage"]
+            },
+            "Unauthorized": {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "description": "Status code",
+                        "type": "string",
+                        "enum": ["UNAUTHORIZED"]
                     },
                     "statusMessage": {
                         "description": "A descriptive error message",

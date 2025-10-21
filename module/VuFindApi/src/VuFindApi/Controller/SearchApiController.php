@@ -204,6 +204,9 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements
             'indexLabel' => $this->indexLabel,
             'modelPrefix' => $this->modelPrefix,
             'maxLimit' => $this->maxLimit,
+            'apiKeysEnabled' => $this->developerSettingsService?->apiKeysEnabled() ?? false,
+            'apiKeyHeaderField' => $this->apiKeyHeaderField,
+            'apiKeyMode' => $this->developerSettingsService?->getApiKeyMode(),
         ];
         $json = $this->getViewRenderer()->render(
             'searchapi/openapi',

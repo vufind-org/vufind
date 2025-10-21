@@ -102,6 +102,21 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
                 'content' => '{"resultCount":1,"records":[{"id":"record.1111","title":"hai!"}],"status":"OK"}',
             ],
         ];
+        yield 'test keys enabled and provided non-working' => [
+            $config,
+            [
+                'queryAndPost' => [
+                    'id' => 'record.1111',
+                ],
+                'headers' => [
+                    ['test-field', '51'],
+                ],
+            ],
+            [
+                'code' => 401,
+                'content' => '{"status":"UNAUTHORIZED","statusMessage":"API key invalid"}',
+            ],
+        ];
         yield 'test keys enabled and not provided' => [
             $config,
             [
@@ -139,7 +154,7 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
             ],
             [
                 'code' => 401,
-                'content' => '{"status":"UNAUTHORIZED","statusMessage":"Missing or invalid API key"}',
+                'content' => '{"status":"UNAUTHORIZED","statusMessage":"API key missing or invalid"}',
             ],
         ];
     }
@@ -160,10 +175,15 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
         $solrOptions->expects($this->any())->method('getAPISettings')->willReturn([]);
         $optionsPluginManager = $this->createMock(SearchPluginManager::class);
         $optionsPluginManager->expects($this->any())->method('get')->willReturn($solrOptions);
-        $apiKeyMode = DeveloperSettingsStatus::from($config['API_Keys']['mode'] ?? 'disabled');
+        $apiKeyMode = DeveloperSettingsStatus::fromSetting($config['API_Keys']['mode'] ?? '');
         $apiKeysEnabled = DeveloperSettingsStatus::settingEnabled($apiKeyMode->value);
         $developerSettingsService = $this->createMock(DeveloperSettingsService::class);
         $developerSettingsService->expects($this->any())->method('apiKeysEnabled')->willReturn($apiKeysEnabled);
+        $developerSettingsService->expects($this->any())->method('getApiKeyMode')->willReturnCallback(
+            function () use ($apiKeyMode) {
+                return $apiKeyMode;
+            }
+        );
         $developerSettingsService->expects($this->any())->method('isApiKeyAllowed')->willReturnCallback(
             function ($token) use ($apiKeyMode, $apiKeysEnabled) {
                 if (!$apiKeysEnabled) {

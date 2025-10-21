@@ -47,6 +47,35 @@ enum DeveloperSettingsStatus: string
     case ENFORCED = 'enforced';
 
     /**
+     * Helper method to get from setting value or disabled if not found.
+     *
+     * @param string $setting Setting value obtained from configuration file.
+     *
+     * @return static
+     */
+    public static function fromSetting(string $setting): static
+    {
+        if ($mode = self::tryFrom($setting)) {
+            return $mode;
+        }
+        return self::from('disabled');
+    }
+
+    /**
+     * Helper method to get proper unauthorized error message using DeveloperSettingsStatus.
+     *
+     * @return string
+     */
+    public function getUnauthorizedMessage(): string
+    {
+        return match ($this->value) {
+            self::OPTIONAL->value => 'API key invalid',
+            self::ENFORCED->value => 'API key missing or invalid',
+            default => ''
+        };
+    }
+
+    /**
      * Helper method to check if given setting value from config is considered being enabled.
      *
      * @param string $setting Setting value usually obtained from a configuration file.

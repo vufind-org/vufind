@@ -105,8 +105,13 @@ class ApiController extends \VuFind\Controller\AbstractBase
     protected function getApiSpecFragment()
     {
         $config = $this->getConfig();
+        // TODO: use getConfigArray
+        $this->initApiKeySettings($config?->API_Keys?->toArray() ?? []);
         $params = [
             'config' => $config,
+            'apiKeysEnabled' => $this->developerSettingsService?->apiKeysEnabled() ?? false,
+            'apiKeyHeaderField' => $this->apiKeyHeaderField,
+            'apiKeyMode' => $this->developerSettingsService?->getApiKeyMode(),
             'version' => \VuFind\Config\Version::getBuildVersion(),
         ];
         return $this->getViewRenderer()->render('api/openapi', $params);

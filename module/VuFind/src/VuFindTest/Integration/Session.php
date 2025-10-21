@@ -135,7 +135,7 @@ class Session extends \Behat\Mink\Session
             $this->setRequestHeader('X-VuFind-Disable-Whoops', '1');
         }
         if ($this->apiKeyToken) {
-            $this->setRequestHeader('X-API-KEY', $this->apiKeyToken);
+            $this->setRequestHeader(VUFIND_API_KEY_DEFAULT_HEADER_FIELD, $this->apiKeyToken);
         }
 
         parent::visit($url);

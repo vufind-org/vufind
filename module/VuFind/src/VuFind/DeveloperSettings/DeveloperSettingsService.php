@@ -99,6 +99,16 @@ class DeveloperSettingsService
     }
 
     /**
+     * Get current API key mode as a developer setting status enum.
+     *
+     * @return DeveloperSettingsStatus
+     */
+    public function getApiKeyMode(): DeveloperSettingsStatus
+    {
+        return DeveloperSettingsStatus::fromSetting($this->apiKeySettings['mode'] ?? '');
+    }
+
+    /**
      * Retrieve API keys for user.
      *
      * @param UserEntityInterface $user User
