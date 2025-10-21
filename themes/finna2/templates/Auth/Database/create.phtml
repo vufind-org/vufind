@@ -1,11 +1,11 @@
 <div class="login-col">
   <div class="form-group">
-    <label class="form-label" for="account_email"><?=$this->transEsc('Email Address')?>:</label>
+    <label class="form-label" for="account_email"><?=$this->transEsc('Email Address')?>: <span class="required-notice"><?=$this->transEsc('form_required_notice')?></span></label>
     <input id="account_email" type="email" name="email" required aria-required="true" value="<?=$this->escapeHtmlAttr($this->request->get('email'))?>" class="form-control">
     <div class="help-block with-errors"></div>
   </div>
   <div class="form-group">
-    <label class="form-label" for="account_username"><?=$this->transEsc('Desired Username')?>:</label>
+    <label class="form-label" for="account_username"><?=$this->transEsc('Desired Username')?>: <span class="required-notice"><?=$this->transEsc('form_required_notice')?></span></label>
     <?php
       $attrs = $this->htmlAttributes($this->usernamePolicy['inputAttrs'] ?? []);
       $attrs->merge(['id' => 'account_username', 'type' => 'text', 'name' => 'username', 'value' => $this->request->get('username'), 'class' => 'form-control']);
@@ -17,7 +17,7 @@
     <div class="help-block with-errors"></div>
   </div>
   <div class="form-group">
-    <label class="form-label" for="account_password"><?=$this->transEsc('Finna Password')?>:</label>
+    <label class="form-label" for="account_password"><?=$this->transEsc('Finna Password')?>: <span class="required-notice"><?=$this->transEsc('form_required_notice')?></span></label>
     <?php
       $attrs = $this->htmlAttributes($this->passwordPolicy['inputAttrs'] ?? []);
       $attrs->merge(['id' => 'account_password', 'type' => 'password', 'name' => 'password', 'class' => 'form-control', 'autocomplete' => 'new-password']);
@@ -29,7 +29,7 @@
     <div class="help-block with-errors"></div>
   </div>
   <div class="form-group">
-    <label class="form-label" for="account_password2"><?=$this->transEsc('Password Again')?>:</label>
+    <label class="form-label" for="account_password2"><?=$this->transEsc('Password Again')?>: <span class="required-notice"><?=$this->transEsc('form_required_notice')?></span></label>
     <input id="account_password2" type="password" name="password2" required class="form-control" data-match="#account_password" data-match-error="<?=$this->escapeHtmlAttr($this->translate('Passwords do not match'))?>">
     <div class="help-block with-errors"></div>
   </div>

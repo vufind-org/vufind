@@ -1,10 +1,10 @@
 <!-- START of: finna - Auth/Database/loginfields.phtml -->
       <div class="form-group">
-        <label class="form-label" for="login_<?=$this->escapeHtmlAttr($topClass)?>_username"><?=$this->transEsc('Finna Login')?>:</label>
-        <input type="text" name="username" id="login_<?=$this->escapeHtmlAttr($topClass)?>_username" value="<?=$this->escapeHtmlAttr($this->request->get('username'))?>" class="form-control">
+        <label class="form-label" for="login_<?=$this->escapeHtmlAttr($topClass)?>_username"><?=$this->transEsc('Finna Login')?>: <span class="required-notice"><?=$this->transEsc('form_required_notice')?></span></label>
+        <input type="text" name="username" id="login_<?=$this->escapeHtmlAttr($topClass)?>_username" value="<?=$this->escapeHtmlAttr($this->request->get('username'))?>" required class="form-control">
       </div>
       <div class="form-group">
-        <label class="form-label" for="login_<?=$this->escapeHtmlAttr($topClass)?>_password"><?=$this->transEsc('Finna Password')?>:</label>
-        <input type="password" name="password" id="login_<?=$this->escapeHtmlAttr($topClass)?>_password" class="form-control">
+        <label class="form-label" for="login_<?=$this->escapeHtmlAttr($topClass)?>_password"><?=$this->transEsc('Finna Password')?>: <span class="required-notice"><?=$this->transEsc('form_required_notice')?></span></label>
+        <input type="password" name="password" id="login_<?=$this->escapeHtmlAttr($topClass)?>_password" required class="form-control">
       </div>
 <!-- END of: finna - Auth/Database/loginfields.phtml -->

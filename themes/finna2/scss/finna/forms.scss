@@ -1,3 +1,9 @@
+form {
+  .required-notice {
+    font-size: $small-font-size;
+    color: $text-muted;
+  }
+}
 input, input.form-control {
   font-size: 16px; // avoid the automatic zoom-in on input fields
 }

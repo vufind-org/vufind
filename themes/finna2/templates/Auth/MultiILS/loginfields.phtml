@@ -12,8 +12,8 @@
       }
     ?>
     <?php if (count($loginTargets) > 1): ?>
-      <label class="form-label" for="login_<?=$this->escapeHtmlAttr($topClass)?>_target"><?=$this->transEsc('login_target')?>:</label>
-      <select id="login_<?=$this->escapeHtmlAttr($topClass)?>_target" name="target" class="form-select">
+      <label class="form-label" for="login_<?=$this->escapeHtmlAttr($topClass)?>_target"><?=$this->transEsc('login_target')?>: <span class="required-notice"><?=$this->transEsc('form_required_notice')?></span></label>
+      <select id="login_<?=$this->escapeHtmlAttr($topClass)?>_target" name="target" required class="form-select">
         <?php foreach ($loginTargets as $target):?>
           <option value="<?=$this->escapeHtmlAttr($target)?>"<?=($target == $currentTarget ? ' selected="selected"' : '')?>><?=$this->transEsc("source_$target", null, $target)?></option>
         <?php endforeach ?>
@@ -25,14 +25,14 @@
   </div>
 
   <div class="form-group">
-    <label class="form-label password-login" for="login_<?=$this->escapeHtmlAttr($topClass)?>_username"><?=$this->transEsc('Username')?>:</label>
-    <label class="form-label email-login hidden" for="login_<?=$this->escapeHtmlAttr($topClass)?>_username"><?=$this->transEsc('Email')?>:</label>
-    <input id="login_<?=$this->escapeHtmlAttr($topClass)?>_username" type="text" name="username" value="<?=$this->escapeHtmlAttr($this->request->get('username'))?>" class="form-control">
+    <label class="form-label password-login" for="login_<?=$this->escapeHtmlAttr($topClass)?>_username"><?=$this->transEsc('Username')?>: <span class="required-notice"><?=$this->transEsc('form_required_notice')?></span></label>
+    <label class="form-label email-login hidden" for="login_<?=$this->escapeHtmlAttr($topClass)?>_username"><?=$this->transEsc('Email')?>: <span class="required-notice"><?=$this->transEsc('form_required_notice')?></span></label>
+    <input id="login_<?=$this->escapeHtmlAttr($topClass)?>_username" type="text" name="username" value="<?=$this->escapeHtmlAttr($this->request->get('username'))?>" required class="form-control">
   </div>
 
   <div class="form-group">
-    <label class="form-label" for="login_<?=$this->escapeHtmlAttr($topClass)?>_password"><?=$this->transEsc('Password')?>:</label>
-    <input id="login_<?=$this->escapeHtmlAttr($topClass)?>_password" type="password" name="password" class="form-control">
+    <label class="form-label" for="login_<?=$this->escapeHtmlAttr($topClass)?>_password"><?=$this->transEsc('Password')?>: <span class="required-notice"><?=$this->transEsc('form_required_notice')?></span></label>
+    <input id="login_<?=$this->escapeHtmlAttr($topClass)?>_password" type="password" name="password" required class="form-control">
   </div>
 </div>
 
