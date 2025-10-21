@@ -146,7 +146,7 @@
     $activeMobileTab = $menuListItems[$headerKey]['translation'] ?? 'Your Account';
 ?>
 
-<ul class="<?=$this->layoutClass('sidebar-myresearch')?> <?= $listOpen ? '' : 'move-list' ?> nav-tabs-personal list-group useraccount-nav nav-tabs finna-movement myresearch-menu account-menu" role="menu">
+<ul role="presentation" class="<?=$this->layoutClass('sidebar-myresearch')?> <?= $listOpen ? '' : 'move-list' ?> nav-tabs-personal list-group useraccount-nav nav-tabs finna-movement myresearch-menu account-menu">
   <li role="none" class="menu-header hidden-xs hidden-sm">
     <h1>
       <?= $this->transEsc('Your Account') ?>
