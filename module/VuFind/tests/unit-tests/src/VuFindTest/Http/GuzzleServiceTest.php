@@ -42,6 +42,8 @@ use VuFind\Http\GuzzleService;
  */
 class GuzzleServiceTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\ReflectionTrait;
+
     /**
      * Test GET request with associative array parameters
      *
@@ -51,11 +53,8 @@ class GuzzleServiceTest extends \PHPUnit\Framework\TestCase
     {
         $service = new GuzzleService([]);
 
-        $method = new \ReflectionMethod($service, 'createQueryString');
-        $method->setAccessible(true);
-
         $params = ['foo' => 'bar', 'baz' => 'qux'];
-        $result = $method->invoke($service, $params);
+        $result = $this->callMethod($service, 'createQueryString', [$params]);
 
         $this->assertEquals('foo=bar&baz=qux', $result);
     }
@@ -69,11 +68,8 @@ class GuzzleServiceTest extends \PHPUnit\Framework\TestCase
     {
         $service = new GuzzleService([]);
 
-        $method = new \ReflectionMethod($service, 'createQueryString');
-        $method->setAccessible(true);
-
         $params = ['foo=bar', 'baz=qux'];
-        $result = $method->invoke($service, $params);
+        $result = $this->callMethod($service, 'createQueryString', [$params]);
 
         $this->assertEquals('foo=bar&baz=qux', $result);
     }
@@ -87,11 +83,8 @@ class GuzzleServiceTest extends \PHPUnit\Framework\TestCase
     {
         $service = new GuzzleService([]);
 
-        $method = new \ReflectionMethod($service, 'createQueryString');
-        $method->setAccessible(true);
-
         $params = ['query' => 'hello world', 'filter' => 'a&b'];
-        $result = $method->invoke($service, $params);
+        $result = $this->callMethod($service, 'createQueryString', [$params]);
 
         $this->assertEquals('query=hello+world&filter=a%26b', $result);
     }
@@ -104,12 +97,7 @@ class GuzzleServiceTest extends \PHPUnit\Framework\TestCase
     public function testGetWithEmptyParams(): void
     {
         $service = new GuzzleService([]);
-
-        $method = new \ReflectionMethod($service, 'createQueryString');
-        $method->setAccessible(true);
-
-        $result = $method->invoke($service, []);
-
+        $result = $this->callMethod($service, 'createQueryString', []);
         $this->assertEquals('', $result);
     }
 

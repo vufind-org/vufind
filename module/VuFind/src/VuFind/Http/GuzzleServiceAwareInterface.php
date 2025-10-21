@@ -52,7 +52,7 @@ interface GuzzleServiceAwareInterface
     /**
      * Get the GuzzleService
      *
-     * @return GuzzleService
+     * @return ?GuzzleService
      */
     public function getGuzzleService(): ?GuzzleService;
 }

@@ -192,7 +192,8 @@ class CachingDownloader implements GuzzleServiceAwareInterface
      */
     public function downloadJson($url, $params = [], $associative = null)
     {
-        $decodeJson = function (string $body, string $url, ResponseInterface $response) use ($associative) {
+        $decodeJson = function (ResponseInterface $response, string $url) use ($associative) {
+            $body = $response->getBody()->getContents();
             $decodedJson = json_decode($body, $associative);
             if ($decodedJson === null) {
                 throw new HttpDownloadException(

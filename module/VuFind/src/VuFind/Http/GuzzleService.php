@@ -97,7 +97,7 @@ class GuzzleService implements HttpServiceInterface
      *
      * @return ClientInterface
      */
-    public function createClient(?string $url = null, ?float $timeout = null): \Psr\Http\Client\ClientInterface
+    public function createClient(?string $url = null, ?float $timeout = null): ClientInterface
     {
         return $this->createGuzzleClient($url, $timeout);
     }
@@ -133,19 +133,10 @@ class GuzzleService implements HttpServiceInterface
     ): ResponseInterface {
         if ($params) {
             $query = $this->createQueryString($params);
-            if (str_contains($url, '?')) {
-                $url .= '&' . $query;
-            } else {
-                $url .= '?' . $query;
-            }
+            $url .= (str_contains($url, '?') ? '&' : '?') . $query;
         }
         $client = $this->createGuzzleClient($url, $timeout);
-        $options = [];
-
-        if ($headers) {
-            $options['headers'] = $headers;
-        }
-
+        $options = $headers ? compact('headers') : [];
         return $client->request('GET', $url, $options);
     }
 
