@@ -94,6 +94,11 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
      */
     public static function isMethodBlockedProvider()
     {
+        $normalize = function (\DateTime $dt): \DateTime {
+            $dt->setTime((int)$dt->format('H'), (int)$dt->format('i'), 0, 0);
+            return $dt;
+        };
+
         return [
             'only startDate' => [
                 [
@@ -146,8 +151,8 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
                 [
-                    'start' => new \DateTime(date('H:i', strtotime('now - 1 hours'))),
-                    'end' => new \DateTime(date('H:i', strtotime('now + 1 hours'))),
+                    'start' => $normalize(new \DateTime('now - 1 hours')),
+                    'end' => $normalize(new \DateTime('now + 1 hours')),
                     'recurring' => true,
                 ],
             ],
@@ -167,8 +172,8 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
                 [
-                    'start' => new \DateTime(date('H:i', strtotime('now - 1 hours'))),
-                    'end' => new \DateTime(date('H:i', strtotime('now + 1 hours'))),
+                    'start' => $normalize(new \DateTime('now - 1 hours')),
+                    'end' => $normalize(new \DateTime('now + 1 hours')),
                     'recurring' => true,
                 ],
             ],
@@ -180,7 +185,7 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
                 [
-                    'start' => new \DateTime(date('Y-m-d', strtotime('now - 1 days'))),
+                    'start' => new \DateTime('yesterday'),
                     'end' => new \DateTime('tomorrow 23:59:59'),
                     'recurring' => false,
                 ],
