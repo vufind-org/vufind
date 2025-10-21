@@ -29,6 +29,7 @@
 
 namespace VuFind\Db;
 
+use Doctrine\ORM\EntityManager;
 use DoctrineModule\Service\AbstractFactory;
 use DoctrineORMModule\Options\EntityManager as DoctrineORMModuleEntityManager;
 use Psr\Container\ContainerInterface;
