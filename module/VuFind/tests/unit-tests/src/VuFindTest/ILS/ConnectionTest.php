@@ -94,13 +94,8 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
      */
     public static function isMethodBlockedProvider()
     {
-        // Clear seconds and microseconds from a DateTime object to make
-        // DateTime('now') match test values like date('H:i', ...)
-        $normalize = function (\DateTime $dt): \DateTime {
-            $dt->setTime((int)$dt->format('H'), (int)$dt->format('i'));
-            return $dt;
-        };
-
+        $oneHourAgo = new \DateTime('now - 1 hours');
+        $oneHourInFuture = new \DateTime('now + 1 hours');
         return [
             'only startDate' => [
                 [
@@ -149,12 +144,12 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
             'inside recurring limits' => [
                 [
                     'Renewals' => [
-                        date('H:i', strtotime('now - 1 hours')) . '/' . date('H:i', strtotime('now + 1 hours')),
+                        $oneHourAgo->format('H:i:s.u') . '/' . $oneHourInFuture->format('H:i:s.u'),
                     ],
                 ],
                 [
-                    'start' => $normalize(new \DateTime('now - 1 hours')),
-                    'end' => $normalize(new \DateTime('now + 1 hours')),
+                    'start' => $oneHourAgo,
+                    'end' => $oneHourInFuture,
                     'recurring' => true,
                 ],
             ],
@@ -169,13 +164,13 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
             'recurring block active, fixed date block inactive' => [
                 [
                     'Renewals' => [
-                        date('H:i', strtotime('now - 1 hours')) . '/' . date('H:i', strtotime('now + 1 hours')),
+                        $oneHourAgo->format('H:i:s.u') . '/' . $oneHourInFuture->format('H:i:s.u'),
                         date('Y-m-d', strtotime('now - 2 days')) . '/' . date('Y-m-d', strtotime('now - 1 days')),
                     ],
                 ],
                 [
-                    'start' => $normalize(new \DateTime('now - 1 hours')),
-                    'end' => $normalize(new \DateTime('now + 1 hours')),
+                    'start' => $oneHourAgo,
+                    'end' => $oneHourInFuture,
                     'recurring' => true,
                 ],
             ],
