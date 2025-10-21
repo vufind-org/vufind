@@ -105,38 +105,32 @@ class UserListService extends AbstractDbService implements
     /**
      * Get public lists.
      *
-     * @param array  $includeFilter List of list ids or entities to include in result.
-     * @param array  $excludeFilter List of list ids or entities to exclude from result.
-     * @param string $type          Type of the user lists. Default is 'default'.
+     * @param array        $includeFilter List of list ids or entities to include in result.
+     * @param array        $excludeFilter List of list ids or entities to exclude from result.
+     * @param string|array $types         Types of user lists to get. Set to an empty array to get all.
      *
      * @return UserListEntityInterface[]
      */
     public function getPublicLists(
         array $includeFilter = [],
         array $excludeFilter = [],
-        string $type = UserList::TYPE_DEFAULT
+        string|array $types = [UserList::TYPE_DEFAULT]
     ): array {
-        $dql = 'SELECT ul FROM ' . UserListEntityInterface::class . ' ul ';
+        $dql = 'SELECT ul FROM ' . UserListEntityInterface::class . ' ul '
+            . 'WHERE ul.public = :public ';
 
-        $parameters = [];
-        $where = ["ul.public = '1'"];
-        if (!empty($includeFilter)) {
-            $where[] = 'ul IN (:includeFilter)';
+        $parameters = ['public' => true];
+        if ($includeFilter) {
+            $dql .= 'AND ul IN (:includeFilter) ';
             $parameters['includeFilter'] = $includeFilter;
         }
-        if (!empty($excludeFilter)) {
-            $where[] = 'ul NOT IN (:excludeFilter)';
+        if ($excludeFilter) {
+            $dql .= 'AND ul NOT IN (:excludeFilter) ';
             $parameters['excludeFilter'] = $excludeFilter;
         }
-        if ($type) {
-            // Set type to default userlist to obtain only lists with default values
-            $where[] = 'ul.type = :type';
-            $parameters['type'] = $type;
-        }
+        $this->addTypesCheck($dql, $parameters, $types);
 
-        $dql .= 'WHERE ' . implode(' AND ', $where);
-
-        $query = $this->entityManager->createQuery($dql);
+        $query = $this->entityManager->createQuery(trim($dql));
         $query->setParameters($parameters);
         $results = $query->getResult();
         return $results;
@@ -147,14 +141,14 @@ class UserListService extends AbstractDbService implements
      * list_entity and count keys.
      *
      * @param UserEntityInterface|int $userOrId User entity object or ID
-     * @param string                  $type     Type of the user lists. Default is 'default'.
+     * @param string|array            $types    Types of user lists to get. Set to an empty array to get all.
      *
      * @return array
      * @throws Exception
      */
     public function getUserListsAndCountsByUser(
         UserEntityInterface|int $userOrId,
-        string $type = UserList::TYPE_DEFAULT
+        string|array $types = [UserList::TYPE_DEFAULT]
     ): array {
         $parameters = [
             'user' => $this->getDoctrineReference(UserEntityInterface::class, $userOrId),
@@ -163,10 +157,9 @@ class UserListService extends AbstractDbService implements
             . 'FROM ' . UserListEntityInterface::class . ' ul '
             . 'LEFT JOIN ' . UserResourceEntityInterface::class . ' ur WITH ur.list = ul.id '
             . 'WHERE ul.user = :user ';
-        if ($type) {
-            $dql .= 'AND ul.type = :type ';
-            $parameters['type'] = $type;
-        }
+
+        $this->addTypesCheck($dql, $parameters, $types);
+
         $dql .= 'GROUP BY ul '
             . 'ORDER BY ul.title';
 
@@ -185,7 +178,7 @@ class UserListService extends AbstractDbService implements
      * @param bool                 $publicOnly        Whether to return only public lists
      * @param bool                 $andTags           Use AND operator when filtering by tag.
      * @param bool                 $caseSensitiveTags Should we treat tags case-sensitively?
-     * @param string               $type              Type of the user lists. Default is 'default'.
+     * @param string|array         $types             Types of user lists to get. Set to an empty array to get all.
      *
      * @return UserListEntityInterface[]
      */
@@ -195,30 +188,27 @@ class UserListService extends AbstractDbService implements
         bool $publicOnly = true,
         bool $andTags = true,
         bool $caseSensitiveTags = false,
-        string $type = UserList::TYPE_DEFAULT
+        string|array $types = [UserList::TYPE_DEFAULT]
     ): array {
         $tag = $tag ? (array)$tag : null;
         $listId = $listId ? (array)$listId : null;
         $dql = 'SELECT IDENTITY(rt.list) '
             . 'FROM ' . ResourceTagsEntityInterface::class . ' rt '
             . 'JOIN rt.tag t '
-            . 'JOIN rt.list l '
+            . 'JOIN rt.list ul '
             // Discard tags assigned to a user resource:
             . 'WHERE rt.resource IS NULL '
             // Restrict to tags by list owner:
-            . 'AND rt.user = l.user ';
+            . 'AND rt.user = ul.user ';
         $parameters = [];
         if (null !== $listId) {
             $dql .= 'AND rt.list IN (:listId) ';
             $parameters['listId'] = $listId;
         }
         if ($publicOnly) {
-            $dql .= "AND l.public = '1' ";
+            $dql .= "AND ul.public = '1' ";
         }
-        if ($type) {
-            $dql .= 'AND l.type = :type ';
-            $parameters['type'] = $type;
-        }
+        $this->addTypesCheck($dql, $parameters, $types);
 
         if ($tag) {
             if ($caseSensitiveTags) {
@@ -250,12 +240,16 @@ class UserListService extends AbstractDbService implements
      * Get list objects belonging to the specified user.
      *
      * @param UserEntityInterface|int $userOrId User entity object or ID
-     * @param string                  $type     Type of the user lists. Default is 'default'.
+     * @param string                  $types    Types of user lists to get from database.
+     *                                          Use UserList::TYPE_ALL to get user lists
+     *                                          without checking types.
      *
      * @return UserListEntityInterface[]
      */
-    public function getUserListsByUser(UserEntityInterface|int $userOrId, string $type = UserList::TYPE_DEFAULT): array
-    {
+    public function getUserListsByUser(
+        UserEntityInterface|int $userOrId,
+        string|array $types = [UserList::TYPE_DEFAULT]
+    ): array {
         $dql = 'SELECT ul '
             . 'FROM ' . UserListEntityInterface::class . ' ul '
             . 'WHERE ul.user = :user ';
@@ -263,10 +257,7 @@ class UserListService extends AbstractDbService implements
         $parameters = [
             'user' => $this->getDoctrineReference(UserEntityInterface::class, $userOrId),
         ];
-        if ($type) {
-            $dql .= 'AND ul.type = :type ';
-            $parameters['type'] = $type;
-        }
+        $this->addTypesCheck($dql, $parameters, $types);
         $dql .= 'ORDER BY ul.title';
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
@@ -277,23 +268,23 @@ class UserListService extends AbstractDbService implements
     /**
      * Retrieve a batch of list objects corresponding to the provided IDs
      *
-     * @param int[]  $ids  List ids.
-     * @param string $type Type of the user lists. Default is 'default'.
+     * @param int[]        $ids   List ids.
+     * @param string|array $types Types of user lists to get. Set to an empty array to get all.
      *
      * @return array
      */
-    protected function getUserListsById(array $ids, string $type = UserList::TYPE_DEFAULT): array
-    {
+    protected function getUserListsById(
+        array $ids,
+        string|array $types = [UserList::TYPE_DEFAULT]
+    ): array {
         $dql = 'SELECT ul FROM ' . UserListEntityInterface::class . ' ul '
             . 'WHERE ul.id IN (:ids)';
         $parameters = [
             'ids' => $ids,
         ];
-        if ($type) {
-            $dql .= ' AND ul.type = :type';
-            $parameters['type'] = $type;
-        }
-        $query = $this->entityManager->createQuery($dql);
+        $this->addTypesCheck($dql, $parameters, $types);
+
+        $query = $this->entityManager->createQuery(trim($dql));
         $query->setParameters($parameters);
         $results = $query->getResult();
         return $results;
@@ -306,7 +297,7 @@ class UserListService extends AbstractDbService implements
      * @param string                       $source   Source of record to look up
      * @param UserEntityInterface|int|null $userOrId Optional user ID or entity object (to limit results
      * to a particular user).
-     * @param string                       $type     Type of the user lists. Default is 'default'.
+     * @param string|array                 $types    Types of user lists to get. Set to an empty array to get all.
      *
      * @return UserListEntityInterface[]
      */
@@ -314,7 +305,7 @@ class UserListService extends AbstractDbService implements
         string $recordId,
         string $source = DEFAULT_SEARCH_BACKEND,
         UserEntityInterface|int|null $userOrId = null,
-        string $type = UserList::TYPE_DEFAULT
+        string|array $types = [UserList::TYPE_DEFAULT]
     ): array {
         $dql = 'SELECT ul FROM ' . UserListEntityInterface::class . ' ul '
             . 'JOIN ' . UserResourceEntityInterface::class . ' ur WITH ur.list = ul.id '
@@ -325,14 +316,11 @@ class UserListService extends AbstractDbService implements
             'recordId' => $recordId,
             'source' => $source,
         ];
-        if ($type) {
-            $dql .= 'AND ul.type = :type ';
-            $parameters['type'] = $type;
-        }
+        $this->addTypesCheck($dql, $parameters, $types);
+
         if (null !== $userOrId) {
-            $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
-            $dql .= 'AND ur.user = :userId ';
-            $parameters['userId'] = $userId;
+            $dql .= 'AND ur.user = :user ';
+            $parameters['user'] = $this->getDoctrineReference(UserEntityInterface::class, $userOrId);
         }
 
         $dql .= 'ORDER BY ul.title';
@@ -340,5 +328,23 @@ class UserListService extends AbstractDbService implements
         $query->setParameters($parameters);
         $results = $query->getResult();
         return $results;
+    }
+
+    /**
+     * Helper function to append type check into a dql
+     *
+     * @param string       $dql        Dql string
+     * @param array        $parameters Parameters for dql
+     * @param string|array $types      User list types to get.
+     *
+     * @return void
+     */
+    protected function addTypesCheck(string &$dql, array &$parameters, string|array $types): void
+    {
+        if (!$types) {
+            return;
+        }
+        $dql .= 'AND ul.type IN (:types) ';
+        $parameters['types'] = (array)$types;
     }
 }
