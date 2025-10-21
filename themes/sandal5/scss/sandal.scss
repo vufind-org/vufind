@@ -61,18 +61,10 @@ header {
   a,
   .nav a,
   .btn-link,
+  .btn-link:hover,
   button.dropdown-toggle {
     color: $white;
     background-color: transparent;
-  }
-  .btn-primary {
-    color: $black;
-    background-color: $header-light;
-  }
-  .btn-primary:hover {
-    color: $black;
-    background-color: $header-light;
-    border-color: $black;
   }
   .nav.navbar-nav > li > a,
   .nav.navbar-nav button.dropdown-toggle {
@@ -113,6 +105,25 @@ header {
   }
 }
 
+.searchForm {
+  .btn-primary {
+    color: $black;
+    background-color: $header-light;
+    border-color: $input-border-color;
+  }
+  .btn-primary:hover {
+    color: $black;
+    background-color: $header-light;
+    border-color: $black;
+  }
+  .btn-link {
+    color: $white;
+    &:hover, &:focus-visible {
+      background: rgba(0, 0, 0, .1);
+    }
+  }
+}
+
 #account-icon {
   &.notification-level-1, &.notification-level-2, &.notification-level-3 {
     margin-left: -.25rem;
@@ -120,7 +131,8 @@ header {
     margin-bottom: -.5rem;
     padding: 0.5rem;
     background-color: $header-light;
-    border-radius: 100%;
+    border-radius: 50%;
+    line-height: 1;
   }
 }
 #login-dropdown .login-dropdown-caret:hover,
@@ -241,8 +253,6 @@ a:hover .login-dropdown-caret {
 
 .facet .badge {
   flex-shrink: 0;
-  max-height: 19px;
-  line-height: .8;
   background-color: $sidebar-item-badge;
 }
 
