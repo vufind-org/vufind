@@ -36,6 +36,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
+use VuFind\Cache\Manager as CacheManager;
 use VuFind\Db\Connection;
 use VuFind\Db\ConnectionFactory;
 use VuFind\Db\Migration\MigrationManager;
@@ -62,12 +63,14 @@ class DatabaseCommand extends Command
      *
      * @param Closure           $migrationManagerFactory Database migration manager factory
      * @param ConnectionFactory $connectionFactory       Database connection factory
+     * @param CacheManager      $cacheManager            Cache Manager
      * @param ?string           $name                    The name of the command; passing null means it
      * must be set in configure()
      */
     public function __construct(
         protected Closure $migrationManagerFactory,
         protected ConnectionFactory $connectionFactory,
+        protected CacheManager $cacheManager,
         $name = null
     ) {
         parent::__construct($name);
@@ -206,6 +209,14 @@ class DatabaseCommand extends Command
         // Display a final message if we're in non-interactive/non-SQL mode, or had nothing to do in interactive mode.
         if (!$sqlOnly && !($interactive && !empty($migrations))) {
             $output->writeln(empty($migrations) ? 'Nothing to do.' : 'Successfully upgraded database.');
+        }
+        if (!empty($migrations)) {
+            $msg = '<info>Please clear the object cache (' . $this->cacheManager->getCacheDir(false) . 'objects) '
+                . ($sqlOnly ? 'after applying the migrations' : 'now')
+                . ' to ensure that the metadata is up to date.</info>';
+            $output->writeln('');
+            $output->writeln($msg);
+            $output->writeln('');
         }
         return 0;
     }

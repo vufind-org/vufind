@@ -788,8 +788,6 @@ class UpgradeController extends AbstractBase
     protected function clearDoctrineMetadataCache(): void
     {
         $entityManager = $this->getService('doctrine.entitymanager.orm_vufind');
-        if ($cacheDriver = $entityManager->getConfiguration()->getMetadataCache()) {
-            $cacheDriver->clear();
-        }
+        $entityManager->clearMetadataCache();
     }
 }
