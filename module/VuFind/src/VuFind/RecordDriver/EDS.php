@@ -481,7 +481,7 @@ class EDS extends DefaultRecord
         $desiredFit = $sizes[$size] ?? count($sizes);
         $closestMatch = false;
         foreach ($this->fields['ImageInfo'] ?? [] as $image) {
-            $currentFit = $sizes[$image['Size'] ?? ''] ?? 0;
+            $currentFit = $sizes[$image['Size'] ?? 'thumb'] ?? 0;
             $target = $image['Target'] ?? '';
             if ($target) {
                 if ($currentFit === $desiredFit) {
