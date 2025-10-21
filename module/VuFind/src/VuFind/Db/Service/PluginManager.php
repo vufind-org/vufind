@@ -93,7 +93,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         PaymentFeeService::class => AbstractDbServiceFactory::class,
         RatingsService::class => AbstractDbServiceFactory::class,
         RecordService::class => AbstractDbServiceFactory::class,
-        ResourceService::class => ResourceServiceFactory::class,
+        ResourceService::class => AbstractDbServiceFactory::class,
         ResourceTagsService::class => AbstractDbServiceFactory::class,
         SearchService::class => AbstractDbServiceFactory::class,
         SessionService::class => AbstractDbServiceFactory::class,

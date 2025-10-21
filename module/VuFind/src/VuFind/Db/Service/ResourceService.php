@@ -30,16 +30,13 @@
 
 namespace VuFind\Db\Service;
 
-use Doctrine\ORM\EntityManager;
 use Exception;
 use Psr\Log\LoggerAwareInterface;
-use VuFind\Db\Entity\PluginManager as EntityPluginManager;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\ResourceTagsEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Entity\UserResourceEntityInterface;
-use VuFind\Db\PersistenceManager;
 use VuFind\Log\LoggerAwareTrait;
 
 /**
@@ -59,31 +56,6 @@ class ResourceService extends AbstractDbService implements
     use DbServiceAwareTrait;
     use Feature\ResourceSortTrait;
     use LoggerAwareTrait;
-
-    /**
-     * Callback to load the resource populator.
-     *
-     * @var callable
-     */
-    protected $resourcePopulatorLoader;
-
-    /**
-     * Constructor
-     *
-     * @param EntityManager       $entityManager           Doctrine ORM entity manager
-     * @param EntityPluginManager $entityPluginManager     VuFind entity plugin manager
-     * @param PersistenceManager  $persistenceManager      Entity persistence manager
-     * @param callable            $resourcePopulatorLoader Resource populator
-     */
-    public function __construct(
-        EntityManager $entityManager,
-        EntityPluginManager $entityPluginManager,
-        PersistenceManager $persistenceManager,
-        callable $resourcePopulatorLoader
-    ) {
-        $this->resourcePopulatorLoader = $resourcePopulatorLoader;
-        parent::__construct($entityManager, $entityPluginManager, $persistenceManager);
-    }
 
     /**
      * Lookup and return a resource.
