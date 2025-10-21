@@ -94,8 +94,10 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
      */
     public static function isMethodBlockedProvider()
     {
+        // Clear seconds and microseconds from a DateTime object to make
+        // DateTime('now') match test values like date('H:i', ...)
         $normalize = function (\DateTime $dt): \DateTime {
-            $dt->setTime((int)$dt->format('H'), (int)$dt->format('i'), 0, 0);
+            $dt->setTime((int)$dt->format('H'), (int)$dt->format('i'));
             return $dt;
         };
 
