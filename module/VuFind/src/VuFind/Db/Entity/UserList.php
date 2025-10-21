@@ -187,7 +187,7 @@ class UserList implements UserListEntityInterface
      */
     public function getType(): string
     {
-        return $this->type ?? self::TYPE_DEFAULT;
+        return $this->type;
     }
 
     /**
