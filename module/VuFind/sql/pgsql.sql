@@ -630,4 +630,4 @@ ADD CONSTRAINT audit_event_ibfk_2 FOREIGN KEY (payment_id) REFERENCES "payment" 
 -- Constraints for table api_key
 ---
 ALTER TABLE api_key
-ADD CONSTRAINT api_key_ibfk_1 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE,
+ADD CONSTRAINT api_key_ibfk_1 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE;
