@@ -89,6 +89,7 @@ $fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
 @import "components/sidebar";
 @import "components/similar-carousel";
 @import "components/sliders";
+@import "components/tables";
 @import "components/trees";
 
 /**
@@ -148,19 +149,6 @@ h3.popover-header {
   padding-right: 0;
 }
 .icon-bar { background-color: #888; }
-
-// Icons vs. Underline fix
-.btn {
-  text-decoration: none;
-}
-.btn-link {
-  @extend .icon-link;
-
-  &.pull-left,
-  &.pull-right {
-    display: flex;
-  }
-}
 
 // More/less buttons
 .more-btn, .less-btn {
@@ -596,11 +584,20 @@ body.rtl .dropdown-menu {
     vertical-align: middle;
   }
 }
+
+.toolbar {
+  margin: 0.5rem 0;
+  .checkbox {
+    padding: 0.5rem;
+  }
+}
+
 .usercontent-table {
   tbody > tr > td {
     vertical-align: middle;
     .checkbox-container {
       padding-top: 0rem;
+      padding-bottom: 0rem;
       border-bottom: 0px;
       .checkbox-select-item {
         float: none;
@@ -615,7 +612,15 @@ body.rtl .dropdown-menu {
       }
     }
   }
+
+  @include media-breakpoint-down(sm) {
+    .checkbox-col {
+      // Account for border to keep alignment:
+      padding: calc(0.5rem - 1px);
+    }
+  }
 }
+
 .fines-total {
   font-weight: bold;
 }
@@ -662,6 +667,14 @@ body.rtl .dropdown-menu {
     }
   }
 }
+.online-payment .toolbar {
+  .checkbox {
+    display: inline-flex;
+  }
+  .payment-row {
+    display: inline-flex;
+  }
+}
 .terms-of-service__text {
     margin-bottom: 1rem;
 }
@@ -703,7 +716,7 @@ body.rtl .dropdown-menu {
   td {
     word-wrap: anywhere;
   }
-  td.fullAvailability, td.holdings-table {
+  td.fullAvailability, td.holdings-table, td.date {
     word-wrap: break-word;
   }
 }
@@ -727,49 +740,15 @@ body.rtl .dropdown-menu {
 @include media-breakpoint-down(sm) {
   @media screen {
     .table-responsive {
-      border: none;
-      thead, tfoot > tr > th {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        margin: -1px;
-        padding: 0;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        border: 0;
-      }
-      tbody > tr {
-        display: block;
-        margin-bottom: #{$line-height-base * $font-size-base};
-        border-left: 1px solid $table-border-color;
-        border-right: 1px solid $table-border-color;
-        border-bottom: 4px solid $table-border-color;
-
-        > :first-child {
-          border-top: var(--#{$prefix}border-width) solid var(--#{$prefix}table-border-color);
-        }
-      }
-      td, tbody > tr > th {
-        display: flex;
-        align-items: first baseline;
-        background: #fff;
-        &:before {
-          display: flex;
-          flex-basis: 40%;
-          flex-shrink: 0;
-          font-weight: bold;
-          content: attr(data-label);
-        }
-      }
-      tbody > tr > td:nth-child(even) {
-        background-color: var(--bs-table-striped-bg);
-      }
-      tfoot > tr > td {
-        border-top: none;
-      }
-      > :not(caption) > * > * {
-        box-shadow: none;
-      }
+      @include table-responsive;
+    }
+  }
+}
+/* ------ Responsive table for non-ultrawide screen size ------ */
+@include media-breakpoint-down(xl) {
+  @media screen {
+    .table-responsive.table-responsive__lg {
+      @include table-responsive;
     }
   }
 }

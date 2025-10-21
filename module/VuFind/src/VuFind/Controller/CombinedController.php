@@ -50,8 +50,9 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class CombinedController extends AbstractSearch
+class CombinedController extends AbstractSearch implements \Psr\Log\LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
     use AjaxResponseTrait;
 
     /**
@@ -170,7 +171,28 @@ class CombinedController extends AbstractSearch
         $initialType = $this->params()->fromQuery('type');
         foreach ($combinedOptions->getTabConfig() as $current => $settings) {
             [$searchClassId] = explode(':', $current);
-            $currentOptions = $optionsManager->get($searchClassId);
+            try {
+                $currentOptions = $optionsManager->get($searchClassId);
+            } catch (\Exception $e) {
+                // Prevent errors from any of the combined search results
+                // from raising up to the user interface and instead just skip them
+                $baseMsg = "Failed get combined options for {$searchClassId}.";
+                $shortDetails = $e->getMessage();
+                $fullDetails = (string)$e;
+                $this->logError(
+                    $baseMsg,
+                    [
+                        'details' => [
+                            1 => "$baseMsg $shortDetails",
+                            2 => "$baseMsg $shortDetails",
+                            3 => "$baseMsg $shortDetails",
+                            4 => "$baseMsg $fullDetails",
+                            5 => "$baseMsg $fullDetails",
+                        ],
+                    ]
+                );
+                continue;
+            }
             $this->adjustQueryForSettings(
                 $settings,
                 $currentOptions->getHandlerForLabel($initialType)
