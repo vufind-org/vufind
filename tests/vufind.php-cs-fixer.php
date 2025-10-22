@@ -6,7 +6,7 @@ $finder->in(__DIR__ . '/../config')
     ->in(__DIR__ . '/../public');
 
 $rules = [
-    '@PHP84Migration' => true,
+    '@PHP8x4Migration' => true,
     '@PHPUnit100Migration:risky' => true,
     '@PSR12' => true,
     'align_multiline_comment' => true,
@@ -34,6 +34,7 @@ $rules = [
         'strict' => true,
         'scope' => 'namespaced',
     ],
+    'new_expression_parentheses' => true, // change to false after raising minimum requirement to PHP 8.4
     'no_alias_functions' => true,
     'no_blank_lines_after_class_opening' => true,
     'no_empty_comment' => true,

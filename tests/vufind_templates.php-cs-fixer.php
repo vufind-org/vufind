@@ -5,7 +5,7 @@ $finder->in(__DIR__ . '/../themes')
     ->name('*.phtml');
 
 $rules = [
-    '@PHP81Migration' => true,
+    '@PHP8x4Migration' => true,
     '@PSR12' => true,
     'align_multiline_comment' => true,
     'binary_operator_spaces' => [
@@ -31,6 +31,7 @@ $rules = [
         'strict' => true,
         'scope' => 'namespaced',
     ],
+    'new_expression_parentheses' => true, // change to false after raising minimum requirement to PHP 8.4
     'no_alias_functions' => true,
     'no_blank_lines_after_class_opening' => true,
     'no_empty_comment' => true,
