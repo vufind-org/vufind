@@ -922,9 +922,10 @@ abstract class Results
     /**
      * Helper for buildFacetList. Initializes the facet list.
      *
-     * @param array $facetList Facet list
-     * @param array $filter    Array of field => on-screen description listing
+     * @param array                       $facetList Facet list
+     * @param array                       $filter    Array of field => on-screen description listing
      * all of the desired facet fields
+     * @param \VuFind\Search\Base\Options $options   Search options object
      *
      * @return array Facets data arrays
      */
@@ -1035,9 +1036,9 @@ abstract class Results
     /**
      * Helper for buildFacetList. Sets displayText for facet values.
      *
-     * @param array $result             Facet data arrays (passed by reference)
-     * @param array $hierarchicalFacets List of hierarchical facets
-     * @param \VuFind\Search\Base\Options $options
+     * @param array                       $result             Facet data arrays (passed by reference)
+     * @param array                       $hierarchicalFacets List of hierarchical facets
+     * @param \VuFind\Search\Base\Options $options            Search options object
      *
      * @return void
      */
@@ -1075,9 +1076,9 @@ abstract class Results
     /**
      * Helper for buildFacetList. Builds hierarchical facets.
      *
-     * @param array $result             Facet data arrays (passed by reference)
-     * @param array $hierarchicalFacets List of hierarchical facets
-     * @param \VuFind\Search\Base\Options $options
+     * @param array                       $result             Facet data arrays (passed by reference)
+     * @param array                       $hierarchicalFacets List of hierarchical facets
+     * @param \VuFind\Search\Base\Options $options            Search options object
      *
      * @return void
      */
