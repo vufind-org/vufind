@@ -255,11 +255,7 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
         $service->expects($this->once())->method('getDoctrineReference')->willReturnCallback(
             function ($className, $userOrId) use ($referenceId, $mockUser) {
                 $this->assertEquals(UserEntityInterface::class, $className);
-                if (is_int($userOrId)) {
-                    $this->assertEquals($referenceId, $userOrId);
-                } else {
-                    $this->assertEquals($referenceId, $userOrId->getId());
-                }
+                $this->assertEquals($referenceId, is_int($userOrId) ? $userOrId : $userOrId->getId());
                 return $mockUser;
             }
         );
