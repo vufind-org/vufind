@@ -161,19 +161,20 @@ class CachingDownloader implements GuzzleServiceAwareInterface
             );
         }
 
+        $body = $response->getBody()->getContents();
+        $response->getBody()->rewind(); // later code might need to read the body again
         if ($response->getStatusCode() != 200) {
             throw new HttpDownloadException(
                 'HttpService download failed (not ok)',
                 $url,
                 $response->getStatusCode(),
                 $response->getHeaders(),
-                $response->getBody()->getContents()
+                $body
             );
         }
 
         $finalValue = $decodeCallback !== null
-            ? $decodeCallback($response, $url)
-            : $response->getBody()->getContents();
+            ? $decodeCallback($response, $url) : $body;
         if ($cache) {
             $cache->addItem($cacheItemKey, $finalValue);
         }
