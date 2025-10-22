@@ -3,6 +3,8 @@
   $renderInterval = function (int $opens, int $closes, bool $minutes): string {
     return $this->render('organisationinfo/elements/helpers/time-interval.phtml', compact('opens', 'closes', 'minutes'));
   };
+  // Use 'organisation_info_only_selfservice' if available (meaning it's customized locally) and fall back to default otherwise:
+  $selfserviceTranslationKey = !$this->translationEmpty('organisation_info_only_selfservice') ? 'organisation_info_only_selfservice' : 'organisation_info_schedule_selfservice';
 ?>
 
 <div class="js-opening-times-week">
@@ -44,7 +46,7 @@
                 <?php if ($time['closed']): ?>
                   <span class="closed-notice"><?=$this->icon('organisation-info-closed')?> <?=$this->transEsc('organisation_info_is_closed')?></span>
                 <?php elseif ($time['selfservice']): ?>
-                  <span class="selfservice-only"><?=$this->transEsc('organisation_info_only_selfservice')?></span>
+                  <span class="selfservice-only"><?=$this->transEsc($selfserviceTranslationKey)?></span>
                 <?php else: ?>
                   <span class="name-staff"><?=$this->transEsc('organisation_info_schedule_staff')?></span>
                 <?php endif; ?>

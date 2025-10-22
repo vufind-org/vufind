@@ -117,12 +117,6 @@ $organisation-info-max-w: 400px !default;
             }
         }
 
-        .location-is-open, .location-is-closed {
-            float: right;
-            margin-top: 8px;
-            margin-right: 3px;
-        }
-
         .schedules-info {
             margin-top: 20px;
             margin-bottom: 10px;
@@ -496,7 +490,7 @@ $organisation-info-max-w: 400px !default;
                             }
                         }
 
-                        .open-or-closed {
+                        .open-times-info {
                             text-align: right;
                         }
                     }
@@ -704,12 +698,9 @@ $organisation-info-max-w: 400px !default;
     width: 100%;
 
     .js-open-status {
-        // Let the status drop down on narrow screens:
-        float: right;
         .location-is-open, .location-is-closed {
             font-size: 1.45em;
             font-weight: bold;
-            margin-left: 1rem;
         }
     }
 

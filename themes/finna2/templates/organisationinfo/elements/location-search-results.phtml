@@ -28,9 +28,9 @@
     <div class="open-times-info">
       <div class="open-or-closed">
         <?php if ($result['openNow']): ?>
-          <span class="location-is-open info-element"><?=$this->transEsc('organisation_info_is_open')?></span>
+          <span class="location-is-open info-element"><?=$this->transEsc('organisation_info_is_open_now')?></span>
         <?php else: ?>
-          <span class="location-is-closed info-element"><?=$this->transEsc('organisation_info_is_closed')?></span>
+          <span class="location-is-closed info-element"><?=$this->transEsc('organisation_info_is_closed_now')?></span>
         <?php endif; ?>
       </div>
       <?php foreach ($result['openTimes']['schedules'] as $schedule): ?>

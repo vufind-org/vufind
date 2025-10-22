@@ -3,6 +3,8 @@
   $renderInterval = function (int $opens, int $closes, bool $minutes): string {
     return $this->render('organisationinfo/elements/helpers/time-interval.phtml', compact('opens', 'closes', 'minutes'));
   };
+  // Use 'organisation_info_only_selfservice' if available (meaning it's customized locally) and fall back to default otherwise:
+  $selfserviceTranslationKey = !$this->translationEmpty('organisation_info_only_selfservice') ? 'organisation_info_only_selfservice' : 'organisation_info_schedule_selfservice';
 ?>
 <div class="location-basic-info"<?=$this->matomoTracking('Location Basic Info', $id . '/' . $orgInfo['name'])?>>
   <h3 class="location-title" aria-atomic="true" aria-live="polite">
@@ -44,9 +46,9 @@
   <?php if (!$orgInfo['isAlwaysClosed']): ?>
     <h4 class="open-or-closed">
       <?php if ($orgInfo['openNow']): ?>
-        <span class="location-is-open info-element"><?=$this->transEsc('organisation_info_is_open')?></span>
+        <span class="location-is-open info-element"><?=$this->transEsc('organisation_info_is_open_now')?></span>
       <?php else: ?>
-        <span class="location-is-closed info-element"><?=$this->transEsc('organisation_info_is_closed')?></span>
+        <span class="location-is-closed info-element"><?=$this->transEsc('organisation_info_is_closed_now')?></span>
       <?php endif; ?>
     </h4>
     <?php foreach ($orgInfo['openTimes']['schedules'] as $schedule): ?>
@@ -73,7 +75,7 @@
                       </span>
                     <?php elseif ($time['selfservice']): ?>
                       <span class="selfservice-times">
-                        <?=$this->transEsc('organisation_info_only_selfservice')?>
+                        <?=$this->transEsc($selfserviceTranslationKey)?>
                         <?=$renderInterval($time['opens'], $time['closes'], $schedule['minutePrecision'])?>
                       </span>
                     <?php else: ?>
