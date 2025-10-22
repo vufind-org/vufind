@@ -63,7 +63,7 @@ use function strlen;
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
 class Aleph extends AbstractBase implements
-    \Laminas\Log\LoggerAwareInterface,
+    \Psr\Log\LoggerAwareInterface,
     \VuFindHttp\HttpServiceAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;

@@ -29,8 +29,6 @@
 
 namespace VuFind\Exception;
 
-use Laminas\Http\Headers;
-
 /**
  * "Format Unavailable" Exception
  *
@@ -43,55 +41,23 @@ use Laminas\Http\Headers;
 class HttpDownloadException extends \Exception implements HttpStatusInterface
 {
     /**
-     * URL we tried to download.
-     *
-     * @var string
-     */
-    protected $url;
-
-    /**
-     * HTTP status associated with this exception.
-     *
-     * @var ?int
-     */
-    protected $statusCode;
-
-    /**
-     * HTTP response headers associated with this exception.
-     *
-     * @var ?Headers
-     */
-    protected $responseHeaders;
-
-    /**
-     * HTTP response body associated with this exception.
-     *
-     * @var ?string
-     */
-    protected $responseBody;
-
-    /**
      * Constructor
      *
-     * @param string          $message         Exception message
-     * @param string          $url             URL we tried to download
-     * @param int|null        $statusCode      HTTP status code
-     * @param Headers|null    $responseHeaders HTTP response headers
-     * @param string|null     $responseBody    HTTP response body
-     * @param \Throwable|null $previous        Previous exception
+     * @param string      $message         Exception message
+     * @param string      $url             URL we tried to download
+     * @param ?int        $statusCode      HTTP status code
+     * @param ?array      $responseHeaders HTTP response headers
+     * @param ?string     $responseBody    HTTP response body
+     * @param ?\Throwable $previous        Previous exception
      */
     public function __construct(
         string $message,
-        string $url,
-        ?int $statusCode = null,
-        ?Headers $responseHeaders = null,
-        ?string $responseBody = null,
+        protected string $url,
+        protected ?int $statusCode = null,
+        protected ?array $responseHeaders = null,
+        protected ?string $responseBody = null,
         ?\Throwable $previous = null
     ) {
-        $this->url = $url;
-        $this->statusCode = $statusCode;
-        $this->responseHeaders = $responseHeaders;
-        $this->responseBody = $responseBody;
         parent::__construct($message, 0, $previous);
     }
 
@@ -118,9 +84,9 @@ class HttpDownloadException extends \Exception implements HttpStatusInterface
     /**
      * Get HTTP response headers.
      *
-     * @return ?Headers
+     * @return ?array
      */
-    public function getResponseHeaders(): ?Headers
+    public function getResponseHeaders(): ?array
     {
         return $this->responseHeaders;
     }

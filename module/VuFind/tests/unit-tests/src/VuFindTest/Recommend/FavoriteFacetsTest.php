@@ -74,32 +74,26 @@ class FavoriteFacetsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a fully configured module
      *
-     * @param \VuFind\Search\Solr\Results  $results      results object
-     * @param string                       $tagSetting   Are tags enabled?
-     * @param string                       $settings     settings
-     * @param \Laminas\Stdlib\Parameters   $request      request
-     * @param \VuFind\Config\PluginManager $configLoader config loader
+     * @param ?\VuFind\Search\Solr\Results $results    results object
+     * @param string                       $tagSetting Are tags enabled?
      *
      * @return FavoriteFacets
      */
     protected function getFavoriteFacets(
-        $results = null,
-        $tagSetting = 'enabled',
-        $settings = '',
-        $request = null,
-        $configLoader = null
-    ) {
+        ?\VuFind\Search\Solr\Results $results = null,
+        string $tagSetting = 'enabled',
+    ): FavoriteFacets {
         if (null === $results) {
             $results = $this->getMockResults();
         }
         $sf = new FavoriteFacets(
-            $configLoader ?? $this->getMockConfigPluginManager([]),
+            $this->getMockConfigManager(),
             $tagSetting
         );
-        $sf->setConfig($settings);
+        $sf->setConfig('');
         $sf->init(
             $results->getParams(),
-            $request ?? new \Laminas\Stdlib\Parameters([])
+            new \Laminas\Stdlib\Parameters([])
         );
         $sf->process($results);
         return $sf;

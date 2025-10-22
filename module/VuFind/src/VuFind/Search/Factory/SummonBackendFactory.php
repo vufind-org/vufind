@@ -51,7 +51,7 @@ class SummonBackendFactory extends AbstractBackendFactory
     /**
      * Logger.
      *
-     * @var \Laminas\Log\LoggerInterface
+     * @var \Psr\Log\LoggerInterface
      */
     protected $logger;
 
@@ -128,7 +128,7 @@ class SummonBackendFactory extends AbstractBackendFactory
             $options,
             $this->getService(GuzzleService::class)->createClient(null, $this->summonConfig->General->timeout ?? 30)
         );
-        $connector->setLogger(new \Laminas\Log\PsrLoggerAdapter($this->logger));
+        $connector->setLogger($this->logger);
         return $connector;
     }
 

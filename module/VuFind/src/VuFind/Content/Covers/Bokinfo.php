@@ -44,7 +44,7 @@ use function strlen;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class Bokinfo extends \VuFind\Content\AbstractCover implements
-    \Laminas\Log\LoggerAwareInterface,
+    \Psr\Log\LoggerAwareInterface,
     \VuFindHttp\HttpServiceAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;

@@ -53,7 +53,7 @@ use function is_object;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Loader implements \Laminas\Log\LoggerAwareInterface
+class Loader implements \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 

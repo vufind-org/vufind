@@ -131,6 +131,10 @@ trait LiveDatabaseTrait
             'doctrine.cache.filesystem',
             new \DoctrineModule\Cache\LaminasStorageCache($cacheAdapter)
         );
+        $container->set(
+            'doctrine.cache.array',
+            new \DoctrineModule\Cache\LaminasStorageCache(new \Laminas\Cache\Storage\Adapter\Memory())
+        );
         $driverFactory = new \DoctrineModule\Service\DriverFactory('orm_default');
         $container->set(
             'doctrine.driver.orm_default',
@@ -185,7 +189,7 @@ trait LiveDatabaseTrait
         // Set up the bare minimum services to actually load real configs:
         $config = $this->getMergedConfig();
         $container = new \VuFindTest\Container\MockContainer($this);
-        $container->set(\VuFind\Log\Logger::class, $this->createMock(\Laminas\Log\LoggerInterface::class));
+        $container->set(\VuFind\Log\Logger::class, $this->createMock(\Psr\Log\LoggerInterface::class));
         $container->set('config', $config);
         $this->addConfigRelatedServicesToContainer($container, moduleConfig: $config);
         $this->addDoctrineDependenciesToContainer($container);
@@ -201,7 +205,7 @@ trait LiveDatabaseTrait
     {
         if (!$this->liveDatabaseContainer) {
             $container = $this->getMockContainerWithDoctrineDependencies();
-            $container->set(\VuFind\Log\Logger::class, $this->createMock(\Laminas\Log\LoggerInterface::class));
+            $container->set(\VuFind\Log\Logger::class, $this->createMock(\Psr\Log\LoggerInterface::class));
             $liveServiceManager = new ServiceManager($container, []);
             $container->set(ServiceManager::class, $liveServiceManager);
             $container->set(

@@ -47,6 +47,7 @@ use VuFind\View\Helper\Root\Translate;
 class FlashmessagesTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\ViewTrait;
+    use \VuFindTest\Feature\TranslatorTrait;
 
     /**
      * Data provider for testFlashmessageData
@@ -273,26 +274,17 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
      */
     protected function getViewHelpers()
     {
-        $getTranslation = function ($str, $tokens = [], $default = null) {
-            $strings = [
+        $translations = [
+            'default' => [
                 'Good' => 'Good Translation',
                 'paragraph' => 'Tag <p>',
                 'foo_html' => '<p>Foo</p>',
                 'foo_placeholder' => 'foo %%ph%%',
-            ];
-            $translated = $strings[$str] ?? $default ?? $str;
-            return str_replace(
-                array_keys($tokens),
-                array_values($tokens),
-                $translated
-            );
-        };
-
-        $translate = $this->getMockBuilder(Translate::class)->getMock();
-        $translate->expects($this->any())
-            ->method('__invoke')
-            ->will($this->returnCallback($getTranslation));
-
+            ],
+        ];
+        $translator = $this->getMockTranslator($translations);
+        $translate = new Translate();
+        $translate->setTranslator($translator);
         $transEsc = new TransEsc();
         $transEsc->setView(
             $this->getPhpRenderer(

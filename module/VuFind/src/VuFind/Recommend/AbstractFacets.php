@@ -70,7 +70,7 @@ abstract class AbstractFacets implements RecommendInterface
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configManager Configuration manager
+     * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
      */
     public function __construct(protected \VuFind\Config\ConfigManagerInterface $configManager)
     {

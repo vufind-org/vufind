@@ -38,7 +38,7 @@ use function is_object;
 use function is_resource;
 
 /**
- * Search
+ * Entity model for search table
  *
  * @category VuFind
  * @package  Database
@@ -420,7 +420,7 @@ class Search implements SearchEntityInterface
      *
      * @return static
      */
-    public function setLastNotificationSent(Datetime $lastNotificationSent): static
+    public function setLastNotificationSent(DateTime $lastNotificationSent): static
     {
         $this->lastNotificationSent = $lastNotificationSent;
         return $this;

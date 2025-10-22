@@ -176,7 +176,7 @@ class AuditEvent implements AuditEventEntityInterface
      *
      * @return DateTime
      */
-    public function getDate(): Datetime
+    public function getDate(): DateTime
     {
         return $this->date;
     }

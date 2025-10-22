@@ -53,7 +53,7 @@ class CollectionSideFacetsTest extends \PHPUnit\Framework\TestCase
     {
         $results = $this->getSolrResults($this->getMockParams());
         $results->getParams()->expects($this->once())->method('getDisplayQuery')->will($this->returnValue('foo'));
-        $csf = $this->getSideFacets(null, $results, '::facets:true');
+        $csf = $this->getSideFacets($results, '::facets:true');
         $this->assertEquals('foo', $csf->getKeywordFilter());
         $this->assertTrue($csf->keywordFilterEnabled());
     }
@@ -61,25 +61,20 @@ class CollectionSideFacetsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a fully configured module
      *
-     * @param \VuFind\Config\PluginManager $configLoader config loader
-     * @param \VuFind\Search\Solr\Results  $results      results
-     * object
-     * @param string                       $settings     settings
-     * @param \Laminas\Stdlib\Parameters   $request      request
+     * @param ?\VuFind\Search\Solr\Results $results  results object
+     * @param string                       $settings settings
      *
-     * @return SideFacets
+     * @return CollectionSideFacets
      */
     protected function getSideFacets(
-        $configLoader = null,
-        $results = null,
-        $settings = '',
-        $request = null
-    ) {
-        $sf = new CollectionSideFacets($configLoader ?? $this->getMockConfigPluginManager([]));
+        ?\VuFind\Search\Solr\Results $results = null,
+        string $settings = ''
+    ): CollectionSideFacets {
+        $sf = new CollectionSideFacets($this->getMockConfigManager([]));
         $sf->setConfig($settings);
         $sf->init(
             $results->getParams(),
-            $request ?? new \Laminas\Stdlib\Parameters([])
+            new \Laminas\Stdlib\Parameters([])
         );
         $sf->process($results ?? $this->getSolrResults());
         return $sf;

@@ -966,6 +966,101 @@ class FolioTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Get expected result of getHoldings(), used by testGetHoldingsWithMultipleIds().
+     *
+     * @return array
+     */
+    protected function getExpectedGetHoldingsWithMultipleIdsResult(): array
+    {
+        return [
+            [
+                'total' => 1,
+                'holdings' => [
+                    0 => [
+                        'callnumber_prefix' => '',
+                        'callnumber' => 'PS2394 .M643 1883',
+                        'id' => 'foo',
+                        'item_id' => 'itemid',
+                        'holdings_id' => 'abbd2c2b-b2a1-4324-bd24-10f990cfc594',
+                        'number' => 1,
+                        'enumchron' => '',
+                        'barcode' => 'barcode-test',
+                        'status' => 'Available',
+                        'duedate' => '',
+                        'availability' => true,
+                        'is_holdable' => true,
+                        'holdings_notes' => null,
+                        'item_notes' => null,
+                        'summary' => ['foo', 'bar baz'],
+                        'supplements' => [],
+                        'indexes' => [],
+                        'location' => 'Special Collections',
+                        'location_code' => 'DCOC',
+                        'reserve' => 'TODO',
+                        'addLink' => true,
+                        'bound_with_records' => [],
+                        'folio_location_is_active' => true,
+                        'loan_type_id' => '',
+                        'loan_type_name' => '',
+                    ],
+                ],
+                'electronic_holdings' => [],
+            ],
+            [
+                'total' => 1,
+                'holdings' => [
+                    0 => [
+                        'callnumber_prefix' => '',
+                        'callnumber' => 'PS3551.S5 R6 1983',
+                        'id' => 'bar',
+                        'item_id' => '3258389f-ed1a-406f-8627-97a78d832003',
+                        'holdings_id' => '2216df84-b841-490c-8bde-b83076c5c4f4',
+                        'number' => 1,
+                        'enumchron' => '',
+                        'barcode' => '12345678901234',
+                        'status' => 'Available',
+                        'duedate' => '',
+                        'availability' => true,
+                        'is_holdable' => true,
+                        'holdings_notes' => null,
+                        'item_notes' => null,
+                        'summary' => [],
+                        'supplements' => [],
+                        'indexes' => [],
+                        'location' => 'MSU Main Library',
+                        'location_code' => 'mnmn',
+                        'reserve' => 'TODO',
+                        'addLink' => 'check',
+                        'bound_with_records' => [],
+                        'folio_location_is_active' => true,
+                        'loan_type_id' => 'd012791f-4e26-4dc2-a279-b6a42b1df315',
+                        'loan_type_name' => 'Can Circulate',
+                    ],
+                ],
+                'electronic_holdings' => [],
+            ],
+        ];
+    }
+
+    /**
+     * Test getHoldings with multiple ids
+     *
+     * @depends testTokens
+     *
+     * @return void
+     */
+    public function testGetHoldingsWithMultipleIds(): void
+    {
+        $driverConfig = $this->defaultDriverConfig;
+        $driverConfig['IDs']['type'] = 'hrid';
+        $this->createConnector('get-holdings', $driverConfig);
+        $this->assertEquals(
+            $this->getExpectedGetHoldingsWithMultipleIdsResult(),
+            $this->driver->getHoldings(['foo', 'bar'])
+        );
+    }
+
+    /**
      * Test getStatuses.
      *
      * @depends testTokens

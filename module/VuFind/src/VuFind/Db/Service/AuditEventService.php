@@ -69,9 +69,9 @@ class AuditEventService extends AbstractDbService implements
      * @param ?string             $requestUri          Request URI (if applicable)
      */
     public function __construct(
-        protected EntityManager $entityManager,
-        protected EntityPluginManager $entityPluginManager,
-        protected PersistenceManager $persistenceManager,
+        EntityManager $entityManager,
+        EntityPluginManager $entityPluginManager,
+        PersistenceManager $persistenceManager,
         protected array $enabledEventTypes,
         protected ?string $sessionId,
         protected ?string $clientIp,
@@ -79,6 +79,7 @@ class AuditEventService extends AbstractDbService implements
         protected ?string $serverName,
         protected ?string $requestUri
     ) {
+        parent::__construct($entityManager, $entityPluginManager, $persistenceManager);
     }
 
     /**

@@ -49,7 +49,7 @@ interface AuditEventEntityInterface extends EntityInterface
      *
      * @return DateTime
      */
-    public function getDate(): Datetime;
+    public function getDate(): DateTime;
 
     /**
      * Set date.
