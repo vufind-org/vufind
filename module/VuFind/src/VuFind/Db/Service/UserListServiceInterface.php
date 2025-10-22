@@ -78,16 +78,16 @@ interface UserListServiceInterface extends DbServiceInterface
     /**
      * Get public lists.
      *
-     * @param array  $includeFilter List of list ids or entities to include in result.
-     * @param array  $excludeFilter List of list ids or entities to exclude from result.
-     * @param string $type          Type of the user lists. Default is 'default'.
+     * @param array           $includeFilter List of list ids or entities to include in result.
+     * @param array           $excludeFilter List of list ids or entities to exclude from result.
+     * @param string|string[] $types         Types of user lists to get. Set to an empty array to get all.
      *
      * @return UserListEntityInterface[]
      */
     public function getPublicLists(
         array $includeFilter = [],
         array $excludeFilter = [],
-        string $type = UserList::TYPE_DEFAULT
+        string|array $types = [UserList::TYPE_DEFAULT]
     ): array;
 
     /**
@@ -95,14 +95,14 @@ interface UserListServiceInterface extends DbServiceInterface
      * list_entity and count keys.
      *
      * @param UserEntityInterface|int $userOrId User entity object or ID
-     * @param string                  $type     Type of the user lists. Default is 'default'.
+     * @param string|string[]         $types    Types of user lists to get. Set to an empty array to get all.
      *
      * @return array
      * @throws Exception
      */
     public function getUserListsAndCountsByUser(
         UserEntityInterface|int $userOrId,
-        string $type = UserList::TYPE_DEFAULT
+        string|array $types = [UserList::TYPE_DEFAULT]
     ): array;
 
     /**
@@ -114,7 +114,7 @@ interface UserListServiceInterface extends DbServiceInterface
      * @param bool                 $publicOnly        Whether to return only public lists
      * @param bool                 $andTags           Use AND operator when filtering by tag.
      * @param bool                 $caseSensitiveTags Should we treat tags case-sensitively?
-     * @param string               $type              Type of the user lists. Default is 'default'.
+     * @param string|string[]      $types             Types of user lists to get. Set to an empty array to get all.
      *
      * @return UserListEntityInterface[]
      */
@@ -124,18 +124,21 @@ interface UserListServiceInterface extends DbServiceInterface
         bool $publicOnly = true,
         bool $andTags = true,
         bool $caseSensitiveTags = false,
-        string $type = UserList::TYPE_DEFAULT
+        string|array $types = [UserList::TYPE_DEFAULT]
     ): array;
 
     /**
      * Get list objects belonging to the specified user.
      *
      * @param UserEntityInterface|int $userOrId User entity object or ID
-     * @param string                  $type     Type of the user lists. Default is 'default'.
+     * @param string|string[]         $types    Types of user lists to get. Set to an empty array to get all.
      *
      * @return UserListEntityInterface[]
      */
-    public function getUserListsByUser(UserEntityInterface|int $userOrId, string $type = UserList::TYPE_DEFAULT): array;
+    public function getUserListsByUser(
+        UserEntityInterface|int $userOrId,
+        string|array $types = [UserList::TYPE_DEFAULT]
+    ): array;
 
     /**
      * Get lists containing a specific record.
@@ -144,7 +147,7 @@ interface UserListServiceInterface extends DbServiceInterface
      * @param string                       $source   Source of record to look up
      * @param UserEntityInterface|int|null $userOrId Optional user ID or entity object (to limit results
      * to a particular user).
-     * @param string                       $type     Type of the user lists. Default is 'default'.
+     * @param string|string[]              $types    Types of user lists to get. Set to an empty array to get all.
      *
      * @return UserListEntityInterface[]
      */
@@ -152,6 +155,6 @@ interface UserListServiceInterface extends DbServiceInterface
         string $recordId,
         string $source = DEFAULT_SEARCH_BACKEND,
         UserEntityInterface|int|null $userOrId = null,
-        string $type = UserList::TYPE_DEFAULT
+        string|array $types = [UserList::TYPE_DEFAULT]
     ): array;
 }
