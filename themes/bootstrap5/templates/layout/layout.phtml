@@ -1,4 +1,11 @@
-<?=$this->doctype()?>
+<?php
+  if (($children = $this->layout()->getChildren()) && $children[0]?->getTemplate() === 'laminas_whoops/simple_error') {
+    // Whoops error is a complete page, so just output it and nothing else:
+    echo $this->layout()->content;
+    return;
+  }
+  echo $this->doctype();
+?>
 <?php
   // Set up the search box -- there are three possible cases:
   // 1. No search box was set; we should default to the normal box

@@ -35,26 +35,28 @@
     <form action="<?=$this->url('ratings-deleteratings')?>" name="updateForm" id="select_all_ratings" method="post">
       <?php if ($this->accountCapabilities()->isRatingRemovalAllowed()): ?>
         <input type="hidden" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>" name="csrf">
-        <label>
-          <div class="checkbox">
-            <input type="checkbox" name="selectAll" class="checkbox-select-all">
-            <?=$this->transEsc('select_all_on_page')?>
-          </div>
-        </label>
-        <?=
-          $this->component(
-              'confirm-button',
-              [
-                  'buttonId' => 'cancelSelected',
-                  'buttonName' => 'cancelSelected',
-                  'buttonLabel' => 'delete_selected',
-                  'header' => 'confirm_userrating_delete_selected_text',
-                  'confirmId' => 'confirm_cancel_selected_yes',
-                  'cancelClass' => 'confirm_cancel_no',
-                  'ignoreLightbox' => true,
-              ]
-          )
-        ?>
+        <div class="toolbar">
+          <label>
+            <div class="checkbox">
+              <input type="checkbox" name="selectAll" class="checkbox-select-all">
+              <?=$this->transEsc('select_all_on_page')?>
+            </div>
+          </label>
+          <?=
+            $this->component(
+                'confirm-button',
+                [
+                    'buttonId' => 'cancelSelected',
+                    'buttonName' => 'cancelSelected',
+                    'buttonLabel' => 'delete_selected',
+                    'header' => 'confirm_userrating_delete_selected_text',
+                    'confirmId' => 'confirm_cancel_selected_yes',
+                    'cancelClass' => 'confirm_cancel_no',
+                    'ignoreLightbox' => true,
+                ]
+            )
+          ?>
+        </div>
       <?php endif; ?>
       <table class="usercontent-table table-striped table table-responsive">
         <thead>
@@ -68,11 +70,11 @@
         <tbody>
           <?php foreach ($this->ratings as $rating):?>
             <tr>
-              <td class="checkbox-col">
+              <td class="checkbox-col unlabeled-column">
                 <?php if ($this->accountCapabilities()->isRatingRemovalAllowed()):?>
                   <div class="checkbox-container result">
                     <div class="checkbox">
-                      <label class="record-checkbox">
+                      <label>
                         <span class="sr-only"><?=$this->transEsc('Select');?></span>
                         <input class="checkbox-select-item" type="checkbox" name="deleteSelectedrating[]" value="<?=$this->escapeHtmlAttr(($rating['id']))?>" id="checkbox_rating_<?=$rating['id']?>">
                       </label>
@@ -80,7 +82,7 @@
                   </div>
                 <?php endif; ?>
               </td>
-              <td data-label="<?=$this->transEscAttr('Created')?>"><?=$this->dateTime()->convertToDisplayDateAndTime('U', $rating['created']->getTimestamp())?></td>
+              <td class="date" data-label="<?=$this->transEscAttr('Created')?>"><?=$this->dateTime()->convertToDisplayDateAndTime('U', $rating['created']->getTimestamp())?></td>
               <td data-label="<?=$this->transEscAttr('Title')?>">
                 <a href="<?=$this->url('record', ['id' => $rating['record_id']])?>"><?=$this->escapeHtml($rating['recordTitle'])?></a>
               </td>

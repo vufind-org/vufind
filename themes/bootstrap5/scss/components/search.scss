@@ -139,7 +139,11 @@ input[type="search"]::-webkit-search-decoration {
   .home-facet-list { flex: 0 1 100%; }
 }
 
-header .container.navbar { margin-bottom: 0; }
+header .container.navbar {
+  margin-bottom: 0;
+  // Use same padding as front page that doesn't have a navbar:
+  --bs-navbar-padding-x: calc(var(--bs-gutter-x)*.5);
+}
 
 .search-sort,
 .search-result-limit {
@@ -161,6 +165,10 @@ header .container.navbar { margin-bottom: 0; }
   display: block;
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
+}
+
+.search-controls form:not(:last-child) {
+  margin-bottom: 0.25rem;
 }
 
 @include media-breakpoint-up(sm) {
@@ -881,6 +889,7 @@ table.search-history-table {
 
     #searchForm-reset {
       width: 2em;
+      height: 2em;
       border: none;
       border-radius: 50%;
       background-color: $gray-lighter;

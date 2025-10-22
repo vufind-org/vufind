@@ -31,6 +31,7 @@ namespace VuFindTest\ILS;
 
 use VuFind\Config\Config;
 use VuFind\ILS\Connection;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
  * Connnection test
@@ -43,6 +44,8 @@ use VuFind\ILS\Connection;
  */
 class ConnectionTest extends \PHPUnit\Framework\TestCase
 {
+    use ConfigRelatedServicesTrait;
+
     /**
      * Connection object
      *
@@ -60,11 +63,11 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
         $config = new Config(['driver' => 'Demo']);
         $driverManager = $this->createMock(\VuFind\ILS\Driver\PluginManager::class);
         $driverManager->method('has')->willReturn('Demo');
-        $configReader = $this->createMock(\VuFind\Config\PluginManager::class);
+        $mockConfigManager = $this->getMockConfigManager();
         $this->connection = new Connection(
             $config,
             $driverManager,
-            $configReader
+            $mockConfigManager
         );
     }
 
@@ -91,6 +94,8 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
      */
     public static function isMethodBlockedProvider()
     {
+        $oneHourAgo = new \DateTime('now - 1 hours');
+        $oneHourInFuture = new \DateTime('now + 1 hours');
         return [
             'only startDate' => [
                 [
@@ -139,12 +144,12 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
             'inside recurring limits' => [
                 [
                     'Renewals' => [
-                        date('H:i', strtotime('now - 1 hours')) . '/' . date('H:i', strtotime('now + 1 hours')),
+                        $oneHourAgo->format('H:i:s.u') . '/' . $oneHourInFuture->format('H:i:s.u'),
                     ],
                 ],
                 [
-                    'start' => new \DateTime(date('H:i', strtotime('now - 1 hours'))),
-                    'end' => new \DateTime(date('H:i', strtotime('now + 1 hours'))),
+                    'start' => $oneHourAgo,
+                    'end' => $oneHourInFuture,
                     'recurring' => true,
                 ],
             ],
@@ -159,13 +164,13 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
             'recurring block active, fixed date block inactive' => [
                 [
                     'Renewals' => [
-                        date('H:i', strtotime('now - 1 hours')) . '/' . date('H:i', strtotime('now + 1 hours')),
+                        $oneHourAgo->format('H:i:s.u') . '/' . $oneHourInFuture->format('H:i:s.u'),
                         date('Y-m-d', strtotime('now - 2 days')) . '/' . date('Y-m-d', strtotime('now - 1 days')),
                     ],
                 ],
                 [
-                    'start' => new \DateTime(date('H:i', strtotime('now - 1 hours'))),
-                    'end' => new \DateTime(date('H:i', strtotime('now + 1 hours'))),
+                    'start' => $oneHourAgo,
+                    'end' => $oneHourInFuture,
                     'recurring' => true,
                 ],
             ],
@@ -177,7 +182,7 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
                 [
-                    'start' => new \DateTime(date('Y-m-d', strtotime('now - 1 days'))),
+                    'start' => new \DateTime('yesterday'),
                     'end' => new \DateTime('tomorrow 23:59:59'),
                     'recurring' => false,
                 ],

@@ -74,6 +74,11 @@ class Folio extends AbstractAPI implements
     }
 
     /**
+     * Maximum number of ids to pass in the query to load FOLIO records with getByBatch()
+     */
+    protected const QUERY_BY_IDS_BATCH_SIZE = 20;
+
+    /**
      * Authentication tenant (X-Okapi-Tenant)
      *
      * @var string
@@ -502,58 +507,200 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Retrieve FOLIO instance using VuFind's chosen bibliographic identifier.
+     * Get FOLIO records by batches of ids.
+     * When using a unique field for $idField (such as 'id'), this function does not check
+     * if all records are found, and returned records are not guaranteed to be in the order of the given ids.
      *
-     * @param string $bibId Bib-level id
+     * @param string[] $ids         ids to look for in the records
+     * @param string   $idField     field to compare to given ids
+     * @param string   $responseKey response key with the records to retrieve
+     * @param string   $endpoint    FOLIO API endpoint
+     * @param string   $querySuffix optional string to append to the queries
      *
-     * @return object
+     * @return \Generator<object>
+     * @throws ILSException if there is an issue with the FOLIO response
      */
-    protected function getInstanceByBibId($bibId)
+    protected function getByBatch($ids, $idField, $responseKey, $endpoint, $querySuffix = '')
+    {
+        if (count($ids) == 0) {
+            return;
+        }
+        $idToKey = fn ($id) => $endpoint . '[' . $idField . '=' . $id . ']';
+        $idsToLookFor = [];
+        foreach ($ids as $id) {
+            $items = $this->getCachedData($idToKey($id));
+            if ($items == null) {
+                $idsToLookFor[] = $id;
+            } else {
+                foreach ($items as $item) {
+                    yield $item;
+                }
+            }
+        }
+        $resultsToCache = [];
+        foreach (array_chunk($idsToLookFor, self::QUERY_BY_IDS_BATCH_SIZE) as $idsInBatch) {
+            $idsWithQuotes = array_map(fn ($id) => '"' . $this->escapeCql($id) . '"', $idsInBatch);
+            $query = [
+                'query' => $idField . ' == (' . implode(' OR ', $idsWithQuotes) . ')' . $querySuffix,
+            ];
+            foreach (
+                $this->getPagedResults(
+                    $responseKey,
+                    $endpoint,
+                    $query
+                ) as $item
+            ) {
+                $key = $idToKey($item->$idField);
+                if (isset($resultsToCache[$key])) {
+                    $resultsToCache[$key][] = $item;
+                } else {
+                    $resultsToCache[$key] = [$item];
+                }
+                yield $item;
+            }
+        }
+        foreach ($resultsToCache as $key => $items) {
+            $this->putCachedData($key, $items);
+        }
+    }
+
+    /**
+     * Support method for getHoldings() -- retrieve holdings by instance ids
+     *
+     * @param string[] $instanceIds the FOLIO instance ids
+     *
+     * @return object[]
+     * @throws ILSException if there is an issue with the FOLIO response
+     */
+    protected function getHoldingsByInstanceIds(array $instanceIds)
+    {
+        if (count($instanceIds) == 0) {
+            return [];
+        }
+        $holdings = [];
+        $querySuffix = ' NOT discoverySuppress==true';
+        foreach (
+            $this->getByBatch(
+                $instanceIds,
+                'instanceId',
+                'holdingsRecords',
+                '/holdings-storage/holdings',
+                $querySuffix
+            ) as $holding
+        ) {
+            $holdings[] = $holding;
+        }
+        return $holdings;
+    }
+
+    /**
+     * Support method for getHoldings() -- retrieve items by holding ids
+     *
+     * @param string[] $holdingIds the FOLIO holdings ids
+     *
+     * @return object[]
+     * @throws ILSException if there is an issue with the FOLIO response
+     */
+    protected function getItemsByHoldingIds(array $holdingIds)
+    {
+        if (count($holdingIds) == 0) {
+            return [];
+        }
+        $items = [];
+        $folioItemSort = $this->config['Holdings']['folio_sort'] ?? '';
+        if (!empty($folioItemSort)) {
+            $querySuffix = ' sortby ' . $folioItemSort;
+        } else {
+            $querySuffix = '';
+        }
+        $endpoint = count($holdingIds) > 1 ? '/inventory/items' : '/inventory/items-by-holdings-id';
+        foreach (
+            $this->getByBatch(
+                $holdingIds,
+                'holdingsRecordId',
+                'items',
+                $endpoint,
+                $querySuffix
+            ) as $item
+        ) {
+            $items[] = $item;
+        }
+        return $items;
+    }
+
+    /**
+     * Retrieve FOLIO instances using VuFind's chosen bibliographic identifiers.
+     * Returned instances may not be in the order of the given ids.
+     *
+     * @param string[] $bibIds Bib-level ids
+     *
+     * @return object[]
+     * @throws ILSException if there is an issue with the FOLIO response or an instance is not found
+     */
+    protected function getInstancesByBibIds($bibIds)
     {
         // Figure out which ID type to use in the CQL query; if the user configured
         // instance IDs, use the 'id' field, otherwise pass the setting through
         // directly:
         $idType = $this->getBibIdType();
         $idField = $idType === 'instance' ? 'id' : $idType;
-
-        $query = [
-            'query' => '(' . $idField . '=="' . $this->escapeCql($bibId) . '")',
-        ];
-        $response = $this->makeRequest('GET', '/instance-storage/instances', $query);
-        $instances = json_decode($response->getBody());
-        if (count($instances->instances ?? []) == 0) {
-            throw new ILSException('Item Not Found');
+        $instances = [];
+        foreach (
+            $this->getByBatch(
+                $bibIds,
+                $idField,
+                'instances',
+                '/instance-storage/instances'
+            ) as $instance
+        ) {
+            $instances[] = $instance;
         }
-        return $instances->instances[0];
+        if (count($instances) != count($bibIds)) {
+            throw new ILSException('An instance was not found, bibIds=' . implode(',', $bibIds));
+        }
+        return $instances;
     }
 
     /**
-     * Get raw object of item from inventory/items/
+     * Retrieve FOLIO instance using VuFind's chosen bibliographic identifier.
      *
-     * @param string $itemId Item-level id
+     * @param string $bibId Bib-level id
      *
-     * @return array
+     * @return object
+     * @throws ILSException if there is an issue with the FOLIO response or the instance is not found
      */
-    public function getStatus($itemId)
+    protected function getInstanceByBibId($bibId)
     {
-        $holding = $this->getHolding($itemId);
-        return $holding['holdings'] ?? [];
+        // NOTE: getInstancesByBibIds() throws an exception if there is no instance matching bibId
+        return $this->getInstancesByBibIds([$bibId])[0];
     }
 
     /**
-     * This method calls getStatus for an array of records or implement a bulk method
+     * Returns the status for the given bib-level id
      *
-     * @param array $idList Item-level ids
+     * @param string $bibId Bib-level id
      *
-     * @return array values from getStatus
+     * @return array an array of associative arrays, one for each item
+     * @throws ILSException if there is an issue with a FOLIO response or the instance is not found
+     */
+    public function getStatus($bibId)
+    {
+        $holding = $this->getHolding($bibId);
+        return $holding['holdings'];
+    }
+
+    /**
+     * Return statuses for an array of bibIds, optimizing retrieval with bulk calls
+     *
+     * @param string[] $idList array of bibIds
+     *
+     * @return array[] the items for each bibId (in the given order)
+     * @throws ILSException if there is an issue with a FOLIO response or an instance is not found
      */
     public function getStatuses($idList)
     {
-        $status = [];
-        foreach ($idList as $id) {
-            $status[] = $this->getStatus($id);
-        }
-        return $status;
+        $holdings = $this->getHoldings($idList);
+        return array_map(fn ($holding) => $holding['holdings'], $holdings);
     }
 
     /**
@@ -766,7 +913,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Support method for getHolding(): extract details from the holding record that
+     * Support method for getHoldings(): extract details from the holding record that
      * will be needed by formatHoldingItem() below.
      *
      * @param object $holding FOLIO holding record (decoded from JSON)
@@ -817,7 +964,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Support method for getHolding() -- return an array of item-level details from
+     * Support method for getHoldings() -- return an array of item-level details from
      * other data: the location, the holdings record, and any current loan on the item.
      *
      * Depending on where this method is called, $locationId will be the holdings record
@@ -851,7 +998,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Support method for getHolding() -- given a few key details, format an item
+     * Support method for getHoldings() -- given a few key details, format an item
      * for inclusion in the return value.
      *
      * @param string     $bibId            Current bibliographic ID
@@ -980,83 +1127,75 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * This method queries the ILS for holding information.
+     * Support method for getHoldings() -- processes a FOLIO item
      *
-     * @param string $bibId   Bib-level id
-     * @param ?array $patron  Patron login information from $this->patronLogin
-     * @param array  $options Extra options (not currently used)
+     * @param string $bibId            Bib-level id
+     * @param array  $holdingDetails   details for the holding
+     * @param object $item             item to process
+     * @param int    $dueDateItemCount number of times getCurrentLoan()/getDueDate() were called (passed by reference)
+     * @param int    $number           item number
      *
-     * @return array An array of associative holding arrays
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     * @return array An associative array
      */
-    public function getHolding($bibId, ?array $patron = null, array $options = [])
+    protected function processItem($bibId, $holdingDetails, $item, &$dueDateItemCount, $number)
     {
         $showDueDate = $this->config['Availability']['showDueDate'] ?? true;
         $showTime = $this->config['Availability']['showTime'] ?? false;
         $maxNumDueDateItems = $this->config['Availability']['maxNumberItems'] ?? 5;
+        $currentLoan = null;
+        $dueDateValue = '';
+        $boundWithRecords = null;
+        if (
+            $item->status->name == 'Checked out'
+            && $showDueDate
+            && $dueDateItemCount < $maxNumDueDateItems
+        ) {
+            $currentLoan = $this->getCurrentLoan($item->id);
+            $dueDateValue = $currentLoan ? $this->getDueDate($currentLoan, $showTime) : '';
+            $dueDateItemCount++;
+        }
+        if ($item->isBoundWith ?? false) {
+            $boundWithRecords = $this->getBoundWithRecords($item);
+        }
+        $nextItem = $this->formatHoldingItem(
+            $bibId,
+            $holdingDetails,
+            $item,
+            $number,
+            $dueDateValue,
+            $boundWithRecords ?? [],
+            $currentLoan
+        );
+        return $nextItem;
+    }
+
+    /**
+     * Support method for getHoldings() -- processes FOLIO records for a single instance
+     *
+     * @param string   $bibId      Bib-level id
+     * @param object[] $holdings   holdings for the instance
+     * @param object[] $folioItems items to look into to find the holdings items
+     *
+     * @return array An associative array with information about the instance holdings
+     */
+    protected function processInstanceHoldings($bibId, $holdings, $folioItems)
+    {
         $showHoldingsNoItems = $this->config['Holdings']['show_holdings_no_items'] ?? false;
         $dueDateItemCount = 0;
-
-        $instance = $this->getInstanceByBibId($bibId);
-        $query = [
-            'query' => '(instanceId=="' . $instance->id
-                . '" NOT discoverySuppress==true)',
-        ];
         $items = [];
-        $folioItemSort = $this->config['Holdings']['folio_sort'] ?? '';
         $vufindItemSort = $this->config['Holdings']['vufind_sort'] ?? '';
-        foreach (
-            $this->getPagedResults(
-                'holdingsRecords',
-                '/holdings-storage/holdings',
-                $query
-            ) as $holding
-        ) {
-            $rawQuery = '(holdingsRecordId=="' . $holding->id . '")';
-            if (!empty($folioItemSort)) {
-                $rawQuery .= ' sortby ' . $folioItemSort;
-            }
-            $query = ['query' => $rawQuery];
+        foreach ($holdings as $holding) {
             $holdingDetails = $this->getHoldingDetailsForItem($holding);
             $nextBatch = [];
             $sortNeeded = false;
             $number = 0;
-            foreach (
-                $this->getPagedResults(
-                    'items',
-                    '/inventory/items-by-holdings-id',
-                    $query
-                ) as $item
-            ) {
+            $folioItemsForHolding = array_filter($folioItems, fn ($item) => $item->holdingsRecordId == $holding->id);
+            foreach ($folioItemsForHolding as $item) {
                 if ($item->discoverySuppress ?? false) {
                     continue;
                 }
                 $number++;
-                $currentLoan = null;
-                $dueDateValue = '';
-                $boundWithRecords = null;
-                if (
-                    $item->status->name == 'Checked out'
-                    && $showDueDate
-                    && $dueDateItemCount < $maxNumDueDateItems
-                ) {
-                    $currentLoan = $this->getCurrentLoan($item->id);
-                    $dueDateValue = $currentLoan ? $this->getDueDate($currentLoan, $showTime) : '';
-                    $dueDateItemCount++;
-                }
-                if ($item->isBoundWith ?? false) {
-                    $boundWithRecords = $this->getBoundWithRecords($item);
-                }
-                $nextItem = $this->formatHoldingItem(
-                    $bibId,
-                    $holdingDetails,
-                    $item,
-                    $number,
-                    $dueDateValue,
-                    $boundWithRecords ?? [],
-                    $currentLoan
-                );
+                $nextItem = $this->processItem($bibId, $holdingDetails, $item, $dueDateItemCount, $number);
                 if (!empty($vufindItemSort) && !empty($nextItem[$vufindItemSort])) {
                     $sortNeeded = true;
                 }
@@ -1087,11 +1226,72 @@ class Folio extends AbstractAPI implements
                     ? $this->sortHoldings($nextBatch, $vufindItemSort) : $nextBatch
             );
         }
+
         return [
             'total' => count($items),
             'holdings' => $items,
             'electronic_holdings' => [],
         ];
+    }
+
+    /**
+     * Query the ILS for information about a single holdings.
+     *
+     * @param string $bibId   Bib-level id
+     * @param ?array $patron  Patron login information from $this->patronLogin
+     * @param array  $options Extra options (not currently used)
+     *
+     * @return array An associative array with the keys: total, holdings, electronic_holdings
+     * @throws ILSException if there is an issue with a FOLIO response or the instance is not found
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getHolding($bibId, ?array $patron = null, array $options = [])
+    {
+        // NOTE: getHoldings() always returns something for a bibId, unless the instance is not found.
+        // If the instance is not found, an ILSException is thrown.
+        return $this->getHoldings([$bibId])[0];
+    }
+
+    /**
+     * Query the ILS for holdings information.
+     *
+     * @param string[] $bibIds Bib-level ids
+     *
+     * @return array[] An array of associative arrays, one for each bibId
+     * @throws ILSException if there is an issue with a FOLIO response or an instance is not found
+     */
+    public function getHoldings($bibIds)
+    {
+        $idType = $this->getBibIdType();
+        $bibIdToInstanceId = [];
+        if ($idType === 'instance') {
+            // Do not retrieve the instances if we already have their ids
+            $instanceIds = $bibIds;
+            foreach ($bibIds as $bibId) {
+                $bibIdToInstanceId[$bibId] = $bibId;
+            }
+        } else {
+            $instances = $this->getInstancesByBibIds($bibIds);
+            $instanceIds = array_map(fn ($instance) => $instance->id, $instances);
+            foreach ($instances as $instance) {
+                $bibIdToInstanceId[$instance->$idType] = $instance->id;
+            }
+        }
+        $holdings = $this->getHoldingsByInstanceIds($instanceIds);
+        $holdingIds = array_map(fn ($holding) => $holding->id, $holdings);
+        if (count($holdings) == 0) {
+            $folioItems = [];
+        } else {
+            $folioItems = $this->getItemsByHoldingIds($holdingIds);
+        }
+        $results = [];
+        foreach ($bibIds as $bibId) {
+            $instanceId = $bibIdToInstanceId[$bibId];
+            $holdingsForInstance = array_filter($holdings, fn ($holding) => $holding->instanceId == $instanceId);
+            $results[] = $this->processInstanceHoldings($bibId, $holdingsForInstance, $folioItems);
+        }
+        return $results;
     }
 
     /**
@@ -1110,7 +1310,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Support method for getHolding(): obtaining the Due Date from the
+     * Support method for getHoldings(): obtaining the Due Date from the
      * current loan, adjusting the timezone and formatting in universal
      * time with or without due time
      *
@@ -1131,7 +1331,7 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Support method for getHolding(): obtaining any current loan from OKAPI
+     * Support method for getHoldings(): obtaining any current loan from OKAPI
      * by calling /circulation/loans with the item->id
      *
      * @param string $itemId ID for the item to query
@@ -1346,6 +1546,7 @@ class Folio extends AbstractAPI implements
      * @param int    $limit     Max number of records to retrieve
      *
      * @return array
+     * @throws ILSException if the response code is not a success or the response is not JSON
      */
     protected function getResultPage($interface, $query = [], $offset = 0, $limit = 1000)
     {
@@ -1372,6 +1573,7 @@ class Folio extends AbstractAPI implements
      * @param int    $limit       How many results to retrieve from FOLIO per call
      *
      * @return array
+     * @throws ILSException if there is an issue with the response
      */
     protected function getPagedResults($responseKey, $interface, $query = [], $limit = 1000)
     {

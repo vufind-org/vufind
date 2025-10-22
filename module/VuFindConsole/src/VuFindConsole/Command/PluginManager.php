@@ -98,6 +98,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'util/sitemap' => Util\SitemapCommand::class,
         'util/suppressed' => Util\SuppressedCommand::class,
         'util/switch_db_hash' => Util\SwitchDbHashCommand::class,
+        'util/update_resource_metadata' => Util\UpdateResourceMetadataCommand::class,
     ];
 
     /**
@@ -155,6 +156,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Util\SitemapCommand::class => Util\SitemapCommandFactory::class,
         Util\SuppressedCommand::class => Util\AbstractSolrAndIlsCommandFactory::class,
         Util\SwitchDbHashCommand::class => Util\SwitchDbHashCommandFactory::class,
+        Util\UpdateResourceMetadataCommand::class =>  Util\UpdateResourceMetadataCommandFactory::class,
     ];
 
     /**
