@@ -162,9 +162,9 @@ class CachingDownloader implements GuzzleServiceAwareInterface
         }
 
         $body = $response->getBody()->getContents();
-        if ($response->getStatusCode() == 200) {
+        if ($response->getStatusCode() != 200) {
             throw new HttpDownloadException(
-                'HttpService download failed (not ok)',
+                'HttpService download failed (not ok) ' . $response->getStatusCode(),
                 $url,
                 $response->getStatusCode(),
                 $response->getHeaders(),
