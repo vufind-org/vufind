@@ -44,6 +44,7 @@ use VuFind\Db\Feature\DateTimeTrait;
  */
 #[ORM\Table(name: 'api_key')]
 #[ORM\Index(name: 'api_key_user_id_idx', columns: ['user_id'])]
+#[ORM\Index(name: 'api_key_token_idx', columns: ['token'])]
 #[ORM\Entity]
 class ApiKey implements ApiKeyEntityInterface
 {
