@@ -14,6 +14,7 @@ $rules = [
     'blank_line_after_opening_tag' => false,
     'cast_spaces' => ['space' => 'none'],
     'class_attributes_separation' => ['elements' => ['method' => 'one', 'property' => 'one']],
+    'class_reference_name_casing' => true,
     'concat_space' => ['spacing' => 'one'],
     'ereg_to_preg' => true,
     'get_class_to_class_keyword' => true,
