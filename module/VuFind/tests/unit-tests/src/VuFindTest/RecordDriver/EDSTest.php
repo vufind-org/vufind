@@ -118,6 +118,32 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
+     * Default test configuration Patron Empowerment Framework (PEF)
+     *
+     * @var array
+     */
+    protected $defaultDriverConfigPEF = [
+        'General' => [
+            'default_sort' => 'relevance',
+        ],
+        'ItemGlobalOrder' => [],
+        'Catalog' => [
+            'driver' => 'Folio',
+            'ilsBackends' => ['Solr', 'EDS'],
+            'EDSHasCatalog' => true,
+            'CatalogDatabaseId' => 'cat012345a',
+            'CatalogANRegex' => [
+                '/^demo\.oai\.edge\.demo\.folio\.provider\.com\.fs00000000\./',
+                '/\./',
+            ],
+            'CatalogANReplace' => [
+                '',
+                '-',
+            ],
+        ],
+    ];
+
+    /**
      * Generate a new Eds driver to return responses set in a json fixture
      *
      * Overwrites $this->driver
@@ -996,5 +1022,71 @@ class EDSTest extends \PHPUnit\Framework\TestCase
         $actual = $driver->getHTMLFullText();
         $expected = $this->getFixture('eds/eds_mathml_table.html');
         $this->assertEquals($expected, $actual);
+    }
+
+    /**
+     * Test getUniqueIDOverrideForRequest for a "normal" record
+     *
+     * @return void
+     */
+    public function testGetUniqueIDOverrideForRequestForNormalRecord(): void
+    {
+        $driver = $this->getDriver('valid-eds-record', $this->defaultDriverConfigPEF);
+        $this->assertEquals('edsgob,edsgob.14707011', $driver->getUniqueIDOverrideForRequest());
+    }
+
+    /**
+     * Test getUniqueIDOverrideForRequest for a catalog record
+     *
+     * @return void
+     */
+    public function testGetUniqueIDOverrideForRequestForCatalogRecord(): void
+    {
+        $driver = $this->getDriver('catalog_record_patron_empowerment', $this->defaultDriverConfigPEF);
+        $this->assertEquals('976cbaf6-fb02-48a2-8f82-a19203769b52', $driver->getUniqueIDOverrideForRequest());
+    }
+
+    /**
+     * Test hasCatalog true
+     *
+     * @return void
+     */
+    public function testHasCatalogTrue(): void
+    {
+        $driver = $this->getDriver('catalog_record_patron_empowerment', $this->defaultDriverConfigPEF);
+        $this->assertTrue($driver->hasCatalog());
+    }
+
+    /**
+     * Test hasCatalog false
+     *
+     * @return void
+     */
+    public function testHasCatalogFalse(): void
+    {
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertFalse($driver->hasCatalog());
+    }
+
+    /**
+     * Test pubTypeRtacEnabled for a catalog record (Book) [true]
+     *
+     * @return void
+     */
+    public function testPubTypeRtacEnabledForCatalogRecordTrue(): void
+    {
+        $driver = $this->getDriver('catalog_record_patron_empowerment');
+        $this->assertTrue($driver->pubTypeRtacEnabled());
+    }
+
+    /**
+     * Test pubTypeRtacEnabled for eBook record [false]
+     *
+     * @return void
+     */
+    public function testPubTypeRtacEnabledForEbookRecordFalse(): void
+    {
+        $driver = $this->getDriver('catalog_record_patron_empowerment_ebook');
+        $this->assertFalse($driver->pubTypeRtacEnabled());
     }
 }

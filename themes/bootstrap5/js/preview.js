@@ -59,6 +59,7 @@ function getHTPreviews(keys) {
 function applyPreviewUrl($link, url) {
   // Update the preview button:
   $link.attr('href', url).removeClass('hidden')
+    .attr('target', '_blank')
     .attr('rel', 'noopener'); // Performance improvement
 
   // Update associated record thumbnail, if any:

@@ -80,7 +80,7 @@ function setupVuFindRemoteCodeCoverage(array $modules): void
                 // includeFile below will do it in any case):
                 $iterator = new \RecursiveDirectoryIterator(
                     "$moduleDir/src/",
-                    \FileSystemIterator::CURRENT_AS_PATHNAME | \FileSystemIterator::SKIP_DOTS
+                    \FilesystemIterator::CURRENT_AS_PATHNAME | \FilesystemIterator::SKIP_DOTS
                 );
                 $filterIterator = new \RecursiveCallbackFilterIterator(
                     $iterator,

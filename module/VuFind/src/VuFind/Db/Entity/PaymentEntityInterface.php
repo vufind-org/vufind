@@ -169,7 +169,7 @@ interface PaymentEntityInterface extends EntityInterface
      *
      * @return DateTime
      */
-    public function getCreated(): Datetime;
+    public function getCreated(): DateTime;
 
     /**
      * Set created date.
@@ -185,7 +185,7 @@ interface PaymentEntityInterface extends EntityInterface
      *
      * @return DateTime
      */
-    public function getPaidDate(): ?Datetime;
+    public function getPaidDate(): ?DateTime;
 
     /**
      * Set paid date.
@@ -201,7 +201,7 @@ interface PaymentEntityInterface extends EntityInterface
      *
      * @return ?DateTime
      */
-    public function getRegistrationStartDate(): ?Datetime;
+    public function getRegistrationStartDate(): ?DateTime;
 
     /**
      * Set registration start date.
@@ -217,7 +217,7 @@ interface PaymentEntityInterface extends EntityInterface
      *
      * @return ?DateTime
      */
-    public function getRegistrationDate(): ?Datetime;
+    public function getRegistrationDate(): ?DateTime;
 
     /**
      * Set registration date.

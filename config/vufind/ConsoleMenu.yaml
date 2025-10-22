@@ -138,6 +138,9 @@ main:
       - label: Register pending online payments and report expired ones
         type: internal-command
         command: onlinepayment/monitor
+      - label: Update resource metadata
+        type: internal-command
+        command: util/updateResourceMetadata
     - label: Harvest Tools
       type: menu
       contents:

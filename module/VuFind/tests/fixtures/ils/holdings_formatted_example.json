@@ -1,0 +1,99 @@
+{
+  "total": 3,
+  "holdings": [
+    {
+      "callnumber_prefix": "",
+      "callnumber": "c123456-1",
+      "is_holdable": true,
+      "holdings_notes": null,
+      "summary": [
+      ],
+      "supplements": [
+      ],
+      "indexes": [
+      ],
+      "location": "Main Library",
+      "location_code": "MAIN",
+      "folio_location_is_active": true,
+      "id": "instance_id",
+      "item_id": "item_id_1",
+      "holdings_id": "holdings_id_1",
+      "number": 1,
+      "enumchron": "",
+      "barcode": "468109755",
+      "duedate": "02.09.2025",
+      "availability": {
+      },
+      "item_notes": null,
+      "addLink": "check",
+      "bound_with_records": [
+      ],
+      "loan_type_id": "loan_type_id",
+      "loan_type_name": "Circulating"
+    },
+    {
+      "callnumber_prefix": "",
+      "callnumber": "c123456-2",
+      "is_holdable": true,
+      "holdings_notes": null,
+      "summary": [
+      ],
+      "supplements": [
+      ],
+      "indexes": [
+      ],
+      "location": "Main Library",
+      "location_code": "MAIN",
+      "folio_location_is_active": true,
+      "id": "instance_id",
+      "item_id": "item_id_2",
+      "holdings_id": "holdings_id_1",
+      "number": 2,
+      "enumchron": "",
+      "barcode": "468109753",
+      "duedate": "",
+      "availability": {
+      },
+      "item_notes": null,
+      "addLink": "check",
+      "bound_with_records": [
+      ],
+      "loan_type_id": "loan_type_id",
+      "loan_type_name": "Circulating"
+    },
+    {
+      "callnumber_prefix": "",
+      "callnumber": "c123456-3",
+      "is_holdable": true,
+      "holdings_notes": null,
+      "summary": [
+      ],
+      "supplements": [
+      ],
+      "indexes": [
+      ],
+      "location": "Secondary Library",
+      "location_code": "SECOND",
+      "folio_location_is_active": true,
+      "id": "instance_id",
+      "item_id": "item_id_3",
+      "holdings_id": "holdings_id_2",
+      "number": 1,
+      "enumchron": "",
+      "barcode": "468109754",
+      "duedate": "",
+      "availability": {
+      },
+      "item_notes": null,
+      "addLink": "check",
+      "bound_with_records": [
+      ],
+      "loan_type_id": "loan_type_id",
+      "loan_type_name": "Circulating"
+    }
+  ],
+  "electronic_holdings": [
+  ],
+  "page": 1,
+  "itemLimit": null
+}
