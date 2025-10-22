@@ -335,7 +335,7 @@ class UserListService extends AbstractDbService implements
      *
      * @param string       $dql        Dql string
      * @param array        $parameters Parameters for dql
-     * @param string|array $types      User list types to get.
+     * @param string|array $types      Types of user lists to get. Set to an empty array to get all.
      *
      * @return void
      */
