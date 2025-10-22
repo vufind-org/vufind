@@ -144,7 +144,7 @@ class RecordFormatter extends \VuFindApi\Formatter\RecordFormatter
      *
      * @return string
      */
-    public function getSearchImagesCountNotice($record): string
+    public function getRecordImagesCountNotice($record): string
     {
         $imageRenderLimit = $record->tryMethod('getImagesRenderLimit');
         $translate = $this->helperManager->get('translate');
@@ -446,12 +446,11 @@ class RecordFormatter extends \VuFindApi\Formatter\RecordFormatter
     public function format($results, $requestedFields)
     {
         if (
-            $this->renderContext === RenderContext::SEARCH
-            && isset($this->recordFields['searchImagesCountNotice'])
+            isset($this->recordFields['recordImagesCountNotice'])
             && array_intersect($requestedFields, ['images', 'imagesExtended', 'imageRights'])
-            && !in_array('searchImagesCountNotice', $requestedFields)
+            && !in_array('recordImagesCountNotice', $requestedFields)
         ) {
-            $requestedFields[] = 'searchImagesCountNotice';
+            $requestedFields[] = 'recordImagesCountNotice';
         }
         $results = array_map(
             function ($record) {

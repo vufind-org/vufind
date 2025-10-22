@@ -81,6 +81,27 @@ trait FinnaRecordTrait
     protected int $maxImagesInSearch = 20;
 
     /**
+     * Maximum limit of URLs to render in search context
+     *
+     * @var int
+     */
+    protected int $maxURLsInSearch = 200;
+
+    /**
+     * Maximum limit of URLs to get in record context
+     *
+     * @var int
+     */
+    protected int $maxURLsInRecord = 200;
+
+    /**
+     * Maximum limit of images to get in record context
+     *
+     * @var int
+     */
+    protected int $maxImagesInRecord = 1000;
+
+    /**
      * Current record render context
      *
      * @var RenderContext
@@ -93,6 +114,13 @@ trait FinnaRecordTrait
      * @var int
      */
     protected int $imagesCount = 0;
+
+    /**
+     * Current amount of URLs
+     *
+     * @var int
+     */
+    protected int $urlsCount = 0;
 
     /**
      * Set current record render context
@@ -108,13 +136,24 @@ trait FinnaRecordTrait
 
     /**
      * Has the record exceeded maximum amount of images for its current context?
-     * Amount of images allowed when renderContext is search is 20.
      *
      * @return bool
      */
     public function maxAmountOfImages(): bool
     {
-        return $this->renderContext === RenderContext::SEARCH && $this->imagesCount >= $this->maxImagesInSearch;
+        return ($this->renderContext === RenderContext::SEARCH && $this->imagesCount >= $this->maxImagesInSearch)
+            || ($this->renderContext === RenderContext::RECORD && $this->imagesCount >= $this->maxImagesInRecord);
+    }
+
+    /**
+     * Has the record exceeded maximum amount of URLs for its current context
+     *
+     * @return bool
+     */
+    public function maxAmountOfURLs(): bool
+    {
+        return ($this->renderContext === RenderContext::SEARCH && $this->urlsCount >= $this->maxURLsInSearch)
+            || ($this->renderContext === RenderContext::RECORD && $this->urlsCount >= $this->maxURLsInRecord);
     }
 
     /**
@@ -127,7 +166,20 @@ trait FinnaRecordTrait
         if ($this->renderContext === RenderContext::SEARCH) {
             return $this->maxImagesInSearch;
         }
-        return -1;
+        return $this->maxImagesInRecord;
+    }
+
+    /**
+     * Get amount of URLs allowed to be rendered in current context
+     *
+     * @return int Current URLs render limit
+     */
+    public function getURLsReturnLimit(): int
+    {
+        if ($this->renderContext === RenderContext::SEARCH) {
+            return $this->maxURLsInSearch;
+        }
+        return $this->maxURLsInRecord;
     }
 
     /**

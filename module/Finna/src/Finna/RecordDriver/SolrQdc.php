@@ -659,7 +659,10 @@ class SolrQdc extends \VuFind\RecordDriver\SolrDefault implements \Laminas\Log\L
         $urls = [];
         foreach (parent::getURLs() as $url) {
             if (!$this->urlBlocked($url['url'] ?? '')) {
-                $urls[] = $url;
+                if (!$this->maxAmountOfURLs()) {
+                    $urls[] = $url;
+                }
+                $this->urlsCount++;
             }
         }
         $urls = $this->resolveUrlTypes($urls);

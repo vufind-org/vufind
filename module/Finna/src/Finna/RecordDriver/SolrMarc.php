@@ -1765,6 +1765,9 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc implements \Laminas\Log\Log
      */
     public function getURLs()
     {
+        if (isset($this->cache[__FUNCTION__])) {
+            return $this->cache[__FUNCTION__];
+        }
         $retVal = [];
 
         // Which fields/subfields should we check for URLs?
@@ -1816,14 +1819,17 @@ class SolrMarc extends \VuFind\RecordDriver\SolrMarc implements \Laminas\Log\Log
                             !$this->urlBlocked($address, $desc)
                             && !in_array($data, $retVal)
                         ) {
-                            $retVal[] = $data;
+                            if (!$this->maxAmountOfURLs()) {
+                                $retVal[] = $data;
+                            }
+                            $this->urlsCount++;
                         }
                     }
                 }
             }
         }
-        $retVal = $this->resolveUrlTypes($retVal);
-        return $retVal;
+        $this->cache[__FUNCTION__] = $this->resolveUrlTypes($retVal);
+        return $this->cache[__FUNCTION__];
     }
 
     /**

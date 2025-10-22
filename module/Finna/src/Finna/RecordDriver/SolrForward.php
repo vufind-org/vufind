@@ -1252,16 +1252,19 @@ class SolrForward extends \VuFind\RecordDriver\SolrDefault implements \Laminas\L
                         }
                     }
                 }
-                $videos[] = [
-                    'id' => $videoID,
-                    'url' => '',
-                    'posterName' => (string)$titleValue,
-                    'type' => $videoType,
-                    'description' => $videoType,
-                    'text' => $videoType,
-                    'source' => $source,
-                    'warnings' => $warnings,
-                ];
+                if (!$this->maxAmountOfURLs()) {
+                    $videos[] = [
+                        'id' => $videoID,
+                        'url' => '',
+                        'posterName' => (string)$titleValue,
+                        'type' => $videoType,
+                        'description' => $videoType,
+                        'text' => $videoType,
+                        'source' => $source,
+                        'warnings' => $warnings,
+                    ];
+                }
+                $this->urlsCount++;
             }
         }
         return $this->cache[$cacheKey] = $handler->getData($videos);

@@ -527,6 +527,8 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Laminas\Log\
                 if (!$this->maxAmountOfImages()) {
                     $images = $this->ensureImageSizes($images);
                     $images['downloadable'] = $this->allowRecordImageDownload($images);
+                } else {
+                    $images = [];
                 }
                 $this->imagesCount++;
             }
@@ -965,6 +967,10 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Laminas\Log\
         ?\SimpleXmlElement $measurements
     ): array {
         if ($codec = $this->supportedAudioFormats[$format] ?? false) {
+            if ($this->maxAmountOfURLs()) {
+                $this->urlsCount++;
+                return [];
+            }
             $audio = [
                 'desc' => $description ?: null,
                 'url' => $url,
@@ -1003,6 +1009,10 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Laminas\Log\
         ?\SimpleXmlElement $measurements
     ): array {
         $mediaType = $this->supportedVideoFormats[$format] ?? false;
+        if ($this->maxAmountOfURLs()) {
+            $this->urlsCount++;
+            return [];
+        }
         $video = match ($mediaType) {
             'text/html' => [
                 'desc' => $description ?: null,
@@ -1048,6 +1058,10 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Laminas\Log\
         string $linkType = 'proxy-link',
         string $type = '',
     ): array {
+        if ($this->maxAmountOfURLs()) {
+            $this->urlsCount++;
+            return [];
+        }
         $format = strtolower($format);
         // Do not display text/html mediatype
         if ('text/html' === $format) {
@@ -2397,6 +2411,9 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Laminas\Log\
      */
     public function getURLs()
     {
+        if (isset($this->cache[__FUNCTION__])) {
+            return $this->cache[__FUNCTION__];
+        }
         $urls = [];
         foreach (parent::getURLs() as $url) {
             if (!$this->urlBlocked($url['url'] ?? '', $url['desc'] ?? '')) {
@@ -2404,8 +2421,8 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Laminas\Log\
             }
         }
         $urls = $this->resolveUrlTypes($urls);
-        $urls = array_merge($urls, $this->getAudios(), $this->getVideos());
-        return $urls;
+        $this->cache[__FUNCTION__] = array_merge($urls, $this->getAudios(), $this->getVideos());
+        return $this->cache[__FUNCTION__];
     }
 
     /**
