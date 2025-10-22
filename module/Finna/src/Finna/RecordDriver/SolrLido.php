@@ -524,8 +524,11 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Laminas\Log\
             array $documents = []
         ) use (&$results) {
             if ($images) {
-                $images = $this->ensureImageSizes($images);
-                $images['downloadable'] = $this->allowRecordImageDownload($images);
+                if (!$this->maxAmountOfImages()) {
+                    $images = $this->ensureImageSizes($images);
+                    $images['downloadable'] = $this->allowRecordImageDownload($images);
+                }
+                $this->imagesCount++;
             }
             $results[] = compact(
                 'images',

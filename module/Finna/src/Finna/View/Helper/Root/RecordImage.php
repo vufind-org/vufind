@@ -31,10 +31,10 @@
 
 namespace Finna\View\Helper\Root;
 
+use Finna\RecordDriver\RenderContext;
 use Laminas\View\Helper\Url;
 
 use function func_get_args;
-use function in_array;
 
 /**
  * Header view helper
@@ -343,6 +343,8 @@ class RecordImage extends \Laminas\View\Helper\AbstractHelper
         $imageToRecord = $extraParams['imageToRecord'] ?? false;
 
         $view = $this->getView();
+        $renderContext = RenderContext::fromView($type);
+        $this->record->getDriver()->tryMethod('setRenderContext', [$renderContext->value]);
         $images = $this->getAllImagesAsCoverLinks(
             $view->layout()->userLang,
             $params,
@@ -351,7 +353,7 @@ class RecordImage extends \Laminas\View\Helper\AbstractHelper
         );
         // Get plausible model data
         if (
-            !in_array($type, ['list', 'list grid'])
+            $renderContext === RenderContext::RECORD
             && $this->record->getDriver()->tryMethod('getModels')
         ) {
             $images = $this->mergeModelDataToImages($images);

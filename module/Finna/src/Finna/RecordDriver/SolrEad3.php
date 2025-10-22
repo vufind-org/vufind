@@ -961,19 +961,24 @@ class SolrEad3 extends SolrEad
         ];
         $xml = $this->getXmlRecord();
         $addToResults = function ($imageData) use (&$result) {
-            $imageData = $this->ensureImageSizes($imageData);
-            $sizes = ['small', 'medium', 'large'];
-            $formatted = $imageData;
-            if (!empty($imageData['urls'])) {
-                foreach ($sizes as $size) {
-                    $from = $imageData['cacheSizes'][$size] ?? null;
-                    if ($from) {
-                        $formatted['pdf'][$size] = $imageData['pdf'][$from];
+            if (!$this->maxAmountOfImages()) {
+                $imageData = $this->ensureImageSizes($imageData);
+                $sizes = ['small', 'medium', 'large'];
+                $formatted = $imageData;
+                if (!empty($imageData['urls'])) {
+                    foreach ($sizes as $size) {
+                        $from = $imageData['cacheSizes'][$size] ?? null;
+                        if ($from) {
+                            $formatted['pdf'][$size] = $imageData['pdf'][$from];
+                        }
                     }
                 }
+                $formatted['downloadable'] = $this->allowRecordImageDownload($formatted);
+                $result['displayImages'][] = $formatted;
             }
-            $formatted['downloadable'] = $this->allowRecordImageDownload($formatted);
-            $result['displayImages'][] = $formatted;
+            if (!empty($imageData['urls'])) {
+                $this->imagesCount++;
+            }
         };
         $isExcludedFromOCR = function ($title) {
             foreach (self::EXCLUDE_OCR_TITLE_PARTS as $part) {
@@ -1118,7 +1123,9 @@ class SolrEad3 extends SolrEad
         if (!empty($fullResImages['items'])) {
             $result['fullres'] = $fullResImages;
         }
-
+        $images = [];
+        $fullResImages = [];
+        $ocrImages = [];
         return $this->cache[$cacheKey] = $result;
     }
 

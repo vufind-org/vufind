@@ -31,6 +31,8 @@
 
 namespace Finna\RecordDriver\Feature;
 
+use Finna\RecordDriver\RenderContext;
+
 use function count;
 use function in_array;
 use function is_array;
@@ -70,6 +72,73 @@ trait FinnaRecordTrait
      * @var string
      */
     protected $defaultRecordSpecsClass = 'DefaultRecord';
+
+    /**
+     * Maximum limit of images to get in search results per record.
+     *
+     * @var int
+     */
+    protected int $maxImagesInSearch = 20;
+
+    /**
+     * Current record render context
+     *
+     * @var RenderContext
+     */
+    protected RenderContext $renderContext = RenderContext::RECORD;
+
+    /**
+     * Current amount of images
+     *
+     * @var int
+     */
+    protected int $imagesCount = 0;
+
+    /**
+     * Set current record render context
+     *
+     * @param string $context Record render context
+     *
+     * @return void
+     */
+    public function setRenderContext(string $context): void
+    {
+        $this->renderContext = RenderContext::from($context);
+    }
+
+    /**
+     * Has the record exceeded maximum amount of images for its current context?
+     * Amount of images allowed when renderContext is search is 20.
+     *
+     * @return bool
+     */
+    public function maxAmountOfImages(): bool
+    {
+        return $this->renderContext === RenderContext::SEARCH && $this->imagesCount >= $this->maxImagesInSearch;
+    }
+
+    /**
+     * Get amount of images allowed to be rendered in current context.
+     *
+     * @return int Current images render limit or -1 for all.
+     */
+    public function getImagesRenderLimit(): int
+    {
+        if ($this->renderContext === RenderContext::SEARCH) {
+            return $this->maxImagesInSearch;
+        }
+        return -1;
+    }
+
+    /**
+     * Get the total image count for the record. Value is populated after calling the getAllImages function.
+     *
+     * @return int
+     */
+    public function getTotalAmountOfImages(): int
+    {
+        return $this->imagesCount;
+    }
 
     /**
      * Get inappropriate comments for this record reported by the given user.

@@ -89,17 +89,20 @@ trait SolrForwardTrait
                         $rights['link'] = $link;
                     }
                 }
-                $image = [
-                    'urls' => [
-                        'small' => $url,
-                        'medium' => $url,
-                        'large' => $url,
-                    ],
-                    'description' => $desc,
-                    'rights' => $rights,
-                ];
-                $image['downloadable'] = $this->allowRecordImageDownload($image);
-                $images[] = $image;
+                if (!$this->maxAmountOfImages()) {
+                    $image = [
+                        'urls' => [
+                            'small' => $url,
+                            'medium' => $url,
+                            'large' => $url,
+                        ],
+                        'description' => $desc,
+                        'rights' => $rights,
+                    ];
+                    $image['downloadable'] = $this->allowRecordImageDownload($image);
+                    $images[] = $image;
+                }
+                $this->imagesCount++;
             }
         }
         return $images;

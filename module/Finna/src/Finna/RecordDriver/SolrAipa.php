@@ -115,16 +115,19 @@ class SolrAipa extends SolrQdc implements ContainerFormatInterface
             if ($format && in_array($format, $images)) {
                 $url = (string)$desc;
                 if ($this->isUrlLoadable($url, $uniqueId)) {
-                    $result[] = [
-                        'urls' => [
-                            'small' => $url,
-                            'medium' => $url,
-                            'large' => $url,
-                        ],
-                        'description' => '',
-                        'rights' => [],
-                        'downloadable' => false,
-                    ];
+                    if (!$this->maxAmountOfImages()) {
+                        $result[] = [
+                            'urls' => [
+                                'small' => $url,
+                                'medium' => $url,
+                                'large' => $url,
+                            ],
+                            'description' => '',
+                            'rights' => [],
+                            'downloadable' => false,
+                        ];
+                    }
+                    $this->imagesCount++;
                 }
             }
         }

@@ -192,13 +192,16 @@ class SolrEad extends SolrDefault implements \Laminas\Log\LoggerAwareInterface
             } else {
                 $description = '';
             }
-            $image = [
-                'urls' => $urls,
-                'description' => (string)$description,
-                'rights' => $rights,
-            ];
-            $image['downloadable'] = $this->allowRecordImageDownload($image);
-            $result[] = $image;
+            if (!$this->maxAmountOfImages()) {
+                $image = [
+                    'urls' => $urls,
+                    'description' => (string)$description,
+                    'rights' => $rights,
+                ];
+                $image['downloadable'] = $this->allowRecordImageDownload($image);
+                $result[] = $image;
+            }
+            $this->imagesCount++;
         }
 
         $this->cache[$cacheKey] = $result;

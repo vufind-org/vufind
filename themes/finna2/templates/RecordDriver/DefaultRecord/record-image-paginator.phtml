@@ -27,6 +27,8 @@
 <?php endif; ?>
 
 <?php
+  $renderedImagesCount = count($images);
+  $totalImagesCount = $this->driver->tryMethod('getTotalAmountOfImages') ?? $renderedImagesCount;
   $settings = [
     'recordId' => $this->driver->getUniqueId(),
     'recordType' => $this->driver->tryMethod('getRecordFormat'),
@@ -38,6 +40,7 @@
     'recordCovers' => 'recordcovers',
     'displayIcon' => $displayIcon,
     'triggerClick' => $this->imageClick ?? 'modal',
+    'totalImagesCount' => $totalImagesCount,
   ];
   if ($this->driver->tryMethod('getModels')) {
     $modelSettings = $this->driver->tryMethod('getModelSettings', [], []);
@@ -50,7 +53,16 @@
   <button class="next-image left" type="button"><?=$this->icon('image-previous') ?><span class="visually-hidden"><?= $this->transEsc('previous_image') ?></span></button>
   <a class="image-popup-trigger init" draggable="false" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($this->driver)) ?>" data-images="<?=htmlspecialchars(json_encode($images ?? []), ENT_QUOTES, 'UTF-8');?>" data-settings="<?=htmlspecialchars(json_encode($settings ?? []), ENT_QUOTES, 'UTF-8');?>" tabindex="-1">
     <div class="iconlabel format-<?=$this->record($this->driver)->getFormatClass(end($formats))?>"></div>
-    <div class="paginator-info"><span class="image-index"></span></div>
+    <div class="paginator-info d-flex align-items-center">
+      <span class="image-index"></span>
+      <?php if ($renderedImagesCount < $totalImagesCount): ?>
+        <?=$this->component('finna-toggletip', [
+          'icon' => 'help',
+          'contentHtml' => $this->translate('showing_results_of_html', ['%%start%%' => 1, '%%end%%' => $renderedImagesCount, '%%total%%' => $totalImagesCount]),
+          'class' => 'partial-images',
+        ]);?>
+      <?php endif; ?>
+    </div>
     <img src="<?=$this->imageSrc()->getDataPixel()?>" data-src="<?=$this->url('cover-unavailable')?>" class="recordcover<?= ($images[0]['pdf'] ?? false) ? ' pdf-cover' : ''?>" alt="<?=$this->transEsc('No Cover Image')?>">
   </a>
   <span class="hidden-trigger" hidden></span>

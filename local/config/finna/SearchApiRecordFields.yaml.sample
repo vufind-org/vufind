@@ -519,6 +519,10 @@ relationshipNotes:
   type: array
   items:
     type: string
+searchImagesCountNotice:
+  vufind.method: "Formatter::getSearchImagesCountNotice"
+  description: Displays current amount of images returned out of total images,
+  type: string
 secondaryAuthors:
   vufind.method: getSecondaryAuthors
   description: Secondary authors

@@ -237,14 +237,17 @@ class SolrQdc extends \VuFind\RecordDriver\SolrDefault implements \Laminas\Log\L
         $highResolution = [];
         $rights = $this->getRights($language);
         $addToResults = function ($imageData) use (&$results) {
-            if (!isset($imageData['urls']['small'])) {
-                $imageData['urls']['small'] = $imageData['urls']['medium']
-                    ?? $imageData['urls']['large']
-                    ?? $imageData['urls']['original'];
+            if (!$this->maxAmountOfImages()) {
+                if (!isset($imageData['urls']['small'])) {
+                    $imageData['urls']['small'] = $imageData['urls']['medium']
+                        ?? $imageData['urls']['large']
+                        ?? $imageData['urls']['original'];
+                }
+                $imageData = $this->ensureImageSizes($imageData);
+                $imageData['downloadable'] = $this->allowRecordImageDownload($imageData);
+                $results[] = $imageData;
             }
-            $imageData = $this->ensureImageSizes($imageData);
-            $imageData['downloadable'] = $this->allowRecordImageDownload($imageData);
-            $results[] = $imageData;
+            $this->imagesCount++;
         };
 
         foreach ($xml->file as $node) {
@@ -303,6 +306,8 @@ class SolrQdc extends \VuFind\RecordDriver\SolrDefault implements \Laminas\Log\L
                 ]
             );
         }
+        $thumbnails = [];
+        $otherSizes = [];
         // Attempt to find a PDF file to be converted to a coverimage
         if ($includePdf && empty($results)) {
             $urls = [];
