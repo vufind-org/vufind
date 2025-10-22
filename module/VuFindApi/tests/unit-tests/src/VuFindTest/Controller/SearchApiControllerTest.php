@@ -180,9 +180,7 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
         $developerSettingsService = $this->createMock(DeveloperSettingsService::class);
         $developerSettingsService->expects($this->any())->method('apiKeysEnabled')->willReturn($apiKeysEnabled);
         $developerSettingsService->expects($this->any())->method('getApiKeyMode')->willReturnCallback(
-            function () use ($apiKeyMode) {
-                return $apiKeyMode;
-            }
+            fn () => $apiKeyMode
         );
         $developerSettingsService->expects($this->any())->method('isApiKeyAllowed')->willReturnCallback(
             function ($token) use ($apiKeyMode, $apiKeysEnabled) {
