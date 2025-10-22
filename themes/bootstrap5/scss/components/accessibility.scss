@@ -1,11 +1,5 @@
 /* ACCESSIBILITY IMPROVEMENTS */
 
-a {
-  text-decoration: underline;
-
-  &:hover { color: black; }
-}
-
 /* AAA Color Contrasts */
 $breadcrumb-color: #535353 !default;
 $breadcrumb-active-color: #444 !default;

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -53,7 +53,8 @@ trait DateTimeTrait
     protected function getNullableDateTimeFromNonNullable(DateTime $date): ?DateTime
     {
         // Compare strings to avoid trouble with time zones:
-        return $date->format('Y-m-d H:i:s') !== $this->getUnassignedDefaultDateTime()->format('Y-m-d H:i:s')
+        return $date->format(VUFIND_DATABASE_DATETIME_FORMAT)
+            !== $this->getUnassignedDefaultDateTime()->format(VUFIND_DATABASE_DATETIME_FORMAT)
             ? $date
             : null;
     }

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -70,8 +70,7 @@ class NotifyCommandFactory implements FactoryInterface
         $scheduleOptions = $container
             ->get(\VuFind\Search\History::class)
             ->getScheduleOptions();
-        $mainConfig = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
+        $mainConfig = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
 
         // We need to initialize the theme so that the view renderer works:
         $theme = new \VuFindTheme\Initializer($mainConfig->Site, $container);

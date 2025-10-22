@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -54,7 +54,7 @@ use function is_callable;
  */
 class Alma extends AbstractBase implements
     \VuFindHttp\HttpServiceAwareInterface,
-    \Laminas\Log\LoggerAwareInterface,
+    \Psr\Log\LoggerAwareInterface,
     TranslatorAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
@@ -1606,7 +1606,7 @@ class Alma extends AbstractBase implements
         $xml = $this->makeRequest('/courses');
         $courses = [];
         foreach ($xml as $course) {
-            $courses[$course->id] = $course->name;
+            $courses[(string)$course->id] = (string)$course->name;
         }
         return $courses;
     }
@@ -2014,13 +2014,25 @@ class Alma extends AbstractBase implements
     /**
      * Get list of funds
      *
-     * @return array with key = course ID, value = course name
+     * @return array with key = fund ID, value = fund name
      */
     public function getFunds()
     {
-        // TODO: implement me!
         // https://developers.exlibrisgroup.com/alma/apis/acq
         // GET /almaws/v1/acq/funds
-        return [];
+        try {
+            $xml = $this->makeRequest('/acq/funds');
+        } catch (ILSException $e) {
+            // API key not defined or not configured to allow this API.
+            // Required permission: Acquisition Read.
+            $xml = [];
+        }
+        $result = [];
+        foreach ($xml->fund ?? [] as $fund) {
+            $fundId = (string)$fund->id;
+            $fundName = (string)$fund->name;
+            $result[$fundId] = $fundName;
+        }
+        return $result;
     }
 }

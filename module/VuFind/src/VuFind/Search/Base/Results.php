@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Base
@@ -902,18 +902,19 @@ abstract class Results
             $filter = $this->getParams()->getFacetConfig();
         }
 
+        $options = $this->getOptions();
         $hierarchicalFacets
-            = is_callable([$this->getOptions(), 'getHierarchicalFacets'])
-            ? $this->getOptions()->getHierarchicalFacets()
+            = is_callable([$options, 'getHierarchicalFacets'])
+            ? $options->getHierarchicalFacets()
             : [];
 
-        $result = $this->initializeFacetResults($facetList, $filter);
+        $result = $this->initializeFacetResults($facetList, $filter, $options);
 
         $this->addExcludeFilters($result, $filter, $hierarchicalFacets);
 
-        $this->setDisplayTextForFacetValues($result, $hierarchicalFacets);
+        $this->setDisplayTextForFacetValues($result, $hierarchicalFacets, $options);
 
-        $this->buildHierarchicalFacets($result, $hierarchicalFacets);
+        $this->buildHierarchicalFacets($result, $hierarchicalFacets, $options);
 
         return $result;
     }
@@ -927,14 +928,18 @@ abstract class Results
      *
      * @return array Facets data arrays
      */
-    protected function initializeFacetResults(array $facetList, array $filter): array
+    protected function initializeFacetResults(array $facetList, array $filter, object $options): array
     {
         $result = [];
+        $dateRangeFields = $options instanceof DateRangeOptionsInterface
+            ? $options->getDateRangeFacets() + $options->getFullDateRangeFacets()
+            : [];
         // Loop through every field returned by the result set
         foreach (array_keys($filter) as $field) {
             $data = $facetList[$field] ?? [];
-            // Skip empty arrays:
-            if (count($data) < 1) {
+            // Skip empty arrays unless this is a date range field, where we want the range selector to be always
+            // displayed:
+            if (!$data && !in_array($field, $dateRangeFields)) {
                 continue;
             }
             // Initialize the settings for the current field
@@ -1032,12 +1037,13 @@ abstract class Results
      *
      * @param array $result             Facet data arrays (passed by reference)
      * @param array $hierarchicalFacets List of hierarchical facets
+     * @param \VuFind\Search\Base\Options $options
      *
      * @return void
      */
-    protected function setDisplayTextForFacetValues(array &$result, array $hierarchicalFacets)
+    protected function setDisplayTextForFacetValues(array &$result, array $hierarchicalFacets, object $options)
     {
-        $translatedFacets = $this->getOptions()->getTranslatedFacets();
+        $translatedFacets = $options->getTranslatedFacets();
         foreach ($result as $field => $fieldResult) {
             $resultList = $fieldResult['list'];
             $hierarchical = in_array($field, $hierarchicalFacets);
@@ -1071,14 +1077,15 @@ abstract class Results
      *
      * @param array $result             Facet data arrays (passed by reference)
      * @param array $hierarchicalFacets List of hierarchical facets
+     * @param \VuFind\Search\Base\Options $options
      *
      * @return void
      */
-    protected function buildHierarchicalFacets(array &$result, array $hierarchicalFacets)
+    protected function buildHierarchicalFacets(array &$result, array $hierarchicalFacets, object $options)
     {
         $hierarchicalFacetSortSettings
-            = is_callable([$this->getOptions(), 'getHierarchicalFacetSortSettings'])
-            ? $this->getOptions()->getHierarchicalFacetSortSettings()
+            = is_callable([$options, 'getHierarchicalFacetSortSettings'])
+            ? $options->getHierarchicalFacetSortSettings()
             : [];
         foreach ($result as $field => $fieldResult) {
             if (!in_array($field, $hierarchicalFacets)) {

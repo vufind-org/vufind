@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Http
@@ -31,8 +31,6 @@ namespace VuFind\Http;
 
 /**
  * Guzzle service.
- *
- * N.B. Use only for dependencies that require Guzzle.
  *
  * @category VuFind
  * @package  Http
@@ -189,12 +187,13 @@ class GuzzleService
     /**
      * Check if given URL is a local address
      *
-     * @param ?string $host Host to check
+     * @param ?string $url URL to check
      *
      * @return bool
      */
-    protected function isLocal(?string $host): bool
+    protected function isLocal(?string $url): bool
     {
+        $host = $url ? parse_url($url, PHP_URL_HOST) : null;
         return $host && preg_match($this->localAddressesRegEx, $host);
     }
 }

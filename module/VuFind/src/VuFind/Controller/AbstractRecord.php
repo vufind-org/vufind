@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -453,12 +453,6 @@ class AbstractRecord extends AbstractBase
         $response = $this->permission()->check('feature.Favorites', false);
         if (is_object($response)) {
             return $response;
-        }
-
-        if ($this->formWasSubmitted('newList')) {
-            // Remove submit now from parameters
-            $this->getRequest()->getPost()->set('newList', null)->set('submitButton', null);
-            return $this->forwardTo('MyResearch', 'editList', ['id' => 'NEW']);
         }
 
         // Process form submission:
@@ -956,8 +950,7 @@ class AbstractRecord extends AbstractBase
             ? (bool)$config->Site->loadInitialTabWithAjax : false;
 
         // Set up next/previous record links (if appropriate)
-        $searchOptions = $this->serviceLocator->get(\VuFind\Search\Options\PluginManager::class)->get($this->sourceId);
-        if ($searchOptions->resultScrollerActive()) {
+        if ($this->getSearchMemory()->getCurrentSearch()?->getOptions()?->resultScrollerActive()) {
             $driver = $this->loadRecord();
             $view->scrollData = $this->resultScroller()->getScrollData($driver);
         }

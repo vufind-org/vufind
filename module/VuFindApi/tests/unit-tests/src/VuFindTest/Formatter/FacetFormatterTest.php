@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Formatter;
 
+use VuFind\Config\ConfigManagerInterface;
 use VuFindTest\Search\TestHarness\Options;
 use VuFindTest\Search\TestHarness\Params;
 use VuFindTest\Search\TestHarness\Results;
@@ -165,7 +166,7 @@ class FacetFormatterTest extends \PHPUnit\Framework\TestCase
 
         $results = [];
         $helper = new \VuFind\Search\Solr\HierarchicalFacetHelper();
-        $configManager = $this->createMock(\VuFind\Config\PluginManager::class);
+        $configManager = $this->createMock(ConfigManagerInterface::class);
         $params = new Params(new Options($configManager), $configManager);
         $requestParams = new \Laminas\Stdlib\Parameters($request);
         $params->initFromRequest($requestParams);
@@ -193,7 +194,7 @@ class FacetFormatterTest extends \PHPUnit\Framework\TestCase
      */
     protected function getFakeResults($request, $facetData)
     {
-        $configManager = $this->createMock(\VuFind\Config\PluginManager::class);
+        $configManager = $this->createMock(ConfigManagerInterface::class);
         $params = new Params(new Options($configManager), $configManager);
         $params->initFromRequest(new \Laminas\Stdlib\Parameters($request));
         $ss = $this->getMockBuilder(\VuFindSearch\Service::class)

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -30,6 +30,7 @@
 namespace VuFindTest\Recommend;
 
 use VuFind\Recommend\SummonResults;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
  * SummonResults Test Class
@@ -42,6 +43,8 @@ use VuFind\Recommend\SummonResults;
  */
 class SummonResultsTest extends \PHPUnit\Framework\TestCase
 {
+    use ConfigRelatedServicesTrait;
+
     /**
      * Test getting search class id.
      *
@@ -55,10 +58,7 @@ class SummonResultsTest extends \PHPUnit\Framework\TestCase
         $runner = $this->getMockBuilder(\VuFind\Search\SearchRunner::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $configManager = $this->getMockBuilder(\VuFind\Config\PluginManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $obj = new SummonResults($runner, $configManager);
+        $obj = new SummonResults($runner, $this->getMockConfigManager());
         $this->assertSame('Summon', $method->invoke($obj));
     }
 }
