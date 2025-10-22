@@ -84,10 +84,11 @@ class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
 
         $stream = $this->createMock(StreamInterface::class);
         $stream->expects($this->any())->method('getContents')->willReturn($testBody);
+        $stream->expects($this->once())->method('rewind');
 
         $response = $this->createMock(ResponseInterface::class);
         $response->method('getStatusCode')->willReturn(200);
-        $response->expects($this->once())->method('getBody')->willReturn($stream);
+        $response->expects($this->exactly(2))->method('getBody')->willReturn($stream);
 
         $service->expects($this->once())->method('get')->with($testUrl)->willReturn($response);
 
