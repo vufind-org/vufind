@@ -67,6 +67,11 @@
       <div class="list-info js-reservation-list-status pending" data-list-id="<?=$this->escapeHtmlAttr($this->listEntity->getId());?>">
       </div>
     <?php endif; ?>
+    <?php if ($this->listEntity->getOrdered()): ?>
+      <div class="my-2 alert alert-info">
+        <?=$this->transEsc('ReservationList::list_editing_info');?>
+      </div>
+    <?php endif; ?>
     <div class="list-controls">
       <?php if ($this->listHandler->isEnabled() && !$this->listEntity->getOrdered() && $this->results->getResults()): ?>
         <a href="<?=$this->escapeHtmlAttr($this->url('reservationlist-placeorder', [], ['query' => ['listId' => $this->listEntity->getId()]]))?>" class="btn btn-primary" data-lightbox><?=$this->transEsc('ReservationList::Send the hold request')?></a>
