@@ -5,7 +5,7 @@ $finder->in(__DIR__ . '/../themes')
     ->name('*.phtml');
 
 $rules = [
-    '@PHP8x4Migration' => true,
+    '@PHP84Migration' => true,
     '@PSR12' => true,
     'align_multiline_comment' => true,
     'binary_operator_spaces' => [
