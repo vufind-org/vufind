@@ -174,12 +174,16 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testBadSearchTabConfig(): void
     {
+        // Add a bad search tab config and disable logging of that exception
         $this->changeConfigs(
             [
                 'config' => [
                     'SearchTabs' => [
                         'Solr' => 'Catalog',
                         'INVALID' => 'Other Search',
+                    ],
+                    'Logging' => [
+                        'file' => null,
                     ],
                 ],
             ]
@@ -201,6 +205,8 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testBadSearchBoxConfig(): void
     {
+        // Add a bad search handler config to the combined handlers
+        // and disable logging of that exception
         $this->changeConfigs(
             [
                 'searchbox' => [
@@ -212,6 +218,11 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
                         'target' => ['Solr', 'INVALID'],
                         'label' => ['Catalog', 'Other Search'],
                         'group' => [false, false],
+                    ],
+                ],
+                'config' => [
+                    'Logging' => [
+                        'file' => null,
                     ],
                 ],
             ]

@@ -113,8 +113,9 @@ class GeoCoords extends \Laminas\View\Helper\AbstractHelper
             return false;
         }
         $urlHelper = $this->getView()->plugin('url');
-        return $urlHelper('search-results')
-            . '?filter[]=' . urlencode($this->geoField)
-            . ':Intersects(ENVELOPE(' . urlencode($this->coords) . '))';
+        $query = http_build_query([
+            'filter' => [$this->geoField . ':Intersects(ENVELOPE(' . $this->coords . '))'],
+        ]);
+        return $urlHelper('search-results') . '?' . $query;
     }
 }

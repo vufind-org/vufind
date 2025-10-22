@@ -221,7 +221,8 @@ class TagsController extends AbstractAdmin
                     "Unexpected error retrieving resource $resourceId"
                 );
             }
-            $resourceMsg = "{$resource->getTitle()} ({$resource->getId()})";
+            $title = $resource->getDisplayTitle() ?? $resource->getTitle();
+            $resourceMsg = "$title ({$resource->getId()})";
         }
 
         $messages = [

@@ -75,7 +75,7 @@ class Missing extends DefaultRecord
         if ($id = $this->getUniqueID()) {
             $resourceService = $this->getDbService(ResourceServiceInterface::class);
             $resource = $resourceService->getResourceByRecordId($id, $this->getSourceIdentifier());
-            if ($title = $resource?->getTitle()) {
+            if ($title = $resource?->getDisplayTitle() ?? $resource?->getTitle()) {
                 return $title;
             }
         }
