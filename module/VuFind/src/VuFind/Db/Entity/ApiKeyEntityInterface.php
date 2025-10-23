@@ -77,18 +77,18 @@ interface ApiKeyEntityInterface extends EntityInterface
     /**
      * Set user.
      *
-     * @param ?UserEntityInterface $user User owning token
+     * @param UserEntityInterface $user User owning token
      *
      * @return static
      */
-    public function setUser(?UserEntityInterface $user): static;
+    public function setUser(UserEntityInterface $user): static;
 
     /**
      * Get user ID.
      *
-     * @return ?UserEntityInterface
+     * @return UserEntityInterface
      */
-    public function getUser(): ?UserEntityInterface;
+    public function getUser(): UserEntityInterface;
 
     /**
      * Get created date.

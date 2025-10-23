@@ -1,6 +1,6 @@
-CREATE TABLE IF NOT EXISTS `api_key` (
-  `id` int(11) unsigned NOT NULL AUTO_INCREMENT,
-  `user_id` int(11) DEFAULT NULL,
+CREATE TABLE `api_key` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
   `title` varchar(255) NOT NULL,
   `token` varchar(255) NOT NULL,
   `revoked` tinyint(1) NOT NULL DEFAULT 0,

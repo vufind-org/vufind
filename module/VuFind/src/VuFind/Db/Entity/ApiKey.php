@@ -55,8 +55,8 @@ class ApiKey implements ApiKeyEntityInterface
      *
      * @var int
      */
-    #[ORM\Column(name: 'id', type: 'integer', nullable: false)]
     #[ORM\Id]
+    #[ORM\Column(name: 'id', type: 'integer', nullable: false)]
     #[ORM\GeneratedValue(strategy: 'IDENTITY')]
     protected int $id;
 
@@ -65,16 +65,16 @@ class ApiKey implements ApiKeyEntityInterface
      *
      * @var ?UserEntityInterface
      */
-    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: true, onDelete: 'CASCADE')]
+    #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
     #[ORM\ManyToOne(targetEntity: UserEntityInterface::class)]
-    protected ?UserEntityInterface $user = null;
+    protected UserEntityInterface $user;
 
     /**
      * Creation date.
      *
      * @var DateTime
      */
-    #[ORM\Column(name: 'created', type: 'datetime', nullable: false, options: ['default' => '2000-01-01 00:00:00'])]
+    #[ORM\Column(name: 'created', type: 'datetime', nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
     protected DateTime $created;
 
     /**
@@ -82,7 +82,7 @@ class ApiKey implements ApiKeyEntityInterface
      *
      * @var DateTime
      */
-    #[ORM\Column(name: 'last_used', type: 'datetime', nullable: false, options: ['default' => '2000-01-01 00:00:00'])]
+    #[ORM\Column(name: 'last_used', type: 'datetime', nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
     protected DateTime $lastUsed;
 
     /**
@@ -167,11 +167,11 @@ class ApiKey implements ApiKeyEntityInterface
     /**
      * Set user.
      *
-     * @param ?UserEntityInterface $user User owning token
+     * @param UserEntityInterface $user User owning token
      *
      * @return static
      */
-    public function setUser(?UserEntityInterface $user): static
+    public function setUser(UserEntityInterface $user): static
     {
         $this->user = $user;
         return $this;
@@ -180,9 +180,9 @@ class ApiKey implements ApiKeyEntityInterface
     /**
      * Get user ID.
      *
-     * @return ?UserEntityInterface
+     * @return UserEntityInterface
      */
-    public function getUser(): ?UserEntityInterface
+    public function getUser(): UserEntityInterface
     {
         return $this->user;
     }
