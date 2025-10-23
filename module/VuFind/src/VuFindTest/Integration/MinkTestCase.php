@@ -1432,6 +1432,10 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $this->stopMinkSession();
         $this->restoreConfigs();
 
+        if ($this->hasLiveDatabaseTrait ?? false) {
+            $this->tearDownLiveDatabaseContainer();
+        }
+
         if (null !== $htmlValidationException) {
             throw $htmlValidationException;
         }
