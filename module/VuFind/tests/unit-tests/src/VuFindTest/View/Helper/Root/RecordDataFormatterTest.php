@@ -176,8 +176,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             ->willReturn(null);
         $record->expects($this->any())->method('getNotExistingAltScript')
             ->willReturn('Alternative Value');
-        $record->expects($this->any())->method('getSummary')
-        ->willReturn(null);
+        $record->expects($this->any())->method('getSummary')->willReturn(null);
         $record->expects($this->any())->method('getSummaryAltScript')
             ->willReturn('Alternative Summary');
         $record->expects($this->any())->method('getPublicationDetailsAltScript')
