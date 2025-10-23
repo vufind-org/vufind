@@ -202,9 +202,8 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
      * @param string $expected Expected HTML
      *
      * @return void
-     *
-     * @dataProvider getTestFlashmessageData
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestFlashmessageData')]
     public function testFlashmessages(array $messages, string $expected): void
     {
         $fm = $this->getFlashmessages($messages);

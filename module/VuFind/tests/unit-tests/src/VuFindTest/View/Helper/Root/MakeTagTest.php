@@ -168,12 +168,11 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
      * @param string $expected Expected value
      * @param array  $params   Parameters to test
      *
-     * @dataProvider htmlAttributesTests
-     * @dataProvider helperOptionTests
-     * @dataProvider voidTags
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('htmlAttributesTests')]
+    #[\PHPUnit\Framework\Attributes\DataProvider('helperOptionTests')]
+    #[\PHPUnit\Framework\Attributes\DataProvider('voidTags')]
     public function testElements($expected, $params): void
     {
         $helper = $this->getHelper();
@@ -207,10 +206,9 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
      *
      * @param string $tagName Tag name to use in test
      *
-     * @dataProvider validTags
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('validTags')]
     public function testValidTagNames($tagName): void
     {
         $helper = $this->getHelper();
@@ -246,10 +244,9 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
      *
      * @param string $tagName Tag name to use in test
      *
-     * @dataProvider invalidTags
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('invalidTags')]
     public function testInvalidTagNames($tagName): void
     {
         $helper = $this->getHelper();

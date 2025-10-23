@@ -95,9 +95,8 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool $multibackend Use MultiBackend driver?
      *
      * @return void
-     *
-     * @dataProvider paymentDisabledProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('paymentDisabledProvider')]
     public function testPaymentDisabled(bool $multibackend): void
     {
         $this->changeConfigs($this->getConfigs($multibackend, null));
@@ -146,10 +145,9 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool  $multibackend    Use MultiBackend driver?
      *
      * @return void
-     *
-     * @dataProvider paymentProvider
-     * @depends      testPaymentDisabled
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testPaymentDisabled')]
+    #[\PHPUnit\Framework\Attributes\DataProvider('paymentProvider')]
     public function testPayment(array $paymentSettings, bool $receiptEnabled, bool $multibackend): void
     {
         $this->changeConfigs($this->getConfigs($multibackend, $paymentSettings));
@@ -294,12 +292,10 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
      * Test payment without returning to VuFind.
      *
      * @return bool
-     *
-     * @depends testPayment
-     *
-     * Excluded from HTML validation, returns plain text.
      */
     #[\VuFindTest\Attribute\HtmlValidation(false)]
+    #[\PHPUnit\Framework\Attributes\Depends('testPayment
+Excluded from HTML validation, returns plain text.')]
     public function testNotify(): bool
     {
         $this->changeConfigs($this->getConfigs(false, []));
@@ -358,9 +354,8 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool $status Status from testNotify
      *
      * @return void
-     *
-     * @depends testNotify
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testNotify')]
     public function testLastPaymentInfo(bool $status): void
     {
         if (true !== $status) {
@@ -404,13 +399,11 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool $vatBreakdown VAT breakdown enabled?
      *
      * @return void
-     *
-     * @dataProvider receiptProvider
-     * @depends      testPayment
-     *
-     * Excluded from HTML validation, returns HTML used for PDF creation.
      */
     #[\VuFindTest\Attribute\HtmlValidation(false)]
+    #[\PHPUnit\Framework\Attributes\DataProvider('receiptProvider')]
+    #[\PHPUnit\Framework\Attributes\Depends('testPayment
+Excluded from HTML validation, returns HTML used for PDF creation.')]
     public function testReceipt(bool $vatBreakdown): void
     {
         $this->changeConfigs(
@@ -494,9 +487,8 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $expectedMsg     Expected block message
      *
      * @return void
-     *
-     * @dataProvider blockedPaymentProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('blockedPaymentProvider')]
     public function testBlockedPayment(array $paymentSettings, string $expectedMsg): void
     {
         $this->changeConfigs(

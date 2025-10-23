@@ -154,9 +154,8 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
      * $record->getAllSubjectHeadings()
      *
      * @return void
-     *
-     * @dataProvider marcSubjectHeadingsSortOptionsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('marcSubjectHeadingsSortOptionsProvider')]
     public function testSubjectHeadingsOrder(?string $marcSubjectHeadingsSortConfig, array $expectedResults): void
     {
         $configArray = [
@@ -304,9 +303,8 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
      * @param array $expectedFormats The expected method output
      *
      * @return void
-     *
-     * @dataProvider getSchemaOrgFormatsArrayProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getSchemaOrgFormatsArrayProvider')]
     public function testGetSchemaOrgFormatsArray(bool $useIls, array $expectedFormats): void
     {
         // Set up record driver:

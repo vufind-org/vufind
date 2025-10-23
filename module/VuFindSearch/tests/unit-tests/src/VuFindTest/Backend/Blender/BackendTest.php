@@ -478,10 +478,9 @@ class BackendTest extends TestCase
      * @param int    $expectedEDS     Expected EDS count
      * @param Query  $query           Override query
      *
-     * @dataProvider getSearchTestData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getSearchTestData')]
     public function testSearch(
         $start,
         $limit,
@@ -852,10 +851,9 @@ class BackendTest extends TestCase
      *
      * @param array $blockSizes Adaptive block size configuration
      *
-     * @dataProvider getInvalidBlockSizes
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getInvalidBlockSizes')]
     public function testInvalidAdaptiveBlockSize($blockSizes): void
     {
         $config = static::$config;

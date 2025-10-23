@@ -129,9 +129,8 @@ class SearchMemoryTest extends \PHPUnit\Framework\TestCase
      * @param array  $expectedRequestArray Expected request parameters to parse
      *
      * @return void
-     *
-     * @dataProvider getLastSearchParamsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getLastSearchParamsProvider')]
     public function testGetLastSearchParams(
         string $query,
         array $expectedRequestArray

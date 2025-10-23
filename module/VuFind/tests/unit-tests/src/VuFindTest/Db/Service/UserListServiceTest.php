@@ -188,9 +188,9 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
      * @param array $params   Params for calling method
      * @param array $expected Expected values for createQuery and setParameters
      *
-     * @dataProvider getTestPublicListsData
-     * @return       void
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestPublicListsData')]
     public function testPublicLists($params, $expected): void
     {
         $result = $this->getService($this->getEntityManager($expected))->getPublicLists(...$params);
@@ -246,9 +246,9 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
      * @param array $params   Params for calling method
      * @param array $expected Expected values for setParameters
      *
-     * @dataProvider getTestUserListsAndCountsByUserData
-     * @return       void
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestUserListsAndCountsByUserData')]
     public function testGetUserListsAndCountsByUser($params, $expected): void
     {
         $mockUser = $this->createMock(UserEntityInterface::class);
@@ -378,9 +378,9 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
      * @param array $params   Params for calling method
      * @param array $expected Expected values for setParameters
      *
-     * @dataProvider getTestGetUserListsByTagAndIdData
-     * @return       void
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestGetUserListsByTagAndIdData')]
     public function testGetUserListsByTagAndId($params, $expected): void
     {
         $service = $this->getService($this->getEntityManager($expected), ['getDoctrineReference', 'getUserListsById']);
@@ -460,9 +460,9 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
      * @param array $params   Params for calling method
      * @param array $expected Expected values for setParameters
      *
-     * @dataProvider getTestGetListsContainingRecordData
-     * @return       void
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestGetListsContainingRecordData')]
     public function testGetListsContainingRecord($params, $expected): void
     {
         $service = $this->getService($this->getEntityManager($expected));

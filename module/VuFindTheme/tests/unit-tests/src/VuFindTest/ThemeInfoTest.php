@@ -322,10 +322,9 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
      * @param array $test     Test data
      * @param array $expected Expected response
      *
-     * @dataProvider mergeEdgeCasesProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('mergeEdgeCasesProvider')]
     public function testMergeWithoutOverrideEdgeCases($test, $expected)
     {
         $ti = $this->getThemeInfo();

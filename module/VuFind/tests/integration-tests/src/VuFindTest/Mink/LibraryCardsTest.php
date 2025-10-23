@@ -192,10 +192,9 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test switching between cards on the profile page.
      *
-     * @depends testAddCards
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddCards')]
     public function testSwitchingCards(): void
     {
         $this->setUpLibraryCardConfigs();
@@ -234,10 +233,9 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that library cards are disabled by default.
      *
-     * @depends testAddCards
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddCards')]
     public function testCardsDisabledByDefault(): void
     {
         $this->setUpLibraryCardConfigs(false);
@@ -255,10 +253,9 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test adding a card that duplicates an existing username.
      *
-     * @depends testAddCards
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddCards')]
     public function testAddingDuplicateCardUsername(): void
     {
         $this->setUpLibraryCardConfigs();
@@ -284,10 +281,9 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test editing a card.
      *
-     * @depends testAddCards
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddCards')]
     public function testEditingCard(): void
     {
         $this->setUpLibraryCardConfigs();
@@ -312,10 +308,9 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test deleting a card.
      *
-     * @depends testEditingCard
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testEditingCard')]
     public function testDeletingCard(): void
     {
         $this->setUpLibraryCardConfigs();

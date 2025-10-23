@@ -219,9 +219,9 @@ class AlephTest extends \VuFindTest\Unit\ILSDriverTestCase
      * @param bool   $xserver_enabled Use xserver
      * @param array  $expected        Expected results for the test
      *
-     * @return       void
-     * @dataProvider getTestGetMyProfileData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestGetMyProfileData')]
     public function testGetMyProfile(string $fixture, bool $xserver_enabled, array $expected): void
     {
         $mockRequest = $xserver_enabled ? 'doXRequest' : 'doRestDLFRequest';

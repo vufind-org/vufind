@@ -116,10 +116,9 @@ class PathResolverTest extends \PHPUnit\Framework\TestCase
      * @param string $filename         Filename to check
      * @param string $expectedFilePath Expected result (minus base path)
      *
-     * @dataProvider getTestPathStackData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestPathStackData')]
     public function testPathStack(string $filename, string $expectedFilePath): void
     {
         $fixtureDir = realpath($this->getFixtureDir() . 'configs/pathstack') . '/';

@@ -208,10 +208,9 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
      * @param bool   $newWindow  Expected "new window" setting
      * @param string $remoteIcon Expected icon value
      *
-     * @dataProvider getTestSingleLookupData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestSingleLookupData')]
     public function testSingleLookup(
         array $config,
         bool $newWindow,

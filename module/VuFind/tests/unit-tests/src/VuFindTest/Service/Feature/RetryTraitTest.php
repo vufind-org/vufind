@@ -204,10 +204,9 @@ class RetryTraitTest extends \PHPUnit\Framework\TestCase
      * @param int   $attempt  Attempt number
      * @param array $options  Current options
      *
-     * @dataProvider backoffDataProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('backoffDataProvider')]
     public function testBackoff(int $expected, int $attempt, array $options = [])
     {
         $testClass = $this->getMockRetryTestClass();

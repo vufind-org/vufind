@@ -335,9 +335,8 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      * @param string $function Function to test the formatting with.
      *
      * @return void
-     *
-     * @dataProvider getFormattingData
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getFormattingData')]
     public function testFormatting(string $function): void
     {
         $spec = [];
@@ -662,9 +661,8 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
      * @param string $function Function to test the formatting with.
      *
      * @return void
-     *
-     * @dataProvider getFormattingDataWithGlobalOptions
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getFormattingDataWithGlobalOptions')]
     public function testFormattingWithGlobalOptions(string $function): void
     {
         $spec = [];
