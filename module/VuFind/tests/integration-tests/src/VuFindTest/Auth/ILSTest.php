@@ -70,6 +70,16 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Standard teardown method.
+     *
+     * @return void
+     */
+    public function tearDown(): void
+    {
+        $this->tearDownLiveDatabaseContainer();
+    }
+
+    /**
      * Get a mock ILS driver to test.
      *
      * @param string $type    Driver type to mock (default = Sample)

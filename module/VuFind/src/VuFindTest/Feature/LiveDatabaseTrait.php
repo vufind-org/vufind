@@ -199,6 +199,8 @@ trait LiveDatabaseTrait
     /**
      * Get a container with database-related services configured.
      *
+     * NOTE: Make sure to call tearDownLiveDatabaseContainer when done to avoid dangling database connections.
+     *
      * @return MockContainer
      */
     public function getLiveDatabaseContainer(): MockContainer
@@ -302,6 +304,7 @@ trait LiveDatabaseTrait
                 return;
             }
         }
+        $test->tearDownLiveDatabaseContainer();
     }
 
     /**
@@ -338,8 +341,23 @@ trait LiveDatabaseTrait
                     $purgeService->purgeUserData($user);
                 }
             }
+            $test->tearDownLiveDatabaseContainer();
         } catch (Throwable $t) {
             echo "\n\nError in removeUsers(): " . (string)$t . "\n";
         }
+    }
+
+    /**
+     * Tear down the live database container and database connection to avoid dangling connections.
+     *
+     * @return void
+     */
+    protected function tearDownLiveDatabaseContainer(): void
+    {
+        if (null === $this->liveDatabaseContainer) {
+            return;
+        }
+        $this->liveDatabaseContainer->get(\VuFind\Db\Connection::class)->close();
+        $this->liveDatabaseContainer->clear();
     }
 }

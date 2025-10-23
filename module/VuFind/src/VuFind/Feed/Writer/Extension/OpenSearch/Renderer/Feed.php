@@ -75,10 +75,10 @@ class Feed extends AbstractRenderer
      *
      * @return void
      */
-    // @codingStandardsIgnoreStart
+    // phpcs:disable
     protected function _appendNamespaces()
     {
-        // @codingStandardsIgnoreEnd
+        // phpcs:enable
         // (We have to ignore coding standards here because the method name has
         // to have an underscore for compatibility w/ parent class)
         $this->getRootElement()->setAttribute(
