@@ -60,12 +60,12 @@ class SummonTopicsTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $results->expects($this->once())->method('getParams')
-            ->will($this->returnValue($parms));
+            ->willReturn($parms);
         $parms->expects($this->once())->method('getSearchClassId')
-            ->will($this->returnValue('Summon'));
+            ->willReturn('Summon');
         $obj->process($results);
         $results->expects($this->once())->method('getTopicRecommendations')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
         $this->assertFalse($obj->getResults());
     }
 
@@ -87,9 +87,9 @@ class SummonTopicsTest extends \PHPUnit\Framework\TestCase
             ->addMethods(['setMaxTopicRecommendations'])
             ->getMockForAbstractClass();
         $parms->expects($this->once())->method('getSearchClassId')
-            ->will($this->returnValue('Summon'));
+            ->willReturn('Summon');
         $parms->expects($this->once())->method('getOptions')
-            ->will($this->returnValue($options));
+            ->willReturn($options);
         $options->expects($this->once())->method('setMaxTopicRecommendations')
             ->with($this->equalTo(1));
         $pm = $this->getMockBuilder(\VuFind\Search\Results\PluginManager::class)
@@ -120,7 +120,7 @@ class SummonTopicsTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $results->expects($this->once())->method('getParams')
-            ->will($this->returnValue($parms));
+            ->willReturn($parms);
         $parms->expects($this->once())->method('setBasicSearch')
             ->with($this->anything(), $this->equalTo('AllFields'));
         $options = $this->getMockBuilder(\VuFind\Search\Base\Options::class)
@@ -128,7 +128,7 @@ class SummonTopicsTest extends \PHPUnit\Framework\TestCase
             ->addMethods(['setMaxTopicRecommendations'])
             ->getMockForAbstractClass();
         $results->expects($this->once())->method('getOptions')
-            ->will($this->returnValue($options));
+            ->willReturn($options);
         $options->expects($this->once())->method('setMaxTopicRecommendations')
             ->with($this->equalTo(1));
         $this->assertNull($method->invokeArgs($obj, [$results]));

@@ -78,7 +78,7 @@ class ConnectorTest extends TestCase
         $cache->expects($this->exactly(1))
             ->method('setItem')
             ->with($keyConstraint, json_encode($this->response))
-            ->will($this->returnValue(true));
+            ->willReturn(true);
 
         $conn->setCache($cache);
 

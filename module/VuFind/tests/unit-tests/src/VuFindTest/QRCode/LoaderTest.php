@@ -68,7 +68,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $theme->expects($this->once())
             ->method('findContainingTheme')
             ->with($this->equalTo(['images/noQRCode.gif']))
-            ->will($this->returnValue(false));
+            ->willReturn(false);
         $loader = $this->getLoader([], $theme);
         $loader->getImage();
     }

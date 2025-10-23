@@ -228,7 +228,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $commandObj->expects($this->once())->method('getResult')
-            ->will($this->returnValue($collection));
+            ->willReturn($collection);
 
         $checkCommand = function ($command) use ($expectedParams) {
             return $command::class === \VuFindSearch\Command\SearchCommand::class
@@ -240,7 +240,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         };
         $searchService->expects($this->once())->method('invoke')
             ->with($this->callback($checkCommand))
-            ->will($this->returnValue($commandObj));
+            ->willReturn($commandObj);
         return $searchService;
     }
 
@@ -495,14 +495,14 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $commandObj->expects($this->once())->method('getResult')
-            ->will($this->returnValue($collection));
+            ->willReturn($collection);
 
         $checkCommand = function ($command) {
             return $command::class === \VuFindSearch\Command\SearchCommand::class;
         };
         $searchService->expects($this->once())->method('invoke')
             ->with($this->callback($checkCommand))
-            ->will($this->returnValue($commandObj));
+            ->willReturn($commandObj);
         return $this->getResults($params, $searchService);
     }
 

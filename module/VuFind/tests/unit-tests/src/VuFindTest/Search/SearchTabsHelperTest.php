@@ -245,21 +245,19 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
         $mockResults = $this->createMock(\VuFind\Search\Results\PluginManager::class);
         $mockResults->expects($this->any())
             ->method('get')
-            ->will(
-                $this->returnCallback(
-                    function ($backend) use ($mockSolr, $mockPrimo) {
-                        switch ($backend) {
-                            case 'Solr':
-                                return $mockSolr;
-                            case 'Primo':
-                                return $mockPrimo;
-                            default:
-                                throw new \Exception(
-                                    "Unsupported backend $backend"
-                                );
-                        }
+            ->willReturnCallback(
+                function ($backend) use ($mockSolr, $mockPrimo) {
+                    switch ($backend) {
+                        case 'Solr':
+                            return $mockSolr;
+                        case 'Primo':
+                            return $mockPrimo;
+                        default:
+                            throw new \Exception(
+                                "Unsupported backend $backend"
+                            );
                     }
-                )
+                }
             );
 
         return new \VuFind\Search\SearchTabsHelper(

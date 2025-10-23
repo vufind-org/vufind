@@ -66,7 +66,7 @@ class RecommendTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         $params = $this->getMockBuilder(\VuFind\Search\Solr\Params::class)
             ->disableOriginalConstructor()->getMock();
         $params->expects($this->any())->method('getQuery')
-            ->will($this->returnValue($query));
+            ->willReturn($query);
         return $params;
     }
 
@@ -85,7 +85,7 @@ class RecommendTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         $results = $this->getMockBuilder(Results::class)
             ->disableOriginalConstructor()->getMock();
         $results->expects($this->any())->method('getParams')
-            ->will($this->returnValue($params));
+            ->willReturn($params);
         return $results;
     }
 
@@ -105,7 +105,7 @@ class RecommendTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         $mockPlugin = $this->container->createMock(RecommendInterface::class);
         $rm = $this->container->createMock(PluginManager::class, ['get']);
         $rm->expects($this->once())->method('get')->with($this->equalTo('foo'))
-            ->will($this->returnValue($mockPlugin));
+            ->willReturn($mockPlugin);
         $this->container->set(PluginManager::class, $rm);
 
         // Set up results object, including expectation to confirm that
@@ -125,7 +125,7 @@ class RecommendTest extends \VuFindTest\Unit\AjaxHandlerTestCase
             ->createMock(ResultsManager::class, ['get']);
         $resultsManager->expects($this->once())->method('get')
             ->with($this->equalTo('Solr'))
-            ->will($this->returnValue($results));
+            ->willReturn($results);
         $this->container->set(ResultsManager::class, $resultsManager);
 
         // Set up view helper and renderer:

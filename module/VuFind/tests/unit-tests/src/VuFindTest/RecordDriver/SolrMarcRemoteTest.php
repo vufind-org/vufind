@@ -113,7 +113,7 @@ class SolrMarcRemoteTest extends \PHPUnit\Framework\TestCase
         $service = $this->getMockBuilder(HttpServiceInterface::class)->getMock();
         $service->expects($this->once())->method('get')
             ->with($this->equalTo('http://foo/1'))
-            ->will($this->returnValue($response));
+            ->willReturn($response);
         return $service;
     }
 }

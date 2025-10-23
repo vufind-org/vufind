@@ -59,11 +59,11 @@ class SearchNormalizerTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $results->expects($this->any())
             ->method('getParams')
-            ->will($this->returnValue($this->getSolrParams()));
+            ->willReturn($this->getSolrParams());
         $manager = $this->createMock(\VuFind\Search\Results\PluginManager::class);
         $manager->expects($this->any())
             ->method('get')->with($this->equalTo('Solr'))
-            ->will($this->returnValue($results));
+            ->willReturn($results);
         $minified = new \minSO($results);
         $normalizer = new SearchNormalizer($manager, $this->createMock(SearchServiceInterface::class));
         $normalized = $normalizer->normalizeMinifiedSearch($minified);

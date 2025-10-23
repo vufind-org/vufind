@@ -70,7 +70,7 @@ class NormalizedSearchTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $results->expects($this->any())
             ->method('getParams')
-            ->will($this->returnValue($this->getSolrParams()));
+            ->willReturn($this->getSolrParams());
         return $results;
     }
 
@@ -87,7 +87,7 @@ class NormalizedSearchTest extends \PHPUnit\Framework\TestCase
         $manager = $this->getResultsManager();
         $manager->expects($this->any())
             ->method('get')->with($this->equalTo('Solr'))
-            ->will($this->returnValue($finalResults));
+            ->willReturn($finalResults);
         return new NormalizedSearch($manager, $finalResults);
     }
 
@@ -177,7 +177,7 @@ class NormalizedSearchTest extends \PHPUnit\Framework\TestCase
         $otherSearch = $this->createMock(\VuFind\Search\EDS\Results::class);
         $mockMin->expects($this->once())
             ->method('deminify')
-            ->will($this->returnValue($otherSearch));
+            ->willReturn($otherSearch);
         $this->assertFalse($norm->isEquivalentToMinifiedSearch($mockMin));
     }
 }
