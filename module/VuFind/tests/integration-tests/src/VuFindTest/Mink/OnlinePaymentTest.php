@@ -291,11 +291,12 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test payment without returning to VuFind.
      *
+     * This test is excluded from HTML validation because the server returns plain text.
+     *
      * @return bool
      */
     #[\VuFindTest\Attribute\HtmlValidation(false)]
-    #[\PHPUnit\Framework\Attributes\Depends('testPayment
-Excluded from HTML validation, returns plain text.')]
+    #[\PHPUnit\Framework\Attributes\Depends('testPayment')]
     public function testNotify(): bool
     {
         $this->changeConfigs($this->getConfigs(false, []));
@@ -396,14 +397,15 @@ Excluded from HTML validation, returns plain text.')]
     /**
      * Test receipt on demand.
      *
+     * This test is excluded from HTML validation because the server returns HTML used for PDF creation.
+     *
      * @param bool $vatBreakdown VAT breakdown enabled?
      *
      * @return void
      */
     #[\VuFindTest\Attribute\HtmlValidation(false)]
     #[\PHPUnit\Framework\Attributes\DataProvider('receiptProvider')]
-    #[\PHPUnit\Framework\Attributes\Depends('testPayment
-Excluded from HTML validation, returns HTML used for PDF creation.')]
+    #[\PHPUnit\Framework\Attributes\Depends('testPayment')]
     public function testReceipt(bool $vatBreakdown): void
     {
         $this->changeConfigs(
