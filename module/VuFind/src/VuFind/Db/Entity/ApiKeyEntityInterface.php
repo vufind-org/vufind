@@ -84,7 +84,7 @@ interface ApiKeyEntityInterface extends EntityInterface
     public function setUser(UserEntityInterface $user): static;
 
     /**
-     * Get user ID.
+     * Get user.
      *
      * @return UserEntityInterface
      */
