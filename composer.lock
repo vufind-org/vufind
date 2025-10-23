@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "abea56eda2059bdb322785065215ad06",
+    "content-hash": "03a6a86b904117efb330699fc070ecfc",
     "packages": [
         {
             "name": "ahand/mobileesp",

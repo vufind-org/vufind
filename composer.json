@@ -130,7 +130,7 @@
         "phpmd/phpmd": "2.15.0",
         "phpstan/phpstan": "2.1.31",
         "phpunit/php-code-coverage": "10.1.16",
-        "phpunit/phpcov": "9.0.2",
+        "phpunit/phpcov": "^9.0",
         "phpunit/phpunit": "10.5.54",
         "pietercolpaert/hardf": "0.5.0",
         "squizlabs/php_codesniffer": "4.0.0"
