@@ -56,7 +56,7 @@ class InstallControllerTest extends \PHPUnit\Framework\TestCase
         );
         $method = $this->getMinimalPhpVersionMethod();
         $this->assertEquals(
-            '8.1.0',
+            '8.2.0',
             $method->invokeArgs($controller, [])
         );
     }

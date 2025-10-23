@@ -30,6 +30,7 @@
 namespace VuFind\Http;
 
 use Laminas\Cache\Storage\StorageInterface;
+use Psr\Http\Message\ResponseInterface;
 use VuFind\Cache\Manager as CacheManager;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Exception\HttpDownloadException;
@@ -43,9 +44,9 @@ use VuFind\Exception\HttpDownloadException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class CachingDownloader implements \VuFindHttp\HttpServiceAwareInterface
+class CachingDownloader implements GuzzleServiceAwareInterface
 {
-    use \VuFindHttp\HttpServiceAwareTrait;
+    use GuzzleServiceAwareTrait;
 
     /**
      * Cache to use for downloads
@@ -148,7 +149,7 @@ class CachingDownloader implements \VuFindHttp\HttpServiceAwareInterface
 
         // Add new item to cache if not exists
         try {
-            $response = $this->httpService->get($url, $params);
+            $response = $this->guzzleService->get($url, $params);
         } catch (\Exception $e) {
             throw new HttpDownloadException(
                 'HttpService download failed (error)',
@@ -159,18 +160,21 @@ class CachingDownloader implements \VuFindHttp\HttpServiceAwareInterface
                 $e
             );
         }
-        if (!$response->isOk()) {
+
+        $body = $response->getBody()->getContents();
+        $response->getBody()->rewind(); // later code might need to read the body again
+        if ($response->getStatusCode() != 200) {
             throw new HttpDownloadException(
                 'HttpService download failed (not ok)',
                 $url,
                 $response->getStatusCode(),
                 $response->getHeaders(),
-                $response->getBody()
+                $body
             );
         }
 
         $finalValue = $decodeCallback !== null
-            ? $decodeCallback($response, $url) : $response->getBody();
+            ? $decodeCallback($response, $url) : $body;
         if ($cache) {
             $cache->addItem($cacheItemKey, $finalValue);
         }
@@ -189,21 +193,21 @@ class CachingDownloader implements \VuFindHttp\HttpServiceAwareInterface
      */
     public function downloadJson($url, $params = [], $associative = null)
     {
-        $decodeJson = function (\Laminas\Http\Response $response, $url) use ($associative) {
-            $decodedJson = json_decode($response->getBody(), $associative);
+        $decodeJson = function (ResponseInterface $response, string $url) use ($associative) {
+            $body = $response->getBody()->getContents();
+            $decodedJson = json_decode($body, $associative);
             if ($decodedJson === null) {
                 throw new HttpDownloadException(
                     'Invalid response body',
                     $url,
                     $response->getStatusCode(),
                     $response->getHeaders(),
-                    $response->getBody()
+                    $body
                 );
             } else {
                 return $decodedJson;
             }
         };
-
         return $this->download($url, $params, $decodeJson);
     }
 }

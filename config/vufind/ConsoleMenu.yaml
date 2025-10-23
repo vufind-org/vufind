@@ -81,6 +81,9 @@ main:
       - label: Manage VuFind® installation
         type: internal-command
         command: install/install
+      - label: Upgrade VuFind® configurations
+        type: internal-command
+        command: upgrade/config
       - label: Upgrade VuFind® database
         type: internal-command
         command: upgrade/database
@@ -138,6 +141,9 @@ main:
       - label: Register pending online payments and report expired ones
         type: internal-command
         command: onlinepayment/monitor
+      - label: Update resource metadata
+        type: internal-command
+        command: util/updateResourceMetadata
     - label: Harvest Tools
       type: menu
       contents:

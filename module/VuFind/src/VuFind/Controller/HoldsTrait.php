@@ -55,6 +55,10 @@ trait HoldsTrait
     public function holdAction()
     {
         $driver = $this->loadRecord();
+        // Holds on API records (as opposed to Solr records; e.g. EDS) may require a different ID.
+        // This id can be obtained from the getUniqueIDOverrideForRequest method
+        $originalId = $driver->getUniqueID();
+        $id = $driver->tryMethod('getUniqueIDOverrideForRequest', default: $originalId);
 
         // Stop now if the user does not have valid catalog credentials available:
         if (!is_array($patron = $this->catalogLogin())) {
@@ -63,13 +67,7 @@ trait HoldsTrait
 
         // If we're not supposed to be here, give up now!
         $catalog = $this->getILS();
-        $checkHolds = $catalog->checkFunction(
-            'Holds',
-            [
-                'id' => $driver->getUniqueID(),
-                'patron' => $patron,
-            ]
-        );
+        $checkHolds = $catalog->checkFunction('Holds', compact('id', 'patron'));
         if (!$checkHolds) {
             return $this->redirectToRecord();
         }
@@ -80,10 +78,15 @@ trait HoldsTrait
         if (!$gatheredDetails) {
             return $this->redirectToRecord();
         }
-
+        // the gatheredDetails['id'] is the original ID, but for API Holds (e.g. EDS)
+        // we may need to use the override ID. So only in that case we will set it to the
+        // value returned by getUniqueIDOverrideForRequest.
+        if ($originalId != $id && $originalId == $gatheredDetails['id']) {
+            $gatheredDetails['id'] = $id;
+        }
         // Block invalid requests:
         $validRequest = $catalog->checkRequestIsValid(
-            $driver->getUniqueID(),
+            $id,
             $gatheredDetails,
             $patron
         );
@@ -100,7 +103,7 @@ trait HoldsTrait
 
         // Send various values to the view so we can build the form:
         $requestGroups = [];
-        $requestGroupsArgs = [$driver->getUniqueID(), $patron, $gatheredDetails];
+        $requestGroupsArgs = [$id, $patron, $gatheredDetails];
         if (
             in_array('requestGroup', $extraHoldFields)
             && $catalog->checkCapability('getRequestGroups', $requestGroupsArgs)
@@ -140,7 +143,7 @@ trait HoldsTrait
             in_array('proxiedUsers', $extraHoldFields)
             && $catalog->checkCapability(
                 'getProxiedUsers',
-                [$driver->getUniqueID(), $patron, $gatheredDetails]
+                [$id, $patron, $gatheredDetails]
             )
         ) {
             $proxiedUsers = $catalog->getProxiedUsers($patron);

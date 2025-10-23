@@ -73,6 +73,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'menu/menu' => Menu\MenuCommand::class,
         'onlinepayment/monitor' => OnlinePayment\MonitorCommand::class,
         'scheduledsearch/notify' => ScheduledSearch\NotifyCommand::class,
+        'upgrade/config' => Upgrade\ConfigCommand::class,
         'upgrade/database' => Upgrade\DatabaseCommand::class,
         'util/browscap' => Util\BrowscapCommand::class,
         'util/cleanuprecordcache' => Util\CleanUpRecordCacheCommand::class,
@@ -98,6 +99,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'util/sitemap' => Util\SitemapCommand::class,
         'util/suppressed' => Util\SuppressedCommand::class,
         'util/switch_db_hash' => Util\SwitchDbHashCommand::class,
+        'util/update_resource_metadata' => Util\UpdateResourceMetadataCommand::class,
     ];
 
     /**
@@ -131,6 +133,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Menu\MenuCommand::class => Menu\MenuCommandFactory::class,
         OnlinePayment\MonitorCommand::class => OnlinePayment\MonitorCommandFactory::class,
         ScheduledSearch\NotifyCommand::class => ScheduledSearch\NotifyCommandFactory::class,
+        Upgrade\ConfigCommand::class => Upgrade\ConfigCommandFactory::class,
         Upgrade\DatabaseCommand::class => Upgrade\DatabaseCommandFactory::class,
         Util\BrowscapCommand::class => Util\BrowscapCommandFactory::class,
         Util\CleanUpRecordCacheCommand::class => Util\CleanUpRecordCacheCommandFactory::class,
@@ -155,6 +158,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Util\SitemapCommand::class => Util\SitemapCommandFactory::class,
         Util\SuppressedCommand::class => Util\AbstractSolrAndIlsCommandFactory::class,
         Util\SwitchDbHashCommand::class => Util\SwitchDbHashCommandFactory::class,
+        Util\UpdateResourceMetadataCommand::class =>  Util\UpdateResourceMetadataCommandFactory::class,
     ];
 
     /**
