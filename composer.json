@@ -46,7 +46,7 @@
     "require": {
         "php": ">=8.2",
         "ahand/mobileesp": "dev-master",
-        "apereo/phpcas": "1.6.1",
+        "apereo/phpcas": "dev-master#77309b6a7f304a5f9e351bc52d8adc831989734f",
         "browscap/browscap-php": "^7.2",
         "cap60552/php-sip2": "1.0.0",
         "colinmollenhour/credis": "1.17.0",

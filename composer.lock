@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "03a6a86b904117efb330699fc070ecfc",
+    "content-hash": "cbd461be788cde368e8f6c3a06485e27",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -67,16 +67,16 @@
         },
         {
             "name": "apereo/phpcas",
-            "version": "1.6.1",
+            "version": "dev-master",
             "source": {
                 "type": "git",
                 "url": "https://github.com/apereo/phpCAS.git",
-                "reference": "c129708154852656aabb13d8606cd5b12dbbabac"
+                "reference": "77309b6a7f304a5f9e351bc52d8adc831989734f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/apereo/phpCAS/zipball/c129708154852656aabb13d8606cd5b12dbbabac",
-                "reference": "c129708154852656aabb13d8606cd5b12dbbabac",
+                "url": "https://api.github.com/repos/apereo/phpCAS/zipball/77309b6a7f304a5f9e351bc52d8adc831989734f",
+                "reference": "77309b6a7f304a5f9e351bc52d8adc831989734f",
                 "shasum": ""
             },
             "require": {
@@ -90,6 +90,7 @@
                 "phpstan/phpstan": "^1.5",
                 "phpunit/phpunit": ">=7.5"
             },
+            "default-branch": true,
             "type": "library",
             "extra": {
                 "branch-alias": {
@@ -132,9 +133,9 @@
             ],
             "support": {
                 "issues": "https://github.com/apereo/phpCAS/issues",
-                "source": "https://github.com/apereo/phpCAS/tree/1.6.1"
+                "source": "https://github.com/apereo/phpCAS/tree/master"
             },
-            "time": "2023-02-19T19:52:35+00:00"
+            "time": "2024-06-29T15:51:32+00:00"
         },
         {
             "name": "bacon/bacon-qr-code",
@@ -15979,14 +15980,15 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
-        "ahand/mobileesp": 20
+        "ahand/mobileesp": 20,
+        "apereo/phpcas": 20
     },
     "prefer-stable": false,
     "prefer-lowest": false,
     "platform": {
         "php": ">=8.2"
     },
-    "platform-dev": [],
+    "platform-dev": {},
     "platform-overrides": {
         "php": "8.2"
     },
