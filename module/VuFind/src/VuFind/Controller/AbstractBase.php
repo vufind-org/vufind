@@ -236,13 +236,10 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         $view = $this->createViewModel($params);
 
         // Load configuration and current user for convenience:
-        $config = $this->getConfig();
-        $view->disableFrom
-            = (isset($config->Mail->disable_from) && $config->Mail->disable_from);
-        $view->editableSubject = isset($config->Mail->user_editable_subjects)
-            && $config->Mail->user_editable_subjects;
-        $view->maxRecipients = isset($config->Mail->maximum_recipients)
-            ? intval($config->Mail->maximum_recipients) : 1;
+        $config = $this->getConfigArray();
+        $view->disableFrom = (bool)($config['Mail']['disable_from'] ?? false);
+        $view->editableSubject = (bool)($config['Mail']['user_editable_subjects'] ?? false);
+        $view->maxRecipients = intval($config['Mail']['maximum_recipients'] ?? 1);
         $user = $this->getUser();
 
         // Send parameters back to view so form can be re-populated:
@@ -258,15 +255,15 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         }
 
         // Set default values if applicable:
-        if (empty($view->to) && $user && ($config->Mail->user_email_in_to ?? false)) {
+        if (empty($view->to) && $user && ($config['Mail']['user_email_in_to'] ?? false)) {
             $view->to = $user->getEmail();
         }
         if (empty($view->from)) {
-            if ($user && ($config->Mail->user_email_in_from ?? false)) {
+            if ($user && ($config['Mail']['user_email_in_from'] ?? false)) {
                 $view->userEmailInFrom = true;
                 $view->from = $user->getEmail();
-            } elseif ($config->Mail->default_from ?? false) {
-                $view->from = $config->Mail->default_from;
+            } elseif ($config['Mail']['default_from'] ?? false) {
+                $view->from = $config['Mail']['default_from'];
             }
         }
         if (empty($view->subject)) {
@@ -459,10 +456,24 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      * @param string $id Configuration identifier (default = main VuFind config)
      *
      * @return \VuFind\Config\Config
+     *
+     * @deprecated Use AbstractBase::getConfigArray
      */
     public function getConfig($id = 'config')
     {
         return $this->getService(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject($id);
+    }
+
+    /**
+     * Get a VuFind configuration as an associative array.
+     *
+     * @param string $id Configuration identifier (default = config)
+     *
+     * @return array
+     */
+    public function getConfigArray(string $id = 'config'): array
+    {
+        return $this->getService(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray($id);
     }
 
     /**

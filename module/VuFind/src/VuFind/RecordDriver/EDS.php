@@ -594,12 +594,29 @@ class EDS extends DefaultRecord
      */
     public function getThumbnail($size = 'small')
     {
+        // Create a ranked list of sizes so we can use "best available" when appropriate.
+        // Note that "thumb" is a value used by EBSCO, not by VuFind; it is included so
+        // it can be matched up with requests for "small."
+        $sizes = ['thumb' => 0, 'small' => 1, 'medium' => 2, 'large' => 3];
+        $bestFit = -1;
+        $desiredFit = $sizes[$size] ?? count($sizes);
+        $closestMatch = false;
         foreach ($this->fields['ImageInfo'] ?? [] as $image) {
-            if ($size == ($image['Size'] ?? '')) {
-                return $image['Target'] ?? '';
+            $currentFit = $sizes[$image['Size'] ?? 'thumb'] ?? 0;
+            $target = $image['Target'] ?? '';
+            if ($target) {
+                if ($currentFit === $desiredFit) {
+                    return $target;
+                }
+                // Aim for the best match that is smaller than the requested size; we
+                // don't want to overflow, but something small is better than nothing.
+                if ($currentFit > $bestFit && $currentFit < $desiredFit) {
+                    $bestFit = $currentFit;
+                    $closestMatch = $target;
+                }
             }
         }
-        return false;
+        return $closestMatch;
     }
 
     /**

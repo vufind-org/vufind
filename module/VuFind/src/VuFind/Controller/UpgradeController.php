@@ -144,11 +144,8 @@ class UpgradeController extends AbstractBase
     {
         // If auto-configuration is disabled, prevent any other action from being
         // accessed:
-        $config = $this->getConfig();
-        if (
-            !isset($config->System->autoConfigure)
-            || !$config->System->autoConfigure
-        ) {
+        $config = $this->getConfigArray();
+        if (!($config['System']['autoConfigure'] ?? false)) {
             $routeMatch = $e->getRouteMatch();
             $routeMatch->setParam('action', 'disabled');
         }
@@ -735,11 +732,10 @@ class UpgradeController extends AbstractBase
      */
     protected function criticalCheckForBlowfishEncryption()
     {
-        $config = $this->getConfig();
-        $encryptionEnabled = $config->Authentication->encrypt_ils_password ?? false;
-        $algo = $config->Authentication->ils_encryption_algo ?? 'blowfish';
-        return ($encryptionEnabled && $algo === 'blowfish')
-            ? 'CriticalFixBlowfish' : null;
+        $config = $this->getConfigArray();
+        $encryptionEnabled = $config['Authentication']['encrypt_ils_password'] ?? false;
+        $algo = $config['Authentication']['ils_encryption_algo'] ?? 'blowfish';
+        return ($encryptionEnabled && $algo === 'blowfish') ? 'CriticalFixBlowfish' : null;
     }
 
     /**

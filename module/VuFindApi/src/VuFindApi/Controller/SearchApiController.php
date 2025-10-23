@@ -126,7 +126,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
     /**
      * Facet configuration
      *
-     * @var \VuFind\Config\Config
+     * @var array
      */
     protected $facetConfig;
 
@@ -159,8 +159,8 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
         // Load configurations from the search options class:
         $options = $sm->get(\VuFind\Search\Options\PluginManager::class)->get($this->searchClassId);
         $settings = $options->getAPISettings();
-        $this->facetConfig = $this->getConfig($options->getFacetsIni());
-        $this->hierarchicalFacets = $this->facetConfig?->SpecialFacets?->hierarchical?->toArray() ?? [];
+        $this->facetConfig = $this->getConfigArray($options->getFacetsIni());
+        $this->hierarchicalFacets = $this->facetConfig['SpecialFacets']['hierarchical'] ?? [];
         // Apply all supported configurations:
         $configKeys = [
             'recordAccessPermission', 'searchAccessPermission', 'maxLimit', 'cursorLimit',
@@ -180,13 +180,12 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
      */
     public function getApiSpecFragment()
     {
-        $config = $this->getConfig();
         $results = $this->getResultsManager()->get($this->searchClassId);
         $options = $results->getOptions();
         $params = $results->getParams();
 
         $viewParams = [
-            'config' => $config,
+            'config' => $this->getConfigArray(),
             'version' => \VuFind\Config\Version::getBuildVersion(),
             'searchTypes' => $options->getBasicHandlers(),
             'defaultSearchType' => $options->getDefaultHandler(),

@@ -83,8 +83,8 @@ class CollectionController extends AbstractRecord
     protected function showTab($tab, $ajax = false)
     {
         // Check that collections are enabled and redirect if necessary
-        $config = $this->getConfig();
-        if (empty($config->Collections->collections)) {
+        $config = $this->getConfigArray();
+        if (empty($config['Collections']['collections'])) {
             return $this->redirectToRecord();
         }
 
