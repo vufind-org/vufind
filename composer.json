@@ -10,7 +10,7 @@
     "license": "GPL-2.0",
     "config": {
         "platform": {
-            "php": "8.1"
+            "php": "8.2"
         },
         "process-timeout": 0,
         "allow-plugins": {
@@ -44,7 +44,7 @@
         "ext-sodium": "*"
     },
     "require": {
-        "php": ">=8.1",
+        "php": ">=8.2",
         "ahand/mobileesp": "dev-master",
         "apereo/phpcas": "1.6.1",
         "browscap/browscap-php": "^7.2",
@@ -54,7 +54,7 @@
         "composer/semver": "3.4.4",
         "doctrine/doctrine-orm-module": "^6.0",
         "doctrine/orm": "^2.10.2",
-        "endroid/qr-code": "5.1.0",
+        "endroid/qr-code": "6.0.9",
         "ezyang/htmlpurifier": "4.18.0",
         "firebase/php-jwt": "6.11.1",
         "guzzlehttp/guzzle": "7.10.0",

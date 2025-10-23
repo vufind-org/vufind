@@ -29,6 +29,7 @@
 
 namespace VuFind\Content\Covers;
 
+use Psr\Http\Message\ResponseInterface;
 use VuFind\Exception\HttpDownloadException;
 use VuFindCode\ISBN;
 
@@ -87,11 +88,12 @@ class Google extends \VuFind\Content\AbstractCover implements \VuFind\Http\Cachi
         $url = 'https://books.google.com/books?jscmd=viewapi&bibkeys='
             . urlencode(implode(',', $identifiers)) . '&callback=addTheCover';
 
-        $decodeCallback = function (\Laminas\Http\Response $response, $url) {
+        $decodeCallback = function (ResponseInterface $response, string $url) {
+            $body = $response->getBody()->getContents();
             if (
                 !preg_match(
                     '/^[^{]*({.*})[^}]*$/',
-                    $response->getBody(),
+                    $body,
                     $matches
                 )
             ) {
@@ -100,7 +102,7 @@ class Google extends \VuFind\Content\AbstractCover implements \VuFind\Http\Cachi
                     $url,
                     $response->getStatusCode(),
                     $response->getHeaders(),
-                    $response->getBody()
+                    $body
                 );
             }
 
@@ -116,7 +118,7 @@ class Google extends \VuFind\Content\AbstractCover implements \VuFind\Http\Cachi
                     $url,
                     $response->getStatusCode(),
                     $response->getHeaders(),
-                    $response->getBody()
+                    $body
                 );
             }
 

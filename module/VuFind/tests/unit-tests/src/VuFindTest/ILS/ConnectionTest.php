@@ -94,6 +94,8 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
      */
     public static function isMethodBlockedProvider()
     {
+        $oneHourAgo = new \DateTime('now - 1 hours');
+        $oneHourInFuture = new \DateTime('now + 1 hours');
         return [
             'only startDate' => [
                 [
@@ -142,12 +144,12 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
             'inside recurring limits' => [
                 [
                     'Renewals' => [
-                        date('H:i', strtotime('now - 1 hours')) . '/' . date('H:i', strtotime('now + 1 hours')),
+                        $oneHourAgo->format('H:i:s.u') . '/' . $oneHourInFuture->format('H:i:s.u'),
                     ],
                 ],
                 [
-                    'start' => new \DateTime(date('H:i', strtotime('now - 1 hours'))),
-                    'end' => new \DateTime(date('H:i', strtotime('now + 1 hours'))),
+                    'start' => $oneHourAgo,
+                    'end' => $oneHourInFuture,
                     'recurring' => true,
                 ],
             ],
@@ -162,13 +164,13 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
             'recurring block active, fixed date block inactive' => [
                 [
                     'Renewals' => [
-                        date('H:i', strtotime('now - 1 hours')) . '/' . date('H:i', strtotime('now + 1 hours')),
+                        $oneHourAgo->format('H:i:s.u') . '/' . $oneHourInFuture->format('H:i:s.u'),
                         date('Y-m-d', strtotime('now - 2 days')) . '/' . date('Y-m-d', strtotime('now - 1 days')),
                     ],
                 ],
                 [
-                    'start' => new \DateTime(date('H:i', strtotime('now - 1 hours'))),
-                    'end' => new \DateTime(date('H:i', strtotime('now + 1 hours'))),
+                    'start' => $oneHourAgo,
+                    'end' => $oneHourInFuture,
                     'recurring' => true,
                 ],
             ],
@@ -180,7 +182,7 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
                 [
-                    'start' => new \DateTime(date('Y-m-d', strtotime('now - 1 days'))),
+                    'start' => new \DateTime('yesterday'),
                     'end' => new \DateTime('tomorrow 23:59:59'),
                     'recurring' => false,
                 ],

@@ -83,6 +83,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $delegators = [
         SolrMarc::class => [IlsAwareDelegatorFactory::class],
         SolrMarcRemote::class => [IlsAwareDelegatorFactory::class],
+        EDS::class => [IlsAwareDelegatorFactory::class],
     ];
 
     /**

@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Booksite cover loader factory
+ * Factory for Util/UpdateResourceMetadata.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2019.
+ * Copyright (C) The National Library of Finland 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,29 +21,34 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Content
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Console
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Content\Covers;
+namespace VuFindConsole\Command\Util;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Db\PersistenceManager;
+use VuFind\Db\Service\ResourceServiceInterface;
+use VuFind\Record\Loader;
+use VuFind\Record\ResourcePopulator;
 
 /**
- * Booksite cover loader factory
+ * Factory for Util/UpdateResourceMetadata.
  *
  * @category VuFind
- * @package  Content
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Console
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:record_drivers Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class BooksiteFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
+class UpdateResourceMetadataCommandFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -58,22 +63,19 @@ class BooksiteFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
         ?array $options = null
     ) {
-        if (!empty($options)) {
-            throw new \Exception('Unexpected options passed to factory.');
-        }
-        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
-        $url = $config['Booksite']['url'] ?? 'https://api.booksite.com';
-        if (!isset($config['Booksite']['key'])) {
-            throw new \Exception("Booksite 'key' not set in VuFind config");
-        }
-        return new $requestedName($url, $config['Booksite']['key']);
+        $serviceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
+        return new $requestedName(
+            $serviceManager->get(ResourceServiceInterface::class),
+            $container->get(Loader::class),
+            $container->get(ResourcePopulator::class),
+            $container->get(PersistenceManager::class),
+            ...($options ?? [])
+        );
     }
 }

@@ -6,7 +6,7 @@ $finder->in(__DIR__ . '/../config')
     ->in(__DIR__ . '/../public');
 
 $rules = [
-    '@PHP84Migration' => true,
+    '@PHP82Migration' => true,
     '@PHPUnit100Migration:risky' => true,
     '@PSR12' => true,
     'align_multiline_comment' => true,
@@ -16,6 +16,7 @@ $rules = [
     ],
     'cast_spaces' => ['space' => 'none'],
     'class_attributes_separation' => ['elements' => ['method' => 'one', 'property' => 'one']],
+    'class_reference_name_casing' => true,
     'concat_space' => ['spacing' => 'one'],
     'ereg_to_preg' => true,
     'get_class_to_class_keyword' => true,

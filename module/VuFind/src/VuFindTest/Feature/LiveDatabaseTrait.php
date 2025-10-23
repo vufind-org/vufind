@@ -131,6 +131,10 @@ trait LiveDatabaseTrait
             'doctrine.cache.filesystem',
             new \DoctrineModule\Cache\LaminasStorageCache($cacheAdapter)
         );
+        $container->set(
+            'doctrine.cache.array',
+            new \DoctrineModule\Cache\LaminasStorageCache(new \Laminas\Cache\Storage\Adapter\Memory())
+        );
         $driverFactory = new \DoctrineModule\Service\DriverFactory('orm_default');
         $container->set(
             'doctrine.driver.orm_default',

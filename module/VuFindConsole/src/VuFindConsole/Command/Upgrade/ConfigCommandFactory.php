@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Booksite review plugin factory.
+ * Factory for configuration upgrader command.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,29 +21,31 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Content
+ * @package  Console
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Content\Reviews;
+namespace VuFindConsole\Command\Upgrade;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\Upgrade;
 
 /**
- * Booksite review plugin factory.
+ * Factory for configuration upgrader command.
  *
  * @category VuFind
- * @package  Content
+ * @package  Console
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class BooksiteFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
+class ConfigCommandFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -64,14 +66,6 @@ class BooksiteFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
         $requestedName,
         ?array $options = null
     ) {
-        if ($options !== null) {
-            throw new \Exception('Unexpected options sent to factory!');
-        }
-        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
-        $url = $config['Booksite']['url'] ?? 'https://api.booksite.com';
-        if (!isset($config['Booksite']['key'])) {
-            throw new \Exception("Booksite 'key' not set in VuFind config");
-        }
-        return new $requestedName($url, $config['Booksite']['key']);
+        return new $requestedName($container->get(Upgrade::class), ...($options ?? []));
     }
 }

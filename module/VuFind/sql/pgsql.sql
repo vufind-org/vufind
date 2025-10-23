@@ -28,13 +28,16 @@ CREATE TABLE resource (
 id SERIAL,
 record_id varchar(255) NOT NULL DEFAULT '',
 title varchar(255) NOT NULL DEFAULT '',
+display_title varchar(255) DEFAULT NULL,
 author varchar(255) DEFAULT NULL,
 year int DEFAULT NULL,
 source varchar(50) NOT NULL DEFAULT 'Solr',
 extra_metadata text DEFAULT NULL,
+updated timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
 PRIMARY KEY (id)
 );
 CREATE INDEX resource_record_id_idx ON resource (record_id);
+CREATE INDEX resource_updated_idx ON resource (updated);
 
 
 -- --------------------------------------------------------
