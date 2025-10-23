@@ -34,6 +34,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use VuFind\Cache\Manager as CacheManager;
@@ -214,9 +215,10 @@ class DatabaseCommand extends Command
             $msg = '<info>Please clear the object cache (' . $this->cacheManager->getCacheDir(false) . 'objects) '
                 . ($sqlOnly ? 'after applying the migrations' : 'now')
                 . ' to ensure that the metadata is up to date.</info>';
-            $output->writeln('');
-            $output->writeln($msg);
-            $output->writeln('');
+            $stdErr = $output instanceof ConsoleOutputInterface ? $output->getErrorOutput() : $output;
+            $stdErr->writeln('');
+            $stdErr->writeln($msg);
+            $stdErr->writeln('');
         }
         return 0;
     }
