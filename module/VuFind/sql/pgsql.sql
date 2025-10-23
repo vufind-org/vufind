@@ -403,7 +403,7 @@ CREATE TABLE api_key (
   revoked boolean NOT NULL DEFAULT '0',
   created timestamp NOT NULL default CURRENT_TIMESTAMP,
   last_used timestamp NOT NULL default CURRENT_TIMESTAMP,
-  PRIMARY KEY (id),
+  PRIMARY KEY (id)
 );
 CREATE INDEX api_key_user_id_idx ON api_key (user_id);
 CREATE INDEX api_key_token_idx ON api_key (token);

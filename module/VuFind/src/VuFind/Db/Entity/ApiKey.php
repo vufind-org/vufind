@@ -178,7 +178,7 @@ class ApiKey implements ApiKeyEntityInterface
     }
 
     /**
-     * Get user ID.
+     * Get user.
      *
      * @return UserEntityInterface
      */
