@@ -206,7 +206,8 @@ class UserListService extends AbstractDbService implements
             $parameters['listId'] = $listId;
         }
         if ($publicOnly) {
-            $dql .= "AND ul.public = '1' ";
+            $dql .= 'AND ul.public = :public ';
+            $parameters['public'] = true;
         }
         $this->addTypesCheck($dql, $parameters, $types);
 

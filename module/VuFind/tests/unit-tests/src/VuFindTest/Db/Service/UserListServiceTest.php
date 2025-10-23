@@ -95,7 +95,15 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
             }
         );
         $queryObject->expects($this->any())->method('getResult')->willReturn([]);
-        $entityManager->expects($this->once())->method('createQuery')->willReturn($queryObject);
+        $entityManager->expects($this->once())->method('createQuery')->willReturnCallback(
+            function ($dql) use ($expected, $queryObject) {
+                // Assert that all the set parameters have been added to the dql properly in form of :param
+                foreach (array_keys($expected['params']) as $key) {
+                    $this->assertStringContainsString(":$key", $dql);
+                }
+                return $queryObject;
+            }
+        );
         return $entityManager;
     }
 
@@ -280,6 +288,7 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
                     'tag0' => 'tag1',
                     'tag1' => 'tag2',
                     'tag2' => 'tag3',
+                    'public' => true,
                     'cnt' => 3,
                 ],
             ],
@@ -294,6 +303,7 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
                     'tag0' => 'tag1',
                     'types' => ['default'],
                     'listId' => [12333],
+                    'public' => true,
                     'cnt' => 1,
                 ],
             ],
@@ -323,6 +333,7 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
             [
                 'params' => [
                     'types' => ['default'],
+                    'public' => true,
                 ],
             ],
         ];
@@ -338,6 +349,7 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
                 'params' => [
                     'types' => ['default'],
                     'tag' => ['Tags1', 'tags2'],
+                    'public' => true,
                 ],
             ],
         ];
@@ -354,6 +366,7 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
                 'params' => [
                     'tag' => ['Tags1', 'tags2'],
                     'types' => ['SOME', 'TEST'],
+                    'public' => true,
                 ],
             ],
         ];
