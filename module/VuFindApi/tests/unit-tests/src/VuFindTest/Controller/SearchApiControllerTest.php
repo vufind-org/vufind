@@ -173,6 +173,7 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
     ): MockObject&SearchApiController {
         $solrOptions = $this->createMock(Options::class);
         $solrOptions->expects($this->any())->method('getAPISettings')->willReturn([]);
+        $solrOptions->expects($this->any())->method('getFacetsIni')->willReturn('');
         $optionsPluginManager = $this->createMock(SearchPluginManager::class);
         $optionsPluginManager->expects($this->any())->method('get')->willReturn($solrOptions);
         $apiKeyMode = DeveloperSettingsStatus::fromSetting($config['API_Keys']['mode'] ?? '');
@@ -222,7 +223,7 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
             ],
         ]);
         $configManager = $this->getMockBuilder(ConfigManager::class)->disableOriginalConstructor()->getMock();
-        $configManager->expects($this->any())->method('getConfigArray')->with('config')->willReturn($config);
+        $configManager->expects($this->any())->method('getConfigArray')->willReturn($config);
 
         $container = new MockContainer($this);
         $container->set(SearchPluginManager::class, $optionsPluginManager);
