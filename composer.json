@@ -126,7 +126,7 @@
         "behat/mink": "1.12.0",
         "behat/mink-selenium2-driver": "1.7.0",
         "dmore/chrome-mink-driver": "2.10.0",
-        "friendsofphp/php-cs-fixer": "3.87.2",
+        "friendsofphp/php-cs-fixer": "3.89.0",
         "phpmd/phpmd": "2.15.0",
         "phpstan/phpstan": "2.1.25",
         "phpunit/php-code-coverage": "10.1.16",
