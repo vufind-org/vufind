@@ -5,13 +5,13 @@
 
     $basePath = rtrim($this->url('home'), '/') . '/api/v1';
     $info = [
-        'title' => $this->config->Site->title,
+        'title' => $this->config['Site']['title'],
         'version' => $this->version,
     ];
-    if ($description = $this->config->API->description ?? '') {
+    if ($description = $this->config['API']['description'] ?? '') {
         $info['description'] = $description;
     }
-    if ($termsUrl = $this->config->API->termsOfServiceUrl ?? '') {
+    if ($termsUrl = $this->config['API']['termsOfServiceUrl'] ?? '') {
         $info['termsOfService'] = $termsUrl;
     }
 ?>

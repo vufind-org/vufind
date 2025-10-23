@@ -74,8 +74,8 @@ class AbstractAdmin extends \VuFind\Controller\AbstractBase
         }
 
         // Block access to everyone when module is disabled:
-        $config = $this->getConfig();
-        if (!isset($config->Site->admin_enabled) || !$config->Site->admin_enabled) {
+        $config = $this->getConfigArray();
+        if (!($config['Site']['admin_enabled'] ?? false)) {
             $pluginManager  = $this->getService(\Laminas\Mvc\Controller\PluginManager::class);
             $redirectPlugin = $pluginManager->get('redirect');
             return $redirectPlugin->toRoute('admin/disabled');

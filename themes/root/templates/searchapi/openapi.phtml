@@ -31,8 +31,8 @@
                         "description": "Language for returned translated strings.",
                         "schema": {
                             "type": "string",
-                            "enum": [<?=implode(', ', array_map(function ($v) { return '"' . addslashes($v) . '"'; }, array_keys($this->config->Languages->toArray()))) ?>],
-                            "default": "<?=addslashes($this->config->Site->language) ?>"
+                            "enum": [<?=implode(', ', array_map(function ($v) { return '"' . addslashes($v) . '"'; }, array_keys($this->config['Languages']))) ?>],
+                            "default": "<?=addslashes($this->config['Site']['language']) ?>"
                         }
                     },
                     {

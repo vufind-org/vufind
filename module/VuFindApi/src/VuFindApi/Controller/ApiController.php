@@ -104,9 +104,8 @@ class ApiController extends \VuFind\Controller\AbstractBase
      */
     protected function getApiSpecFragment()
     {
-        $config = $this->getConfig();
-        // TODO: use getConfigArray
-        $this->initApiKeySettings($config?->API_Keys?->toArray() ?? []);
+        $config = $this->getConfigArray();
+        $this->initApiKeySettings($config['API_Keys'] ?? []);
         $params = [
             'config' => $config,
             'apiKeysEnabled' => $this->developerSettingsService?->apiKeysEnabled() ?? false,

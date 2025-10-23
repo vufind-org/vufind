@@ -50,8 +50,8 @@ class RelaisController extends AbstractBase
     public function loginAction()
     {
         // Fatal error if not configured correctly:
-        $config = $this->getConfig();
-        $baseUrl = $config->Relais->loginUrl ?? null;
+        $config = $this->getConfigArray();
+        $baseUrl = $config['Relais']['loginUrl'] ?? null;
         if (empty($baseUrl)) {
             throw new \Exception('Relais login URL not set.');
         }
@@ -62,7 +62,7 @@ class RelaisController extends AbstractBase
         }
 
         // Send user credentials through to Relais:
-        $symbol = $config->Relais->symbol ?? '';
+        $symbol = $config['Relais']['symbol'] ?? '';
         $q = $this->params()->fromQuery('query');
         $url = $baseUrl . '?LS=' . urlencode($symbol)
             . '&dest=discovery&group=patron&PI='
