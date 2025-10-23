@@ -193,6 +193,7 @@ id SERIAL,
 user_id int NOT NULL,
 title varchar(200) NOT NULL,
 description text DEFAULT NULL,
+type varchar(200) NOT NULL DEFAULT 'default',
 created timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
 public boolean NOT NULL DEFAULT '0',
 PRIMARY KEY (id)

@@ -271,6 +271,7 @@ CREATE TABLE `user_list` (
   `user_id` int(11) NOT NULL,
   `title` varchar(200) NOT NULL,
   `description` text,
+  `type` varchar(200) NOT NULL DEFAULT 'default',
   `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   `public` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
