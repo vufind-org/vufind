@@ -81,6 +81,9 @@ main:
       - label: Manage VuFind® installation
         type: internal-command
         command: install/install
+      - label: Upgrade VuFind® configurations
+        type: internal-command
+        command: upgrade/config
       - label: Upgrade VuFind® database
         type: internal-command
         command: upgrade/database

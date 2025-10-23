@@ -598,14 +598,33 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Data provider for testGetThumbnail().
+     *
+     * @return array[]
+     */
+    public static function getThumbnailProvider(): array
+    {
+        return [
+            'thumb is upscaled to small' => ['small', 'small thumbnail link'],
+            'medium is used as-is' => ['medium', 'medium thumbnail link'],
+            'medium is upscaled to large' => ['large', 'medium thumbnail link'],
+        ];
+    }
+
+    /**
      * Test getThumbnail for a record.
      *
+     * @param string $size     Size to request
+     * @param string $expected Expected result
+     *
      * @return void
+     *
+     * @dataProvider getThumbnailProvider
      */
-    public function testGetThumbnail(): void
+    public function testGetThumbnail(string $size, string $expected): void
     {
         $driver = $this->getDriver('valid-eds-record');
-        $this->assertEquals('thumbnail link', $driver->getThumbnail());
+        $this->assertEquals($expected, $driver->getThumbnail($size));
     }
 
     /**

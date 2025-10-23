@@ -420,7 +420,7 @@ class Search implements SearchEntityInterface
      *
      * @return static
      */
-    public function setLastNotificationSent(Datetime $lastNotificationSent): static
+    public function setLastNotificationSent(DateTime $lastNotificationSent): static
     {
         $this->lastNotificationSent = $lastNotificationSent;
         return $this;

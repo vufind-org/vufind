@@ -95,7 +95,7 @@ class Sfx extends AbstractBase
     {
         $records = []; // array to return
         try {
-            $xml = new \SimpleXmlElement($xmlstr);
+            $xml = new \SimpleXMLElement($xmlstr);
         } catch (\Exception $e) {
             return $records;
         }

@@ -191,7 +191,7 @@ interface SearchEntityInterface extends EntityInterface
      *
      * @return static
      */
-    public function setLastNotificationSent(Datetime $lastNotificationSent): static;
+    public function setLastNotificationSent(DateTime $lastNotificationSent): static;
 
     /**
      * Get notification base URL.
