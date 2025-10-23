@@ -112,7 +112,7 @@ class UserList implements UserListEntityInterface
      *
      * @var string
      */
-    #[ORM\Column(name: 'type', type: 'text', length: 200, nullable: false, options: ['default' => self::TYPE_DEFAULT])]
+    #[ORM\Column(name: 'type', type: 'string', length: 200, nullable: false, options: ['default' => self::TYPE_DEFAULT])]
     protected string $type = self::TYPE_DEFAULT;
 
     /**
