@@ -372,7 +372,7 @@ class WebCrawlCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         // Get command line parameters:
         $testMode = $input->getOption('test-only') ? true : false;

@@ -139,7 +139,7 @@ class DatabaseCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $sqlOnly = $input->getOption('sql-only') ? true : false;
         $driver = $input->getOption('driver');
@@ -176,11 +176,11 @@ class DatabaseCommand extends Command
                     $e = $e->getPrevious();
                 }
             }
-            return 1;
+            return self::FAILURE;
         }
         if (!$sqlOnly) {
             $output->writeln('Successfully created database.');
         }
-        return 0;
+        return self::SUCCESS;
     }
 }

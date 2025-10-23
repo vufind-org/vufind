@@ -128,7 +128,7 @@ class MenuCommand extends Command
         while (true) {
             $choice = $this->getHelper('question')->ask($input, $output, $question);
             if ($choice === $exitOption) {
-                return Command::SUCCESS;
+                return self::SUCCESS;
             }
             $index = array_search($choice, $legalOptions);
             if ($index !== false) {
@@ -278,14 +278,14 @@ class MenuCommand extends Command
             );
             // Bail out if the user wants to exit:
             if ($result === $this->exitCommand) {
-                return Command::SUCCESS;
+                return self::SUCCESS;
             }
             // Run the command if ready!
             if (str_starts_with($result, $this->runCommand)) {
                 $success = $this->runCommand($fullCommand);
                 $output->writeln($success ? '<info>Command successful.</info>' : '<error>Command failed.</error>');
                 if ($success || (empty($arguments) && empty($options))) {
-                    return $success ? Command::SUCCESS : Command::FAILURE;
+                    return $success ? self::SUCCESS : self::FAILURE;
                 }
             }
             // If we got this far, we need to process additional user input:
@@ -381,7 +381,7 @@ class MenuCommand extends Command
                 $this->displaySummary($output, $content, $indent . '    ');
             }
         }
-        return Command::SUCCESS;
+        return self::SUCCESS;
     }
 
     /**
@@ -410,7 +410,7 @@ class MenuCommand extends Command
                 return $this->displaySummary($output, $this->config['main']);
             default:
                 $output->writeln("Unknown menu type '$type' with label '$label'");
-                return Command::FAILURE;
+                return self::FAILURE;
         }
     }
 
@@ -422,7 +422,7 @@ class MenuCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         return $this->displayOptions($input, $output, $this->config['main']);
     }

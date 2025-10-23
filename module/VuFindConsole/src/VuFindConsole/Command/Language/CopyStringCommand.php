@@ -124,7 +124,7 @@ class CopyStringCommand extends AbstractCommand
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $source = $input->getArgument('source');
         $target = $input->getArgument('target');
@@ -139,7 +139,7 @@ class CopyStringCommand extends AbstractCommand
             !($sourceDir = $this->getLangDir($output, $sourceDomain))
             || !($targetDir = $this->getLangDir($output, $targetDomain, true))
         ) {
-            return 1;
+            return self::FAILURE;
         }
 
         // First, collect the source values from the source text domain:
@@ -170,6 +170,6 @@ class CopyStringCommand extends AbstractCommand
         };
         $this->processDirectory($targetDir, $targetCallback, [$output, 'writeln']);
 
-        return 0;
+        return self::SUCCESS;
     }
 }

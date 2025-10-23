@@ -97,7 +97,7 @@ class PurgeCachedRecordCommand extends Command
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $source = $input->getArgument('source');
         $id = $input->getArgument('id');
@@ -113,6 +113,6 @@ class PurgeCachedRecordCommand extends Command
                 $output->writeln('No resource found');
             }
         }
-        return 0;
+        return self::SUCCESS;
     }
 }

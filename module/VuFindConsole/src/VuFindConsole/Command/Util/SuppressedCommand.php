@@ -95,7 +95,7 @@ class SuppressedCommand extends AbstractSolrAndIlsCommand
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         // Setup Solr Connection
         $backend = $input->getOption('authorities') ? 'SolrAuth' : 'Solr';
@@ -107,23 +107,23 @@ class SuppressedCommand extends AbstractSolrAndIlsCommand
                 : $this->catalog->getSuppressedRecords();
         } catch (\Exception $e) {
             $output->writeln('ILS error -- ' . $e->getMessage());
-            return 1;
+            return self::FAILURE;
         }
 
         // Validate result:
         if (!is_array($result)) {
             $output->writeln('Could not obtain suppressed record list from ILS.');
-            return 1;
+            return self::FAILURE;
         } elseif (empty($result)) {
             $output->writeln('No suppressed records to delete.');
-            return 0;
+            return self::SUCCESS;
         }
 
         // If 'outfile' set, write the list
         if ($file = $input->getOption('outfile')) {
             if (!$this->writeToDisk($file, implode("\n", $result))) {
                 $output->writeln("Problem writing to $file");
-                return 1;
+                return self::FAILURE;
             }
         } else {
             // Default behavior: Delete from Solr index
@@ -131,6 +131,6 @@ class SuppressedCommand extends AbstractSolrAndIlsCommand
             $this->solr->commit($backend);
             $this->solr->optimize($backend);
         }
-        return 0;
+        return self::SUCCESS;
     }
 }
