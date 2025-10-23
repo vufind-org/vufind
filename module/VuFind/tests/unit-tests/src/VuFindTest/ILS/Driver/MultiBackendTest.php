@@ -1328,17 +1328,13 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
         $ils1->expects($this->once())
             ->method('checkRequestIsValid')
             ->with('bibid', ['id' => 'itemid'], $this->getPatron('username'))
-            ->willReturn(
-                true
-            );
+            ->willReturn(true);
 
         $ils2 = $this->getMockILS('Demo', ['init', 'checkRequestIsValid']);
         $ils2->expects($this->once())
             ->method('checkRequestIsValid')
             ->with('bibid', ['id' => 'itemid'], $this->getPatron('username'))
-            ->willReturn(
-                true
-            );
+            ->willReturn(true);
 
         $driver = $this->getMultiDriverForDrivers(['d1' => $ils1, 'd2' => $ils2]);
 
@@ -1394,9 +1390,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
         $demo->expects($this->once())
             ->method('checkRequestIsValid')
             ->with('d1.bibid', ['id' => 'd1.itemid'], $this->getPatron('username'))
-            ->willReturn(
-                true
-            );
+            ->willReturn(true);
 
         $driver = $this->getMultiDriverForDrivers(['d2' => $demo]);
         $result = $driver->checkRequestIsValid(
