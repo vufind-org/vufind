@@ -82,6 +82,22 @@ interface UserListEntityInterface extends EntityInterface
     public function getDescription(): ?string;
 
     /**
+     * Get list type
+     *
+     * @return string
+     */
+    public function getType(): string;
+
+    /**
+     * Set list type
+     *
+     * @param string $type Type of the user list
+     *
+     * @return static
+     */
+    public function setType(string $type): static;
+
+    /**
      * Set created date.
      *
      * @param DateTime $dateTime Created date

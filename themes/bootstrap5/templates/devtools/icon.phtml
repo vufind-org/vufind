@@ -6,8 +6,8 @@
     ->add($title, active: true);
 ?>
 <h1><?=$titleEsc?></h1>
-<div>
+<div class="devtools-icon-container">
   <?php foreach ($aliases as $icon): ?>
-    <?=$this->icon($icon)?>: <?=$this->escapeHtml($icon)?><br>
+    <?=$this->icon($icon)?> <?=$this->escapeHtml($icon)?><br>
   <?php endforeach; ?>
 </div>
