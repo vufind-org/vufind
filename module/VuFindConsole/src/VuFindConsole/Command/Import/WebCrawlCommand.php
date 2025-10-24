@@ -420,6 +420,6 @@ class WebCrawlCommand extends Command
             }
             $this->solr->optimize($index);
         }
-        return $error ? 1 : 0;
+        return $error ? self::FAILURE : self::SUCCESS;
     }
 }
