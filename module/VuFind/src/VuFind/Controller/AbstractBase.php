@@ -38,6 +38,7 @@ use Laminas\Uri\Http;
 use Laminas\View\Model\ViewModel;
 use VuFind\Config\Feature\EmailSettingsTrait;
 use VuFind\Controller\Feature\AccessPermissionInterface;
+use VuFind\Controller\Feature\RequestHelperTrait;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\AuditEventServiceInterface;
 use VuFind\Db\Service\PluginManager as DatabaseServiceManager;
@@ -82,6 +83,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     use EmailSettingsTrait;
     use GetServiceTrait;
     use TranslatorAwareTrait;
+    use RequestHelperTrait;
 
     /**
      * Permission that must be granted to access this module (false for no

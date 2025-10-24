@@ -34,12 +34,17 @@ namespace VuFindTest\Feature;
 use Throwable;
 use VuFind\Account\UserAccountService;
 use VuFind\Db\PersistenceManager;
+use VuFind\Db\Service\AbstractDbServiceFactory;
+use VuFind\Db\Service\ApiKeyService;
+use VuFind\Db\Service\ApiKeyServiceInterface;
 use VuFind\Db\Service\DbServiceInterface;
 use VuFind\Db\Service\PluginManager as ServiceManager;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserService;
+use VuFind\DeveloperSettings\DeveloperSettingsService;
+use VuFind\DeveloperSettings\DeveloperSettingsServiceFactory;
 use VuFind\Favorites\FavoritesService;
 use VuFind\Favorites\FavoritesServiceFactory;
 use VuFind\Record\ResourcePopulator;
@@ -219,6 +224,14 @@ trait LiveDatabaseTrait
                     $container->get(ResourcePopulator::class)
                 )
             );
+            $dbServiceFactory = new AbstractDbServiceFactory();
+            $apiKeyService = $dbServiceFactory($container, ApiKeyService::class);
+            $container->set(ApiKeyServiceInterface::class, $apiKeyService);
+
+            $developerSettingsServiceFactory = new DeveloperSettingsServiceFactory();
+            $developerSettingsService = $developerSettingsServiceFactory($container, DeveloperSettingsService::class);
+            $container->set(DeveloperSettingsService::class, $developerSettingsService);
+
             $favoritesFactory = new FavoritesServiceFactory();
             $favoritesService = $favoritesFactory($container, FavoritesService::class);
             $container->set(FavoritesService::class, $favoritesService);
