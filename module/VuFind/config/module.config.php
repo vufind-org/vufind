@@ -170,6 +170,7 @@ $config = [
             'VuFind\Controller\AjaxController' => 'VuFind\Controller\AjaxControllerFactory',
             'VuFind\Controller\AlmaController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\AlphabrowseController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFind\Controller\DeveloperSettingsController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\AuthorController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\AuthorityController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\AuthorityRecordController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -246,6 +247,8 @@ $config = [
             'alma' => 'VuFind\Controller\AlmaController',
             'Alphabrowse' => 'VuFind\Controller\AlphabrowseController',
             'alphabrowse' => 'VuFind\Controller\AlphabrowseController',
+            'DeveloperSettings' => 'VuFind\Controller\DeveloperSettingsController',
+            'developersettings' => 'VuFind\Controller\DeveloperSettingsController',
             'Author' => 'VuFind\Controller\AuthorController',
             'author' => 'VuFind\Controller\AuthorController',
             'Authority' => 'VuFind\Controller\AuthorityController',
@@ -424,6 +427,7 @@ $config = [
             'League\CommonMark\MarkdownConverter' => 'VuFind\Service\MarkdownFactory',
             'VuFind\Account\UserAccountService' => 'VuFind\Account\UserAccountServiceFactory',
             'VuFind\AjaxHandler\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\DeveloperSettings\DeveloperSettingsService' => 'VuFind\DeveloperSettings\DeveloperSettingsServiceFactory',
             'VuFind\Auth\EmailAuthenticator' => 'VuFind\Auth\EmailAuthenticatorFactory',
             'VuFind\Auth\ILSAuthenticator' => 'VuFind\Auth\ILSAuthenticatorFactory',
             'VuFind\Auth\LoginTokenManager' => 'VuFind\Auth\LoginTokenManagerFactory',
@@ -571,6 +575,7 @@ $config = [
             'VuFindHttp\HttpService' => 'VuFind\Service\HttpServiceFactory',
             'VuFindSearch\Service' => 'VuFind\Service\SearchServiceFactory',
             'Laminas\Session\SessionManager' => 'VuFind\Session\ManagerFactory',
+            'Lmc\Rbac\Mvc\Service\AuthorizationService' => 'VuFind\Service\AuthorizationServiceFactory',
         ],
         'delegators' => [
             'Laminas\Mvc\I18n\Translator' => [
@@ -787,6 +792,14 @@ $config = [
             ],
         ],
         'vufind_permission_provider_manager' => [ /* see VuFind\Role\PermissionProvider\PluginManager for defaults */ ],
+        'assertion_manager' => [
+            'factories' => [
+                'VuFind\Role\Assertion\HasVerifiedEmailAssertion' => 'Laminas\ServiceManager\Factory\InvokableFactory',
+            ],
+            'aliases' => [
+                'VerifiedEmail' => 'VuFind\Role\Assertion\HasVerifiedEmailAssertion',
+            ],
+        ],
     ],
 ];
 
@@ -889,6 +902,9 @@ $staticRoutes = [
     'Confirm/Confirm',
     'Cover/Show',
     'Cover/Unavailable',
+    'DeveloperSettings/DeleteApiKey',
+    'DeveloperSettings/DisplaySettings',
+    'DeveloperSettings/GenerateApiKey',
     'EDS/Advanced',
     'EDS/Home',
     'EDS/Search',

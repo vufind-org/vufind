@@ -45,12 +45,39 @@
                     }
 <?php $commonFields = ob_get_contents(); ?>
 <?php ob_end_clean(); ?>
+
+<?php ob_start(); ?>
+    <?php if ($this->apiKeysEnabled): ?>
+                "security": [
+                    {
+                        "ApiKeyAuth": []
+                    }
+                ],
+    <?php endif; ?>
+<?php $securityBlock = ob_get_clean(); ?>
+
+<?php ob_start(); ?>
+    <?php if ($this->apiKeysEnabled): ?>
+                    "401": {
+                        "description": <?=json_encode($this->apiKeyMode->getUnauthorizedMessage())?>,
+                        "content": {
+                            "application/json": {
+                                "schema": {
+                                    "$ref": "#/components/schemas/Unauthorized"
+                                }
+                            }
+                        }
+                    },
+    <?php endif; ?>
+<?php $unauthorizedResponse = ob_get_clean();?>
+
 {
     "paths": {
         "/<?=$recordRoute?>": {
             "get": {
                 "summary": "Fetch records from <?=$this->indexLabel?> index",
-                "description": "Return a single record or multiple records from <?=$this->indexLabel?> index. POST method may also be used if sending a long request.",
+                "description": "Return a single record or multiple records from <?=$this->indexLabel?> index. POST method may also be used if sending a long request.",   
+<?=$securityBlock?>
                 "parameters": [
                     {
                         "name": "id",
@@ -92,6 +119,7 @@
                             }
                         }
                     },
+<?=$unauthorizedResponse?>
                     "default": {
                         "description": "Error",
                         "content": {
@@ -109,6 +137,7 @@
             "get": {
                 "summary": "Search <?=$this->indexLabel?> index",
                 "description": "Search <?=$this->indexLabel?> index with given terms and filters. POST method may also be used if sending a long request.\n\nThe URL syntax here is the as the one used in VuFind user interface. It is possible to make a search in VuFind and copy the query parameters here to make the same search via the API.",
+<?=$securityBlock?>
                 "parameters": [
                     {
                         "name": "lookfor",
@@ -224,6 +253,7 @@
                             }
                         }
                     },
+<?=$unauthorizedResponse?>
                     "default": {
                         "description": "Error",
                         "content": {
