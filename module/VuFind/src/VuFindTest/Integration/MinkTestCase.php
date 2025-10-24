@@ -41,6 +41,7 @@ use function call_user_func;
 use function floatval;
 use function in_array;
 use function intval;
+use function is_callable;
 use function is_string;
 use function strlen;
 
@@ -1431,6 +1432,10 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
 
         $this->stopMinkSession();
         $this->restoreConfigs();
+
+        if (($this->hasLiveDatabaseTrait ?? false) && is_callable([$this, 'tearDownLiveDatabaseContainer'])) {
+            $this->tearDownLiveDatabaseContainer();
+        }
 
         if (null !== $htmlValidationException) {
             throw $htmlValidationException;

@@ -106,6 +106,16 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Standard teardown method.
+     *
+     * @return void
+     */
+    public function tearDown(): void
+    {
+        $this->tearDownLiveDatabaseContainer();
+    }
+
+    /**
      * Get an authentication object.
      *
      * @param ?array $config             Configuration to use (null for default)

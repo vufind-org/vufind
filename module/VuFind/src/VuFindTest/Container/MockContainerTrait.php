@@ -182,4 +182,15 @@ trait MockContainerTrait
         $this->mockAliases[$alias] = $target;
         return $this;
     }
+
+    /**
+     * Clear all services from the container.
+     *
+     * @return void
+     */
+    public function clear(): void
+    {
+        $this->mockServices = [];
+        $this->mockAliases = [];
+    }
 }
