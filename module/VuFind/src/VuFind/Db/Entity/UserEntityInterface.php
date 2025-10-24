@@ -21,7 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Db_Interface
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
@@ -35,7 +35,7 @@ use DateTime;
  * Interface for representing a user account record.
  *
  * @category VuFind
- * @package  Db_Interface
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
@@ -371,7 +371,7 @@ interface UserEntityInterface extends
      *
      * @return DateTime
      */
-    public function getCreated(): Datetime;
+    public function getCreated(): DateTime;
 
     /**
      * Set email verification date (or null for unverified).

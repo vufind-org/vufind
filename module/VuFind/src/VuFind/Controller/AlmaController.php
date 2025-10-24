@@ -69,16 +69,9 @@ class AlmaController extends AbstractBase
     protected $httpHeaders;
 
     /**
-     * Configuration from config.ini
-     *
-     * @var \VuFind\Config\Config
-     */
-    protected $config;
-
-    /**
      * Alma.ini config
      *
-     * @var \VuFind\Config\Config
+     * @var array
      */
     protected $configAlma;
 
@@ -99,8 +92,7 @@ class AlmaController extends AbstractBase
         parent::__construct($sm);
         $this->httpResponse = $this->getResponse();
         $this->httpHeaders = $this->httpResponse->getHeaders();
-        $this->config = $this->getConfig('config');
-        $this->configAlma = $this->getConfig('Alma');
+        $this->configAlma = $this->getConfigArray('Alma');
         $this->userService = $this->getDbService(UserServiceInterface::class);
     }
 
@@ -207,7 +199,7 @@ class AlmaController extends AbstractBase
             $username = null;
             $userIdentifiers
                 = $requestBodyJson->webhook_user->user->user_identifier ?? null;
-            $idTypeConfig = $this->configAlma->NewUser->idType ?? null;
+            $idTypeConfig = $this->configAlma['NewUser']['idType'] ?? null;
             foreach ($userIdentifiers as $userIdentifier) {
                 $idTypeHook = $userIdentifier->id_type->value ?? null;
                 if (
@@ -255,7 +247,7 @@ class AlmaController extends AbstractBase
                 try {
                     $this->userService->persistEntity($user);
                     if ($method == 'CREATE') {
-                        $this->sendSetPasswordEmail($user, $this->config);
+                        $this->sendSetPasswordEmail($user);
                     }
                     $jsonResponse = $this->createJsonResponse(
                         'Successfully ' . strtolower($method) .
@@ -349,18 +341,17 @@ class AlmaController extends AbstractBase
      * Send the "set password email" to a new user that was created in Alma and sent
      * to VuFind via webhook.
      *
-     * @param UserEntityInterface   $user   User entity object
-     * @param \VuFind\Config\Config $config A config object of config.ini
+     * @param UserEntityInterface $user User entity object
      *
      * @return void
      */
-    protected function sendSetPasswordEmail(UserEntityInterface $user, $config)
+    protected function sendSetPasswordEmail(UserEntityInterface $user): void
     {
         // Attempt to send the email
         try {
             // Create a fresh hash
             $this->getAuthManager()->updateUserVerifyHash($user);
-            $config = $this->getConfig();
+            $config = $this->getConfigArray();
             $renderer = $this->getViewRenderer();
             $method = $this->getAuthManager()->getAuthMethod();
 
@@ -368,7 +359,7 @@ class AlmaController extends AbstractBase
             $message = $renderer->render(
                 'Email/new-user-welcome.phtml',
                 [
-                    'library' => $config->Site->title,
+                    'library' => $config['Site']['title'],
                     'firstname' => $user->getFirstname(),
                     'lastname' => $user->getLastname(),
                     'username' => $user->getUsername(),
@@ -382,7 +373,7 @@ class AlmaController extends AbstractBase
                 $this->getEmailSenderAddress($config),
                 $this->translate(
                     'new_user_welcome_subject',
-                    ['%%library%%' => $config->Site->title]
+                    ['%%library%%' => $config['Site']['title']]
                 ),
                 $message
             );
@@ -473,7 +464,7 @@ class AlmaController extends AbstractBase
         : null;
 
         // Get the webhook secret defined in Alma.ini
-        $secretConfig = $this->configAlma->Webhook->secret ?? null;
+        $secretConfig = $this->configAlma['Webhook']['secret'] ?? null;
 
         // Calculate hmac-sha256 hash from request body we get from Alma webhook and
         // sign it with the Alma webhook secret from Alma.ini

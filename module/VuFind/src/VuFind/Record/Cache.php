@@ -46,7 +46,7 @@ use VuFind\RecordDriver\PluginManager as RecordFactory;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Cache implements \Laminas\Log\LoggerAwareInterface
+class Cache implements \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 

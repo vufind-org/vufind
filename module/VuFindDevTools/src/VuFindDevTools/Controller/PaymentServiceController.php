@@ -125,7 +125,7 @@ class PaymentServiceController extends \VuFind\Controller\AbstractBase
                 $this->putCachedData($requestId, $session);
                 $this->callNotifyHandler($session['notifyUrl']);
                 if ('notify' === $status) {
-                    return $this->getAjaxResponse('text/html', 'Notify done');
+                    return $this->getAjaxResponse('text/plain', 'Notify done');
                 }
                 return $this->redirect()->toUrl($this->addSignature($session['returnUrl']));
             }

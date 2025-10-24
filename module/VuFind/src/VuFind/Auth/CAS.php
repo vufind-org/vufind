@@ -30,7 +30,6 @@
 
 namespace VuFind\Auth;
 
-use Laminas\Log\PsrLoggerAdapter;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
 
@@ -309,7 +308,7 @@ class CAS extends AbstractBase
         if (!$this->phpCASSetup) {
             $cas = $this->getConfig()->CAS;
 
-            $casauth->setLogger(new PsrLoggerAdapter($this->logger));
+            $casauth->setLogger($this->logger);
 
             if ($cas->debug ?? false) {
                 $casauth->setVerbose(true);

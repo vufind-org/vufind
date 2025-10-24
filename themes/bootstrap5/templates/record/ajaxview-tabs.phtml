@@ -10,7 +10,7 @@
   <?php $coreMetadata = trim($this->record($this->driver)->getCoreMetadata()); ?>
   <?php if (!empty($coreMetadata)): ?>
     <li class="nav-item" role="presentation">
-      <a id="information_<?=$idSuffixEsc?>" class="nav-link list-tab-toggle loaded<?=$this->defaultTab === 'information' ? ' active" aria-selected="true"' : '"'?>" data-bs-toggle="tab" data-bs-target="#information_<?=$idSuffixEsc?>-content" class="noajax">
+      <a id="information_<?=$idSuffixEsc?>" class="nav-link list-tab-toggle loaded<?=$this->defaultTab === 'information' ? ' active" aria-selected="true"' : '"'?> data-bs-toggle="tab" data-bs-target="#information_<?=$idSuffixEsc?>-content" class="noajax" role="tab">
         <?=$this->translate('ajaxview_label_information') ?>
       </a>
     </li>
@@ -19,7 +19,7 @@
   <?php $toolbar = trim($this->record($this->driver)->getToolbar()); ?>
   <?php if (!empty($toolbar)): ?>
     <li class="nav-item" role="presentation">
-      <a id="tools_<?=$idSuffixEsc?>" class="nav-link list-tab-toggle loaded<?=$this->defaultTab === 'tools' ? ' active" aria-selected="true"' : '"'?>" data-bs-toggle="tab" data-bs-target="#tools_<?=$idSuffixEsc?>-content" class="noajax">
+      <a id="tools_<?=$idSuffixEsc?>" class="nav-link list-tab-toggle loaded<?=$this->defaultTab === 'tools' ? ' active" aria-selected="true"' : '"'?> data-bs-toggle="tab" data-bs-target="#tools_<?=$idSuffixEsc?>-content" class="noajax" role="tab">
       <?=$this->translate('ajaxview_label_tools') ?>
       </a>
     </li>
@@ -28,7 +28,7 @@
   <?php $list = $this->related()->getList($this->driver); ?>
   <?php if (!empty($list)): ?>
     <li class="nav-item" role="presentation">
-      <a id="related_<?=$idSuffixEsc?>" class="nav-link list-tab-toggle loaded<?=$this->defaultTab === 'related' ? ' active" aria-selected="true"' : '"'?>" data-bs-toggle="tab" data-bs-target="#related_<?=$idSuffixEsc?>-content" class="noajax">
+      <a id="related_<?=$idSuffixEsc?>" class="nav-link list-tab-toggle loaded<?=$this->defaultTab === 'related' ? ' active" aria-selected="true"' : '"'?> data-bs-toggle="tab" data-bs-target="#related_<?=$idSuffixEsc?>-content" class="noajax" role="tab">
         <?=$this->transEsc('Related Items')?>
       </a>
     </li>
@@ -48,6 +48,7 @@
         'href' => $this->recordLinker()->getTabUrl($this->driver, $tab) . '#tabnav',
         'data-bs-toggle' => 'tab',
         'data-bs-target' => '#' . strtolower($tab) . '_' . $idSuffix . '-content',
+        'role' => 'tab',
       ]);
       if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)) {
         $aAttrs['data-background'] = true;

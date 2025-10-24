@@ -77,20 +77,20 @@ class DynamicRoleProviderFactory implements FactoryInterface
     protected function getPermissionConfiguration(
         ContainerInterface $container,
         array $rbacConfig
-    ) {
+    ): array {
         // Get role provider settings from the Lmc\Rbac\Mvc configuration:
         $config = $rbacConfig['role_provider']['VuFind\Role\DynamicRoleProvider'];
 
         // Load the permissions:
-        $configLoader = $container->get(\VuFind\Config\PluginManager::class);
-        $permissions = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('permissions');
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
+        $permissions = $configManager->getConfigArray('permissions');
 
         // If we're configured to map legacy settings, do so now:
         if (
             isset($config['map_legacy_settings'])
             && $config['map_legacy_settings']
         ) {
-            $permissions = $this->addLegacySettings($configLoader, $permissions);
+            $permissions = $this->addLegacySettings($configManager, $permissions);
         }
 
         return $permissions;
@@ -99,18 +99,18 @@ class DynamicRoleProviderFactory implements FactoryInterface
     /**
      * Map legacy VuFind settings into the permissions.ini setup.
      *
-     * @param \VuFind\Config\PluginManager $loader      Config loader
-     * @param array                        $permissions Permissions to update
+     * @param \VuFind\Config\ConfigManagerInterface $configManager Config manager
+     * @param array                                 $permissions   Permissions to update
      *
      * @return array
      */
     protected function addLegacySettings(
-        \VuFind\Config\PluginManager $loader,
+        \VuFind\Config\ConfigManagerInterface $configManager,
         array $permissions
-    ) {
+    ): array {
         // Add admin settings if they are absent:
         if (!$this->permissionDefined($permissions, 'access.AdminModule')) {
-            $config = $loader->get('config')->toArray();
+            $config = $configManager->getConfigArray('config');
             $permissions['legacy.AdminModule'] = [];
             if (isset($config['AdminAuth']['ipRegEx'])) {
                 $permissions['legacy.AdminModule']['ipRegEx']
@@ -148,14 +148,14 @@ class DynamicRoleProviderFactory implements FactoryInterface
         $defined = $this
             ->permissionDefined($permissions, 'access.SummonExtendedResults');
         if (!$defined) {
-            $config = $loader->get('Summon');
+            $config = $configManager->getConfigArray('Summon');
             $permissions['legacy.SummonExtendedResults'] = [];
-            if (isset($config->Auth->check_login) && $config->Auth->check_login) {
+            if ($config['Auth']['check_login'] ?? false) {
                 $permissions['legacy.SummonExtendedResults']['role'] = ['loggedin'];
             }
-            if (isset($config->Auth->ip_range)) {
+            if (isset($config['Auth']['ip_range'])) {
                 $permissions['legacy.SummonExtendedResults']['ipRegEx']
-                    = $config->Auth->ip_range;
+                    = $config['Auth']['ip_range'];
             }
             if (!empty($permissions['legacy.SummonExtendedResults'])) {
                 $permissions['legacy.SummonExtendedResults']['require'] = 'ANY';
@@ -177,7 +177,7 @@ class DynamicRoleProviderFactory implements FactoryInterface
      *
      * @return bool
      */
-    protected function permissionDefined(array $config, $permission)
+    protected function permissionDefined(array $config, string $permission): bool
     {
         foreach ($config as $current) {
             if (

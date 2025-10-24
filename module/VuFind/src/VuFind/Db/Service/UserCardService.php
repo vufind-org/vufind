@@ -32,7 +32,7 @@ namespace VuFind\Db\Service;
 
 use DateTime;
 use Doctrine\ORM\EntityManager;
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Config\AccountCapabilities;
 use VuFind\Db\Entity\PluginManager as EntityPluginManager;

@@ -40,7 +40,7 @@ namespace VuFind\Hierarchy\TreeDataSource;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:hierarchy_components Wiki
  */
-abstract class AbstractBase implements \Laminas\Log\LoggerAwareInterface
+abstract class AbstractBase implements \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 

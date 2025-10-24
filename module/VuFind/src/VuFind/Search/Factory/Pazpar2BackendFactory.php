@@ -49,7 +49,7 @@ class Pazpar2BackendFactory extends AbstractBackendFactory
     /**
      * Logger.
      *
-     * @var \Laminas\Log\LoggerInterface
+     * @var \Psr\Log\LoggerInterface
      */
     protected $logger;
 

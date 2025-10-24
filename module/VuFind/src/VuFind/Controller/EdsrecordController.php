@@ -44,6 +44,8 @@ use VuFindSearch\ParamBag;
  */
 class EdsrecordController extends AbstractRecord
 {
+    use HoldsTrait;
+
     /**
      * Constructor
      *
