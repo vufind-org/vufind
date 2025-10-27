@@ -52,13 +52,7 @@ use function is_object;
 class SimilarItems extends AbstractChannelProvider implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
-
-    /**
-     * Number of results to include in each channel.
-     *
-     * @var int
-     */
-    protected $batchSize;
+	use BatchTrait;
 
     /**
      * Maximum number of records to examine for similar results.
@@ -118,15 +112,7 @@ class SimilarItems extends AbstractChannelProvider implements TranslatorAwareInt
     public function setOptions(array $options)
     {
         $this->maxRecordsToExamine = $options['maxRecordsToExamine'] ?? 2;
-
-        // Calculate batch size
-        $itemsPerRow = $options['itemsPerRow'] ?? 6;
-        $rowsPerPage = $options['rowsPerPage'] ?? 2;
-        $this->batchSize = $itemsPerRow * $rowsPerPage;
-        // Set a minimum of 20 to make sure the server isn't hit too often
-        while ($this->batchSize <= 20) {
-            $this->batchSize *= 2;
-        }
+		$this->setBatchSizeFromOptions($options);
     }
 
     /**
@@ -237,14 +223,14 @@ class SimilarItems extends AbstractChannelProvider implements TranslatorAwareInt
         $route = $this->recordRouter->getRouteDetails($driver);
         $retVal['links'][] = [
             'label' => 'View Record',
-            'icon' => 'fa-file-text-o',
+            'icon' => 'format-default',
             'url' => $this->url
                 ->fromRoute($route['route'], $route['params']),
         ];
 
         $retVal['links'][] = [
             'label' => 'channel_expand',
-            'icon' => 'fa-search-plus',
+            'icon' => 'ui-add',
             'url' => $this->url->fromRoute('channels-record')
                 . '?id=' . urlencode($driver->getUniqueID())
                 . '&source=' . urlencode($driver->getSourceIdentifier()),

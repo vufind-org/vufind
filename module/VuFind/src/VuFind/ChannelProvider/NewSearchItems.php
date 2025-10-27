@@ -50,13 +50,7 @@ use function count;
 class NewSearchItems extends AbstractChannelProvider implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
-
-    /**
-     * Number of results to include in each channel.
-     *
-     * @var int
-     */
-    protected $batchSize;
+    use BatchTrait;
 
     /**
      * Maximum age (in days) of results to retrieve.
@@ -100,15 +94,7 @@ class NewSearchItems extends AbstractChannelProvider implements TranslatorAwareI
     {
         $this->maxAge = $options['maxAge'] ?? 30;
         $this->sort = $options['sort'] ?? 'first_indexed desc';
-
-        // Calculate batch size
-        $itemsPerRow = $options['itemsPerRow'] ?? 6;
-        $rowsPerPage = $options['rowsPerPage'] ?? 2;
-        $this->batchSize = $itemsPerRow * $rowsPerPage;
-        // Set a minimum of 20 to make sure the server isn't hit too often
-        while ($this->batchSize <= 20) {
-            $this->batchSize *= 2;
-        }
+        $this->setBatchSizeFromOptions($options);
     }
 
     /**

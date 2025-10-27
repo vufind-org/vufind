@@ -51,6 +51,7 @@ use function count;
 class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
+	use BatchTrait;
 
     /**
      * Facet fields to use (field name => description).
@@ -58,13 +59,6 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
      * @var array
      */
     protected $fields;
-
-    /**
-     * Number of results to retrieve at a time
-     *
-     * @var int
-     */
-    protected $batchSize;
 
     /**
      * Maximum number of different fields to suggest in the channel list.
@@ -129,15 +123,7 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
         $this->fields = $options['fields'] ?? ['topic_facet' => 'Topic', 'author_facet' => 'Author'];
         $this->maxFieldsToSuggest = $options['maxFieldsToSuggest'] ?? 2;
         $this->maxValuesToSuggestPerField = $options['maxValuesToSuggestPerField'] ?? 2;
-
-        // Calculate batch size
-        $itemsPerRow = $options['itemsPerRow'] ?? 6;
-        $rowsPerPage = $options['rowsPerPage'] ?? 2;
-        $this->batchSize = $itemsPerRow * $rowsPerPage;
-        // Set a minimum of 20 to make sure the server isn't hit too often
-        while ($this->batchSize <= 20) {
-            $this->batchSize *= 2;
-        }
+		$this->setBatchSizeFromOptions($options);
     }
 
     /**
@@ -301,13 +287,13 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
         $query = $newResults->getUrlQuery()->getParams(false);
         $retVal['links'][] = [
             'label' => 'channel_search',
-            'icon' => 'fa-list',
+            'icon' => 'search',
             'url' => $this->url->fromRoute($params->getOptions()->getSearchAction())
                 . $query,
         ];
         $retVal['links'][] = [
             'label' => 'channel_expand',
-            'icon' => 'fa-search-plus',
+            'icon' => 'ui-add',
             'url' => $this->url->fromRoute('channels-search')
                 . $query . '&source=' . urlencode($params->getSearchClassId()),
         ];

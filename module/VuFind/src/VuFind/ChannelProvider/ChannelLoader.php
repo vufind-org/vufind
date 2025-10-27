@@ -85,7 +85,7 @@ class ChannelLoader
 
             // Calculate batch size
             $itemsPerRow = $options['itemsPerRow'] ?? 6;
-            $rowsPerPage = $options['rowsPerPage'] ?? 2;
+            $rowsPerPage = $options['rowsPerPage'] ?? 1;
             $pageSize = $itemsPerRow * $rowsPerPage;
             $batchSize = $pageSize;
             // Set a minimum of 20 to make sure the server isn't hit too often
