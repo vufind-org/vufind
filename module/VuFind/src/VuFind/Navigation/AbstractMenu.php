@@ -29,6 +29,10 @@
 
 namespace VuFind\Navigation;
 
+use VuFind\Exception\BadConfig;
+use VuFind\Section\AbstractBase;
+use VuFind\Section\SectionServiceInterface;
+
 /**
  * Abstract menu base class
  *
@@ -38,53 +42,164 @@ namespace VuFind\Navigation;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-abstract class AbstractMenu implements NavigationInterface
+abstract class AbstractMenu extends AbstractBase implements NavigationInterface
 {
     /**
-     * Constructor
-     *
-     * @param array $config Menu configuration
+     * Menu group context key used with setting properties.
      */
-    public function __construct(protected array $config)
+    protected const GROUP_CONTEXT = 'group';
+
+    /**
+     * Menu item context key used with setting properties.
+     */
+    protected const ITEM_CONTEXT = 'item';
+
+    /**
+     * Section service.
+     *
+     * @var SectionServiceInterface
+     */
+    protected SectionServiceInterface $sectionService;
+
+    /**
+     * Processed and filtered menu configuration returned by getMenu().
+     *
+     * @var ?array
+     */
+    protected ?array $menu;
+
+    /**
+     * Constructor.
+     *
+     * @param array $config Configuration
+     */
+    public function __construct(array $config)
     {
+        $this->requiredSettings[self::GROUP_CONTEXT] ??= [];
+        $this->requiredSettings[self::ITEM_CONTEXT] ??= [];
+        $this->localizableSettings[self::GROUP_CONTEXT] ??= [];
+        $this->localizableSettings[self::ITEM_CONTEXT] ??= [];
+        $this->setConfig($config);
     }
 
     /**
-     * Get all groups with items to display.
+     * Set section configuration.
+     *
+     * @param array $config Configuration
+     *
+     * @return $this
+     */
+    public function setConfig(array $config): static
+    {
+        parent::setConfig($config);
+        $this->menu = null;
+        return $this;
+    }
+
+    /**
+     * Set section service.
+     *
+     * @param SectionServiceInterface $sectionService Section service
+     *
+     * @return static
+     */
+    public function setSectionService(SectionServiceInterface $sectionService): static
+    {
+        $this->sectionService = $sectionService;
+        return $this;
+    }
+
+    /**
+     * Localize the configuration.
+     *
+     * Navigation items do not localize the configuration when it is set due to
+     * backward compatibility.
+     *
+     * @return static
+     */
+    public function localizeConfig(): static
+    {
+        $config = $this->sectionService->localizeSettings($this);
+        foreach ($config as $group => $settings) {
+            $config[$group]
+                = $this->sectionService->localizeSettings(
+                    $this,
+                    $settings,
+                    self::GROUP_CONTEXT
+                );
+            foreach ($settings['MenuItems'] ?? [] as $i => $menuItem) {
+                $config[$group]['MenuItems'][$i]
+                    = $this->sectionService->localizeSettings(
+                        $this,
+                        $menuItem,
+                        self::ITEM_CONTEXT
+                    );
+            }
+        }
+        $this->setConfig($config);
+        return $this;
+    }
+
+    /**
+     * Validate settings.
+     *
+     * @param array  $settings   Settings
+     * @param string $contextKey Key identifying the context (optional)
+     *
+     * @return array
+     * @throws BadConfig
+     */
+    public function validateSettings(
+        array $settings,
+        string $contextKey = self::DEFAULT_CONTEXT
+    ): array {
+        parent::validateSettings($settings, $contextKey);
+        if ($contextKey === self::DEFAULT_CONTEXT) {
+            foreach ($settings as $group) {
+                parent::validateSettings($group, self::GROUP_CONTEXT);
+                foreach ($group['MenuItems'] ?? [] as $menuItem) {
+                    parent::validateSettings($menuItem, self::ITEM_CONTEXT);
+                }
+            }
+        }
+        return $settings;
+    }
+
+    /**
+     * Return context variables that can be used to render the section.
+     *
+     * @return array
+     */
+    public function getContext(): array
+    {
+        return [
+            'menu' => $this->getMenu(),
+        ];
+    }
+
+    /**
+     * Get processed and filtered menu configuration with groups and items to
+     * display.
      *
      * @return array
      */
     public function getMenu(): array
     {
-        $menu = $this->config ?: static::getDefaultMenuConfig();
+        if (!isset($this->menu)) {
+            $menu = $this->getConfig() ?: static::getDefaultMenuConfig();
 
-        $availableGroups = [];
-        foreach ($this->filterAvailable($menu) as $name => $group) {
-            // skip groups without items to display
-            if ($items = $this->filterAvailable($group['MenuItems'])) {
-                $group['MenuItems'] = $items;
-                $availableGroups[$name] = $group;
+            $availableGroups = [];
+            foreach ($this->filterAvailable($menu) as $groupName => $group) {
+                // Skip groups without items to display.
+                if ($items = $this->filterAvailable($group['MenuItems'])) {
+                    $group['MenuItems'] = $items;
+                    $availableGroups[$groupName] = $group;
+                }
             }
+            $this->menu = $availableGroups;
         }
 
-        return $availableGroups;
-    }
-
-    /**
-     * Get available items from a given list.
-     *
-     * @param array $list Items to filter
-     *
-     * @return array
-     */
-    protected function filterAvailable(array $list): array
-    {
-        return array_filter(
-            $list,
-            function ($item) {
-                return !isset($item['checkMethod']) || $this->{$item['checkMethod']}();
-            }
-        );
+        return $this->menu;
     }
 
     /**

@@ -37,6 +37,8 @@ namespace VuFind\View\Helper\Root;
  * @author   Josef Moravec <josef.moravec@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
+ *
+ * @deprecated Use \VuFind\View\Helper\Root\Section instead
  */
 class AccountMenu extends AbstractMenuHelper
 {

@@ -50,7 +50,26 @@ class AdminMenu extends AbstractMenu
         array $config,
         protected bool $showOverdriveAdminMenu
     ) {
+        $this->addRequiredSettings(
+            [
+                'label',
+                'route',
+            ],
+            self::ITEM_CONTEXT
+        );
         parent::__construct($config);
+    }
+
+    /**
+     * Return context variables that can be used to render the section.
+     *
+     * @return array
+     */
+    public function getContext(): array
+    {
+        $context = parent::getContext();
+        $context['items'] = $this->getMenu()['Admin']['MenuItems'];
+        return $context;
     }
 
     /**

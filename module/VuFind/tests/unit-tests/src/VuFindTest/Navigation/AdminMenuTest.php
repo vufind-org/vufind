@@ -29,7 +29,9 @@
 
 namespace VuFindTest\Navigation;
 
+use VuFind\Exception\BadConfig;
 use VuFind\Navigation\AdminMenu;
+use VuFindTest\Section\AbstractSectionTestCase;
 
 /**
  * Admin menu tests.
@@ -40,7 +42,7 @@ use VuFind\Navigation\AdminMenu;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class AdminMenuTest extends \PHPUnit\Framework\TestCase
+class AdminMenuTest extends AbstractSectionTestCase
 {
     /**
      * Test that the menu is the default menu if configuration is missing.
@@ -64,49 +66,47 @@ class AdminMenuTest extends \PHPUnit\Framework\TestCase
     {
         $menu = $this->getAdminMenu(
             AdminMenu::getDefaultMenuConfig(),
-            $this->getCheckMethods(false)
+            $this->getAdminMenuCheckMethods(false)
         )->getMenu();
         $this->assertCount(7, $menu['Admin']['MenuItems']);
     }
 
     /**
-     * Get mock AdminMenu.
-     *
-     * @param array $config       Configuration to use
-     * @param array $checkMethods Values to return for specific check methods
-     *
-     * @return AdminMenu
-     */
-    protected function getAdminMenu(
-        array $config = [],
-        array $checkMethods = [],
-    ): AdminMenu {
-        $adminMenu = $this->getMockBuilder(AdminMenu::class)
-            ->setConstructorArgs(
-                [
-                    $config,
-                    false,
-                ]
-            )
-            ->onlyMethods(array_keys($this->getCheckMethods()))
-            ->getMock();
-        foreach ($this->getCheckMethods() as $checkMethod => $default) {
-            $adminMenu->method($checkMethod)->willReturn($checkMethods[$checkMethod] ?? $default);
-        }
-        return $adminMenu;
-    }
-
-    /**
-     * Get all check methods.
-     *
-     * @param bool $value Value for the check methods to return
+     * Data provider for testRequiredConfiguration
      *
      * @return array
      */
-    protected function getCheckMethods(bool $value = true): array
+    public static function requiredConfigurationProvider(): array
     {
         return [
-            'checkShowOverdrive' => $value,
+            // Missing menu item settings.
+            [
+                [
+                    'Admin' => [
+                        'MenuItems' => [[]],
+                    ],
+                ],
+            ],
         ];
+    }
+
+    /**
+     * Test required configuration.
+     *
+     * @param array  $config                      Account menu configuration
+     * @param string $expectedExceptionClass      Expected exception class
+     * @param string $expectedExceptionMsgMatches Expected exception message regexp
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('requiredConfigurationProvider')]
+    public function testRequiredConfiguration(
+        array $config,
+        string $expectedExceptionClass = BadConfig::class,
+        string $expectedExceptionMsgMatches = '/^Missing required setting: /'
+    ) {
+        $this->expectException($expectedExceptionClass);
+        $this->expectExceptionMessageMatches($expectedExceptionMsgMatches);
+        $this->getAccountMenu($config);
     }
 }

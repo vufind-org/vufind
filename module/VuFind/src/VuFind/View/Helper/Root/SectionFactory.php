@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Menu factory
+ * Section view helper factory.
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2024.
+ * Copyright (C) The National Library of Finland 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,32 +21,31 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Navigation
+ * @package  View_Helpers
  * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Navigation;
+namespace VuFind\View\Helper\Root;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-
-use function array_slice;
+use VuFind\Section\SectionServiceInterface;
 
 /**
- * Menu factory
+ * Section view helper factory.
  *
  * @category VuFind
- * @package  Navigation
+ * @package  View_Helpers
  * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AbstractMenuFactory implements FactoryInterface
+class SectionFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -67,18 +66,11 @@ class AbstractMenuFactory implements FactoryInterface
         $requestedName,
         ?array $options = null
     ) {
-        if (empty($options)) {
-            throw new \Exception('Expected options not sent to factory.');
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options sent to factory.');
         }
-        $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
-        $menu = new $requestedName(
-            // First array item should be the name of the menu configuration file.
-            $yamlReader->get(reset($options)),
-            ...array_slice($options, 1)
+        return new $requestedName(
+            $container->get(SectionServiceInterface::class)
         );
-        $sectionService = $container->get(\VuFind\Section\SectionServiceInterface::class);
-        $menu->setSectionService($sectionService);
-        $menu->localizeConfig();
-        return $menu;
     }
 }

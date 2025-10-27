@@ -1,0 +1,31 @@
+# All sections must have a type key. The value can be one of the documented built-in
+# types or a custom section plugin alias or class name. E.g.
+#
+#   ExampleAliasTypeSection:
+#     type: exampleSection
+#   ExampleClassTypeSection:
+#     type: VuFind\Section\ExampleSection
+#
+# Additional section keys are determined by the type. All section specific
+# configuration is passed to section plugins. Key names beginning with a double
+# underscore (e.g. __key) are reserved for internal use.
+#
+# Built-in section type values and type specific additional keys:
+#
+# - navigation: A navigation plugin section.
+#   Additional keys:
+#     - plugin: Navigation plugin alias or class name. Required.
+#
+# Section type keys reserved for future plugins:
+#
+# - container: A generic container for other sections.
+# - tabs: A tabbed container for other sections.
+
+Sections:
+  AccountMenu:
+    type: navigation
+    plugin: accountMenu
+
+  AdminMenu:
+    type: navigation
+    plugin: adminMenu

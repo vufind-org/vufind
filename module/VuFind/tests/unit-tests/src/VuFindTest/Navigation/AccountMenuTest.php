@@ -30,11 +30,9 @@
 
 namespace VuFindTest\Navigation;
 
-use VuFind\Auth\ILSAuthenticator;
-use VuFind\Auth\Manager;
-use VuFind\Config\AccountCapabilities;
-use VuFind\ILS\Connection;
+use VuFind\Exception\BadConfig;
 use VuFind\Navigation\AccountMenu;
+use VuFindTest\Section\AbstractSectionTestCase;
 
 /**
  * Account menu tests.
@@ -46,7 +44,7 @@ use VuFind\Navigation\AccountMenu;
  *           License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class AccountMenuTest extends \PHPUnit\Framework\TestCase
+class AccountMenuTest extends AbstractSectionTestCase
 {
     /**
      * Test that the menu is the default menu if configuration is missing.
@@ -70,7 +68,7 @@ class AccountMenuTest extends \PHPUnit\Framework\TestCase
     {
         $menu = $this->getAccountMenu(
             AccountMenu::getDefaultMenuConfig(),
-            $this->getCheckMethods(false)
+            $this->getAccountMenuCheckMethods(false)
         )->getMenu();
         $this->assertCount(1, $menu['Account']['MenuItems']);
         $this->assertEquals('Profile', reset($menu['Account']['MenuItems'])['label']);
@@ -85,62 +83,6 @@ class AccountMenuTest extends \PHPUnit\Framework\TestCase
     {
         $menu = $this->getAccountMenu($this->getOldDefaultMenuConfig())->getMenu();
         $this->assertCount(12, $menu['Account']['MenuItems']);
-    }
-
-    /**
-     * Get mock AccountMenu.
-     *
-     * @param array $config       Configuration to use
-     * @param array $checkMethods Values to return for specific check methods
-     *
-     * @return AccountMenu
-     */
-    protected function getAccountMenu(
-        array $config = [],
-        array $checkMethods = [],
-    ): AccountMenu {
-        $accountMenu = $this->getMockBuilder(AccountMenu::class)
-            ->setConstructorArgs(
-                [
-                    $config,
-                    $this->createMock(AccountCapabilities::class),
-                    $this->createMock(Manager::class),
-                    $this->createMock(Connection::class),
-                    $this->createMock(ILSAuthenticator::class),
-                    null,
-                ]
-            )
-            ->onlyMethods(array_keys($this->getCheckMethods()))
-            ->getMock();
-        foreach ($this->getCheckMethods() as $checkMethod => $default) {
-            $accountMenu->method($checkMethod)->willReturn($checkMethods[$checkMethod] ?? $default);
-        }
-        return $accountMenu;
-    }
-
-    /**
-     * Get all check methods.
-     *
-     * @param bool $value Value for the check methods to return
-     *
-     * @return array
-     */
-    protected function getCheckMethods(bool $value = true): array
-    {
-        return [
-            'checkFavorites' => $value,
-            'checkCheckedout' => $value,
-            'checkHistoricloans' => $value,
-            'checkHolds' => $value,
-            'checkStorageRetrievalRequests' => $value,
-            'checkILLRequests' => $value,
-            'checkFines' => $value,
-            'checkLibraryCards' => $value,
-            'checkOverdrive' => $value,
-            'checkHistory' => $value,
-            'checkLogout' => $value,
-            'checkUserlistMode' => $value,
-        ];
     }
 
     /**
@@ -242,5 +184,49 @@ class AccountMenuTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
         ];
+    }
+
+    /**
+     * Data provider for testRequiredConfiguration
+     *
+     * @return array
+     */
+    public static function requiredConfigurationProvider(): array
+    {
+        return [
+            // Missing group settings.
+            [
+                ['Account' => []],
+            ],
+            // Missing menu item settings.
+            [
+                [
+                    'Account' => [
+                        'label' => 'Test',
+                        'MenuItems' => [[]],
+                    ],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Test required configuration.
+     *
+     * @param array  $config                      Account menu configuration
+     * @param string $expectedExceptionClass      Expected exception class
+     * @param string $expectedExceptionMsgMatches Expected exception message regexp
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('requiredConfigurationProvider')]
+    public function testRequiredConfiguration(
+        array $config,
+        string $expectedExceptionClass = BadConfig::class,
+        string $expectedExceptionMsgMatches = '/^Missing required setting: /'
+    ) {
+        $this->expectException($expectedExceptionClass);
+        $this->expectExceptionMessageMatches($expectedExceptionMsgMatches);
+        $this->getAccountMenu($config);
     }
 }

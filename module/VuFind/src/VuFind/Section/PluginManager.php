@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Navigation plugin manager
+ * Section plugin manager.
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2024.
+ * Copyright (C) The National Library of Finland 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,22 +21,22 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Navigation
+ * @package  Section
  * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Navigation;
+namespace VuFind\Section;
 
 /**
- * Navigation plugin manager
+ * Section plugin manager.
  *
  * @category VuFind
- * @package  Navigation
+ * @package  Section
  * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org Main Site
  */
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
@@ -46,8 +46,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
-        'accountMenu' => AccountMenu::class,
-        'adminMenu' => AdminMenu::class,
+        // Reserved for future plugins.
+        // 'container' => Container::class,
+        // 'tabs' => Tabs::class,
     ];
 
     /**
@@ -56,9 +57,30 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        AccountMenu::class => AccountMenuFactory::class,
-        AdminMenu::class => AdminMenuFactory::class,
+        // Reserved for future plugins.
+        // Container::class => InvokableFactory::class,
+        // Tabs::class => InvokableFactory::class,
     ];
+
+    /**
+     * Constructor
+     *
+     * Make sure plugins are properly initialized.
+     *
+     * @param mixed $configOrContainerInstance Configuration or container instance
+     * @param array $v3config                  If $configOrContainerInstance is a
+     * container, this value will be passed to the parent constructor.
+     */
+    public function __construct(
+        $configOrContainerInstance = null,
+        array $v3config = []
+    ) {
+        // These objects are not meant to be shared -- every time we retrieve one,
+        // we are building a brand new object.
+        $this->sharedByDefault = false;
+
+        parent::__construct($configOrContainerInstance, $v3config);
+    }
 
     /**
      * Return the name of the base class or interface that plug-ins must conform
@@ -68,6 +90,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected function getExpectedInterface()
     {
-        return NavigationInterface::class;
+        return SectionInterface::class;
     }
 }
