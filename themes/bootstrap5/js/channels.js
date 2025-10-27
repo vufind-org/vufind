@@ -1,12 +1,13 @@
 /*global getUrlRoot, VuFind */
 VuFind.register("channels", function Channels() {
   /**
+   * @param {HTMLElement} channel Channel to search
    * @param {string} source Record source
    * @param {string} id Record ID
    * @returns {HTMLElement} Channel item matching the record source and ID
    */
-  function findChannelItem(source, id) {
-    return document.querySelector(
+  function findChannelItem(channel, source, id) {
+    return channel.querySelector(
       `[data-record-source="${source}"][data-record-id="${id}"]`
     );
   }
@@ -293,8 +294,9 @@ VuFind.register("channels", function Channels() {
       if (event.target.closest(".ql-prev-item-btn")) {
         const group = event.target.closest(".channels-quick-look");
         const record = findChannelItem(
+          event.target.closest(".channel"),
           group.dataset.recordSource,
-          group.dataset.recordId
+          group.dataset.recordId,
         );
         if (record.previousElementSibling) {
           quickLook(record.previousElementSibling);
@@ -307,8 +309,9 @@ VuFind.register("channels", function Channels() {
       if (event.target.closest(".ql-next-item-btn")) {
         const group = event.target.closest(".channels-quick-look");
         const record = findChannelItem(
+          event.target.closest(".channel"),
           group.dataset.recordSource,
-          group.dataset.recordId
+          group.dataset.recordId,
         );
         if (record.nextElementSibling) {
           quickLook(record.nextElementSibling);
