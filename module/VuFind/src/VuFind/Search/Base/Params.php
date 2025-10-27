@@ -1208,8 +1208,9 @@ class Params
     {
         $result = [];
         foreach ($this->filterList as $field => $values) {
-            if (str_starts_with($field, '-')) {
-                $result[substr($field, 1)] = $values;
+            [$operator, $fieldName] = $this->parseOperatorAndFieldName($field);
+            if ('NOT' === $operator) {
+                $result[$fieldName] = $values;
             }
         }
         return $result;
