@@ -27,7 +27,7 @@
   } elseif ('' !== (string)($this->facet['value'] ?? '')) {
     $displayText .= $this->escapeHtml($this->facet['value']);
   } else {
-    $displayText = $displayText . '-';
+    $displayText .= '-';
   }
   $displayText = '<span class="facet-value' . ($hasCheckbox ? ' icon-link__label' : '') . '">' . $displayText . '</span>';
 
