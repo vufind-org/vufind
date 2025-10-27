@@ -325,7 +325,9 @@ class LoggerFactory implements FactoryInterface
                     $authManager = $container->get(AuthManager::class);
                     if ($user = $authManager->getUserObject()) {
                         $monologLogger->pushProcessor(function (LogRecord $record) use ($user) {
-                            $record['extra']['username'] = $user->getUsername();
+                            $record['extra'] = array_merge($record['extra'], [
+                                'username' => $user->getUsername(),
+                            ]);
                             return $record;
                         });
                     }
