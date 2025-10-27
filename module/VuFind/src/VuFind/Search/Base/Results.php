@@ -1082,7 +1082,7 @@ abstract class Results
      *
      * @return void
      */
-    protected function buildHierarchicalFacets(array &$result, array $hierarchicalFacets, object $options)
+    protected function buildHierarchicalFacets(array &$result, array $hierarchicalFacets, object $options): void
     {
         $hierarchicalFacetSortSettings
             = is_callable([$options, 'getHierarchicalFacetSortSettings'])
