@@ -32,6 +32,7 @@ declare(strict_types=1);
 namespace VuFindTest\Mink;
 
 use function count;
+use function is_array;
 
 /**
  * OAuth2/OIDC test class.
