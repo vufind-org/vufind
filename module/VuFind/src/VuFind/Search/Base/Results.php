@@ -909,11 +909,8 @@ abstract class Results
             : [];
 
         $result = $this->initializeFacetResults($facetList, $filter, $options);
-
         $this->addExcludeFilters($result, $filter, $hierarchicalFacets);
-
         $this->setDisplayTextForFacetValues($result, $hierarchicalFacets, $options);
-
         $this->buildHierarchicalFacets($result, $hierarchicalFacets, $options);
 
         return $result;
