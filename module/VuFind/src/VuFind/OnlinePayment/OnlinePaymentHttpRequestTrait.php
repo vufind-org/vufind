@@ -160,13 +160,13 @@ trait OnlinePaymentHttpRequestTrait
     ) {
         try {
             $client = $this->guzzleService->createGuzzleClient($url, 30);
-            
+
             $requestOptions = $options;
-            
+
             if (!empty($username) && !empty($password)) {
                 $requestOptions['auth'] = [$username, $password];
             }
-            
+
             $headers = array_merge(
                 [
                     'Content-Type' => 'application/json',
@@ -174,13 +174,13 @@ trait OnlinePaymentHttpRequestTrait
                 ],
                 $headers
             );
-            
+
             $requestOptions['headers'] = $headers;
-            
+
             if ($method === 'POST' && !empty($body)) {
                 $requestOptions['body'] = $body;
             }
-            
+
             $response = $client->request($method, $url, $requestOptions);
         } catch (\Exception $e) {
             $this->logger->err(
