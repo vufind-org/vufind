@@ -300,7 +300,7 @@ VuFind.register('account', function Account() {
     clearAllCaches: clearAllCaches,
     notify: notify,
     // if user is logged out, clear cache instead of register
-    register: userIsLoggedIn ? register : clearCache
+    register: (typeof userIsLoggedIn !== 'undefined' && userIsLoggedIn) ? register : clearCache
   };
 });
 

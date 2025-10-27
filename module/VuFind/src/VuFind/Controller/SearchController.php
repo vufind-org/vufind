@@ -502,10 +502,10 @@ class SearchController extends AbstractSolrSearch
     {
         switch ($this->params()->fromQuery('method')) {
             case 'describe':
-                $config = $this->getConfig();
+                $config = $this->getConfigArray();
                 $xml = $this->getViewRenderer()->render(
                     'search/opensearch-describe.phtml',
-                    ['site' => $config->Site]
+                    ['site' => $config['Site']]
                 );
                 break;
             default:

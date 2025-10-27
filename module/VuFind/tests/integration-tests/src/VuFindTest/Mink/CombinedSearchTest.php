@@ -49,9 +49,6 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function getCombinedIniOverrides(): array
     {
-        // Include 2 valid combined handlers, and one invalid one
-        // to ensure that the exception handling correctly filters
-        // it out from the final results.
         return [
             'Solr:one' => [
                 'label' => 'Solr One',
@@ -60,9 +57,6 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
             'Solr:two' => [
                 'label' => 'Solr Two',
                 'hiddenFilter' => 'building:weird_ids.mrc',
-            ],
-            'INVALID:one' => [
-                'label' => 'Invalid handler',
             ],
         ];
     }
@@ -135,6 +129,43 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performCombinedSearch('id:"testsample1" OR id:"theplus+andtheminus-"');
         $this->unFindCss($page, '.fa-spinner.icon--spin');
         $this->assertResultsForDefaultQuery($page);
+    }
+
+    /**
+     * Test that combined results work with an invalid search heandler.
+     *
+     * @return void
+     */
+    public function testCombinedSearchResultsInvalidHandler(): void
+    {
+        $combined = $this->getCombinedIniOverrides();
+        $combined['INVALID:one'] = [
+            'label' => 'Invalid handler',
+        ];
+
+        // Include an invalid combined search handler, and disable logging
+        $this->changeConfigs(
+            [
+                'combined' => $combined,
+                'config' => [
+                    'Logging' => [
+                        'file' => null,
+                    ],
+                ],
+            ],
+            ['combined']
+        );
+        $page = $this->performCombinedSearch('id:"testsample1" OR id:"theplus+andtheminus-"');
+        $this->assertEquals('200', $this->getMinkSession()->getStatusCode());
+        $this->assertResultsForDefaultQuery($page);
+        $this->assertStringContainsString(
+            'Solr One',
+            $this->findCssAndGetHtml($page, '.combined-search-container')
+        );
+        $this->assertStringNotContainsString(
+            'Invalid handler',
+            $this->findCssAndGetHtml($page, '.combined-search-container')
+        );
     }
 
     /**

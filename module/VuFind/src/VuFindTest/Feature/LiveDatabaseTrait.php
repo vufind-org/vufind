@@ -34,12 +34,17 @@ namespace VuFindTest\Feature;
 use Throwable;
 use VuFind\Account\UserAccountService;
 use VuFind\Db\PersistenceManager;
+use VuFind\Db\Service\AbstractDbServiceFactory;
+use VuFind\Db\Service\ApiKeyService;
+use VuFind\Db\Service\ApiKeyServiceInterface;
 use VuFind\Db\Service\DbServiceInterface;
 use VuFind\Db\Service\PluginManager as ServiceManager;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserService;
+use VuFind\DeveloperSettings\DeveloperSettingsService;
+use VuFind\DeveloperSettings\DeveloperSettingsServiceFactory;
 use VuFind\Favorites\FavoritesService;
 use VuFind\Favorites\FavoritesServiceFactory;
 use VuFind\Record\ResourcePopulator;
@@ -131,6 +136,10 @@ trait LiveDatabaseTrait
             'doctrine.cache.filesystem',
             new \DoctrineModule\Cache\LaminasStorageCache($cacheAdapter)
         );
+        $container->set(
+            'doctrine.cache.array',
+            new \DoctrineModule\Cache\LaminasStorageCache(new \Laminas\Cache\Storage\Adapter\Memory())
+        );
         $driverFactory = new \DoctrineModule\Service\DriverFactory('orm_default');
         $container->set(
             'doctrine.driver.orm_default',
@@ -195,6 +204,8 @@ trait LiveDatabaseTrait
     /**
      * Get a container with database-related services configured.
      *
+     * NOTE: Make sure to call tearDownLiveDatabaseContainer when done to avoid dangling database connections.
+     *
      * @return MockContainer
      */
     public function getLiveDatabaseContainer(): MockContainer
@@ -213,6 +224,14 @@ trait LiveDatabaseTrait
                     $container->get(ResourcePopulator::class)
                 )
             );
+            $dbServiceFactory = new AbstractDbServiceFactory();
+            $apiKeyService = $dbServiceFactory($container, ApiKeyService::class);
+            $container->set(ApiKeyServiceInterface::class, $apiKeyService);
+
+            $developerSettingsServiceFactory = new DeveloperSettingsServiceFactory();
+            $developerSettingsService = $developerSettingsServiceFactory($container, DeveloperSettingsService::class);
+            $container->set(DeveloperSettingsService::class, $developerSettingsService);
+
             $favoritesFactory = new FavoritesServiceFactory();
             $favoritesService = $favoritesFactory($container, FavoritesService::class);
             $container->set(FavoritesService::class, $favoritesService);
@@ -298,6 +317,7 @@ trait LiveDatabaseTrait
                 return;
             }
         }
+        $test->tearDownLiveDatabaseContainer();
     }
 
     /**
@@ -334,8 +354,23 @@ trait LiveDatabaseTrait
                     $purgeService->purgeUserData($user);
                 }
             }
+            $test->tearDownLiveDatabaseContainer();
         } catch (Throwable $t) {
             echo "\n\nError in removeUsers(): " . (string)$t . "\n";
         }
+    }
+
+    /**
+     * Tear down the live database container and database connection to avoid dangling connections.
+     *
+     * @return void
+     */
+    protected function tearDownLiveDatabaseContainer(): void
+    {
+        if (null === $this->liveDatabaseContainer) {
+            return;
+        }
+        $this->liveDatabaseContainer->get(\VuFind\Db\Connection::class)->close();
+        $this->liveDatabaseContainer->clear();
     }
 }

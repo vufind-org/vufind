@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Database resource service factory
+ * Factory for configuration upgrader command.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2023.
+ * Copyright (C) Villanova University 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,30 +21,31 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Database
- * @author   Sudharma Kellampalli <skellamp@villanova.edu>
+ * @package  Console
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\Db\Service;
+namespace VuFindConsole\Command\Upgrade;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\Record\ResourcePopulator;
+use VuFind\Config\Upgrade;
 
 /**
- * Database resource service factory
+ * Factory for configuration upgrader command.
  *
  * @category VuFind
- * @package  Database
- * @author   Sudharma Kellampalli <skellamp@villanova.edu>
+ * @package  Console
+ * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class ResourceServiceFactory extends AbstractDbServiceFactory
+class ConfigCommandFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -65,12 +66,6 @@ class ResourceServiceFactory extends AbstractDbServiceFactory
         $requestedName,
         ?array $options = null
     ) {
-        if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory!');
-        }
-        $populatorLoader = function () use ($container) {
-            return $container->get(ResourcePopulator::class);
-        };
-        return parent::__invoke($container, $requestedName, [$populatorLoader]);
+        return new $requestedName($container->get(Upgrade::class), ...($options ?? []));
     }
 }

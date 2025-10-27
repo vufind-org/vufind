@@ -621,7 +621,7 @@ class RestConnector implements ConnectorInterface, \Psr\Log\LoggerAwareInterface
      *
      * @return void
      */
-    protected function processHighlighting(array &$record, array $params, \StdClass $highlight): void
+    protected function processHighlighting(array &$record, array $params, \stdClass $highlight): void
     {
         if (empty($params['highlight'])) {
             return;

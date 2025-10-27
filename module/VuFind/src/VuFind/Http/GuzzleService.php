@@ -29,6 +29,12 @@
 
 namespace VuFind\Http;
 
+use Psr\Http\Client\ClientInterface;
+use Psr\Http\Message\ResponseInterface;
+
+use function array_is_list;
+use function strlen;
+
 /**
  * Guzzle service.
  *
@@ -39,15 +45,8 @@ namespace VuFind\Http;
  * @link     https://vufind.org/wiki/development
  * @todo     Merge with PSR-18 HTTP Client Service when implemented
  */
-class GuzzleService
+class GuzzleService implements HttpServiceInterface
 {
-    /**
-     * Default regular expression matching a request to localhost.
-     *
-     * @var string
-     */
-    public const LOCAL_ADDRESS_RE = '@^(localhost|127(\.\d+){3}|\[::1\])@';
-
     /**
      * VuFind configuration
      *
@@ -91,6 +90,19 @@ class GuzzleService
     }
 
     /**
+     * Return a generic PSR-compliant client.
+     *
+     * @param ?string $url     Target URL (required for proper proxy setup for non-local addresses)
+     * @param ?float  $timeout Request timeout in seconds (overrides configuration)
+     *
+     * @return ClientInterface
+     */
+    public function createClient(?string $url = null, ?float $timeout = null): ClientInterface
+    {
+        return $this->createGuzzleClient($url, $timeout);
+    }
+
+    /**
      * Return a new Guzzle client.
      *
      * @param ?string $url     Target URL (required for proper proxy setup for non-local addresses)
@@ -98,9 +110,83 @@ class GuzzleService
      *
      * @return \GuzzleHttp\ClientInterface
      */
-    public function createClient(?string $url = null, ?float $timeout = null): \GuzzleHttp\ClientInterface
+    public function createGuzzleClient(?string $url = null, ?float $timeout = null): \GuzzleHttp\ClientInterface
     {
         return new \GuzzleHttp\Client($this->getGuzzleConfig($url, $timeout));
+    }
+
+    /**
+     * Perform a GET request.
+     *
+     * @param string $url     Request URL
+     * @param array  $params  Request parameters (query string)
+     * @param float  $timeout Request timeout in seconds
+     * @param array  $headers Request HTTP headers
+     *
+     * @return ResponseInterface
+     */
+    public function get(
+        string $url,
+        array $params = [],
+        ?float $timeout = null,
+        array $headers = []
+    ): ResponseInterface {
+        if ($params) {
+            $query = $this->createQueryString($params);
+            $url .= (str_contains($url, '?') ? '&' : '?') . $query;
+        }
+        $client = $this->createGuzzleClient($url, $timeout);
+        $options = $headers ? compact('headers') : [];
+        return $client->request('GET', $url, $options);
+    }
+
+    /**
+     * Perform a POST request.
+     *
+     * @param string  $url     Request URL
+     * @param ?string $body    Request body document
+     * @param string  $type    Request body content type
+     * @param float   $timeout Request timeout in seconds
+     * @param array   $headers Request HTTP headers
+     *
+     * @return ResponseInterface
+     */
+    public function post(
+        string $url,
+        ?string $body = null,
+        string $type = 'application/octet-stream',
+        ?float $timeout = null,
+        array $headers = []
+    ): ResponseInterface {
+        $client = $this->createGuzzleClient($url, $timeout);
+
+        $options = [
+            'body' => $body,
+            'headers' => array_merge(
+                [
+                    'Content-Type' => $type,
+                    'Content-Length' => strlen($body ?? ''),
+                ],
+                $headers
+            ),
+        ];
+
+        return $client->request('POST', $url, $options);
+    }
+
+    /**
+     * Create a query string from an array of parameters.
+     *
+     * @param array $params Parameters (either an associative key=>value array,
+     * or a regular array of preformatted key=value strings)
+     *
+     * @return string
+     */
+    protected function createQueryString(array $params = []): string
+    {
+        return !array_is_list($params)
+            ? http_build_query($params)
+            : implode('&', $params);
     }
 
     /**
