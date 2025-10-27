@@ -188,7 +188,7 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
         $result = [];
         foreach ($config as $key => $configLine) {
             if (empty($configLine)) {
-                $configLine = "||";
+                $configLine = '||';
             }
             $parts = explode('|', $configLine);
             $result[$key] = [
