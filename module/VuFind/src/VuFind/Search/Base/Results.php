@@ -1042,7 +1042,7 @@ abstract class Results
      *
      * @return void
      */
-    protected function setDisplayTextForFacetValues(array &$result, array $hierarchicalFacets, object $options)
+    protected function setDisplayTextForFacetValues(array &$result, array $hierarchicalFacets, object $options): void
     {
         $translatedFacets = $options->getTranslatedFacets();
         foreach ($result as $field => $fieldResult) {
