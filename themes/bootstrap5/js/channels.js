@@ -155,12 +155,19 @@ VuFind.register("channels", function Channels() {
 
     // Reveal hidden items
     const targetChannel = btn.closest(".channel");
+    const pageSize = Number(targetChannel.dataset.pageSize);
     const hiddenItems = targetChannel.querySelectorAll(".hidden-batch-item");
-    hiddenItems.forEach((item) => item.classList.remove("hidden-batch-item"));
+
+    // Reveal hidden items (limit to pageSize)
+    hiddenItems.forEach((item, index) => {
+      if (index < pageSize) {
+        item.classList.remove("hidden-batch-item");
+      }
+    });
 
     // How many more records do we need?
-    const neededCount = Number(targetChannel.dataset.pageSize) - hiddenItems.length;
-    if (neededCount === 0) {
+    const neededCount = pageSize - hiddenItems.length;
+    if (neededCount <= 0) {
       return; // skip loading more records
     }
 
