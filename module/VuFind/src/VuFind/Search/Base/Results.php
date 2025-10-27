@@ -976,7 +976,7 @@ abstract class Results
      *
      * @return void
      */
-    protected function addExcludeFilters(array &$result, array $filter, array $hierarchicalFacets)
+    protected function addExcludeFilters(array &$result, array $filter, array $hierarchicalFacets): void
     {
         foreach ($this->getParams()->getExcludeFilters() as $field => $values) {
             if (!isset($filter[$field])) {
