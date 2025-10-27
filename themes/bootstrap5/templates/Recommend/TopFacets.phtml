@@ -32,7 +32,7 @@
                   } ?>
                   <a href="<?=$removeLink ?>" class="<?=$thisFacet['isApplied'] ? 'applied' : 'excluded'?>">
                     <?php if ($thisFacet['isExcluded']): ?>
-                      <span class="visually-hidden">Excluded: </span>
+                      <span class="visually-hidden"><?=$this->transEsc('excluded') ?></span>
                     <?php endif; ?>
                     <?=$this->escapeHtml($thisFacet['displayText'])?> <?=$thisFacet['isApplied'] ? $this->icon('facet-applied') : '' ?><!--
                --></a>
