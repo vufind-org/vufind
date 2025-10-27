@@ -117,6 +117,9 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
             $specificConfig = $this->getBestIntegratorLinks()[$linkType] ?? false;
             if ($specificConfig) {
                 $config = $specificConfig;
+                if (empty($config['linkText'])) {
+                    return ['link' => '', 'label' => '', 'data' => $data];
+                }
             }
             if ($this->config['useBrowzineLabel'] ?? false) {
                 $config['linkText'] = $serviceData['recommendedLinkText'] ?? $config['linkText'];
@@ -184,6 +187,9 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
     {
         $result = [];
         foreach ($config as $key => $configLine) {
+            if (empty($configLine)) {
+                $configLine = "||";
+            }
             $parts = explode('|', $configLine);
             $result[$key] = [
                 'linkText' => $parts[0],
