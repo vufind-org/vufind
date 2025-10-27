@@ -22,17 +22,37 @@
 
 .channel-header {
   display: flex;
-  align-items: center;
-  gap: 1rem;
+
+  @media (max-width: 639px) {
+    flex-direction: column;
+    gap: 0.5rem;
+
+    .channel-options .dropdown-toggle {
+      width: 100%;
+    }
+  }
+
+  @media (min-width: 640px) {
+    align-items: center;
+    gap: 1rem;
+  }
 }
 
 .channel-title {
-  flex: 1 1 0%;
   width: 100%;
   margin: 0;
   white-space: nowrap;
   overflow-x: hidden;
   text-overflow: ellipsis;
+
+  @media (min-width: 640px) {
+    flex: 1 1 0%;
+  }
+}
+
+.channel-add-menu .dropdown-menu {
+  max-height: 256px; /* 8 items, 32px tall each */
+  overflow-y: auto;
 }
 
 .tab-pane {
@@ -61,6 +81,9 @@
   display: inline-block;
   text-align: center;
   background-color: white;
+}
+.hidden-batch-item {
+  display: none;
 }
 
 .channel-item-thumb {
@@ -107,8 +130,13 @@
   display: block;
 }
 
-.hidden-batch-item {
-  display: none;
+.channel-load-more-btn.disabled {
+  color: #666;
+  background-color: transparent;
+  border-color: #999;
+  opacity: 1;
+  pointer-events: auto;
+  cursor: not-allowed;
 }
 
 .ql-view-record-btn {
