@@ -20,7 +20,7 @@
   }
   $displayText = '';
   if ($this->facet['isExcluded']) {
-    $displayText = '<span class="sr-only">Excluded: </span>';
+    $displayText = '<span class="visually-hidden">Excluded: </span>';
   }
   if ('' !== (string)($this->facet['displayText'] ?? '')) {
     $displayText = $displayText . $this->escapeHtml($this->facet['displayText']);
