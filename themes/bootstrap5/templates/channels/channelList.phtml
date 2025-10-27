@@ -80,7 +80,12 @@
 
       <?php if (!empty($channel['links'])): ?>
         <div class="channel-options dropdown">
-          <button class="btn btn-default dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" aria-label="<?=$this->transEsc('channel_options_dropdown_toggle', ['%%channel%%' => $channel['title']])?>">
+          <button class="btn btn-default dropdown-toggle"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+            aria-label="<?=$this->transEsc('channel_options_dropdown_toggle', ['%%channel%%' => $channel['title']])?>"
+          >
             <?=$this->transEsc('channel_options') ?>
             <?=$this->icon('dropdown-caret') ?>
           </button>
