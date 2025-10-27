@@ -23,7 +23,7 @@
     $displayText = '<span class="visually-hidden">Excluded: </span>';
   }
   if ('' !== (string)($this->facet['displayText'] ?? '')) {
-    $displayText = $displayText . $this->escapeHtml($this->facet['displayText']);
+    $displayText .= $this->escapeHtml($this->facet['displayText']);
   } elseif ('' !== (string)($this->facet['value'] ?? '')) {
     $displayText = $displayText . $this->escapeHtml($this->facet['value']);
   } else {
