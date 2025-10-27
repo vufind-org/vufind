@@ -361,7 +361,7 @@ class Manager implements LoggerAwareInterface
      *
      * @return void
      */
-    public function ensureCacheDirectoyExists($dirName, $overrideOpts = [])
+    public function ensureCacheDirectoryExists($dirName, $overrideOpts = [])
     {
         $opts = array_merge($this->defaults, $overrideOpts);
 
