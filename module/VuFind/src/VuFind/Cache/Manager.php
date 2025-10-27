@@ -415,7 +415,7 @@ class Manager implements LoggerAwareInterface
             unset($opts['disabled']);
         }
 
-        $this->ensureCacheDirectoyExists($dirName, $opts);
+        $this->ensureCacheDirectoryExists($dirName, $opts);
 
         if (empty($opts)) {
             $opts = ['cache_dir' => $dirName];

@@ -117,7 +117,7 @@ class ConnectionFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
         $doctrineCacheDir = $container
             ->get('config')['caches']['doctrinemodule.cache.filesystem']['options']['cache_dir'];
         $cacheManager = $container->get(\VuFind\Cache\Manager::class);
-        $cacheManager->ensureCacheDirectoyExists($doctrineCacheDir);
+        $cacheManager->ensureCacheDirectoryExists($doctrineCacheDir);
 
         $this->config = $container->get(\VuFind\Config\ConfigManagerInterface::class)
             ->getConfigObject($this->configName);
