@@ -55,9 +55,12 @@ VuFind.register("channels", function Channels() {
     const source = record.dataset.recordSource;
     content.setAttribute("data-record-id", id);
     content.setAttribute("data-record-source", source);
+
+    // Set URL for quicklook
+    const expandParams = new URLSearchParams({ id, source }); // escape
     content
       .querySelector(".ql-expand-btn")
-      .setAttribute("href", `${VuFind.path}/Channels/Record?id=${id}&source=${source}`);
+      .setAttribute("href", `${VuFind.path}/Channels/Record?${expandParams}`);
 
     const prevBtn = content.querySelector(".ql-prev-item-btn");
     if (record.previousElementSibling) {
