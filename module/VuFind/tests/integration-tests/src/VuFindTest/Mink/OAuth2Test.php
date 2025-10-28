@@ -556,10 +556,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
 
         $response = $this->httpGet($this->getVuFindUrl() . '/.well-known/openid-configuration');
         $contentTypeHeader = $response->getHeader('Content-Type');
-        $this->assertEquals(
-            'application/json',
-            is_array($contentTypeHeader) ? $contentTypeHeader[0] : $contentTypeHeader
-        );
+        $this->assertEquals(['application/json'], $contentTypeHeader);
         $json = $response->getBody()->getContents();
         $this->assertJsonStringEqualsJsonString(json_encode($expected), $json);
     }
