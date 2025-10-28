@@ -291,46 +291,48 @@ class MonitorCommand extends Command
     /**
      * Send email reports of unresolved payments that need to be resolved manually.
      *
-     * @param array $payments Payments to be reported.
+     * @param PaymentEntityInterface[] $payments Payments to be reported.
      *
      * @return void
      */
-    protected function sendReports($payments)
+    protected function sendReports(array $payments): void
     {
-        foreach ($payments as $source => $sourcePayments) {
+        $paymentsBySourceIls = [];
+        foreach ($payments as $payment) {
+            $paymentsBySourceIls[$payment->getSourceIls()][] = $payment;
+        }
+        foreach ($paymentsBySourceIls as $source => $sourcePayments) {
             $errorCount = count($sourcePayments);
-            if ($errorCount) {
-                if (!($recipient = $this->getErrorEmail($source))) {
-                    $msg = "No error email for expired payments defined for $source ($errorCount errors)";
-                    $this->msg($msg);
-                    $this->err($msg);
-                    continue;
-                }
-                $this->msg("Inform $errorCount expired payments to $recipient (source: $source)");
+            if (!($recipient = $this->getErrorEmail($source))) {
+                $msg = "No error email for expired payments defined for $source ($errorCount errors)";
+                $this->msg($msg);
+                $this->err($msg);
+                continue;
+            }
+            $this->msg("Inform $errorCount expired payments to $recipient (source: $source)");
 
-                $adminUrl = ($this->viewRenderer->plugin('url'))('admin-payments');
-                $params = compact('source', 'errorCount', 'adminUrl');
-                $message = $this->viewRenderer->render('Email/online-payment-alert.phtml', $params);
+            $adminUrl = ($this->viewRenderer->plugin('url'))('admin-payments');
+            $params = compact('source', 'errorCount', 'adminUrl');
+            $message = $this->viewRenderer->render('Email/online-payment-alert.phtml', $params);
 
-                try {
-                    $this->mailer->setMaxRecipients(0);
-                    $this->mailer->send(
-                        $recipient,
-                        $this->fromEmail,
-                        '',
-                        $message
-                    );
-                    foreach ($sourcePayments as $payment) {
-                        $payment->applyReportedStatus();
-                        $this->paymentService->persistEntity($payment);
-                    }
-                } catch (\Exception $e) {
-                    $this->msg(
-                        "Failed to send error email to staff at $recipient (source: $source): " . (string)$e
-                    );
-                    $this->err('Failed to send error email to staff');
-                    continue;
+            try {
+                $this->mailer->setMaxRecipients(0);
+                $this->mailer->send(
+                    $recipient,
+                    $this->fromEmail,
+                    '',
+                    $message
+                );
+                foreach ($sourcePayments as $payment) {
+                    $payment->applyReportedStatus();
+                    $this->paymentService->persistEntity($payment);
                 }
+            } catch (\Exception $e) {
+                $this->msg(
+                    "Failed to send error email to staff at $recipient (source: $source): " . (string)$e
+                );
+                $this->err('Failed to send error email to staff');
+                continue;
             }
         }
     }
