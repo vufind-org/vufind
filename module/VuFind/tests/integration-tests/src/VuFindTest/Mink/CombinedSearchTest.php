@@ -132,6 +132,43 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test that combined results work with an invalid search heandler.
+     *
+     * @return void
+     */
+    public function testCombinedSearchResultsInvalidHandler(): void
+    {
+        $combined = $this->getCombinedIniOverrides();
+        $combined['INVALID:one'] = [
+            'label' => 'Invalid handler',
+        ];
+
+        // Include an invalid combined search handler, and disable logging
+        $this->changeConfigs(
+            [
+                'combined' => $combined,
+                'config' => [
+                    'Logging' => [
+                        'file' => null,
+                    ],
+                ],
+            ],
+            ['combined']
+        );
+        $page = $this->performCombinedSearch('id:"testsample1" OR id:"theplus+andtheminus-"');
+        $this->assertEquals('200', $this->getMinkSession()->getStatusCode());
+        $this->assertResultsForDefaultQuery($page);
+        $this->assertStringContainsString(
+            'Solr One',
+            $this->findCssAndGetHtml($page, '.combined-search-container')
+        );
+        $this->assertStringNotContainsString(
+            'Invalid handler',
+            $this->findCssAndGetHtml($page, '.combined-search-container')
+        );
+    }
+
+    /**
      * Data provider for different combinations of AJAX columns
      *
      * @return array

@@ -43,6 +43,7 @@ interface ApiInterface
     // define some status constants
     public const STATUS_OK = 'OK';                  // good
     public const STATUS_ERROR = 'ERROR';            // bad
+    public const STATUS_UNAUTHORIZED = 'UNAUTHORIZED';
 
     /**
      * Get API specification JSON fragment for services provided by the

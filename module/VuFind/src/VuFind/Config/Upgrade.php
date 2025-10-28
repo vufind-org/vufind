@@ -421,22 +421,23 @@ class Upgrade implements LoggerAwareInterface
     }
 
     /**
-     * Add warnings if Amazon problems were found.
+     * Add warnings if obsolete cover/review problems were found.
      *
-     * @param array $config Configuration to check
+     * @param array  $config Configuration to check
+     * @param string $site   Site name to check
      *
      * @return void
      */
-    protected function checkAmazonConfig(array $config): void
+    protected function checkObsoleteCoverOrReviewConfig(array $config, string $site): void
     {
         // Warn the user if they have Amazon enabled but do not have the appropriate
         // credentials set up.
-        $hasAmazonReview = stristr($config['Content']['reviews'] ?? '', 'amazon');
-        $hasAmazonCover = stristr($config['Content']['coverimages'] ?? '', 'amazon');
-        if ($hasAmazonReview || $hasAmazonCover) {
+        $hasBadReview = stristr($config['Content']['reviews'] ?? '', $site);
+        $hasBadCover = stristr($config['Content']['coverimages'] ?? '', $site);
+        if ($hasBadReview || $hasBadCover) {
             $this->addWarning(
-                'WARNING: You have Amazon content enabled, but VuFind no longer '
-                . 'supports it. You should remove Amazon references from config.ini.'
+                'WARNING: You have ' . $site . ' content enabled, but VuFind no longer '
+                . 'supports it. You should remove ' . $site . ' references from config.ini.'
             );
         }
     }
@@ -467,7 +468,14 @@ class Upgrade implements LoggerAwareInterface
         }
 
         // Warn the user about Amazon configuration issues:
-        $this->checkAmazonConfig($newConfig);
+        $this->checkObsoleteCoverOrReviewConfig($newConfig, 'Amazon');
+
+        // Warn the user about BookSite configuration issues:
+        $this->checkObsoleteCoverOrReviewConfig($newConfig, 'Booksite');
+        if (isset($newConfig['Booksite'])) {
+            unset($newConfig['Booksite']);
+            $this->addWarning('The [Booksite] section of config.ini is no longer supported.');
+        }
 
         // Warn the user if they have enabled a deprecated Google API:
         if (isset($newConfig['GoogleSearch'])) {

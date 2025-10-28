@@ -33,6 +33,7 @@ use Exception;
 use Laminas\Http\Exception\InvalidArgumentException;
 use Laminas\Http\Header\ContentType;
 use Laminas\Mvc\Exception\DomainException;
+use VuFind\DeveloperSettings\DeveloperSettingsService;
 
 /**
  * Additional functionality for API controllers.
@@ -72,6 +73,20 @@ trait ApiTrait
      * @var bool
      */
     protected bool $returnUnicode = false;
+
+    /**
+     * Name of HTTP header
+     *
+     * @var string
+     */
+    protected string $apiKeyHeaderField = VUFIND_API_KEY_DEFAULT_HEADER_FIELD;
+
+    /**
+     * API key service
+     *
+     * @var ?DeveloperSettingsService
+     */
+    protected ?DeveloperSettingsService $developerSettingsService = null;
 
     /**
      * Execute the request
@@ -201,5 +216,53 @@ trait ApiTrait
         }
         $headers->addHeader($contentTypeHeader);
         return $response;
+    }
+
+    /**
+     * Init API key settings
+     *
+     * @param array $settings API key settings from config.ini
+     *
+     * @return void;
+     */
+    protected function initApiKeySettings(array $settings): void
+    {
+        $this->developerSettingsService = $this->getService(DeveloperSettingsService::class);
+        if ($field = $settings['header_field'] ?? null) {
+            $this->apiKeyHeaderField = $field;
+        }
+    }
+
+    /**
+     * Check request for API key if mode is not set to disabled.
+     *
+     * @return bool
+     * @throws \Exception
+     */
+    protected function checkRequestForApiKey(): bool
+    {
+        if (!$this->developerSettingsService) {
+            throw new \Exception('ApiTrait: Developer settings service not initialized');
+        }
+        return $this->developerSettingsService->isApiKeyAllowed($this->getHeader($this->apiKeyHeaderField));
+    }
+
+    /**
+     * Return output if request is missing an API key and API keys are enforced
+     *
+     * @return \Laminas\Http\Response
+     * @throws \Exception
+     */
+    protected function outputMissingAPIKey(): \Laminas\Http\Response
+    {
+        if (!$this->developerSettingsService) {
+            throw new \Exception('ApiTrait: Developer settings service not initialized');
+        }
+        return $this->output(
+            [],
+            ApiInterface::STATUS_UNAUTHORIZED,
+            401,
+            $this->developerSettingsService->getApiKeyMode()->getUnauthorizedMessage()
+        );
     }
 }

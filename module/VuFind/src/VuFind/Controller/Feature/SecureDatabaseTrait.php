@@ -67,9 +67,9 @@ trait SecureDatabaseTrait
     protected function hasSecureDatabase(): bool
     {
         // Are configuration settings missing?
-        $config = $this->getConfig();
-        $status = ($config->Authentication->hash_passwords ?? false)
-            && ($config->Authentication->encrypt_ils_password ?? false);
+        $config = $this->getConfigArray();
+        $status = ($config['Authentication']['hash_passwords'] ?? false)
+            && ($config['Authentication']['encrypt_ils_password'] ?? false);
 
         // If we're correctly configured, check that the data in the database is ok:
         if ($status) {
