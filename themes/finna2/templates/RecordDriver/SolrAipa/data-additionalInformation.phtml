@@ -1,4 +1,4 @@
 <?php //Don't add START and END comments ?>
 <?php if (!empty($data)): ?>
-  <?=$this->escapeHtml($data) ?>
+  <?= $this->markdown()->toHTML($data); // Field can contain full Markdown content ?>
 <?php endif; ?>
