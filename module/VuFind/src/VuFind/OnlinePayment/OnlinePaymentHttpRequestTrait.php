@@ -49,29 +49,29 @@ trait OnlinePaymentHttpRequestTrait
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
-     * Guzzle service.
+     * HTTP service.
      *
-     * @var \VuFind\Http\GuzzleService
+     * @var \VuFindHttp\HttpService
      */
-    protected $guzzleService;
+    protected $http;
 
     /**
-     * Set Guzzle service.
+     * Set HTTP service.
      *
-     * @param \VuFind\Http\GuzzleService $guzzleService Guzzle service.
+     * @param \VuFindHttp\HttpService $http HTTP service.
      *
      * @return void
      */
-    public function setGuzzleService(\VuFind\Http\GuzzleService $guzzleService): void
+    public function setHttpService(\VuFindHttp\HttpService $http): void
     {
-        $this->guzzleService = $guzzleService;
+        $this->http = $http;
     }
 
     /**
      * Make a GET request to payment provider.
      *
      * @param string $url      URL
-     * @param array  $options  Guzzle client options
+     * @param array  $options  Laminas HTTP client options
      * @param array  $headers  HTTP headers (key-value list).
      * @param string $username Username for HTTP basic authentication.
      * @param string $password Password for HTTP basic authentication.
@@ -89,7 +89,7 @@ trait OnlinePaymentHttpRequestTrait
         $password = null
     ) {
         return $this->sendHttpRequest(
-            'GET',
+            \Laminas\Http\Request::METHOD_GET,
             $url,
             '',
             $options,
@@ -104,7 +104,7 @@ trait OnlinePaymentHttpRequestTrait
      *
      * @param string $url      URL
      * @param string $body     Request body
-     * @param array  $options  Guzzle client options
+     * @param array  $options  Laminas HTTP client options
      * @param array  $headers  HTTP headers (key-value list).
      * @param string $username Username for HTTP basic authentication.
      * @param string $password Password for HTTP basic authentication.
@@ -123,7 +123,7 @@ trait OnlinePaymentHttpRequestTrait
         $password = null
     ) {
         return $this->sendHttpRequest(
-            'POST',
+            \Laminas\Http\Request::METHOD_POST,
             $url,
             $body,
             $options,
@@ -139,7 +139,7 @@ trait OnlinePaymentHttpRequestTrait
      * @param string  $method   HTTP method
      * @param string  $url      URL
      * @param string  $body     Request body (POST requests)
-     * @param array   $options  Guzzle client options
+     * @param array   $options  Laminas HTTP client options
      * @param array   $headers  HTTP headers (key-value list).
      * @param ?string $username Username for HTTP basic authentication.
      * @param ?string $password Password for HTTP basic authentication.
@@ -159,14 +159,11 @@ trait OnlinePaymentHttpRequestTrait
         ?string $password = null
     ) {
         try {
-            $client = $this->guzzleService->createGuzzleClient($url, 30);
-
-            $requestOptions = $options;
-
+            $client = $this->http->createClient($url, $method, 30);
             if (!empty($username) && !empty($password)) {
-                $requestOptions['auth'] = [$username, $password];
+                $client->setAuth($username, $password);
             }
-
+            $client->setOptions($options);
             $headers = array_merge(
                 [
                     'Content-Type' => 'application/json',
@@ -174,14 +171,9 @@ trait OnlinePaymentHttpRequestTrait
                 ],
                 $headers
             );
-
-            $requestOptions['headers'] = $headers;
-
-            if ($method === 'POST' && !empty($body)) {
-                $requestOptions['body'] = $body;
-            }
-
-            $response = $client->request($method, $url, $requestOptions);
+            $client->setHeaders($headers);
+            $client->setRawBody($body);
+            $response = $client->send();
         } catch (\Exception $e) {
             $this->logger->err(
                 "Error sending $method request: " . $e->getMessage()
@@ -196,13 +188,13 @@ trait OnlinePaymentHttpRequestTrait
         $this->logger->warn(
             "Online payment request: method: $method, url: $url, body: $body, headers: "
             . var_export($headers, true) . ', response: '
-            . (string)$response->getBody()
+            . (string)$response
         );
 
         $status = $response->getStatusCode();
-        $content = $response->getBody()->getContents();
+        $content = $response->getBody();
 
-        if ($status != 200) {
+        if (!$response->isSuccess()) {
             $this->logger->err(
                 "Error sending $method request: invalid status code: $status"
                 . ", url: $url, body: $body, headers: " . var_export($headers, true)
@@ -214,7 +206,7 @@ trait OnlinePaymentHttpRequestTrait
         return [
             'httpCode' => $status,
             'response' => $content,
-            'headers' => $response->getHeaders(),
+            'headers' => $response->getHeaders()->toArray(),
         ];
     }
 }
