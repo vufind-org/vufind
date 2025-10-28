@@ -792,8 +792,8 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['getResult'])
-            ->getMockForAbstractClass();
+            ->onlyMethods(['getResult', 'execute'])
+            ->getMock();
         $commandObj->expects($this->once())->method('getResult')
             ->will($this->returnValue($result));
         $checkCommand = function ($command) {
