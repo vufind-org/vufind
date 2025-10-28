@@ -339,13 +339,13 @@ class AbstractSearch extends AbstractBase
     /**
      * Get the value multiFacetsSelection from the config
      *
-     * @param Config $config The config containing multiFacetsSelection
+     * @param array $config The config containing multiFacetsSelection
      *
      * @return string
      */
-    protected static function getMultiSelectionValueFromConfig(Config $config)
+    protected static function getMultiSelectionValueFromConfig(array $config): string
     {
-        $multiFacetsSelection = $config->Results_Settings->multiFacetsSelection ?? 'false';
+        $multiFacetsSelection = $config['Results_Settings']['multiFacetsSelection'] ?? 'false';
         return match ($multiFacetsSelection) {
             true, '1' => 'true',
             false, '', '0' => 'false',
@@ -364,7 +364,7 @@ class AbstractSearch extends AbstractBase
     protected function getSearchResultsView($setupCallback = null)
     {
         $view = $this->createViewModel();
-        $config = $this->getConfig($this->getOptionsForClass()->getFacetsIni());
+        $config = $this->getConfigArray($this->getOptionsForClass()->getFacetsIni());
         $view->multiFacetsSelection = static::getMultiSelectionValueFromConfig($config);
         $extraErrors = [];
 
@@ -503,7 +503,7 @@ class AbstractSearch extends AbstractBase
         $jumpto = $this->params()->fromQuery('jumpto', true);
         if (
             $jumpto
-            && ($this->getConfig()->Record->jump_to_single_search_result ?? false)
+            && ($this->getConfigArray()['Record']['jump_to_single_search_result'] ?? false)
             && $results->getResultTotal() == 1
             && $recordList = $results->getResults()
         ) {
@@ -913,9 +913,8 @@ class AbstractSearch extends AbstractBase
                 ? 'count'
                 : current(array_keys($facetSortOptions));
         }
-        $config = $this->getService(\VuFind\Config\ConfigManagerInterface::class)
-            ->getConfigObject($options->getFacetsIni());
-        $limit = $config->Results_Settings->lightboxLimit ?? 50;
+        $config = $this->getConfigArray($options->getFacetsIni());
+        $limit = $config['Results_Settings']['lightboxLimit'] ?? 50;
         $limit = $this->params()->fromQuery('facetlimit', $limit);
         if (!empty($contains)) {
             $params->setFacetContains($contains);

@@ -1,3 +1,5 @@
+@use "sass:color";
+
 @import 'vendor/tachyons-colors'; // Import colors from the tachyons library
 
 /* Material Colors can be found here: https://material.io/guidelines/style/color.html */
@@ -5,7 +7,7 @@ $primary: #1976d2; /* Material Blue 700 */
 $primary: #1976d2; /* Material Blue 700 */
 $secondary: #ff6d00; /* Material Orange A700 */
 
-$header-bg: #607d8b; /* Material Blue Grey 500 */
+$header-bg: #546e7a; /* Material Blue Grey 600 */
 $header-light: #cfd8dc; /* Material Blue Grey 100 */
 
 $action-color: $primary;
@@ -26,7 +28,7 @@ $sidebar-title-icon-color: $light-silver;
 $sidebar-item-bg: $white;
 $sidebar-item-color: $black;
 $sidebar-item-hover-bg: $lightest-blue;
-$sidebar-item-badge: $gray;
+$sidebar-item-badge: darken($gray, 5%);
 $sidebar-active-bg: $secondary;
 $sidebar-active-color: $white;
 
@@ -51,3 +53,5 @@ $table-bg-hover:            $header-light;
 $pagination-color:          $header-bg;
 $pagination-hover-bg:       #eee;
 $nav-link-hover-bg:         $header-light;
+
+$focus-ring-color:          $gold;

@@ -38,8 +38,8 @@
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-// @codingStandardsIgnoreStart - lowercase class name
+// phpcs:disable
 class minSO extends \VuFind\Search\Minified
 {
 }
-// @codingStandardsIgnoreEnd
+// phpcs:enable

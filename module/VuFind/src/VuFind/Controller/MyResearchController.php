@@ -245,8 +245,8 @@ class MyResearchController extends AbstractBase
             return $this->redirect()->toUrl($url);
         }
 
-        $config = $this->getConfig();
-        $page = $config->Site->defaultAccountPage ?? 'Favorites';
+        $config = $this->getConfigArray();
+        $page = $config['Site']['defaultAccountPage'] ?? 'Favorites';
 
         // Default to search history if favorites are disabled:
         if ($page == 'Favorites' && !$this->listsEnabled()) {
@@ -393,9 +393,9 @@ class MyResearchController extends AbstractBase
      */
     public function logoutAction()
     {
-        $config = $this->getConfig();
-        if (!empty($config->Site->logOutRoute)) {
-            $logoutTarget = $this->getServerUrl($config->Site->logOutRoute);
+        $config = $this->getConfigArray();
+        if (!empty($config['Site']['logOutRoute'])) {
+            $logoutTarget = $this->getServerUrl($config['Site']['logOutRoute']);
         } else {
             $logoutTarget = $this->getRequest()->getServer()->get('HTTP_REFERER');
             if (empty($logoutTarget) || !$this->isLocalUrl($logoutTarget)) {
@@ -531,7 +531,7 @@ class MyResearchController extends AbstractBase
             $this->setSavedFlagSecurely($sid, true, $user);
             $savedRow = $this->getSearchRowSecurely($sid, $userId);
         }
-        if (!($this->getConfig()->Account->force_first_scheduled_email ?? false)) {
+        if (!($this->getConfigArray()['Account']['force_first_scheduled_email'] ?? false)) {
             // By default, a first scheduled email will be sent because the database
             // last notification date will be initialized to a past date. If we don't
             // want that to happen, we need to set it to a more appropriate date:
@@ -727,8 +727,8 @@ class MyResearchController extends AbstractBase
         // Begin building view object:
         $view = $this->createViewModel(['user' => $user]);
 
-        $config = $this->getConfig();
-        $allowHomeLibrary = $config->Account->set_home_library ?? true;
+        $config = $this->getConfigArray();
+        $allowHomeLibrary = $config['Account']['set_home_library'] ?? true;
 
         $patron = $this->catalogLogin();
         if (is_array($patron)) {
@@ -789,8 +789,7 @@ class MyResearchController extends AbstractBase
             $view->patronLoginView->showMenu = false;
         }
 
-        $view->accountDeletion
-            = !empty($config->Authentication->account_deletion);
+        $view->accountDeletion = !empty($config['Authentication']['account_deletion']);
 
         $this->addPendingEmailChangeMessage($user);
 
@@ -1555,8 +1554,8 @@ class MyResearchController extends AbstractBase
         $renewForm = false;
 
         // Get paging setup:
-        $config = $this->getConfig();
-        $pageSize = $config->Catalog->checked_out_page_size ?? 50;
+        $config = $this->getConfigArray();
+        $pageSize = $config['Catalog']['checked_out_page_size'] ?? 50;
         $pageOptions = $this->getPaginationHelper()->getOptions(
             (int)$this->params()->fromQuery('page', 1),
             $this->params()->fromQuery('sort'),
@@ -1584,7 +1583,7 @@ class MyResearchController extends AbstractBase
         // If the results are not paged in the ILS, collect up to date stats for ajax
         // account notifications:
         if (
-            !empty($config->Authentication->enableAjax)
+            !empty($config['Authentication']['enableAjax'])
             && (!$pageOptions['ilsPaging'] || !$paginator
             || $result['count'] <= $pageSize)
         ) {
@@ -1619,8 +1618,7 @@ class MyResearchController extends AbstractBase
 
         $transactions = $this->ilsRecords()->getDrivers($driversNeeded);
 
-        $displayItemBarcode
-            = !empty($config->Catalog->display_checked_out_item_barcode);
+        $displayItemBarcode = !empty($config['Catalog']['display_checked_out_item_barcode']);
 
         $ilsPaging = $pageOptions['ilsPaging'];
         $sortList = $pageOptions['sortList'];
@@ -1698,7 +1696,7 @@ class MyResearchController extends AbstractBase
         $fines = array_values($fines);
 
         // Collect up to date stats for ajax account notifications:
-        if (!empty($this->getConfig()->Authentication->enableAjax)) {
+        if (!empty($this->getConfigArray()['Authentication']['enableAjax'])) {
             $accountStatus = $this->getFineSummary(
                 $fines,
                 $this->getService(\VuFind\Service\CurrencyFormatter::class)
@@ -1745,12 +1743,12 @@ class MyResearchController extends AbstractBase
                 $csrf->trimTokenList(0);
             }
 
-            $config = $this->getConfig();
+            $config = $this->getConfigArray();
             try {
                 if ($recoveryData = $authManager->getPasswordRecoveryData($this->params()->fromPost())) {
                     $this->sendRecoveryEmail($recoveryData);
                 } else {
-                    if (!empty($config->Authentication->recover_be_honest)) {
+                    if (!empty($config['Authentication']['recover_be_honest'])) {
                         $this->flashMessenger()->addErrorMessage('recovery_user_not_found');
                     } else {
                         $this->flashMessenger()->addSuccessMessage('recovery_email_sent');
@@ -1836,15 +1834,15 @@ class MyResearchController extends AbstractBase
             return;
         }
 
-        $config = $this->getConfig();
+        $config = $this->getConfigArray();
         $renderer = $this->getViewRenderer();
         // Custom template for emails (text-only)
         $message = $renderer->render(
             'Email/notify-email-change.phtml',
             [
-                'library' => $config->Site->title,
+                'library' => $config['Site']['title'],
                 'url' => $this->getServerUrl('home'),
-                'email' => $config->Site->email,
+                'email' => $config['Site']['email'],
                 'newEmail' => $newEmail,
             ]
         );
@@ -1876,8 +1874,8 @@ class MyResearchController extends AbstractBase
         } else {
             // Make sure we've waited long enough
             $hashtime = $this->getHashAge($user->getVerifyHash());
-            $recoveryInterval = $this->getConfig()->Authentication->recover_interval
-                ?? 60;
+            $config = $this->getConfigArray();
+            $recoveryInterval = $config['Authentication']['recover_interval'] ?? 60;
             if (time() - $hashtime < $recoveryInterval && !$change) {
                 $this->flashMessenger()
                     ->addMessage('verification_too_soon', 'error');
@@ -1886,13 +1884,12 @@ class MyResearchController extends AbstractBase
                 try {
                     // Create a fresh hash
                     $this->getAuthManager()->updateUserVerifyHash($user);
-                    $config = $this->getConfig();
                     $renderer = $this->getViewRenderer();
                     // Custom template for emails (text-only)
                     $message = $renderer->render(
                         'Email/verify-email.phtml',
                         [
-                            'library' => $config->Site->title,
+                            'library' => $config['Site']['title'],
                             'url' => $this->getServerUrl('myresearch-verifyemail')
                                 . '?hash=' . urlencode($user->getVerifyHash()),
                         ]
@@ -1947,9 +1944,10 @@ class MyResearchController extends AbstractBase
         // If we have a submitted form
         if ($hash = $this->params()->fromQuery('hash')) {
             $hashtime = $this->getHashAge($hash);
-            $config = $this->getConfig();
+            $config = $this->getConfigArray();
             // Check if hash is expired
-            $hashLifetime = $config->Authentication->recover_hash_lifetime ?? static::DEFAULT_RECOVERY_HASH_LIFE_TIME;
+            $hashLifetime = $config['Authentication']['recover_hash_lifetime']
+                ?? static::DEFAULT_RECOVERY_HASH_LIFE_TIME;
             if (time() - $hashtime > $hashLifetime) {
                 $this->flashMessenger()
                     ->addMessage('recovery_expired_hash', 'error');
@@ -2012,8 +2010,8 @@ class MyResearchController extends AbstractBase
             return $this->forwardTo('MyResearch', 'Login');
         }
         // Check if hash is expired (we do this here to ensure that repeated calls work but not for too long):
-        $config = $this->getConfig();
-        $hashLifetime = $config->Authentication->recover_hash_lifetime ?? static::DEFAULT_RECOVERY_HASH_LIFE_TIME;
+        $config = $this->getConfigArray();
+        $hashLifetime = $config['Authentication']['recover_hash_lifetime'] ?? static::DEFAULT_RECOVERY_HASH_LIFE_TIME;
         if (time() - $recoveryData['timestamp'] > $hashLifetime) {
             $this->flashMessenger()->addErrorMessage('recovery_expired_hash');
             return $this->forwardTo('MyResearch', 'Login');
@@ -2053,9 +2051,10 @@ class MyResearchController extends AbstractBase
         // If we have a submitted form
         if ($hash = $this->params()->fromQuery('hash')) {
             $hashtime = $this->getHashAge($hash);
-            $config = $this->getConfig();
+            $config = $this->getConfigArray();
             // Check if hash is expired
-            $hashLifetime = $config->Authentication->recover_hash_lifetime ?? static::DEFAULT_RECOVERY_HASH_LIFE_TIME;
+            $hashLifetime = $config['Authentication']['recover_hash_lifetime']
+                ?? static::DEFAULT_RECOVERY_HASH_LIFE_TIME;
             if (time() - $hashtime > $hashLifetime) {
                 $this->flashMessenger()
                     ->addMessage('recovery_expired_hash', 'error');
@@ -2238,7 +2237,7 @@ class MyResearchController extends AbstractBase
             }
             // Return to account home
             return $this->redirect()->toRoute('myresearch-home');
-        } elseif ($this->getConfig()->Authentication->verify_email ?? false) {
+        } elseif ($this->getConfigArray()['Authentication']['verify_email'] ?? false) {
             $this->flashMessenger()
                 ->addMessage('change_email_verification_reminder', 'info');
         }
@@ -2376,8 +2375,8 @@ class MyResearchController extends AbstractBase
             return $this->forceLogin();
         }
 
-        $config = $this->getConfig();
-        if (empty($config->Authentication->account_deletion)) {
+        $config = $this->getConfigArray();
+        if (empty($config['Authentication']['account_deletion'])) {
             throw new \VuFind\Exception\BadRequest();
         }
 
@@ -2405,8 +2404,8 @@ class MyResearchController extends AbstractBase
 
             $this->getService(UserAccountService::class)->purgeUserData(
                 $user,
-                $config->Authentication->delete_comments_with_user ?? true,
-                $config->Authentication->delete_ratings_with_user ?? true
+                $config['Authentication']['delete_comments_with_user'] ?? true,
+                $config['Authentication']['delete_ratings_with_user'] ?? true
             );
             $view->accountDeleted = true;
             $authManager = $this->getAuthManager();

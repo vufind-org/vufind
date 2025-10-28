@@ -165,7 +165,7 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
      */
     protected function senderIsBlocked(Form $form): bool
     {
-        $config = $this->getConfig()->toArray();
+        $config = $this->getConfigArray();
         return $this->senderEmailMatchesPattern($form, (array)($config['Feedback']['blocked_senders'] ?? []));
     }
 
@@ -178,7 +178,7 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
      */
     protected function senderIsIgnored(Form $form): bool
     {
-        $config = $this->getConfig()->toArray();
+        $config = $this->getConfigArray();
         return $this->senderEmailMatchesPattern($form, (array)($config['Feedback']['ignored_senders'] ?? []));
     }
 
