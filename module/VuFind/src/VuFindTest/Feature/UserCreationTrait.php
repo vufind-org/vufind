@@ -162,4 +162,22 @@ trait UserCreationTrait
         $button = $this->findCss($page, $prefix . 'input.btn.btn-primary');
         $button->click();
     }
+
+    /**
+     * Function to press the login button and create a default user
+     *
+     * @param Element $page      Page element.
+     * @param array   $overrides Optional overrides for form values.
+     *
+     * @return void
+     */
+    protected function createAndLoginUser(Element $page, array $overrides = []): void
+    {
+        $this->clickCss($page, '#loginOptions a');
+        $this->clickCss($page, '.modal-body .createAccountLink');
+        $this->fillInAccountForm($page, $overrides);
+
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
+        $this->waitForPageLoad($page);
+    }
 }

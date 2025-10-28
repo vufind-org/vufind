@@ -99,6 +99,9 @@ class ServiceInitializer implements InitializerInterface
         if ($instance instanceof \VuFindHttp\HttpServiceAwareInterface) {
             $instance->setHttpService($sm->get(\VuFindHttp\HttpService::class));
         }
+        if ($instance instanceof \VuFind\Http\GuzzleServiceAwareInterface) {
+            $instance->setGuzzleService($sm->get(\VuFind\Http\GuzzleService::class));
+        }
         if ($instance instanceof AuthorizationServiceAwareInterface) {
             $instance->setAuthorizationService($sm->get(AuthorizationService::class));
         }

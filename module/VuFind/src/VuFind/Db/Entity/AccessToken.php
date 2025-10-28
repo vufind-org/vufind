@@ -171,7 +171,7 @@ class AccessToken implements AccessTokenEntityInterface
     }
 
     /**
-     * Get user ID.
+     * Get user.
      *
      * @return ?UserEntityInterface
      */
