@@ -774,7 +774,7 @@ class Aleph extends AbstractBase implements
                 'addLink'           => $addLink,
                 'holdtype'          => 'hold',
                 /* below are optional attributes*/
-                'collection'        => (string)$collection,
+                'collection'        => $collection,
                 'collection_desc'   => (string)$collection_desc['desc'],
                 'callnumber_second' => (string)$z30->{'z30-call-no-2'},
                 'sub_lib_desc'      => (string)$item_status['sub_lib_desc'],
@@ -1321,7 +1321,7 @@ class Aleph extends AbstractBase implements
             id: (string)$id,
             cat_username: (string)$user,
             cat_password: $password,
-            firstname: (string)$firstName,
+            firstname: $firstName,
             lastname: (string)$lastName,
             email: (string)$email_addr,
         );

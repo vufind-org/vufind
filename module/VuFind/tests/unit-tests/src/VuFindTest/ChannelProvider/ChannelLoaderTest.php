@@ -111,9 +111,8 @@ class ChannelLoaderTest extends \PHPUnit\Framework\TestCase
      * @param array $sections            Config sections to look at for provider settings
      *
      * @return void
-     *
-     * @dataProvider getRecordContextProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getRecordContextProvider')]
     public function testGetRecordContext(array $config, array $expectedChannelData, array $sections): void
     {
         $mockRecord = $this->createMock(DefaultRecord::class);

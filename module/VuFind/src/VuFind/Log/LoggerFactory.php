@@ -37,6 +37,7 @@ use Monolog\Handler\BufferHandler;
 use Monolog\Handler\FilterHandler;
 use Monolog\Handler\HandlerInterface;
 use Monolog\Logger as MonologLogger;
+use Monolog\LogRecord;
 use Monolog\Processor\PsrLogMessageProcessor;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
@@ -323,8 +324,10 @@ class LoggerFactory implements FactoryInterface
                 try {
                     $authManager = $container->get(AuthManager::class);
                     if ($user = $authManager->getUserObject()) {
-                        $monologLogger->pushProcessor(function (array $record) use ($user) {
-                            $record['extra']['username'] = $user->getUsername();
+                        $monologLogger->pushProcessor(function (LogRecord $record) use ($user) {
+                            $record['extra'] = array_merge($record['extra'], [
+                                'username' => $user->getUsername(),
+                            ]);
                             return $record;
                         });
                     }
@@ -462,7 +465,7 @@ class LoggerFactory implements FactoryInterface
         // Construct the logger as a lazy loading proxy so that the object is not
         // instantiated until it is called. This helps break potential circular
         // dependencies with other services.
-        $callback = function (&$wrapped, $proxy) use ($container, $requestedName) {
+        $callback = function (&$wrapped, $proxy) use ($container, $requestedName): void {
             // Now build the actual service:
             $monologLogger = new MonologLogger('vufind');
             $wrapped = new $requestedName(

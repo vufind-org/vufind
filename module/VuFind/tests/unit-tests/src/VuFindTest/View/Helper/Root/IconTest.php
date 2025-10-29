@@ -266,10 +266,9 @@ class IconTest extends \PHPUnit\Framework\TestCase
      * @param string       $icon            Icon alias
      * @param string|array $attrs           Classes or attributes
      *
-     * @dataProvider unicodeIconProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('unicodeIconProvider')]
     public function testUnicodeIcons(
         string $expectedClasses,
         string $expectedAttrs,

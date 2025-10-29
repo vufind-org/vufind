@@ -63,9 +63,8 @@ class AlphabrowseTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $expectedFirstTitle Expected first title in result list
      *
      * @return void
-     *
-     * @dataProvider titleSearchNormalizationProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('titleSearchNormalizationProvider')]
     public function testTitleSearchNormalization($query, $expectedFirstTitle): void
     {
         $session = $this->getMinkSession();

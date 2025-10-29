@@ -159,9 +159,8 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      * @param array  $expected Expected result
      *
      * @return void
-     *
-     * @dataProvider databaseUpgradeProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('databaseUpgradeProvider')]
     public function testDatabaseUpgrade(string $fixture, array $expected): void
     {
         $upgrader = $this->runAndGetConfigUpgrader($fixture);
@@ -430,9 +429,8 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      * @param string $configName Configuration name, EDS or EPF
      *
      * @return void
-     *
-     * @dataProvider ebscoUpgradeProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('ebscoUpgradeProvider')]
     public function testEbscoUpgrade(string $backend, string $configName): void
     {
         $upgrader = $this->runAndGetConfigUpgrader($backend);
@@ -650,9 +648,8 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      * @param string $expected Expected migrated setting
      *
      * @return void
-     *
-     * @dataProvider mailRequireLoginProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('mailRequireLoginProvider')]
     public function testMailRequireLoginMigration(string $fixture, string $expected): void
     {
         $upgrader = $this->runAndGetConfigUpgrader($fixture);

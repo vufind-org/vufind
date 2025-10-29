@@ -140,9 +140,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test adding comments on records (with Captcha enabled).
      *
      * @return void
-     *
-     * @depends testAddComment
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddComment')]
     public function testAddCommentWithCaptcha(): void
     {
         // Set up configs:
@@ -195,9 +194,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test adding tags on records.
      *
      * @return void
-     *
-     * @depends testAddComment
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddComment')]
     public function testAddTag(): void
     {
         // Go to a record view
@@ -262,9 +260,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test searching for one of the tags created above.
      *
      * @return void
-     *
-     * @depends testAddTag
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddTag')]
     public function testTagSearch(): void
     {
         // First try an undefined tag:
@@ -304,11 +301,9 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $expectedLast  Expected last title after sorting
      *
      * @return void
-     *
-     * @dataProvider getTagSearchSortData
-     *
-     * @depends testTagSearch
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testTagSearch')]
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTagSearchSortData')]
     public function testTagSearchSort(
         int $index,
         string $expectedSort,
@@ -326,9 +321,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test that default autocomplete behavior is correct on a non-default search handler.
      *
      * @return void
-     *
-     * @depends testTagSearch
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testTagSearch')]
     public function testTagAutocomplete(): void
     {
         $session = $this->getMinkSession();
@@ -355,9 +349,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test adding case sensitive tags on records.
      *
      * @return void
-     *
-     * @depends testAddTag
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddTag')]
     public function testAddSensitiveTag(): void
     {
         // Set up configs:
@@ -389,10 +382,9 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test that the tag admin module works.
      *
      * @return void
-     *
-     * @depends testTagSearch
-     * @depends testAddSensitiveTag
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testTagSearch')]
+    #[\PHPUnit\Framework\Attributes\Depends('testAddSensitiveTag')]
     public function testTagAdminHome(): void
     {
         // Go to admin page:
@@ -407,10 +399,9 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test that listing tags in Admin works.
      *
      * @return void
-     *
-     * @depends testTagSearch
-     * @depends testAddSensitiveTag
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testTagSearch')]
+    #[\PHPUnit\Framework\Attributes\Depends('testAddSensitiveTag')]
     public function testTagAdminList(): void
     {
         $page = $this->goToTagAdmin('/List');
@@ -462,9 +453,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test that managing tags in Admin works.
      *
      * @return void
-     *
-     * @depends testTagAdminList
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testTagAdminList')]
     public function testTagAdminManage(): void
     {
         $page = $this->goToTagAdmin('/Manage');
@@ -719,10 +709,9 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @param bool $allowRemove Value for remove_rating config
      *
-     * @dataProvider getTestRatingData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestRatingData')]
     public function testRating($allowRemove): void
     {
         // Set up configs:

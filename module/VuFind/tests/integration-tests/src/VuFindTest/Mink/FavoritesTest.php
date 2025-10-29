@@ -183,10 +183,9 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      * Test adding a record to favorites (from the record page) using an existing
      * account that is not yet logged in.
      *
-     * @depends testAddRecordToFavoritesNewAccount
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddRecordToFavoritesNewAccount')]
     public function testAddRecordToFavoritesLogin(): void
     {
         $page = $this->gotoRecord();
@@ -233,10 +232,9 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      * Test adding a record to favorites (from the record page) using an existing
      * account that is already logged in.
      *
-     * @depends testAddRecordToFavoritesNewAccount
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddRecordToFavoritesNewAccount')]
     public function testAddRecordToFavoritesLoggedIn(): void
     {
         $page = $this->gotoRecord();
@@ -258,10 +256,9 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      * Test adding a record to favorites (from the search results) while creating a
      * new account.
      *
-     * @depends testAddRecordToFavoritesNewAccount
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddRecordToFavoritesNewAccount')]
     public function testAddSearchItemToFavoritesNewAccount(): void
     {
         $page = $this->gotoSearch('id:"017791359-1"');
@@ -333,10 +330,9 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      * Test adding a record to favorites (from the search results) using an existing
      * account that is not yet logged in.
      *
-     * @depends testAddSearchItemToFavoritesNewAccount
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddSearchItemToFavoritesNewAccount')]
     public function testAddSearchItemToFavoritesLogin(): void
     {
         $page = $this->gotoSearch();
@@ -378,10 +374,9 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      * Test adding a record to favorites (from the search results) using an existing
      * account that is already logged in.
      *
-     * @depends testAddSearchItemToFavoritesLogin
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddSearchItemToFavoritesLogin')]
     public function testAddSearchItemToFavoritesLoggedIn(): void
     {
         $page = $this->gotoSearch();
@@ -437,9 +432,8 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      * Test that we can sort lists.
      *
      * @return void
-     *
-     * @depends testAddSearchItemToFavoritesLoggedIn
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddSearchItemToFavoritesLoggedIn')]
     public function testListSorting(): void
     {
         $session = $this->getMinkSession();
@@ -478,9 +472,8 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      * Test that we can facet filters by tag.
      *
      * @return void
-     *
-     * @depends testAddSearchItemToFavoritesLoggedIn
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddSearchItemToFavoritesLoggedIn')]
     public function testFavoriteFaceting(): void
     {
         $session = $this->getMinkSession();
@@ -519,10 +512,9 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that lists can be tagged when the optional setting is activated.
      *
-     * @depends testAddSearchItemToFavoritesNewAccount
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddSearchItemToFavoritesNewAccount')]
     public function testTaggedList(): void
     {
         $this->changeConfigs(
@@ -635,10 +627,9 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that the email control works.
      *
-     * @depends testAddRecordToFavoritesNewAccount
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddRecordToFavoritesNewAccount')]
     public function testBulkEmail(): void
     {
         $page = $this->setupBulkTest();
@@ -665,10 +656,9 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that the export control works.
      *
-     * @depends testAddRecordToFavoritesNewAccount
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddRecordToFavoritesNewAccount')]
     public function testBulkExport(): void
     {
         $page = $this->setupBulkTest();
@@ -695,10 +685,9 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that the print control works.
      *
-     * @depends testAddRecordToFavoritesNewAccount
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddRecordToFavoritesNewAccount')]
     public function testBulkPrint(): void
     {
         $page = $this->setupBulkTest();
@@ -725,11 +714,10 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that it is possible to email a public list.
      *
-     * @depends testAddRecordToFavoritesNewAccount
-     * @depends testAddSearchItemToFavoritesNewAccount
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddRecordToFavoritesNewAccount')]
+    #[\PHPUnit\Framework\Attributes\Depends('testAddSearchItemToFavoritesNewAccount')]
     public function testEmailPublicList(): void
     {
         $page = $this->setupBulkTest();
@@ -771,9 +759,8 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      * Test that a public list can be displayed as a channel.
      *
      * @return void
-     *
-     * @depends testEmailPublicList
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testEmailPublicList')]
     public function testPublicListChannel(): void
     {
         $this->changeConfigs(
@@ -857,12 +844,10 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool   $caseSensitive Use case sensitive tags?
      * @param bool   $matchExpected Do we expect the list to show up in channel?
      *
-     * @depends testEmailPublicList
-     *
-     * @dataProvider getListTagData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testEmailPublicList')]
+    #[\PHPUnit\Framework\Attributes\DataProvider('getListTagData')]
     public function testListTaggingToDisplayChannel(
         string $listTags,
         array $channelConfig,
@@ -911,11 +896,10 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that public list indicator appears as expected.
      *
-     * @depends testEmailPublicList
-     * @depends testAddRecordToFavoritesLogin
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testEmailPublicList')]
+    #[\PHPUnit\Framework\Attributes\Depends('testAddRecordToFavoritesLogin')]
     public function testPublicListIndicator(): void
     {
         $page = $this->goToUserAccount();
@@ -953,10 +937,9 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that individual favorite items can be deleted.
      *
-     * @depends testAddSearchItemToFavoritesNewAccount
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddSearchItemToFavoritesNewAccount')]
     public function testDeleteSingleFavoriteItem(): void
     {
         $page = $this->gotoUserAccount('username2');
@@ -989,10 +972,9 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that the bulk delete control works.
      *
-     * @depends testAddRecordToFavoritesNewAccount
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddRecordToFavoritesNewAccount')]
     public function testBulkDelete(): void
     {
         $page = $this->setupBulkTest();

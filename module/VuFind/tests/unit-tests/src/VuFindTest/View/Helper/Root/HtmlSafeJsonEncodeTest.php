@@ -98,9 +98,8 @@ class HtmlSafeJsonEncodeTest extends \PHPUnit\Framework\TestCase
      * @param string $expectedOutput Expected output
      *
      * @return void
-     *
-     * @dataProvider getJsonTests
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getJsonTests')]
     public function testCoreEncoding($input, string $expectedOutput): void
     {
         $this->assertEquals($expectedOutput, ($this->getHelper())($input, null));

@@ -183,9 +183,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      * @param string $expectedResult Expected return value from normalizeSort
      *
      * @return void
-     *
-     * @dataProvider sortValueProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('sortValueProvider')]
     public function testSortTieBreakerParameter(
         string $sort,
         string $tieBreaker,
@@ -417,9 +416,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      * @param string $expectedSortList Expected sort list
      *
      * @return void
-     *
-     * @dataProvider sortListDataProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('sortListDataProvider')]
     public function testSortList(array $searchConfig, string $sort, array $expectedSortList): void
     {
         $params = $this->getParams(mockConfigManager: $this->getMockConfigManager(['searches' => $searchConfig]));

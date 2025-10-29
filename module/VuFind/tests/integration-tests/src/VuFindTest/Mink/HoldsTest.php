@@ -310,10 +310,9 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test placing a hold using SSO and an existing catalog account
      *
-     * @depends testPlaceHoldWithSSO
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testPlaceHoldWithSSO')]
     public function testPlaceSecondHoldWithSSO(): void
     {
         $this->changeConfigs(
@@ -492,10 +491,9 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test canceling a hold.
      *
-     * @depends testPlaceHold
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testPlaceHold')]
     public function testCancelHold(): void
     {
         // Turn on "cancel holds" in addition to normal defaults:
@@ -560,10 +558,9 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test creating a frozen hold.
      *
-     * @depends testPlaceHold
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testPlaceHold')]
     public function testFrozenHoldCreation(): void
     {
         $this->changeConfigs(
@@ -588,10 +585,9 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test creating, and then editing, a frozen hold.
      *
-     * @depends testPlaceHold
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testPlaceHold')]
     public function testFrozenHoldEditing(): void
     {
         $demoConfig = $this->getDemoIniOverrides();
@@ -631,10 +627,9 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test editing two holds with different pickup locations.
      *
-     * @depends testPlaceHold
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testPlaceHold')]
     public function testEditingDifferentPickupLocations()
     {
         $demoConfig = $this->getDemoIniOverrides();
@@ -701,10 +696,9 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test creating, and then editing, and then canceling, a frozen hold.
      *
-     * @depends testPlaceHold
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testPlaceHold')]
     public function testFrozenHoldEditingWithCancellation(): void
     {
         $config = $this->getConfigIniOverrides();
@@ -853,10 +847,9 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test placing a hold for a proxy user
      *
-     * @depends testPlaceHoldWithoutPickUpLocations
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testPlaceHoldWithoutPickUpLocations')]
     public function testPlaceHoldForProxyUser(): void
     {
         $demoConfig = $this->getDemoIniOverrides();

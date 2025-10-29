@@ -326,7 +326,7 @@ class AuditEventService extends AbstractDbService implements
     {
         array_walk_recursive(
             $details,
-            function (&$value, $key) {
+            function (&$value, $key): void {
                 if ('csrf' === $key || str_contains($key, 'password')) {
                     $value = '***';
                 }

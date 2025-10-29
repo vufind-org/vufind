@@ -70,9 +70,8 @@ class UserCommentsTest extends \PHPUnit\Framework\TestCase
      * @param bool $expectedResult Expected return value from isActive
      *
      * @return void
-     *
-     * @dataProvider isActiveProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('isActiveProvider')]
     public function testIsActive(bool $enable, bool $expectedResult): void
     {
         $obj = new UserComments($enable);
@@ -96,9 +95,8 @@ class UserCommentsTest extends \PHPUnit\Framework\TestCase
      * @param bool $expectedResult Expected return value from isActive
      *
      * @return void
-     *
-     * @dataProvider isCaptchaActiveProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('isCaptchaActiveProvider')]
     public function testIsCaptchaActive(bool $captcha, bool $expectedResult): void
     {
         $obj = new UserComments(true, $captcha);

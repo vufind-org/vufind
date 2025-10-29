@@ -87,7 +87,7 @@ class KohaRestTest extends \VuFindTest\Unit\ILSDriverTestCase
     {
         $this->driver = new KohaRest(
             new \VuFind\Date\Converter(),
-            function () {
+            function (): void {
             },
             new \VuFind\Service\CurrencyFormatter()
         );

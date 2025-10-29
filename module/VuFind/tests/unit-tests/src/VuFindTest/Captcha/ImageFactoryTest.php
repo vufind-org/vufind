@@ -34,16 +34,15 @@ use function func_get_args;
 /**
  * Unit tests for Image CAPTCHA handler factory.
  *
- * @requires extension gd
- * @requires function imagepng
- * @requires function imageftbbox
- *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+#[\PHPUnit\Framework\Attributes\RequiresPhpExtension('gd')]
+#[\PHPUnit\Framework\Attributes\RequiresFunction('imagepng')]
+#[\PHPUnit\Framework\Attributes\RequiresFunction('imageftbbox')]
 class ImageFactoryTest extends \PHPUnit\Framework\TestCase
 {
     /**
@@ -53,9 +52,8 @@ class ImageFactoryTest extends \PHPUnit\Framework\TestCase
      * @param string $expectedCache Expected cache path
      *
      * @return void
-     *
-     * @dataProvider factoryDataProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('factoryDataProvider')]
     public function testFactory($homeUrl = null, $expectedCache = '/cache/'): void
     {
         // Set up mock services expected by factory:

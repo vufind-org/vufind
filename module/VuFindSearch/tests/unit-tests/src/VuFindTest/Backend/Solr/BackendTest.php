@@ -492,9 +492,8 @@ class BackendTest extends TestCase
      * @param string  $expectedFlOut Expected field list in output
      *
      * @return void
-     *
-     * @dataProvider getIdsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getIdsProvider')]
     public function testGetIds(?string $flIn, string $expectedFlOut): void
     {
         $paramBagChecker = function (ParamBag $params) use ($expectedFlOut) {

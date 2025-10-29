@@ -73,9 +73,8 @@ class UpdateResourceMetadataCommandTest extends \PHPUnit\Framework\TestCase
      * @param array $expectedFindParams Expected params to resource service's findMetadataToUpdate method
      *
      * @return void
-     *
-     * @dataProvider updateProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('updateProvider')]
     public function testUpdate(array $commandParams, array $expectedFindParams)
     {
         $resourceService = $this->createMock(ResourceServiceInterface::class);

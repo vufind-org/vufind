@@ -84,9 +84,8 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
      * @param bool $expectedResult Expected return value from isActive
      *
      * @return void
-     *
-     * @dataProvider isActiveProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('isActiveProvider')]
     public function testIsActive(int $childCount, bool $expectedResult): void
     {
         $searchObj = $this->getService();

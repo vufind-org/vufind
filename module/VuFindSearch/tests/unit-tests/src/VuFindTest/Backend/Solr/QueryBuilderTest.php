@@ -774,9 +774,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      * @param array $expected2         Second set of expected fields
      *
      * @return void
-     *
-     * @dataProvider globalExtraParamsIndividualQueryDataProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('globalExtraParamsIndividualQueryDataProvider')]
     public function testIndividualQueryHandlerWithGlobalExtraParams(
         $globalExtraParams,
         $expected1,
@@ -902,9 +901,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      * @param array $expectedFields    Expected fields
      *
      * @return void
-     *
-     * @dataProvider globalExtraParamsGroupedQueryDataProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('globalExtraParamsGroupedQueryDataProvider')]
     public function testGroupedQueryHandlerWithGlobalExtraParams(
         $globalExtraParams,
         $expectedFields
