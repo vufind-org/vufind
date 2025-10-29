@@ -1313,7 +1313,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
 
         if ($result['code'] >= 300) {
             if (!empty($result['data']['error'])) {
-                return $this->holdError($result['data']['error'], true);
+                return $this->holdError($result['data']['error']);
             }
             return $this->holdError('hold_error_fail', false);
         }
