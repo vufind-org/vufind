@@ -109,7 +109,7 @@ class ExpandFacetsTest extends \PHPUnit\Framework\TestCase
             $results = $this->getMockResults();
         }
         $sf = new ExpandFacets(
-            $configManager ?? $this->getMockConfigPluginManager([]),
+            $configManager ?? $this->getMockConfigManager(),
             $emptyResults ?? $this->getMockResults()
         );
         $sf->setConfig($settings);

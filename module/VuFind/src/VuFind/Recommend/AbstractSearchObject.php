@@ -152,7 +152,7 @@ abstract class AbstractSearchObject implements RecommendInterface
         }
 
         // Set up the callback to initialize the parameters:
-        $callback = function ($runner, $params) use ($lookfor, $typeLabel) {
+        $callback = function ($runner, $params) use ($lookfor, $typeLabel): void {
             $params->setLimit($this->limit);
             if ($this->sort) {
                 $params->setSort($this->sort, true);

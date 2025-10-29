@@ -69,10 +69,9 @@ class DirLocationsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test "use_parent_dir" parent setting in ini configs.
      *
-     * @depends testIniConfigs
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testIniConfigs')]
     public function testParentIniConfigs(): void
     {
         $session = $this->getMinkSession();

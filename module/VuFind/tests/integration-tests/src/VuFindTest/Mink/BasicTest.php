@@ -168,6 +168,78 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test graceful handling of failed search handler in the search tabs.
+     *
+     * @return void
+     */
+    public function testBadSearchTabConfig(): void
+    {
+        // Add a bad search tab config and disable logging of that exception
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'SearchTabs' => [
+                        'Solr' => 'Catalog',
+                        'INVALID' => 'Other Search',
+                    ],
+                    'Logging' => [
+                        'file' => null,
+                    ],
+                ],
+            ]
+        );
+        $page = $this->getSearchHomePage();
+        $this->assertEquals('200', $this->getMinkSession()->getStatusCode());
+        $this->assertStringNotContainsString('Other Search', $page->getContent());
+        $this->assertStringNotContainsString('ServiceNotFoundException', $page->getContent());
+        $this->assertEquals(
+            'Catalog',
+            $this->findCssAndGetHtml($page, '#searchForm .nav-link')
+        );
+    }
+
+    /**
+     * Test graceful handling of failed search handler in the combined search box.
+     *
+     * @return void
+     */
+    public function testBadSearchBoxConfig(): void
+    {
+        // Add a bad search handler config to the combined handlers
+        // and disable logging of that exception
+        $this->changeConfigs(
+            [
+                'searchbox' => [
+                    'General' => [
+                        'combinedHandlers' => true,
+                    ],
+                    'CombinedHandlers' => [
+                        'type' => ['VuFind', 'VuFind'],
+                        'target' => ['Solr', 'INVALID'],
+                        'label' => ['Catalog', 'Other Search'],
+                        'group' => [false, false],
+                    ],
+                ],
+                'config' => [
+                    'Logging' => [
+                        'file' => null,
+                    ],
+                ],
+            ]
+        );
+        $page = $this->getSearchHomePage();
+        $this->assertEquals('200', $this->getMinkSession()->getStatusCode());
+        $this->assertStringContainsString(
+            'Catalog',
+            $this->findCssAndGetHtml($page, '#searchForm_type')
+        );
+        $this->assertStringNotContainsString(
+            'Other Search',
+            $this->findCssAndGetHtml($page, '#searchForm_type')
+        );
+    }
+
+    /**
      * Test lightbox jump links
      *
      * @return void

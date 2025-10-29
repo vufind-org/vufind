@@ -82,10 +82,9 @@ class ConfigCacheTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool $cacheIni         Ini cache enabled
      * @param bool $cacheSearchspecs Searchspecs cache enabled
      *
-     * @dataProvider cacheSettingsProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('cacheSettingsProvider')]
     public function testConfigurationCaching(bool $cacheDefault, bool $cacheIni, bool $cacheSearchspecs): void
     {
         $this->changeConfigs(

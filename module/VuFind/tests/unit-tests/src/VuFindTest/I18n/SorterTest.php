@@ -149,10 +149,9 @@ class SorterTest extends \PHPUnit\Framework\TestCase
      * @param array $test     Test data
      * @param int   $expected Expected result
      *
-     * @dataProvider compareProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('compareProvider')]
     public function testCompare($test, $expected)
     {
         $sorter = $this->getSorterForTest($test);
@@ -247,10 +246,9 @@ class SorterTest extends \PHPUnit\Framework\TestCase
      * @param array $test     Test data
      * @param array $expected Expected result
      *
-     * @dataProvider sortProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('sortProvider')]
     public function testSort($test, $expected)
     {
         $sorter = $this->getSorterForTest($test);
@@ -324,10 +322,9 @@ class SorterTest extends \PHPUnit\Framework\TestCase
      * @param array $test     Test data
      * @param array $expected Expected result
      *
-     * @dataProvider asortProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('asortProvider')]
     public function testAsort($test, $expected)
     {
         $sorter = $this->getSorterForTest($test);
@@ -370,10 +367,9 @@ class SorterTest extends \PHPUnit\Framework\TestCase
      * @param array $test     Test data
      * @param array $expected Expected result
      *
-     * @dataProvider natsortProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('natsortProvider')]
     public function testNatsort($test, $expected)
     {
         $sorter = $this->getSorterForTest($test);

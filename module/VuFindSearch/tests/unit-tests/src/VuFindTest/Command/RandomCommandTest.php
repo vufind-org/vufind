@@ -113,7 +113,12 @@ class RandomCommandTest extends TestCase
         $command = new RandomCommand($backendId, $query, 10, $params);
         $rci = $this->getMockBuilder(\VuFindSearch\Response\RecordCollectionInterface::class)
             ->addMethods(['shuffle'])
-            ->getMockForAbstractClass();
+            ->onlyMethods([
+                'getTotal', 'getFacets', 'getRecords', 'getErrors', 'getOffset',
+                'first', 'setSourceIdentifier', 'setSourceIdentifiers', 'getSourceIdentifier',
+                'setResultSetIdentifier', 'add', 'count', 'current', 'key', 'next', 'rewind', 'valid',
+            ])
+            ->getMock();
 
         $rci->expects($this->once())->method('getTotal')
             ->will($this->returnValue(2));

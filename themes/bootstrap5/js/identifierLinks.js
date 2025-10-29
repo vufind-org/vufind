@@ -32,7 +32,10 @@ VuFind.register('identifierLinks', function identifierLinks() {
       .then((response) => {
         elements.forEach((identifierEl) => {
           var currentInstance = identifierEl.dataset.instance;
-          if ("undefined" !== typeof response.data[currentInstance]) {
+          // response.data should be an array; if it's a string, there's an error message.
+          if ("string" === typeof response.data) {
+            console.error("Unexpected identifier data: " + response.data);
+          } else if ("undefined" !== typeof response.data[currentInstance]) {
             VuFind.setInnerHtml(identifierEl, response.data[currentInstance]);
           }
         });

@@ -71,9 +71,8 @@ class PreviewTest extends \PHPUnit\Framework\TestCase
      * @param bool $expectedResult Expected return value from isActive
      *
      * @return void
-     *
-     * @dataProvider isActiveProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('isActiveProvider')]
     public function testisActive(bool $enable, bool $expectedResult): void
     {
         $obj = $this->getPreview($enable);

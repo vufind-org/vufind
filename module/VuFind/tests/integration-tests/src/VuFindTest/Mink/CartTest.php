@@ -588,10 +588,9 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that the save control works.
      *
-     * @depends testCartEmail
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testCartEmail')]
     public function testCartSave()
     {
         $page = $this->setUpGenericCartTest();

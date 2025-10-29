@@ -57,7 +57,7 @@ trait CheckEnabledTrait
             return;
         }
 
-        $config = $this->getConfig($configId);
+        $config = $this->getConfigArray($configId);
         if (!($config['General']['enabled'] ?? false)) {
             throw new ForbiddenException($configId . ' is disabled');
         }

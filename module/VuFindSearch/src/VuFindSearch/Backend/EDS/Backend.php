@@ -307,6 +307,62 @@ class Backend extends AbstractBackend
     }
 
     /**
+     * Support method for retrieve(): do the actual EBSCO lookup.
+     *
+     * @param string    $id                  Document identifier
+     * @param string    $authenticationToken Authentication token
+     * @param string    $sessionToken        Session token
+     * @param ?ParamBag $params              Search backend parameters
+     *
+     * @return array
+     * @throws BackendException
+     * @throws ApiException
+     */
+    protected function performEbscoRetrieval(
+        string $id,
+        string $authenticationToken,
+        string $sessionToken,
+        ?ParamBag $params
+    ): array {
+        if ('EDS' === $this->backendType) {
+            $parts = explode(',', $id, 2);
+            if (!isset($parts[1])) {
+                throw new BackendException(
+                    'Retrieval id is not in the correct format.'
+                );
+            }
+            [$dbId, $an] = $parts;
+            $hlTerms = $params?->get('highlightterms') ?? null;
+            $extras = [];
+            if (
+                null !== $params
+                && ($eBookFormat = $params->get('ebookpreferredformat'))
+            ) {
+                $extras['ebookpreferredformat'] = $eBookFormat;
+            }
+            return $this->client->retrieveEdsItem(
+                $an,
+                $dbId,
+                $authenticationToken,
+                $sessionToken,
+                $hlTerms,
+                $extras
+            );
+        } elseif ('EPF' === $this->backendType) {
+            $pubId = $id;
+            return $this->client->retrieveEpfItem(
+                $pubId,
+                $authenticationToken,
+                $sessionToken
+            );
+        } else {
+            throw new BackendException(
+                'Unknown backendType: ' . $this->backendType
+            );
+        }
+    }
+
+    /**
      * Retrieve a single document.
      *
      * @param string    $id     Document identifier
@@ -325,44 +381,7 @@ class Backend extends AbstractBackend
                 $this->profile = $overrideProfile;
             }
             $sessionToken = $this->getSessionToken();
-
-            if ('EDS' === $this->backendType) {
-                $parts = explode(',', $id, 2);
-                if (!isset($parts[1])) {
-                    throw new BackendException(
-                        'Retrieval id is not in the correct format.'
-                    );
-                }
-                [$dbId, $an] = $parts;
-                $hlTerms = (null !== $params)
-                    ? $params->get('highlightterms') : null;
-                $extras = [];
-                if (
-                    null !== $params
-                    && ($eBookFormat = $params->get('ebookpreferredformat'))
-                ) {
-                    $extras['ebookpreferredformat'] = $eBookFormat;
-                }
-                $response = $this->client->retrieveEdsItem(
-                    $an,
-                    $dbId,
-                    $authenticationToken,
-                    $sessionToken,
-                    $hlTerms,
-                    $extras
-                );
-            } elseif ('EPF' === $this->backendType) {
-                $pubId = $id;
-                $response = $this->client->retrieveEpfItem(
-                    $pubId,
-                    $authenticationToken,
-                    $sessionToken
-                );
-            } else {
-                throw new BackendException(
-                    'Unknown backendType: ' . $this->backendType
-                );
-            }
+            $response = $this->performEbscoRetrieval($id, $authenticationToken, $sessionToken, $params);
         } catch (ApiException $e) {
             // Error codes can be reviewed at
             // https://connect.ebsco.com/s/article
@@ -381,13 +400,7 @@ class Backend extends AbstractBackend
                         } else {
                             $sessionToken = $this->getSessionToken(true);
                         }
-                        $response = $this->client->retrieve(
-                            $an,
-                            $dbId,
-                            $authenticationToken,
-                            $sessionToken,
-                            $hlTerms
-                        );
+                        $response = $this->performEbscoRetrieval($id, $authenticationToken, $sessionToken, $params);
                     } catch (Exception $e) {
                         throw new BackendException(
                             $e->getMessage(),

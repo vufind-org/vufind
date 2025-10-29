@@ -542,10 +542,9 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      * @param string $mode          Retrieval mode
      * @param bool   $filterInvalid Should we filter invalid ISBNs?
      *
-     * @dataProvider getCleanISBNsProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getCleanISBNsProvider')]
     public function testGetCleanISBNs($result, $mode, $filterInvalid)
     {
         $this->assertEquals($result, $this->getDriver()->getCleanISBNs($mode, $filterInvalid));

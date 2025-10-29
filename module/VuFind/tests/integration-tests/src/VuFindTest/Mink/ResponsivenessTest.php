@@ -67,9 +67,8 @@ final class ResponsivenessTest extends \VuFindTest\Integration\MinkTestCase
      * @param array $controlVisibility Expected visibility of controls
      *
      * @return void
-     *
-     * @dataProvider windowDimensionProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('windowDimensionProvider')]
     public function testBulkControls(int $windowWidth, int $windowHeight, array $controlVisibility): void
     {
         // Activate the bulk options:
@@ -125,9 +124,8 @@ final class ResponsivenessTest extends \VuFindTest\Integration\MinkTestCase
      * @param array $controlVisibility Expected visibility of controls
      *
      * @return void
-     *
-     * @dataProvider windowDimensionProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('windowDimensionProvider')]
     public function testOffcanvas(int $windowWidth, int $windowHeight, array $controlVisibility): void
     {
         // Activate offcanvas:

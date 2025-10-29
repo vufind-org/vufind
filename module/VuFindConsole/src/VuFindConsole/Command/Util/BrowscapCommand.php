@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Console command: browscap
+ * Console command: update browscap cache.
  *
  * PHP version 8
  *
@@ -45,7 +45,7 @@ use VuFind\Cache\Manager as CacheManager;
 use VuFind\Http\GuzzleService;
 
 /**
- * Console command: browscap
+ * Console command: update browscap cache.
  *
  * @category VuFind
  * @package  Console

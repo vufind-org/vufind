@@ -275,7 +275,7 @@ trait OnlinePaymentTrait
      */
     protected function ensureLogger(): void
     {
-        if (null === $this->getLogger()) {
+        if (null === $this->logger) {
             $this->setLogger($this->serviceLocator->get(\VuFind\Log\Logger::class));
         }
     }

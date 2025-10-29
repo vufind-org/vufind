@@ -75,9 +75,8 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
      * @param string|false $advAction Expected advanced search action
      *
      * @return void
-     *
-     * @dataProvider optionsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('optionsProvider')]
     public function testOptions(array $config, $advAction): void
     {
         $mockConfigManager = $this->getMockConfigManager(

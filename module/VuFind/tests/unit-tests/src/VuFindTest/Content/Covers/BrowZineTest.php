@@ -72,9 +72,8 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
      * @param string|bool $expected Expected cover URL
      *
      * @return void
-     *
-     * @dataProvider coverProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('coverProvider')]
     public function testCoverLoading(array $ids, ?string $fixture, string|bool $expected): void
     {
         $service = $this->createMock(\VuFindSearch\Service::class);

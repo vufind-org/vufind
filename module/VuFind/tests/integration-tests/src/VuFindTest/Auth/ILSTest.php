@@ -70,6 +70,16 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Standard teardown method.
+     *
+     * @return void
+     */
+    public function tearDown(): void
+    {
+        $this->tearDownLiveDatabaseContainer();
+    }
+
+    /**
      * Get a mock ILS driver to test.
      *
      * @param string $type    Driver type to mock (default = Sample)
@@ -104,7 +114,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
             new \VuFindTest\Container\MockContainer($this)
         );
         $driverManager->setService('Sample', $driver);
-        $mockConfigReader = $this->getMockConfigPluginManager([]);
+        $mockConfigReader = $this->getMockConfigManager();
         $auth = new \VuFind\Auth\ILS(
             new \VuFind\ILS\Connection(
                 new \VuFind\Config\Config(['driver' => 'Sample']),

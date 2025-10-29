@@ -11,11 +11,11 @@
         <span class="visually-hidden"><?=$this->transEsc('clear_tag_filter') ?></span>
       <?php endif; ?>
 
-      <?= $this->icon($current['selected'] ? 'facet-checked' : 'facet-unchecked', [
-          'class' => 'icon-link__icon',
-          'data-checked' => $current['selected'] ? 'true' : 'false',
-      ]) ?>
       <span class="text">
+        <?= $this->icon($current['selected'] ? 'facet-checked' : 'facet-unchecked', [
+            'class' => 'icon-link__icon',
+            'data-checked' => $current['selected'] ? 'true' : 'false',
+        ]) ?>
         <span class="icon-link__label"><?=$this->transEsc($current['desc']) ?></span>
       </span>
       <?php if (!$current['selected']): ?>

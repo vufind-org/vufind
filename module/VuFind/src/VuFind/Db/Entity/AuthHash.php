@@ -33,7 +33,7 @@ use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * AuthHash
+ * Entity model for auth_hash table
  *
  * @category VuFind
  * @package  Database
@@ -104,7 +104,7 @@ class AuthHash implements AuthHashEntityInterface
     public function __construct()
     {
         // Set the default value as a DateTime object
-        $this->created = new Datetime();
+        $this->created = new DateTime();
     }
 
     /**

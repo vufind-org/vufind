@@ -21,7 +21,7 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Db_Interface
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
@@ -35,7 +35,7 @@ use DateTime;
  * Entity model interface for user_list table
  *
  * @category VuFind
- * @package  Db_Interface
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
@@ -80,6 +80,22 @@ interface UserListEntityInterface extends EntityInterface
      * @return ?string
      */
     public function getDescription(): ?string;
+
+    /**
+     * Get list type
+     *
+     * @return string
+     */
+    public function getType(): string;
+
+    /**
+     * Set list type
+     *
+     * @param string $type Type of the user list
+     *
+     * @return static
+     */
+    public function setType(string $type): static;
 
     /**
      * Set created date.

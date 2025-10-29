@@ -221,10 +221,8 @@ class AbstractSolrSearch extends AbstractSearch
      */
     protected function getHierarchicalFacets($config)
     {
-        $facetConfig = $this->getConfig($config);
-        return isset($facetConfig->SpecialFacets->hierarchical)
-            ? $facetConfig->SpecialFacets->hierarchical->toArray()
-            : [];
+        $facetConfig = $this->getConfigArray($config);
+        return $facetConfig['SpecialFacets']['hierarchical'] ?? [];
     }
 
     /**
@@ -236,17 +234,9 @@ class AbstractSolrSearch extends AbstractSearch
      */
     protected function getAdvancedHierarchicalFacetsSortOptions($config)
     {
-        $facetConfig = $this->getConfig($config);
-        $baseConfig
-            = isset($facetConfig->SpecialFacets->hierarchicalFacetSortOptions)
-            ? $facetConfig->SpecialFacets->hierarchicalFacetSortOptions->toArray()
-            : [];
-        $advancedConfig
-            = isset($facetConfig->Advanced_Settings->hierarchicalFacetSortOptions)
-            ? $facetConfig->Advanced_Settings->hierarchicalFacetSortOptions
-                ->toArray()
-            : [];
-
+        $facetConfig = $this->getConfigArray($config);
+        $baseConfig = $facetConfig['SpecialFacets']['hierarchicalFacetSortOptions'] ?? [];
+        $advancedConfig = $facetConfig['Advanced_Settings']['hierarchicalFacetSortOptions'] ?? [];
         return array_merge($baseConfig, $advancedConfig);
     }
 }

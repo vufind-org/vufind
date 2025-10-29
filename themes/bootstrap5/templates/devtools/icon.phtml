@@ -6,20 +6,9 @@
     ->set('Development Tools', $this->url('devtools-home'))
     ->add($title, active: true);
 ?>
-<h1><?=$titleEsc ?></h1>
-<table class="icon-table table table-striped">
-  <thead>
-    <tr>
-      <th>Alias</th>
-      <th>Icon</th>
-    </tr>
-  </thead>
-  <tbody>
-    <?php foreach ($aliases as $icon): ?>
-      <tr>
-        <td><?=$this->escapeHtml($icon) ?></td>
-        <td><?=$this->icon($icon) ?></td>
-      </tr>
-    <?php endforeach; ?>
-  </tbody>
-</table>
+<h1><?=$titleEsc?></h1>
+<div class="devtools-icon-container">
+  <?php foreach ($aliases as $icon): ?>
+    <?=$this->icon($icon)?> <?=$this->escapeHtml($icon)?><br>
+  <?php endforeach; ?>
+</div>

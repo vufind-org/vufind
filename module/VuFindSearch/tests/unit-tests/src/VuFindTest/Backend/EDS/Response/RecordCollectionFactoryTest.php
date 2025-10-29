@@ -67,7 +67,7 @@ class RecordCollectionFactoryTest extends TestCase
         $this->expectExceptionMessage('Unexpected type of value: Expected array, got string');
 
         $factory = new RecordCollectionFactory(
-            function () {
+            function (): void {
             }
         );
         $factory->factory('bad');

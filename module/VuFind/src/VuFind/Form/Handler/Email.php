@@ -31,8 +31,8 @@ declare(strict_types=1);
 
 namespace VuFind\Form\Handler;
 
-use Laminas\Log\LoggerAwareInterface;
 use Laminas\View\Renderer\RendererInterface;
+use Psr\Log\LoggerAwareInterface;
 use Symfony\Component\Mime\Address;
 use VuFind\Config\Config;
 use VuFind\Db\Entity\UserEntityInterface;

@@ -129,7 +129,7 @@ class TabManagerTest extends \PHPUnit\Framework\TestCase
         $this->expectExceptionMessage(
             'Using deprecated way of fetching tab configuration! Use RecordTabs.ini instead.'
         );
-        $errorCallback = function (int $code, string $msg) {
+        $errorCallback = function (int $code, string $msg): void {
             throw new \Exception($msg, $code);
         };
         set_error_handler($errorCallback, E_USER_WARNING);

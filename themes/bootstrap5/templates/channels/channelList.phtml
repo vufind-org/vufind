@@ -6,6 +6,7 @@
   $this->jsTranslations()->addStrings([
     'channel_browse' => 'channel_browse',
     'channel_expand' => 'channel_expand',
+    'channel_options_dropdown_toggle' => 'channel_options_dropdown_toggle',
     'channel_search' => 'channel_search',
     'nohit_heading' => 'nohit_heading',
     'View Record' => 'View Record',
@@ -45,8 +46,8 @@
     <?php if (count($channel['relatedTokens'] ?? []) > 0): ?>
       <div class="channel-add-menu hidden" data-group="<?=$this->escapeHtmlAttr($groupId) ?>">
         <button type="button" class="add-btn btn btn-link"><?=$this->transEsc('channel_add_more') ?></button><!--
-     --><button type="button" class="btn btn-link dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="<?=$this->transEscAttr('toggle_dropdown') ?>">
-          <span class="caret"></span>
+     --><button type="button" class="btn btn-link dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="<?=$this->transEscAttr('channel_list_dropdown_toggle', ['%%channel%%' => $channel['title']]) ?>">
+          <?=$this->icon('dropdown-caret')?>
         </button>
         <ul class="dropdown-menu">
           <?php foreach ($channel['relatedTokens'] as $related): ?>

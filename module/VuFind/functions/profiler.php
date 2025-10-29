@@ -64,7 +64,7 @@ function enableVuFindProfiling($profilerBaseUrl)
             $xhprofRunId,
             $suffix,
             $profilerDisableFunc
-        ) {
+        ): void {
             $xhprofData = $profilerDisableFunc();
             $dir = ini_get('xhprof.output_dir');
             if (empty($dir)) {

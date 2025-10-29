@@ -68,10 +68,9 @@ class QueryAdapterTest extends \PHPUnit\Framework\TestCase
      * @param string $type   Search type
      * @param bool   $legacy Whether to test legacy version deminification
      *
-     * @dataProvider conversionsProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('conversionsProvider')]
     public function testConversions(string $type, bool $legacy)
     {
         // Load minified, unminified, and Query object data:

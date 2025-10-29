@@ -301,9 +301,9 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
      *                           multiple tests.
      * @param array  $expected   Expected results for the test
      *
-     * @return       void
-     * @dataProvider getTestGetMyProfileData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestGetMyProfileData')]
     public function testGetMyProfile(string $fixtureKey, array $expected): void
     {
         $adjustedConfig = $this->defaultDriverConfig;
@@ -388,9 +388,9 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
      * @param array  $expected   Expected results
      * @param string $fixtureKey Fixture key for response mapping
      *
-     * @return       void
-     * @dataProvider getTestPatronLoginData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestPatronLoginData')]
     public function testPatronLogin(array $config, array $expected, string $fixtureKey): void
     {
         $this->createConnector('get-patron-response', $config, $fixtureKey);

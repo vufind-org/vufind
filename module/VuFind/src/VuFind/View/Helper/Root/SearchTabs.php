@@ -48,8 +48,10 @@ use VuFind\Search\UrlQueryHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SearchTabs extends \Laminas\View\Helper\AbstractHelper
+class SearchTabs extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log\LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * Search manager
      *
@@ -140,28 +142,48 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
             $class = $this->helper->extractClassName($key);
             $filters = isset($allFilters[$key]) ? (array)$allFilters[$key] : [];
             $selected = $class == $activeSearchClass && $this->helper->filtersMatch($class, $hiddenFilters, $filters);
-            if ($type == 'basic') {
-                if (!isset($activeOptions)) {
-                    $activeOptions
-                        = $this->results->get($activeSearchClass)->getOptions();
+            try {
+                if ($type == 'basic') {
+                    if (!isset($activeOptions)) {
+                        $activeOptions
+                            = $this->results->get($activeSearchClass)->getOptions();
+                    }
+                    $url = $this->remapBasicSearch(
+                        $activeOptions,
+                        $class,
+                        $query,
+                        $handler,
+                        $filters,
+                    );
+                } elseif ($type == 'advanced') {
+                    $url = $this->getAdvancedTabUrl(
+                        $class,
+                        $filters,
+                    );
+                } else {
+                    $url = $this->getHomeTabUrl(
+                        $class,
+                        $filters,
+                    );
                 }
-                $url = $this->remapBasicSearch(
-                    $activeOptions,
-                    $class,
-                    $query,
-                    $handler,
-                    $filters,
+            } catch (\Exception $e) {
+                // Log the error and just don't add tabs that we couldn't get the data for
+                $baseMsg = "Could not add tab for {$key}.";
+                $shortDetails = $e->getMessage();
+                $fullDetails = (string)$e;
+                $this->logError(
+                    $baseMsg,
+                    [
+                        'details' => [
+                            1 => "$baseMsg $shortDetails",
+                            2 => "$baseMsg $shortDetails",
+                            3 => "$baseMsg $shortDetails",
+                            4 => "$baseMsg $fullDetails",
+                            5 => "$baseMsg $fullDetails",
+                        ],
+                    ]
                 );
-            } elseif ($type == 'advanced') {
-                $url = $this->getAdvancedTabUrl(
-                    $class,
-                    $filters,
-                );
-            } else {
-                $url = $this->getHomeTabUrl(
-                    $class,
-                    $filters,
-                );
+                continue;
             }
             $tab = [
                 'id' => $key,
