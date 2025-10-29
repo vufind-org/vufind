@@ -99,8 +99,7 @@ abstract class AbstractContentFactory implements \Laminas\ServiceManager\Factory
     {
         $setting = $config->Content->hide_if_empty ?? false;
         if (
-            $setting === true || $setting === false
-            || $setting === 1 || $setting === 0
+            in_array($setting, [true, false, 1, 0], true)
         ) {
             return (bool)$setting;
         }

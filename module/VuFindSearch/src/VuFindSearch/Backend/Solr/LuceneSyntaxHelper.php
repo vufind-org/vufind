@@ -607,15 +607,11 @@ class LuceneSyntaxHelper
     protected function getBoolsToCap()
     {
         if (
-            $this->caseSensitiveBooleans === false
-            || $this->caseSensitiveBooleans === 0
-            || $this->caseSensitiveBooleans === '0'
+            in_array($this->caseSensitiveBooleans, [false, 0, '0'], true)
         ) {
             return $this->allBools;
         } elseif (
-            $this->caseSensitiveBooleans === true
-            || $this->caseSensitiveBooleans === 1
-            || $this->caseSensitiveBooleans === '1'
+            in_array($this->caseSensitiveBooleans, [true, 1, '1'], true)
         ) {
             return [];
         }

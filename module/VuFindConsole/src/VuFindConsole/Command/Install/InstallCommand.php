@@ -1033,7 +1033,7 @@ class InstallCommand extends Command
                 $this->multisiteMode = self::MULTISITE_DIR_BASED;
             } elseif ($mode === 'host') {
                 $this->multisiteMode = self::MULTISITE_HOST_BASED;
-            } elseif ($mode !== true && $mode !== null && $mode !== false) {
+            } elseif (!in_array($mode, [true, null, false], true)) {
                 return $this->failWithError(
                     $output,
                     'Unexpected multisite mode: ' . $mode
