@@ -1286,7 +1286,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
 
         // Make sure pickup location is valid
         if (!$this->pickUpLocationIsValid($pickUpLocation, $patron, $holdDetails)) {
-            return $this->holdError('hold_invalid_pickup');
+            return $this->holdError('hold_invalid_pickup', false);
         }
 
         $request = [
@@ -1312,7 +1312,10 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         );
 
         if ($result['code'] >= 300) {
-            return $this->holdError($result['data']['error'] ?? 'hold_error_fail');
+            if (!empty($result['data']['error'])) {
+                return $this->holdError($result['data']['error'], true);
+            }
+            return $this->holdError('hold_error_fail', false);
         }
 
         if ($holdDetails['startDateTS']) {
@@ -2761,24 +2764,31 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     /**
      * Return a hold error message
      *
-     * @param string $error Error message
+     * @param string $error  Error message
+     * @param bool   $ilsMsg Whether the error is an ILS error message (needs translation prefix)
      *
      * @return array
      */
-    protected function holdError($error)
+    protected function holdError($error, $ilsMsg = true)
     {
         switch ($error) {
             case 'Hold cannot be placed. Reason: tooManyReserves':
             case 'Hold cannot be placed. Reason: tooManyHoldsForThisRecord':
                 $error = 'hold_error_too_many_holds';
+                $ilsMsg = false;
                 break;
             case 'Hold cannot be placed. Reason: ageRestricted':
                 $error = 'hold_error_age_restricted';
+                $ilsMsg = false;
                 break;
         }
+
+        $prefix = $ilsMsg
+            ? ($this->config['Catalog']['translationPrefix'] ?? '')
+            : '';
         return [
             'success' => false,
-            'sysMessage' => $error,
+            'sysMessage' => $prefix . $error,
         ];
     }
 
