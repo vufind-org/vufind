@@ -68,6 +68,28 @@ class Citation extends \VuFind\View\Helper\Root\Citation
     }
 
     /**
+     * Store a record driver object and return this object so that the appropriate
+     * template can be rendered.
+     *
+     * @param \VuFind\RecordDriver\Base $driver Record driver object.
+     *
+     * @return Citation
+     */
+    public function __invoke($driver)
+    {
+        $result = parent::__invoke($driver);
+
+        // Use Finna's methods for retrieving the authors to display:
+        $authors = $this->driver->tryMethod('getPrimaryAuthorsExtended')
+            ?? $this->driver->tryMethod('getNonPresenterAuthors');
+        if (null !== $authors) {
+            $this->details['authors'] = $this->prepareAuthors(array_unique(array_column($authors, 'name')));
+        }
+
+        return $result;
+    }
+
+    /**
      * Get Harvard citation.
      *
      * This function assigns all the necessary variables using APA's functions
