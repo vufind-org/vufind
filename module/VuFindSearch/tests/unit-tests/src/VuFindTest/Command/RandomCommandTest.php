@@ -116,7 +116,7 @@ class RandomCommandTest extends TestCase
             ->onlyMethods([
                 'getTotal', 'getFacets', 'getRecords', 'getErrors', 'getOffset',
                 'first', 'setSourceIdentifier', 'setSourceIdentifiers', 'getSourceIdentifier',
-                'setResultSetIdentifier', 'add', 'count', 'current', 'key', 'next', 'rewind', 'valid'
+                'setResultSetIdentifier', 'add', 'count', 'current', 'key', 'next', 'rewind', 'valid',
             ])
             ->getMock();
 
