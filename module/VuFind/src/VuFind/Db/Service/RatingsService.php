@@ -142,15 +142,13 @@ class RatingsService extends AbstractDbService implements
             $result['count'] += $rating['count'];
             $ratingTotal += $rating['rating'];
             ++$groupCount;
-            if ($groups) {
-                foreach ($groups as $key => $range) {
-                    if (
-                        $rating['rating'] >= $range[0]
-                        && $rating['rating'] <= $range[1]
-                    ) {
-                        $result['groups'][$key] = ($result['groups'][$key] ?? 0)
-                            + $rating['count'];
-                    }
+            foreach ($groups as $key => $range) {
+                if (
+                    $rating['rating'] >= $range[0]
+                    && $rating['rating'] <= $range[1]
+                ) {
+                    $result['groups'][$key] = ($result['groups'][$key] ?? 0)
+                        + $rating['count'];
                 }
             }
         }

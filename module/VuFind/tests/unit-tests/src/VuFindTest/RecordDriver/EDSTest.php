@@ -414,10 +414,9 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      * @param array $expectedItems Expected items
      * @param int   $expectedCount Expected item count
      *
-     * @dataProvider filterProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('filterProvider')]
     public function testGetItemsFilter(array $filter, array $expectedItems, int $expectedCount): void
     {
         // Change the default order the array data is in and exclude one of the items
@@ -618,9 +617,8 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      * @param string $expected Expected result
      *
      * @return void
-     *
-     * @dataProvider getThumbnailProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getThumbnailProvider')]
     public function testGetThumbnail(string $size, string $expected): void
     {
         $driver = $this->getDriver('valid-eds-record');
@@ -728,9 +726,8 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      * @param string $cleanDoi Expected value
      *
      * @return void
-     *
-     * @dataProvider getCleanDOIFromUrlProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getCleanDOIFromUrlProvider')]
     public function testGetCleanDOIFromUrl(string $testDoi, string $cleanDoi): void
     {
         $driver = $this->getDriver('valid-eds-record-2');

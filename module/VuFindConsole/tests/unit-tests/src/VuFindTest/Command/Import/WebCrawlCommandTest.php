@@ -102,9 +102,8 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
      * @param string $expectedOutput Expected normalized output string
      *
      * @return void
-     *
-     * @dataProvider successWithMinimalParametersProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('successWithMinimalParametersProvider')]
     public function testSuccessWithMinimalParameters(bool $verbose, bool $cache, string $expectedOutput): void
     {
         $cacheDir = realpath($this->getFixtureDir('VuFindConsole') . 'webcrawl/cache');

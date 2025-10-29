@@ -97,9 +97,8 @@ class LDAPTest extends \PHPUnit\Framework\TestCase
      * @param string $key Configuration key to exclude
      *
      * @return void
-     *
-     * @dataProvider configKeyProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('configKeyProvider')]
     public function testWithMissingConfiguration(string $key): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);

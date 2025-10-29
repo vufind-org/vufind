@@ -118,9 +118,8 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
      * @param ?bool $blocks Blocks status
      *
      * @return void
-     *
-     * @dataProvider getTestIdentityRepositoryData
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestIdentityRepositoryData')]
     public function testIdentityRepository(?bool $blocks): void
     {
         $accessTokenService = $this->getMockAccessTokenService();

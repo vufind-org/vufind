@@ -104,9 +104,8 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
      * @param string $expected         Expected results
      *
      * @return void
-     *
-     * @dataProvider getCurrentHiddenFilterParamsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getCurrentHiddenFilterParamsProvider')]
     public function testGetCurrentHiddenFilterParams(
         array $currentFilters,
         int $filtersCalls,

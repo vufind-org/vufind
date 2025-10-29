@@ -125,9 +125,8 @@ final class EmailVerificationTest extends \VuFindTest\Integration\MinkTestCase
      * Test changing email address.
      *
      * @return void
-     *
-     * @depends testEmailVerification
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testEmailVerification')]
     public function testEmailAddressChange(): void
     {
         // Set up configs, session and message logging:

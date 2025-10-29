@@ -8,6 +8,7 @@
 .php_cs_cache
 .phpmd.result-cache.php
 .phpstan_cache
+.rector
 .vagrant
 .vscode/*
 /downloads

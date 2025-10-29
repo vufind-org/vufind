@@ -65,10 +65,8 @@ class Tag implements AutocompleteInterface
     {
         $tagList = [];
         $tags = $this->tagsService->getNonListTagsFuzzilyMatchingString($query);
-        if ($tags) {
-            foreach ($tags as $tag) {
-                $tagList[] = $tag['tag'];
-            }
+        foreach ($tags as $tag) {
+            $tagList[] = $tag['tag'];
         }
         return $tagList;
     }

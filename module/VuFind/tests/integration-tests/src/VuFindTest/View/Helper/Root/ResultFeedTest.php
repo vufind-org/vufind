@@ -114,9 +114,8 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
      * @param string $expectedLink The link URL we expect to find in the first result in the feed.
      *
      * @return void
-     *
-     * @dataProvider rssProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('rssProvider')]
     public function testRSS(array $options, string $expectedLink): void
     {
         // Set up a request -- we'll sort by title to ensure a predictable order

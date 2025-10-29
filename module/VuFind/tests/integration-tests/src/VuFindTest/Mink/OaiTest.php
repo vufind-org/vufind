@@ -78,10 +78,9 @@ class OaiTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $path URL path to OAI-PMH server.
      *
      * @return void
-     *
-     * @dataProvider serverProvider
      */
     #[\VuFindTest\Attribute\HtmlValidation(false)]
+    #[\PHPUnit\Framework\Attributes\DataProvider('serverProvider')]
     public function testDisabledByDefault(string $path): void
     {
         $session = $this->getMinkSession();
@@ -99,9 +98,8 @@ class OaiTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $path URL path to OAI-PMH server.
      *
      * @return void
-     *
-     * @dataProvider serverProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('serverProvider')]
     public function testVerbRequired(string $path): void
     {
         $this->changeConfigs(['config' => $this->defaultOaiConfig]);
@@ -116,9 +114,8 @@ class OaiTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $path URL path to OAI-PMH server.
      *
      * @return void
-     *
-     * @dataProvider serverProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('serverProvider')]
     public function testIdentifyResponseRepositoryName(string $path): void
     {
         $this->changeConfigs(['config' => $this->defaultOaiConfig]);

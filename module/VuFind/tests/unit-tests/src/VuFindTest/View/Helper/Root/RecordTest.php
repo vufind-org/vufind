@@ -347,9 +347,8 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      * @param string $expected          Expected final result
      *
      * @return void
-     *
-     * @dataProvider getLinkProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getLinkProvider')]
     public function testGetLink(
         string $linkUrl,
         string $expectedSeparator,
