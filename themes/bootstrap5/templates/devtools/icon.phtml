@@ -4,10 +4,18 @@
   $this->headTitle($title);
   $this->breadcrumbs()->set('Development Tools', $this->url('devtools-home'))
     ->add($title, active: true);
+  $icons = [];
+  $lastIcon = '';
+  foreach ($aliases as $icon) {
+    // If this is a right-to-left icon, display it on the same line with the left-to-right version:
+    if ($icon === "$lastIcon-rtl") {
+      array_pop($icons);
+      $icons[] = $this->icon($lastIcon) . '/' . $this->icon($icon) . ' ' . $this->escapeHtml($lastIcon) . ' (ltr/rtl) <br>';
+    } else {
+      $icons[] = $this->icon($icon) . ' ' . $this->escapeHtml($icon) . '<br>';
+    }
+    $lastIcon = $icon;
+  }
 ?>
 <h1><?=$titleEsc?></h1>
-<div class="devtools-icon-container">
-  <?php foreach ($aliases as $icon): ?>
-    <?=$this->icon($icon)?> <?=$this->escapeHtml($icon)?><br>
-  <?php endforeach; ?>
-</div>
+<div class="devtools-icon-container"><?=implode('', $icons)?></div>
