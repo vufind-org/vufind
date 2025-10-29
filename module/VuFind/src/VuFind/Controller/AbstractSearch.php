@@ -195,13 +195,9 @@ class AbstractSearch extends AbstractBase
         // Enable recommendations unless explicitly told to disable them:
         $all = ['top', 'side', 'noresults', 'bottom'];
         $noRecommend = $this->params()->fromQuery('noRecommend', false);
-        if (
-            in_array($noRecommend, [1, '1', 'true', true], true)
-        ) {
+        if (in_array($noRecommend, [1, '1', 'true', true], true)) {
             return [];
-        } elseif (
-            in_array($noRecommend, [0, '0', 'false', false], true)
-        ) {
+        } elseif (in_array($noRecommend, [0, '0', 'false', false], true)) {
             return $all;
         }
         return array_diff(
