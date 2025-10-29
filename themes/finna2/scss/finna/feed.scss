@@ -963,7 +963,7 @@ finna-feed.carousel-slider.splide--ltr {
         }
     }
 }
-@container (min-width: $slider-stacked-breakpoint) {
+@container (min-width: #{$slider-stacked-breakpoint-min}) {
     finna-feed.carousel-slider.splide--ltr {
         .slider-text-part {
             .slider-title {
@@ -976,7 +976,7 @@ finna-feed.carousel-slider.splide--ltr {
         }
     }
 }
-@container (max-width: $slider-stacked-breakpoint) {
+@container (max-width: #{$slider-stacked-breakpoint-max}) {
     finna-feed.carousel-slider.splide--ltr {
         .feed-item-holder[style] {
             height: var(--height) !important;

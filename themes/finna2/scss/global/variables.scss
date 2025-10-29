@@ -132,6 +132,8 @@ $similar-carousel-format-background: #f2f2f2 !default;
 
 //== Breakpoint for slider layout
 $slider-stacked-breakpoint: map.get($grid-breakpoints, "sm") !default;
+$slider-stacked-breakpoint-min: $slider-stacked-breakpoint;
+$slider-stacked-breakpoint-max: ($slider-stacked-breakpoint - 0.02);
 
 //== List feed styles
 $list-feed-background: $body-bg !default;
