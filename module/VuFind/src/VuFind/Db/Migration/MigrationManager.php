@@ -31,6 +31,7 @@ namespace VuFind\Db\Migration;
 
 use Doctrine\DBAL\Exception;
 use Doctrine\DBAL\Exception\TableNotFoundException;
+use RuntimeException;
 use VuFind\Db\Connection;
 
 use function get_class;
@@ -268,7 +269,15 @@ class MigrationManager
         foreach ($this->loader->splitSqlIntoStatements($sql) as $i => $sqlChunk) {
             $output .= $this->logMigrationEvent($connection, $shortMigrationName, "writing chunk $i");
             if ($connection) {
-                $connection->executeQuery($sqlChunk);
+                try {
+                    $connection->executeQuery($sqlChunk);
+                } catch (\Exception $e) {
+                    throw new RuntimeException(
+                        "Could not apply database migration command '$sqlChunk'; " . $e->getMessage(),
+                        0,
+                        $e
+                    );
+                }
             }
             $output .= "$sqlChunk;\n";
         }

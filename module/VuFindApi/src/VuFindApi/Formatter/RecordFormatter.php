@@ -193,7 +193,7 @@ class RecordFormatter extends BaseFormatter
         $translator = $this->helperManager->get('translate');
         array_walk_recursive(
             $result,
-            function (&$value) use ($translator) {
+            function (&$value) use ($translator): void {
                 if (is_object($value)) {
                     if ($value instanceof TranslatableString) {
                         $value = [

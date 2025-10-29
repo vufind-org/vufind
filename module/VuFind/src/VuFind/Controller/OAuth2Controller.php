@@ -176,7 +176,7 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
         if ($allowedScopes = $clientConfig['allowedScopes'] ?? null) {
             $scopes = $authRequest->getScopes();
             array_map(
-                function ($scope) use ($allowedScopes) {
+                function ($scope) use ($allowedScopes): void {
                     if (!in_array($scope->getIdentifier(), $allowedScopes)) {
                         $scope->setHidden(true);
                     }

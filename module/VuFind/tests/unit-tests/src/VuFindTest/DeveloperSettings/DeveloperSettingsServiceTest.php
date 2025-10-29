@@ -379,7 +379,7 @@ class DeveloperSettingsServiceTest extends \PHPUnit\Framework\TestCase
         $apiKey->setTitle('heitest')->setCreated($date)->setLastUsed($date)->setRevoked(false);
         $apiKeyService = $this->createMockWithMethods(ApiKeyServiceInterface::class, ['getByToken' => $apiKey]);
         $apiKeyService->expects($this->once())->method('persistEntity')->willReturnCallback(
-            function ($apiKey) use ($date) {
+            function ($apiKey) use ($date): void {
                 $this->assertNotEquals(
                     $apiKey->getLastUsed()->getTimestamp(),
                     $date->getTimestamp()

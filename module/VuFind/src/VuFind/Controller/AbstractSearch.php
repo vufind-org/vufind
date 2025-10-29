@@ -230,7 +230,7 @@ class AbstractSearch extends AbstractBase
         $override = $this->params()->fromQuery('recommendOverride');
 
         // Retrieve recommend settings from params object:
-        return function ($runner, $params, $searchId) use ($rManager, $activeRecs, $override) {
+        return function ($runner, $params, $searchId) use ($rManager, $activeRecs, $override): void {
             $listener = new RecommendListener($rManager, $searchId);
             $config = [];
             $rawConfig = $params->getOptions()

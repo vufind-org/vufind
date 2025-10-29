@@ -86,7 +86,7 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
         $queryObject = $this->createMock(Query::class);
         $queryObject->expects($this->any())->method('getSingleColumnResult')->willReturn([]);
         $queryObject->expects($this->once())->method('setParameters')->willReturnCallback(
-            function ($params) use ($expected) {
+            function ($params) use ($expected): void {
                 $params = array_map(
                     fn ($param) => is_object($param) ? $param->getId() : $param,
                     $params,

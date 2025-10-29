@@ -150,6 +150,7 @@
     <phingcall target="eslint-report"/>
     <phingcall target="jshint-report"/>
     <phingcall target="phpstan-checkstyle"/>
+    <phingcall target="rector-console"/>
   </target>
 
   <!-- Quality Assurance Tasks -->
@@ -172,10 +173,13 @@
     <phingcall target="phpcs-console"/>
     <phingcall target="php-cs-fixer-dryrun"/>
     <phingcall target="phpstan-console"/>
+    <phingcall target="rector-console"/>
   </target>
 
   <!-- Fix PHP Tasks -->
   <target name="fix-php" description="quality assurance php tasks">
+    <!-- Rector may introduce style issues, so run it first -->
+    <phingcall target="rector"/>
     <phingcall target="php-cs-fixer"/>
     <phingcall target="phpcbf"/>
   </target>
@@ -262,6 +266,18 @@
     </exec>
     <exec executable="${srcdir}/vendor/bin/php-cs-fixer" passthru="true" escape="false" checkreturn="true">
       <arg line="fix --config=${srcdir}/tests/vufind_templates.php-cs-fixer.php --dry-run -vvv --diff" />
+    </exec>
+  </target>
+
+  <!-- Rector -->
+  <target name="rector-console">
+    <exec executable="${srcdir}/vendor/bin/rector" escape="false" passthru="true" checkreturn="true">
+      <arg line="--config=${srcdir}/tests/rector.php --dry-run" />
+    </exec>
+  </target>
+  <target name="rector">
+    <exec executable="${srcdir}/vendor/bin/rector" escape="false" passthru="true" checkreturn="true">
+      <arg line="--config=${srcdir}/tests/rector.php" />
     </exec>
   </target>
 

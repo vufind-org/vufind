@@ -877,7 +877,7 @@ class BackendTest extends TestCase
         $preEventParams = [];
         $postEventParams = [];
 
-        $onSearchPre = function (EventInterface $event) use (&$preEventParams) {
+        $onSearchPre = function (EventInterface $event) use (&$preEventParams): void {
             $command = $event->getParam('command');
             $params = $command->getSearchParameters();
             $backend = $event->getParam('backend');
@@ -897,7 +897,7 @@ class BackendTest extends TestCase
             ];
         };
 
-        $onSearchPost = function (EventInterface $event) use (&$postEventParams) {
+        $onSearchPost = function (EventInterface $event) use (&$postEventParams): void {
             $command = $event->getParam('command');
             $postEventParams[$command->getTargetIdentifier()] = [
                 'target' => $event->getTarget(),
