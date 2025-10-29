@@ -9,7 +9,7 @@
   foreach ($aliases as $icon) {
     // If this is a right-to-left icon, display it on the same line with the left-to-right version:
     if ($icon === "$lastIcon-rtl") {
-      array_pop($icons);
+      array_pop($icons); // discard the previous uncombined version of the line before adding the combined version
       $icons[] = $this->icon($lastIcon) . '/' . $this->icon($icon) . ' ' . $this->escapeHtml($lastIcon) . ' (ltr/rtl) <br>';
     } else {
       $icons[] = $this->icon($icon) . ' ' . $this->escapeHtml($icon) . '<br>';
