@@ -178,9 +178,10 @@
 
   <!-- Fix PHP Tasks -->
   <target name="fix-php" description="quality assurance php tasks">
+    <!-- Rector may introduce style issues, so run it first -->
+    <phingcall target="rector"/>
     <phingcall target="php-cs-fixer"/>
     <phingcall target="phpcbf"/>
-    <phingcall target="rector"/>
   </target>
 
   <!-- Report rule violations with PHPMD (mess detector) -->
