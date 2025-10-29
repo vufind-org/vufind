@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -61,9 +61,8 @@ class SwitchTypeTest extends \PHPUnit\Framework\TestCase
      * @param string $expectedResult Expected return value from isActive
      *
      * @return void
-     *
-     * @dataProvider newHandlerNameProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('newHandlerNameProvider')]
     public function testGetNewHandlerName(string $settings, string $expectedResult): void
     {
         $obj = new SwitchType();
@@ -92,9 +91,8 @@ class SwitchTypeTest extends \PHPUnit\Framework\TestCase
      * @param bool|string $expectedResult Expected return value from isActive
      *
      * @return void
-     *
-     * @dataProvider newHandlerProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('newHandlerProvider')]
     public function testGetNewHandler(string $settings, string $searchHandler, $expectedResult): void
     {
         $obj = new SwitchType();

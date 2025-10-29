@@ -28,13 +28,16 @@ CREATE TABLE resource (
 id SERIAL,
 record_id varchar(255) NOT NULL DEFAULT '',
 title varchar(255) NOT NULL DEFAULT '',
+display_title varchar(255) DEFAULT NULL,
 author varchar(255) DEFAULT NULL,
 year int DEFAULT NULL,
 source varchar(50) NOT NULL DEFAULT 'Solr',
 extra_metadata text DEFAULT NULL,
+updated timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
 PRIMARY KEY (id)
 );
 CREATE INDEX resource_record_id_idx ON resource (record_id);
+CREATE INDEX resource_updated_idx ON resource (updated);
 
 
 -- --------------------------------------------------------
@@ -190,6 +193,7 @@ id SERIAL,
 user_id int NOT NULL,
 title varchar(200) NOT NULL,
 description text DEFAULT NULL,
+type varchar(200) NOT NULL DEFAULT 'default',
 created timestamp NOT NULL DEFAULT '2000-01-01 00:00:00',
 public boolean NOT NULL DEFAULT '0',
 PRIMARY KEY (id)
@@ -283,6 +287,7 @@ expires timestamp NOT NULL default '2000-01-01 00:00:00',
 PRIMARY KEY (id)
 );
 CREATE UNIQUE INDEX oai_resumption_token_idx ON oai_resumption (token);
+CREATE INDEX oai_resumption_expires_idx on oai_resumption(expires);
 
 -- --------------------------------------------------------
 
@@ -387,6 +392,21 @@ revoked boolean NOT NULL DEFAULT '0',
 PRIMARY KEY (id, type)
 );
 CREATE INDEX access_token_user_id_idx ON access_token (user_id);
+
+DROP TABLE IF EXISTS "api_key";
+
+CREATE TABLE api_key (
+  id SERIAL,
+  user_id int NOT NULL,
+  title varchar(255) NOT NULL,
+  token varchar(255) NOT NULL,
+  revoked boolean NOT NULL DEFAULT '0',
+  created timestamp NOT NULL default CURRENT_TIMESTAMP,
+  last_used timestamp NOT NULL default CURRENT_TIMESTAMP,
+  PRIMARY KEY (id)
+);
+CREATE INDEX api_key_user_id_idx ON api_key (user_id);
+CREATE INDEX api_key_token_idx ON api_key (token);
 
 --
 -- Table structure for table `login_token`
@@ -609,3 +629,9 @@ ADD CONSTRAINT payment_fee_ibfk_1 FOREIGN KEY (payment_id) REFERENCES "payment" 
 ALTER TABLE audit_event
 ADD CONSTRAINT audit_event_ibfk_1 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE SET NULL,
 ADD CONSTRAINT audit_event_ibfk_2 FOREIGN KEY (payment_id) REFERENCES "payment" (id) ON DELETE CASCADE;
+
+---
+-- Constraints for table api_key
+---
+ALTER TABLE api_key
+ADD CONSTRAINT api_key_ibfk_1 FOREIGN KEY (user_id) REFERENCES "user" (id) ON DELETE CASCADE;

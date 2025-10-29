@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -77,9 +77,9 @@ class AbstractExpireCommandTest extends \PHPUnit\Framework\TestCase
     protected $illegalAge = 1.0;
 
     /**
-     * Expected minimum age in error message.
+     * Expected minimum age in error message or null if not applicable.
      *
-     * @var float
+     * @var ?float
      */
     protected $expectedMinAge = 2.0;
 
@@ -100,6 +100,9 @@ class AbstractExpireCommandTest extends \PHPUnit\Framework\TestCase
         $service = $this->createMock($this->validServiceClass);
         $command = new $this->targetClass($service, 'foo');
         $commandTester = new CommandTester($command);
+        if (null === $this->expectedMinAge) {
+            $this->expectExceptionMessage('The "age" argument does not exist.');
+        }
         $commandTester->execute(['age' => $this->illegalAge]);
         $expectedMinAge = number_format($this->expectedMinAge, 1, '.', '');
         $this->assertEquals(

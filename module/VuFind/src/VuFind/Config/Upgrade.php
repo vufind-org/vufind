@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Config
@@ -30,7 +30,7 @@
 
 namespace VuFind\Config;
 
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Config\Location\ConfigDirectory;
 use VuFind\Config\Location\ConfigLocationInterface;
 use VuFind\Exception\FileAccess as FileAccessException;
@@ -167,7 +167,7 @@ class Upgrade implements LoggerAwareInterface
         $this->saveModifiedConfig('permissions', $this->permissionsModified);
 
         // Make sure to update any remaining configurations that were not explicitly updated above.
-        foreach ($this->newConfigs as $configName => $newConfig) {
+        foreach (array_keys($this->newConfigs) as $configName) {
             if (!in_array($configName, $this->writtenConfig)) {
                 $this->applyOldSettings($configName);
                 $this->saveModifiedConfig($configName);
@@ -421,22 +421,23 @@ class Upgrade implements LoggerAwareInterface
     }
 
     /**
-     * Add warnings if Amazon problems were found.
+     * Add warnings if obsolete cover/review problems were found.
      *
-     * @param array $config Configuration to check
+     * @param array  $config Configuration to check
+     * @param string $site   Site name to check
      *
      * @return void
      */
-    protected function checkAmazonConfig(array $config): void
+    protected function checkObsoleteCoverOrReviewConfig(array $config, string $site): void
     {
         // Warn the user if they have Amazon enabled but do not have the appropriate
         // credentials set up.
-        $hasAmazonReview = stristr($config['Content']['reviews'] ?? '', 'amazon');
-        $hasAmazonCover = stristr($config['Content']['coverimages'] ?? '', 'amazon');
-        if ($hasAmazonReview || $hasAmazonCover) {
+        $hasBadReview = stristr($config['Content']['reviews'] ?? '', $site);
+        $hasBadCover = stristr($config['Content']['coverimages'] ?? '', $site);
+        if ($hasBadReview || $hasBadCover) {
             $this->addWarning(
-                'WARNING: You have Amazon content enabled, but VuFind no longer '
-                . 'supports it. You should remove Amazon references from config.ini.'
+                'WARNING: You have ' . $site . ' content enabled, but VuFind no longer '
+                . 'supports it. You should remove ' . $site . ' references from config.ini.'
             );
         }
     }
@@ -467,7 +468,14 @@ class Upgrade implements LoggerAwareInterface
         }
 
         // Warn the user about Amazon configuration issues:
-        $this->checkAmazonConfig($newConfig);
+        $this->checkObsoleteCoverOrReviewConfig($newConfig, 'Amazon');
+
+        // Warn the user about BookSite configuration issues:
+        $this->checkObsoleteCoverOrReviewConfig($newConfig, 'Booksite');
+        if (isset($newConfig['Booksite'])) {
+            unset($newConfig['Booksite']);
+            $this->addWarning('The [Booksite] section of config.ini is no longer supported.');
+        }
 
         // Warn the user if they have enabled a deprecated Google API:
         if (isset($newConfig['GoogleSearch'])) {
@@ -559,7 +567,7 @@ class Upgrade implements LoggerAwareInterface
         unset($newConfig['Index']['local']);
 
         // Warn the user if they are using an unsupported theme:
-        $this->checkTheme('theme', 'bootprint3');
+        $this->checkTheme('theme', 'sandal5');
         $this->checkTheme('mobile_theme', null);
 
         // Translate legacy auth settings:

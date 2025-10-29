@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -462,7 +462,7 @@ class DefaultRecord extends AbstractBase
         }
 
         // deduplicate
-        $dedup = function (&$array1, &$array2) {
+        $dedup = function (&$array1, &$array2): void {
             if (!empty($array1) && !empty($array2)) {
                 $keys = array_keys($array1);
                 foreach ($keys as $author) {
@@ -481,7 +481,7 @@ class DefaultRecord extends AbstractBase
         $dedup($authors['secondary'], $authors['corporate']);
         $dedup($authors['primary'], $authors['secondary']);
 
-        $dedup_data = function (&$array) {
+        $dedup_data = function (&$array): void {
             foreach ($array as $author => $data) {
                 foreach ($data as $field => $values) {
                     if (is_array($values)) {

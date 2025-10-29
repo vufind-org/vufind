@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -60,18 +60,18 @@ class Printms extends AbstractHelper
         $seconds = floor($ms / 1000);
 
         $minutes = floor($seconds / 60);
-        $seconds = ($seconds % 60);
+        $seconds %= 60;
 
         $hours = floor($minutes / 60);
-        $minutes = ($minutes % 60);
+        $minutes %= 60;
 
         if ($hours) {
             $days = floor($hours / 60);
-            $hours = ($hours % 60);
+            $hours %= 60;
 
             if ($days) {
                 $years = floor($days / 365);
-                $days = ($days % 365);
+                $days %= 365;
 
                 if ($years) {
                     return sprintf(

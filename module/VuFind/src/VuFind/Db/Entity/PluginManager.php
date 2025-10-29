@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -49,6 +49,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         AccessTokenEntityInterface::class => AccessToken::class,
+        ApiKeyEntityInterface::class => ApiKey::class,
         AuthHashEntityInterface::class => AuthHash::class,
         ChangeTrackerEntityInterface::class => ChangeTracker::class,
         CommentsEntityInterface::class => Comments::class,
@@ -80,6 +81,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $factories = [
         AccessToken::class => InvokableFactory::class,
+        ApiKey::class => InvokableFactory::class,
         AuthHash::class => InvokableFactory::class,
         ChangeTracker::class => InvokableFactory::class,
         Comments::class => InvokableFactory::class,

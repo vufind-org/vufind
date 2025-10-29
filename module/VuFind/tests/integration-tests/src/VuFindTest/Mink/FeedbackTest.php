@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -141,10 +141,9 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool   $expectSuccess Expect successful send?
      * @param bool   $expectEmail   Expect email to be received?
      *
-     * @dataProvider feedbackFormProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('feedbackFormProvider')]
     public function testFeedbackForm(string $sender, bool $expectSuccess, bool $expectEmail): void
     {
         $this->resetEmailLog();
@@ -210,9 +209,8 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
      * Test that the feedback admin module works.
      *
      * @return void
-     *
-     * @depends testFeedbackFormDatabaseStorage
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testFeedbackFormDatabaseStorage')]
     public function testFeedbackAdmin(): void
     {
         // Go to admin page:

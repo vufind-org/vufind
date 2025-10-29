@@ -109,6 +109,7 @@
           $searchboxAttributes['class'] .= " autocomplete searcher:{$this->searchClassId}"
             . ($this->searchbox()->autocompleteAutoSubmit($this->searchClassId) ? ' ac-auto-submit' : '');
           $searchboxAttributes['data-autocomplete-formatting-rules'] = $this->searchbox()->autocompleteFormattingRulesJson($this->searchClassId);
+          $searchboxAttributes['data-autocomplete-display-limit'] = $this->searchbox()->autocompleteDisplayLimit($this->searchClassId);
         }
         if (!empty($keyboardLayouts)) {
           $searchboxAttributes['class'] .= ' with-keyboard-selection';

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -69,9 +69,9 @@ class AuditEventService extends AbstractDbService implements
      * @param ?string             $requestUri          Request URI (if applicable)
      */
     public function __construct(
-        protected EntityManager $entityManager,
-        protected EntityPluginManager $entityPluginManager,
-        protected PersistenceManager $persistenceManager,
+        EntityManager $entityManager,
+        EntityPluginManager $entityPluginManager,
+        PersistenceManager $persistenceManager,
         protected array $enabledEventTypes,
         protected ?string $sessionId,
         protected ?string $clientIp,
@@ -79,6 +79,7 @@ class AuditEventService extends AbstractDbService implements
         protected ?string $serverName,
         protected ?string $requestUri
     ) {
+        parent::__construct($entityManager, $entityPluginManager, $persistenceManager);
     }
 
     /**
@@ -325,7 +326,7 @@ class AuditEventService extends AbstractDbService implements
     {
         array_walk_recursive(
             $details,
-            function (&$value, $key) {
+            function (&$value, $key): void {
                 if ('csrf' === $key || str_contains($key, 'password')) {
                     $value = '***';
                 }

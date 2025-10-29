@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -68,9 +68,8 @@ class MigrationLoaderTest extends \PHPUnit\Framework\TestCase
      * @param string $expectedDir Expected result
      *
      * @return void
-     *
-     * @dataProvider getMigrationDirForPlatformProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getMigrationDirForPlatformProvider')]
     public function testGetMigrationDirForPlatform(string $platform, string $expectedDir): void
     {
         $loader = new MigrationLoader();
@@ -99,9 +98,8 @@ class MigrationLoaderTest extends \PHPUnit\Framework\TestCase
      * @param array  $expectedDirs Expected matching versions
      *
      * @return void
-     *
-     * @dataProvider getMigrationSubdirectoriesMatchingVersionProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getMigrationSubdirectoriesMatchingVersionProvider')]
     public function testGetMigrationSubdirectoriesMatchingVersion(string $version, array $expectedDirs): void
     {
         $fixtureDir = $this->getFixtureDir() . 'db-migrations';

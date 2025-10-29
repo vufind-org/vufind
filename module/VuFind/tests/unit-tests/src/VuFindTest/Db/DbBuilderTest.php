@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -82,9 +82,8 @@ class DbBuilderTest extends \PHPUnit\Framework\TestCase
      * @param ?string $expectedPort Expected port number (or null) parsed from string
      *
      * @return void
-     *
-     * @dataProvider portHandlingProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('portHandlingProvider')]
     public function testPortHandling(string $host, string $expectedHost, ?string $expectedPort): void
     {
         $mockConnectionFactory = $this->createMock(ConnectionFactory::class);
@@ -136,9 +135,8 @@ class DbBuilderTest extends \PHPUnit\Framework\TestCase
      * @param bool     $sqlOnly          Test in SQL-only mode?
      *
      * @return void
-     *
-     * @dataProvider preCommandsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('preCommandsProvider')]
     public function testPreCommands(string $driver, array $expectedCommands, bool $sqlOnly): void
     {
         $factory = $this->createMock(ConnectionFactory::class);
@@ -173,9 +171,8 @@ class DbBuilderTest extends \PHPUnit\Framework\TestCase
      * @param string $expectedFile File containing expected commands
      *
      * @return void
-     *
-     * @dataProvider mainCommandsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('mainCommandsProvider')]
     public function testMainCommands(string $driver, string $expectedFile): void
     {
         $factory = $this->createMock(ConnectionFactory::class);
@@ -223,9 +220,8 @@ class DbBuilderTest extends \PHPUnit\Framework\TestCase
      * @param bool     $sqlOnly          Test in SQL-only mode?
      *
      * @return void
-     *
-     * @dataProvider postCommandsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('postCommandsProvider')]
     public function testPostCommands(string $driver, array $expectedCommands, bool $sqlOnly): void
     {
         $factory = $this->createMock(ConnectionFactory::class);

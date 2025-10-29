@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -49,6 +49,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         AccessTokenServiceInterface::class => AccessTokenService::class,
+        ApiKeyServiceInterface::class => ApiKeyService::class,
         AuthHashServiceInterface::class => AuthHashService::class,
         ChangeTrackerServiceInterface::class => ChangeTrackerService::class,
         CommentsServiceInterface::class => CommentsService::class,
@@ -81,6 +82,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $factories = [
         AccessTokenService::class => AbstractDbServiceFactory::class,
+        ApiKeyService::class => AbstractDbServiceFactory::class,
         AuthHashService::class => AbstractDbServiceFactory::class,
         ChangeTrackerService::class => AbstractDbServiceFactory::class,
         CommentsService::class => AbstractDbServiceFactory::class,
@@ -93,7 +95,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         PaymentFeeService::class => AbstractDbServiceFactory::class,
         RatingsService::class => AbstractDbServiceFactory::class,
         RecordService::class => AbstractDbServiceFactory::class,
-        ResourceService::class => ResourceServiceFactory::class,
+        ResourceService::class => AbstractDbServiceFactory::class,
         ResourceTagsService::class => AbstractDbServiceFactory::class,
         SearchService::class => AbstractDbServiceFactory::class,
         SessionService::class => AbstractDbServiceFactory::class,

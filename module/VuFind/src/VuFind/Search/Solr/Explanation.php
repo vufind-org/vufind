@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Solr
@@ -311,7 +311,7 @@ class Explanation extends \VuFind\Search\Base\Explanation
         if (($response['responseHeader']['params']['boost'] ?? false) && count($lines) > 1) {
             $this->boost = $this->parseLine(array_pop($lines));
             if ($this->boost['value'] > 0) {
-                $this->baseScore = $this->baseScore / $this->boost['value'];
+                $this->baseScore /= $this->boost['value'];
             }
         }
 
@@ -319,7 +319,7 @@ class Explanation extends \VuFind\Search\Base\Explanation
         if (!empty($lines) && str_contains($this->parseLine(end($lines))['description'], 'coord')) {
             $this->coord = $this->parseLine(end($lines));
             if ($this->coord['value'] > 0) {
-                $this->baseScore = $this->baseScore / $this->coord['value'];
+                $this->baseScore /= $this->coord['value'];
             }
         }
 

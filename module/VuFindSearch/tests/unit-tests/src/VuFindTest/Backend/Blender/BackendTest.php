@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -32,8 +32,8 @@ namespace VuFindTest\Backend\Blender;
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\EventManager;
 use Laminas\EventManager\SharedEventManager;
-use Laminas\Log\LoggerInterface;
 use PHPUnit\Framework\TestCase;
+use Psr\Log\LoggerInterface;
 use VuFind\Config\Config;
 use VuFind\RecordDriver\EDS as EDSRecord;
 use VuFind\RecordDriver\SolrMarc as SolrRecord;
@@ -478,10 +478,9 @@ class BackendTest extends TestCase
      * @param int    $expectedEDS     Expected EDS count
      * @param Query  $query           Override query
      *
-     * @dataProvider getSearchTestData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getSearchTestData')]
     public function testSearch(
         $start,
         $limit,
@@ -816,13 +815,13 @@ class BackendTest extends TestCase
 
         $logger = $this->createMock(LoggerInterface::class);
         $logger->expects($this->once())
-            ->method('warn')
+            ->method('log')
             ->with(
+                \Psr\Log\LogLevel::WARNING,
                 'VuFindSearch\Backend\Blender\Backend:'
                 . ' Invalid blender_backend filter: Backend Foo not enabled',
                 []
-            )
-            ->willReturn(null);
+            );
         $backend->setLogger($logger);
         $backend->search(new Query(), 0, 20, $params);
     }
@@ -852,10 +851,9 @@ class BackendTest extends TestCase
      *
      * @param array $blockSizes Adaptive block size configuration
      *
-     * @dataProvider getInvalidBlockSizes
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getInvalidBlockSizes')]
     public function testInvalidAdaptiveBlockSize($blockSizes): void
     {
         $config = static::$config;
@@ -879,7 +877,7 @@ class BackendTest extends TestCase
         $preEventParams = [];
         $postEventParams = [];
 
-        $onSearchPre = function (EventInterface $event) use (&$preEventParams) {
+        $onSearchPre = function (EventInterface $event) use (&$preEventParams): void {
             $command = $event->getParam('command');
             $params = $command->getSearchParameters();
             $backend = $event->getParam('backend');
@@ -899,7 +897,7 @@ class BackendTest extends TestCase
             ];
         };
 
-        $onSearchPost = function (EventInterface $event) use (&$postEventParams) {
+        $onSearchPost = function (EventInterface $event) use (&$postEventParams): void {
             $command = $event->getParam('command');
             $postEventParams[$command->getTargetIdentifier()] = [
                 'target' => $event->getTarget(),

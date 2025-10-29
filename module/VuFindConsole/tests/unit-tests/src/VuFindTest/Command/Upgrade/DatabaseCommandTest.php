@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,7 +29,9 @@
 
 namespace VuFindTest\Command\Upgrade;
 
+use Closure;
 use Symfony\Component\Console\Tester\CommandTester;
+use VuFind\Cache\Manager as CacheManager;
 use VuFind\Db\Connection;
 use VuFind\Db\ConnectionFactory;
 use VuFind\Db\Migration\MigrationManager;
@@ -65,9 +67,8 @@ class DatabaseCommandTest extends \PHPUnit\Framework\TestCase
      * @param bool $sqlOnly Test in sql-only mode?
      *
      * @return void
-     *
-     * @dataProvider sqlOnlyProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('sqlOnlyProvider')]
     public function testSimpleSuccess(bool $sqlOnly): void
     {
         $connection = $this->createMock(Connection::class);
@@ -82,11 +83,25 @@ class DatabaseCommandTest extends \PHPUnit\Framework\TestCase
         if (!$sqlOnly) {
             $factory->expects($this->once())->method('getConnection')->with(null, null)->willReturn($connection);
         }
-        $command = new DatabaseCommand($manager, $factory);
+        $cacheManager = $this->createMock(CacheManager::class);
+        $cacheManager->expects($this->once())
+            ->method('getCacheDir')
+            ->with(false)
+            ->willReturn('CACHEDIR/');
+        $command = new DatabaseCommand(Closure::fromCallable(fn () => $manager), $factory, $cacheManager);
         $commandTester = new CommandTester($command);
         $commandTester->execute($sqlOnly ? ['--sql-only' => true] : []);
+        if ($sqlOnly) {
+            $expectedMsg = "123\n"
+                . "\nPlease clear the object cache (CACHEDIR/objects) after applying the migrations to ensure that the"
+                . " metadata is up to date.\n\n";
+        } else {
+            $expectedMsg = "Successfully upgraded database.\n"
+                . "\nPlease clear the object cache (CACHEDIR/objects) now to ensure that the metadata is up to date."
+                . "\n\n";
+        }
         $this->assertEquals(
-            $sqlOnly ? "123\n" : "Successfully upgraded database.\n",
+            $expectedMsg,
             $commandTester->getDisplay()
         );
         $this->assertEquals(0, $commandTester->getStatusCode());
@@ -101,7 +116,8 @@ class DatabaseCommandTest extends \PHPUnit\Framework\TestCase
     {
         $manager = $this->createMock(MigrationManager::class);
         $factory = $this->createMock(ConnectionFactory::class);
-        $command = new DatabaseCommand($manager, $factory);
+        $cacheManager = $this->createMock(CacheManager::class);
+        $command = new DatabaseCommand(Closure::fromCallable(fn () => $manager), $factory, $cacheManager);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
         $this->assertEquals(

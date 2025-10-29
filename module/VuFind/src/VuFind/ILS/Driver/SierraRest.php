@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -29,7 +29,7 @@
 
 namespace VuFind\ILS\Driver;
 
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
@@ -1244,9 +1244,6 @@ class SierraRest extends AbstractBase implements
         if ($this->config['InnReach']['enabled'] ?? false) {
             foreach ($holds as $n => $hold) {
                 if (!empty($hold['item_id']) && strstr($hold['item_id'], $this->config['InnReach']['identifier'])) {
-                    $id = $hold['id'];
-                    $volume = $hold['volume'];
-
                     $innReach = $this->getInnReachHoldTitleInfoFromId($hold['reqnum'], $hold['id']);
                     if (!empty($innReach)) {
                         $holds[$n]['id'] = $innReach['id'];

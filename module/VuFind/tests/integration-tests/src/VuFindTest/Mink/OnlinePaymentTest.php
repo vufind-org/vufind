@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -95,9 +95,8 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool $multibackend Use MultiBackend driver?
      *
      * @return void
-     *
-     * @dataProvider paymentDisabledProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('paymentDisabledProvider')]
     public function testPaymentDisabled(bool $multibackend): void
     {
         $this->changeConfigs($this->getConfigs($multibackend, null));
@@ -146,10 +145,9 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool  $multibackend    Use MultiBackend driver?
      *
      * @return void
-     *
-     * @dataProvider paymentProvider
-     * @depends      testPaymentDisabled
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testPaymentDisabled')]
+    #[\PHPUnit\Framework\Attributes\DataProvider('paymentProvider')]
     public function testPayment(array $paymentSettings, bool $receiptEnabled, bool $multibackend): void
     {
         $this->changeConfigs($this->getConfigs($multibackend, $paymentSettings));
@@ -210,10 +208,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#modal .btn.btn-primary', null, 1);
         $localIdentifier = $this->getLocalIdentifierFromReturnUrl($page);
         $this->clickCss($page, '.button-success');
-        $this->assertEquals(
-            'Payment successful',
-            $this->findCssAndGetText($page, '.alert.alert-success')
-        );
+        $this->waitForPageLoad($page);
         // Wait for the "Processing Payment" info alert to disappear:
         $this->unFindCss($page, '.alert.alert-info');
         $this->waitForPageLoad($page);
@@ -296,10 +291,12 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test payment without returning to VuFind.
      *
-     * @return bool
+     * This test is excluded from HTML validation because the server returns plain text.
      *
-     * @depends testPayment
+     * @return bool
      */
+    #[\VuFindTest\Attribute\HtmlValidation(false)]
+    #[\PHPUnit\Framework\Attributes\Depends('testPayment')]
     public function testNotify(): bool
     {
         $this->changeConfigs($this->getConfigs(false, []));
@@ -330,7 +327,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
         // Send notify event:
         $this->clickCss($page, '.button-notify');
         $this->assertEqualsWithTimeout(
-            'Notify done',
+            'OK Notify done',
             function () use ($page) {
                 return $this->findCssAndGetText($page, 'body');
             }
@@ -358,9 +355,8 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool $status Status from testNotify
      *
      * @return void
-     *
-     * @depends testNotify
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testNotify')]
     public function testLastPaymentInfo(bool $status): void
     {
         if (true !== $status) {
@@ -401,13 +397,15 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test receipt on demand.
      *
+     * This test is excluded from HTML validation because the server returns HTML used for PDF creation.
+     *
      * @param bool $vatBreakdown VAT breakdown enabled?
      *
      * @return void
-     *
-     * @dataProvider receiptProvider
-     * @depends      testPayment
      */
+    #[\VuFindTest\Attribute\HtmlValidation(false)]
+    #[\PHPUnit\Framework\Attributes\DataProvider('receiptProvider')]
+    #[\PHPUnit\Framework\Attributes\Depends('testPayment')]
     public function testReceipt(bool $vatBreakdown): void
     {
         $this->changeConfigs(
@@ -491,9 +489,8 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $expectedMsg     Expected block message
      *
      * @return void
-     *
-     * @dataProvider blockedPaymentProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('blockedPaymentProvider')]
     public function testBlockedPayment(array $paymentSettings, string $expectedMsg): void
     {
         $this->changeConfigs(

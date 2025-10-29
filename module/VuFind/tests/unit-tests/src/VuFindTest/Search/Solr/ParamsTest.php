@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -183,9 +183,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      * @param string $expectedResult Expected return value from normalizeSort
      *
      * @return void
-     *
-     * @dataProvider sortValueProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('sortValueProvider')]
     public function testSortTieBreakerParameter(
         string $sort,
         string $tieBreaker,
@@ -417,9 +416,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      * @param string $expectedSortList Expected sort list
      *
      * @return void
-     *
-     * @dataProvider sortListDataProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('sortListDataProvider')]
     public function testSortList(array $searchConfig, string $sort, array $expectedSortList): void
     {
         $params = $this->getParams(mockConfigManager: $this->getMockConfigManager(['searches' => $searchConfig]));

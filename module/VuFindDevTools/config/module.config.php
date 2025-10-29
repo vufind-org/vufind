@@ -1,6 +1,6 @@
 <?php
 
-namespace VuFindLocalTemplate\Module\Configuration;
+namespace VuFindDevTools\Module\Configuration;
 
 $config = [
     'controllers' => [

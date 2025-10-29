@@ -81,6 +81,9 @@ main:
       - label: Manage VuFind® installation
         type: internal-command
         command: install/install
+      - label: Upgrade VuFind® configurations
+        type: internal-command
+        command: upgrade/config
       - label: Upgrade VuFind® database
         type: internal-command
         command: upgrade/database
@@ -120,6 +123,9 @@ main:
       - label: Expire old sessions in the database
         type: internal-command
         command: util/expire_sessions
+      - label: Expire old harvesting resumption tokens in the database
+        type: internal-command
+        command: util/expire_resumption_tokens
     - label: Data Management Tools
       type: menu
       contents:
@@ -135,6 +141,9 @@ main:
       - label: Register pending online payments and report expired ones
         type: internal-command
         command: onlinepayment/monitor
+      - label: Update resource metadata
+        type: internal-command
+        command: util/updateResourceMetadata
     - label: Harvest Tools
       type: menu
       contents:
@@ -215,6 +224,9 @@ main:
           - label: Specify ID prefix
             switch: --id-prefix
             type: string
+      - label: Download a file
+        type: internal-command
+        command: util/download
     - label: Import Tools
       type: menu
       contents:

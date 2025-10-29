@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -142,9 +142,8 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
      */
     public function testLogging()
     {
-        $logger = new \Laminas\Log\Logger();
-        $writer = new \Laminas\Log\Writer\Mock();
-        $logger->addWriter($writer);
+        $testHandler = new \Monolog\Handler\TestHandler();
+        $logger = new \Monolog\Logger('test', [$testHandler]);
 
         $driver = $this->initDriver(
             [
@@ -154,12 +153,14 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
         $driver->setLogger($logger);
 
         $this->callMethod($driver, 'getDriverConfig', ['bad']);
+        $records = $testHandler->getRecords();
+        $this->assertCount(1, $records);
         $this->assertEquals(
             $driver::class . ': Could not load config for bad',
-            $writer->events[0]['message']
+            $records[0]['message']
         );
 
-        return ['driver' => $driver, 'writer' => $writer];
+        return ['driver' => $driver, 'writer' => $testHandler];
     }
 
     /**

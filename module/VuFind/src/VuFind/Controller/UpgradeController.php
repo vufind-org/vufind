@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -54,8 +54,6 @@ use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Db\Service\ShortlinksServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
-use VuFind\Exception\RecordMissing as RecordMissingException;
-use VuFind\Record\ResourcePopulator;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 use VuFind\Tags\TagsService;
 
@@ -146,11 +144,8 @@ class UpgradeController extends AbstractBase
     {
         // If auto-configuration is disabled, prevent any other action from being
         // accessed:
-        $config = $this->getConfig();
-        if (
-            !isset($config->System->autoConfigure)
-            || !$config->System->autoConfigure
-        ) {
+        $config = $this->getConfigArray();
+        if (!($config['System']['autoConfigure'] ?? false)) {
             $routeMatch = $e->getRouteMatch();
             $routeMatch->setParam('action', 'disabled');
         }
@@ -318,6 +313,7 @@ class UpgradeController extends AbstractBase
      */
     public function applyDatabaseMigrations(): ?ViewModel
     {
+        $this->clearDoctrineMetadataCache();
         $migrationManager = $this->getService(MigrationManager::class);
         $migrations = $migrationManager->getMigrations($this->cookie->oldVersion);
         $failedMigrations = $migrationManager->getFailedMigrations();
@@ -339,6 +335,7 @@ class UpgradeController extends AbstractBase
         } else {
             $this->session->sql = $migrationManager->applyMigrations($migrations, null);
         }
+        $this->clearDoctrineMetadataCache();
         return null;
     }
 
@@ -530,53 +527,20 @@ class UpgradeController extends AbstractBase
     }
 
     /**
-     * Fix missing metadata in the resource table.
+     * Check for missing metadata in the resource table.
      *
      * @return mixed
      * @throws Exception
      */
     public function fixmetadataAction()
     {
-        // User requested skipping this step?  No need to do further work:
-        if (strlen($this->params()->fromPost('skip', '')) > 0) {
-            $this->cookie->metadataOkay = true;
-            return $this->forwardTo('Upgrade', 'Home');
-        }
-
-        // This can take a while -- don't time out!
-        set_time_limit(0);
-
         // Check for problems:
+        $this->clearDoctrineMetadataCache();
         $resourceService = $this->getDbService(ResourceServiceInterface::class);
-        $problems = $resourceService->findMissingMetadata();
+        $problems = $resourceService->findMetadataToUpdate(null, 1);
 
-        // No problems?  We're done here!
-        if (count($problems) == 0) {
-            $this->cookie->metadataOkay = true;
-            return $this->forwardTo('Upgrade', 'Home');
-        }
-
-        // Process submit button:
-        if ($this->formWasSubmitted()) {
-            $resourcePopulator = $this->getService(ResourcePopulator::class);
-            foreach ($problems as $problem) {
-                $recordId = $problem->getRecordId();
-                $source = $problem->getSource();
-                try {
-                    $driver = $this->getRecordLoader()->load($recordId, $source);
-                    $resourceService->persistEntity(
-                        $resourcePopulator->assignMetadata($problem, $driver)
-                    );
-                } catch (RecordMissingException $e) {
-                    $this->session->warnings->append(
-                        "Unable to load metadata for record {$source}:{$recordId}"
-                    );
-                } catch (\Exception $e) {
-                    $this->session->warnings->append(
-                        "Problem saving metadata updates for record {$source}:{$recordId}"
-                    );
-                }
-            }
+        // No problems or form submitted?  We're done here!
+        if (count($problems) == 0 || $this->formWasSubmitted()) {
             $this->cookie->metadataOkay = true;
             return $this->forwardTo('Upgrade', 'Home');
         }
@@ -768,11 +732,10 @@ class UpgradeController extends AbstractBase
      */
     protected function criticalCheckForBlowfishEncryption()
     {
-        $config = $this->getConfig();
-        $encryptionEnabled = $config->Authentication->encrypt_ils_password ?? false;
-        $algo = $config->Authentication->ils_encryption_algo ?? 'blowfish';
-        return ($encryptionEnabled && $algo === 'blowfish')
-            ? 'CriticalFixBlowfish' : null;
+        $config = $this->getConfigArray();
+        $encryptionEnabled = $config['Authentication']['encrypt_ils_password'] ?? false;
+        $algo = $config['Authentication']['ils_encryption_algo'] ?? 'blowfish';
+        return ($encryptionEnabled && $algo === 'blowfish') ? 'CriticalFixBlowfish' : null;
     }
 
     /**
@@ -811,5 +774,16 @@ class UpgradeController extends AbstractBase
         return $this->createViewModel(
             compact('newAlgorithm', 'exampleKey', 'blowfishIsWorking')
         );
+    }
+
+    /**
+     * Clear Doctrine's metadata cache to ensure the schema information is up to date.
+     *
+     * @return void
+     */
+    protected function clearDoctrineMetadataCache(): void
+    {
+        $entityManager = $this->getService('doctrine.entitymanager.orm_vufind');
+        $entityManager->getConfiguration()->getMetadataCache()?->clear();
     }
 }

@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -301,9 +301,9 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
      *                           multiple tests.
      * @param array  $expected   Expected results for the test
      *
-     * @return       void
-     * @dataProvider getTestGetMyProfileData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestGetMyProfileData')]
     public function testGetMyProfile(string $fixtureKey, array $expected): void
     {
         $adjustedConfig = $this->defaultDriverConfig;
@@ -365,6 +365,20 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
             ],
             'fixtureKey' => 'test patron login password',
         ];
+        yield 'Test with login method password and password is null' => [
+            'config' => $localConfig,
+            'expected' => [
+                'id' => '21991',
+                'email' => null,
+                'firstname' => 'Sauna',
+                'lastname' => 'Tonttu',
+                'major' => null,
+                'college' => null,
+                'cat_username' => '1111',
+                'cat_password' => null,
+            ],
+            'fixtureKey' => 'test patron login password and password is null',
+        ];
     }
 
     /**
@@ -374,13 +388,13 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
      * @param array  $expected   Expected results
      * @param string $fixtureKey Fixture key for response mapping
      *
-     * @return       void
-     * @dataProvider getTestPatronLoginData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestPatronLoginData')]
     public function testPatronLogin(array $config, array $expected, string $fixtureKey): void
     {
         $this->createConnector('get-patron-response', $config, $fixtureKey);
-        $result = $this->driver->patronLogin('1111', '1212');
+        $result = $this->driver->patronLogin($expected['cat_username'], $expected['cat_password']);
         $this->assertEquals($expected, $result);
     }
 

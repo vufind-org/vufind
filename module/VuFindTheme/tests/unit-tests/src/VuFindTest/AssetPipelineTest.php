@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -145,9 +145,8 @@ class AssetPipelineTest extends \PHPUnit\Framework\TestCase
      * @param bool        $expectGrouped Do we expect the pipeline to be applied (true) or not (false)?
      *
      * @return void
-     *
-     * @dataProvider isPipelineEnabledForTypeProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('isPipelineEnabledForTypeProvider')]
     public function testIsPipelineEnabledForType(
         string|bool $config,
         string $type,
@@ -272,9 +271,8 @@ class AssetPipelineTest extends \PHPUnit\Framework\TestCase
      * @param array  $expectedGroupedAssets Expected processed assets
      *
      * @return void
-     *
-     * @dataProvider groupAssetsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('groupAssetsProvider')]
     public function testGroupAssets(array $assets, string $type, array $expectedGroupedAssets): void
     {
         $themeInfo = $this->createMock(ThemeInfo::class);
@@ -397,9 +395,8 @@ class AssetPipelineTest extends \PHPUnit\Framework\TestCase
      * @param array  $expectedResult Expected final result
      *
      * @return void
-     *
-     * @dataProvider processGroupedAssetsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('processGroupedAssetsProvider')]
     public function testProcessGroupedAssets(array $groupedAssets, string $type, array $expectedResult): void
     {
         $pipeline = $this->getMockPipeline(

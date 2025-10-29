@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -74,8 +74,8 @@ class AbstractAdmin extends \VuFind\Controller\AbstractBase
         }
 
         // Block access to everyone when module is disabled:
-        $config = $this->getConfig();
-        if (!isset($config->Site->admin_enabled) || !$config->Site->admin_enabled) {
+        $config = $this->getConfigArray();
+        if (!($config['Site']['admin_enabled'] ?? false)) {
             $pluginManager  = $this->getService(\Laminas\Mvc\Controller\PluginManager::class);
             $redirectPlugin = $pluginManager->get('redirect');
             return $redirectPlugin->toRoute('admin/disabled');
@@ -93,22 +93,5 @@ class AbstractAdmin extends \VuFind\Controller\AbstractBase
     public function disabledAction()
     {
         return $this->createViewModel();
-    }
-
-    /**
-     * Get the url parameters
-     *
-     * @param string $param          A key to check the url params for
-     * @param bool   $prioritizePost If true, check the POST params first
-     * @param mixed  $default        Default value if no value found
-     *
-     * @return string|array
-     */
-    protected function getParam($param, $prioritizePost = true, $default = null)
-    {
-        $primary = $prioritizePost ? 'fromPost' : 'fromQuery';
-        $secondary = $prioritizePost ? 'fromQuery' : 'fromPost';
-        return $this->params()->$primary($param)
-            ?? $this->params()->$secondary($param, $default);
     }
 }

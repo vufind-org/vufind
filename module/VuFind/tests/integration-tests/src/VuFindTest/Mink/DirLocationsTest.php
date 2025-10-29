@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -69,10 +69,9 @@ class DirLocationsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test "use_parent_dir" parent setting in ini configs.
      *
-     * @depends testIniConfigs
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testIniConfigs')]
     public function testParentIniConfigs(): void
     {
         $session = $this->getMinkSession();

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -393,10 +393,9 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test ILL requests.
      *
-     * @depends testProfile
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testProfile')]
     public function testIllRequest(): void
     {
         $this->changeConfigs(
@@ -441,10 +440,9 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test canceling an ILL request with "cancel all."
      *
-     * @depends testProfile
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testProfile')]
     public function testCancelAllIllRequest(): void
     {
         $page = $this->setUpCancelIllTest();
@@ -454,10 +452,9 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test canceling an ILL request with "cancel selected."
      *
-     * @depends testProfile
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testProfile')]
     public function testCancelSelectedIllRequest(): void
     {
         $page = $this->setUpCancelIllTest();
@@ -467,10 +464,9 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test storage retrieval requests.
      *
-     * @depends testProfile
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testProfile')]
     public function testStorageRetrievalRequest(): void
     {
         $this->changeConfigs(
@@ -515,10 +511,9 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test canceling storage retrieval requests with "cancel all."
      *
-     * @depends testProfile
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testProfile')]
     public function testCancelAllStorageRetrievalRequest(): void
     {
         $page = $this->setUpCancelStorageRetrievalTest();
@@ -528,10 +523,9 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test canceling storage retrieval requests with "cancel selected."
      *
-     * @depends testProfile
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testProfile')]
     public function testCancelSelectedStorageRetrievalRequest(): void
     {
         $page = $this->setUpCancelStorageRetrievalTest();
@@ -541,10 +535,9 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test renewal action.
      *
-     * @depends testProfile
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testProfile')]
     public function testRenewal(): void
     {
         $this->changeConfigs(
@@ -583,10 +576,9 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test loan history.
      *
-     * @depends testProfile
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testProfile')]
     public function testLoanHistory(): void
     {
         $this->changeConfigs(
@@ -668,10 +660,9 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool $all      Whether to enable Purge All
      *
      * @return void
-     *
-     * @dataProvider loanHistoryWithPurgeDisabledProvider
-     * @depends      testProfile
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testProfile')]
+    #[\PHPUnit\Framework\Attributes\DataProvider('loanHistoryWithPurgeDisabledProvider')]
     public function testLoanHistoryWithPurgeDisabled(bool $selected, bool $all): void
     {
         $demoConfig = $this->getDemoIniOverrides();

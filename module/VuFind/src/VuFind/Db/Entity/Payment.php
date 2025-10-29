@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -389,7 +389,7 @@ class Payment implements PaymentEntityInterface
      *
      * @return DateTime
      */
-    public function getCreated(): Datetime
+    public function getCreated(): DateTime
     {
         return $this->created;
     }
@@ -412,7 +412,7 @@ class Payment implements PaymentEntityInterface
      *
      * @return DateTime
      */
-    public function getPaidDate(): ?Datetime
+    public function getPaidDate(): ?DateTime
     {
         return $this->getNullableDateTimeFromNonNullable($this->paid);
     }
@@ -435,7 +435,7 @@ class Payment implements PaymentEntityInterface
      *
      * @return ?DateTime
      */
-    public function getRegistrationStartDate(): ?Datetime
+    public function getRegistrationStartDate(): ?DateTime
     {
         return $this->getNullableDateTimeFromNonNullable($this->registrationStarted);
     }
@@ -458,7 +458,7 @@ class Payment implements PaymentEntityInterface
      *
      * @return ?DateTime
      */
-    public function getRegistrationDate(): ?Datetime
+    public function getRegistrationDate(): ?DateTime
     {
         return $this->getNullableDateTimeFromNonNullable($this->registered);
     }
