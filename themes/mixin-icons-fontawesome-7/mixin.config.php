@@ -32,7 +32,6 @@ return [
              * To add extra classes, add an additional : divider:
              * - FontAwesome6:ui-trash.color-red
              */
-            'addthis-bookmark' => 'fa-solid fa-circle-plus',
             'barcode' => 'fa-solid fa-barcode',
             'browzine-best' => 'fa-solid fa-list-ol',
             'browzine-concern' => 'Alias:warning',
