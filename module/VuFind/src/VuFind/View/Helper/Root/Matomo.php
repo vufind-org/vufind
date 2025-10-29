@@ -392,7 +392,6 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
         if (is_array($formats)) {
             $formats = implode(',', $formats);
         }
-        $formats = $formats;
         $author = $recordDriver->tryMethod('getPrimaryAuthor');
         if (empty($author)) {
             $author = '-';
@@ -406,7 +405,6 @@ class Matomo extends \Laminas\View\Helper\AbstractHelper
         if (is_array($institutions)) {
             $institutions = implode(',', $institutions);
         }
-        $institutions = $institutions;
 
         return [
             'Context' => $this->context ?: 'page',
