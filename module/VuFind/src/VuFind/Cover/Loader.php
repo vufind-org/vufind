@@ -651,9 +651,7 @@ class Loader extends \VuFind\ImageLoader
                 ? trim(strtolower($this->config->Content->coverimagesCache)) : true;
             if (in_array($conf, [true, 1, '1', 'true'], true)) {
                 $cache = true;
-            } elseif (
-                in_array($conf, [false, 0, '0', 'false'], true)
-            ) {
+            } elseif (in_array($conf, [false, 0, '0', 'false'], true)) {
                 $cache = false;
             } else {
                 $conf = array_map('trim', explode(',', $conf));
