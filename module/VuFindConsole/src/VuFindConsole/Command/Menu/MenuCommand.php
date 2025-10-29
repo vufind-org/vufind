@@ -198,21 +198,17 @@ class MenuCommand extends Command
         }
         $helper = $this->getHelper('question');
         $menu = [];
-        if (count($options) > 0) {
-            foreach ($options as $i => $currentOption) {
-                if (($currentOption['type'] ?? 'string') === 'no-value') {
-                    $currentValue = ($optionValues[$i] ?? $currentOption['default'] ?? false) ? 'ON' : 'OFF';
-                } else {
-                    $currentValue = ($optionValues[$i] ?? $currentOption['default'] ?? '--unset--');
-                }
-                $menu[] = "Set Option $i ({$currentOption['label']}); current value: " . $currentValue;
+        foreach ($options as $i => $currentOption) {
+            if (($currentOption['type'] ?? 'string') === 'no-value') {
+                $currentValue = ($optionValues[$i] ?? $currentOption['default'] ?? false) ? 'ON' : 'OFF';
+            } else {
+                $currentValue = ($optionValues[$i] ?? $currentOption['default'] ?? '--unset--');
             }
+            $menu[] = "Set Option $i ({$currentOption['label']}); current value: " . $currentValue;
         }
-        if (count($arguments) > 0) {
-            foreach ($arguments as $i => $currentArgument) {
-                $menu[] = "Set Argument $i ({$currentArgument['label']}); current value: "
-                    . ($argumentValues[$i] ?? $currentArgument['default'] ?? '--unset--');
-            }
+        foreach ($arguments as $i => $currentArgument) {
+            $menu[] = "Set Argument $i ({$currentArgument['label']}); current value: "
+                . ($argumentValues[$i] ?? $currentArgument['default'] ?? '--unset--');
         }
         $menu[] = $this->exitCommand;
         $menu[] = $this->runCommand . ': ' . $fullCommand;

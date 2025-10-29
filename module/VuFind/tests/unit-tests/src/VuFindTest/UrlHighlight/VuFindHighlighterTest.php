@@ -87,9 +87,8 @@ class VuFindHighlighterTest extends \PHPUnit\Framework\TestCase
      * @param string $expected Expected result
      *
      * @return void
-     *
-     * @dataProvider getHighlightDataProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getHighlightDataProvider')]
     public function testGetHighlight(string $url, string $expected): void
     {
         $this->proxyUrl

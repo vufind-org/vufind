@@ -74,9 +74,8 @@ class ConfigWritingTest extends ConfigTestCase
      * @param string $configName Config name
      *
      * @return void
-     *
-     * @dataProvider upgradeTestProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('upgradeTestProvider')]
     public function testWriting(string $fixture, string $configName): void
     {
         $container = $this->getContainerWithConfigRelatedServices(

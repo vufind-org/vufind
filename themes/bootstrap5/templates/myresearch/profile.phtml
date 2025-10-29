@@ -170,6 +170,14 @@
   <?php elseif ('ils-none' !== $this->ils()->getOfflineMode() && $this->patronLoginView && !empty($this->patronLoginView->getTemplate())): ?>
     <?=$this->partial($this->patronLoginView);?>
   <?php endif; ?>
+
+  <?php if ($this->developerSettings()->isEnabled()): ?>
+    <?php if ($this->permission()->allowDisplay('feature.Developer')): ?>
+      <a class="btn btn-link" href="<?=$this->url('developersettings-displaysettings');?>"><?=$this->icon('options') . ' ' . $this->transEsc('Developer::settings');?></a>
+    <?php elseif ($block = $this->permission()->getAlternateContent('feature.Developer')): ?>
+      <?=$block?>
+    <?php endif; ?>
+  <?php endif; ?>
 </div>
 
 <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">

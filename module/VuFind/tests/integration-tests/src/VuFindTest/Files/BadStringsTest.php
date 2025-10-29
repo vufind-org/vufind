@@ -86,7 +86,11 @@ class BadStringsTest extends \PHPUnit\Framework\TestCase
                 $failures[] = str_replace(APPLICATION_PATH . '/', '', $fileToCheck) . " ($reasonMsg)";
             }
         }
-        $this->assertEquals('', implode(PHP_EOL, $failures), 'Found bad strings in files.');
+        // We could use a variety of assertions here, but the goal is to make actionable information
+        // conveniently available. By imploding the list of bad files (with some extra spaces to separate
+        // the diff markers from the filenames) we make it easier to read (and in some setups, click on)
+        // the list of files that need attention.
+        $this->assertEquals('', implode(PHP_EOL . ' ', $failures), 'Found bad strings in files.');
     }
 
     /**

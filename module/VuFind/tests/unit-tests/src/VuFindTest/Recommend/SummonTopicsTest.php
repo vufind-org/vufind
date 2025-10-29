@@ -84,8 +84,9 @@ class SummonTopicsTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $options = $this->getMockBuilder(\VuFind\Search\Base\Options::class)
             ->disableOriginalConstructor()
+            ->onlyMethods(['getSearchAction'])
             ->addMethods(['setMaxTopicRecommendations'])
-            ->getMockForAbstractClass();
+            ->getMock();
         $parms->expects($this->once())->method('getSearchClassId')
             ->will($this->returnValue('Summon'));
         $parms->expects($this->once())->method('getOptions')
@@ -126,7 +127,8 @@ class SummonTopicsTest extends \PHPUnit\Framework\TestCase
         $options = $this->getMockBuilder(\VuFind\Search\Base\Options::class)
             ->disableOriginalConstructor()
             ->addMethods(['setMaxTopicRecommendations'])
-            ->getMockForAbstractClass();
+            ->onlyMethods(['getSearchAction'])
+            ->getMock();
         $results->expects($this->once())->method('getOptions')
             ->will($this->returnValue($options));
         $options->expects($this->once())->method('setMaxTopicRecommendations')

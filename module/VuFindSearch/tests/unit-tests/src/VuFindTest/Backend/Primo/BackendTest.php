@@ -257,10 +257,9 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      * @param mixed $value    Input value of filter
      * @param bool  $expected Expected output value of filter
      *
-     * @dataProvider getPcAvailabilityData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getPcAvailabilityData')]
     public function testPcAvailabilityFilter(mixed $value, bool $expected): void
     {
         $params = new ParamBag(

@@ -101,7 +101,7 @@ class OverdriveController extends AbstractBase implements LoggerAwareInterface
                 foreach ($checkoutResults->data as $checkout) {
                     $mycheckout = compact('checkout');
 
-                    if ($checkout->metadata->mediaType == 'Magazine') {
+                    if (($checkout->metadata->mediaType ?? '') == 'Magazine') {
                         $mycheckout['checkout']->isMagazine = true;
                         $this->debug("loading magazine metadata for {$checkout->reserveId}");
                         $idToLoad = strtolower($checkout->metadata->parentMagazineReferenceId);

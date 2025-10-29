@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Database resource service factory
+ * Developer settings service factory
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2023.
+ * Copyright (C) Villanova University 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,30 +21,33 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Database
- * @author   Sudharma Kellampalli <skellamp@villanova.edu>
+ * @package  Developer_Settings
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
-namespace VuFind\Db\Service;
+namespace VuFind\DeveloperSettings;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use VuFind\Record\ResourcePopulator;
+use VuFind\Config\ConfigManagerInterface;
+use VuFind\Db\Service\ApiKeyService;
+use VuFind\Db\Service\PluginManager;
 
 /**
- * Database resource service factory
+ * Developer settings service factory
  *
  * @category VuFind
- * @package  Database
- * @author   Sudharma Kellampalli <skellamp@villanova.edu>
+ * @package  Developer_Settings
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class ResourceServiceFactory extends AbstractDbServiceFactory
+class DeveloperSettingsServiceFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -68,9 +71,10 @@ class ResourceServiceFactory extends AbstractDbServiceFactory
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $populatorLoader = function () use ($container) {
-            return $container->get(ResourcePopulator::class);
-        };
-        return parent::__invoke($container, $requestedName, [$populatorLoader]);
+
+        return new $requestedName(
+            $container->get(PluginManager::class)->get(ApiKeyService::class),
+            $container->get(ConfigManagerInterface::class)->getConfigArray('config')['API_Keys'] ?? []
+        );
     }
 }

@@ -67,9 +67,8 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
      * @param bool $skipBackups Should we test with backups disabled?
      *
      * @return void
-     *
-     * @dataProvider skipBackupsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('skipBackupsProvider')]
     public function testInteractiveInstallation(bool $skipBackups): void
     {
         $expectedBaseDir = realpath(__DIR__ . '/../../../../../../../../');

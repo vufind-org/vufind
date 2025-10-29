@@ -73,9 +73,8 @@ class KohaTest extends \PHPUnit\Framework\TestCase
      * @param array       $params   Parameters to send to cover loader
      *
      * @return void
-     *
-     * @dataProvider getCoverData
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getCoverData')]
     public function testValidCoverLoading($expected, array $params): void
     {
         $loader = new Koha('http://base');

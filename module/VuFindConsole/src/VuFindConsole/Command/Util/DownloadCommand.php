@@ -184,7 +184,7 @@ class DownloadCommand extends Command
                 $output,
                 &$progressBar,
                 $statusInterval
-            ) {
+            ): void {
                 $maxSteps = (int)round($downloadTotal / 1024 / 1024);
                 if (null === $progressBar) {
                     $progressBar = new ProgressBar($output, $maxSteps, $statusInterval);

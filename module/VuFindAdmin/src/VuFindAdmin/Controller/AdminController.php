@@ -57,11 +57,10 @@ class AdminController extends AbstractAdmin
      */
     public function homeAction()
     {
-        $config = $this->getConfig();
+        $config = $this->getConfigArray();
         $xml = false;
-        if (isset($config->Index->url)) {
-            $response = $this->getService(\VuFindHttp\HttpService::class)
-                ->get($config->Index->url . '/admin/cores?wt=xml');
+        if ($url = $config['Index']['url'] ?? null) {
+            $response = $this->getService(\VuFindHttp\HttpService::class)->get($url . '/admin/cores?wt=xml');
             $xml = $response->isSuccess() ? $response->getBody() : false;
         }
         $view = $this->createViewModel();

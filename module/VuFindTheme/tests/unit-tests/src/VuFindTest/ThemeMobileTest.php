@@ -61,9 +61,8 @@ class ThemeMobileTest extends \PHPUnit\Framework\TestCase
      * @param bool $active Result of mobile detection
      *
      * @return void
-     *
-     * @dataProvider detectionProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('detectionProvider')]
     public function testDetection(bool $active): void
     {
         $detector = $this->createMock(\uagent_info::class);

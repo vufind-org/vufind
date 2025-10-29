@@ -52,7 +52,7 @@ class UpdateDocumentTest extends TestCase
      */
     public function testAsXML()
     {
-        $record = $this->getMockForAbstractClass(\VuFindSearch\Backend\Solr\Record\SerializableRecordInterface::class);
+        $record = $this->createMock(\VuFindSearch\Backend\Solr\Record\SerializableRecordInterface::class);
         $record->expects($this->once())
             ->method('getFields')
             ->will($this->returnValue(['id' => 'ID', 'field' => 'FIELD']));

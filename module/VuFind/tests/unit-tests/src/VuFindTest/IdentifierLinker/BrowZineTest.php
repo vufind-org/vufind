@@ -259,9 +259,8 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
      * @param array $expectedResponse          Expected response
      *
      * @return void
-     *
-     * @dataProvider doiProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('doiProvider')]
     public function testDOIApiSuccess(
         array $identifierLinksConfig,
         array $doiServicesConfig,

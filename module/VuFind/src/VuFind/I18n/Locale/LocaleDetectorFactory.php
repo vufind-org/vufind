@@ -91,7 +91,7 @@ class LocaleDetectorFactory implements DelegatorFactoryInterface
         $cookies = $container->get(CookieManager::class);
         $detector->getEventManager()->attach(
             LocaleEvent::EVENT_FOUND,
-            function (EventInterface $event) use ($cookies) {
+            function (EventInterface $event) use ($cookies): void {
                 $language = $event->getParam('locale');
                 if ($language !== $cookies->get('language')) {
                     $cookies->set('language', $language);

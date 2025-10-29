@@ -189,9 +189,8 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
      * @param bool   $limited             Whether the permission set has been limited by the server
      *
      * @return void
-     *
-     * @dataProvider oauth2AuthorizationProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('oauth2AuthorizationProvider')]
     public function testOAuth2Authorization(string $clientId, array $expectedPermissions, bool $limited): void
     {
         // Bogus redirect URI, but it doesn't matter since the page won't handle the

@@ -52,7 +52,8 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:controllers Wiki
  */
-class SearchApiController extends \VuFind\Controller\AbstractSearch implements ApiInterface
+class SearchApiController extends \VuFind\Controller\AbstractSearch implements
+    ApiInterface
 {
     use ApiTrait;
     use \VuFind\ResumptionToken\ResumptionTokenTrait;
@@ -126,7 +127,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
     /**
      * Facet configuration
      *
-     * @var \VuFind\Config\Config
+     * @var array
      */
     protected $facetConfig;
 
@@ -157,10 +158,10 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
             }
         }
         // Load configurations from the search options class:
-        $options = $sm->get(\VuFind\Search\Options\PluginManager::class)->get($this->searchClassId);
+        $options = $this->getService(\VuFind\Search\Options\PluginManager::class)->get($this->searchClassId);
         $settings = $options->getAPISettings();
-        $this->facetConfig = $this->getConfig($options->getFacetsIni());
-        $this->hierarchicalFacets = $this->facetConfig?->SpecialFacets?->hierarchical?->toArray() ?? [];
+        $this->facetConfig = $this->getConfigArray($options->getFacetsIni());
+        $this->hierarchicalFacets = $this->facetConfig['SpecialFacets']['hierarchical'] ?? [];
         // Apply all supported configurations:
         $configKeys = [
             'recordAccessPermission', 'searchAccessPermission', 'maxLimit', 'cursorLimit',
@@ -170,6 +171,8 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
                 $this->$key = $settings[$key];
             }
         }
+        $config = $this->getConfigArray()['API_Keys'] ?? [];
+        $this->initApiKeySettings($config);
     }
 
     /**
@@ -180,13 +183,12 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
      */
     public function getApiSpecFragment()
     {
-        $config = $this->getConfig();
         $results = $this->getResultsManager()->get($this->searchClassId);
         $options = $results->getOptions();
         $params = $results->getParams();
 
         $viewParams = [
-            'config' => $config,
+            'config' => $this->getConfigArray(),
             'version' => \VuFind\Config\Version::getBuildVersion(),
             'searchTypes' => $options->getBasicHandlers(),
             'defaultSearchType' => $options->getDefaultHandler(),
@@ -201,6 +203,9 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
             'indexLabel' => $this->indexLabel,
             'modelPrefix' => $this->modelPrefix,
             'maxLimit' => $this->maxLimit,
+            'apiKeysEnabled' => $this->developerSettingsService?->apiKeysEnabled() ?? false,
+            'apiKeyHeaderField' => $this->apiKeyHeaderField,
+            'apiKeyMode' => $this->developerSettingsService?->getApiKeyMode(),
         ];
         $json = $this->getViewRenderer()->render(
             'searchapi/openapi',
@@ -256,9 +261,11 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
             return $result;
         }
 
-        $request = $this->getRequest()->getQuery()->toArray()
-            + $this->getRequest()->getPost()->toArray();
+        $request = $this->getAllRequestParams();
 
+        if (!$this->checkRequestForApiKey()) {
+            return $this->outputMissingAPIKey();
+        }
         if (!isset($request['id'])) {
             return $this->output([], self::STATUS_ERROR, 400, 'Missing id');
         }
@@ -312,10 +319,11 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
         if ($result = $this->isAccessDenied($this->searchAccessPermission)) {
             return $result;
         }
-
+        if (!$this->checkRequestForApiKey()) {
+            return $this->outputMissingAPIKey();
+        }
         // Send both GET and POST variables to search class:
-        $request = $this->getRequest()->getQuery()->toArray()
-            + $this->getRequest()->getPost()->toArray();
+        $request = $this->getAllRequestParams();
 
         $isCursorSearch = ($request['resumptionToken'] ?? false);
         try {
@@ -370,7 +378,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
                 $facets,
                 $hierarchicalFacets,
                 $recordFields
-            ) {
+            ): void {
                 foreach ($facets as $facet) {
                     if (!isset($hierarchicalFacets[$facet])) {
                         $params->addFacet($facet);
@@ -450,7 +458,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements A
             ) use (
                 $cursorMark,
                 $limit
-            ) {
+            ): void {
                 $results->overrideStartRecord(1);
                 $results->setCursorMark($cursorMark);
                 $params->setLimit($limit);

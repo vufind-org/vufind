@@ -43,7 +43,7 @@ use VuFind\Db\Entity\OaiResumptionEntityInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-interface OaiResumptionServiceInterface
+interface OaiResumptionServiceInterface extends DbServiceInterface
 {
     /**
      * Remove all expired tokens from the database.

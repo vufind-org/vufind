@@ -29,7 +29,6 @@
 
 namespace VuFindTest\Exception;
 
-use Laminas\Http\Headers;
 use VuFind\Exception\HttpDownloadException;
 
 /**
@@ -53,9 +52,9 @@ class HttpDownloadExceptionTest extends \PHPUnit\Framework\TestCase
         $message = 'Not Found';
         $url = 'https://mock.codes/404';
         $statusCode = 404;
-        $responseHeaders = Headers::fromString(
-            'content-type: application/json'
-        );
+        $responseHeaders = [
+            'content-type' => 'application/json',
+        ];
         $responseBody = '{"statusCode" : 404, "description": "Not Found"}';
         $previous = null;
 

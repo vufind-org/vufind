@@ -191,9 +191,8 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
      * @param ?int   $record2ChannelIndex Index of channel containing second record (needed when $record1 === $record2)
      *
      * @return void
-     *
-     * @dataProvider popoversProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('popoversProvider')]
     public function testPopovers(
         string $query,
         string $record1,

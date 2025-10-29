@@ -64,10 +64,9 @@ class ScopeRepositoryTest extends AbstractTokenRepositoryTestCase
      * @param bool   $hidden  Expected hidden value
      * @param bool   $ils     Expected "ILS Needed" value
      *
-     * @dataProvider getTestScopeRepositoryData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestScopeRepositoryData')]
     public function testScopeRepository(
         string $scopeId,
         string $desc,

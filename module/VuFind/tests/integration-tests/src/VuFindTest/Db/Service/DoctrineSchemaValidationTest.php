@@ -62,6 +62,16 @@ final class DoctrineSchemaValidationTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Standard teardown method.
+     *
+     * @return void
+     */
+    public function tearDown(): void
+    {
+        $this->tearDownLiveDatabaseContainer();
+    }
+
+    /**
      * Test schema validation.
      *
      * @return void

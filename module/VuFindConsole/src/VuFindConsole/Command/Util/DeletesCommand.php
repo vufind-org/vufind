@@ -124,7 +124,7 @@ class DeletesCommand extends AbstractSolrCommand
     ): array {
         $ids = [];
         // MARC file mode:
-        $messageCallback = function (string $msg, int $level) use ($output) {
+        $messageCallback = function (string $msg, int $level) use ($output): void {
             if ($output->isVerbose() || $level !== E_NOTICE) {
                 $output->writeln(
                     '<comment>' . OutputFormatter::escape($msg) . '</comment>'

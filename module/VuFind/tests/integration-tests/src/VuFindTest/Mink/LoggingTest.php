@@ -275,9 +275,8 @@ final class LoggingTest extends MinkTestCase
      * @param string $description        Test scenario description
      *
      * @return void
-     *
-     * @dataProvider emailLoggingScenarioProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('emailLoggingScenarioProvider')]
     public function testEmailLogging(
         string $emailConfig,
         array $expectedPatterns,
@@ -298,6 +297,7 @@ final class LoggingTest extends MinkTestCase
                 ],
                 'Logging' => [
                     'email' => $emailConfig,
+                    'file' => null,
                 ],
             ],
         ]);
@@ -393,9 +393,8 @@ final class LoggingTest extends MinkTestCase
      * @param string $description        Test scenario description
      *
      * @return void
-     *
-     * @dataProvider fileLoggingScenarioProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('fileLoggingScenarioProvider')]
     public function testFileLogging(
         string $loggingConfig,
         array $expectedPatterns,
@@ -449,6 +448,7 @@ final class LoggingTest extends MinkTestCase
                 ],
                 'Logging' => [
                     'email' => '',
+                    'file' => null,
                 ],
             ],
         ]);
@@ -506,9 +506,8 @@ final class LoggingTest extends MinkTestCase
      * @param string $description        Test scenario description
      *
      * @return void
-     *
-     * @dataProvider DatabaseLoggingScenarioProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('DatabaseLoggingScenarioProvider')]
     public function testDatabaseLogging(
         string $loggingConfig,
         array $expectedPatterns,
@@ -523,6 +522,7 @@ final class LoggingTest extends MinkTestCase
                 ],
                 'Logging' => [
                     'database' => $loggingConfig,
+                    'file' => null,
                 ],
             ],
         ]);

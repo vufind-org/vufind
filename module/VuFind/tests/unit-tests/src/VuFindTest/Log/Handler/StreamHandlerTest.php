@@ -216,7 +216,7 @@ class StreamHandlerTest extends TestCase
         $logContent = file_get_contents($this->tempLogFile);
         $this->assertStringContainsString($message, $logContent);
 
-        foreach ($context as $key => $value) {
+        foreach ($context as $value) {
             $this->assertStringContainsString((string)$value, $logContent);
         }
     }
