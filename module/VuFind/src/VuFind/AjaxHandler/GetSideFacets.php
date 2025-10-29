@@ -172,7 +172,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Psr\Log
      */
     protected function getFacetResults(array $request, $index, $loc)
     {
-        $setupCallback = function ($runner, $params, $searchId) use ($index, $loc) {
+        $setupCallback = function ($runner, $params, $searchId) use ($index, $loc): void {
             $listener = new RecommendListener(
                 $this->recommendPluginManager,
                 $searchId

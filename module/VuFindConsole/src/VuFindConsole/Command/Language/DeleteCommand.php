@@ -97,7 +97,7 @@ class DeleteCommand extends AbstractCommand
         if (!($dir = $this->getLangDir($output, $domain))) {
             return 1;
         }
-        $callback = function ($full) use ($output, $target) {
+        $callback = function ($full) use ($output, $target): void {
             $lines = file($full);
             $out = '';
             $found = false;

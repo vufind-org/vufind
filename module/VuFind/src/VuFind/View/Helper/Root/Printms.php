@@ -60,18 +60,18 @@ class Printms extends AbstractHelper
         $seconds = floor($ms / 1000);
 
         $minutes = floor($seconds / 60);
-        $seconds = ($seconds % 60);
+        $seconds %= 60;
 
         $hours = floor($minutes / 60);
-        $minutes = ($minutes % 60);
+        $minutes %= 60;
 
         if ($hours) {
             $days = floor($hours / 60);
-            $hours = ($hours % 60);
+            $hours %= 60;
 
             if ($days) {
                 $years = floor($days / 365);
-                $days = ($days % 365);
+                $days %= 365;
 
                 if ($years) {
                     return sprintf(

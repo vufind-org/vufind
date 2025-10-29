@@ -275,7 +275,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
         $helper('sanity-check', 'this is good');
 
         $this->expectExceptionMessage("'<marquee>' is deprecated and should be replaced.");
-        $errorCallback = function (int $code, string $msg) {
+        $errorCallback = function (int $code, string $msg): void {
             throw new \Exception($msg, $code);
         };
         set_error_handler($errorCallback, E_USER_WARNING);

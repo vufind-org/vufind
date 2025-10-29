@@ -97,6 +97,13 @@ jobs:
           key: "php-${{ matrix.php-version }}-phpcs-${{ github.sha }}"
           restore-keys: "php-${{ matrix.php-version }}-phpcs-"
 
+      - name: Cache rector data
+        uses: actions/cache@v4
+        with:
+          path: .rector
+          key: "php-${{ matrix.php-version }}-rector-${{ github.sha }}"
+          restore-keys: "php-${{ matrix.php-version }}-rector-"
+
       - name: Install composer dependencies
         run: composer install
 
