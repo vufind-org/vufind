@@ -122,7 +122,7 @@ input[type="search"]::-webkit-search-decoration {
 
 .home-facet-container {
   padding-right: $home-facet-container-right-padding; // Defines padding for better visual division
-  padding-left: $home-facet-container-left-padding; // Defines padding for better visual division X
+  padding-left: $home-facet-container-left-padding; // Defines padding for better visual division
 
   @media (min-width: 768px) {
     height: $home-facet-container-height; // determines the height of the visual division line (see variables.scss for more info)
