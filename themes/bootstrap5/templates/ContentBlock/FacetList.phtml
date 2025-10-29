@@ -27,7 +27,10 @@
             <?php else: ?>
               <?php
                 $sortedList = $this->sortFacetList($results, $field, $details['list'], $basicSearch, $format);
-                $maxListLength = $columnSize;
+
+                // Special case: two columns for LC call numbers...
+                $maxListLength = $field == 'callnumber-first'
+                  ? $columnSize * 2 : $columnSize;
 
                 // Special case: custom URLs for collections...
                 $moreUrl = $field == 'hierarchy_top_title'
@@ -54,8 +57,6 @@
                 <?php if ($i >= $maxListLength): // list too long? show more link! ?>
                   <li><a href="<?=$moreUrl?>"><strong><?=$this->transEsc('more_options_ellipsis')?></strong></a></li>
                   <?php break; ?>
-                <?php elseif ($i % $columnSize === 0): // end of column? insert break! ?>
-                  </ul><ul class="home-facet-list">
                 <?php endif; ?>
               <?php endforeach; ?>
             <?php endif; ?>
