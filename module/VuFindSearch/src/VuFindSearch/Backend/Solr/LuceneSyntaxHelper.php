@@ -606,13 +606,9 @@ class LuceneSyntaxHelper
      */
     protected function getBoolsToCap()
     {
-        if (
-            in_array($this->caseSensitiveBooleans, [false, 0, '0'], true)
-        ) {
+        if (in_array($this->caseSensitiveBooleans, [false, 0, '0'], true)) {
             return $this->allBools;
-        } elseif (
-            in_array($this->caseSensitiveBooleans, [true, 1, '1'], true)
-        ) {
+        } elseif (in_array($this->caseSensitiveBooleans, [true, 1, '1'], true)) {
             return [];
         }
 
