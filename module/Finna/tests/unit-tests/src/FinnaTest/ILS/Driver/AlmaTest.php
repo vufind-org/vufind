@@ -222,68 +222,76 @@ class AlmaTest extends \PHPUnit\Framework\TestCase
      */
     public static function getTestGetMyProfileData(): Generator
     {
+        $fullProfile = [
+            'barcode' => '01924019240',
+            'email' => 'pref@email.if',
+            'group_code' => 'test',
+            'expired' => null,
+            'expiration_soon' => null,
+            'self_service_pin' => null,
+            'address3' => 'Line 3',
+            'homeAddress' => 'Line 1, 00000 City',
+            'workAddress' => 'A street 1, 00000 Far away',
+            'account_type' => 'normal',
+            'language' => 'fi',
+            'firstname' => 'John',
+            'lastname' => 'Smith',
+            'birthdate' => '',
+            'address1' => 'Line 1',
+            'address2' => 'Line 2',
+            'city' => 'City',
+            'country' => new TranslatableString('Country', ''),
+            'zip' => '00000',
+            'phone' => '9876543210',
+            'mobile_phone' => null,
+            'home_library' => null,
+            'expiration_date' => null,
+            'group' => 'descgroup',
+            'addresses' => [
+                [
+                    'address1' => 'A street 1',
+                    'address2' => '          ',
+                    'address3' => 'Not a default field',
+                    'country' => new TranslatableString('Far', ''),
+                    'city' => 'Far away',
+                    'zip' => '00000',
+                    'types' => [
+                        'work',
+                        'something',
+                    ],
+                    'preferred' => false,
+                ],
+                [
+                    'address1' => 'Line 1',
+                    'address2' => 'Line 2',
+                    'address3' => 'Line 3',
+                    'country' => new TranslatableString('Country', ''),
+                    'city' => 'City',
+                    'zip' => '00000',
+                    'types' => [
+                        'Type 1',
+                        'home',
+                    ],
+                    'preferred' => true,
+                ],
+            ],
+            'guarantees' => [
+                ['lastname' => 'Tester Test'],
+                ['lastname' => 'Ttee Tst'],
+            ],
+            'messagingServices' => [],
+            'loan_history' => null,
+        ];
+        $fullProfileNonPreferredEmail = $fullProfile;
+        $fullProfileNonPreferredEmail['email'] = 'first@email.if';
+
         yield 'profile all values set' => [
             'alma/profile.xml',
-            [
-                'barcode' => '01924019240',
-                'email' => 'pref@email.if',
-                'group_code' => 'test',
-                'expired' => null,
-                'expiration_soon' => null,
-                'self_service_pin' => null,
-                'address3' => 'Line 3',
-                'homeAddress' => 'Line 1, 00000 City',
-                'workAddress' => 'A street 1, 00000 Far away',
-                'account_type' => 'normal',
-                'language' => 'fi',
-                'firstname' => 'John',
-                'lastname' => 'Smith',
-                'birthdate' => '',
-                'address1' => 'Line 1',
-                'address2' => 'Line 2',
-                'city' => 'City',
-                'country' => new TranslatableString('Country', ''),
-                'zip' => '00000',
-                'phone' => '9876543210',
-                'mobile_phone' => null,
-                'home_library' => null,
-                'expiration_date' => null,
-                'group' => 'descgroup',
-                'addresses' => [
-                    [
-                        'address1' => 'A street 1',
-                        'address2' => '          ',
-                        'address3' => 'Not a default field',
-                        'country' => new TranslatableString('Far', ''),
-                        'city' => 'Far away',
-                        'zip' => '00000',
-                        'types' => [
-                            'work',
-                            'something',
-                        ],
-                        'preferred' => false,
-                    ],
-                    [
-                        'address1' => 'Line 1',
-                        'address2' => 'Line 2',
-                        'address3' => 'Line 3',
-                        'country' => new TranslatableString('Country', ''),
-                        'city' => 'City',
-                        'zip' => '00000',
-                        'types' => [
-                            'Type 1',
-                            'home',
-                        ],
-                        'preferred' => true,
-                    ],
-                ],
-                'guarantees' => [
-                    ['lastname' => 'Tester Test'],
-                    ['lastname' => 'Ttee Tst'],
-                ],
-                'messagingServices' => [],
-                'loan_history' => null,
-            ],
+            $fullProfile,
+        ];
+        yield 'profile all values set but no preferred email' => [
+            'alma/profile_no_preferred_email.xml',
+            $fullProfileNonPreferredEmail,
         ];
         yield 'profile some values missing' => [
             'alma/profile_partial.xml',

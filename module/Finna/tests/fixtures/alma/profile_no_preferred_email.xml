@@ -62,8 +62,8 @@
             </phone>
         </phones>
         <emails>
-            <email><email_address>notpref@email.if</email_address></email>
-            <email preferred="true"><email_address>pref@email.if</email_address></email>
+            <email><email_address>first@email.if</email_address></email>
+            <email><email_address>second@email.if</email_address></email>
         </emails>
     </contact_info>
 </user>

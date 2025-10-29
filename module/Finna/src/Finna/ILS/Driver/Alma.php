@@ -544,7 +544,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
         $email = null;
         foreach ($contact->emails->email ?? [] as $item) {
             if ('true' === (string)$item['preferred']) {
-                $email = $item;
+                $email = $item->email_address;
                 break;
             }
         }
