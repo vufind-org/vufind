@@ -49,7 +49,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'demo' => Demo::class,
         'obalkyknih' => ObalkyKnih::class,
         'syndetics' => Syndetics::class,
-        'syndeticsplus' => SyndeticsPlus::class,
     ];
 
     /**
@@ -61,7 +60,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Demo::class => \Laminas\ServiceManager\Factory\InvokableFactory::class,
         ObalkyKnih::class => \VuFind\Content\ObalkyKnihContentFactory::class,
         Syndetics::class => \VuFind\Content\AbstractSyndeticsFactory::class,
-        SyndeticsPlus::class => \VuFind\Content\AbstractSyndeticsFactory::class,
     ];
 
     /**

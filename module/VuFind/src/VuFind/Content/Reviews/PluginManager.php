@@ -57,7 +57,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'demo' => Demo::class,
         'guardian' => Guardian::class,
         'syndetics' => Syndetics::class,
-        'syndeticsplus' => SyndeticsPlus::class,
     ];
 
     /**
@@ -70,7 +69,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Deprecated::class => \Laminas\ServiceManager\Factory\InvokableFactory::class,
         Guardian::class => \Laminas\ServiceManager\Factory\InvokableFactory::class,
         Syndetics::class => \VuFind\Content\AbstractSyndeticsFactory::class,
-        SyndeticsPlus::class => \VuFind\Content\AbstractSyndeticsFactory::class,
     ];
 
     /**
