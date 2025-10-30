@@ -407,17 +407,23 @@ class MailerTest extends \PHPUnit\Framework\TestCase
      */
     public function testSendLink()
     {
-        $viewCallback = function ($in): bool {
-            return $in['msgUrl'] == 'http://foo'
-                && $in['to'] == 'to@example.com;to2@example.com'
-                && $in['from'] == 'from@example.com'
-                && $in['message'] == 'message';
-        };
-        $view = $this->getMockBuilder(\Laminas\View\Renderer\PhpRenderer::class)
-            ->addMethods(['partial'])->getMock();
-        $view->expects($this->once())->method('partial')
-            ->with($this->equalTo('Email/share-link.phtml'), $this->callback($viewCallback))
-            ->willReturn('body');
+        $view = $this->createMock(\Laminas\View\Renderer\PhpRenderer::class);
+        $view->method('__call')
+            ->willReturnCallback(
+                function ($method, $args) {
+                    if ($method === 'partial') {
+                        $this->assertSame('Email/share-link.phtml', $args[0]);
+                        $this->assertTrue(
+                            $args[1]['msgUrl'] == 'http://foo'
+                            && $args[1]['to'] == 'to@example.com;to2@example.com'
+                            && $args[1]['from'] == 'from@example.com'
+                            && $args[1]['message'] == 'message'
+                        );
+                        return 'body';
+                    }
+                    return null;
+                }
+            );
 
         $callback = function ($message): bool {
             $to = $message->getTo();
