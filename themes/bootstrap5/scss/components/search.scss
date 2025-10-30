@@ -139,7 +139,11 @@ input[type="search"]::-webkit-search-decoration {
   .home-facet-list { flex: 0 1 100%; }
 }
 
-header .container.navbar { margin-bottom: 0; }
+header .container.navbar {
+  margin-bottom: 0;
+  // Use same padding as front page that doesn't have a navbar:
+  --bs-navbar-padding-x: calc(var(--bs-gutter-x)*.5);
+}
 
 .search-sort,
 .search-result-limit {
@@ -163,10 +167,20 @@ header .container.navbar { margin-bottom: 0; }
   padding-bottom: 0.5rem;
 }
 
+.search-controls form:not(:last-child) {
+  margin-bottom: 0.25rem;
+}
+
 @include media-breakpoint-up(sm) {
   .search-header { display: flex; }
   .search-stats { flex-grow: 1; }
   .search-controls { text-align: right; }
+}
+
+// Hide record versions in embedded accordions/tabs:
+.record-list .panel-group .record-versions,
+.record-list .tab-content .record-versions {
+  display: none;
 }
 
 .versions-tab {
@@ -352,6 +366,10 @@ header .container.navbar { margin-bottom: 0; }
 .result-body {
   padding: 0;
   padding-bottom: .25rem;
+
+  .author sup {
+    display: none;
+  }
 }
 
 .result-body,
@@ -871,6 +889,7 @@ table.search-history-table {
 
     #searchForm-reset {
       width: 2em;
+      height: 2em;
       border: none;
       border-radius: 50%;
       background-color: $gray-lighter;

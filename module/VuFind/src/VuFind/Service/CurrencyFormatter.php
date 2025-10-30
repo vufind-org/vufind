@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Service
@@ -66,9 +66,8 @@ class CurrencyFormatter
      */
     public function __construct($defaultCurrency = null, $locale = null)
     {
-        // Initialize number formatter:
-        $locale ??= setlocale(LC_MONETARY, '');
-        $this->formatter = new NumberFormatter($locale, NumberFormatter::CURRENCY);
+        // Initialize number formatter (an empty string makes NumberFormatter use the default locale):
+        $this->formatter = new NumberFormatter($locale ?? '', NumberFormatter::CURRENCY);
 
         // Initialize default currency:
         if (null === $defaultCurrency) {

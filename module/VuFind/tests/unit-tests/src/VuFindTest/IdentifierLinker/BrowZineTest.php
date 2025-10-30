@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -240,10 +240,12 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
         if ($bestIntegratorLinksConfig !== null) {
             $configArray['BestIntegratorLinks'] = $bestIntegratorLinksConfig;
         }
-        $configObj = new \VuFind\Config\Config($configArray);
-        $mockConfigManager = $this->createMock(\VuFind\Config\PluginManager::class);
-        $mockConfigManager->expects($this->once())->method('get')->with('BrowZine')->willReturn($configObj);
-        $container->set(\VuFind\Config\PluginManager::class, $mockConfigManager);
+        $mockConfigManager = $this->createMock(\VuFind\Config\ConfigManagerInterface::class);
+        $mockConfigManager->expects($this->once())
+            ->method('getConfigArray')
+            ->with('BrowZine')
+            ->willReturn($configArray);
+        $container->set(\VuFind\Config\ConfigManagerInterface::class, $mockConfigManager);
         $factory = new BrowZineFactory();
         return $factory($container, BrowZine::class);
     }
@@ -257,9 +259,8 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
      * @param array $expectedResponse          Expected response
      *
      * @return void
-     *
-     * @dataProvider doiProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('doiProvider')]
     public function testDOIApiSuccess(
         array $identifierLinksConfig,
         array $doiServicesConfig,

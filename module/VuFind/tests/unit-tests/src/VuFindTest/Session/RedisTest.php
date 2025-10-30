@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -54,7 +54,7 @@ class RedisTest extends \VuFindTest\Unit\SessionHandlerTestCase
             ->getMock();
         $client->expects($this->once())->method('get')
             ->with($this->equalTo('vufind_sessions/foo'))
-            ->will($this->returnValue('bar'));
+            ->willReturn('bar');
         $handler = $this->getHandler($client);
         $this->assertEquals('bar', $handler->read('foo'));
     }
@@ -75,7 +75,7 @@ class RedisTest extends \VuFindTest\Unit\SessionHandlerTestCase
                 $this->equalTo(3600),
                 $this->equalTo('stuff')
             )
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $handler = $this->getHandler($client);
         $this->assertTrue($handler->write('foo', 'stuff'));
     }
@@ -92,7 +92,7 @@ class RedisTest extends \VuFindTest\Unit\SessionHandlerTestCase
             ->getMock();
         $client->expects($this->once())->method('del')
             ->with($this->equalTo('vufind_sessions/foo'))
-            ->will($this->returnValue(1));
+            ->willReturn(1);
         $handler = $this->getHandler($client);
         $this->setUpDestroyExpectations('foo');
 
@@ -111,7 +111,7 @@ class RedisTest extends \VuFindTest\Unit\SessionHandlerTestCase
             ->getMock();
         $client->expects($this->once())->method('unlink')
             ->with($this->equalTo('vufind_sessions/foo'))
-            ->will($this->returnValue(1));
+            ->willReturn(1);
         $config = new \VuFind\Config\Config(
             ['redis_version' => 4]
         );

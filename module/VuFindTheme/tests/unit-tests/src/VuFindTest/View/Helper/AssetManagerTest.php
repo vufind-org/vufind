@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -73,9 +73,8 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
      * @param string $expectedType The type we expect to pass to the helper
      *
      * @return void
-     *
-     * @dataProvider outputInlineScriptProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('outputInlineScriptProvider')]
     public function testOutputInlineScriptLink(array $attrs, bool $arbitrary, string $expectedType): void
     {
         $script = 'foo.js';
@@ -104,9 +103,8 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
      * @param string $expectedType The type we expect to pass to the helper
      *
      * @return void
-     *
-     * @dataProvider outputInlineScriptProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('outputInlineScriptProvider')]
     public function testOutputInlineScriptString(array $attrs, bool $arbitrary, string $expectedType): void
     {
         $script = 'foo';

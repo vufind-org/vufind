@@ -15,9 +15,6 @@ $btn-border-radius: .25rem;
 mark { background-color: $highlighter-color; }
 
 /* ------ Bootstrap class overrides ------ */
-.badge {
-  margin-bottom: 1px;
-}
 .btn-link,
 .btn-primary { border-color: transparent; }
 .btn-primary:hover {
@@ -29,18 +26,6 @@ mark { background-color: $highlighter-color; }
 
 .media,
 .media-body { overflow: initial; }
-
-.form-control { box-shadow: none; }
-.form-control:hover,
-.form-control:focus {
-  --outline-color: color.change($primary, $alpha: 0.4);
-
-  border-color: $primary;
-  outline: 4px solid var(--outline-color);
-}
-.form-control:focus {
-  --outline-color: #{$gold};
-}
 
 .breadcrumb a { color: $dark-gray; }
 .breadcrumb .active { color: $near-black; }

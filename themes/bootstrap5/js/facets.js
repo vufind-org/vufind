@@ -2,8 +2,7 @@
 
 /**
  * Get the globally-configured multi-facets selection setting (or default to 'false').
- *
- * @returns string
+ * @returns {string} The multi-facets selection setting
  */
 const getMultiFacetsSelectionSetting = () => {
   return typeof multiFacetsSelection === 'undefined' ? 'false' : multiFacetsSelection;
@@ -11,8 +10,7 @@ const getMultiFacetsSelectionSetting = () => {
 
 /**
  * Returns whether multi-facets selection is enabled.
- *
- * @returns boolean
+ * @returns {boolean} Return true if multi-facets selection is enabled
  */
 const isMultiFacetsSelectionEnabled = () => {
   return getMultiFacetsSelectionSetting() !== 'false';
@@ -20,8 +18,7 @@ const isMultiFacetsSelectionEnabled = () => {
 
 /**
  * Get the default checkbox selection state to apply if overriding user state is not found.
- *
- * @returns boolean
+ * @returns {boolean} Return true if the checkbox should be checked by default.
  */
 const getMultiFacetsSelectionPageLoadValue = () => {
   const setting = getMultiFacetsSelectionSetting();
@@ -30,11 +27,19 @@ const getMultiFacetsSelectionPageLoadValue = () => {
 
 /* --- Facet List --- */
 VuFind.register('facetList', function FacetList() {
+  /**
+   * Get the current value from the facet filter input.
+   * @returns {string|null} The current filter value, or null if the element doesn't exist.
+   */
   function getCurrentContainsValue() {
     const containsEl = document.querySelector('.ajax_param[data-name="contains"]');
     return containsEl ? containsEl.value : null;
   }
 
+  /**
+   * Set the value of the facet filter input.
+   * @param {string} val The value to set.
+   */
   function setCurrentContainsValue(val) {
     const containsEl = document.querySelector('.ajax_param[data-name="contains"]');
     if (containsEl) {
@@ -42,6 +47,11 @@ VuFind.register('facetList', function FacetList() {
     }
   }
 
+  /**
+   * Override the "href" attribute of a set of elements with new URL parameters.
+   * @param {string} selector         The CSS selector for the elements.
+   * @param {object} [overrideParams] An object of key-value pairs to add to the URL (default = {}).
+   */
   function overrideHref(selector, overrideParams = {}) {
     $(selector).each(function overrideHrefEach() {
       const dummyDomain = 'https://www.example.org'; // we need this since the URL class cannot parse relative URLs
@@ -53,6 +63,9 @@ VuFind.register('facetList', function FacetList() {
     });
   }
 
+  /**
+   * Update the href attribute to include the current facet filter value.
+   */
   function updateHrefContains() {
     const overrideParams = { contains: getCurrentContainsValue() };
     overrideHref('.js-facet-sort', overrideParams);
@@ -60,6 +73,11 @@ VuFind.register('facetList', function FacetList() {
     overrideHref('.js-facet-prev-page', overrideParams);
   }
 
+  /**
+   * Fetch facet list HTML content via an AJAX call.
+   * @param {object} [overrideParams] An object of key-value pairs to add as URL parameters for the request (default = {}).
+   * @returns {Promise} A promise that resolves with the AJAX request object.
+   */
   function getContent(overrideParams = {}) {
     const ajaxParams = $('.ajax_params').data('params');
     let url = ajaxParams.urlBase;
@@ -90,6 +108,10 @@ VuFind.register('facetList', function FacetList() {
     }));
   }
 
+  /**
+   * Update the content of the facet list by making an AJAX call and rendering the result.
+   * @param {object} [overrideParams] An object of key-value pairs to add as URL parameters for the request (default = {}).
+   */
   function updateContent(overrideParams = {}) {
     $('#facet-info-result').html(VuFind.loading());
     getContent(overrideParams).then(html => {
@@ -107,6 +129,9 @@ VuFind.register('facetList', function FacetList() {
   // to detect when the user stops typing.
   // See also: https://stackoverflow.com/questions/1909441/how-to-delay-the-keyup-handler-until-the-user-stops-typing
   var inputCallbackTimeout = null;
+  /**
+   * Register event listeners for the facet list, including filtering and sorting.
+   */
   function registerCallbacks() {
     $('.facet-lightbox-filter').removeClass('hidden');
 
@@ -129,6 +154,9 @@ VuFind.register('facetList', function FacetList() {
     });
   }
 
+  /**
+   * Set up the facet list functionality.
+   */
   function setup() {
     if ($.isReady) {
       registerCallbacks();
@@ -161,11 +189,9 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
 
   /**
    * Normalize a filter value
-   *
    * @param {string} key   Parameter name
    * @param {string} value Value
-   *
-   * @returns string
+   * @returns {string} The normalized value
    */
   function normalizeValue(key, value) {
     if (key !== 'filter[]') {
@@ -183,10 +209,8 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
 
   /**
    * Normalize a single query key from a search
-   *
    * @param {string} key Key name
-   *
-   * @returns string
+   * @returns {string} The normalized query
    */
   function normalizeSearchQueryKey(key) {
     // We normally use open-ended brackets to signify array-based query parameters.
@@ -197,7 +221,6 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
 
   /**
    * Append a normalized value to a normalized key in a set of parameters
-   *
    * @param {URLSearchParams} params Parameters to update
    * @param {string}          key    Key name
    * @param {string}          value  Value to set
@@ -209,10 +232,8 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
 
   /**
    * Normalize keys and values in a set of search parameters
-   *
    * @param {URLSearchParams} params Parameters to normalize
-   *
-   * @returns URLSearchParams
+   * @returns {URLSearchParams} A new object with normalized keys and values.
    */
   function normalizeSearchQueryKeysAndValues(params) {
     const normalized = new URLSearchParams();
@@ -228,10 +249,8 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
 
   /**
    * Update query params for every date range selector
-   *
-   * @param {URLSearchParams} queryParams
-   *
-   * @returns {URLSearchParams}
+   * @param {URLSearchParams} queryParams The current query parameters.
+   * @returns {URLSearchParams} A new object with the range selector values applied.
    */
   function processRangeSelector(queryParams) {
     let newParams = new URLSearchParams(queryParams.toString());
@@ -270,8 +289,10 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     }
     return newParams;
   }
-
-  // Goes through all modified facets to compile into 2 arrays of added and removed URL parameters
+  
+  /**
+   * Compile modified facets into lists of added and removed URL parameters.
+   */
   function processModifiedFacets() {
     const elems = document.querySelectorAll('[data-multi-filters-modified="true"]');
 
@@ -295,8 +316,11 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
       }
     }
   }
-
-  // Compile current parameters and newly added / removed to return the URL to redirect to
+  
+  /**
+   * Compile current parameters and newly added / removed to return the URL to redirect to
+   * @returns {string} The new URL to redirect to.
+   */
   function getHrefWithNewParams() {
     processModifiedFacets();
 
@@ -312,6 +336,9 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     return baseUrl + '?' + processRangeSelector(newParams).toString();
   }
 
+  /**
+   * Apply the selected multi-facets and redirects the page.
+   */
   function applyMultiFacetsSelection() {
     defaultContext.getElementsByClassName('js-apply-multi-facets-selection')[0]
       .removeEventListener('click', applyMultiFacetsSelection);
@@ -325,6 +352,10 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     window.location.assign(params.url);
   }
 
+  /**
+   * Toggle the visual selected style of a facet element.
+   * @param {HTMLElement} elem The facet element to toggle.
+   */
   function toggleSelectedFacetStyle(elem) {
     if (elem.classList.contains('exclude')) {
       elem.classList.toggle('selected');
@@ -348,10 +379,17 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     }
   }
 
+  /**
+   * Get the count of modified facet filters.
+   * @returns {number} The number of modified facets.
+   */
   function getModifiedFiltersCount() {
     return document.querySelectorAll('[data-multi-filters-modified="true"]').length;
   }
 
+  /**
+   * Update the count text displayed for the multi-facets feature.
+   */
   function updateCountText() {
     const textElems = document.getElementsByClassName('multi-filters-text');
     const count = getModifiedFiltersCount();
@@ -361,14 +399,24 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     }
   }
 
+  /**
+   * Hide the facet count text.
+   */
   function hideCountText() {
     document.querySelectorAll('.multi-filters-text').forEach(el => el.style.display = 'none');
   }
 
+  /**
+   * Show the facet count text.
+   */
   function showCountText() {
     document.querySelectorAll('.multi-filters-text').forEach(el => el.style.display = 'block');
   }
 
+  /**
+   * Toggle the visibility of the facet count text.
+   * @param {boolean} [show] Whether to show or hide the text (default = true).
+   */
   function toggleCountText(show = true) {
     if (show) {
       showCountText();
@@ -377,6 +425,10 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     }
   }
 
+  /**
+   * Initialize the original count text to be used as a default state.
+   * @param {HTMLElement} context The container element.
+   */
   function initOriginalCountText(context) {
     if (typeof defaultCountText === 'undefined') {
       const multiFiltersTextEl = context.querySelector('.multi-filters-text');
@@ -384,6 +436,10 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     }
   }
 
+  /**
+   * Handle a click event on a facet when multi-selection is enabled.
+   * @param {Event} e The click event.
+   */
   function handleMultiSelectionClick(e) {
     e.preventDefault();
     const elem = e.currentTarget;
@@ -399,10 +455,18 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     toggleSelectedFacetStyle(elem);
   }
 
+  /**
+   * Save the user's last selection state in local storage.
+   * @param {boolean} state The state ('true' or 'false') to save.
+   */
   function saveUserSelectionLastState(state) {
     localStorage.setItem(local_storage_variable_name, state ? 'true' : 'false');
   }
 
+  /**
+   * Retrieve the user's last selection state from local storage.
+   * @returns {boolean|undefined} Return true or false if a state is found, or undefined otherwise.
+   */
   function getUserSelectionLastState() {
     const state = localStorage.getItem(local_storage_variable_name);
     if (state === null) {
@@ -411,6 +475,10 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     return localStorage.getItem(local_storage_variable_name) === 'true';
   }
 
+  /**
+   * Toggle the multi-facets selection feature on or off.
+   * @param {boolean} enable Whether to enable the feature.
+   */
   function toggleMultiFacetsSelection(enable) {
     if (typeof enable !== 'undefined') {
       isMultiFacetsSelectionActivated = enable;
@@ -433,14 +501,26 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     VuFind.emit(event);
   }
 
+  /**
+   * Register a callback function to be executed when the "Apply" button is clicked.
+   * @param {Function} callback The function to call on apply.
+   */
   function registerCallbackOnApply(callback) {
     callbackOnApply = callback;
   }
 
+  /**
+   * Register a callback function to be executed when the multi-selection mode is deactivated.
+   * @param {Function} callback The function to call when deactivated.
+   */
   function registerCallbackWhenDeactivated(callback) {
     callbackWhenDeactivated = callback;
   }
 
+  /**
+   * Handle a click on a facet.
+   * @param {Event} e The click event.
+   */
   function handleClickedFacet(e) {
     if (isMultiFacetsSelectionActivated === true) {
       handleMultiSelectionClick(e);
@@ -449,6 +529,10 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     }
   }
 
+  /**
+   * Initialize the multi-facet control elements.
+   * @param {HTMLElement} context The container element.
+   */
   function initMultiFacetControls(context) {
     // Listener on checkbox for multiFacetsSelection feature
     const activationElem = context.querySelector('.js-user-selection-multi-filters');
@@ -463,6 +547,10 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     }
   }
 
+  /**
+   * Initialize click handlers for individual facet links.
+   * @param {HTMLElement} context The container element.
+   */
   function initFacetClickHandler(context) {
     context.classList.add('multi-facet-selection');
     context.querySelectorAll('a.facet:not(.narrow-toggle):not(.js-facet-next-page), .facet a').forEach(function addListeners(link) {
@@ -470,7 +558,10 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     });
   }
 
-  // List all the forms for date range facets and add a listener on them to prevent submission
+  /**
+   * Initialize event listeners for date range selector forms.
+   * @param {HTMLElement} context The container element.
+   */
   function initRangeSelection(context) {
     context.querySelectorAll('div.facet form .date-fields').forEach((elem) => {
       const formElement = elem.closest('form');
@@ -485,6 +576,10 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     });
   }
 
+  /**
+   * Initialize the multi-facets selection feature.
+   * @param {HTMLElement} [_context] The container element to initialize. Defaults to #search-sidebar, then .js-full-facet-list if not found.
+   */
   function init(_context) {
     if (!isMultiFacetsSelectionEnabled()) {
       return;
@@ -530,6 +625,11 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
 
 /* --- Side Facets --- */
 VuFind.register('sideFacets', function SideFacets() {
+  /**
+   * Show a loading overlay on a facet container.
+   *
+   * This is used to indicate that new facet data is being loaded.
+   */
   function showLoadingOverlay() {
     let elem;
     if (this === undefined || this.nodeName === undefined) {
@@ -545,6 +645,10 @@ VuFind.register('sideFacets', function SideFacets() {
     );
   }
 
+  /**
+   * Activate facet-blocking on facet links to show a loading overlay on click.
+   * @param {jQuery} [context] The container element to activate blocking on.
+   */
   function activateFacetBlocking(context) {
     const finalContext = (typeof context === "undefined") ? $(document.body) : context;
     finalContext.find('a.facet:not(.narrow-toggle):not(.js-facet-next-page),.facet a').click(showLoadingOverlay);
@@ -552,8 +656,7 @@ VuFind.register('sideFacets', function SideFacets() {
 
   /**
    * Set form action on submit if necessary to get rid of any hash in current page URL
-   *
-   * @param {Event} ev Event
+   * @param {Event} ev The form submission event.
    */
   function formSubmitHandler(ev) {
     const form = ev.target;
@@ -571,6 +674,9 @@ VuFind.register('sideFacets', function SideFacets() {
     document.querySelectorAll('.facet-group form').forEach((formEl) => formEl.addEventListener('submit', formSubmitHandler));
   }
 
+  /**
+   * Activate a single AJAX facet container, requesting and rendering its content.
+   */
   function activateSingleAjaxFacetContainer() {
     var $container = $(this);
     var facetList = [];
@@ -653,6 +759,9 @@ VuFind.register('sideFacets', function SideFacets() {
       });
   }
 
+  /**
+   * Load all side facet containers that are configured for AJAX loading.
+   */
   function loadAjaxSideFacets() {
     $('.side-facets-container-ajax').each(activateSingleAjaxFacetContainer);
   }
@@ -664,6 +773,11 @@ VuFind.register('sideFacets', function SideFacets() {
     setTimeout(loadAjaxSideFacets, 50);
   }
 
+  /**
+   * Save the state of a facet group in session storage.
+   * @param {Event}  e    The event object.
+   * @param {string} data The state to save.
+   */
   function facetSessionStorage(e, data) {
     var source = $('#result0 .hiddenSource').val();
     var id = e.target.id;
@@ -671,6 +785,9 @@ VuFind.register('sideFacets', function SideFacets() {
     sessionStorage.setItem(key, data);
   }
 
+  /**
+   * Initialize the side facets, including listeners for state changes and AJAX loading.
+   */
   function init() {
     if (isMultiFacetsSelectionEnabled()) {
       VuFind.multiFacetsSelection.registerCallbackOnApply(showLoadingOverlay);
@@ -728,8 +845,16 @@ VuFind.register('sideFacets', function SideFacets() {
 
 /* --- Lightbox Facets --- */
 VuFind.register('lightbox_facets', function LightboxFacets() {
+  /**
+   * Handle sorting for facets displayed in a lightbox.
+   */
   function lightboxFacetSorting() {
     var sortButtons = $('.js-facet-sort');
+    
+    /**
+     * Trigger an AJAX call to update the facet list with a new sort order.
+     * @param {HTMLElement} button The button element that was clicked to trigger the sort.
+     */
     function sortAjax(button) {
       var sort = $(button).data('sort');
       VuFind.facetList.updateContent({facetsort: sort});
@@ -744,6 +869,9 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
     });
   }
 
+  /**
+   * Set up all the event handlers and features for facets within a lightbox.
+   */
   function setup() {
     if (isMultiFacetsSelectionEnabled()) {
       const elem = document.querySelector('.js-full-facet-list');
@@ -794,6 +922,9 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
   return { setup: setup };
 });
 
+/**
+ * Register the facet truncation functionality for side facets.
+ */
 function registerSideFacetTruncation() {
   VuFind.truncate.initTruncate('.truncate-facets', '.facet__list__item');
   // Only top level is truncatable with hierarchical facets:

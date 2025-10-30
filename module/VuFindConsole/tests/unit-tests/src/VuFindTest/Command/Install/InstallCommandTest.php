@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -67,9 +67,8 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
      * @param bool $skipBackups Should we test with backups disabled?
      *
      * @return void
-     *
-     * @dataProvider skipBackupsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('skipBackupsProvider')]
     public function testInteractiveInstallation(bool $skipBackups): void
     {
         $expectedBaseDir = realpath(__DIR__ . '/../../../../../../../../');
@@ -124,7 +123,7 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
         ];
         $command->expects($this->exactly(2))->method('buildDirs')
             ->with($this->equalTo($expectedDirs))
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $expectedEnvBat = "@set VUFIND_HOME=$expectedBaseDir\n"
             . "@set VUFIND_LOCAL_DIR=$localFixtures\n"
             . "@set SOLR_PORT=8080\n";
@@ -192,7 +191,7 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
         $command->expects($this->exactly(5))->method('backUpFile')->willReturn(true);
         $command->expects($this->once())->method('buildDirs')
             ->with($this->equalTo($expectedDirs))
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $expectedEnvBat = "@set VUFIND_HOME=$expectedBaseDir\n"
             . "@set VUFIND_LOCAL_DIR=$localFixtures\n"
             . "@set SOLR_PORT=8983\n";

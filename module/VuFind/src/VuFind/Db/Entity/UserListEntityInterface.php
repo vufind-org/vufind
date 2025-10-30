@@ -17,11 +17,11 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Db_Interface
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
@@ -35,7 +35,7 @@ use DateTime;
  * Entity model interface for user_list table
  *
  * @category VuFind
- * @package  Db_Interface
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
@@ -82,6 +82,22 @@ interface UserListEntityInterface extends EntityInterface
     public function getDescription(): ?string;
 
     /**
+     * Get list type
+     *
+     * @return string
+     */
+    public function getType(): string;
+
+    /**
+     * Set list type
+     *
+     * @param string $type Type of the user list
+     *
+     * @return static
+     */
+    public function setType(string $type): static;
+
+    /**
      * Set created date.
      *
      * @param DateTime $dateTime Created date
@@ -116,16 +132,16 @@ interface UserListEntityInterface extends EntityInterface
     /**
      * Set user.
      *
-     * @param ?UserEntityInterface $user User owning the list.
+     * @param UserEntityInterface $user User owning the list.
      *
      * @return static
      */
-    public function setUser(?UserEntityInterface $user): static;
+    public function setUser(UserEntityInterface $user): static;
 
     /**
      * Get user.
      *
-     * @return ?UserEntityInterface
+     * @return UserEntityInterface
      */
-    public function getUser(): ?UserEntityInterface;
+    public function getUser(): UserEntityInterface;
 }

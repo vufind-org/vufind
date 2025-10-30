@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -78,10 +78,9 @@ class OaiTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $path URL path to OAI-PMH server.
      *
      * @return void
-     *
-     * @dataProvider serverProvider
      */
     #[\VuFindTest\Attribute\HtmlValidation(false)]
+    #[\PHPUnit\Framework\Attributes\DataProvider('serverProvider')]
     public function testDisabledByDefault(string $path): void
     {
         $session = $this->getMinkSession();
@@ -99,9 +98,8 @@ class OaiTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $path URL path to OAI-PMH server.
      *
      * @return void
-     *
-     * @dataProvider serverProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('serverProvider')]
     public function testVerbRequired(string $path): void
     {
         $this->changeConfigs(['config' => $this->defaultOaiConfig]);
@@ -116,9 +114,8 @@ class OaiTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $path URL path to OAI-PMH server.
      *
      * @return void
-     *
-     * @dataProvider serverProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('serverProvider')]
     public function testIdentifyResponseRepositoryName(string $path): void
     {
         $this->changeConfigs(['config' => $this->defaultOaiConfig]);

@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Session_Handlers
@@ -73,8 +73,8 @@ class SecureDelegatorFactory implements DelegatorFactoryInterface
          * @var HandlerInterface $handler
          */
         $handler = call_user_func($callback);
-        $config = $container->get(\VuFind\Config\PluginManager::class);
-        $secure = $config->get('config')->Session->secure ?? false;
+        $secure = $container->get(\VuFind\Config\ConfigManagerInterface::class)
+            ->getConfigArray('config')['Session']['secure'] ?? false;
         return $secure ? $this->delegate($container, $handler) : $handler;
     }
 

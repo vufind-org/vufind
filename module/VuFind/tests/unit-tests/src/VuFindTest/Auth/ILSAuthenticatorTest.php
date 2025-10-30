@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -67,7 +67,7 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
         $details = ['foo' => 'bar'];
         $connection = $this->getMockConnection(['patronLogin']);
         $connection->expects($this->once())->method('patronLogin')
-            ->with($this->equalTo('user'), $this->equalTo('pass'))->will($this->returnValue($details));
+            ->with($this->equalTo('user'), $this->equalTo('pass'))->willReturn($details);
         $auth = $this->getAuthenticator($manager, $connection);
         $mockServices = new MockDbServicePluginManager($this);
         $userService = $this->createMock(UserServiceInterface::class);
@@ -92,7 +92,7 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
         $details = false;
         $connection = $this->getMockConnection(['patronLogin']);
         $connection->expects($this->once())->method('patronLogin')
-            ->with($this->equalTo('user'), $this->equalTo('pass'))->will($this->returnValue($details));
+            ->with($this->equalTo('user'), $this->equalTo('pass'))->willReturn($details);
         $auth = $this->getAuthenticator($manager, $connection);
         $this->assertEquals($details, $auth->newCatalogLogin('user', 'pass'));
     }
@@ -111,7 +111,7 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
         $connection = $this->getMockConnection(['patronLogin']);
         $connection->expects($this->once())->method('patronLogin')
             ->with($this->equalTo('user'), $this->equalTo('pass'))
-            ->will($this->throwException(new \VuFind\Exception\ILS('kaboom')));
+            ->willThrowException(new \VuFind\Exception\ILS('kaboom'));
         $auth = $this->getAuthenticator($manager, $connection);
         $auth->newCatalogLogin('user', 'pass');
     }
@@ -194,7 +194,7 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
         $connection->expects($this->once())
             ->method('patronLogin')
             ->with($this->equalTo('user'), $this->equalTo('pass'))
-            ->will($this->throwException(new \VuFind\Exception\ILS('kaboom')));
+            ->willThrowException(new \VuFind\Exception\ILS('kaboom'));
         $auth = $this->getAuthenticator($manager, $connection);
         $auth->storedCatalogLogin();
     }

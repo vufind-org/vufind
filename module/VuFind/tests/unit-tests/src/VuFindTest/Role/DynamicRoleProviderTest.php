@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -73,17 +73,17 @@ class DynamicRoleProviderTest extends \PHPUnit\Framework\TestCase
             ->expects($this->any())
             ->method('getPermissions')
             ->with($this->equalTo('foo'))
-            ->will($this->returnValue([]));
+            ->willReturn([]);
         $pm->get('b')
             ->expects($this->any())
             ->method('getPermissions')
             ->with($this->equalTo('bar'))
-            ->will($this->returnValue(['role']));
+            ->willReturn(['role']);
         $pm->get('c')
             ->expects($this->any())
             ->method('getPermissions')
             ->with($this->equalTo([1, 2, 3]))
-            ->will($this->returnValue(['role']));
+            ->willReturn(['role']);
         $result = $this->getDynamicRoleProvider($pm, $config)->getRoles(['role']);
         $this->assertCount(1, $result);
         $this->assertEquals('role', $result[0]->getName());

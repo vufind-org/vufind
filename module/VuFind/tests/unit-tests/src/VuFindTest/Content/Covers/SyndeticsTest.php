@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -72,7 +72,7 @@ class SyndeticsTest extends \PHPUnit\Framework\TestCase
             $fixture = $this->getFixture($fixtureFile);
             $mockDownloader->expects($this->once())->method('download')
                 ->with($this->equalTo("http://syndetics.com/index.aspx?client=test&isbn=$isbn/index.xml"))
-                ->will($this->returnValue($fixture));
+                ->willReturn($fixture);
             $loader->setCachingDownloader($mockDownloader);
         }
         return $loader;

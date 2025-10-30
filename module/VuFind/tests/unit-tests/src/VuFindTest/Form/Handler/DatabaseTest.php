@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -34,6 +34,7 @@ use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Db\Entity\FeedbackEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\FeedbackServiceInterface;
+use VuFind\Db\Service\UserService;
 use VuFind\Form\Form;
 use VuFind\Form\Handler\Database;
 
@@ -80,7 +81,8 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
         $feedbackService = $this->createMock(FeedbackServiceInterface::class);
         $feedbackService->expects($this->once())->method('createEntity')->willReturn($feedback);
         $feedbackService->expects($this->once())->method('persistEntity')->with($feedback);
-        $handler = new Database($feedbackService, 'http://foo');
+        $userService = $this->createMock(UserService::class);
+        $handler = new Database($feedbackService, $userService, 'http://foo');
         $form = $this->createMock(Form::class);
         $form->expects($this->once())->method('mapRequestParamsToFieldValues')->willReturn([]);
         $form->expects($this->once())->method('getFormId')->willReturn('formy-mcformface');
@@ -101,7 +103,8 @@ class DatabaseTest extends \PHPUnit\Framework\TestCase
         $feedbackService = $this->createMock(FeedbackServiceInterface::class);
         $feedbackService->expects($this->once())->method('createEntity')->willReturn($feedback);
         $feedbackService->expects($this->once())->method('persistEntity')->with($feedback);
-        $handler = new Database($feedbackService, 'http://foo');
+        $userService = $this->createMock(UserService::class);
+        $handler = new Database($feedbackService, $userService, 'http://foo');
         $form = $this->createMock(Form::class);
         $form->expects($this->once())->method('mapRequestParamsToFieldValues')->willReturn([]);
         $form->expects($this->once())->method('getFormId')->willReturn('formy-mcformface');

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -153,10 +153,9 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool $dropdown            Enable navbar dropdown menu?
      * @param int  $expectedStatusCount How many instances of status badge to expect
      *
-     * @dataProvider menuConfigurationProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('menuConfigurationProvider')]
     public function testMenuConfiguration(bool $ajax, bool $dropdown, int $expectedStatusCount)
     {
         $this->changeConfigs(
@@ -324,10 +323,9 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
      * @param array  $storage    Array of storage values to test
      * @param string $checkClass Icon class to check
      *
-     * @dataProvider accountIconProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('accountIconProvider')]
     public function testAccountIcon(array $storage, string $checkClass): void
     {
         $this->changeConfigs(

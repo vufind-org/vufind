@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<funds total_record_count="7">
+    <fund link="https://api-eu.hosted.exlibrisgroup.com/almaws/v1/acq/funds/FUND-01">
+        <id>FUND-01</id>
+        <code>VUFIND-01</code>
+        <name>VuFind Community</name>
+        <type desc="Regulär">REG</type>
+        <entity_type desc="Allocated fund">ALLOCATED</entity_type>
+        <owner desc="My University">VUFIND_INST</owner>
+        <status desc="Active">ACTIVE</status>
+        <fiscal_period desc="FY-2025">19</fiscal_period>
+        <currency desc="Euro">EUR</currency>
+        <allocated_balance>12000</allocated_balance>
+        <expended_balance>0</expended_balance>
+        <cash_balance>12000</cash_balance>
+        <encumbered_balance>12000</encumbered_balance>
+        <available_balance>0</available_balance>
+        <available_for_libraries>
+            <available_for_library desc="VuFind Library 1">100</available_for_library>
+            <available_for_library desc="VuFind Library 2">102</available_for_library>
+        </available_for_libraries>
+        <parent link="https://api-eu.hosted.exlibrisgroup.com/almaws/v1/acq/funds/FUND">FUND</parent>
+        <overencumbrance_allowed desc="No limits">NO_LIMITS</overencumbrance_allowed>
+        <overexpenditure_allowed desc="Yes">YES</overexpenditure_allowed>
+        <overencumbrance_warning_percent>0.0</overencumbrance_warning_percent>
+        <overexpenditure_warning_sum>20000.0</overexpenditure_warning_sum>
+        <overencumbrance_limit_percent>0.0</overencumbrance_limit_percent>
+        <overexpenditure_limit_sum>20000.0</overexpenditure_limit_sum>
+        <encumbrances_prior_to_fiscal_period>0</encumbrances_prior_to_fiscal_period>
+        <expenditures_prior_to_fiscal_period>0</expenditures_prior_to_fiscal_period>
+        <transfers_prior_to_fiscal_period>0</transfers_prior_to_fiscal_period>
+        <fiscal_period_end_encumbrance_grace_period>-16</fiscal_period_end_encumbrance_grace_period>
+        <fiscal_period_end_expenditure_grace_period>-11</fiscal_period_end_expenditure_grace_period>
+    </fund>
+    <fund link="https://api-eu.hosted.exlibrisgroup.com/almaws/v1/acq/funds/FUND-02">
+        <id>FUND-02</id>
+        <code>VUFIND-02</code>
+        <name>VuFind Sponsors</name>
+        <external_id>123456/78</external_id>
+        <type desc="Regulär">REG</type>
+        <entity_type desc="Allocated fund">ALLOCATED</entity_type>
+        <owner desc="Universität Mannheim">VUFIND_INST</owner>
+        <status desc="Active">ACTIVE</status>
+        <fiscal_period desc="FY-2025">19</fiscal_period>
+        <currency desc="Euro">EUR</currency>
+        <allocated_balance>6000.02</allocated_balance>
+        <expended_balance>390.14</expended_balance>
+        <cash_balance>5609.88</cash_balance>
+        <encumbered_balance>5600</encumbered_balance>
+        <available_balance>9.88</available_balance>
+        <available_for_libraries>
+            <available_for_library desc="VuFind Library 2">102</available_for_library>
+        </available_for_libraries>
+        <parent link="https://api-eu.hosted.exlibrisgroup.com/almaws/v1/acq/funds/FUND">FUND</parent>
+        <overencumbrance_allowed desc="Yes">YES</overencumbrance_allowed>
+        <overexpenditure_allowed desc="Yes">YES</overexpenditure_allowed>
+        <overencumbrance_warning_percent>20.0</overencumbrance_warning_percent>
+        <overexpenditure_warning_sum>1000.0</overexpenditure_warning_sum>
+        <overencumbrance_limit_percent>20.0</overencumbrance_limit_percent>
+        <overexpenditure_limit_sum>1000.0</overexpenditure_limit_sum>
+        <encumbrances_prior_to_fiscal_period>0</encumbrances_prior_to_fiscal_period>
+        <expenditures_prior_to_fiscal_period>0</expenditures_prior_to_fiscal_period>
+        <transfers_prior_to_fiscal_period>0</transfers_prior_to_fiscal_period>
+        <fiscal_period_end_encumbrance_grace_period>-8</fiscal_period_end_encumbrance_grace_period>
+        <fiscal_period_end_expenditure_grace_period>2</fiscal_period_end_expenditure_grace_period>
+    </fund>
+</funds>

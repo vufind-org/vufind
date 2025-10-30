@@ -5,6 +5,9 @@ VuFind.register('embedded', function embedded() {
   var _DELIM = ',';
   var _STATUS = {};
 
+  /**
+   * Synchronize the current status information to session storage for persistence.
+   */
   function saveStatusToStorage() {
     var storage = [];
     var str;
@@ -18,16 +21,33 @@ VuFind.register('embedded', function embedded() {
     }
     sessionStorage.setItem(_STORAGEKEY, $.uniqueSort(storage).join(_DELIM));
   }
+
+  /**
+   * Add a record and its active tab to the storage status.
+   * @param {string} id  The record ID.
+   * @param {string} tab The ID of the active tab.
+   * @private
+   */
   function addToStorage(id, tab) {
     _STATUS[id] = tab;
     saveStatusToStorage();
   }
+  /**
+   * Remove a record from the storage status.
+   * @param {string} id The record ID.
+   */
   function removeFromStorage(id) {
     if (delete _STATUS[id]) {
       saveStatusToStorage();
     }
   }
 
+  /**
+   * Load the content for a specific record tab via AJAX.
+   * @param {string}  tabid    The ID of the tab to load.
+   * @param {boolean} [_click] Whether to trigger a click on the tab after loading (default = false).
+   * @returns {boolean} Returns false if the tab redirects to a new page, otherwise true.
+   */
   function ajaxLoadTab(tabid, _click) {
     var click = _click || false;
     var $tab = $('#' + tabid);
@@ -82,6 +102,12 @@ VuFind.register('embedded', function embedded() {
     return true;
   }
 
+  /**
+   * Toggle the embedded detailed view of a record.
+   * @param {jQuery} _link   The link element.
+   * @param {string} [tabid] The ID of the tab to open (default = first available tab).
+   * @returns {boolean} Return false to prevent the default link behavior.
+   */
   function toggleDataView(_link, tabid) {
     var $link = $(_link);
     var viewType = $link.attr('data-view');
@@ -190,6 +216,9 @@ VuFind.register('embedded', function embedded() {
     return false;
   }
 
+  /**
+   * Load the status of open records from session storage.
+   */
   function loadStorage() {
     var storage = sessionStorage.getItem(_STORAGEKEY);
     if (!storage) {
@@ -226,6 +255,10 @@ VuFind.register('embedded', function embedded() {
     }
   }
 
+  /**
+   * Update the container by binding events and loading stored states.
+   * @param {object} params An object containing the container element.
+   */
   function updateContainer(params) {
     const container = $(params.container);
     container.find('.getFull').on('click', function linkToggle() { return toggleDataView(this); });
@@ -233,6 +266,9 @@ VuFind.register('embedded', function embedded() {
     loadStorage();
   }
 
+  /**
+   * Initialize the embedded module.
+   */
   function init() {
     updateContainer({container: document});
     VuFind.listen('results-init', updateContainer);

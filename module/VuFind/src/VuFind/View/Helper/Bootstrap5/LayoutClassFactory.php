@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -66,13 +66,12 @@ class LayoutClassFactory implements FactoryInterface
         ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $sidebarOnLeft = $config->Site->sidebarOnLeft ?? false;
-        $mirror = $config->Site->mirrorSidebarInRTL ?? true;
-        $offcanvas = $config->Site->offcanvas ?? false;
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config')['Site'];
+        $sidebarOnLeft = $config['sidebarOnLeft'] ?? false;
+        $mirror = $config['mirrorSidebarInRTL'] ?? true;
+        $offcanvas = $config['offcanvas'] ?? false;
         // The right-to-left setting is injected into the layout by the Bootstrapper;
         // pull it back out here to avoid duplicate effort, then use it to apply
         // the mirror setting appropriately.

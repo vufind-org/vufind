@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Cache
@@ -31,8 +31,8 @@ namespace VuFind\RateLimiter;
 
 use Closure;
 use Laminas\EventManager\EventInterface;
-use Laminas\Log\LoggerAwareInterface;
 use Laminas\Mvc\MvcEvent;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\Log\LoggerAwareTrait;
@@ -193,6 +193,16 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
                 . ', retry-after: ' . $result['retryAfter']
                 . ', limit: ' . $result['requestLimit']
             );
+            if (isset($turnstileLimit)) {
+                $this->verboseDebug(
+                    'Turnstile: '
+                    . ($turnstileLimit->isAccepted() ? 'Accepted' : 'Refused')
+                    . " by policy '$policyId'"
+                    . ', remaining: ' . $turnstileLimit->getRemainingTokens()
+                    . ', retry-after: ' . $turnstileLimit->getRetryAfter()->getTimestamp() - time()
+                    . ', limit: ' . $turnstileLimit->getLimit()
+                );
+            }
 
             // Add headers if configured:
             if ($this->config['Policies'][$policyId]['addHeaders'] ?? false) {
@@ -211,6 +221,28 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
                     $result['allow'] = false;
                     $result['message'] = $this->getTooManyRequestsResponseMessage($event, $result);
                     $result['presentTurnstileChallenge'] = ($priorTurnstileResult === null);
+                    if (
+                        $result['presentTurnstileChallenge'] &&
+                        ($this->config['Policies'][$policyId]['turnstileIgnoredRateLimiterSettings'] ?? false)
+                    ) {
+                        $turnstileIgnoredLimiter = ($this->rateLimiterFactoryCallback)(
+                            $this->config,
+                            $policyId,
+                            $this->clientIp,
+                            $this->userId,
+                            'turnstileIgnoredRateLimiterSettings'
+                        );
+                        $turnstileIgnoredLimit = $turnstileIgnoredLimiter->consume(1);
+                        if (!$turnstileIgnoredLimit->isAccepted()) {
+                            $this->verboseDebug('Turnstile ignored limit exceeded.');
+                            $this->turnstile->setResult($policyId, $this->clientIp, false);
+                            $result['presentTurnstileChallenge'] = false;
+                        } else {
+                            $this->verboseDebug(
+                                'Turnstile ignored limit down to ' . $turnstileIgnoredLimit->getRemainingTokens()
+                            );
+                        }
+                    }
                     return $result;
                 }
             }

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -52,9 +52,9 @@ class SummonResultsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTestCa
         $options = $this->getMockBuilder(\VuFind\Search\Solr\Options::class)
             ->disableOriginalConstructor()->getMock();
         $options->expects($this->once())->method('getLabelForBasicHandler')
-            ->with($this->equalTo('bar'))->will($this->returnValue('baz'));
-        $params->expects($this->once())->method('getOptions')->will($this->returnValue($options));
-        $params->expects($this->once())->method('getSearchHandler')->will($this->returnValue('bar'));
+            ->with($this->equalTo('bar'))->willReturn('baz');
+        $params->expects($this->once())->method('getOptions')->willReturn($options);
+        $params->expects($this->once())->method('getSearchHandler')->willReturn('bar');
         $mod = $this->getRecommend(\VuFind\Recommend\SummonResultsDeferred::class, '', null, $results);
         $this->assertEquals(
             'mod=SummonResults&params=lookfor%3A&lookfor=foo&typeLabel=baz',

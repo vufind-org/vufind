@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -230,7 +230,7 @@ class AbstractSearch extends AbstractBase
         $override = $this->params()->fromQuery('recommendOverride');
 
         // Retrieve recommend settings from params object:
-        return function ($runner, $params, $searchId) use ($rManager, $activeRecs, $override) {
+        return function ($runner, $params, $searchId) use ($rManager, $activeRecs, $override): void {
             $listener = new RecommendListener($rManager, $searchId);
             $config = [];
             $rawConfig = $params->getOptions()
@@ -339,13 +339,13 @@ class AbstractSearch extends AbstractBase
     /**
      * Get the value multiFacetsSelection from the config
      *
-     * @param Config $config The config containing multiFacetsSelection
+     * @param array $config The config containing multiFacetsSelection
      *
      * @return string
      */
-    protected static function getMultiSelectionValueFromConfig(Config $config)
+    protected static function getMultiSelectionValueFromConfig(array $config): string
     {
-        $multiFacetsSelection = $config->Results_Settings->multiFacetsSelection ?? 'false';
+        $multiFacetsSelection = $config['Results_Settings']['multiFacetsSelection'] ?? 'false';
         return match ($multiFacetsSelection) {
             true, '1' => 'true',
             false, '', '0' => 'false',
@@ -364,7 +364,7 @@ class AbstractSearch extends AbstractBase
     protected function getSearchResultsView($setupCallback = null)
     {
         $view = $this->createViewModel();
-        $config = $this->getConfig($this->getOptionsForClass()->getFacetsIni());
+        $config = $this->getConfigArray($this->getOptionsForClass()->getFacetsIni());
         $view->multiFacetsSelection = static::getMultiSelectionValueFromConfig($config);
         $extraErrors = [];
 
@@ -403,7 +403,11 @@ class AbstractSearch extends AbstractBase
         if ($totalResults > 0 && $page > $lastPage) {
             $queryParams = $request;
             $queryParams['page'] = $lastPage;
-            return $this->redirect()->toRoute('search-results', [], [ 'query' => $queryParams ]);
+            return $this->redirect()->toRoute(
+                $params->getOptions()->getSearchAction(),
+                [],
+                ['query' => $queryParams]
+            );
         }
 
         // If we received an EmptySet back, that indicates that the real search
@@ -499,7 +503,7 @@ class AbstractSearch extends AbstractBase
         $jumpto = $this->params()->fromQuery('jumpto', true);
         if (
             $jumpto
-            && ($this->getConfig()->Record->jump_to_single_search_result ?? false)
+            && ($this->getConfigArray()['Record']['jump_to_single_search_result'] ?? false)
             && $results->getResultTotal() == 1
             && $recordList = $results->getResults()
         ) {
@@ -670,10 +674,8 @@ class AbstractSearch extends AbstractBase
      */
     protected function getRangeFieldList($config, $section, $filter)
     {
-        $config = $this->getService(\VuFind\Config\PluginManager::class)
-            ->get($config);
-        $fields = isset($config->SpecialFacets->$section)
-            ? $config->SpecialFacets->$section->toArray() : [];
+        $config = $this->getService(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray($config);
+        $fields = $config['SpecialFacets'][$section] ?? [];
 
         if (!empty($filter)) {
             $fields = array_intersect($fields, $filter);
@@ -842,8 +844,7 @@ class AbstractSearch extends AbstractBase
         $section = $params[1] ?? 'CheckboxFacets';
 
         // Load config file:
-        $config = $this->getService(\VuFind\Config\PluginManager::class)
-            ->get($config);
+        $config = $this->getService(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray($config);
 
         // Process checkbox settings in config:
         $flipCheckboxes = false;
@@ -851,8 +852,7 @@ class AbstractSearch extends AbstractBase
             $section = substr($section, 1);
             $flipCheckboxes = true;
         }
-        $checkboxFacets = ($section && isset($config->$section))
-            ? $config->$section->toArray() : [];
+        $checkboxFacets = ($section && isset($config[$section])) ? $config[$section] : [];
         if ($flipCheckboxes) {
             $checkboxFacets = array_flip($checkboxFacets);
         }
@@ -913,9 +913,8 @@ class AbstractSearch extends AbstractBase
                 ? 'count'
                 : current(array_keys($facetSortOptions));
         }
-        $config = $this->getService(\VuFind\Config\PluginManager::class)
-            ->get($options->getFacetsIni());
-        $limit = $config->Results_Settings->lightboxLimit ?? 50;
+        $config = $this->getConfigArray($options->getFacetsIni());
+        $limit = $config['Results_Settings']['lightboxLimit'] ?? 50;
         $limit = $this->params()->fromQuery('facetlimit', $limit);
         if (!empty($contains)) {
             $params->setFacetContains($contains);

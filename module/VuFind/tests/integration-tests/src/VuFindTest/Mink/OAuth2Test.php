@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -189,9 +189,8 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
      * @param bool   $limited             Whether the permission set has been limited by the server
      *
      * @return void
-     *
-     * @dataProvider oauth2AuthorizationProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('oauth2AuthorizationProvider')]
     public function testOAuth2Authorization(string $clientId, array $expectedPermissions, bool $limited): void
     {
         // Bogus redirect URI, but it doesn't matter since the page won't handle the

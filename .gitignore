@@ -6,7 +6,9 @@
 .*.sw[po]
 
 .php_cs_cache
+.phpmd.result-cache.php
 .phpstan_cache
+.rector
 .vagrant
 .vscode/*
 /downloads
@@ -23,7 +25,6 @@ import/solrmarc.log*
 lessphp_*.list
 module/VuFind/tests/.phpunit*
 node_modules
-package-lock.json
 public/swagger-ui
 tests/phpcs.cache.json
 themes/bootstrap5/scss/vendor/bootstrap

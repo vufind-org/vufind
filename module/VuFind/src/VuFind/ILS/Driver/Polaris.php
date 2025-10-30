@@ -16,8 +16,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -603,19 +603,11 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         if (!$response->ValidPatron) {
             return null;
         }
-
-        $user = [];
-
-        $user['id']           = $response->PatronID;
-        $user['firstname']    = null;
-        $user['lastname']     = null;
-        $user['cat_username'] = $response->PatronBarcode;
-        $user['cat_password'] = $password;
-        $user['email']        = null;
-        $user['major']        = null;
-        $user['college']      = null;
-
-        return $user;
+        return $this->createPatronArray(
+            id: $response->PatronID,
+            cat_username: $response->PatronBarcode,
+            cat_password: $password
+        );
     }
 
     /**
@@ -674,12 +666,11 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $patron['cat_password']
         );
         $profile_response = $response->PatronBasicData;
-        $profile = [
-          'firstname' => $profile_response->NameFirst,
-          'lastname'  => $profile_response->NameLast,
-          'phone'     => $profile_response->PhoneNumber,
-        ];
-        return $profile;
+        return $this->createProfileArray(
+            firstname:  $profile_response->NameFirst,
+            lastname:  $profile_response->NameLast,
+            phone:  $profile_response->PhoneNumber
+        );
     }
 
     /**

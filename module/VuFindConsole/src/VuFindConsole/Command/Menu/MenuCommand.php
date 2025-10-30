@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -198,21 +198,17 @@ class MenuCommand extends Command
         }
         $helper = $this->getHelper('question');
         $menu = [];
-        if (count($options) > 0) {
-            foreach ($options as $i => $currentOption) {
-                if (($currentOption['type'] ?? 'string') === 'no-value') {
-                    $currentValue = ($optionValues[$i] ?? $currentOption['default'] ?? false) ? 'ON' : 'OFF';
-                } else {
-                    $currentValue = ($optionValues[$i] ?? $currentOption['default'] ?? '--unset--');
-                }
-                $menu[] = "Set Option $i ({$currentOption['label']}); current value: " . $currentValue;
+        foreach ($options as $i => $currentOption) {
+            if (($currentOption['type'] ?? 'string') === 'no-value') {
+                $currentValue = ($optionValues[$i] ?? $currentOption['default'] ?? false) ? 'ON' : 'OFF';
+            } else {
+                $currentValue = ($optionValues[$i] ?? $currentOption['default'] ?? '--unset--');
             }
+            $menu[] = "Set Option $i ({$currentOption['label']}); current value: " . $currentValue;
         }
-        if (count($arguments) > 0) {
-            foreach ($arguments as $i => $currentArgument) {
-                $menu[] = "Set Argument $i ({$currentArgument['label']}); current value: "
-                    . ($argumentValues[$i] ?? $currentArgument['default'] ?? '--unset--');
-            }
+        foreach ($arguments as $i => $currentArgument) {
+            $menu[] = "Set Argument $i ({$currentArgument['label']}); current value: "
+                . ($argumentValues[$i] ?? $currentArgument['default'] ?? '--unset--');
         }
         $menu[] = $this->exitCommand;
         $menu[] = $this->runCommand . ': ' . $fullCommand;

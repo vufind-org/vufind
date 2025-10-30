@@ -6,6 +6,7 @@
  * PHP version 8
  *
  * Copyright (C) Villanova University 2023.
+ * Copyright (C) The National Library of Finland 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -17,22 +18,22 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
  * @author   Sudharma Kellampalli <skellamp@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 
 namespace VuFind\Db\Service;
 
-use Laminas\Log\LoggerAwareInterface;
+use DateTime;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\OaiResumptionEntityInterface;
-use VuFind\Db\Table\DbTableAwareInterface;
-use VuFind\Db\Table\DbTableAwareTrait;
 use VuFind\Log\LoggerAwareTrait;
 
 use function intval;
@@ -43,29 +44,36 @@ use function intval;
  * @category VuFind
  * @package  Database
  * @author   Sudharma Kellampalli <skellamp@villanova.edu>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 class OaiResumptionService extends AbstractDbService implements
-    DbTableAwareInterface,
     LoggerAwareInterface,
-    OaiResumptionServiceInterface
+    OaiResumptionServiceInterface,
+    Feature\DeleteExpiredInterface
 {
-    use DbTableAwareTrait;
     use LoggerAwareTrait;
 
     /**
-     * Remove all expired tokens from the database.
+     * Remove expired tokens from the database.
+     *
+     * Removes tokens expired more than a day ago. This allows the ExpireOaiResumptionTokensCommand
+     * to do the work in background if it's enabled.
+     * Removal is done in a loop to avoid long database locks.
      *
      * @return void
      */
     public function removeExpired(): void
     {
-        $this->getDbTable('oairesumption')->removeExpired();
+        $dateThreshold = $this->getDateTime('now - 1 days');
+        do {
+            $count = $this->deleteExpired($dateThreshold, 1000);
+        } while ($count > 0);
     }
 
     /**
-     * Retrieve a row from the database based on primary key; return null if it
+     * Retrieve an unexpired row from the database based on primary key; return null if it
      * is not found.
      *
      * @param string $token The resumption token to retrieve.
@@ -73,13 +81,13 @@ class OaiResumptionService extends AbstractDbService implements
      * @return     ?OaiResumptionEntityInterface
      * @deprecated Use OaiResumptionService::findWithId
      */
-    public function findToken(string $token): ?OaiResumptionEntityInterface
+    public function findToken($token): ?OaiResumptionEntityInterface
     {
         return $this->findWithId($token);
     }
 
     /**
-     * Retrieve a row from the database based on primary key; return null if it
+     * Retrieve an unexpired row from the database based on primary key; return null if it
      * is not found.
      *
      * @param string $id Id to use for the search.
@@ -88,11 +96,17 @@ class OaiResumptionService extends AbstractDbService implements
      */
     public function findWithId(string $id): ?OaiResumptionEntityInterface
     {
-        return $this->getDbTable('oairesumption')->findWithId($id);
+        $dql = 'SELECT O FROM ' . OaiResumptionEntityInterface::class . ' O '
+            . 'WHERE O.id = :id AND O.expires > :now';
+        $now = $this->getDateTime();
+        $parameters = compact('id', 'now');
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        return $query->getOneOrNullResult();
     }
 
     /**
-     * Retrieve a row from the database based on token; return null if it
+     * Retrieve an unexpired row from the database based on token; return null if it
      * is not found.
      *
      * @param string $token Token used for the search.
@@ -101,11 +115,36 @@ class OaiResumptionService extends AbstractDbService implements
      */
     public function findWithToken(string $token): ?OaiResumptionEntityInterface
     {
-        return $this->getDbTable('oairesumption')->findWithToken($token);
+        $dql = 'SELECT O FROM ' . OaiResumptionEntityInterface::class . ' O '
+            . 'WHERE O.token = :token AND O.expires > :now';
+        $now = $this->getDateTime();
+        $parameters = compact('token', 'now');
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        return $query->getOneOrNullResult();
     }
 
     /**
-     * Try to find with token first, if not found then try to find with id where the token is null.
+     * Retrieve an unexpired row from the database based on primary key and where the token is null.
+     *
+     * @param int $id Id used for the search.
+     *
+     * @return ?OaiResumptionEntityInterface
+     * @todo   In future, we should migrate data to prevent null token fields, which will make this method obsolete.
+     */
+    protected function findWithLegacyIdToken(int $id): ?OaiResumptionEntityInterface
+    {
+        $dql = 'SELECT O FROM ' . OaiResumptionEntityInterface::class . ' O '
+            . 'WHERE O.token IS NULL AND O.id = :id AND O.expires > :now';
+        $now = $this->getDateTime();
+        $parameters = compact('id', 'now');
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        return $query->getOneOrNullResult();
+    }
+
+    /**
+     * Try to find an unexpired row with token first, if not found then try to find with id where the token is null.
      *
      * @param string $tokenOrId Token or id
      *
@@ -118,7 +157,7 @@ class OaiResumptionService extends AbstractDbService implements
         if (!$result && is_numeric($tokenOrId)) {
             $idInt = intval($tokenOrId);
             if ($idInt > 0) {
-                $result = $this->getDbTable('oairesumption')->findWithLegacyIdToken($idInt);
+                return $this->findWithLegacyIdToken($idInt);
             }
         }
         return $result;
@@ -137,13 +176,13 @@ class OaiResumptionService extends AbstractDbService implements
     /**
      * Create and persist a new resumption token.
      *
-     * @param array $params Parameters associated with the token.
-     * @param int   $expire Expiration time for token (Unix timestamp).
+     * @param array    $params Parameters associated with the token.
+     * @param DateTime $expiry Expiration time for the token.
      *
      * @return OaiResumptionEntityInterface
      * @throws \Exception
      */
-    public function createAndPersistToken(array $params, int $expire): OaiResumptionEntityInterface
+    public function createAndPersistToken(array $params, DateTime $expiry): OaiResumptionEntityInterface
     {
         $row = null;
         // In extremely rare cases it might be possible that the generated random token already exists in the
@@ -153,7 +192,7 @@ class OaiResumptionService extends AbstractDbService implements
                 $row = $this->createEntity()
                     ->setToken($this->createRandomToken())
                     ->setResumptionParameters($this->encodeParams($params))
-                    ->setExpiry(\DateTime::createFromFormat('U', $expire));
+                    ->setExpiry($expiry);
                 $this->persistEntity($row);
                 break;
             } catch (\Exception $e) {
@@ -174,7 +213,7 @@ class OaiResumptionService extends AbstractDbService implements
      */
     public function createEntity(): OaiResumptionEntityInterface
     {
-        return $this->getDbTable('oairesumption')->createRow();
+        return $this->entityPluginManager->get(OaiResumptionEntityInterface::class);
     }
 
     /**
@@ -189,5 +228,46 @@ class OaiResumptionService extends AbstractDbService implements
         ksort($params);
         $processedParams = http_build_query($params, '', '&', PHP_QUERY_RFC3986);
         return $processedParams;
+    }
+
+    /**
+     * Delete expired records. Allows setting a limit so that rows can be deleted in small batches.
+     *
+     * @param DateTime $dateLimit Date threshold of an "expired" record.
+     * @param ?int     $limit     Maximum number of rows to delete or null for no limit.
+     *
+     * @return int Number of rows deleted
+     */
+    public function deleteExpired(DateTime $dateLimit, ?int $limit = null): int
+    {
+        $subQueryBuilder = $this->entityManager->createQueryBuilder();
+        $subQueryBuilder->select('o.id')
+            ->from(OaiResumptionEntityInterface::class, 'o')
+            ->where('o.expires < :dateLimit')
+            ->setParameter('dateLimit', $dateLimit);
+
+        if ($limit) {
+            $subQueryBuilder->setMaxResults($limit);
+        }
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->delete(OaiResumptionEntityInterface::class, 'o')
+            ->where('o.id IN (:tokens)')
+            ->setParameter('tokens', $subQueryBuilder->getQuery()->getResult());
+
+        return $queryBuilder->getQuery()->execute();
+    }
+
+    /**
+     * Get current time or specified time as DateTime.
+     *
+     * NOTE: This method is useful because it helps with mocking dates in tests.
+     *
+     * @param string $datetime Time to return
+     *
+     * @return DateTime
+     */
+    protected function getDateTime(string $datetime = 'now'): DateTime
+    {
+        return new DateTime($datetime);
     }
 }
