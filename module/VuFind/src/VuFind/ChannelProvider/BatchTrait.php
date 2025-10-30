@@ -48,7 +48,7 @@ trait BatchTrait
     protected $batchSize = 24;
 
     /**
-     * Set the options for the provider.
+     * Calculate and set the provider's batch-related properties from the provided options array.
      *
      * @param array $options Options
      *
