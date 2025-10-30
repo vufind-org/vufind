@@ -299,7 +299,7 @@ VuFind.register("channels", function Channels() {
         const record = findChannelItem(
           event.target.closest(".channel"),
           group.dataset.recordSource,
-          group.dataset.recordId,
+          group.dataset.recordId
         );
         if (record.previousElementSibling) {
           quickLook(record.previousElementSibling);
@@ -314,7 +314,7 @@ VuFind.register("channels", function Channels() {
         const record = findChannelItem(
           event.target.closest(".channel"),
           group.dataset.recordSource,
-          group.dataset.recordId,
+          group.dataset.recordId
         );
         if (record.nextElementSibling) {
           quickLook(record.nextElementSibling);
