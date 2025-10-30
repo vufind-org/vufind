@@ -51,7 +51,7 @@ use function count;
 class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
-	use BatchTrait;
+    use BatchTrait;
 
     /**
      * Facet fields to use (field name => description).
@@ -75,27 +75,6 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
     protected $maxValuesToSuggestPerField;
 
     /**
-     * Search results manager.
-     *
-     * @var ResultsManager
-     */
-    protected $resultsManager;
-
-    /**
-     * URL helper
-     *
-     * @var Url
-     */
-    protected $url;
-
-    /**
-     * Request
-     *
-     * @var HttpRequest
-     */
-    protected $request;
-
-    /**
      * Constructor
      *
      * @param ResultsManager $rm      Results manager
@@ -103,11 +82,12 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
      * @param HttpRequest    $req     Request for parameters
      * @param array          $options Settings (optional)
      */
-    public function __construct(ResultsManager $rm, Url $url, HttpRequest $req, array $options = [])
-    {
-        $this->resultsManager = $rm;
-        $this->url = $url;
-        $this->request = $req;
+    public function __construct(
+        protected ResultsManager $resultsManager,
+        protected Url $url,
+        protected HttpRequest $request,
+        array $options = []
+    ) {
         $this->setOptions($options);
     }
 
@@ -123,7 +103,7 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
         $this->fields = $options['fields'] ?? ['topic_facet' => 'Topic', 'author_facet' => 'Author'];
         $this->maxFieldsToSuggest = $options['maxFieldsToSuggest'] ?? 2;
         $this->maxValuesToSuggestPerField = $options['maxValuesToSuggestPerField'] ?? 2;
-		$this->setBatchSizeFromOptions($options);
+        $this->setBatchSizeFromOptions($options);
     }
 
     /**
