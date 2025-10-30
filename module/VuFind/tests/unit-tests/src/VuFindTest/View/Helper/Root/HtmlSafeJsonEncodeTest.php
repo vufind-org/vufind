@@ -70,7 +70,7 @@ class HtmlSafeJsonEncodeTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()->getMock();
         $escapeHtmlAttr->expects($this->once())->method('__invoke')
             ->with($this->equalTo('1'))
-            ->will($this->returnValue('1'));
+            ->willReturn('1');
         $this->assertEquals('1', ($this->getHelper(compact('escapeHtmlAttr')))(1));
     }
 

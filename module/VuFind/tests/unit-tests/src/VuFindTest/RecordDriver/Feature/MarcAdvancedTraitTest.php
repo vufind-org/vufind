@@ -58,10 +58,10 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
             ->onlyMethods(['getMarcReader', 'getUniqueId'])->getMock();
         $obj->expects($this->any())
             ->method('getMarcReader')
-            ->will($this->returnValue($record));
+            ->willReturn($record);
         $obj->expects($this->any())
             ->method('getUniqueId')
-            ->will($this->returnValue('123'));
+            ->willReturn('123');
         return $obj;
     }
 

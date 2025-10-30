@@ -122,7 +122,7 @@ class SetupThemeResourcesTest extends \PHPUnit\Framework\TestCase
             // These are side effects of __call and need to be added for mocking:
             ->addMethods(['prependHttpEquiv', 'appendName'])
             ->getMock();
-        $mock->expects($this->any())->method('__invoke')->will($this->returnValue($mock));
+        $mock->expects($this->any())->method('__invoke')->willReturn($mock);
         $mock->expects($this->once())->method('prependHttpEquiv')
             ->with($this->equalTo('Content-Type'), $this->equalTo('text/html; charset=utf-8'));
         $mock->expects($this->once())->method('appendName')

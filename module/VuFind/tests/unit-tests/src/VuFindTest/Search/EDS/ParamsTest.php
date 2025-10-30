@@ -58,12 +58,12 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             ['selectedvalue' => 'limitervalue', 'description' => 'limiter'],
         ];
         $options->expects($this->once())->method('getSearchScreenLimiters')
-            ->will($this->returnValue($limiters));
+            ->willReturn($limiters);
         $expanders = [
             ['selectedvalue' => 'expandervalue', 'description' => 'expander'],
         ];
         $options->expects($this->once())->method('getSearchScreenExpanders')
-            ->will($this->returnValue($expanders));
+            ->willReturn($expanders);
         $params = $this->getParams($options);
         // We expect "normal" filters to NOT be always visible, and inverted
         // filters to be always visible.

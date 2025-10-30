@@ -101,7 +101,7 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
         $reader = $this->getMockReader();
         $reader->expects($this->once())->method('getTextDomain')
             ->with($this->equalTo($expectedPath), $this->equalTo(false))
-            ->will($this->returnValue(['bar' => 'baz']));
+            ->willReturn(['bar' => 'baz']);
         $command = $this->getMockCommand($normalizer, $reader);
         $command->expects($this->once())->method('addLineToFile')
             ->with(

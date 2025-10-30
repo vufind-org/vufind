@@ -232,7 +232,7 @@ class JopTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $ipReader->expects($this->once())->method('getUserIp')
-            ->will($this->returnValue($ipAddr));
+            ->willReturn($ipAddr);
         $conn = new Jop($this->openUrlConfig['OpenURL']['url'], $client, $ipReader);
         return $conn;
     }

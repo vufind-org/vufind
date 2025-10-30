@@ -58,7 +58,7 @@ class IpRegExTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $mockIpReader->expects($this->once())->method('getUserIp')
-            ->will($this->returnValue($ipAddr));
+            ->willReturn($ipAddr);
         return new IpRegEx($mockRequest, $mockIpReader);
     }
 

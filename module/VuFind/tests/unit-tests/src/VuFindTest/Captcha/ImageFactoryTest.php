@@ -61,20 +61,20 @@ class ImageFactoryTest extends \PHPUnit\Framework\TestCase
         $container = new \VuFindTest\Container\MockContainer($this);
         $storage = $container->get(\Laminas\Cache\Storage\StorageInterface::class);
         $storage->expects($this->once())->method('getOptions')
-            ->will($this->returnValue($options));
+            ->willReturn($options);
         $cacheManager = $container->get(\VuFind\Cache\Manager::class);
         $cacheManager->expects($this->once())->method('getCache')
             ->with($this->equalTo('public'))
-            ->will($this->returnValue($storage));
+            ->willReturn($storage);
 
         $url = $container->get(\VuFind\View\Helper\Root\Url::class);
         $url->expects($this->once())->method('__invoke')
             ->with($this->equalTo('home'))
-            ->will($this->returnValue($homeUrl));
+            ->willReturn($homeUrl);
 
         $manager = $container->get('ViewHelperManager');
         $manager->expects($this->once())->method('get')
-            ->with($this->equalTo('url'))->will($this->returnValue($url));
+            ->with($this->equalTo('url'))->willReturn($url);
 
         $factory = new \VuFind\Captcha\ImageFactory();
         $fakeImage = new class () {

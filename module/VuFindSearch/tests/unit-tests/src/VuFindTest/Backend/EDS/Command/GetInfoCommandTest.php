@@ -54,9 +54,9 @@ class GetInfoCommandTest extends TestCase
             ->getMockBuilder(\VuFindSearch\Backend\EDS\Backend::class)
             ->disableOriginalConstructor()->getMock();
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue('EDS'));
+            ->willReturn('EDS');
         $backend->expects($this->once())->method('getInfo')
-            ->will($this->returnValue('result'));  // not a realistic value!
+            ->willReturn('result');  // not a realistic value!
         $command = new GetInfoCommand();
         $this->assertEquals('result', $command->execute($backend)->getResult());
     }
