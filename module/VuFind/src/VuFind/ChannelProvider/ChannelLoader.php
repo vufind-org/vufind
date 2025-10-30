@@ -87,11 +87,7 @@ class ChannelLoader
             $itemsPerRow = $config['itemsPerRow'] ?? 6;
             $rowsPerPage = $config['rowsPerPage'] ?? 1;
             $pageSize = $itemsPerRow * $rowsPerPage;
-            $batchSize = $pageSize;
-            // Set a minimum of 20 to make sure the server isn't hit too often
-            while ($batchSize <= 20) {
-                $batchSize *= 2;
-            }
+            $batchSize = BatchTrait::calcBatchSize($itemsPerRow, $rowsPerPage);
 
             // Pass to view
             $context['channels'][$i]['config'] = [

@@ -41,7 +41,8 @@ namespace VuFind\ChannelProvider;
 trait BatchTrait
 {
     /**
-     * Number of results to include in each channel.
+     * Number of results to fetch from providers.
+     * Calculated from itemsPerRow and rowsPerPage, min 20.
      *
      * @var int
      */
@@ -54,16 +55,23 @@ trait BatchTrait
      *
      * @return void
      */
-	public function setBatchSizeFromOptions(array $options)
-	{
+    public function setBatchSizeFromOptions(array $options)
+    {
         // Calculate batch size
         $itemsPerRow = $options['itemsPerRow'] ?? 6;
         $rowsPerPage = $options['rowsPerPage'] ?? 1;
-        $this->batchSize = $itemsPerRow * $rowsPerPage;
+        $this->batchSize = self::calcBatchSize($itemsPerRow, $rowsPerPage);
+    }
+
+    static public function calcBatchSize($itemsPerRow, $rowsPerPage)
+    {
+        $batchSize = $itemsPerRow * $rowsPerPage;
 
         // Set a minimum of 20 so that smaller page sizes do not result in excessive server requests
-        while ($this->batchSize <= 20) {
-            $this->batchSize *= 2;
+        while ($batchSize <= 20) {
+            $batchSize *= 2;
         }
-	}
+
+        return $batchSize;
+    }
 }
