@@ -53,7 +53,7 @@ class ChannelLoader
     /**
      * Constructor
      *
-     * @param Config         $config         Channels configuration
+     * @param array          $config         Channels configuration
      * @param CacheManager   $cacheManager   Cache manager
      * @param ChannelManager $channelManager Channel manager
      * @param SearchRunner   $searchRunner   Search runner
@@ -61,7 +61,7 @@ class ChannelLoader
      * @param string         $locale         Current locale (used for caching)
      */
     public function __construct(
-        protected Config $config,
+        protected array $config,
         protected CacheManager $cacheManager,
         protected ChannelManager $channelManager,
         protected SearchRunner $searchRunner,
@@ -81,11 +81,11 @@ class ChannelLoader
     {
         for ($i = 0; $i < count($context['channels']); $i++) {
             [, $configSection] = explode(':', $context['channels'][$i]['providerId'] . ':');
-            $config = $this->config->$configSection;
+            $config = $this->config[$configSection] ?? [];
 
             // Calculate batch size
-            $itemsPerRow = $options['itemsPerRow'] ?? 6;
-            $rowsPerPage = $options['rowsPerPage'] ?? 1;
+            $itemsPerRow = $config['itemsPerRow'] ?? 6;
+            $rowsPerPage = $config['rowsPerPage'] ?? 1;
             $pageSize = $itemsPerRow * $rowsPerPage;
             $batchSize = $pageSize;
             // Set a minimum of 20 to make sure the server isn't hit too often
@@ -161,8 +161,8 @@ class ChannelLoader
      */
     protected function getChannelProviders($source, $configSection, $activeId = null)
     {
-        $providerIds = isset($this->config->{"source.$source"}->$configSection)
-            ? $this->config->{"source.$source"}->$configSection->toArray() : [];
+        $providerIds = isset($this->config["source.$source"][$configSection])
+            ? $this->config["source.$source"][$configSection] : [];
         $finalIds = (!empty($activeId) && in_array($activeId, $providerIds))
             ? [$activeId] : $providerIds;
         return array_map([$this, 'getChannelProvider'], $finalIds);
@@ -186,8 +186,8 @@ class ChannelLoader
         if (empty($configSection)) {
             $configSection = "provider.$serviceName";
         }
-        $options = isset($this->config->{$configSection})
-            ? $this->config->{$configSection}->toArray() : [];
+        $options = isset($this->config[$configSection])
+            ? $this->config[$configSection] : [];
 
         // Load the service, and configure appropriately:
         $provider = $this->channelManager->get($serviceName);
@@ -212,13 +212,13 @@ class ChannelLoader
         $activeSource = null
     ) {
         // Load appropriate channel objects:
-        $defaultSource = $this->config->General->default_home_source
+        $defaultSource = $this->config['General']['default_home_source']
             ?? DEFAULT_SEARCH_BACKEND;
         $source = $activeSource ?? $defaultSource;
         $providers = $this->getChannelProviders($source, 'home', $activeChannel);
 
         // Set up the cache, if appropriate:
-        if ($this->config->General->cache_home_channels ?? false) {
+        if ($this->config['General']['cache_home_channels'] ?? false) {
             $providerIds = array_map('get_class', $providers);
             $parts = [implode(',', $providerIds), $source, $token, $this->locale];
             $cacheKey = md5(implode('-', $parts));
@@ -231,9 +231,9 @@ class ChannelLoader
         // Fetch channel data from cache, or populate cache if necessary:
         if (!($channels = $cacheKey ? $cache->getItem($cacheKey) : false)) {
             $searchParams = [];
-            if (isset($this->config->General->default_home_search)) {
+            if (isset($this->config['General']['default_home_search'])) {
                 $searchParams['lookfor']
-                    = $this->config->General->default_home_search;
+                    = $this->config['General']['default_home_search'];
             }
             $results = $this
                 ->performChannelSearch($searchParams, $providers, $source);
