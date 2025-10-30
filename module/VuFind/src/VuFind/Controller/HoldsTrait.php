@@ -78,6 +78,18 @@ trait HoldsTrait
             return $this->redirectToRecord();
         }
 
+        // Attach holdings data from requested item for template use
+        $holdings = $catalog->getHolding($driver->getUniqueID(), $patron);
+        $requestedItemId = $this->params()->fromPost('item_id') ?: $this->params()->fromQuery('item_id');
+        $requestedItem = null;
+        foreach ($holdings['holdings'] as $item) {
+            if ($item['item_id'] === $requestedItemId) {
+                $requestedItem = $item;
+                break;
+            }
+        }
+        $gatheredDetails['requestedItem'] = $requestedItem;
+
         // Block invalid requests:
         $validRequest = $catalog->checkRequestIsValid(
             $driver->getUniqueID(),
