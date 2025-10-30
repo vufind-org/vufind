@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "48a5fa6db681858882d3db2d8bc1934c",
+    "content-hash": "cdaee71b8a97aa5615995963ee344bee",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -980,16 +980,16 @@
         },
         {
             "name": "doctrine/collections",
-            "version": "2.3.0",
+            "version": "2.4.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/collections.git",
-                "reference": "2eb07e5953eed811ce1b309a7478a3b236f2273d"
+                "reference": "9acfeea2e8666536edff3d77c531261c63680160"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/collections/zipball/2eb07e5953eed811ce1b309a7478a3b236f2273d",
-                "reference": "2eb07e5953eed811ce1b309a7478a3b236f2273d",
+                "url": "https://api.github.com/repos/doctrine/collections/zipball/9acfeea2e8666536edff3d77c531261c63680160",
+                "reference": "9acfeea2e8666536edff3d77c531261c63680160",
                 "shasum": ""
             },
             "require": {
@@ -998,11 +998,11 @@
                 "symfony/polyfill-php84": "^1.30"
             },
             "require-dev": {
-                "doctrine/coding-standard": "^12",
+                "doctrine/coding-standard": "^14",
                 "ext-json": "*",
-                "phpstan/phpstan": "^1.8",
-                "phpstan/phpstan-phpunit": "^1.0",
-                "phpunit/phpunit": "^10.5"
+                "phpstan/phpstan": "^2.1.30",
+                "phpstan/phpstan-phpunit": "^2.0.7",
+                "phpunit/phpunit": "^10.5.58 || ^11.5.42 || ^12.4"
             },
             "type": "library",
             "autoload": {
@@ -1046,7 +1046,7 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/collections/issues",
-                "source": "https://github.com/doctrine/collections/tree/2.3.0"
+                "source": "https://github.com/doctrine/collections/tree/2.4.0"
             },
             "funding": [
                 {
@@ -1062,7 +1062,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-03-22T10:17:19+00:00"
+            "time": "2025-10-25T09:18:13+00:00"
         },
         {
             "name": "doctrine/common",
@@ -1920,16 +1920,16 @@
         },
         {
             "name": "doctrine/orm",
-            "version": "2.20.6",
+            "version": "2.20.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/doctrine/orm.git",
-                "reference": "c322c71cd40da12d255dabd7b6ce0d9cf208a5d5"
+                "reference": "59938cae57c88b386cb79c81685426c83d27a120"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/doctrine/orm/zipball/c322c71cd40da12d255dabd7b6ce0d9cf208a5d5",
-                "reference": "c322c71cd40da12d255dabd7b6ce0d9cf208a5d5",
+                "url": "https://api.github.com/repos/doctrine/orm/zipball/59938cae57c88b386cb79c81685426c83d27a120",
+                "reference": "59938cae57c88b386cb79c81685426c83d27a120",
                 "shasum": ""
             },
             "require": {
@@ -1956,14 +1956,13 @@
             },
             "require-dev": {
                 "doctrine/annotations": "^1.13 || ^2",
-                "doctrine/coding-standard": "^9.0.2 || ^13.0",
+                "doctrine/coding-standard": "^9.0.2 || ^14.0",
                 "phpbench/phpbench": "^0.16.10 || ^1.0",
                 "phpstan/extension-installer": "~1.1.0 || ^1.4",
-                "phpstan/phpstan": "~1.4.10 || 2.0.3",
+                "phpstan/phpstan": "~1.4.10 || 2.1.22",
                 "phpstan/phpstan-deprecation-rules": "^1 || ^2",
                 "phpunit/phpunit": "^7.5 || ^8.5 || ^9.6",
                 "psr/log": "^1 || ^2 || ^3",
-                "squizlabs/php_codesniffer": "3.12.0",
                 "symfony/cache": "^4.4 || ^5.4 || ^6.4 || ^7.0",
                 "symfony/var-exporter": "^4.4 || ^5.4 || ^6.2 || ^7.0",
                 "symfony/yaml": "^3.4 || ^4.0 || ^5.0 || ^6.0 || ^7.0"
@@ -2016,9 +2015,9 @@
             ],
             "support": {
                 "issues": "https://github.com/doctrine/orm/issues",
-                "source": "https://github.com/doctrine/orm/tree/2.20.6"
+                "source": "https://github.com/doctrine/orm/tree/2.20.7"
             },
-            "time": "2025-08-08T06:55:44+00:00"
+            "time": "2025-10-27T21:19:59+00:00"
         },
         {
             "name": "doctrine/persistence",
@@ -9602,16 +9601,16 @@
         },
         {
             "name": "stripe/stripe-php",
-            "version": "v17.5.0",
+            "version": "v18.0.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stripe/stripe-php.git",
-                "reference": "313c7e3ed6af1d6948dc4262d2b9c6ee6b30394b"
+                "reference": "70d6c286f0eca002b60ccd62afa7140c43c14bbb"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stripe/stripe-php/zipball/313c7e3ed6af1d6948dc4262d2b9c6ee6b30394b",
-                "reference": "313c7e3ed6af1d6948dc4262d2b9c6ee6b30394b",
+                "url": "https://api.github.com/repos/stripe/stripe-php/zipball/70d6c286f0eca002b60ccd62afa7140c43c14bbb",
+                "reference": "70d6c286f0eca002b60ccd62afa7140c43c14bbb",
                 "shasum": ""
             },
             "require": {
@@ -9655,9 +9654,9 @@
             ],
             "support": {
                 "issues": "https://github.com/stripe/stripe-php/issues",
-                "source": "https://github.com/stripe/stripe-php/tree/v17.5.0"
+                "source": "https://github.com/stripe/stripe-php/tree/v18.0.0"
             },
-            "time": "2025-07-30T17:16:57+00:00"
+            "time": "2025-09-30T22:56:22+00:00"
         },
         {
             "name": "swagger-api/swagger-ui",
@@ -15635,16 +15634,16 @@
         },
         {
             "name": "symfony/finder",
-            "version": "v7.3.2",
+            "version": "v7.3.5",
             "source": {
                 "type": "git",
                 "url": "https://github.com/symfony/finder.git",
-                "reference": "2a6614966ba1074fa93dae0bc804227422df4dfe"
+                "reference": "9f696d2f1e340484b4683f7853b273abff94421f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/symfony/finder/zipball/2a6614966ba1074fa93dae0bc804227422df4dfe",
-                "reference": "2a6614966ba1074fa93dae0bc804227422df4dfe",
+                "url": "https://api.github.com/repos/symfony/finder/zipball/9f696d2f1e340484b4683f7853b273abff94421f",
+                "reference": "9f696d2f1e340484b4683f7853b273abff94421f",
                 "shasum": ""
             },
             "require": {
@@ -15679,7 +15678,7 @@
             "description": "Finds files and directories via an intuitive fluent interface",
             "homepage": "https://symfony.com",
             "support": {
-                "source": "https://github.com/symfony/finder/tree/v7.3.2"
+                "source": "https://github.com/symfony/finder/tree/v7.3.5"
             },
             "funding": [
                 {
@@ -15699,7 +15698,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-07-15T13:41:35+00:00"
+            "time": "2025-10-15T18:45:57+00:00"
         },
         {
             "name": "symfony/polyfill-php81",
