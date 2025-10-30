@@ -61,7 +61,7 @@ trait BatchTrait
         $rowsPerPage = $options['rowsPerPage'] ?? 1;
         $this->batchSize = $itemsPerRow * $rowsPerPage;
 
-        // Set a minimum of 20 to make sure the server isn't hit too often
+        // Set a minimum of 20 so that smaller page sizes do not result in excessive server requests
         while ($this->batchSize <= 20) {
             $this->batchSize *= 2;
         }
