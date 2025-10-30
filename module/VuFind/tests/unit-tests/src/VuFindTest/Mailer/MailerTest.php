@@ -413,12 +413,10 @@ class MailerTest extends \PHPUnit\Framework\TestCase
                 function ($method, $args) {
                     if ($method === 'partial') {
                         $this->assertSame('Email/share-link.phtml', $args[0]);
-                        $this->assertTrue(
-                            $args[1]['msgUrl'] == 'http://foo'
-                            && $args[1]['to'] == 'to@example.com;to2@example.com'
-                            && $args[1]['from'] == 'from@example.com'
-                            && $args[1]['message'] == 'message'
-                        );
+                        $this->assertSame('http://foo', $args[1]['msgUrl']);
+                        $this->assertSame('to@example.com;to2@example.com', $args[1]['to']);
+                        $this->assertSame('from@example.com', $args[1]['from']);
+                        $this->assertSame('message', $args[1]['message']);
                         return 'body';
                     }
                     return null;
