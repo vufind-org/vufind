@@ -171,13 +171,12 @@ input[type="search"]::-webkit-search-decoration {
       column-count: $home-facet-list-column-count-md; // Defaults to '2'; can be defined in 'variables.scss'
       column-rule: $home-facet-list-column-rule-md; // Defaults to '1 px solid grey'; can be defined in 'variables.scss'
     }
-    }
   }
+}
 
 .search-home-facets .home-facet:last-of-type {
   border-right: $home-facet-list-last-of-type-border-right-style; // removes visual division between containers for last container
-  }
-
+}
 
 
 // Reset styling of hierarchical facets on the home page:

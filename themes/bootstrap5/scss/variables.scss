@@ -41,7 +41,7 @@ $home-facet-list-column-count-xs: 1 !default; // Defines the maximum number of c
 $home-facet-list-non-default-column-count: 2 !default; // Defines the maximum number of columns into which a non-default facet list, such as '.callnumber-first' will be split for devices >=992px
 $home-facet-list-non-default-column-rule: 1px dotted grey !default; // Defines column rule between the <li> columns for non-default facet lists, such as '.callnumber-first' on devices >=992px
 
-$home-facet-list-column-fill: auto !default; // Set this to 'balance' to distribute available <li>entries evenly across the max. number of columns, set this to 'auto' for distribution that fills first column and places remaining entries in 2nd column etc.
+$home-facet-list-column-fill: balance !default; // Set this to 'balance' to distribute available <li>entries evenly across the max. number of columns, set this to 'auto' for distribution that fills first column and places remaining entries in 2nd column etc.
 
 $home-facet-list-column-gap: 1rem !default; // Defines the gap between <li>columns if more than one
 $home-facet-list-column-height: auto !default; // Defines the height of each <li>column before the column breaks, 1rem should roughly equal one line
