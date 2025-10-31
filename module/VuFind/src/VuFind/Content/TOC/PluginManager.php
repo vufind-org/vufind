@@ -49,6 +49,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'demo' => Demo::class,
         'obalkyknih' => ObalkyKnih::class,
         'syndetics' => Syndetics::class,
+        'syndeticsplus' => 'syndetics',
     ];
 
     /**

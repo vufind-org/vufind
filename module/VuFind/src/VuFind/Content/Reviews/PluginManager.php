@@ -57,6 +57,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'demo' => Demo::class,
         'guardian' => Guardian::class,
         'syndetics' => Syndetics::class,
+        'syndeticsplus' => 'syndetics',
     ];
 
     /**
