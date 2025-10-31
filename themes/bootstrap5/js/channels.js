@@ -1,6 +1,7 @@
 /*global getUrlRoot, VuFind */
 VuFind.register("channels", function Channels() {
   /**
+   * Retrieve a specific item's element from within a channel.
    * @param {HTMLElement} channel Channel to search
    * @param {string} source Record source
    * @param {string} id Record ID
