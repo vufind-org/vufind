@@ -19,5 +19,5 @@
 ## VuFind® Planning
  - [Community Call](https://vufind.org/wiki/community_call) - A regular meeting (free, online and open to all) for discussion, planning and information sharing.
  - [GitHub pull requests](https://github.com/vufind-org/vufind/pulls) - A place to view and discuss work in progress on new features.
- - [JIRA](http://vufind.org/jira) - VuFind®'s issue tracker.
- - [Slack](http://vufind.slack.com/) - Email info@vufind.org for an invitation to the Slack if you cannot sign up directly.
+ - [JIRA](https://vufind.org/jira) - VuFind®'s issue tracker.
+ - [Slack](https://vufind.slack.com/) - Email info@vufind.org for an invitation to the Slack if you cannot sign up directly.
