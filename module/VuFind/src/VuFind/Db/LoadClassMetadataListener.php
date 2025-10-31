@@ -99,7 +99,7 @@ class LoadClassMetadataListener
                     // Merge arrays, always override table name and add missing fields:
                     if (is_array($val)) {
                         $classMetadata->table[$key] = [
-                            ...$val ?? [],
+                            ...$val,
                             ...$classMetadata->table[$key] ?? [],
                         ];
                     } elseif ('name' === $key || !isset($classMetadata->table[$key])) {
