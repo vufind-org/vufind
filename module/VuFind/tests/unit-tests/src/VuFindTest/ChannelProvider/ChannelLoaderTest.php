@@ -34,7 +34,6 @@ use VuFind\Cache\Manager as CacheManager;
 use VuFind\ChannelProvider\AbstractChannelProvider;
 use VuFind\ChannelProvider\ChannelLoader;
 use VuFind\ChannelProvider\PluginManager;
-use VuFind\Config\Config;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\RecordDriver\DefaultRecord;
 use VuFind\Search\Base\Results;
@@ -214,7 +213,7 @@ class ChannelLoaderTest extends \PHPUnit\Framework\TestCase
     protected function getChannelLoader(array $config = [], ?RecordLoader $recordLoader = null): ChannelLoader
     {
         return new ChannelLoader(
-            new Config($config),
+            $config,
             $this->createMock(CacheManager::class),
             $this->getMockPluginManager(),
             $this->createMock(SearchRunner::class),

@@ -53,7 +53,7 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetFromRecord(): void
     {
-        [$similar, $expectedResult] = $this->configureTestTargetAndExpectations(['rows' => 6]);
+        [$similar, $expectedResult] = $this->configureTestTargetAndExpectations(['rows' => 24]);
         $recordDriver = $this->getDriver();
         $this->assertSame($expectedResult, $similar->getFromRecord($recordDriver));
     }
@@ -78,13 +78,11 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetFromSearch(): void
     {
-        $results = $this->getMockBuilder(\VuFind\Search\Base\Results::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $results = $this->createMock(\VuFind\Search\Base\Results::class);
         $recordDriver = $this->getDriver();
         $results->expects($this->once())->method('getResults')
             ->willReturn([$recordDriver]);
-        [$similar, $expectedResult] = $this->configureTestTargetAndExpectations(['rows' => 6]);
+        [$similar, $expectedResult] = $this->configureTestTargetAndExpectations(['rows' => 24]);
         $this->assertSame($expectedResult, $similar->getFromSearch($results));
     }
 
@@ -96,9 +94,7 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetFromSearchWhenMaxRecordsIsLessthanChannels(): void
     {
-        $results = $this->getMockBuilder(\VuFind\Search\Base\Results::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $results = $this->createMock(\VuFind\Search\Base\Results::class);
         $recordDriver = $this->getDriver();
         $results->expects($this->once())->method('getResults')
             ->willReturn([$recordDriver]);
@@ -121,14 +117,12 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetFromSearchWhenChannelsIsEmpty(): void
     {
-        $results = $this->getMockBuilder(\VuFind\Search\Base\Results::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $results = $this->createMock(\VuFind\Search\Base\Results::class);
         $recordDriver = $this->getDriver();
         $results->expects($this->once())->method('getResults')
             ->willReturn([$recordDriver]);
         [$similar, $expectedResult]  = $this->configureTestTargetAndExpectations(
-            ['maxRecordsToExamine' => 0, 'rows' => 6],
+            ['maxRecordsToExamine' => 0, 'rows' => 24],
             true
         );
         $this->assertSame(
@@ -160,12 +154,8 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
         $similar->setProviderId('foo_ProviderId');
         $params = new ParamBag(['rows' => $options['rows']]);
         $retrieveParams = new ParamBag();
-        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $collection = $this->getMockBuilder(\VuFindSearch\Response\RecordCollectionInterface::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
+        $collection = $this->createMock(\VuFindSearch\Response\RecordCollectionInterface::class);
         $recordDriver = $this->getDriver();
         $router->expects($this->once())->method('getTabRouteDetails')
             ->with($this->equalTo($recordDriver))
@@ -209,15 +199,16 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
             'links' => [
                 [
                     'label' => 'View Record',
-                    'icon' => 'fa-file-text-o',
+                    'icon' => 'format-default',
                     'url' => 'url_test',
                 ],
                 [
                     'label' => 'channel_expand',
-                    'icon' => 'fa-search-plus',
+                    'icon' => 'ui-add',
                     'url' => 'channels-record?id=foo_Id&source=Solr',
                 ],
             ],
+            'limit' => 24,
             'contents' => [[
                 'title' => 'foo_Title',
                 'source' => 'Solr',
@@ -255,15 +246,9 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
      */
     protected function getSimilarItems($options = [])
     {
-        $search = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $url = $this->getMockBuilder(\Laminas\Mvc\Controller\Plugin\Url::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $router = $this->getMockBuilder(\VuFind\Record\Router::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $search = $this->createMock(\VuFindSearch\Service::class);
+        $url = $this->createMock(\Laminas\Mvc\Controller\Plugin\Url::class);
+        $router = $this->createMock(\VuFind\Record\Router::class);
         $similar = new SimilarItems($search, $url, $router, $options);
 
         return compact('search', 'url', 'router', 'similar');
@@ -284,9 +269,10 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
         $target = 'Solr'
     ) {
         return function ($command) use ($class, $args, $target) {
-            return $command::class === $class
-                && $command->getArguments() == $args
-                && $command->getTargetIdentifier() === $target;
+            $this->assertSame($class, $command::class);
+            $this->assertEquals($args, $command->getArguments());
+            $this->assertSame($target, $command->getTargetIdentifier());
+            return true;
         };
     }
 
