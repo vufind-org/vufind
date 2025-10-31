@@ -49,6 +49,8 @@ use function in_array;
  */
 class ChannelLoader
 {
+    use BatchTrait;
+
     /**
      * Constructor
      *
@@ -90,7 +92,7 @@ class ChannelLoader
                 $itemsPerRow = $config['itemsPerRow'] ?? 6;
                 $rowsPerPage = $config['rowsPerPage'] ?? 1;
                 $pageSize = $itemsPerRow * $rowsPerPage;
-                $batchSize = BatchTrait::calcBatchSize($itemsPerRow, $rowsPerPage);
+                $batchSize = self::calcBatchSize($itemsPerRow, $rowsPerPage);
 
                 // Pass to view
                 $current['config'] = [

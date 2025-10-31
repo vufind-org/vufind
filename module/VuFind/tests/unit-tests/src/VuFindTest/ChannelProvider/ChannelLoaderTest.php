@@ -57,15 +57,17 @@ class ChannelLoaderTest extends \PHPUnit\Framework\TestCase
      */
     public static function getRecordContextProvider(): array
     {
+        $defaultConfig = ['batchSize' => 24, 'pageSize' => 6, 'rowSize' => 6];
         return [
-            'no configuration' => [[], [], ['record']],
+            'no configuration' => [[], [], [], ['record']],
             'one provider' => [
                 [
                     'source.Solr' => [
                         'record' => ['bar'],
                     ],
                 ],
-                ['bar'],
+                [['contents' => 'bar', 'providerId' => 'mock', 'config' => $defaultConfig]],
+                [],
                 ['record'],
             ],
             'two providers, including config' => [
@@ -77,7 +79,11 @@ class ChannelLoaderTest extends \PHPUnit\Framework\TestCase
                         'extraConfig',
                     ],
                 ],
-                ['bar', 'baz-extraConfig'],
+                [
+                    ['contents' => 'bar', 'providerId' => 'mock', 'config' => $defaultConfig],
+                    ['contents' => 'baz-extraConfig', 'providerId' => 'mock', 'config' => $defaultConfig],
+                ],
+                [],
                 ['record'],
             ],
             'override section' => [
@@ -87,7 +93,8 @@ class ChannelLoaderTest extends \PHPUnit\Framework\TestCase
                         'recordTab' => ['override'],
                     ],
                 ],
-                ['override'],
+                [['contents' => 'override', 'providerId' => 'mock', 'config' => $defaultConfig]],
+                [],
                 ['recordTab', 'record'],
             ],
             'proper section fallback' => [
@@ -96,7 +103,8 @@ class ChannelLoaderTest extends \PHPUnit\Framework\TestCase
                         'record' => ['bar'],
                     ],
                 ],
-                ['bar'],
+                [['contents' => 'bar', 'providerId' => 'mock', 'config' => $defaultConfig]],
+                [],
                 ['recordTab', 'record'],
             ],
         ];
@@ -107,21 +115,27 @@ class ChannelLoaderTest extends \PHPUnit\Framework\TestCase
      *
      * @param array $config              Configuration
      * @param array $expectedChannelData The channel data we expect to retrieve
+     * @param array $expectedTokenData   The token data we expect to retrieve
      * @param array $sections            Config sections to look at for provider settings
      *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('getRecordContextProvider')]
-    public function testGetRecordContext(array $config, array $expectedChannelData, array $sections): void
-    {
+    public function testGetRecordContext(
+        array $config,
+        array $expectedChannelData,
+        array $expectedTokenData,
+        array $sections
+    ): void {
         $mockRecord = $this->createMock(DefaultRecord::class);
         $recordLoader = $this->getMockRecordLoader();
         $recordLoader->expects($this->once())->method('load')->with('foo', 'Solr')->willReturn($mockRecord);
         $loader = $this->getChannelLoader($config, $recordLoader);
         $context = $loader->getRecordContext('foo', configSections: $sections);
-        $this->assertEquals(['driver', 'channels', 'token'], array_keys($context));
+        $this->assertEquals(['driver', 'channels', 'token', 'relatedTokens'], array_keys($context));
         $this->assertEquals($mockRecord, $context['driver']);
         $this->assertEquals($expectedChannelData, $context['channels']);
+        $this->assertEquals($expectedTokenData, $context['relatedTokens']);
         $this->assertNull($context['token']);
     }
 
@@ -180,7 +194,7 @@ class ChannelLoaderTest extends \PHPUnit\Framework\TestCase
                      */
                     public function getFromRecord(\VuFind\RecordDriver\AbstractBase $driver, $channelToken = null)
                     {
-                        return [$this->settings];
+                        return [['contents' => $this->settings, 'providerId' => 'mock']];
                     }
 
                     /**
@@ -194,7 +208,7 @@ class ChannelLoaderTest extends \PHPUnit\Framework\TestCase
                      */
                     public function getFromSearch(Results $results, $channelToken = null)
                     {
-                        return [$this->settings];
+                        return [['contents' => $this->settings, 'providerId' => 'mock']];
                     }
                 };
             }
