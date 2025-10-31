@@ -30,6 +30,7 @@
 namespace VuFind\ServiceManager;
 
 use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
+use Laminas\ServiceManager\Factory\InvokableFactory;
 use Psr\Container\ContainerInterface;
 
 /**
@@ -41,14 +42,14 @@ use Psr\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-abstract class AbstractPluginFactory implements AbstractFactoryInterface
+class AbstractPluginFactory implements AbstractFactoryInterface
 {
     /**
      * Default namespace for building class names
      *
      * @var string
      */
-    protected $defaultNamespace;
+    protected $defaultNamespace = 'VuFind';
 
     /**
      * Optional suffix to append to class names
@@ -71,13 +72,31 @@ abstract class AbstractPluginFactory implements AbstractFactoryInterface
             return $requestedName;
         }
         // First try the raw service name, then try a normalized version:
-        $finalName = $this->defaultNamespace . '\\' . $requestedName
-            . $this->classSuffix;
+        $finalName = $this->defaultNamespace . '\\' . $requestedName . $this->classSuffix;
         if (!class_exists($finalName)) {
-            $finalName = $this->defaultNamespace . '\\'
-                . ucwords(strtolower($requestedName)) . $this->classSuffix;
+            $finalName = $this->defaultNamespace . '\\' . ucwords(strtolower($requestedName)) . $this->classSuffix;
         }
         return $finalName;
+    }
+
+    /**
+     * Given a class name, find the best matching factory.
+     *
+     * @param string $class Class name
+     *
+     * @return string
+     */
+    protected function getFactoryForClass(string $class): string
+    {
+        if (class_exists($class . 'Factory')) {
+            return $class . 'Factory';
+        }
+        while ($class = get_parent_class($class)) {
+            if (class_exists($class . 'Factory')) {
+                return $class . 'Factory';
+            }
+        }
+        return InvokableFactory::class;
     }
 
     /**
@@ -103,8 +122,6 @@ abstract class AbstractPluginFactory implements AbstractFactoryInterface
      * @param array              $options       Options (unused)
      *
      * @return object
-     *
-     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(
         ContainerInterface $container,
@@ -112,6 +129,8 @@ abstract class AbstractPluginFactory implements AbstractFactoryInterface
         ?array $options = null
     ) {
         $class = $this->getClassName($requestedName);
-        return new $class();
+        $factoryName = $this->getFactoryForClass($class);
+        $factory = new $factoryName();
+        return $factory($container, $class, $options);
     }
 }
