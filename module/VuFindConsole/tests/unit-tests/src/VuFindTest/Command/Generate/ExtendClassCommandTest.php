@@ -140,7 +140,7 @@ class ExtendClassCommandTest extends \PHPUnit\Framework\TestCase
         );
         $tools->expects($this->once())->method('setOutputInterface');
         $tools->expects($this->once())->method('extendClass')
-            ->will($this->throwException(new \Exception('Foo!')));
+            ->willThrowException(new \Exception('Foo!'));
         $command = new ExtendClassCommand($tools, $container);
         $commandTester = new CommandTester($command);
         $commandTester->execute(

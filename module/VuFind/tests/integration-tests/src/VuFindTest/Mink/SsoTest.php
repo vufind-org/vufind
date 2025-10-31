@@ -94,9 +94,8 @@ final class SsoTest extends \VuFindTest\Integration\MinkTestCase
      * @param array $extraSsoConfigs Extra configurations for SimulatedSSO.ini
      *
      * @return void
-     *
-     * @dataProvider loginConfigProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('loginConfigProvider')]
     public function testLogin(array $extraSsoConfigs = []): void
     {
         // Set up configs

@@ -67,9 +67,8 @@ class DatabaseCommandTest extends \PHPUnit\Framework\TestCase
      * @param bool $sqlOnly Test in sql-only mode?
      *
      * @return void
-     *
-     * @dataProvider sqlOnlyProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('sqlOnlyProvider')]
     public function testSimpleSuccess(bool $sqlOnly): void
     {
         $connection = $this->createMock(Connection::class);

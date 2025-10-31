@@ -65,9 +65,8 @@ class HoldingsTest extends \PHPUnit\Framework\TestCase
      * barcodes
      *
      * @return void
-     *
-     * @dataProvider barcodeVisibilityBehaviorProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('barcodeVisibilityBehaviorProvider')]
     public function testBarcodeVisibilityBehavior(
         array $config,
         bool $expectedBarcodeResult,

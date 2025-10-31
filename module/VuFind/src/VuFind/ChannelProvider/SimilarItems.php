@@ -203,14 +203,14 @@ class SimilarItems extends AbstractChannelProvider implements TranslatorAwareInt
             'title' => "{$heading}: {$driver->getBreadcrumb()}",
             'providerId' => $this->providerId,
             'links' => [],
-            'token' => $driver->getUniqueID(),
-            'limit' => $this->batchSize,
         ];
 
         if ($tokenOnly) {
+            $retVal['token'] = $driver->getUniqueID();
             return $retVal;
         }
 
+        $retVal['limit'] = $this->batchSize;
         $params = new \VuFindSearch\ParamBag(['rows' => $this->batchSize]);
         $command = new SimilarCommand(
             $driver->getSourceIdentifier(),

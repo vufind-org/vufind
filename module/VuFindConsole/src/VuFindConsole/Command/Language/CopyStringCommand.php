@@ -145,7 +145,7 @@ class CopyStringCommand extends AbstractCommand
         // First, collect the source values from the source text domain:
         $sources = [];
         $sourceCallback
-            = function ($full) use ($output, $replaceRule, $sourceKey, &$sources) {
+            = function ($full) use ($output, $replaceRule, $sourceKey, &$sources): void {
                 $strings = $this->reader->getTextDomain($full, false);
                 if (!isset($strings[$sourceKey])) {
                     $output->writeln('Source key not found.');
@@ -162,7 +162,7 @@ class CopyStringCommand extends AbstractCommand
         $this->createMissingFiles($targetDir->path, array_keys($sources));
 
         // Now copy the values to their destination:
-        $targetCallback = function ($full) use ($targetKey, $sources) {
+        $targetCallback = function ($full) use ($targetKey, $sources): void {
             if (isset($sources[basename($full)])) {
                 $this->addLineToFile($full, $targetKey, $sources[basename($full)]);
                 $this->normalizer->normalizeFile($full);

@@ -121,9 +121,8 @@ class LocalFileTest extends \PHPUnit\Framework\TestCase
      * @param bool   $includeFixturePath Include fixture path in key pattern?
      *
      * @return void
-     *
-     * @dataProvider validCoverProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('validCoverProvider')]
     public function testValidCoverLoading(
         string $expectedFilename,
         string $keyPattern,
@@ -160,9 +159,8 @@ class LocalFileTest extends \PHPUnit\Framework\TestCase
      * @param bool   $includeFixturePath Include fixture path in key pattern?
      *
      * @return void
-     *
-     * @dataProvider invalidCoverProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('invalidCoverProvider')]
     public function testInvalidCover(
         string $keyPattern,
         array $imageParams = [],

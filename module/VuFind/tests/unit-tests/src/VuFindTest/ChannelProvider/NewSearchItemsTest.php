@@ -99,11 +99,12 @@ class NewSearchItemsTest extends \PHPUnit\Framework\TestCase
         $rci->expects($this->once())->method('getRecords')
             ->willReturn([$recordDriver]);
         $search->expects($this->once())->method('invoke')
-            ->with($this->callback($this->getCommandChecker([$query, 0, 20, $paramBag])))
+            ->with($this->callback($this->getCommandChecker([$query, 0, 24, $paramBag])))
             ->willReturn($commandObj);
         $expectedResult = [[
             'title' => 'New Items',
             'providerId' => 'foo_ProviderID',
+            'limit' => 24,
             'contents' => [[
                 'title' => 'foo_Title',
                 'source' => 'foo_Identifier',
@@ -168,9 +169,10 @@ class NewSearchItemsTest extends \PHPUnit\Framework\TestCase
         $target = 'Solr'
     ) {
         return function ($command) use ($class, $args, $target) {
-            return $command::class === $class
-                && $command->getArguments() == $args
-                && $command->getTargetIdentifier() === $target;
+            $this->assertSame($class, $command::class);
+            $this->assertEquals($args, $command->getArguments());
+            $this->assertSame($target, $command->getTargetIdentifier());
+            return true;
         };
     }
 

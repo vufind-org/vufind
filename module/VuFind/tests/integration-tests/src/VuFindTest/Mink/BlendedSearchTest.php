@@ -151,10 +151,9 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
      * @param array  $queryParams Query parameters
      * @param string $path        URL path
      *
-     * @dataProvider getSearchData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getSearchData')]
     public function testSearch(array $queryParams, string $path): void
     {
         $expectedLabels = $this->getExpectedLabels($queryParams['page']);

@@ -91,10 +91,9 @@ class VarDumperTraitTest extends \PHPUnit\Framework\TestCase
      * @param mixed  $var      Variable to dump
      * @param string $expected Expected dumped string
      *
-     * @dataProvider varDumpProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('varDumpProvider')]
     public function testVarDump(mixed $var, string $expected): void
     {
         $this->assertMatchesRegularExpression('/' . $expected . '/', $this->varDump($var));

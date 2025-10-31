@@ -68,9 +68,8 @@ class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
      * @param bool $cacheEnabled Is the cache enabled?
      *
      * @return void
-     *
-     * @dataProvider downloadProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('downloadProvider')]
     public function testDownload(bool $cacheEnabled): void
     {
         $container = new \VuFindTest\Container\MockContainer($this);

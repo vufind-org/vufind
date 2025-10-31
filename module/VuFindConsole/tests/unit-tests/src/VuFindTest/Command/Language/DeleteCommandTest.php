@@ -102,9 +102,8 @@ class DeleteCommandTest extends \PHPUnit\Framework\TestCase
      * @param string $domain Text domain to test with.
      *
      * @return void
-     *
-     * @dataProvider successWithMinimalParametersProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('successWithMinimalParametersProvider')]
     public function testSuccessWithMinimalParameters(string $domain): void
     {
         $expectedPath = realpath($this->languageFixtureDir) . '/' . $domain . '/en.ini';

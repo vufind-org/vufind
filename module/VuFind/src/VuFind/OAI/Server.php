@@ -957,12 +957,10 @@ class Server
         }
 
         // Iterate over custom sets:
-        if (!empty($this->setQueries)) {
-            foreach ($this->setQueries as $setName => $solrQuery) {
-                $set = $xml->addChild('set');
-                $set->setName = $set->setSpec = $setName;
-                $set->setDescription = $solrQuery;
-            }
+        foreach ($this->setQueries as $setName => $solrQuery) {
+            $set = $xml->addChild('set');
+            $set->setName = $set->setSpec = $setName;
+            $set->setDescription = $solrQuery;
         }
 
         // Display the list:

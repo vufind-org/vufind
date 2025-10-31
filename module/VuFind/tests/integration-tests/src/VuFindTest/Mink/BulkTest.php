@@ -190,10 +190,9 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that the save control works.
      *
-     * @depends testBulkEmail
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testBulkEmail')]
     public function testBulkSave(): void
     {
         $page = $this->setUpGenericBulkTest();
@@ -235,9 +234,8 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      * Test that we can bulk-delete records from a favorites list.
      *
      * @return void
-     *
-     * @depends testBulkSave
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testBulkSave')]
     public function testBulkDeleteFromList(): void
     {
         // Log in to account that owns the list:
@@ -299,9 +297,8 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $idPrefix Prefix for bulk control IDs.
      *
      * @return void
-     *
-     * @dataProvider topOrBottomProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('topOrBottomProvider')]
     public function testBulkExport(string $idPrefix): void
     {
         $session = $this->getMinkSession();
@@ -343,9 +340,8 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $idPrefix Prefix for bulk control IDs.
      *
      * @return void
-     *
-     * @dataProvider topOrBottomProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('topOrBottomProvider')]
     public function testBulkPrint(string $idPrefix): void
     {
         $session = $this->getMinkSession();
@@ -376,9 +372,8 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      * Test that the print control works.
      *
      * @return void
-     *
-     * @depends testBulkEmail
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testBulkEmail')]
     public function testBulkActionLimits(): void
     {
         $session = $this->getMinkSession();

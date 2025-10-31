@@ -61,9 +61,8 @@ class SwitchTypeTest extends \PHPUnit\Framework\TestCase
      * @param string $expectedResult Expected return value from isActive
      *
      * @return void
-     *
-     * @dataProvider newHandlerNameProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('newHandlerNameProvider')]
     public function testGetNewHandlerName(string $settings, string $expectedResult): void
     {
         $obj = new SwitchType();
@@ -92,9 +91,8 @@ class SwitchTypeTest extends \PHPUnit\Framework\TestCase
      * @param bool|string $expectedResult Expected return value from isActive
      *
      * @return void
-     *
-     * @dataProvider newHandlerProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('newHandlerProvider')]
     public function testGetNewHandler(string $settings, string $searchHandler, $expectedResult): void
     {
         $obj = new SwitchType();
@@ -107,9 +105,9 @@ class SwitchTypeTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $results->expects($this->once())->method('getParams')
-            ->will($this->returnValue($parms));
+            ->willReturn($parms);
         $parms->expects($this->once())->method('getSearchHandler')
-            ->will($this->returnValue($searchHandler));
+            ->willReturn($searchHandler);
         $obj->process($results);
         $this->assertSame($expectedResult, $obj->getNewHandler());
     }
@@ -130,9 +128,9 @@ class SwitchTypeTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $results->expects($this->once())->method('getParams')
-            ->will($this->returnValue($parms));
+            ->willReturn($parms);
         $parms->expects($this->once())->method('getSearchHandler')
-            ->will($this->returnValue('bar'));
+            ->willReturn('bar');
         $obj->process($results);
         $this->assertSame($results, $obj->getResults());
     }

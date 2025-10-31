@@ -84,9 +84,8 @@ class SolrPrefixTest extends \PHPUnit\Framework\TestCase
      * @param int    $expectedLimit     Expected limit value
      *
      * @return void
-     *
-     * @dataProvider getSuggestionsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getSuggestionsProvider')]
     public function testGetSuggestions(
         string $autocompleteField,
         string $facetField,

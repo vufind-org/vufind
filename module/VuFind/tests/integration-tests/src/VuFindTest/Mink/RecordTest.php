@@ -177,9 +177,8 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $id      Record ID to test with
      *
      * @return void
-     *
-     * @dataProvider permalinkProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('permalinkProvider')]
     public function testPermalink(?bool $enabled, $id = 'testbug1'): void
     {
         // Change configuration, unless we're using the default value:

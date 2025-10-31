@@ -103,10 +103,9 @@ class OpenIDConnectTest extends \PHPUnit\Framework\TestCase
      * @param array $config  Auth module configuration
      * @param array $results Expected mappings
      *
-     * @dataProvider getAttributesMappingsProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getAttributesMappingsProvider')]
     public function testGetAttributesMappings(array $config, array $results): void
     {
         $authModule = $this->getOpenIDConnectObject($config);

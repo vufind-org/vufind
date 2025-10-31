@@ -190,7 +190,7 @@ class ZoteroTest extends \PHPUnit\Framework\TestCase
         $accessTokenService->expects($expectCounts ? $this->exactly(2) : $this->any())
             ->method('persistEntity')
             ->with($this->isInstanceOf(AccessToken::class))
-            ->willReturnCallback(function ($accessToken) {
+            ->willReturnCallback(function ($accessToken): void {
                 $this->storedAccessToken = $accessToken;
             });
 

@@ -465,7 +465,7 @@ class LoggerFactory implements FactoryInterface
         // Construct the logger as a lazy loading proxy so that the object is not
         // instantiated until it is called. This helps break potential circular
         // dependencies with other services.
-        $callback = function (&$wrapped, $proxy) use ($container, $requestedName) {
+        $callback = function (&$wrapped, $proxy) use ($container, $requestedName): void {
             // Now build the actual service:
             $monologLogger = new MonologLogger('vufind');
             $wrapped = new $requestedName(
