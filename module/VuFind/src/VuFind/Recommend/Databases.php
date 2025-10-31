@@ -106,6 +106,15 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
     protected $useQueryMinLength = 3;
 
     /**
+     * When using the query string as a match point, the query string and
+     * database names will first be normalize by removing the characters
+     * in this regular expression.
+     *
+     * @var string
+     */
+    protected $useQueryReplacePattern = '/[-\/\.,:]/';
+
+    /**
      * Configuration of whether to use LibGuides as a data source
      *
      * @var bool
@@ -180,6 +189,8 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
             ?? $this->useQuery;
         $this->useQueryMinLength = $databasesConfig['useQueryMinLength']
             ?? $this->useQueryMinLength;
+        $this->useQueryReplacePattern = $databasesConfig['useQueryReplacePattern']
+            ?? $this->useQueryReplacePattern;
 
         $this->useLibGuides = $databasesConfig['useLibGuides']
             ?? $this->useLibGuides;
@@ -265,9 +276,16 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
             $query = is_callable([$queryObject, 'getString'])
                 ? strtolower($queryObject->getString())
                 : '';
+            if ($this->useQueryReplacePattern) {
+                $query = preg_replace($this->useQueryReplacePattern, '', $query);
+            }
             if (strlen($query) >= $this->useQueryMinLength) {
                 foreach ($nameToDatabase as $name => $databaseInfo) {
-                    if (str_contains(strtolower($name), $query)) {
+                    $name = strtolower($name);
+                    if ($this->useQueryReplacePattern) {
+                        $name = preg_replace($this->useQueryReplacePattern, '', $name);
+                    }
+                    if (str_contains($name, $query)) {
                         $databases[$databaseInfo['url']] = $databaseInfo;
                     }
                     if (count($databases) >= $this->limit) {
