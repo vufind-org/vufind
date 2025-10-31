@@ -17,7 +17,7 @@ VuFind's [packaged releases](https://vufind.org/vufind/downloads.html) have all 
 
 Documentation and Support
 -------------------------
-The VuFind community maintains a detailed [wiki](https://vufind.org/wiki) containing information on using and customizing the software. The VuFind website also lists [sources of community and commercial support](https://vufind-org.github.io/vufind/support.html).
+The VuFind community maintains a detailed [wiki](https://vufind.org/wiki) containing information on using and customizing the software. The VuFind website also lists [sources of community and commercial support](https://vufind.org/vufind/support.html).
 
 
 Contributing
