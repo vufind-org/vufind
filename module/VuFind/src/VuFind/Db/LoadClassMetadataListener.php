@@ -32,6 +32,8 @@ namespace VuFind\Db;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 
+use function is_array;
+
 /**
  * LoadClassMetadata event listener.
  *
