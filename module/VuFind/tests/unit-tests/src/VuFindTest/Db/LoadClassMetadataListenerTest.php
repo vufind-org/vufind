@@ -32,12 +32,6 @@ namespace VuFindTest\Db;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Event\LoadClassMetadataEventArgs;
 use Doctrine\ORM\Mapping\ClassMetadata;
-use PHPUnit\Framework\InvalidArgumentException;
-use PHPUnit\Framework\MockObject\Exception;
-use PHPUnit\Event\NoPreviousThrowableException;
-use PHPUnit\Framework\MockObject\MethodCannotBeConfiguredException;
-use PHPUnit\Framework\MockObject\MethodNameAlreadyConfiguredException;
-use PHPUnit\Framework\MockObject\IncompatibleReturnValueException;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\LoadClassMetadataListener;
 
