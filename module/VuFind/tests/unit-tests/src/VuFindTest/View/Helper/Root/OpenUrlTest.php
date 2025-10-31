@@ -257,11 +257,11 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
         $driver = $this->getMockBuilder($class)
             ->disableOriginalConstructor()->getMock();
         $driver->expects($this->any())->method('getOpenUrl')
-            ->will($this->returnValue($openUrl));
+            ->willReturn($openUrl);
         $driver->expects($this->any())->method('getCleanISSN')
-            ->will($this->returnValue($issn));
+            ->willReturn($issn);
         $driver->expects($this->any())->method('getFormats')
-            ->will($this->returnValue($formats));
+            ->willReturn($formats);
         return $driver;
     }
 

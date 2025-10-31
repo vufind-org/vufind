@@ -73,9 +73,8 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
      * @param string $expectedType The type we expect to pass to the helper
      *
      * @return void
-     *
-     * @dataProvider outputInlineScriptProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('outputInlineScriptProvider')]
     public function testOutputInlineScriptLink(array $attrs, bool $arbitrary, string $expectedType): void
     {
         $script = 'foo.js';
@@ -104,9 +103,8 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
      * @param string $expectedType The type we expect to pass to the helper
      *
      * @return void
-     *
-     * @dataProvider outputInlineScriptProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('outputInlineScriptProvider')]
     public function testOutputInlineScriptString(array $attrs, bool $arbitrary, string $expectedType): void
     {
         $script = 'foo';

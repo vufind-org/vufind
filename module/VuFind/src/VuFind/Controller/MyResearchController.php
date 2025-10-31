@@ -1139,7 +1139,7 @@ class MyResearchController extends AbstractBase
 
             // Set up listener for recommendations:
             $rManager = $this->getService(\VuFind\Recommend\PluginManager::class);
-            $setupCallback = function ($runner, $params, $searchId) use ($rManager) {
+            $setupCallback = function ($runner, $params, $searchId) use ($rManager): void {
                 $listener = new RecommendListener($rManager, $searchId);
                 $listener->setConfig(
                     $params->getOptions()->getRecommendationSettings()

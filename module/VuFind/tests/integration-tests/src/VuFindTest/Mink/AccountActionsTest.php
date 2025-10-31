@@ -135,10 +135,9 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test username case-insensitivity.
      *
-     * @depends testChangePassword
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testChangePassword')]
     public function testCaseInsensitiveUsername(): void
     {
         $session = $this->getMinkSession();
@@ -179,11 +178,9 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool   $secure Should we enable secure session mode?
      *
      * @return void
-     *
-     * @depends testChangePassword
-     *
-     * @dataProvider sessionSettingsProvider
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testChangePassword')]
+    #[\PHPUnit\Framework\Attributes\DataProvider('sessionSettingsProvider')]
     public function testLoginWithSessionSettings(string $type, bool $secure): void
     {
         // Adjust session settings:
@@ -213,10 +210,9 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that changing email is disabled by default.
      *
-     * @depends testChangePassword
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testChangePassword')]
     public function testChangeEmailDisabledByDefault(): void
     {
         // Go to profile page:
@@ -238,10 +234,9 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test changing an email.
      *
-     * @depends testChangePassword
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testChangePassword')]
     public function testChangeEmail(): void
     {
         // Turn on email change option:
@@ -425,9 +420,8 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test account deletion.
      *
      * @return void
-     *
-     * @depends testDefaultPickUpLocation
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testDefaultPickUpLocation')]
     public function testAccountDeletion(): void
     {
         $this->changeConfigs(
@@ -479,11 +473,9 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool $beHonest Should the recovery error message be honest?
      *
      * @return void
-     *
-     * @depends testChangePassword
-     *
-     * @dataProvider honestyProvider
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testChangePassword')]
+    #[\PHPUnit\Framework\Attributes\DataProvider('honestyProvider')]
     public function testRecoveryHonesty(bool $beHonest): void
     {
         $this->changeConfigs(
@@ -530,9 +522,8 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test recovering a password by username.
      *
      * @return void
-     *
-     * @depends testChangePassword
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testChangePassword')]
     public function testRecoverPasswordByUsername(): void
     {
         $this->changeConfigs(
@@ -607,9 +598,8 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool $choiceAuth   Test with ChoiceAuth?
      *
      * @return void
-     *
-     * @dataProvider recoverILSPasswordProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('recoverILSPasswordProvider')]
     public function testRecoverILSPassword(bool $multiBackend, bool $choiceAuth): void
     {
         $configs = [

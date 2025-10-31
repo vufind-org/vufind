@@ -129,7 +129,7 @@ class TermsIdFetcherTest extends \PHPUnit\Framework\TestCase
         $command = $this->getMockBuilder(TermsCommand::class)
             ->disableOriginalConstructor()->getMock();
         $command->expects($this->once())->method('getResult')
-            ->will($this->returnValue($terms));
+            ->willReturn($terms);
         return $command;
     }
 
@@ -143,7 +143,7 @@ class TermsIdFetcherTest extends \PHPUnit\Framework\TestCase
         $command = $this->getMockBuilder(GetUniqueKeyCommand::class)
             ->disableOriginalConstructor()->getMock();
         $command->expects($this->once())->method('getResult')
-            ->will($this->returnValue($this->uniqueKey));
+            ->willReturn($this->uniqueKey);
         return $command;
     }
 

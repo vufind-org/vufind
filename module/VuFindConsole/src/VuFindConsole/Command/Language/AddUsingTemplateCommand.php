@@ -108,7 +108,7 @@ class AddUsingTemplateCommand extends AbstractCommand
             if (!$sourceDir) {
                 return 1;
             }
-            $sourceCallback = function ($full) use (&$tokens) {
+            $sourceCallback = function ($full) use (&$tokens): void {
                 $strings = $this->reader->getTextDomain($full, false);
                 foreach ($tokens as & $current) {
                     $sourceKey = $current['key'];
@@ -127,10 +127,10 @@ class AddUsingTemplateCommand extends AbstractCommand
             $template,
             $targetKey,
             $lookups
-        ) {
+        ): void {
             $lang = basename($full);
             $in = $out = [];
-            foreach ($lookups as $domain => $tokens) {
+            foreach ($lookups as $tokens) {
                 foreach ($tokens as $token => $details) {
                     if (!isset($details['translations'][$lang])) {
                         $output->writeln("Skipping; no match for token: $token");

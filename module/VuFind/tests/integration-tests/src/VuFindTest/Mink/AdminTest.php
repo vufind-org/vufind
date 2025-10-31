@@ -74,9 +74,8 @@ class AdminTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool $enabled Should we enable the admin theme?
      *
      * @return void
-     *
-     * @dataProvider adminThemeProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('adminThemeProvider')]
     public function testAdminTheme(bool $enabled): void
     {
         $config = [

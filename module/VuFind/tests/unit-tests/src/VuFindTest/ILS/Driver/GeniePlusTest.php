@@ -123,10 +123,10 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
             ->getMock();
         $response->expects($this->any())
             ->method('getBody')
-            ->will($this->returnValue($body));
+            ->willReturn($body);
         $response->expects($this->any())
             ->method('getStatusCode')
-            ->will($this->returnValue($status));
+            ->willReturn($status);
         return $response;
     }
 

@@ -434,7 +434,7 @@ abstract class Base implements LoggerAwareInterface
                     }
                     $cnt = 0;
                     foreach ($value as $subValue) {
-                        $cnt = $cnt + 1;
+                        $cnt += 1;
                         $finalParameterName = $parameterName;
                         if (SearchRequestModel::isParameterIndexed($key)) {
                             $finalParameterName = $parameterName . '-' . $cnt;

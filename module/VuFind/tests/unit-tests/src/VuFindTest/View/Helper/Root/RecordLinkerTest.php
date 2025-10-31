@@ -138,9 +138,8 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
      * @param string $breadcrumb Breadcrumb text to test with
      *
      * @return void
-     *
-     * @dataProvider getBreadcrumbParamsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getBreadcrumbParamsProvider')]
     public function testGetBreadcrumbParams(string $breadcrumb): void
     {
         if (empty($breadcrumb)) {

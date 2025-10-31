@@ -59,7 +59,7 @@ class SitemapCommandTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo('http://bar'));
         $generator->expects($this->once())->method('generate');
         $generator->expects($this->once())->method('getWarnings')
-            ->will($this->returnValue(['Sample warning']));
+            ->willReturn(['Sample warning']);
         $command = new SitemapCommand($generator);
         $commandTester = new CommandTester($command);
         $commandTester->execute(

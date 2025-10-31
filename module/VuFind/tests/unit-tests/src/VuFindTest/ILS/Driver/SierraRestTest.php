@@ -196,9 +196,9 @@ class SierraRestTest extends \VuFindTest\Unit\ILSDriverTestCase
      * @param string $fixture  Name of the response fixture file
      * @param array  $expected Expected results
      *
-     * @return       void
-     * @dataProvider getTestGetMyProfileData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestGetMyProfileData')]
     public function testGetMyProfile(array $patron, string $fixture, array $expected): void
     {
         $requestMap = [
@@ -269,9 +269,9 @@ class SierraRestTest extends \VuFindTest\Unit\ILSDriverTestCase
      * @param string $fixture  Name of the response fixture file
      * @param array  $expected Expected results
      *
-     * @return       void
-     * @dataProvider getTestPatronLoginData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestPatronLoginData')]
     public function testPatronLogin(array $patron, string $fixture, array $expected): void
     {
         $request = [

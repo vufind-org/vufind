@@ -45,7 +45,7 @@ function setupVuFindRemoteCodeCoverage(array $modules): void
         return;
     }
 
-    $error = function ($msg) {
+    $error = function ($msg): void {
         error_log("setupVuFindRemoteCodeCoverage: $msg");
         throw new \Exception($msg);
     };

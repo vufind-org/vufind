@@ -110,13 +110,13 @@ class LoggerTest extends \PHPUnit\Framework\TestCase
             ->onlyMethods(['getUserIp'])
             ->getMock();
         $mockIpReader->expects($this->once())->method('getUserIp')
-            ->will($this->returnValue('1.2.3.4'));
+            ->willReturn('1.2.3.4');
         $logger = $this->getMockBuilder(\VuFind\Log\Logger::class)
             ->setConstructorArgs([$mockIpReader, new \Monolog\Logger('test')])
             ->onlyMethods(['log'])
             ->getMock();
         $logger->expects($this->once())->method('log')
-            ->will($this->returnCallback($callback));
+            ->willReturnCallback($callback);
 
         try {
             throw new \Exception('test');

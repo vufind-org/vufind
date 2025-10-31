@@ -492,9 +492,8 @@ class BackendTest extends TestCase
      * @param string  $expectedFlOut Expected field list in output
      *
      * @return void
-     *
-     * @dataProvider getIdsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getIdsProvider')]
     public function testGetIds(?string $flIn, string $expectedFlOut): void
     {
         $paramBagChecker = function (ParamBag $params) use ($expectedFlOut) {
@@ -689,7 +688,7 @@ class BackendTest extends TestCase
         $e = new RemoteErrorException($msg, 400, new \Laminas\Http\Response());
         $conn->expects($this->once())->method('query')
             ->with($this->equalTo('browse'))
-            ->will($this->throwException($e));
+            ->willThrowException($e);
         $back = new Backend($conn);
         $back->alphabeticBrowse('foo', 'bar', 1);
     }

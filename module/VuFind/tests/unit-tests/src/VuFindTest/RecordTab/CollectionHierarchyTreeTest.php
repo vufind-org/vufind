@@ -60,13 +60,13 @@ class CollectionHierarchyTreeTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $request->expects($this->once())->method('getQuery')
             ->with($this->equalTo('recordID'), $this->equalTo(false))
-            ->will($this->returnValue('foo'));
+            ->willReturn('foo');
         $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\AbstractBase::class)
             ->disableOriginalConstructor()
             ->getMock();
         $load->expects($this->once())->method('load')
             ->with($this->equalTo('foo'))
-            ->will($this->returnValue($recordDriver));
+            ->willReturn($recordDriver);
         $obj = new CollectionHierarchyTree($conf, $load);
         $obj->setRequest($request);
         $this->assertSame($recordDriver, $obj->getActiveRecord());
@@ -90,7 +90,7 @@ class CollectionHierarchyTreeTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $request->expects($this->once())->method('getQuery')
             ->with($this->equalTo('recordID'), $this->equalTo(false))
-            ->will($this->returnValue(null));
+            ->willReturn(null);
         $load->expects($this->never())->method('load');
         $obj = new CollectionHierarchyTree($conf, $load);
         $obj->setRequest($request);

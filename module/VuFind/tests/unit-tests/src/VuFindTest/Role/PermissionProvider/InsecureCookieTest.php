@@ -49,10 +49,9 @@ class InsecureCookieTest extends \PHPUnit\Framework\TestCase
      * @param string|string[] $options       Cookie(s) to check
      * @param array           $expectedRoles Expected roles from provider
      *
-     * @dataProvider getPermissionsProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getPermissionsProvider')]
     public function testGetPermissions(string|array $options, array $expectedRoles)
     {
         $cookieProvider = $this->createMock(CookieManager::class);

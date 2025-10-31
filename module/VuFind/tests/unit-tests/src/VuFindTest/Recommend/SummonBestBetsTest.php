@@ -60,12 +60,12 @@ class SummonBestBetsTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $results->expects($this->once())->method('getParams')
-            ->will($this->returnValue($parms));
+            ->willReturn($parms);
         $parms->expects($this->once())->method('getSearchClassId')
-            ->will($this->returnValue('Summon'));
+            ->willReturn('Summon');
         $obj->process($results);
         $results->expects($this->once())->method('getBestBets')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
         $this->assertFalse($obj->getResults());
     }
 }

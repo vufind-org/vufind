@@ -76,9 +76,8 @@ class HoldingsWorldCat2Test extends \PHPUnit\Framework\TestCase
      * @param bool   $expectedResult Expected return value from isActive
      *
      * @return void
-     *
-     * @dataProvider isActiveProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('isActiveProvider')]
     public function testIsActive(string $oclcnum, bool $expectedResult): void
     {
         $searchObj = $this->createMock(\VuFindSearch\Service::class);

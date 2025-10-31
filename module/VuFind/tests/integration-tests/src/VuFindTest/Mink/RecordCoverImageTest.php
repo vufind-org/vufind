@@ -136,9 +136,8 @@ class RecordCoverImageTest extends \VuFindTest\Integration\MinkTestCase
      * @param string  $noCoverAvailableImage Image to load if unavailable (empty for none)
      *
      * @return void
-     *
-     * @dataProvider coverLoadingProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('coverLoadingProvider')]
     public function testCoverLoading(
         string $id,
         bool $includeBacklink,

@@ -109,9 +109,8 @@ class SwitchTabTest extends \PHPUnit\Framework\TestCase
      * @param array $expectedResult expected result from getActiveTab
      *
      * @return void
-     *
-     * @dataProvider tabConfigProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('tabConfigProvider')]
     public function testGetActiveTab(array $tabEnv, $expectedResult): void
     {
         $obj = new SwitchTab();
@@ -166,9 +165,8 @@ class SwitchTabTest extends \PHPUnit\Framework\TestCase
      * @param array $expectedResult expected result from getInactiveTabs
      *
      * @return void
-     *
-     * @dataProvider inactiveTabConfigProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('inactiveTabConfigProvider')]
     public function testGetInactiveTab(array $tabEnv, array $expectedResult): void
     {
         $obj = new SwitchTab();

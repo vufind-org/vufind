@@ -72,7 +72,7 @@ class SyndeticsTest extends \PHPUnit\Framework\TestCase
             $fixture = $this->getFixture($fixtureFile);
             $mockDownloader->expects($this->once())->method('download')
                 ->with($this->equalTo("http://syndetics.com/index.aspx?client=test&isbn=$isbn/index.xml"))
-                ->will($this->returnValue($fixture));
+                ->willReturn($fixture);
             $loader->setCachingDownloader($mockDownloader);
         }
         return $loader;

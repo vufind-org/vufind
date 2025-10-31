@@ -103,7 +103,7 @@ class ExtendServiceCommandTest extends \PHPUnit\Framework\TestCase
         );
         $tools->expects($this->once())->method('setOutputInterface');
         $tools->expects($this->once())->method('extendService')
-            ->will($this->throwException(new \Exception('Foo!')));
+            ->willThrowException(new \Exception('Foo!'));
         $command = new ExtendServiceCommand($tools);
         $commandTester = new CommandTester($command);
         $commandTester->execute(

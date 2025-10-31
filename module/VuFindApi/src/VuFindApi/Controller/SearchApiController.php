@@ -378,7 +378,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements
                 $facets,
                 $hierarchicalFacets,
                 $recordFields
-            ) {
+            ): void {
                 foreach ($facets as $facet) {
                     if (!isset($hierarchicalFacets[$facet])) {
                         $params->addFacet($facet);
@@ -458,7 +458,7 @@ class SearchApiController extends \VuFind\Controller\AbstractSearch implements
             ) use (
                 $cursorMark,
                 $limit
-            ) {
+            ): void {
                 $results->overrideStartRecord(1);
                 $results->setCursorMark($cursorMark);
                 $params->setLimit($limit);
