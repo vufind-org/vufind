@@ -53,6 +53,7 @@ class BadStringsTest extends \PHPUnit\Framework\TestCase
     protected array $badStrings = [
         'outdated license address' => '51 Franklin',
         'outdated PHP header comment' => '/\\* (PHP version [^8])\s*\n/',
+        'outdated wiki link' => 'vufind.org/wiki/vufind2',
     ];
 
     /**

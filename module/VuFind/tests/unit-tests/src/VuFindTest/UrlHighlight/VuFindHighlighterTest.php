@@ -110,16 +110,16 @@ class VuFindHighlighterTest extends \PHPUnit\Framework\TestCase
     {
         return [
             'http' => [
-                'http://vufind.org',
-                '<a href="URL_WITH_PROXY">http://vufind.org</a>',
+                'https://vufind.org',
+                '<a href="URL_WITH_PROXY">https://vufind.org</a>',
             ],
             'complex link' => [
                 'https://vufind.org?foo=1&bar=2#xyzzy',
                 '<a href="URL_WITH_PROXY">https://vufind.org?foo=1&bar=2#xyzzy</a>',
             ],
             'quotes' => [
-                'http://vufind.org/path/with"quotes"/?q=search',
-                '<a href="URL_WITH_PROXY">http://vufind.org/path/with"quotes"/?q=search</a>',
+                'https://vufind.org/path/with"quotes"/?q=search',
+                '<a href="URL_WITH_PROXY">https://vufind.org/path/with"quotes"/?q=search</a>',
             ],
             'no scheme' => [
                 'vufind.org',

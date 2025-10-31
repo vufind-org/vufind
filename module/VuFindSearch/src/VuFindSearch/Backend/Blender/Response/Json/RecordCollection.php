@@ -24,7 +24,7 @@
  * @package  Search
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     https://vufind.org
  */
 
 namespace VuFindSearch\Backend\Blender\Response\Json;
@@ -45,7 +45,7 @@ use function is_string;
  * @package  Search
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     https://vufind.org
  */
 class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCollection
 {

@@ -24,7 +24,7 @@
  * @package  Search
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org   Main Site
  */
 
 namespace VuFind\Search\Factory;
@@ -42,7 +42,7 @@ use VuFindSearch\Backend\Blender\Backend;
  * @package  Search
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org   Main Site
  */
 class BlenderBackendFactory implements FactoryInterface
 {
