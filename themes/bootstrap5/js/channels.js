@@ -2,14 +2,14 @@
 VuFind.register("channels", function Channels() {
   /**
    * Retrieve a specific item's element from within a channel.
-   * @param {HTMLElement} channel Channel to search
+   * @param {string} channelID Channel to search
    * @param {string} source Record source
    * @param {string} id Record ID
    * @returns {HTMLElement} Channel item matching the record source and ID
    */
-  function findChannelItem(channel, source, id) {
-    return channel.querySelector(
-      `[data-record-source="${source}"][data-record-id="${id}"]`
+  function findChannelItem(channelID, source, id) {
+    return document.querySelector(
+      `#${channelID} [data-record-source="${source}"][data-record-id="${id}"]`
     );
   }
 
@@ -36,48 +36,6 @@ VuFind.register("channels", function Channels() {
     }
 
     el.textContent = strings[Math.min(strings.length, targetLines) - 1];
-  }
-
-  /**
-   * @param {HTMLElement} record Channel item to preview
-   * @returns {string} HTML of quick look controls
-   */
-  function quickLookHeader(record) {
-    const template = document.getElementById("template-channels-quick-look");
-    const content = template.content.cloneNode(true).children[0];
-
-    const titleLink = record.querySelector(".channel-item-title");
-    content.querySelector(".ql-title").textContent = titleLink.textContent;
-    content
-      .querySelector(".ql-view-record-btn")
-      .setAttribute("href", titleLink.getAttribute("href"));
-
-    const id = record.dataset.recordId;
-    const source = record.dataset.recordSource;
-    content.setAttribute("data-record-id", id);
-    content.setAttribute("data-record-source", source);
-
-    // Set URL for quicklook
-    const expandParams = new URLSearchParams({ id, source }); // escape
-    content
-      .querySelector(".ql-expand-btn")
-      .setAttribute("href", `${VuFind.path}/Channels/Record?${expandParams}`);
-
-    const prevBtn = content.querySelector(".ql-prev-item-btn");
-    if (record.previousElementSibling) {
-      prevBtn.removeAttribute("disabled");
-    } else {
-      prevBtn.setAttribute("disabled", "");
-    }
-
-    const nextBtn = content.querySelector(".ql-next-item-btn");
-    if (record.nextElementSibling) {
-      nextBtn.removeAttribute("disabled");
-    } else {
-      nextBtn.setAttribute("disabled", "");
-    }
-
-    return content.outerHTML;
   }
 
   /**
@@ -212,15 +170,64 @@ VuFind.register("channels", function Channels() {
     // Set button to next, next page
     url.searchParams.set("page", Number(url.searchParams.get("page")) + 1);
     btn.setAttribute("data-href", url.toString());
-    btn.textContent = VuFind.translate("channel_load_more");
+    btn.textContent = VuFind.translate("channel_more_items");
     enableLoadMoreBtn(btn);
   }
 
   /**
    * @param {HTMLElement} record Channel item to preview
+   * @param {string} channelID record's channel id (hard to get from quicklook)
+   * @returns {string} HTML of quick look controls
+   */
+  function quickLookHeader(record, channelID) {
+    const template = document.getElementById("template-channels-quick-look");
+    const content = template.content.cloneNode(true).children[0];
+
+    const titleLink = record.querySelector(".channel-item-title");
+    content.querySelector(".ql-title").textContent = titleLink.textContent;
+    content
+      .querySelector(".ql-view-record-btn")
+      .setAttribute("href", titleLink.getAttribute("href"));
+
+    const id = record.dataset.recordId;
+    const source = record.dataset.recordSource;
+    content.setAttribute("data-channel-id", channelID);
+    content.setAttribute("data-record-id", id);
+    content.setAttribute("data-record-source", source);
+
+    // Set URL for quicklook
+    const expandParams = new URLSearchParams({ id, source }); // escape
+    content
+      .querySelector(".ql-expand-btn")
+      .setAttribute("href", `${VuFind.path}/Channels/Record?${expandParams}`);
+
+    const prevBtn = content.querySelector(".ql-prev-item-btn");
+    if (record.previousElementSibling) {
+      prevBtn.classList.remove("disabled");
+      prevBtn.removeAttribute("disabled");
+    } else {
+      prevBtn.classList.add("disabled");
+      prevBtn.setAttribute("disabled", "");
+    }
+
+    const nextBtn = content.querySelector(".ql-next-item-btn");
+    if (record.nextElementSibling) {
+      nextBtn.classList.remove("disabled");
+      nextBtn.removeAttribute("disabled");
+    } else {
+      nextBtn.classList.add("disabled");
+      nextBtn.setAttribute("disabled", "");
+    }
+
+    return content.outerHTML;
+  }
+
+  /**
+   * @param {HTMLElement} record Channel item to preview
+   * @param {string | null} _channelID record's channel id (hard to get from quicklook)
    * @returns {void}
    */
-  function quickLook(record) {
+  function quickLook(record, _channelID = null) {
     const titleLink = record.querySelector(".channel-item-title");
     const href = titleLink.getAttribute("href");
 
@@ -229,13 +236,16 @@ VuFind.register("channels", function Channels() {
     const formData = new FormData();
     formData.append("tab", "description");
 
+    const channelID = _channelID === null
+      ? record.closest(".channel-list").getAttribute("id")
+      : _channelID;
     fetch(VuFind.path + getUrlRoot(href) + "/AjaxTab", {
       method: "POST",
       body: formData,
     })
       .then((res) => res.text())
       .then(function quickLookFetchDone(htmlContent) {
-        VuFind.lightbox.render(`${quickLookHeader(record)} ${htmlContent}`);
+        VuFind.lightbox.render(`${quickLookHeader(record, channelID)} ${htmlContent}`);
       });
   }
 
@@ -289,7 +299,10 @@ VuFind.register("channels", function Channels() {
 
       // Quick Look buttons
       if (event.target.closest(".channel-quick-look-btn")) {
-        quickLook(event.target.closest(".channel-item"));
+        quickLook(
+          event.target.closest(".channel-item"),
+          event.target.closest(".channel-list").getAttribute("id")
+        );
         event.preventDefault();
         return false;
       }
@@ -298,12 +311,12 @@ VuFind.register("channels", function Channels() {
       if (event.target.closest(".ql-prev-item-btn")) {
         const group = event.target.closest(".channels-quick-look");
         const record = findChannelItem(
-          event.target.closest(".channel"),
+          group.dataset.channelId,
           group.dataset.recordSource,
           group.dataset.recordId
         );
         if (record.previousElementSibling) {
-          quickLook(record.previousElementSibling);
+          quickLook(record.previousElementSibling, group.dataset.channelId);
           event.preventDefault();
           return false;
         }
@@ -313,12 +326,12 @@ VuFind.register("channels", function Channels() {
       if (event.target.closest(".ql-next-item-btn")) {
         const group = event.target.closest(".channels-quick-look");
         const record = findChannelItem(
-          event.target.closest(".channel"),
+          group.dataset.channelId,
           group.dataset.recordSource,
           group.dataset.recordId
         );
         if (record.nextElementSibling) {
-          quickLook(record.nextElementSibling);
+          quickLook(record.nextElementSibling, group.dataset.channelId);
           event.preventDefault();
           return false;
         }

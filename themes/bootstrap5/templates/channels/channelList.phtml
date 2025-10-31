@@ -6,13 +6,12 @@
     'channel_expand' => 'channel_expand',
     'channel_explore' => 'channel_explore',
     'channel_list_dropdown_toggle' => 'channel_list_dropdown_toggle',
-    'channel_load_more' => 'channel_load_more',
-    'channel_more_items_extended' => 'channel_more_items_extended',
     'channel_more_items' => 'channel_more_items',
-    'channel_options_dropdown_toggle' => 'channel_options_dropdown_toggle',
+    'channel_more_items_extended' => 'channel_more_items_extended',
     'channel_options' => 'channel_options',
-    'channel_quick_look_extended' => 'channel_quick_look_extended',
+    'channel_options_dropdown_toggle' => 'channel_options_dropdown_toggle',
     'channel_quick_look' => 'channel_quick_look',
+    'channel_quick_look_extended' => 'channel_quick_look_extended',
     'channel_search' => 'channel_search',
     'channel_searchbox_label' => 'channel_searchbox_label',
     'nohit_heading' => 'nohit_heading',
@@ -169,6 +168,7 @@
 <template id="template-channels-quick-look">
   <div
     class="channels-quick-look"
+    data-channel-id="${record.dataset.channelID}"
     data-record-id="${record.dataset.recordId}"
     data-record-source="${record.dataset.recordSource}"
   >
@@ -180,13 +180,13 @@
 
     <div class="ql-btn-group btn-group">
       <button class="ql-prev-item-btn btn btn-default">
-        <?=$this->transEsc('Previous Record') ?>
+        <?=$this->transEsc('Prev') ?>
       </button>
       <a class="ql-expand-btn btn btn-default" href="${expandUrl}" data-lightbox-ignore>
         <?=$this->transEsc('channel_expand') ?>
       </a>
       <button class="ql-next-item-btn btn btn-default">
-        <?=$this->transEsc('Next Record') ?>
+        <?=$this->transEsc('Next') ?>
       </button>
     </div>
   </div>
