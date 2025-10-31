@@ -31,7 +31,6 @@ namespace VuFind\ChannelProvider;
 
 use VuFind\Cache\Manager as CacheManager;
 use VuFind\ChannelProvider\PluginManager as ChannelManager;
-use VuFind\Config\Config;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Search\Base\Results;
 use VuFind\Search\SearchRunner;
@@ -79,23 +78,40 @@ class ChannelLoader
      */
     protected function addConfigToContext($context)
     {
+        $channels = [];
+        $relatedTokens = [];
         for ($i = 0; $i < count($context['channels'] ?? []); $i++) {
-            [, $configSection] = explode(':', $context['channels'][$i]['providerId'] . ':');
-            $config = $this->config[$configSection] ?? [];
+            $current = $context['channels'][$i];
+            if (isset($current['contents'])) {
+                [, $configSection] = explode(':', $context['channels'][$i]['providerId'] . ':');
+                $config = $this->config[$configSection] ?? [];
 
-            // Calculate batch size
-            $itemsPerRow = $config['itemsPerRow'] ?? 6;
-            $rowsPerPage = $config['rowsPerPage'] ?? 1;
-            $pageSize = $itemsPerRow * $rowsPerPage;
-            $batchSize = BatchTrait::calcBatchSize($itemsPerRow, $rowsPerPage);
+                // Calculate batch size
+                $itemsPerRow = $config['itemsPerRow'] ?? 6;
+                $rowsPerPage = $config['rowsPerPage'] ?? 1;
+                $pageSize = $itemsPerRow * $rowsPerPage;
+                $batchSize = BatchTrait::calcBatchSize($itemsPerRow, $rowsPerPage);
 
-            // Pass to view
-            $context['channels'][$i]['config'] = [
-                'batchSize' => $batchSize,
-                'pageSize' => $pageSize,
-                'rowSize' => $itemsPerRow,
-            ];
+                // Pass to view
+                $current['config'] = [
+                    'batchSize' => $batchSize,
+                    'pageSize' => $pageSize,
+                    'rowSize' => $itemsPerRow,
+                ];
+                $channels[] = $current;
+            } elseif (isset($current['token'])) {
+                // Add token to related tokens map
+                $group = $current['groupId'] ?? $current['providerId'];
+                if (!isset($relatedTokens[$group])) {
+                    $relatedTokens[$group] = [];
+                }
+                $relatedTokens[$group][] = $current;
+            }
         }
+
+        $context['channels'] = $channels;
+        $context['relatedTokens'] = $relatedTokens;
+
         return $context;
     }
 

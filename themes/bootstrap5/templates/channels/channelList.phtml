@@ -16,17 +16,6 @@
     'channel_searchbox_label' => 'channel_searchbox_label',
     'nohit_heading' => 'nohit_heading',
   ]);
-
-  $finalChannels = [];
-  $finalCount = 0;
-  foreach ($channels as $current) {
-    if (isset($current['contents'])) {
-      $finalChannels[] = $current;
-      $finalCount++;
-    } elseif ($finalCount > 0 && isset($current['token'])) {
-      $finalChannels[$finalCount - 1]['relatedTokens'][] = $current;
-    }
-  }
 ?>
 
 <?php if (empty($token) && ($displaySearchBox ?? true)): ?>
@@ -37,7 +26,7 @@
   </form>
 <?php endif; ?>
 
-<?php foreach ($finalChannels as $channel): ?>
+<?php foreach ($this->channels as $channel): ?>
   <?php
     $groupId = $channel['groupId'] ?? $channel['providerId'];
     $channelID = 'channel-' . md5(serialize($channel));
@@ -54,7 +43,7 @@
     <div class="channel-header">
       <h2 class="channel-title" title="<?=$this->escapeHtmlAttr($channel['title']) ?>"><?=$this->escapeHtml($channel['title'])?></h2>
 
-      <?php if (count($channel['relatedTokens'] ?? []) > 0): ?>
+      <?php if (count($this->relatedTokens[$groupId] ?? []) > 0): ?>
         <div class="channel-add-menu btn-group" data-group="<?=$this->escapeHtmlAttr($groupId) ?>">
           <button type="button" class="channel-add-more-btn btn btn-default"><?=$this->transEsc('channel_add_more') ?></button>
           <button type="button" class="btn btn-default dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
@@ -62,7 +51,7 @@
             <span aria-hidden="true"><?=$this->icon('dropdown-caret') ?></span>
           </button>
           <ul class="dropdown-menu">
-            <?php foreach ($channel['relatedTokens'] as $related): ?>
+            <?php foreach ($this->relatedTokens[$groupId] as $related): ?>
               <?php
                 $linkAttrs = $this->htmlAttributes([
                   'class' => 'channel-add-link dropdown-item',
@@ -153,9 +142,10 @@
         if (isset($channel['token'])) {
           $pageHref .= '&channelToken=' . urlencode($channel['token']);
         }
+        $isDiabled = count($channel['contents']) < $channel['config']['rowSize'];
       ?>
       <button
-        class="channel-load-more-btn btn btn-default"
+        class="channel-load-more-btn btn btn-default<?=$isDiabled ? ' visually-hidden disabled" aria-disabled="true' : '' ?>"
         data-href="<?=$pageHref ?>"
         aria-label="<?=$this->transEscAttr('channel_more_items_extended', ['%%channel%%' => $channel['title']]) ?>"
       >

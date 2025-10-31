@@ -39,11 +39,28 @@ VuFind.register("channels", function Channels() {
   }
 
   /**
-   * @param {Event} event Click event from .channel-add-link
+   * @param {HTMLElement} link .channel-add-link
    * @returns {void}
    */
-  function addChannel(event) {
-    const link = event.target;
+  function addChannel(link) {
+    let callerChannelEl = link.closest(".channel");
+    // Remove from dropdowns
+    const group = link.closest(".channel-add-menu").dataset.group;
+    const token = link.dataset.token;
+    let groupMenus = Array.from(document.querySelectorAll(`[data-group="${group}"]`));
+    for (const menu of groupMenus) {
+      const doomed = menu.querySelector(`[data-token="${token}"]`);
+      if (doomed) {
+        doomed.remove();
+      }
+      if (menu.querySelector(".channel-add-link") === null) {
+        for (const emptyMenu of groupMenus) {
+          emptyMenu.remove();
+        }
+        groupMenus = null;
+        break;
+      }
+    }
 
     // Get and parse results
     fetch(link.getAttribute("href"))
@@ -55,10 +72,14 @@ VuFind.register("channels", function Channels() {
         const resDOM = parser.parseFromString(resHTML, "text/html");
 
         // Add channels to DOM
-        let callerChannelEl = link.closest(".channel");
         for (const channelEl of resDOM.querySelectorAll(".channel")) {
           // Make sure the channel has content
           if (channelEl.querySelectorAll(".channel-item").length > 0) {
+            // Add related channels menu
+            if (groupMenus) {
+              channelEl.querySelector(".channel-title").after(groupMenus[0].cloneNode(true));
+            }
+            // Add channel
             callerChannelEl.after(channelEl);
             continue;
           }
@@ -80,9 +101,6 @@ VuFind.register("channels", function Channels() {
           callerChannelEl.after(emptyWrapper.firstChild);
           callerChannelEl = emptyWrapper.firstChild;
         }
-
-        // Remove dropdown link
-        link.closest(".dropdown-menu").removeChild(link.closest("li"));
       });
   }
 
@@ -290,7 +308,7 @@ VuFind.register("channels", function Channels() {
     document.addEventListener("click", function channelsClickHandler(event) {
       // More channels dropdown links
       if (event.target.closest(".channel-add-link")) {
-        addChannel(event);
+        addChannel(event.target.closest(".channel-add-link"));
         event.preventDefault();
         return false;
       }
@@ -300,10 +318,10 @@ VuFind.register("channels", function Channels() {
         const addLinks = Array.from(
           event.target
             .closest(".channel-add-menu")
-            .querySelectorAll(".dropdown-item")
+            .querySelectorAll(".channel-add-link")
         );
         for (let i = 0; i < Math.min(2, addLinks.length); i++) {
-          addLinks[i].click();
+          addChannel(addLinks[i]);
         }
         event.preventDefault();
         return false;
