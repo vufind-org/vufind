@@ -42,7 +42,7 @@
   width: 100%;
   margin: 0;
   white-space: nowrap;
-  overflow-x: hidden;
+  overflow: hidden;
   text-overflow: ellipsis;
 
   @media (min-width: 640px) {
