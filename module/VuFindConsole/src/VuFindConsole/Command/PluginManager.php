@@ -29,8 +29,6 @@
 
 namespace VuFindConsole\Command;
 
-use Laminas\ServiceManager\Factory\InvokableFactory;
-
 /**
  * Console command plugin manager
  *
