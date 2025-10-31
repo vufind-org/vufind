@@ -130,6 +130,7 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
         } else {
             $result['localIcon'] = $config['localIcon'];
         }
+        $result['linkType'] = $linkType ?? $serviceKey;
         return $result;
     }
 
