@@ -107,6 +107,19 @@ VuFind.register("channels", function Channels() {
   }
 
   /**
+   * Helper function to visually hide and disable the more items button
+   * @param {HTMLButtonElement} loadMoreBtn The button
+   * @returns {void}
+   */
+  function hideLoadMoreBtn(loadMoreBtn) {
+    // visually hide
+    loadMoreBtn.classList.add("visually-hidden");
+    // screen-reader disable
+    loadMoreBtn.classList.add("disabled");
+    loadMoreBtn.setAttribute("aria-disabled", 1);
+  }
+
+  /**
    * @param {Event} event Click event from .channel-load-more-btn
    * @returns {void}
    */
@@ -127,6 +140,12 @@ VuFind.register("channels", function Channels() {
         item.classList.remove("hidden-batch-item");
       }
     });
+
+    // Out of records
+    if (hiddenItems.length < Number(targetChannel.dataset.rowSize)) {
+      hideLoadMoreBtn(btn);
+      return;
+    }
 
     // How many more records do we need?
     const neededCount = pageSize - hiddenItems.length;
@@ -161,9 +180,9 @@ VuFind.register("channels", function Channels() {
           clampLines(record.querySelector(".channel-item-title"));
         }
 
-        // Disable button
+        // Hide button
         if (records.length < Number(targetChannel.dataset.batchSize)) {
-          disableLoadMoreBtn(btn);
+          hideLoadMoreBtn(btn);
         }
       });
 
@@ -257,8 +276,8 @@ VuFind.register("channels", function Channels() {
     for (const channelEl of document.querySelectorAll(".channel")) {
       // Disable the load more button is there are less items than the batchSize
       const allItems = channelEl.querySelectorAll(".channel-item");
-      if (allItems.length < Number(channelEl.dataset.batchSize)) {
-        disableLoadMoreBtn(channelEl.querySelector(".channel-load-more-btn"));
+      if (allItems.length < Number(channelEl.dataset.rowSize)) {
+        hideLoadMoreBtn(channelEl.querySelector(".channel-load-more-btn"));
       }
 
       // Clamp titles to 3 lines
