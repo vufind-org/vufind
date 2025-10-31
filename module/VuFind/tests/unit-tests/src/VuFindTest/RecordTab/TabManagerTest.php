@@ -132,7 +132,6 @@ class TabManagerTest extends \PHPUnit\Framework\TestCase
         $errorCallback = function (int $code, string $msg): void {
             throw new \Exception($msg, $code);
         };
-        set_error_handler($errorCallback, E_USER_WARNING);
         $legacyConfig = [
             'vufind' => [
                 'recorddriver_tabs' => [
@@ -145,8 +144,14 @@ class TabManagerTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
         ];
-        $this->getTabManager(legacyConfig: $legacyConfig);
-        restore_error_handler();
+        set_error_handler($errorCallback, E_USER_WARNING);
+        try {
+            $this->getTabManager(legacyConfig: $legacyConfig);
+        } catch (\Throwable $e) {
+            throw $e;
+        } finally {
+            restore_error_handler();
+        }
     }
 
     /**

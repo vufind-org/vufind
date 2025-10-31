@@ -65,7 +65,7 @@ class BokinfoTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $request->expects($this->once())->method('getHeaders')
-            ->will($this->returnValue($headers));
+            ->willReturn($headers);
         $headers->expects($this->once())->method('addHeaderLine')
             ->with(
                 $this->equalTo('Ocp-Apim-Subscription-Key'),
@@ -115,20 +115,20 @@ class BokinfoTest extends \PHPUnit\Framework\TestCase
         $url2 = 'https://fake-url';
         $client1 = $this->getMockClient();
         $client1->expects($this->once())->method('getRequest')
-            ->will($this->returnValue($this->getMockRequest()));
+            ->willReturn($this->getMockRequest());
         $response1 = $this->getMockResponse();
         $response1->expects($this->once())->method('getBody')
-            ->will(
-                $this->returnValue($this->getFixture('content/covers/bokinfo.xml'))
+            ->willReturn(
+                $this->getFixture('content/covers/bokinfo.xml')
             );
         $client1->expects($this->once())->method('send')
-            ->will($this->returnValue($response1));
+            ->willReturn($response1);
         $client2 = $this->getMockClient();
         $response2 = $this->getMockResponse();
         $response2->expects($this->once())->method('getHeaders')
-            ->will($this->returnValue(['foo: bar']));
+            ->willReturn(['foo: bar']);
         $client2->expects($this->once())->method('send')
-            ->will($this->returnValue($response2));
+            ->willReturn($response2);
         $this->expectConsecutiveCalls(
             $service,
             'createClient',

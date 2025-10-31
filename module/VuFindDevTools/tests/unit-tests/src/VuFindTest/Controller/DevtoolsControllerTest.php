@@ -57,7 +57,7 @@ class DevtoolsControllerTest extends \PHPUnit\Framework\TestCase
         $container = new \VuFindTest\Container\MockContainer($this);
         $container->get(\VuFind\I18n\Locale\LocaleSettings::class)
             ->expects($this->once())->method('getEnabledLocales')
-            ->will($this->returnValue(['en' => 'English']));
+            ->willReturn(['en' => 'English']);
         $c = new Controller($container);
         $result = $c->languageAction();
 

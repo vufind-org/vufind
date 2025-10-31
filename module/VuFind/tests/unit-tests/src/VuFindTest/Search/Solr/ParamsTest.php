@@ -194,7 +194,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                 ->disableOriginalConstructor()
                 ->getMock();
         $options->expects($this->once())->method('getSortTieBreaker')
-                ->will($this->returnValue($tieBreaker));
+                ->willReturn($tieBreaker);
         $params = $this->getParams($options);
         $this->assertEquals(
             $expectedResult,

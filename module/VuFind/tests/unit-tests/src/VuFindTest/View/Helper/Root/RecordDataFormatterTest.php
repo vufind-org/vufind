@@ -152,9 +152,9 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         // Force a return value of zero so we can test this edge case value (even
         // though in the context of "building"/"container title" it makes no sense):
         $record->expects($this->any())->method('getBuildings')
-            ->will($this->returnValue(['0']));
+            ->willReturn(['0']);
         $record->expects($this->any())->method('getContainerTitle')
-            ->will($this->returnValue('0'));
+            ->willReturn('0');
         // Expect only one call to getDeduplicatedAuthors to confirm that caching
         // works correctly (we need this data more than once, but should only pull
         // it from the driver once).
@@ -163,36 +163,35 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'secondary' => ['Pandolfi, Claudia.' => []],
         ];
         $record->expects($this->once())->method('getDeduplicatedAuthors')
-            ->will($this->returnValue($authors));
+            ->willReturn($authors);
 
         // Functions for testing combine alt
         $record->expects($this->any())->method('getFullTitle')
-            ->will($this->returnValue(['Standard Title']));
+            ->willReturn(['Standard Title']);
         $record->expects($this->any())->method('getFullTitleAltScript')
-            ->will($this->returnValue('Alternative Title'));
+            ->willReturn('Alternative Title');
         $record->expects($this->any())->method('getAltFullTitle')
-            ->will($this->returnValue('Other Alternative Title'));
+            ->willReturn('Other Alternative Title');
         $record->expects($this->any())->method('getBuildingsAltScript')
-            ->will($this->returnValue(null));
+            ->willReturn(null);
         $record->expects($this->any())->method('getNotExistingAltScript')
-            ->will($this->returnValue('Alternative Value'));
-        $record->expects($this->any())->method('getSummary')
-        ->will($this->returnValue(null));
+            ->willReturn('Alternative Value');
+        $record->expects($this->any())->method('getSummary')->willReturn(null);
         $record->expects($this->any())->method('getSummaryAltScript')
-            ->will($this->returnValue('Alternative Summary'));
+            ->willReturn('Alternative Summary');
         $record->expects($this->any())->method('getPublicationDetailsAltScript')
-            ->will($this->returnValue([
+            ->willReturn([
                 new PublicationDetails('Alt Place', 'Alt Name', 'Alt Date'),
-            ]));
+            ]);
         $record->expects($this->any())->method('getNewerTitles')
-            ->will($this->returnValue(['New Title', 'Second New Title']));
+            ->willReturn(['New Title', 'Second New Title']);
         $record->expects($this->any())->method('getNewerTitlesAltScript')
-            ->will($this->returnValue(['Alt New Title', 'Second Alt New Title']));
+            ->willReturn(['Alt New Title', 'Second Alt New Title']);
         $record->expects($this->any())->method('getFunctionWithParams')
-            ->will($this->returnCallback(function () {
+            ->willReturnCallback(function () {
                 $args = func_get_args();
                 return implode(' ', $args);
-            }));
+            });
 
         // Load record data from fixture file:
         $fixture = $this->getJsonFixture('misc/testbug2.json');

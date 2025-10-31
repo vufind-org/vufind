@@ -688,7 +688,7 @@ class BackendTest extends TestCase
         $e = new RemoteErrorException($msg, 400, new \Laminas\Http\Response());
         $conn->expects($this->once())->method('query')
             ->with($this->equalTo('browse'))
-            ->will($this->throwException($e));
+            ->willThrowException($e);
         $back = new Backend($conn);
         $back->alphabeticBrowse('foo', 'bar', 1);
     }

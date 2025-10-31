@@ -426,7 +426,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $request = $this->getMockRequest();
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
-        $db->expects($this->once())->method('authenticate')->with($request)->will($this->throwException($e));
+        $db->expects($this->once())->method('authenticate')->with($request)->willThrowException($e);
         $manager = $this->getManager([], null, null, $pm);
         $request->getPost()->set('csrf', $manager->getCsrfHash());
         $manager->login($request);
@@ -446,7 +446,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $request = $this->getMockRequest();
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
-        $db->expects($this->once())->method('authenticate')->with($request)->will($this->throwException($e));
+        $db->expects($this->once())->method('authenticate')->with($request)->willThrowException($e);
         $manager = $this->getManager([], null, null, $pm);
         $request->getPost()->set('csrf', $manager->getCsrfHash());
         $manager->login($request);
@@ -466,7 +466,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $request = $this->getMockRequest();
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
-        $db->expects($this->once())->method('authenticate')->with($request)->will($this->throwException($e));
+        $db->expects($this->once())->method('authenticate')->with($request)->willThrowException($e);
         $manager = $this->getManager([], null, null, $pm);
         $request->getPost()->set('csrf', $manager->getCsrfHash());
         $manager->login($request);

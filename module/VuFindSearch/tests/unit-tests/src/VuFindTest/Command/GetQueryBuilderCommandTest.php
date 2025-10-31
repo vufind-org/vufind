@@ -57,7 +57,7 @@ class GetQueryBuilderCommandTest extends TestCase
             ->getMockBuilder(\VuFindSearch\Backend\BrowZine\Backend::class)
             ->disableOriginalConstructor()->getMock();
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue('bar'));
+            ->willReturn('bar');
         $command->execute($backend);
     }
 
@@ -75,9 +75,9 @@ class GetQueryBuilderCommandTest extends TestCase
             ->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
             ->disableOriginalConstructor()->getMock();
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue('bar'));
+            ->willReturn('bar');
         $backend->expects($this->once())->method('getQueryBuilder')
-            ->will($this->returnValue($builder));
+            ->willReturn($builder);
         $command = new GetQueryBuilderCommand('bar');
         $this->assertEquals($builder, $command->execute($backend)->getResult());
     }
