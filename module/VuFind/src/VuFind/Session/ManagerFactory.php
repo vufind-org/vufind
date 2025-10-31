@@ -114,7 +114,7 @@ class ManagerFactory implements FactoryInterface
     protected function registerShutdownFunction(SessionManager $sessionManager)
     {
         register_shutdown_function(
-            function () use ($sessionManager) {
+            function () use ($sessionManager): void {
                 // If storage is immutable, the session is already closed:
                 if (!$sessionManager->getStorage()->isImmutable()) {
                     $sessionManager->writeClose();

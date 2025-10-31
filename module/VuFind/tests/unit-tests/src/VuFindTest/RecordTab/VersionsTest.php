@@ -95,9 +95,8 @@ class VersionsTest extends \PHPUnit\Framework\TestCase
      * @param bool $expectedResult Expected return value from isActive
      *
      * @return void
-     *
-     * @dataProvider isActiveProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('isActiveProvider')]
     public function testisActive(bool $versionAction, int $versionCount, bool $expectedResult): void
     {
         $som = $this->getMockPluginManager();

@@ -94,9 +94,8 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
      * @param array $expectedList Expected suppressed locations list
      *
      * @return void
-     *
-     * @dataProvider suppressedLocationsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('suppressedLocationsProvider')]
     public function testGetSuppressedLocations(array $configArray, array $expectedList): void
     {
         $logic = $this->getHoldsLogic(config: $configArray);

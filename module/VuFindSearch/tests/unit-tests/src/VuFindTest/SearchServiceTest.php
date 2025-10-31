@@ -90,7 +90,7 @@ class SearchServiceTest extends TestCase
         $command = $this->createMock(\VuFindSearch\Command\RetrieveCommand::class);
         $command->expects($this->once())->method('execute')
             ->with($this->equalTo($backend))
-            ->will($this->throwException(new BackendException('test')));
+            ->willThrowException(new BackendException('test'));
         $em = $service->getEventManager();
         $this->expectConsecutiveCalls(
             $em,
@@ -111,7 +111,7 @@ class SearchServiceTest extends TestCase
         $this->expectExceptionMessage('Unable to resolve backend: getInfo, EDS');
 
         $mockResponse = $this->createMock(\Laminas\EventManager\ResponseCollection::class);
-        $mockResponse->expects($this->any())->method('stopped')->will($this->returnValue(false));
+        $mockResponse->expects($this->any())->method('stopped')->willReturn(false);
         $em = $this->createMock(\Laminas\EventManager\EventManagerInterface::class);
         $service = new Service();
         $em->expects($this->any())->method('triggerUntil')
@@ -119,7 +119,7 @@ class SearchServiceTest extends TestCase
                 $this->anything(),
                 $this->equalTo('resolve'),
                 $this->equalTo($service)
-            )->will($this->returnValue($mockResponse));
+            )->willReturn($mockResponse);
         $service->setEventManager($em);
         $service->invoke(new \VuFindSearch\Backend\EDS\Command\GetInfoCommand());
     }
@@ -139,7 +139,7 @@ class SearchServiceTest extends TestCase
         $identifier = 'foo'
     ) {
         $backend = $this->createMock($class);
-        $backend->method('getIdentifier')->will($this->returnValue($identifier));
+        $backend->method('getIdentifier')->willReturn($identifier);
         return $backend;
     }
 
@@ -169,7 +169,7 @@ class SearchServiceTest extends TestCase
             ->onlyMethods(['resolve'])
             ->getMock();
         $service->expects($this->any())->method('resolve')
-            ->will($this->returnValue($this->getBackend()));
+            ->willReturn($this->getBackend());
         $service->setEventManager($em);
         return $service;
     }

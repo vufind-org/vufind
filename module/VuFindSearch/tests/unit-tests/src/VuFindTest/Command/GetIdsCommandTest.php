@@ -59,14 +59,14 @@ class GetIdsCommandTest extends TestCase
             ->disableOriginalConstructor()->getMock();
         $command = new GetIdsCommand($backendId, $query, 0, 1, $params);
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue($backendId));
+            ->willReturn($backendId);
         $backend->expects($this->once())->method('getIds')
             ->with(
                 $this->equalTo($query),
                 $this->equalTo(0),
                 $this->equalTo(1),
                 $this->equalTo($params)
-            )->will($this->returnValue('result'));
+            )->willReturn('result');
         $this->assertEquals('result', $command->execute($backend)->getResult());
     }
 
@@ -84,14 +84,14 @@ class GetIdsCommandTest extends TestCase
             ->disableOriginalConstructor()->getMock();
         $command = new GetIdsCommand($backendId, $query, 0, 1, $params);
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue($backendId));
+            ->willReturn($backendId);
         $backend->expects($this->once())->method('search')
             ->with(
                 $this->equalTo($query),
                 $this->equalTo(0),
                 $this->equalTo(1),
                 $this->equalTo($params)
-            )->will($this->returnValue('result'));
+            )->willReturn('result');
         $this->assertEquals('result', $command->execute($backend)->getResult());
     }
 

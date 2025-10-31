@@ -93,9 +93,8 @@ class TitleHoldsTest extends \PHPUnit\Framework\TestCase
      * @param array $expectedList Expected suppressed locations list
      *
      * @return void
-     *
-     * @dataProvider suppressedLocationsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('suppressedLocationsProvider')]
     public function testHideHoldingsBehavior(array $configArray, array $expectedList): void
     {
         $logic = $this->getTitleHoldsLogic(config: $configArray);

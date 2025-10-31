@@ -164,7 +164,7 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
         }
         $this->configFileDatabases = $databasesConfig['url']
             ?? $this->configFileDatabases;
-        array_walk($this->configFileDatabases, function (&$value, $name) {
+        array_walk($this->configFileDatabases, function (&$value, $name): void {
             $value = [
                 'name' => $name,
                 'url' => $value,

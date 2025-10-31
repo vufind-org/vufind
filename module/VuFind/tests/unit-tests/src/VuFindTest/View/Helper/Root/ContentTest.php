@@ -70,14 +70,14 @@ class ContentTest extends \PHPUnit\Framework\TestCase
                 $this->equalTo($expectedPathPrefix),
                 $this->equalTo($pageName),
                 $this->equalTo($pattern)
-            )->will($this->returnValue($contentBlockContext));
+            )->willReturn($contentBlockContext);
         $mockContext = $this->getMockBuilder(Context::class)
             ->disableOriginalConstructor()->getMock();
         $mockContext->expects($this->once())->method('renderInContext')
             ->with(
                 $this->equalTo('ContentBlock/TemplateBased.phtml'),
                 $this->equalTo($context + $contentBlockContext)
-            )->will($this->returnValue('rendered-content'));
+            )->willReturn('rendered-content');
         $content = new Content($mockTemplateBased, $mockContext);
         // Confirm that expected content was rendered:
         $pageDetails = [];

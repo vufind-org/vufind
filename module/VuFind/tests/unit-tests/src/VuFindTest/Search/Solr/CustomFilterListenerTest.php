@@ -58,9 +58,7 @@ class CustomFilterListenerTest extends \PHPUnit\Framework\TestCase
     {
         $backend = $this->getMockBuilder(Backend::class)
             ->disableOriginalConstructor()->getMock();
-        $backend->expects($this->any())->method('getIdentifier')->will(
-            $this->returnValue($id)
-        );
+        $backend->expects($this->any())->method('getIdentifier')->willReturn($id);
         return $backend;
     }
 

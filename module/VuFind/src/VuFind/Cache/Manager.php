@@ -457,7 +457,7 @@ class Manager implements LoggerAwareInterface
             $eventManager = $laminasCache->getEventManager();
             $eventManager->attach(
                 'getCapabilities.post',
-                function ($event) use ($laminasCache) {
+                function ($event) use ($laminasCache): void {
                     $oldCapacities = $event->getResult();
                     $newCapacities = new Capabilities(
                         $laminasCache,

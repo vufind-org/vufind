@@ -216,7 +216,7 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
         }
 
         $updates = new UpdateDocument();
-        foreach ($index as $id => $data) {
+        foreach ($index as $data) {
             if (!empty($data['bib_id'])) {
                 $updates->addRecord(new SerializableRecord($data));
             }

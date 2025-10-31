@@ -48,10 +48,9 @@ class Base62Test extends \PHPUnit\Framework\TestCase
      * @param string $input    Input
      * @param string $expected Expected output
      *
-     * @dataProvider exampleProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('exampleProvider')]
     public function testEncode($input, $expected)
     {
         $base62 = new Base62();
@@ -64,10 +63,9 @@ class Base62Test extends \PHPUnit\Framework\TestCase
      * @param string $expected Expected output
      * @param string $input    Input
      *
-     * @dataProvider exampleProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('exampleProvider')]
     public function testDecode($expected, $input)
     {
         $base62 = new Base62();

@@ -338,7 +338,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
         $mock->setRawData($fields);
         $mock->expects($this->any())
             ->method('getBookOpenUrlParams')
-            ->will($this->returnValue($openUrlParams));
+            ->willReturn($openUrlParams);
 
         $this->assertEquals($openUrl, $mock->getOpenUrl());
     }
@@ -542,10 +542,9 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      * @param string $mode          Retrieval mode
      * @param bool   $filterInvalid Should we filter invalid ISBNs?
      *
-     * @dataProvider getCleanISBNsProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getCleanISBNsProvider')]
     public function testGetCleanISBNs($result, $mode, $filterInvalid)
     {
         $this->assertEquals($result, $this->getDriver()->getCleanISBNs($mode, $filterInvalid));

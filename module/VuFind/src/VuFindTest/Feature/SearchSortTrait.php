@@ -120,6 +120,6 @@ trait SearchSortTrait
     protected function assertSelectedSort(Element $page, string $active): void
     {
         $sort = $this->findCss($page, $this->sortControlSelector);
-        $this->assertEquals((string)$active, $sort->getValue());
+        $this->assertEquals($active, $sort->getValue());
     }
 }

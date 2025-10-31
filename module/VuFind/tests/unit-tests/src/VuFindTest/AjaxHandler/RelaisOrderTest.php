@@ -78,9 +78,8 @@ class RelaisOrderTest extends \PHPUnit\Framework\TestCase
      * @param array  $expected Expected handler response
      *
      * @return void
-     *
-     * @dataProvider authenticatedBehaviorProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('authenticatedBehaviorProvider')]
     public function testAuthenticatedBehavior(string $response, array $expected): void
     {
         $user = $this->createMock(\VuFind\Db\Entity\UserEntityInterface::class);

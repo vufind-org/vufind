@@ -374,7 +374,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
         $this->expectExceptionMessage('Boom');
 
         $transport = $this->createMock(MailerInterface::class);
-        $transport->expects($this->once())->method('send')->will($this->throwException(new \Exception('Boom')));
+        $transport->expects($this->once())->method('send')->willThrowException(new \Exception('Boom'));
         $mailer = new Mailer($transport);
         $mailer->send('to@example.com', 'from@example.com', 'subject', 'body');
     }
@@ -387,12 +387,10 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     public function testUnknownException()
     {
         $mailer = $this->createMock(Mailer::class);
-        $mailer->expects($this->once())->method('send')->will(
-            $this->throwException(
-                new \VuFind\Exception\Mail(
-                    'Technical message',
-                    \VuFind\Exception\Mail::ERROR_UNKNOWN
-                )
+        $mailer->expects($this->once())->method('send')->willThrowException(
+            new \VuFind\Exception\Mail(
+                'Technical message',
+                \VuFind\Exception\Mail::ERROR_UNKNOWN
             )
         );
         try {
@@ -419,7 +417,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
             ->addMethods(['partial'])->getMock();
         $view->expects($this->once())->method('partial')
             ->with($this->equalTo('Email/share-link.phtml'), $this->callback($viewCallback))
-            ->will($this->returnValue('body'));
+            ->willReturn('body');
 
         $callback = function ($message): bool {
             $to = $message->getTo();
@@ -452,7 +450,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
     public function testSendRecord()
     {
         $driver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
-        $driver->expects($this->once())->method('getBreadcrumb')->will($this->returnValue('breadcrumb'));
+        $driver->expects($this->once())->method('getBreadcrumb')->willReturn('breadcrumb');
 
         $viewCallback = function ($in) use ($driver): bool {
             return $in['driver'] == $driver
@@ -464,7 +462,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
             ->addMethods(['partial'])->getMock();
         $view->expects($this->once())->method('partial')
             ->with($this->equalTo('Email/record.phtml'), $this->callback($viewCallback))
-            ->will($this->returnValue('body'));
+            ->willReturn('body');
 
         $callback = function ($message): bool {
             return 'to@example.com' == $message->getTo()[0]->toString()

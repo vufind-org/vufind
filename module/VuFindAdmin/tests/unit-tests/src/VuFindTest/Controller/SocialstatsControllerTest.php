@@ -60,7 +60,7 @@ class SocialstatsControllerTest extends \PHPUnit\Framework\TestCase
         $mockCommentsStats = ['users' => 5, 'resources' => 7, 'total' => 23];
         $commentsService = $this->createMock(CommentsServiceInterface::class);
         $commentsService->expects($this->once())->method('getStatistics')
-            ->will($this->returnValue($mockCommentsStats));
+            ->willReturn($mockCommentsStats);
         $dbServices->set(CommentsServiceInterface::class, $commentsService);
 
         $userResourceStats = ['users' => 5,
@@ -70,26 +70,26 @@ class SocialstatsControllerTest extends \PHPUnit\Framework\TestCase
         ];
         $userResourceService = $this->createMock(UserResourceServiceInterface::class);
         $userResourceService->expects($this->once())->method('getStatistics')
-            ->will($this->returnValue($userResourceStats));
+            ->willReturn($userResourceStats);
         $dbServices->set(UserResourceServiceInterface::class, $userResourceService);
 
         $mockRatingsStats = ['users' => 1, 'resources' => 2, 'total' => 3];
         $ratingsService = $this->createMock(RatingsServiceInterface::class);
         $ratingsService->expects($this->any())->method('getStatistics')
-            ->will($this->returnValue($mockRatingsStats));
+            ->willReturn($mockRatingsStats);
         $dbServices->set(RatingsServiceInterface::class, $ratingsService);
 
         $mockTagStats = ['users' => 31, 'resources' => 32, 'total' => 33];
         $tagService = $this->createMock(TagsService::class);
         $tagService->expects($this->once())->method('getStatistics')
-            ->will($this->returnValue($mockTagStats));
+            ->willReturn($mockTagStats);
         $container->set(TagsService::class, $tagService);
         $viewRenderer = $this->getMockBuilder(\Laminas\View\Renderer\RendererInterface::class)
             ->onlyMethods(['getEngine', 'setResolver', 'render'])->addMethods(['plugin'])->getMock();
         $viewRenderer->expects($this->once())->method('plugin')->withAnyParameters()
-            ->will($this->returnValue(function (/*$input*/) {
+            ->willReturn(function (/*$input*/) {
                 return 'url';
-            }));
+            });
         $container->set('ViewRenderer', $viewRenderer);
 
         // Build the controller to test:

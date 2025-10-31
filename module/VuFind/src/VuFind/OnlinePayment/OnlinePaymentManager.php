@@ -24,7 +24,7 @@
  * @package  OnlinePayment
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 
 declare(strict_types=1);
@@ -59,7 +59,7 @@ use VuFind\OnlinePayment\Handler\PluginManager as HandlerPluginManager;
  * @package  OnlinePayment
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class OnlinePaymentManager implements LoggerAwareInterface
 {
