@@ -79,7 +79,7 @@ class ChannelLoader
      */
     protected function addConfigToContext($context)
     {
-        for ($i = 0; $i < count($context['channels']); $i++) {
+        for ($i = 0; $i < count($context['channels'] ?? []); $i++) {
             [, $configSection] = explode(':', $context['channels'][$i]['providerId'] . ':');
             $config = $this->config[$configSection] ?? [];
 
@@ -157,8 +157,7 @@ class ChannelLoader
      */
     protected function getChannelProviders($source, $configSection, $activeId = null)
     {
-        $providerIds = isset($this->config["source.$source"][$configSection])
-            ? $this->config["source.$source"][$configSection] : [];
+        $providerIds = $this->config["source.$source"][$configSection] ?? [];
         $finalIds = (!empty($activeId) && in_array($activeId, $providerIds))
             ? [$activeId] : $providerIds;
         return array_map([$this, 'getChannelProvider'], $finalIds);
@@ -182,8 +181,7 @@ class ChannelLoader
         if (empty($configSection)) {
             $configSection = "provider.$serviceName";
         }
-        $options = isset($this->config[$configSection])
-            ? $this->config[$configSection] : [];
+        $options = $this->config[$configSection] ?? [];
 
         // Load the service, and configure appropriately:
         $provider = $this->channelManager->get($serviceName);

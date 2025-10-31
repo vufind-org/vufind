@@ -109,9 +109,8 @@
       data-group="<?=$this->escapeHtmlAttr($groupId) ?>"
       style="--row-size:<?=$this->escapeHtmlAttr($channel['config']['rowSize']) ?>"
     >
-      <?php for ($index = 0; $index < count($channel['contents']); $index++): ?>
+      <?php foreach ($channel['contents'] ?? [] as $index => $item): ?>
         <?php
-          $item = $channel['contents'][$index];
           $url = empty($item['routeDetails'])
             ? $this->recordLinker()->getUrl("{$item['source']}|{$item['id']}")
             : $this->url($item['routeDetails']['route'], $item['routeDetails']['params']);

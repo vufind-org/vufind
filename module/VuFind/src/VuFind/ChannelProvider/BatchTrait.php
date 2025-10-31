@@ -75,7 +75,15 @@ trait BatchTrait
         );
 	}
 
-	static public function calcBatchSize($itemsPerRow, $rowsPerPage)
+    /**
+     * Calculate batch size (using row size, page size, and minimum of 20).
+     *
+     * @param int $itemsPerRow Items per row
+     * @param int $rowsPerPage Rows per page
+     *
+     * @return int
+     */
+	static public function calcBatchSize(int $itemsPerRow, int $rowsPerPage): int
 	{
         $batchSize = $itemsPerRow * $rowsPerPage;
 
