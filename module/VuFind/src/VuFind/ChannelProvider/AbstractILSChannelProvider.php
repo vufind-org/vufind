@@ -48,7 +48,7 @@ use function count;
 abstract class AbstractILSChannelProvider extends AbstractChannelProvider implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
-	use BatchTrait;
+    use BatchTrait;
 
     /**
      * Channel title (will be run through translator).

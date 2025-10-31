@@ -54,7 +54,7 @@ use function is_object;
 class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
-	use BatchTrait;
+    use BatchTrait;
 
     /**
      * Maximum number of records to examine for similar results.
@@ -146,7 +146,7 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
         $this->solrField = $options['solrField'] ?? 'callnumber-raw';
         $this->rowsBefore = $options['rows_before'] ?? 10;
         $this->source = $options['source'] ?? 'Solr';
-		$this->setBatchSizeFromOptions($options);
+        $this->setBatchSizeFromOptions($options);
     }
 
     /**

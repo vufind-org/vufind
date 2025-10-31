@@ -52,7 +52,7 @@ use function is_object;
 class SimilarItems extends AbstractChannelProvider implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
-	use BatchTrait;
+    use BatchTrait;
 
     /**
      * Maximum number of records to examine for similar results.
@@ -112,7 +112,7 @@ class SimilarItems extends AbstractChannelProvider implements TranslatorAwareInt
     public function setOptions(array $options)
     {
         $this->maxRecordsToExamine = $options['maxRecordsToExamine'] ?? 2;
-		$this->setBatchSizeFromOptions($options);
+        $this->setBatchSizeFromOptions($options);
     }
 
     /**

@@ -42,7 +42,7 @@ trait BatchTrait
 {
     /**
      * Number of results to fetch from providers.
-	 * Calculated from itemsPerRow and rowsPerPage, min 20.
+     * Calculated from itemsPerRow and rowsPerPage, min 20.
      *
      * @var int
      */
@@ -50,7 +50,7 @@ trait BatchTrait
 
     /**
      * Number of results to fetch from providers.
-	 * Calculated from itemsPerRow and rowsPerPage, min 20.
+     * Calculated from itemsPerRow and rowsPerPage, min 20.
      *
      * @var int
      */
@@ -63,8 +63,8 @@ trait BatchTrait
      *
      * @return void
      */
-	public function setBatchSizeFromOptions(array $options)
-	{
+    public function setBatchSizeFromOptions(array $options)
+    {
         // Calculate batch size
         $itemsPerRow = $options['itemsPerRow'] ?? 6;
         $rowsPerPage = $options['rowsPerPage'] ?? 1;
@@ -73,7 +73,7 @@ trait BatchTrait
             self::calcBatchSize($itemsPerRow, $rowsPerPage),
             $this->maxBatchSize,
         );
-	}
+    }
 
     /**
      * Calculate batch size (using row size, page size, and minimum of 20).
@@ -83,8 +83,8 @@ trait BatchTrait
      *
      * @return int
      */
-	static public function calcBatchSize(int $itemsPerRow, int $rowsPerPage): int
-	{
+    public static function calcBatchSize(int $itemsPerRow, int $rowsPerPage): int
+    {
         $batchSize = $itemsPerRow * $rowsPerPage;
 
         // Set a minimum of 20 so that smaller page sizes do not result in excessive server requests
@@ -92,6 +92,6 @@ trait BatchTrait
             $batchSize *= 2;
         }
 
-		return $batchSize;
-	}
+        return $batchSize;
+    }
 }

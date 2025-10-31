@@ -77,10 +77,10 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
     /**
      * Constructor
      *
-     * @param ResultsManager $rm      Results manager
-     * @param Url            $url     URL helper
-     * @param HttpRequest    $req     Request for parameters
-     * @param array          $options Settings (optional)
+     * @param ResultsManager $resultsManager Results manager
+     * @param Url            $url            URL helper
+     * @param HttpRequest    $request        Request for parameters
+     * @param array          $options        Settings (optional)
      */
     public function __construct(
         protected ResultsManager $resultsManager,
