@@ -29,7 +29,7 @@
 
 namespace VuFind\Section;
 
-use VuFind\Config\Feature\SettingPropertiesInterface;
+use VuFind\Config\Feature\ConfigSettingPropertiesInterface;
 
 /**
  * Interface for a configurable model class representing a section of the UI.
@@ -40,7 +40,7 @@ use VuFind\Config\Feature\SettingPropertiesInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-interface SectionInterface extends SettingPropertiesInterface
+interface SectionInterface extends ConfigSettingPropertiesInterface
 {
     /**
      * Set section key.

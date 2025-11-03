@@ -44,7 +44,7 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-trait SettingPropertiesTrait
+trait ConfigSettingPropertiesTrait
 {
     /**
      * Required and conditionally required settings.

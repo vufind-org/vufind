@@ -29,7 +29,7 @@
 
 namespace VuFind\Section;
 
-use VuFind\Config\Feature\SettingPropertiesInterface;
+use VuFind\Config\Feature\ConfigSettingPropertiesInterface;
 
 /**
  * Section service interface.
@@ -75,7 +75,7 @@ interface SectionServiceInterface
     public function localizeSettings(
         SectionInterface $section,
         ?array $settings = null,
-        string $contextKey = SettingPropertiesInterface::DEFAULT_CONTEXT,
+        string $contextKey = ConfigSettingPropertiesInterface::DEFAULT_CONTEXT,
         bool $useFirst = true
     ): array;
 }

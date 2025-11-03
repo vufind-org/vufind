@@ -29,7 +29,7 @@
 
 namespace VuFind\Section;
 
-use VuFind\Config\Feature\SettingPropertiesTrait;
+use VuFind\Config\Feature\ConfigSettingPropertiesTrait;
 
 /**
  * Section trait.
@@ -42,7 +42,7 @@ use VuFind\Config\Feature\SettingPropertiesTrait;
  */
 trait SectionTrait
 {
-    use SettingPropertiesTrait;
+    use ConfigSettingPropertiesTrait;
 
     /**
      * Key.
