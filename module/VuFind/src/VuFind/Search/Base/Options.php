@@ -1267,13 +1267,13 @@ abstract class Options implements TranslatorAwareInterface
 
     /**
      * Load all recommendation settings from the relevant ini file. Returns an
-     * associative array where the key is the location of the recommendations (top
-     * or side) and the value is the settings found in the file (which may be either
-     * a single string or an array of strings).
+     * associative array where the key is the location of the recommendations (top,
+     * between or side) and the value is the settings found in the file (which may
+     * be either a single string or an array of strings).
      *
      * @param string $handler Name of handler for which to load specific settings.
      *
-     * @return array associative: location (top/side/etc.) => search settings
+     * @return array associative: location (top/between/side/etc.) => search settings
      */
     public function getRecommendationSettings($handler = null)
     {
@@ -1292,6 +1292,14 @@ abstract class Options implements TranslatorAwareInterface
             $recommend['top'] = $searchSettings['TopRecommendations'][$handler];
         } else {
             $recommend['top'] = $searchSettings['General']['default_top_recommend'] ?? false;
+        }
+        if (
+            null !== $handler
+            && isset($searchSettings['BetweenRecommendations'][$handler])
+        ) {
+            $recommend['between'] = $searchSettings['BetweenRecommendations'][$handler];
+        } else {
+            $recommend['between'] = $searchSettings['General']['default_between_recommend'] ?? false;
         }
         if (
             null !== $handler
