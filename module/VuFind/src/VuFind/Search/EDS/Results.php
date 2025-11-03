@@ -131,4 +131,34 @@ class Results extends \VuFind\Search\Base\Results
         }
         return $this->buildFacetList($this->responseFacets, $filter);
     }
+
+    /**
+     * Get the scores of the results
+     *
+     * @return array
+     */
+    public function getScores()
+    {
+        $scoreMap = [];
+        foreach ($this->results as $record) {
+            $score = $record->getScore() ?? false;
+            if ($score) {
+                $scoreMap[$record->getUniqueId()] = $score;
+            }
+        }
+        return $scoreMap;
+    }
+
+    /**
+     * Getting the highest relevance of all the results
+     *
+     * @return ?float
+     */
+    public function getMaxScore()
+    {
+        if (empty($this->results)) {
+            return null;
+        }
+        return $this->results[0]->getScore();
+    }
 }
