@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -31,7 +31,8 @@
 
 namespace VuFindTest\Mink;
 
-use VuFind\Db\Table\User;
+use Doctrine\ORM\EntityManager;
+use VuFind\Db\Service\UserService;
 
 use function count;
 
@@ -134,10 +135,9 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test username case-insensitivity.
      *
-     * @depends testChangePassword
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testChangePassword')]
     public function testCaseInsensitiveUsername(): void
     {
         $session = $this->getMinkSession();
@@ -178,11 +178,9 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool   $secure Should we enable secure session mode?
      *
      * @return void
-     *
-     * @depends testChangePassword
-     *
-     * @dataProvider sessionSettingsProvider
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testChangePassword')]
+    #[\PHPUnit\Framework\Attributes\DataProvider('sessionSettingsProvider')]
     public function testLoginWithSessionSettings(string $type, bool $secure): void
     {
         // Adjust session settings:
@@ -212,10 +210,9 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that changing email is disabled by default.
      *
-     * @depends testChangePassword
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testChangePassword')]
     public function testChangeEmailDisabledByDefault(): void
     {
         // Go to profile page:
@@ -237,10 +234,9 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test changing an email.
      *
-     * @depends testChangePassword
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testChangePassword')]
     public function testChangeEmail(): void
     {
         // Turn on email change option:
@@ -329,8 +325,8 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->submitCatalogLoginForm($page, 'catuser', 'catpass');
 
         // Check the default library and possible values:
-        $userTable = $this->getTable(User::class);
-        $this->assertSame('', $userTable->getByUsername('username2')->getHomeLibrary());
+        $userService = $this->getDbService(UserService::class);
+        $this->assertSame('', $userService->getUserByUsername('username2')->getHomeLibrary());
         $this->assertEquals(
             '',
             $this->findCssAndGetValue($page, '#home_library')
@@ -355,9 +351,11 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#profile_form .btn');
         $this->waitForPageLoad($page);
         $this->assertEquals('B', $this->findCssAndGetValue($page, '#home_library'));
+        $entityManager = $this->getLiveDatabaseContainer()->get(EntityManager::class);
+        $entityManager->clear();
         $this->assertEquals(
             'B',
-            $userTable->getByUsername('username2')->getHomeLibrary()
+            $userService->getUserByUsername('username2')->getHomeLibrary()
         );
 
         // Change to "Always ask me":
@@ -368,7 +366,8 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
             ' ** ',
             $this->findCssAndGetValue($page, '#home_library')
         );
-        $this->assertNull($userTable->getByUsername('username2')->getHomeLibrary());
+        $entityManager->clear();
+        $this->assertNull($userService->getUserByUsername('username2')->getHomeLibrary());
 
         // Back to default:
         $this->findCssAndSetValue($page, '#home_library', '');
@@ -378,7 +377,8 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
             '',
             $this->findCssAndGetValue($page, '#home_library')
         );
-        $this->assertSame('', $userTable->getByUsername('username2')->getHomeLibrary());
+        $entityManager->clear();
+        $this->assertSame('', $userService->getUserByUsername('username2')->getHomeLibrary());
     }
 
     /**
@@ -420,9 +420,8 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test account deletion.
      *
      * @return void
-     *
-     * @depends testDefaultPickUpLocation
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testDefaultPickUpLocation')]
     public function testAccountDeletion(): void
     {
         $this->changeConfigs(
@@ -456,12 +455,75 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Data provider for testRecoverPasswordByUsername().
+     *
+     * @return array[]
+     */
+    public static function honestyProvider(): array
+    {
+        return [
+            'be honest' => [true],
+            'be dishonest' => [false],
+        ];
+    }
+
+    /**
+     * Test attempting to recover a password with an invalid username.
+     *
+     * @param bool $beHonest Should the recovery error message be honest?
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testChangePassword')]
+    #[\PHPUnit\Framework\Attributes\DataProvider('honestyProvider')]
+    public function testRecoveryHonesty(bool $beHonest): void
+    {
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Authentication' => [
+                        'recover_password' => true,
+                        'recover_interval' => 0,
+                        'recover_be_honest' => $beHonest,
+                    ],
+                    'Mail' => [
+                        'testOnly' => true,
+                        'message_log' => $this->getEmailLogPath(),
+                        'message_log_format' => $this->getEmailLogFormat(),
+                    ],
+                ],
+            ]
+        );
+
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl());
+        $page = $session->getPage();
+        $this->resetEmailLog();
+
+        // Recover account
+        $this->clickCss($page, '#loginOptions a');
+        $this->clickCss($page, '.modal-body .recover-account-link');
+        $this->findCssAndSetValue($page, '#recovery_username', 'bad');
+        $this->clickCss($page, '.modal-body input[type="submit"]');
+        if ($beHonest) {
+            $this->assertEquals('We could not find your account', $this->findCssAndGetText($page, '.alert-danger'));
+        } else {
+            $this->assertEquals(
+                'Password recovery instructions have been sent to the email address registered with this account.',
+                $this->findCssAndGetText($page, '.alert-success')
+            );
+        }
+
+        // No email should have been sent
+        $this->assertEmpty($this->getLoggedEmails(allowEmpty: true));
+    }
+
+    /**
      * Test recovering a password by username.
      *
      * @return void
-     *
-     * @depends testChangePassword
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testChangePassword')]
     public function testRecoverPasswordByUsername(): void
     {
         $this->changeConfigs(
@@ -488,9 +550,6 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         // Recover account
         $this->clickCss($page, '#loginOptions a');
         $this->clickCss($page, '.modal-body .recover-account-link');
-        $this->findCssAndSetValue($page, '#recovery_username', 'bad');
-        $this->clickCss($page, '.modal-body input[type="submit"]');
-        $this->assertEquals('We could not find your account', $this->findCssAndGetText($page, '.alert-danger'));
         $this->findCssAndSetValue($page, '#recovery_username', 'username1');
         $this->clickCss($page, '.modal-body input[type="submit"]');
         $this->assertEquals(
@@ -539,9 +598,8 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool $choiceAuth   Test with ChoiceAuth?
      *
      * @return void
-     *
-     * @dataProvider recoverILSPasswordProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('recoverILSPasswordProvider')]
     public function testRecoverILSPassword(bool $multiBackend, bool $choiceAuth): void
     {
         $configs = [

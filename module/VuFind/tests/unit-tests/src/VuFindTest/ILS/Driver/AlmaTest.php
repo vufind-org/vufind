@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -190,8 +190,40 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
         $this->driver->setCacheStorage($cache);
         $this->driver->expects($this->any())
             ->method('makeRequest')
-            ->will($this->returnCallback([$this, 'mockMakeRequest']));
+            ->willReturnCallback([$this, 'mockMakeRequest']);
         $this->driver->init();
+    }
+
+    /**
+     * Testing getCourses
+     *
+     * @return void
+     */
+    public function testGetCourses()
+    {
+        $this->createConnector('get-courses');
+        $result = $this->driver->getCourses();
+        $expected = [
+            '1234' => 'VuFind Basics',
+            '5678' => 'Advanced VuFind',
+        ];
+        $this->assertEquals($expected, $result);
+    }
+
+    /**
+     * Testing getFunds
+     *
+     * @return void
+     */
+    public function testGetFunds()
+    {
+        $this->createConnector('get-funds');
+        $result = $this->driver->getFunds();
+        $expected = [
+            'FUND-01' => 'VuFind Community',
+            'FUND-02' => 'VuFind Sponsors',
+        ];
+        $this->assertEquals($expected, $result);
     }
 
     /**
@@ -269,9 +301,9 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
      *                           multiple tests.
      * @param array  $expected   Expected results for the test
      *
-     * @return       void
-     * @dataProvider getTestGetMyProfileData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestGetMyProfileData')]
     public function testGetMyProfile(string $fixtureKey, array $expected): void
     {
         $adjustedConfig = $this->defaultDriverConfig;
@@ -356,9 +388,9 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
      * @param array  $expected   Expected results
      * @param string $fixtureKey Fixture key for response mapping
      *
-     * @return       void
-     * @dataProvider getTestPatronLoginData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestPatronLoginData')]
     public function testPatronLogin(array $config, array $expected, string $fixtureKey): void
     {
         $this->createConnector('get-patron-response', $config, $fixtureKey);

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -34,8 +34,7 @@ use Laminas\Cache\Storage\StorageInterface;
 use Laminas\View\Renderer\PhpRenderer;
 use Psr\Container\ContainerInterface;
 use VuFind\Cache\Manager as CacheManager;
-use VuFind\Config\Config;
-use VuFind\Config\PluginManager as ConfigPluginManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\View\Helper\Root\CleanHtml;
 use VuFind\View\Helper\Root\CleanHtmlFactory;
 use VuFind\View\Helper\Root\SearchMemory;
@@ -161,19 +160,18 @@ trait ViewTrait
         $cacheManager->expects($this->any())
             ->method('getCache')
             ->willReturn($cache);
-        $config = $this->createMock(Config::class);
-        $configPluginManager = $this->createMock(ConfigPluginManager::class);
-        $configPluginManager->expects($this->any())
-            ->method('get')
-            ->willReturn($config);
+        $configManager = $this->createMock(ConfigManagerInterface::class);
+        $configManager->expects($this->any())
+            ->method('getConfigArray')
+            ->willReturn([]);
         $container = $this->createMock(ContainerInterface::class);
         $container->expects($this->any())
             ->method('get')
             ->willReturnCallback(
-                function ($class) use ($cacheManager, $configPluginManager) {
+                function ($class) use ($cacheManager, $configManager) {
                     return match ($class) {
                         CacheManager::class => $cacheManager,
-                        ConfigPluginManager::class => $configPluginManager,
+                        ConfigManagerInterface::class => $configManager,
                     };
                 }
             );

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -166,7 +166,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
             ->setConstructorArgs([$this->permissionDeniedConfig])
             ->getMock();
         $mockPmd->expects($this->any())->method('getDeniedTemplateBehavior')
-            ->will($this->returnValue($config['deniedTemplateBehavior']));
+            ->willReturn($config['deniedTemplateBehavior']);
         return $mockPmd;
     }
 
@@ -183,9 +183,9 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $mockPm->expects($this->any())->method('isAuthorized')
-            ->will($this->returnValue($isAuthorized));
+            ->willReturn($isAuthorized);
         $mockPm->expects($this->any())->method('permissionRuleExists')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
 
         return $mockPm;
     }

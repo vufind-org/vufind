@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Content
@@ -50,9 +50,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $aliases = [
         Amazon::class => Deprecated::class,
         AmazonEditorial::class => Deprecated::class,
+        Booksite::class => Deprecated::class,
         'amazon' => Deprecated::class,
         'amazoneditorial' => Deprecated::class,
-        'booksite' => Booksite::class,
+        'booksite' => Deprecated::class,
         'demo' => Demo::class,
         'guardian' => Guardian::class,
         'syndetics' => Syndetics::class,
@@ -65,7 +66,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        Booksite::class => BooksiteFactory::class,
         Demo::class => \Laminas\ServiceManager\Factory\InvokableFactory::class,
         Deprecated::class => \Laminas\ServiceManager\Factory\InvokableFactory::class,
         Guardian::class => \Laminas\ServiceManager\Factory\InvokableFactory::class,

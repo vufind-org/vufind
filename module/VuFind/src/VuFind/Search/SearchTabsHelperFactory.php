@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -66,25 +66,16 @@ class SearchTabsHelperFactory implements FactoryInterface
         ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $tabConfig = isset($config->SearchTabs)
-            ? $config->SearchTabs->toArray() : [];
-        $filterConfig = isset($config->SearchTabsFilters)
-            ? $config->SearchTabsFilters->toArray() : [];
-        $permissionConfig = isset($config->SearchTabsPermissions)
-            ? $config->SearchTabsPermissions->toArray() : [];
-        $settings = isset($config->SearchTabsSettings)
-            ? $config->SearchTabsSettings->toArray() : [];
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         return new $requestedName(
             $container->get(\VuFind\Search\Results\PluginManager::class),
-            $tabConfig,
-            $filterConfig,
+            $config['SearchTabs'] ?? [],
+            $config['SearchTabsFilters'] ?? [],
             $container->get('Application')->getRequest(),
-            $permissionConfig,
-            $settings
+            $config['SearchTabsPermissions'] ?? [],
+            $config['SearchTabsSettings'] ?? []
         );
     }
 }

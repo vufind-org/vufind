@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -35,7 +35,6 @@ use PHPUnit\Framework\MockObject\Exception;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Row\User;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\ILS\Connection;
 use VuFind\OAuth2\Entity\UserEntity;
@@ -119,9 +118,8 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
      * @param ?bool $blocks Blocks status
      *
      * @return void
-     *
-     * @dataProvider getTestIdentityRepositoryData
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestIdentityRepositoryData')]
     public function testIdentityRepository(?bool $blocks): void
     {
         $accessTokenService = $this->getMockAccessTokenService();
@@ -225,7 +223,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
      */
     protected function getMockUser(): UserEntityInterface
     {
-        $user = $this->createMock(User::class);
+        $user = $this->createMock(UserEntityInterface::class);
         $user->expects($this->any())->method('getId')->willReturn(2);
         $user->expects($this->any())->method('getFirstname')->willReturn('Lib');
         $user->expects($this->any())->method('getLastname')->willReturn('Rarian');
@@ -299,12 +297,12 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
         $ils->expects($this->once())
             ->method('patronLogin')
             ->with('user', 'pass')
-            ->will($this->returnValue($patron));
+            ->willReturn($patron);
 
         $ils->expects($this->once())
             ->method('getMyProfile')
             ->with($patron)
-            ->will($this->returnValue($profile));
+            ->willReturn($profile);
 
         if (null === $blocks) {
             $ils->expects($this->once())
@@ -320,7 +318,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
             $ils->expects($this->once())
                 ->method('getAccountBlocks')
                 ->with($patron)
-                ->will($this->returnValue($blocks ? ['Simulated block'] : []));
+                ->willReturn($blocks ? ['Simulated block'] : []);
         }
 
         return $ils;
@@ -343,7 +341,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
 
         $ils->expects($this->once())
             ->method('patronLogin')
-            ->will($this->throwException($exception));
+            ->willThrowException($exception);
 
         return $ils;
     }

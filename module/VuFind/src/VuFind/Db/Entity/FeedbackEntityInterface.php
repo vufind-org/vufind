@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -43,11 +43,11 @@ use DateTime;
 interface FeedbackEntityInterface extends EntityInterface
 {
     /**
-     * Id getter
+     * Get identifier (returns null for an uninitialized or non-persisted object).
      *
-     * @return int
+     * @return ?int
      */
-    public function getId(): int;
+    public function getId(): ?int;
 
     /**
      * Message setter
@@ -68,18 +68,18 @@ interface FeedbackEntityInterface extends EntityInterface
     /**
      * Form data setter.
      *
-     * @param array $data Form data
+     * @param ?array $data Form data
      *
      * @return static
      */
-    public function setFormData(array $data): static;
+    public function setFormData(?array $data): static;
 
     /**
      * Form data getter
      *
-     * @return array
+     * @return ?array
      */
-    public function getFormData(): array;
+    public function getFormData(): ?array;
 
     /**
      * Form name setter.

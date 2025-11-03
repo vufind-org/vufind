@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -148,7 +148,7 @@ class MapTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $recordDriver->expects($this->once())->method('tryMethod')
             ->with($this->equalTo('getDisplayCoordinates'))
-            ->will($this->returnValue($coordinates));
+            ->willReturn($coordinates);
         $obj->setRecordDriver($recordDriver);
         $value = ['56 00', '89 87 45 56'];
         $this->assertSame($value, $obj->getDisplayCoords());
@@ -168,14 +168,14 @@ class MapTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $recordDriver->expects($this->once())->method('tryMethod')
             ->with($this->equalTo('getGeoLocation'))
-            ->will($this->returnValue($coordinates));
+            ->willReturn($coordinates);
         $obj->setRecordDriver($recordDriver);
         $value = [[25.8,4.6,43.9,5.0]];
         $this->assertSame($value, $obj->getGeoLocationCoords());
     }
 
     /**
-     * Test construction of map-coordinates adn labels.
+     * Test construction of map-coordinates and labels.
      *
      * @return void
      */

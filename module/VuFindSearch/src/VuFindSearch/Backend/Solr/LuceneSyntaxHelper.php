@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -304,7 +304,7 @@ class LuceneSyntaxHelper
                 &$result,
                 &$collected,
                 &$discardParens
-            ) {
+            ): void {
                 if (!$quoted) {
                     // Discard closing parenthesis for previously discarded opening
                     // ones to keep balance
@@ -691,7 +691,7 @@ class LuceneSyntaxHelper
     {
         $count = 0;
         $this->processQueryString(
-            function (string $ch, bool $quoted, bool $esc) use ($needle, &$count) {
+            function (string $ch, bool $quoted, bool $esc) use ($needle, &$count): void {
                 if (!$quoted && !$esc && $ch === $needle) {
                     ++$count;
                 }
@@ -714,7 +714,7 @@ class LuceneSyntaxHelper
     {
         $result = '';
         $this->processQueryString(
-            function (string $ch, bool $quoted, bool $esc) use ($needles, &$result) {
+            function (string $ch, bool $quoted, bool $esc) use ($needles, &$result): void {
                 if ($quoted || $esc || !in_array($ch, $needles)) {
                     $result .= $ch;
                 }

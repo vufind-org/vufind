@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -78,7 +78,7 @@ class PluginCommandTest extends \PHPUnit\Framework\TestCase
             ['setOutputInterface', 'createPlugin']
         );
         $tools->expects($this->once())->method('setOutputInterface')
-            ->will($this->returnValue($tools));
+            ->willReturn($tools);
         $tools->expects($this->once())->method('createPlugin')
             ->with(
                 $this->equalTo($container),
@@ -103,7 +103,7 @@ class PluginCommandTest extends \PHPUnit\Framework\TestCase
             ['setOutputInterface', 'createPlugin']
         );
         $tools->expects($this->once())->method('setOutputInterface')
-            ->will($this->returnValue($tools));
+            ->willReturn($tools);
         $tools->expects($this->once())->method('createPlugin')
             ->with(
                 $this->equalTo($container),
@@ -130,9 +130,9 @@ class PluginCommandTest extends \PHPUnit\Framework\TestCase
             ['createPlugin', 'setOutputInterface']
         );
         $tools->expects($this->once())->method('setOutputInterface')
-            ->will($this->returnValue($tools));
+            ->willReturn($tools);
         $tools->expects($this->once())->method('createPlugin')
-            ->will($this->throwException(new \Exception('Foo!')));
+            ->willThrowException(new \Exception('Foo!'));
         $command = new PluginCommand($tools, $container);
         $commandTester = new CommandTester($command);
         $commandTester->execute(

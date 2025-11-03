@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -89,11 +89,8 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that we can save a favorite from tab mode.
      *
-     * @todo Enable HTML validation when the issues are fixed in the upstream code
-     *
      * @return void
      */
-    #[\VuFindTest\Attribute\HtmlValidation(false)]
     public function testFavoritesInTabMode()
     {
         // Change the theme:
@@ -123,13 +120,9 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that we can save a favorite from accordion mode.
      *
-     * @depends testFavoritesInTabMode
-     *
-     * @todo Enable HTML validation when the issues are fixed in the upstream code
-     *
      * @return void
      */
-    #[\VuFindTest\Attribute\HtmlValidation(false)]
+    #[\PHPUnit\Framework\Attributes\Depends('testFavoritesInTabMode')]
     public function testFavoritesInAccordionMode()
     {
         // Change the theme:

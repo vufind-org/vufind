@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -30,10 +30,8 @@
 
 namespace VuFind\Db\Service;
 
-use Exception;
+use DateTime;
 use VuFind\Db\Entity\ShortlinksEntityInterface;
-use VuFind\Db\Table\DbTableAwareInterface;
-use VuFind\Db\Table\DbTableAwareTrait;
 
 /**
  * Database service for shortlinks.
@@ -45,46 +43,8 @@ use VuFind\Db\Table\DbTableAwareTrait;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class ShortlinksService extends AbstractDbService implements
-    DbTableAwareInterface,
-    ShortlinksServiceInterface,
-    Feature\TransactionInterface
+class ShortlinksService extends AbstractDbService implements ShortlinksServiceInterface
 {
-    use DbTableAwareTrait;
-
-    /**
-     * Begin a database transaction.
-     *
-     * @return void
-     * @throws Exception
-     */
-    public function beginTransaction(): void
-    {
-        $this->getDbTable('shortlinks')->beginTransaction();
-    }
-
-    /**
-     * Commit a database transaction.
-     *
-     * @return void
-     * @throws Exception
-     */
-    public function commitTransaction(): void
-    {
-        $this->getDbTable('shortlinks')->commitTransaction();
-    }
-
-    /**
-     * Roll back a database transaction.
-     *
-     * @return void
-     * @throws Exception
-     */
-    public function rollBackTransaction(): void
-    {
-        $this->getDbTable('shortlinks')->rollbackTransaction();
-    }
-
     /**
      * Create a short link entity.
      *
@@ -92,7 +52,7 @@ class ShortlinksService extends AbstractDbService implements
      */
     public function createEntity(): ShortlinksEntityInterface
     {
-        return $this->getDbTable('shortlinks')->createRow();
+        return $this->entityPluginManager->get(ShortlinksEntityInterface::class);
     }
 
     /**
@@ -104,10 +64,11 @@ class ShortlinksService extends AbstractDbService implements
      */
     public function createAndPersistEntityForPath(string $path): ShortlinksEntityInterface
     {
-        $table = $this->getDbTable('shortlinks');
-        $table->insert(['path' => $path]);
-        $id = $table->getLastInsertValue();
-        return $table->select(['id' => $id])->current();
+        $shortlink = $this->createEntity()
+            ->setPath($path)
+            ->setCreated(new DateTime());
+        $this->persistEntity($shortlink);
+        return $shortlink;
     }
 
     /**
@@ -119,7 +80,13 @@ class ShortlinksService extends AbstractDbService implements
      */
     public function getShortLinkByHash(string $hash): ?ShortlinksEntityInterface
     {
-        return $this->getDbTable('shortlinks')->select(['hash' => $hash])->current();
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->select('s')
+            ->from(ShortlinksEntityInterface::class, 's')
+            ->where('s.hash = :hash')
+            ->setParameter('hash', $hash);
+        $query = $queryBuilder->getQuery();
+        return $query->getResult()[0] ?? null;
     }
 
     /**
@@ -129,6 +96,8 @@ class ShortlinksService extends AbstractDbService implements
      */
     public function getShortLinksWithMissingHashes(): array
     {
-        return iterator_to_array($this->getDbTable('shortlinks')->select(['hash' => null]));
+        return $this->entityManager
+            ->getRepository(ShortlinksEntityInterface::class)
+            ->findBy(['hash' => null]);
     }
 }

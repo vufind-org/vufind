@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -306,7 +306,7 @@ class ResultScroller extends AbstractPlugin
         // decrease the page in the session because
         // we're now sliding into the previous page
         // (-- doesn't work on ArrayObjects)
-        $this->data->page = $this->data->page - 1;
+        $this->data->page -= 1;
 
         // shift pages to the right
         $tmp = $this->data->currIds;
@@ -350,7 +350,7 @@ class ResultScroller extends AbstractPlugin
         // increase the page in the session because
         // we're now sliding into the next page
         // (++ doesn't work on ArrayObjects)
-        $this->data->page = $this->data->page + 1;
+        $this->data->page += 1;
 
         // shift pages to the left
         $tmp = $this->data->currIds;

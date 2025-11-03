@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -134,9 +134,8 @@ class PropertyStringTest extends \PHPUnit\Framework\TestCase
      * @param array  $expectedAttrs Expected attributes
      *
      * @return void
-     *
-     * @dataProvider fromHtmlProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('fromHtmlProvider')]
     public function testFromHtml(
         string $html,
         array $attrs,

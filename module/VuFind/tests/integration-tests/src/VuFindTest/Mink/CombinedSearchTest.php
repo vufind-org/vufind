@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -132,6 +132,43 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test that combined results work with an invalid search heandler.
+     *
+     * @return void
+     */
+    public function testCombinedSearchResultsInvalidHandler(): void
+    {
+        $combined = $this->getCombinedIniOverrides();
+        $combined['INVALID:one'] = [
+            'label' => 'Invalid handler',
+        ];
+
+        // Include an invalid combined search handler, and disable logging
+        $this->changeConfigs(
+            [
+                'combined' => $combined,
+                'config' => [
+                    'Logging' => [
+                        'file' => null,
+                    ],
+                ],
+            ],
+            ['combined']
+        );
+        $page = $this->performCombinedSearch('id:"testsample1" OR id:"theplus+andtheminus-"');
+        $this->assertEquals('200', $this->getMinkSession()->getStatusCode());
+        $this->assertResultsForDefaultQuery($page);
+        $this->assertStringContainsString(
+            'Solr One',
+            $this->findCssAndGetHtml($page, '.combined-search-container')
+        );
+        $this->assertStringNotContainsString(
+            'Invalid handler',
+            $this->findCssAndGetHtml($page, '.combined-search-container')
+        );
+    }
+
+    /**
      * Data provider for different combinations of AJAX columns
      *
      * @return array
@@ -153,9 +190,8 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool $rightAjax Should right column load via AJAX?
      *
      * @return void
-     *
-     * @dataProvider ajaxCombinationsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('ajaxCombinationsProvider')]
     public function testCombinedSearchResultsAuthorLinks(bool $leftAjax, bool $rightAjax): void
     {
         $config = $this->getCombinedIniOverrides();
@@ -258,9 +294,8 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $linkMode Linking mode to activate
      *
      * @return void
-     *
-     * @dataProvider jumpMenuProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('jumpMenuProvider')]
     public function testJumpMenu(string $linkMode): void
     {
         $config = $this->getCombinedIniOverrides();
@@ -301,9 +336,8 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool $rightAjax Should right column load via AJAX?
      *
      * @return void
-     *
-     * @dataProvider ajaxCombinationsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('ajaxCombinationsProvider')]
     public function testCombinedSearchResultsMixedAjaxDOIs(bool $leftAjax, bool $rightAjax): void
     {
         $config = $this->getCombinedIniOverrides();

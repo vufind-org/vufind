@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -57,11 +57,10 @@ class AdminController extends AbstractAdmin
      */
     public function homeAction()
     {
-        $config = $this->getConfig();
+        $config = $this->getConfigArray();
         $xml = false;
-        if (isset($config->Index->url)) {
-            $response = $this->getService(\VuFindHttp\HttpService::class)
-                ->get($config->Index->url . '/admin/cores?wt=xml');
+        if ($url = $config['Index']['url'] ?? null) {
+            $response = $this->getService(\VuFindHttp\HttpService::class)->get($url . '/admin/cores?wt=xml');
             $xml = $response->isSuccess() ? $response->getBody() : false;
         }
         $view = $this->createViewModel();

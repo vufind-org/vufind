@@ -6,7 +6,7 @@
  * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
- * Copyright (C) The National Library of Finland 2023-2024.
+ * Copyright (C) The National Library of Finland 2023-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -32,6 +32,7 @@
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
+use VuFindTest\Feature\RetryClickTrait;
 use VuFindTest\Feature\SearchFacetFilterTrait;
 use VuFindTest\Feature\SearchLimitTrait;
 use VuFindTest\Feature\SearchSortTrait;
@@ -48,6 +49,7 @@ use VuFindTest\Feature\SearchSortTrait;
  */
 class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 {
+    use RetryClickTrait;
     use SearchLimitTrait;
     use SearchSortTrait;
     use SearchFacetFilterTrait;
@@ -337,10 +339,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      * @param array  $facets      Facets to apply
      * @param string $multiselect Use multiselection?
      *
-     * @dataProvider applyFacetProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('applyFacetProvider')]
     public function testApplyFacet(bool $deferred, bool $orFacets, array $facets, string $multiselect): void
     {
         $this->changeConfigs(
@@ -817,7 +818,17 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $this->clickCss($page, $this->facetExpandSelector);
         $this->clickCss($page, $this->facetSecondLevelExcludeLinkSelector);
-        $this->assertAppliedFilters($page, ['hierarchy:level1a/level2a']);
+        try {
+            $this->assertAppliedFilters($page, ['hierarchy:level1a/level2a']);
+        } catch (\Exception $e) {
+            // Sometimes the click doesn't go through possibly due to transition, so retry once:
+            $this->retryClickWithResizedWindow(
+                $this->getMinkSession(),
+                $page,
+                $this->facetSecondLevelExcludeLinkSelector
+            );
+            $this->assertAppliedFilters($page, ['hierarchy:level1a/level2a']);
+        }
         $this->assertEquals(
             'Showing 1 - 7 results of 7',
             $extractCount($this->findCssAndGetText($page, '.search-stats'))
@@ -857,10 +868,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      * @param ?string $sort         Sort option
      * @param string  $expectedSort Expected sort order of facet hierarchy
      *
-     * @dataProvider hierarchicalFacetSortProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('hierarchicalFacetSortProvider')]
     public function testHierarchicalFacetSort(?string $sort, string $expectedSort): void
     {
         $facetConfig = [
@@ -1193,10 +1203,10 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool  $selectMulti   Select multiple?
      * @param bool  $unselectMulti Unselect multiple?
      *
-     * @return       void
-     * @throws       \Exception
-     * @dataProvider checkboxFacetSelectionProvider
+     * @return void
+     * @throws \Exception
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('checkboxFacetSelectionProvider')]
     public function testCheckboxFacetSelection(
         array $checkFacets,
         int $expectedCount,
@@ -1287,10 +1297,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool $deferred Are deferred facets enabled?
      * @param bool $counts   Are checkbox facet counts enabled?
      *
-     * @dataProvider checkboxFacetsProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('checkboxFacetsProvider')]
     public function testCheckboxFacets(bool $deferred, bool $counts): void
     {
         $this->changeConfigs(
@@ -1366,10 +1375,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @param string $multiselection Use multi-facet selection?
      *
-     * @dataProvider rangeFacetsProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('rangeFacetsProvider')]
     public function testRangeFacets(string $multiselection): void
     {
         $this->changeConfigs(
@@ -1386,7 +1394,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $multiselection = $multiselection !== 'false';
 
-        $page = $this->performSearch('building:weird_ids.mrc');
+        $page = $this->performSearch('building:weird_ids.mrc OR building:really_old.xml');
         $sidebar = $this->findCss($page, '.sidebar');
         if ($multiselection) {
             $this->activateMultiFilterSelection($sidebar);
@@ -1404,31 +1412,48 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             $elem->click();
         }
 
-        $this->applyRangeFacet($page, 'publishDate', '2000', '', $multiselection);
+        $this->applyRangeFacet($page, 'publishDateRange', '2000', '', $multiselection);
 
         // Verify that we have two filters:
         $this->assertAppliedFilters($page, [':Books', 'Year of Publication:2000 - *']);
 
         // Change date range filter and check results:
-        $this->applyRangeFacet($page, 'publishDate', null, '2001', $multiselection);
+        $this->applyRangeFacet($page, 'publishDateRange', null, '2001', $multiselection);
         $this->assertAppliedFilters($page, [':Books', 'Year of Publication:2000 - 2001']);
 
         // Change date range filter again and check results:
-        $this->applyRangeFacet($page, 'publishDate', '2001', '2007', $multiselection);
+        $this->applyRangeFacet($page, 'publishDateRange', '2001', '2007', $multiselection);
         $this->assertAppliedFilters($page, [':Books', 'Year of Publication:2001 - 2007']);
 
         // Remove dates in range filter and check results:
-        $this->applyRangeFacet($page, 'publishDate', '', '', $multiselection);
+        $this->applyRangeFacet($page, 'publishDateRange', '', '', $multiselection);
         $this->assertAppliedFilters($page, [':Books']);
 
         // Add date range filter again and check results:
-        $this->applyRangeFacet($page, 'publishDate', '2001', '2007', $multiselection);
+        $this->applyRangeFacet($page, 'publishDateRange', '2001', '2007', $multiselection);
         $this->assertAppliedFilters($page, [':Books', 'Year of Publication:2001 - 2007']);
+        $this->assertResultTitles(
+            $page,
+            8,
+            '<HTML> The Basics',
+            'Questions about Percents'
+        );
+
+        // Change date range filter to include old records and check results:
+        $this->applyRangeFacet($page, 'publishDateRange', '-500', '2007', $multiselection);
+        $this->assertAppliedFilters($page, [':Books', 'Year of Publication:-500 - 2007']);
+        $this->assertResultTitles(
+            $page,
+            10,
+            first: 'Pyrgi Gold Tablets',
+            second: 'Book of Kells',
+            last: 'Questions about Percents'
+        );
 
         if ($multiselection) {
             // Apply another facet and change date range at the same time:
             $this->clickCss($page, '#side-collapse-institution a[data-title="MyInstitution"]');
-            $this->applyRangeFacet($page, 'publishDate', '2001', '2010', $multiselection);
+            $this->applyRangeFacet($page, 'publishDateRange', '2001', '2010', $multiselection);
             $this->assertAppliedFilters(
                 $page,
                 [':Books', 'Institution:MyInstitution', 'Year of Publication:2001 - 2010']
@@ -1437,7 +1462,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             // Remove all filters and check results:
             $this->clickCss($checkboxFilters, 'a.checkbox-filter');
             $this->clickCss($page, '#side-collapse-institution a[data-title="MyInstitution"]');
-            $this->applyRangeFacet($page, 'publishDate', '', '', true);
+            $this->applyRangeFacet($page, 'publishDateRange', '', '', true);
             $this->assertNoFilters($page);
             $this->deactivateMultiFilterSelection($sidebar);
         }
@@ -1504,10 +1529,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool $changeLanguage  Should we change the language before applying the facets?
      * @param bool $includeCheckbox Should we apply a checkbox prior to multi-selection?
      *
-     * @dataProvider multiSelectOnAdvancedSearchProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('multiSelectOnAdvancedSearchProvider')]
     public function testMultiSelectOnAdvancedSearch(bool $changeLanguage, bool $includeCheckbox): void
     {
         $facets = [

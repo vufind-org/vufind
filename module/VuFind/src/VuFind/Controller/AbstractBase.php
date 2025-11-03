@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -38,7 +38,10 @@ use Laminas\Uri\Http;
 use Laminas\View\Model\ViewModel;
 use VuFind\Config\Feature\EmailSettingsTrait;
 use VuFind\Controller\Feature\AccessPermissionInterface;
+use VuFind\Controller\Feature\RequestHelperTrait;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\AuditEventServiceInterface;
+use VuFind\Db\Service\PluginManager as DatabaseServiceManager;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Http\PhpEnvironment\Request as HttpRequest;
@@ -80,6 +83,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     use EmailSettingsTrait;
     use GetServiceTrait;
     use TranslatorAwareTrait;
+    use RequestHelperTrait;
 
     /**
      * Permission that must be granted to access this module (false for no
@@ -99,6 +103,13 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      * @var string
      */
     protected $accessDeniedBehavior = null;
+
+    /**
+     * Audit event service
+     *
+     * @var ?AuditEventServiceInterface
+     */
+    protected ?AuditEventServiceInterface $auditEventService = null;
 
     /**
      * Constructor
@@ -227,13 +238,10 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         $view = $this->createViewModel($params);
 
         // Load configuration and current user for convenience:
-        $config = $this->getConfig();
-        $view->disableFrom
-            = (isset($config->Mail->disable_from) && $config->Mail->disable_from);
-        $view->editableSubject = isset($config->Mail->user_editable_subjects)
-            && $config->Mail->user_editable_subjects;
-        $view->maxRecipients = isset($config->Mail->maximum_recipients)
-            ? intval($config->Mail->maximum_recipients) : 1;
+        $config = $this->getConfigArray();
+        $view->disableFrom = (bool)($config['Mail']['disable_from'] ?? false);
+        $view->editableSubject = (bool)($config['Mail']['user_editable_subjects'] ?? false);
+        $view->maxRecipients = intval($config['Mail']['maximum_recipients'] ?? 1);
         $user = $this->getUser();
 
         // Send parameters back to view so form can be re-populated:
@@ -249,15 +257,15 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         }
 
         // Set default values if applicable:
-        if (empty($view->to) && $user && ($config->Mail->user_email_in_to ?? false)) {
+        if (empty($view->to) && $user && ($config['Mail']['user_email_in_to'] ?? false)) {
             $view->to = $user->getEmail();
         }
         if (empty($view->from)) {
-            if ($user && ($config->Mail->user_email_in_from ?? false)) {
+            if ($user && ($config['Mail']['user_email_in_from'] ?? false)) {
                 $view->userEmailInFrom = true;
                 $view->from = $user->getEmail();
-            } elseif ($config->Mail->default_from ?? false) {
-                $view->from = $config->Mail->default_from;
+            } elseif ($config['Mail']['default_from'] ?? false) {
+                $view->from = $config['Mail']['default_from'];
             }
         }
         if (empty($view->subject)) {
@@ -292,11 +300,11 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      * rather than through injection with the AuthorizationServiceAwareInterface
      * to minimize expensive initialization when authorization is not needed.
      *
-     * @return \LmcRbacMvc\Service\AuthorizationService
+     * @return \Lmc\Rbac\Mvc\Service\AuthorizationService
      */
     protected function getAuthorizationService()
     {
-        return $this->getService(\LmcRbacMvc\Service\AuthorizationService::class);
+        return $this->getService(\Lmc\Rbac\Mvc\Service\AuthorizationService::class);
     }
 
     /**
@@ -375,7 +383,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     {
         // First make sure user is logged in to VuFind:
         $account = $this->getAuthManager();
-        if (!$account->getIdentity()) {
+        if (!($user = $account->getUserObject())) {
             return $this->forceLogin();
         }
 
@@ -383,8 +391,8 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         $ilsAuth = $this->getILSAuthenticator();
         $patron = null;
         if (
-            ($username = $this->params()->fromPost('cat_username', false))
-            && ($password = $this->params()->fromPost('cat_password', false))
+            ($username = $this->params()->fromPost('cat_username'))
+            && ($password = $this->params()->fromPost('cat_password'))
         ) {
             // If somebody is POSTing credentials but that logic is disabled, we
             // should throw an exception!
@@ -402,16 +410,15 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
                     $routeName = $routeMatch ? $routeMatch->getMatchedRouteName()
                         : 'myresearch-profile';
                     $routeParams = $routeMatch ? $routeMatch->getParams() : [];
-                    $ilsAuth->sendEmailLoginLink($username, $routeName, $routeParams, ['catalogLogin' => 'true']);
-                    $this->flashMessenger()
-                        ->addSuccessMessage('email_login_link_sent');
+                    $ilsAuth
+                        ->sendEmailLoginLink($username, $routeName, $routeParams, ['catalogLogin' => 'true'], $user);
+                    $this->flashMessenger()->addSuccessMessage('email_login_link_sent');
                 } else {
-                    $patron = $ilsAuth->newCatalogLogin($username, $password);
+                    $patron = $ilsAuth->newCatalogLogin($username, $password, $user);
 
                     // If login failed, store a warning message:
                     if (!$patron) {
-                        $this->flashMessenger()
-                            ->addErrorMessage('Invalid Patron Login');
+                        $this->flashMessenger()->addErrorMessage('Invalid Patron Login');
                     }
                 }
             } catch (ILSException $e) {
@@ -451,10 +458,24 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      * @param string $id Configuration identifier (default = main VuFind config)
      *
      * @return \VuFind\Config\Config
+     *
+     * @deprecated Use AbstractBase::getConfigArray
      */
     public function getConfig($id = 'config')
     {
-        return $this->getService(\VuFind\Config\PluginManager::class)->get($id);
+        return $this->getService(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject($id);
+    }
+
+    /**
+     * Get a VuFind configuration as an associative array.
+     *
+     * @param string $id Configuration identifier (default = config)
+     *
+     * @return array
+     */
+    public function getConfigArray(string $id = 'config'): array
+    {
+        return $this->getService(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray($id);
     }
 
     /**
@@ -495,18 +516,6 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     public function getRecordRouter()
     {
         return $this->getService(\VuFind\Record\Router::class);
-    }
-
-    /**
-     * Get a database table object.
-     *
-     * @param string $table Name of table to retrieve
-     *
-     * @return \VuFind\Db\Table\Gateway
-     */
-    public function getTable($table)
-    {
-        return $this->getService(\VuFind\Db\Table\PluginManager::class)->get($table);
     }
 
     /**
@@ -907,5 +916,19 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
     {
         $baseUrlNorm = $this->normalizeUrlForComparison($this->getServerUrl('home'));
         return str_starts_with($this->normalizeUrlForComparison($url), $baseUrlNorm);
+    }
+
+    /**
+     * Get audit event service.
+     *
+     * @return AuditEventServiceInterface
+     */
+    protected function getAuditEventService(): AuditEventServiceInterface
+    {
+        if (null === $this->auditEventService) {
+            $dbServiceManager = $this->serviceLocator->get(DatabaseServiceManager::class);
+            $this->auditEventService = $dbServiceManager->get(AuditEventServiceInterface::class);
+        }
+        return $this->auditEventService;
     }
 }

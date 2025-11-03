@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -57,7 +57,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $conn = $this->getConnectorMock(['call']);
         $conn->expects($this->once())
             ->method('call')
-            ->will($this->returnValue($this->loadResponse('retrieve')));
+            ->willReturn($this->loadResponse('retrieve'));
 
         $back = new Backend($conn, $this->getRCFactory());
         $back->setIdentifier('test');
@@ -80,7 +80,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $conn = $this->getConnectorMock(['call']);
         $conn->expects($this->once())
             ->method('call')
-            ->will($this->returnValue($this->loadResponse('search')));
+            ->willReturn($this->loadResponse('search'));
 
         $back = new Backend($conn, $this->getRCFactory());
         $back->setIdentifier('test');

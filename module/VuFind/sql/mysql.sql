@@ -79,7 +79,8 @@ CREATE TABLE `oai_resumption` (
   `params` text,
   `expires` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `oai_resumption_token_idx` (`token`)
+  UNIQUE KEY `oai_resumption_token_idx` (`token`),
+  KEY `oai_resumption_expires_idx` (`expires`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -93,12 +94,15 @@ CREATE TABLE `resource` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `record_id` varchar(255) NOT NULL DEFAULT '',
   `title` varchar(255) NOT NULL DEFAULT '',
+  `display_title` varchar(255) DEFAULT NULL,
   `author` varchar(255) DEFAULT NULL,
   `year` mediumint(6) DEFAULT NULL,
   `source` varchar(50) NOT NULL DEFAULT 'Solr',
   `extra_metadata` mediumtext DEFAULT NULL,
+  `updated` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   PRIMARY KEY (`id`),
-  KEY `resource_record_id_idx` (`record_id`(190))
+  KEY `resource_record_id_idx` (`record_id`(190)),
+  KEY `resource_updated_idx` (`updated`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -267,6 +271,7 @@ CREATE TABLE `user_list` (
   `user_id` int(11) NOT NULL,
   `title` varchar(200) NOT NULL,
   `description` text,
+  `type` varchar(200) NOT NULL DEFAULT 'default',
   `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
   `public` tinyint(1) NOT NULL DEFAULT '0',
   PRIMARY KEY (`id`),
@@ -417,6 +422,27 @@ CREATE TABLE `access_token` (
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
+-- Table structure for table `api_key`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `api_key` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `user_id` int(11) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `token` varchar(255) NOT NULL,
+  `revoked` tinyint(1) NOT NULL DEFAULT 0,
+  `created` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `last_used` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `api_key_user_id_idx` (`user_id`),
+  KEY `api_key_token_idx` (`token`),
+  CONSTRAINT `api_key_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
 -- Table structure for table `login_token`
 --
 
@@ -437,4 +463,117 @@ CREATE TABLE `login_token` (
   KEY `login_token_series_idx` (`series`),
   CONSTRAINT `login_token_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `payment`
+--
+
+CREATE TABLE `payment` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `local_identifier` varchar(255) NOT NULL,
+  `remote_identifier` varchar(255) NULL,
+  `user_id` int NOT NULL,
+  `source_ils` varchar(255) NOT NULL,
+  `cat_username` varchar(50) NOT NULL,
+  `amount` int NOT NULL,
+  `currency` varchar(3) NOT NULL,
+  `service_fee` int NOT NULL,
+  `created` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+  `paid` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+  `registration_started` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+  `registered` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+  `status` int NOT NULL DEFAULT '0',
+  `status_message` varchar(255),
+  `reported` datetime NOT NULL DEFAULT '2000-01-01 00:00:00',
+  PRIMARY KEY (`id`),
+  KEY `payment_local_identifier_idx` (`local_identifier`),
+  KEY `payment_user_id_idx` (`user_id`),
+  KEY `payment_status_cat_username_created_idx` (`status`, `cat_username`, `created`),
+  KEY `payment_paid_reported_idx` (`paid`, `reported`),
+  CONSTRAINT `payment_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 collate utf8mb4_bin;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `payment_fee`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `payment_fee` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `payment_id` int(11) NOT NULL,
+  `title` varchar(255) NOT NULL DEFAULT '',
+  `type` varchar(255) NOT NULL DEFAULT '',
+  `description` varchar(255) NOT NULL DEFAULT '',
+  `amount` int NOT NULL DEFAULT '0',
+  `tax_percent` int NOT NULL DEFAULT '0',
+  `currency` varchar(3) NOT NULL,
+  `fine_id` varchar(1024) NOT NULL DEFAULT '',
+  `organization` varchar(255) NOT NULL DEFAULT '',
+  PRIMARY KEY (`id`),
+  KEY `payment_fee_payment_id_idx` (`payment_id`),
+  CONSTRAINT `payment_fee_ibfk_1` FOREIGN KEY (`payment_id`) REFERENCES `payment` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 collate utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `audit_event`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `audit_event` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `type` varchar(50) NOT NULL,
+  `subtype` varchar(50) NOT NULL,
+  `user_id` int NULL,
+  `payment_id` int NULL,
+  `session_id` varchar(128) NULL,
+  `username` varchar(255) NULL,
+  `client_ip` varchar(255) NULL,
+  `server_ip` varchar(255) NULL,
+  `server_name` varchar(255) NULL,
+  `message`  varchar(255) NULL,
+  `data` json DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  KEY `audit_event_user_id_idx` (`user_id`),
+  KEY `audit_event_payment_id_idx` (`payment_id`),
+  CONSTRAINT `audit_event_ibfk_1` FOREIGN KEY (`user_id`) REFERENCES `user` (`id`) ON DELETE SET NULL,
+  CONSTRAINT `audit_event_ibfk_2` FOREIGN KEY (`payment_id`) REFERENCES `payment` (`id`) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `migrations`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `migrations` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NULL,
+  `status` varchar(50) NOT NULL,
+  `target_version` varchar(50) NOT NULL,
+  `date` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `log_table`
+--
+
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8mb4 */;
+CREATE TABLE `log_table` (
+  `id` INT NOT NULL AUTO_INCREMENT,
+  `logtime` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `ident` CHAR(16) NOT NULL DEFAULT '',
+  `priority` INT NOT NULL DEFAULT '0',
+  `message` TEXT,
+  PRIMARY KEY (id)
+);
 /*!40101 SET character_set_client = @saved_cs_client */;

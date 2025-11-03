@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  VuFindAdmin\Controller
@@ -48,23 +48,6 @@ use function is_array;
  */
 class FeedbackController extends AbstractAdmin
 {
-    /**
-     * Get the url parameters
-     *
-     * @param string $param          A key to check the url params for
-     * @param bool   $prioritizePost If true, check the POST params first
-     * @param mixed  $default        Default value if no value found
-     *
-     * @return string|string[]
-     */
-    protected function getParam($param, $prioritizePost = false, $default = null)
-    {
-        $primary = $prioritizePost ? 'fromPost' : 'fromQuery';
-        $secondary = $prioritizePost ? 'fromQuery' : 'fromPost';
-        return $this->params()->$primary($param)
-            ?? $this->params()->$secondary($param, $default);
-    }
-
     /**
      * Home action
      *
@@ -245,6 +228,7 @@ class FeedbackController extends AbstractAdmin
                 $success = true;
             }
         } catch (\Exception $e) {
+            // Fall through to display an error message
         }
         if ($success) {
             $this->flashMessenger()->addMessage(

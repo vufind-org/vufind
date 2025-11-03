@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -492,9 +492,8 @@ class BackendTest extends TestCase
      * @param string  $expectedFlOut Expected field list in output
      *
      * @return void
-     *
-     * @dataProvider getIdsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getIdsProvider')]
     public function testGetIds(?string $flIn, string $expectedFlOut): void
     {
         $paramBagChecker = function (ParamBag $params) use ($expectedFlOut) {
@@ -689,7 +688,7 @@ class BackendTest extends TestCase
         $e = new RemoteErrorException($msg, 400, new \Laminas\Http\Response());
         $conn->expects($this->once())->method('query')
             ->with($this->equalTo('browse'))
-            ->will($this->throwException($e));
+            ->willThrowException($e);
         $back = new Backend($conn);
         $back->alphabeticBrowse('foo', 'bar', 1);
     }

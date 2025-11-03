@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -51,21 +51,21 @@ class AbstractHandlerMapTest extends TestCase
      */
     public function testPrepareDefaults()
     {
-        $map = $this->getMockForAbstractClass(AbstractHandlerMap::class);
+        $map = $this->getMockBuilder(AbstractHandlerMap::class)
+                ->onlyMethods(['getDefaults', 'getAppends', 'getInvariants'])
+                ->getMock();
         $map->expects($this->once())
             ->method('getDefaults')
-            ->will(
-                $this->returnValue(
-                    new ParamBag(['p1' => ['default'], 'p2' => ['default']])
-                )
+            ->willReturn(
+                new ParamBag(['p1' => ['default'], 'p2' => ['default']])
             );
         $map->expects($this->once())
             ->method('getAppends')
-            ->will($this->returnValue(new ParamBag()));
+            ->willReturn(new ParamBag());
         $map->expects($this->once())
             ->method('getInvariants')
-            ->will(
-                $this->returnValue(new ParamBag())
+            ->willReturn(
+                new ParamBag()
             );
 
         $params = new ParamBag(['p2' => ['non-default']]);
@@ -82,16 +82,18 @@ class AbstractHandlerMapTest extends TestCase
      */
     public function testPrepareAppends()
     {
-        $map = $this->getMockForAbstractClass(AbstractHandlerMap::class);
+        $map = $this->getMockBuilder(AbstractHandlerMap::class)
+                ->onlyMethods(['getDefaults', 'getAppends', 'getInvariants'])
+                ->getMock();
         $map->expects($this->once())
             ->method('getDefaults')
-            ->will($this->returnValue(new ParamBag()));
+            ->willReturn(new ParamBag());
         $map->expects($this->once())
             ->method('getAppends')
-            ->will($this->returnValue(new ParamBag(['p1' => 'append'])));
+            ->willReturn(new ParamBag(['p1' => 'append']));
         $map->expects($this->once())
             ->method('getInvariants')
-            ->will($this->returnValue(new ParamBag()));
+            ->willReturn(new ParamBag());
 
         $params = new ParamBag(['p1' => ['something']]);
         $map->prepare('f', $params);
@@ -106,16 +108,18 @@ class AbstractHandlerMapTest extends TestCase
      */
     public function testPrepareInvariants()
     {
-        $map = $this->getMockForAbstractClass(AbstractHandlerMap::class);
+        $map = $this->getMockBuilder(AbstractHandlerMap::class)
+                ->onlyMethods(['getDefaults', 'getAppends', 'getInvariants'])
+                ->getMock();
         $map->expects($this->once())
             ->method('getDefaults')
-            ->will($this->returnValue(new ParamBag()));
+            ->willReturn(new ParamBag());
         $map->expects($this->once())
             ->method('getAppends')
-            ->will($this->returnValue(new ParamBag(['p1' => ['append']])));
+            ->willReturn(new ParamBag(['p1' => ['append']]));
         $map->expects($this->once())
             ->method('getInvariants')
-            ->will($this->returnValue(new ParamBag(['p1' => ['invariant']])));
+            ->willReturn(new ParamBag(['p1' => ['invariant']]));
 
         $params = new ParamBag(['p1' => ['something']]);
         $map->prepare('f', $params);

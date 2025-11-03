@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -40,8 +40,6 @@ use VuFind\Auth\Shibboleth\ConfigurationLoaderInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\ExternalSessionServiceInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
-use VuFind\Db\Table\DbTableAwareInterface;
-use VuFind\Db\Table\DbTableAwareTrait;
 use VuFind\Exception\Auth as AuthException;
 
 /**
@@ -58,10 +56,8 @@ use VuFind\Exception\Auth as AuthException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Shibboleth extends AbstractBase implements DbTableAwareInterface
+class Shibboleth extends AbstractBase
 {
-    use DbTableAwareTrait;
-
     /**
      * Header name for entityID of the IdP that authenticated the user.
      */

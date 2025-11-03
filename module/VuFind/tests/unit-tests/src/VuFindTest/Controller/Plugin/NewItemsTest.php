@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -98,13 +98,13 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $catalog->expects($this->once())->method('checkCapability')
-            ->with($this->equalTo('getFunds'))->will($this->returnValue(true));
+            ->with($this->equalTo('getFunds'))->willReturn(true);
         $catalog->expects($this->once())->method('getFunds')
-            ->will($this->returnValue(['a', 'b', 'c']));
+            ->willReturn(['a', 'b', 'c']);
         $controller = $this->getMockBuilder(\VuFind\Controller\SearchController::class)
             ->disableOriginalConstructor()->getMock();
         $controller->expects($this->once())->method('getILS')
-            ->will($this->returnValue($catalog));
+            ->willReturn($catalog);
         $newItems = new NewItems(new Config([]));
         $newItems->setController($controller);
         $this->assertEquals(['a', 'b', 'c'], $newItems->getFundList());
@@ -229,10 +229,8 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
                 $this->equalTo(10),
                 $this->equalTo('a')
             )
-            ->will(
-                $this->returnValue(
-                    ['results' => [['id' => 1], ['id' => 2]]]
-                )
+            ->willReturn(
+                ['results' => [['id' => 1], ['id' => 2]]]
             );
         return $catalog;
     }
@@ -249,9 +247,9 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
         $params = $this->getMockBuilder(\VuFind\Search\Solr\Params::class)
             ->disableOriginalConstructor()->getMock();
         $params->expects($this->once())->method('getLimit')
-            ->will($this->returnValue(20));
+            ->willReturn(20);
         $params->expects($this->once())->method('getQueryIDLimit')
-            ->will($this->returnValue($idLimit));
+            ->willReturn($idLimit);
         return $params;
     }
 }
