@@ -124,12 +124,12 @@ class SetupThemeResourcesTest extends \PHPUnit\Framework\TestCase
         $mock->expects($this->exactly(2))
             ->method('__call')
             ->willReturnCallback(function ($method, $args) use ($mock) {
-                if ($method === 'prependHttpEquiv'){
+                if ($method === 'prependHttpEquiv') {
                     $this->assertEquals('Content-Type', $args[0]);
                     $this->assertEquals('text/html; charset=utf-8', $args[1]);
                     return $mock;
                 }
-                if ($method === 'appendName'){
+                if ($method === 'appendName') {
                     $this->assertEquals('Generator', $args[0]);
                     $this->assertEquals('fake-generator', $args[1]);
                     return $mock;
