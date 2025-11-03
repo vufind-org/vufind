@@ -40,5 +40,5 @@
 </div>
 
 <div class="<?= $this->layoutClass('sidebar') ?>" id="myresearch-sidebar" role="navigation" aria-label="<?= $this->transEscAttr('account_menu_label') ?>">
-  <?= $this->section('AccountMenu', \VuFind\Section\SectionServiceInterface::DEFAULT_CONFIG_FILE, 'myresearch/menu.phtml')->render() ?>
+  <?= $this->section('AccountMenu', template: 'myresearch/menu.phtml')->render() ?>
 </div>
