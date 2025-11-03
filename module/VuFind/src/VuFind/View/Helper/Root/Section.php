@@ -33,6 +33,9 @@ use Laminas\View\Helper\AbstractHelper;
 use VuFind\Section\SectionInterface;
 use VuFind\Section\SectionServiceInterface;
 
+use function call_user_func_array;
+use function is_callable;
+
 /**
  * Section view helper
  *
@@ -59,21 +62,21 @@ class Section extends AbstractHelper
     protected string $defaultTemplateDir = 'Section';
 
     /**
-     * Plugin classes keyed by alias.
+     * Sections.
      *
      * @var SectionInterface[]
      */
-    protected array $plugins;
+    protected array $sections;
 
     /**
-     * Current plugin.
+     * Key of the current section.
      *
-     * @var SectionInterface
+     * @var string
      */
-    protected SectionInterface $plugin;
+    protected string $key;
 
     /**
-     * Template to use for the current plugin.
+     * Template to use for the current section.
      *
      * @var string
      */
@@ -89,7 +92,7 @@ class Section extends AbstractHelper
     }
 
     /**
-     * Store a plugin object and return this object.
+     * Store a section object and return this object.
      *
      * @param string       $key      Section key in configuration
      * @param array|string $config   Configuration or configuration file name (optional)
@@ -102,28 +105,31 @@ class Section extends AbstractHelper
         array|string $config = SectionServiceInterface::DEFAULT_CONFIG_FILE,
         ?string $template = null
     ): static {
-        if (!isset($this->plugins[$key])) {
-            $this->plugins[$key] = $this->sectionService->getSection($key, $config);
-        }
+        // Always call section service as the configuration might be different.
+        $this->sections[$key] = $this->sectionService->getSection($key, $config);
         if (null === $template) {
             $template = $this->defaultTemplateDir . '/' . $key . '.phtml';
         }
-        $this->plugin = $this->plugins[$key];
+        $this->key = $key;
         $this->template = $template;
         return $this;
     }
 
     /**
-     * By default, proxy method calls to the plugin class.
+     * By default, proxy method calls to the section class.
      *
      * @param string $methodName The name of the called method.
      * @param array  $params     Array of passed parameters.
      *
-     * @return mixed
+     * @return mixed             Varies by method (null if undefined method)
      */
     public function __call($methodName, $params)
     {
-        return $this->plugin->$methodName(...$params);
+        $method = [$this->sections[$this->key], $methodName];
+        if (is_callable($method)) {
+            return call_user_func_array($method, $params);
+        }
+        return null;
     }
 
     /**
@@ -136,14 +142,15 @@ class Section extends AbstractHelper
      */
     public function render(array $context = []): string
     {
-        $mergedContext = array_merge($this->plugin->getContext(), $context);
+        $mergedContext
+            = array_merge($this->sections[$this->key]->getContext(), $context);
         $mergedContext[self::ADDITIONAL_CONTEXT_KEY] = $context;
         if ($this->getView()->resolver()->resolve($this->template)) {
             return $this->getView()->render($this->template, $mergedContext);
         } else {
             // Default to class-based template.
             $template = $this->defaultTemplateDir . '/%s.phtml';
-            $className = strtolower($this->plugin::class);
+            $className = strtolower($this->sections[$this->key]::class);
             return $this->renderClassTemplate($template, $className, $mergedContext);
         }
     }
