@@ -426,12 +426,12 @@ class MailerTest extends \PHPUnit\Framework\TestCase
         $callback = function ($message): bool {
             $to = $message->getTo();
             return 'to@example.com' === $to[0]->toString()
-            && 'to2@example.com' === $to[1]->toString()
-            && 2 == count($to)
-            && 'from@example.com' == $message->getFrom()[0]->toString()
-            && 'cc@example.com' == $message->getCc()[0]->toString()
-            && 'body' == $message->getBody()->getBody()
-            && 'Library Catalog Search Result' == $message->getSubject();
+                && 'to2@example.com' === $to[1]->toString()
+                && 2 == count($to)
+                && 'from@example.com' == $message->getFrom()[0]->toString()
+                && 'cc@example.com' == $message->getCc()[0]->toString()
+                && 'body' == $message->getBody()->getBody()
+                && 'Library Catalog Search Result' == $message->getSubject();
         };
         $mailer = $this->getMailer($callback);
         $mailer->setMaxRecipients(2);
@@ -496,10 +496,10 @@ class MailerTest extends \PHPUnit\Framework\TestCase
         $text = 'this is the text part';
         $callback = function ($message) use ($html, $text): bool {
             return 'to@example.com' == $message->getTo()[0]->toString()
-            && '"Sender TextName" <from@example.com>' == $message->getFrom()[0]->toString()
-            && 'subject' == $message->getSubject()
-            && str_contains($message->getBody()->getParts()[0]->getBody(), $text)
-            && str_contains($message->getBody()->getParts()[1]->getBody(), $html);
+                && '"Sender TextName" <from@example.com>' == $message->getFrom()[0]->toString()
+                && 'subject' == $message->getSubject()
+                && str_contains($message->getBody()->getParts()[0]->getBody(), $text)
+                && str_contains($message->getBody()->getParts()[1]->getBody(), $html);
         };
         $address = new Address('from@example.com', 'Sender TextName');
         $mailer = $this->getMailer($callback);
