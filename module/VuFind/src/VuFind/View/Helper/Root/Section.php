@@ -92,10 +92,8 @@ class Section extends AbstractHelper
      * Store a plugin object and return this object.
      *
      * @param string       $key      Section key in configuration
-     * @param array|string $config   Configuration or configuration file name
-     * *                             (optional)
-     * @param ?string      $template File name of template used to render menu
-     *                               (optional)
+     * @param array|string $config   Configuration or configuration file name (optional)
+     * @param ?string      $template File name of template used to render section (optional)
      *
      * @return static
      */
