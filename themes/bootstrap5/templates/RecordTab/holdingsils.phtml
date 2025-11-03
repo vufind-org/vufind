@@ -54,6 +54,11 @@
     <?php endif; ?>
   <?php endif; ?>
 <?php endif; ?>
+<?php if ($this->ils()->getHoldsMode() == 'driver' && empty($holdings['holdings'])): ?>
+  <div class="alert alert-warning">
+    <?=$this->transEsc('no_holdings_found')?>
+  </div>
+<?php endif; ?>
 <?php $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold'); ?>
 <?php if (!empty($holdingTitleHold)): ?>
   <a class="placehold icon-link hidden-print" data-lightbox title="<?=$this->transEscAttr('request_place_text')?>" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holdingTitleHold))?>">
