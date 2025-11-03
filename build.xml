@@ -895,19 +895,23 @@ return [
         <if>
           <equals arg1="${psql_needs_sudo}" arg2="false" />
           <then>
+            <!-- do not use ON_ERROR_STOP here, since the pre-commands may include "already exists" errors we can safely ignore -->
             <exec executable="psql" passthru="true" checkreturn="true">
               <arg line="-f ${pgsqldatabaseprecommands} ${pgsqlrootuser}" />
             </exec>
+            <!-- use ON_ERROR_STOP to detect syntax errors in pgsql.sql -->
             <exec executable="psql" passthru="true" checkreturn="true">
-              <arg line="-f ${pgsqldatabasemainpostcommands} --dbname=${vufinddb}" />
+              <arg line="-f ${pgsqldatabasemainpostcommands} -v ON_ERROR_STOP=1 --dbname=${vufinddb}" />
             </exec>
           </then>
           <else>
+            <!-- do not use ON_ERROR_STOP here, since the pre-commands may include "already exists" errors we can safely ignore -->
             <exec executable="sudo" checkreturn="true">
               <arg line="su -c &quot;psql -f ${pgsqldatabaseprecommands}&quot; ${pgsqlrootuser}" />
             </exec>
+            <!-- use ON_ERROR_STOP to detect syntax errors in pgsql.sql -->
             <exec executable="sudo" checkreturn="true">
-              <arg line="su -c &quot;psql -f ${pgsqldatabasemainpostcommands} --dbname=${vufinddb}&quot; ${pgsqlrootuser}" />
+              <arg line="su -c &quot;psql -f ${pgsqldatabasemainpostcommands}  -v ON_ERROR_STOP=1 --dbname=${vufinddb}&quot; ${pgsqlrootuser}" />
             </exec>
           </else>
         </if>
