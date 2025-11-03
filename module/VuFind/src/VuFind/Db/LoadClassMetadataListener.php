@@ -92,6 +92,8 @@ class LoadClassMetadataListener
                 unset($mapping['declared']);
             }
             unset($mapping);
+            // Override root entity so that any custom properties added are handled properly when persisted:
+            $classMetadata->rootEntityName = $classMetadata->name;
             // Copy other attributes from any parent class:
             if ($classMetadata->parentClasses) {
                 $parentMetadata = $this->loadedMetadata[end($classMetadata->parentClasses)] ?? null;
