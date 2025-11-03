@@ -88,7 +88,7 @@ class Between extends \Laminas\View\Helper\AbstractHelper
         $scores = $results->getScores();
         $lastScore = null;
         $recordIndex = 0;
-        foreach ($scores as $recordId => $score) {
+        foreach ($scores as $score) {
             if ($recordIndex > 0) {
                 $diff = $lastScore - $score;
                 if ($diff > $maxDiff) {
