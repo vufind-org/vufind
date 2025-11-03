@@ -1,3 +1,7 @@
+# Sections are specific configurable parts of the user interface. Sections include
+# navigation menus, which have their own configuration files, and other types of
+# user interface elements.
+#
 # All sections must have a type key. The value can be one of the documented built-in
 # types or a custom section plugin alias or class name. E.g.
 #
