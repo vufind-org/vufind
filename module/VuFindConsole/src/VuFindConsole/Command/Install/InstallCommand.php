@@ -1078,7 +1078,7 @@ class InstallCommand extends Command
 
         // Should we display Apache help messages?
         $this->showApacheHelp = !$input->getOption('no-apache-help');
-        return 0;
+        return self::SUCCESS;
     }
 
     /**
@@ -1126,7 +1126,7 @@ class InstallCommand extends Command
         if (($result = $this->buildApacheConfig($output)) !== true) {
             return $this->failWithError($output, $result);
         }
-        return 0;
+        return self::SUCCESS;
     }
 
     /**
@@ -1137,7 +1137,7 @@ class InstallCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln("VuFind® has been found in {$this->baseDir}.");
 
@@ -1147,11 +1147,11 @@ class InstallCommand extends Command
             $this->collectParameters($input, $output) !== 0
             || $this->processParameters($output) !== 0
         ) {
-            return 1;
+            return self::FAILURE;
         }
 
         // Report success:
         $this->displaySuccessMessage($output);
-        return 0;
+        return self::SUCCESS;
     }
 }

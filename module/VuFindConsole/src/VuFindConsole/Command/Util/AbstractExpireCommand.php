@@ -153,7 +153,7 @@ class AbstractExpireCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         // Collect arguments/options:
         $daysOld = $input->hasArgument('age') ? floatval($input->getArgument('age')) : 0;
@@ -169,7 +169,7 @@ class AbstractExpireCommand extends Command
                     'Expiration age must be at least %%age%% days.'
                 )
             );
-            return 1;
+            return self::FAILURE;
         }
 
         // Calculate date threshold once to avoid creeping a few seconds in each loop iteration.
@@ -195,7 +195,7 @@ class AbstractExpireCommand extends Command
         $output->writeln(
             $this->getTimestampedMessage("Total $total {$this->rowLabel} deleted.")
         );
-        return 0;
+        return self::SUCCESS;
     }
 
     /**
