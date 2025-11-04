@@ -1,0 +1,44 @@
+<?php
+  // Set up breadcrumbs:
+  $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
+    ->add($this->translate('Profile'));
+?>
+
+<?= $this->component('show-account-menu-button') ?>
+<div class="<?= $this->layoutClass('mainbody') ?>">
+  <?= $this->component('page-title', ['title' => $this->translate('Developer::settings')]); ?>
+  <?= $this->flashmessages(); ?>
+
+  <div>
+    <h3><?= $this->transEsc('Developer::api_keys') ?></h3>
+    <table class="table table-striped">
+      <?php foreach ($this->apiKeys as $apiKey): ?>
+        <tr class="d-flex flex-row">
+          <th class="d-flex align-items-center justify-content-center"><?= $this->escapeHtml($apiKey->getTitle()); ?></th>
+          <td class="d-flex flex-fill align-items-center justify-content-end">
+            <div>
+              <?php if ($apiKey->isRevoked()): ?>
+                <span><?= $this->transEsc('Developer::api_key_locked'); ?></span>
+              <?php else: ?>
+                <?=$this->component('confirm-button', [
+                      'buttonLink' => $this->url('developersettings-deleteapikey', [], ['query' => ['id' => $apiKey->getId()]]),
+                      'buttonLabel' => 'Delete',
+                      'confirmLink' => $this->url('developersettings-deleteapikey', [], ['query' => ['id' => $apiKey->getId(), 'confirm' => 1]]),
+                      'header' => 'confirm_delete',
+                    ]
+                  );?>
+              <?php endif; ?>
+            </div>
+          </td>
+        </tr>
+      <?php endforeach; ?>
+    </table>
+    <?php if ($this->createAllowed): ?>
+      <a class="btn btn-primary" href="<?= $this->url('developersettings-generateapikey') ?>" data-lightbox><?= $this->transEsc('Developer::api_key_generate') ?></a>
+    <?php endif; ?>
+  </div>
+</div>
+
+<div class="<?= $this->layoutClass('sidebar') ?>" id="myresearch-sidebar" role="navigation" aria-label="<?= $this->transEscAttr('account_menu_label') ?>">
+  <?= $this->accountMenu()->render() ?>
+</div>

@@ -94,9 +94,8 @@ final class SsoTest extends \VuFindTest\Integration\MinkTestCase
      * @param array $extraSsoConfigs Extra configurations for SimulatedSSO.ini
      *
      * @return void
-     *
-     * @dataProvider loginConfigProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('loginConfigProvider')]
     public function testLogin(array $extraSsoConfigs = []): void
     {
         // Set up configs
@@ -190,7 +189,6 @@ final class SsoTest extends \VuFindTest\Integration\MinkTestCase
             $this->getFixture('shibboleth/logout_notification.xml'),
             'application/xml'
         );
-        $this->assertTrue($result->isSuccess());
         $this->assertEquals(200, $result->getStatusCode());
 
         // Check that login link is back:

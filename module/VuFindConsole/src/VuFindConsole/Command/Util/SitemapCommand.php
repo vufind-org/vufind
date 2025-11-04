@@ -107,7 +107,7 @@ class SitemapCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         if ($input->hasOption('verbose') && $input->getOption('verbose')) {
             $this->generator->setVerbose([$output, 'writeln']);
@@ -125,6 +125,6 @@ class SitemapCommand extends Command
         foreach ($this->generator->getWarnings() as $warning) {
             $output->writeln("$warning");
         }
-        return 0;
+        return self::SUCCESS;
     }
 }

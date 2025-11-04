@@ -541,9 +541,9 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
         ];
         $options = $this->getMockOptions();
         $options->expects($this->any())->method('getHierarchicalExcludeFilters')
-            ->will($this->returnValue($exclude));
+            ->willReturn($exclude);
         $options->expects($this->any())->method('getHierarchicalFacetFilters')
-            ->will($this->returnValue([]));
+            ->willReturn([]);
         $filtered = $this->helper->filterFacets($facet, $facetList, $options);
         $this->assertEquals($expected, $filtered);
     }
@@ -607,9 +607,9 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
         ];
         $options = $this->getMockOptions();
         $options->expects($this->any())->method('getHierarchicalExcludeFilters')
-            ->will($this->returnValue([]));
+            ->willReturn([]);
         $options->expects($this->any())->method('getHierarchicalFacetFilters')
-            ->will($this->returnValue($filters));
+            ->willReturn($filters);
         $filtered = $this->helper->filterFacets($facet, $facetList, $options);
         $this->assertEquals($expected, $filtered);
     }

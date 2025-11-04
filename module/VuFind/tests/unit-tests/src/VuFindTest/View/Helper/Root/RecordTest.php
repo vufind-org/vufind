@@ -95,7 +95,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
             false
         );
         $record->getView()->expects($this->any())->method('render')
-            ->will($this->throwException(new RuntimeException('boom')));
+            ->willThrowException(new RuntimeException('boom'));
         $record->getCoreMetadata();
     }
 
@@ -347,9 +347,8 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      * @param string $expected          Expected final result
      *
      * @return void
-     *
-     * @dataProvider getLinkProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getLinkProvider')]
     public function testGetLink(
         string $linkUrl,
         string $expectedSeparator,

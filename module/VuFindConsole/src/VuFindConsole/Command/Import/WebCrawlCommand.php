@@ -372,7 +372,7 @@ class WebCrawlCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         // Get command line parameters:
         $testMode = $input->getOption('test-only') ? true : false;
@@ -420,6 +420,6 @@ class WebCrawlCommand extends Command
             }
             $this->solr->optimize($index);
         }
-        return $error ? 1 : 0;
+        return $error ? self::FAILURE : self::SUCCESS;
     }
 }

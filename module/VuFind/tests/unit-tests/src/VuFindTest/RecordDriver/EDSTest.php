@@ -414,10 +414,9 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      * @param array $expectedItems Expected items
      * @param int   $expectedCount Expected item count
      *
-     * @dataProvider filterProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('filterProvider')]
     public function testGetItemsFilter(array $filter, array $expectedItems, int $expectedCount): void
     {
         // Change the default order the array data is in and exclude one of the items
@@ -598,14 +597,32 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Data provider for testGetThumbnail().
+     *
+     * @return array[]
+     */
+    public static function getThumbnailProvider(): array
+    {
+        return [
+            'thumb is upscaled to small' => ['small', 'small thumbnail link'],
+            'medium is used as-is' => ['medium', 'medium thumbnail link'],
+            'medium is upscaled to large' => ['large', 'medium thumbnail link'],
+        ];
+    }
+
+    /**
      * Test getThumbnail for a record.
+     *
+     * @param string $size     Size to request
+     * @param string $expected Expected result
      *
      * @return void
      */
-    public function testGetThumbnail(): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('getThumbnailProvider')]
+    public function testGetThumbnail(string $size, string $expected): void
     {
         $driver = $this->getDriver('valid-eds-record');
-        $this->assertEquals('thumbnail link', $driver->getThumbnail());
+        $this->assertEquals($expected, $driver->getThumbnail($size));
     }
 
     /**
@@ -709,9 +726,8 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      * @param string $cleanDoi Expected value
      *
      * @return void
-     *
-     * @dataProvider getCleanDOIFromUrlProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getCleanDOIFromUrlProvider')]
     public function testGetCleanDOIFromUrl(string $testDoi, string $cleanDoi): void
     {
         $driver = $this->getDriver('valid-eds-record-2');

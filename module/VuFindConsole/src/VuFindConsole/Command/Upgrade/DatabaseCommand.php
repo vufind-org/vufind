@@ -34,6 +34,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Output\ConsoleOutputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Question\ChoiceQuestion;
 use VuFind\Cache\Manager as CacheManager;
@@ -172,13 +173,13 @@ class DatabaseCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $sqlOnly = $input->getOption('sql-only') ? true : false;
         $interactive = $input->getOption('interactive') ? true : false;
         if ($sqlOnly && $interactive) {
             $output->writeln('--sql-only and --interactive options are incompatible; choose only one');
-            return 1;
+            return self::FAILURE;
         }
         $rootUser = $input->getOption('rootUser');
         $rootPass = $input->getOption('rootPass');
@@ -204,7 +205,7 @@ class DatabaseCommand extends Command
                     $e = $e->getPrevious();
                 }
             }
-            return 1;
+            return self::FAILURE;
         }
         // Display a final message if we're in non-interactive/non-SQL mode, or had nothing to do in interactive mode.
         if (!$sqlOnly && !($interactive && !empty($migrations))) {
@@ -214,10 +215,11 @@ class DatabaseCommand extends Command
             $msg = '<info>Please clear the object cache (' . $this->cacheManager->getCacheDir(false) . 'objects) '
                 . ($sqlOnly ? 'after applying the migrations' : 'now')
                 . ' to ensure that the metadata is up to date.</info>';
-            $output->writeln('');
-            $output->writeln($msg);
-            $output->writeln('');
+            $stdErr = $output instanceof ConsoleOutputInterface ? $output->getErrorOutput() : $output;
+            $stdErr->writeln('');
+            $stdErr->writeln($msg);
+            $stdErr->writeln('');
         }
-        return 0;
+        return self::SUCCESS;
     }
 }

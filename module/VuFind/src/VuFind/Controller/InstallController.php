@@ -71,11 +71,8 @@ class InstallController extends AbstractBase
     {
         // If auto-configuration is disabled, prevent any other action from being
         // accessed:
-        $config = $this->getConfig();
-        if (
-            !isset($config->System->autoConfigure)
-            || !$config->System->autoConfigure
-        ) {
+        $config = $this->getConfigArray();
+        if (!($config['System']['autoConfigure'] ?? false)) {
             $routeMatch = $e->getRouteMatch();
             $routeMatch->setParam('action', 'disabled');
         }
@@ -136,8 +133,8 @@ class InstallController extends AbstractBase
         // See if the URL setting remains at the default (unless we already
         // know we've failed):
         if ($status) {
-            $config = $this->getConfig();
-            if (stristr($config->Site->url, 'myuniversity.edu')) {
+            $config = $this->getConfigArray();
+            if (stristr($config['Site']['url'], 'myuniversity.edu')) {
                 $status = false;
             }
         }
@@ -476,13 +473,13 @@ class InstallController extends AbstractBase
      */
     protected function checkILS()
     {
-        $config = $this->getConfig();
-        if (in_array($config->Catalog->driver, ['Sample', 'Demo'])) {
+        $config = $this->getConfigArray();
+        if (in_array($config['Catalog']['driver'], ['Sample', 'Demo'])) {
             $status = false;
         } else {
             try {
                 $status = 'ils-offline' !== $this->getILS()->getOfflineMode(true)
-                    || ('NoILS' === $config->Catalog->driver);
+                    || ('NoILS' === $config['Catalog']['driver']);
             } catch (\Exception $e) {
                 $status = false;
             }
@@ -519,9 +516,9 @@ class InstallController extends AbstractBase
 
         // If we got this far, check whether we have an error with a real driver
         // or if we need to warn the user that they have selected a fake driver:
-        $config = $this->getConfig();
+        $config = $this->getConfigArray();
         $view = $this->createViewModel();
-        if (in_array($config->Catalog->driver, ['Sample', 'Demo'])) {
+        if (in_array($config['Catalog']['driver'], ['Sample', 'Demo'])) {
             $view->demo = true;
             // Get a list of available drivers:
             $dir
@@ -544,9 +541,7 @@ class InstallController extends AbstractBase
             sort($drivers);
             $view->drivers = $drivers;
         } else {
-            $view->configPath = $this->getForcedLocalConfigPath(
-                "{$config->Catalog->driver}.ini"
-            );
+            $view->configPath = $this->getForcedLocalConfigPath("{$config['Catalog']['driver']}.ini");
         }
         return $view;
     }
@@ -589,10 +584,10 @@ class InstallController extends AbstractBase
     public function fixsolrAction()
     {
         // In Windows, localhost may fail -- see if switching to 127.0.0.1 helps:
-        $config = $this->getConfig();
+        $config = $this->getConfigArray();
         $configFile = $this->getForcedLocalConfigPath('config.ini');
-        if (stristr($config->Index->url, 'localhost')) {
-            $newUrl = str_replace('localhost', '127.0.0.1', $config->Index->url);
+        if (stristr($config['Index']['url'], 'localhost')) {
+            $newUrl = str_replace('localhost', '127.0.0.1', $config['Index']['url']);
             try {
                 $this->testSearchService();
 
@@ -611,13 +606,13 @@ class InstallController extends AbstractBase
         // If we got this far, the automatic fix didn't work, so let's just assign
         // some variables to use in offering troubleshooting advice:
         $view = $this->createViewModel();
-        $view->rawUrl = $config->Index->url;
+        $view->rawUrl = $config['Index']['url'];
         $view->userUrl = str_replace(
             ['localhost', '127.0.0.1'],
             $this->getRequest()->getServer()->get('HTTP_HOST'),
-            $config->Index->url
+            $config['Index']['url']
         );
-        $view->core = $config->Index->default_core ?? 'biblio';
+        $view->core = $config['Index']['default_core'] ?? 'biblio';
         $view->configFile = $configFile;
         return $view;
     }
@@ -645,25 +640,25 @@ class InstallController extends AbstractBase
      * Support method for fixsecurityAction(). Returns true if the configuration
      * was modified, false otherwise.
      *
-     * @param \VuFind\Config\Config $config Existing VuFind configuration
-     * @param ConfigWriter          $writer Config writer
+     * @param array        $config Existing VuFind configuration
+     * @param ConfigWriter $writer Config writer
      *
      * @return bool
      */
-    protected function fixSecurityConfiguration($config, $writer)
+    protected function fixSecurityConfiguration(array $config, ConfigWriter $writer): bool
     {
         $changed = false;
 
         if (
-            !($config->Authentication->hash_passwords ?? false)
-            || !($config->Authentication->encrypt_ils_password ?? false)
+            !($config['Authentication']['hash_passwords'] ?? false)
+            || !($config['Authentication']['encrypt_ils_password'] ?? false)
         ) {
             $writer->set('Authentication', 'hash_passwords', true);
             $writer->set('Authentication', 'encrypt_ils_password', true);
             $changed = true;
         }
         // Only rewrite encryption key if we don't already have one:
-        if (empty($config->Authentication->ils_encryption_key)) {
+        if (empty($config['Authentication']['ils_encryption_key'])) {
             [$algorithm, $key] = $this->getSecureAlgorithmAndKey();
             $writer->set('Authentication', 'ils_encryption_algo', $algorithm);
             $writer->set('Authentication', 'ils_encryption_key', $key);
@@ -720,7 +715,7 @@ class InstallController extends AbstractBase
         set_time_limit(0);
 
         // First, set encryption/hashing to true, and set the key
-        $config = $this->getConfig();
+        $config = $this->getConfigArray();
         $configPath = $this->getForcedLocalConfigPath('config.ini');
         $writer = new ConfigWriter($configPath);
         if ($this->fixSecurityConfiguration($config, $writer)) {

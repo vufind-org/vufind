@@ -264,9 +264,8 @@ class WorldCat2Test extends \PHPUnit\Framework\TestCase
      * @param array   $config   Configuration to apply
      *
      * @return void
-     *
-     * @dataProvider methodTests
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('methodTests')]
     public function testMethod(string $method, $expected, ?string $fixture = null, array $config = [])
     {
         $configObj = new Config($config);

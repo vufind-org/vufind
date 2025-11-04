@@ -77,9 +77,8 @@ class CleanHtmlTest extends \PHPUnit\Framework\TestCase
      * @param string  $expected    Expected result
      *
      * @return void
-     *
-     * @dataProvider cleanHtmlProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('cleanHtmlProvider')]
     public function testCleanHtml(string $input, ?bool $targetBlank, ?string $context, $expected): void
     {
         $cleanHtml = $this->createCleanHtmlHelper();

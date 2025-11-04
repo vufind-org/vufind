@@ -119,7 +119,7 @@ class UpdateResourceMetadataCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $batch = $input->getOption('batch');
         $minAge = $input->getOption('min-age');
@@ -177,6 +177,6 @@ class UpdateResourceMetadataCommand extends Command
         }
 
         $output->writeln('<info>Resource metadata update completed</info>');
-        return Command::SUCCESS;
+        return self::SUCCESS;
     }
 }

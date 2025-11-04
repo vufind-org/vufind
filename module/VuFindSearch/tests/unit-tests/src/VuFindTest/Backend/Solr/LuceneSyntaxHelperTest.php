@@ -88,9 +88,8 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
      * @param $expected Expected output
      *
      * @return void
-     *
-     * @dataProvider capitalizeBooleansProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('capitalizeBooleansProvider')]
     public function testCapitalizeBooleans(string $input, string $expected): void
     {
         $lh = new LuceneSyntaxHelper();
@@ -272,9 +271,8 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
      * @param $expected Expected output
      *
      * @return void
-     *
-     * @dataProvider capitalizeRangesProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('capitalizeRangesProvider')]
     public function testCapitalizeRanges(string $input, string $expected): void
     {
         $lh = new LuceneSyntaxHelper();
@@ -389,9 +387,8 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
      * @param $expected Expected output
      *
      * @return void
-     *
-     * @dataProvider colonNormalizationProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('colonNormalizationProvider')]
     public function testColonNormalization(string $input, string $expected): void
     {
         $lh = new LuceneSyntaxHelper(false, false);
@@ -438,9 +435,8 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
      * @param $expected Expected output
      *
      * @return void
-     *
-     * @dataProvider extractSearchTermsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('extractSearchTermsProvider')]
     public function testExtractSearchTerms(string $input, string $expected): void
     {
         $lh = new LuceneSyntaxHelper(false, false);
@@ -515,10 +511,9 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
      * @param string $input    Input string
      * @param string $expected Expected result
      *
-     * @dataProvider unquotedNormalizationProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('unquotedNormalizationProvider')]
     public function testUnquotedNormalization(string $input, string $expected)
     {
         $lh = new LuceneSyntaxHelper(false, false);

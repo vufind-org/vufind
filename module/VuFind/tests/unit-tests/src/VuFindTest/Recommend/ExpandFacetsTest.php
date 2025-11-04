@@ -79,7 +79,7 @@ class ExpandFacetsTest extends \PHPUnit\Framework\TestCase
         $results->expects($this->once())
             ->method('getFacetList')
             ->with($this->equalTo(['format' => 'Format']))
-            ->will($this->returnValue(['foo']));
+            ->willReturn(['foo']);
         $ef = $this->getExpandFacets(
             $this->getMockConfigManager($config, [], $this->once()),
             $results
@@ -137,7 +137,7 @@ class ExpandFacetsTest extends \PHPUnit\Framework\TestCase
         $results = $this->getMockBuilder(\VuFind\Search\Solr\Results::class)
             ->disableOriginalConstructor()->getMock();
         $results->expects($this->any())->method('getParams')
-            ->will($this->returnValue($params));
+            ->willReturn($params);
         return $results;
     }
 
@@ -156,7 +156,7 @@ class ExpandFacetsTest extends \PHPUnit\Framework\TestCase
         $params = $this->getMockBuilder(\VuFind\Search\Solr\Params::class)
             ->disableOriginalConstructor()->getMock();
         $params->expects($this->any())->method('getQuery')
-            ->will($this->returnValue($query));
+            ->willReturn($query);
         return $params;
     }
 }

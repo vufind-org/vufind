@@ -594,11 +594,11 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Support method for getHoldings() -- retrieve items by holding ids
+     * Support method for getHoldings() -- retrieve items by holding ids (including bound-with items)
      *
      * @param string[] $holdingIds the FOLIO holdings ids
      *
-     * @return object[]
+     * @return object[] The items, with an additional queryHoldingsRecordId property with the matching holdings id
      * @throws ILSException if there is an issue with the FOLIO response
      */
     protected function getItemsByHoldingIds(array $holdingIds)
@@ -613,16 +613,58 @@ class Folio extends AbstractAPI implements
         } else {
             $querySuffix = '';
         }
-        $endpoint = count($holdingIds) > 1 ? '/inventory/items' : '/inventory/items-by-holdings-id';
+        if (count($holdingIds) == 1) {
+            // /inventory/items-by-holdings-id returns bound-with items too (but it only takes one holdingsRecordId)
+            foreach (
+                $this->getByBatch(
+                    $holdingIds,
+                    'holdingsRecordId',
+                    'items',
+                    '/inventory/items-by-holdings-id',
+                    $querySuffix
+                ) as $item
+            ) {
+                $item->queryHoldingsRecordId = $holdingIds[0];
+                $items[] = $item;
+            }
+            return $items;
+        }
+        // /inventory/items does not return bound-with items, we have to retrieve them afterwards
         foreach (
             $this->getByBatch(
                 $holdingIds,
                 'holdingsRecordId',
                 'items',
-                $endpoint,
+                '/inventory/items',
                 $querySuffix
             ) as $item
         ) {
+            $item->queryHoldingsRecordId = $item->holdingsRecordId;
+            $items[] = $item;
+        }
+        $boundWithItemIds = [];
+        $itemIdToHoldingsRecordId = [];
+        foreach (
+            $this->getByBatch(
+                $holdingIds,
+                'holdingsRecordId',
+                'boundWithParts',
+                '/inventory-storage/bound-with-parts',
+                $querySuffix
+            ) as $boundWithPart
+        ) {
+            $boundWithItemIds[] = $boundWithPart->itemId;
+            $itemIdToHoldingsRecordId[$boundWithPart->itemId] = $boundWithPart->holdingsRecordId;
+        }
+        foreach (
+            $this->getByBatch(
+                $boundWithItemIds,
+                'id',
+                'items',
+                '/inventory/items'
+            ) as $item
+        ) {
+            $item->queryHoldingsRecordId = $itemIdToHoldingsRecordId[$item->id];
             $items[] = $item;
         }
         return $items;
@@ -1189,7 +1231,10 @@ class Folio extends AbstractAPI implements
             $nextBatch = [];
             $sortNeeded = false;
             $number = 0;
-            $folioItemsForHolding = array_filter($folioItems, fn ($item) => $item->holdingsRecordId == $holding->id);
+            $folioItemsForHolding = array_filter(
+                $folioItems,
+                fn ($item) => $item->queryHoldingsRecordId == $holding->id
+            );
             foreach ($folioItemsForHolding as $item) {
                 if ($item->discoverySuppress ?? false) {
                     continue;

@@ -10,7 +10,7 @@
     "license": "GPL-2.0",
     "config": {
         "platform": {
-            "php": "8.1"
+            "php": "8.2"
         },
         "process-timeout": 0,
         "allow-plugins": {
@@ -20,13 +20,13 @@
     },
     "autoload": {
         "psr-4": {
-            "VuFind\\": "module/VuFind/src/VuFind",
-            "VuFindAdmin\\": "module/VuFindAdmin/src/VuFindAdmin",
-            "VuFindApi\\": "module/VuFindApi/src/VuFindApi",
-            "VuFindConsole\\": "module/VuFindConsole/src/VuFindConsole",
-            "VuFindDevTools\\": "module/VuFindDevTools/src/VuFindDevTools",
-            "VuFindSearch\\": "module/VuFindSearch/src/VuFindSearch",
-            "VuFindTheme\\": "module/VuFindTheme/src/VuFindTheme"
+            "VuFind\\": ["module/VuFind/src/VuFind", "module/VuFind"],
+            "VuFindAdmin\\": ["module/VuFindAdmin/src/VuFindAdmin", "module/VuFindAdmin"],
+            "VuFindApi\\": ["module/VuFindApi/src/VuFindApi", "module/VuFindApi"],
+            "VuFindConsole\\": ["module/VuFindConsole/src/VuFindConsole", "module/VuFindConsole"],
+            "VuFindDevTools\\": ["module/VuFindDevTools/src/VuFindDevTools", "module/VuFindDevTools"],
+            "VuFindSearch\\": ["module/VuFindSearch/src/VuFindSearch", "module/VuFindSearch"],
+            "VuFindTheme\\": ["module/VuFindTheme/src/VuFindTheme", "module/VuFindTheme"]
         },
         "psr-0": {
             "minSO": "module/VuFind/src/VuFind/Search"
@@ -44,7 +44,7 @@
         "ext-sodium": "*"
     },
     "require": {
-        "php": ">=8.1",
+        "php": ">=8.2",
         "ahand/mobileesp": "dev-master",
         "apereo/phpcas": "1.6.1",
         "browscap/browscap-php": "^7.2",
@@ -54,8 +54,8 @@
         "composer/semver": "3.4.4",
         "doctrine/doctrine-orm-module": "^6.0",
         "doctrine/orm": "^2.10.2",
-        "endroid/qr-code": "5.1.0",
-        "ezyang/htmlpurifier": "4.18.0",
+        "endroid/qr-code": "6.0.9",
+        "ezyang/htmlpurifier": "4.19.0",
         "firebase/php-jwt": "6.11.1",
         "guzzlehttp/guzzle": "7.10.0",
         "jaybizzle/crawler-detect": "^1.2",
@@ -66,24 +66,24 @@
         "laminas/laminas-cache-storage-adapter-memory": "^2.0",
         "laminas/laminas-captcha": "2.18.0",
         "laminas/laminas-code": "4.16.0",
-        "laminas/laminas-diactoros": "3.6.0",
+        "laminas/laminas-diactoros": "3.8.0",
         "laminas/laminas-escaper": "2.14.0",
         "laminas/laminas-eventmanager": "3.14.0",
         "laminas/laminas-feed": "2.25.0",
-        "laminas/laminas-form": "3.21.0",
+        "laminas/laminas-form": "3.22.0",
         "laminas/laminas-http": "2.22.0",
-        "laminas/laminas-i18n": "2.30.0",
-        "laminas/laminas-modulemanager": "2.17.0",
+        "laminas/laminas-i18n": "2.31.0",
+        "laminas/laminas-modulemanager": "2.19.0",
         "laminas/laminas-mvc": "3.8.0",
         "laminas/laminas-mvc-i18n": "1.9.0",
         "laminas/laminas-mvc-plugin-flashmessenger": "1.11.0",
-        "laminas/laminas-paginator": "2.19.0",
+        "laminas/laminas-paginator": "2.21.0",
         "laminas/laminas-psr7bridge": "1.12.0",
         "laminas/laminas-recaptcha": "3.8.0",
         "laminas/laminas-serializer": "2.18.0",
         "laminas/laminas-servicemanager": "3.23.0",
-        "laminas/laminas-session": "2.24.0",
-        "laminas/laminas-stdlib": "3.20.0",
+        "laminas/laminas-session": "2.25.1",
+        "laminas/laminas-stdlib": "3.21.0",
         "laminas/laminas-translator": "^1",
         "laminas/laminas-validator": "2.64.4",
         "laminas/laminas-view": "2.36.0",
@@ -104,14 +104,14 @@
         "serialssolutions/summon": "1.3.1",
         "slm/locale": "1.2.0",
         "steverhoades/oauth2-openid-connect-server": "3.0.1",
-        "stripe/stripe-php": "v17.5.0",
-        "swagger-api/swagger-ui": "5.29.0",
+        "stripe/stripe-php": "v18.0.0",
+        "swagger-api/swagger-ui": "5.29.5",
         "symfony/console": "6.4.25",
         "symfony/mailer": "6.4.25",
         "symfony/rate-limiter": "^6.4",
         "symfony/var-dumper": "6.4.25",
         "symfony/yaml": "6.4.25",
-        "vstelmakh/url-highlight": "3.1.2",
+        "vstelmakh/url-highlight": "3.1.3",
         "vufind-org/vufindcode": "1.2",
         "vufind-org/vufinddate": "1.2.0",
         "vufind-org/vufindharvest": "5.4.0",
@@ -120,20 +120,21 @@
         "webfontkit/open-sans": "^1.0",
         "webmozart/glob": "^4.7",
         "wikimedia/composer-merge-plugin": "2.1.0",
-        "yajra/laravel-pdo-via-oci8": "3.7.1"
+        "yajra/laravel-pdo-via-oci8": "3.7.2"
     },
     "require-dev": {
         "behat/mink": "1.12.0",
         "behat/mink-selenium2-driver": "1.7.0",
-        "dmore/chrome-mink-driver": "2.9.3",
-        "friendsofphp/php-cs-fixer": "3.87.2",
+        "dmore/chrome-mink-driver": "2.10.0",
+        "friendsofphp/php-cs-fixer": "3.89.0",
         "phpmd/phpmd": "2.15.0",
-        "phpstan/phpstan": "2.1.25",
+        "phpstan/phpstan": "2.1.31",
         "phpunit/php-code-coverage": "10.1.16",
         "phpunit/phpcov": "^9.0",
         "phpunit/phpunit": "10.5.54",
         "pietercolpaert/hardf": "0.5.0",
-        "squizlabs/php_codesniffer": "3.13.4"
+        "rector/rector": "2.2.6",
+        "squizlabs/php_codesniffer": "4.0.0"
     },
     "extra": {
         "merge-plugin": {

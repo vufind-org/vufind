@@ -331,7 +331,7 @@ class GeneratorTools
             $module,
             null,
             ['Laminas\ServiceManager\Factory\FactoryInterface'],
-            function ($generator) {
+            function ($generator): void {
                 $method = MethodGenerator::fromArray(
                     [
                         'name' => '__invoke',

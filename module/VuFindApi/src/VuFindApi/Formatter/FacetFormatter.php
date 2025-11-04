@@ -83,7 +83,7 @@ class FacetFormatter extends BaseFormatter
         $discard = true;
         array_walk_recursive(
             $facet,
-            function ($item, $key) use (&$discard, $filters) {
+            function ($item, $key) use (&$discard, $filters): void {
                 if ($discard && $key == 'value') {
                     foreach ($filters as $filter) {
                         $pattern = '/' . addcslashes($filter, '/') . '/';

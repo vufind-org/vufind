@@ -304,7 +304,7 @@ class LuceneSyntaxHelper
                 &$result,
                 &$collected,
                 &$discardParens
-            ) {
+            ): void {
                 if (!$quoted) {
                     // Discard closing parenthesis for previously discarded opening
                     // ones to keep balance
@@ -606,17 +606,9 @@ class LuceneSyntaxHelper
      */
     protected function getBoolsToCap()
     {
-        if (
-            $this->caseSensitiveBooleans === false
-            || $this->caseSensitiveBooleans === 0
-            || $this->caseSensitiveBooleans === '0'
-        ) {
+        if (in_array($this->caseSensitiveBooleans, [false, 0, '0'], true)) {
             return $this->allBools;
-        } elseif (
-            $this->caseSensitiveBooleans === true
-            || $this->caseSensitiveBooleans === 1
-            || $this->caseSensitiveBooleans === '1'
-        ) {
+        } elseif (in_array($this->caseSensitiveBooleans, [true, 1, '1'], true)) {
             return [];
         }
 
@@ -691,7 +683,7 @@ class LuceneSyntaxHelper
     {
         $count = 0;
         $this->processQueryString(
-            function (string $ch, bool $quoted, bool $esc) use ($needle, &$count) {
+            function (string $ch, bool $quoted, bool $esc) use ($needle, &$count): void {
                 if (!$quoted && !$esc && $ch === $needle) {
                     ++$count;
                 }
@@ -714,7 +706,7 @@ class LuceneSyntaxHelper
     {
         $result = '';
         $this->processQueryString(
-            function (string $ch, bool $quoted, bool $esc) use ($needles, &$result) {
+            function (string $ch, bool $quoted, bool $esc) use ($needles, &$result): void {
                 if ($quoted || $esc || !in_array($ch, $needles)) {
                     $result .= $ch;
                 }
