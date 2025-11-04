@@ -29,7 +29,8 @@
 
 namespace VuFindTest\Feature;
 
-use VuFindHttp\HttpService;
+use Psr\Http\Message\ResponseInterface;
+use VuFind\Http\GuzzleService;
 
 /**
  * HTTP request helper methods for integration tests.
@@ -47,7 +48,7 @@ trait HttpRequestTrait
     /**
      * HTTP service
      *
-     * @var ?HttpService
+     * @var ?GuzzleService
      */
     protected $httpService = null;
 
@@ -73,12 +74,12 @@ trait HttpRequestTrait
     /**
      * Get HTTP service.
      *
-     * @return HttpService
+     * @return GuzzleService
      */
-    protected function getHttpService(): HttpService
+    protected function getHttpService(): GuzzleService
     {
         if (!$this->httpService) {
-            $this->httpService = new HttpService();
+            $this->httpService = new GuzzleService([]);
         }
         return $this->httpService;
     }
@@ -91,14 +92,14 @@ trait HttpRequestTrait
      * @param float  $timeout Request timeout in seconds
      * @param array  $headers Request headers
      *
-     * @return \Laminas\Http\Response
+     * @return ResponseInterface
      */
     protected function httpGet(
         $url,
         array $params = [],
         $timeout = null,
         array $headers = []
-    ): \Laminas\Http\Response {
+    ): ResponseInterface {
         return $this->getHttpService()->get(
             $url,
             $params,
@@ -116,7 +117,7 @@ trait HttpRequestTrait
      * @param float  $timeout Request timeout in seconds
      * @param array  $headers Request http-headers
      *
-     * @return \Laminas\Http\Response
+     * @return ResponseInterface
      */
     protected function httpPost(
         $url,
@@ -124,7 +125,7 @@ trait HttpRequestTrait
         $type = 'application/octet-stream',
         $timeout = null,
         array $headers = []
-    ): \Laminas\Http\Response {
+    ): ResponseInterface {
         return $this->getHttpService()->post(
             $url,
             $body,

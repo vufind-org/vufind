@@ -103,7 +103,7 @@ class OaiTest extends \VuFindTest\Integration\MinkTestCase
     public function testVerbRequired(string $path): void
     {
         $this->changeConfigs(['config' => $this->defaultOaiConfig]);
-        $rawXml = $this->httpGet($this->getVuFindUrl() . $path)->getBody();
+        $rawXml = $this->httpGet($this->getVuFindUrl() . $path)->getBody()->getContents();
         $xml = simplexml_load_string($rawXml);
         $this->assertEquals('Missing Verb Argument', $xml->error);
     }
@@ -119,7 +119,7 @@ class OaiTest extends \VuFindTest\Integration\MinkTestCase
     public function testIdentifyResponseRepositoryName(string $path): void
     {
         $this->changeConfigs(['config' => $this->defaultOaiConfig]);
-        $rawXml = $this->httpGet($this->getVuFindUrl() . $path . '?verb=Identify')->getBody();
+        $rawXml = $this->httpGet($this->getVuFindUrl() . $path . '?verb=Identify')->getBody()->getContents();
         $xml = simplexml_load_string($rawXml);
         // Authority endpoint overrides default name:
         $expectedName = $path === '/OAI/AuthServer'
@@ -142,7 +142,8 @@ class OaiTest extends \VuFindTest\Integration\MinkTestCase
         // test will need to be adjusted.
         $rawXml = $this
             ->httpGet($this->getVuFindUrl() . '/OAI/Server?verb=ListRecords&metadataPrefix=oai_dc')
-            ->getBody();
+            ->getBody()
+            ->getContents();
         $xml = simplexml_load_string($rawXml);
         $resultSetSize = 22;
         $pageSize = $this->defaultOaiConfig['OAI']['page_size'];
@@ -163,7 +164,7 @@ class OaiTest extends \VuFindTest\Integration\MinkTestCase
         // the results are different than before by comparing first record IDs.
         $rawXml2 = $this->httpGet(
             $this->getVuFindUrl() . '/OAI/Server?verb=ListRecords&resumptionToken=' . urlencode($resumptionToken)
-        )->getBody();
+        )->getBody()->getContents();
         $xml2 = simplexml_load_string($rawXml2);
         $resumptionAttributes2 = $xml2->ListRecords->resumptionToken->attributes();
         $this->assertEquals($resultSetSize - $pageSize, count($xml2->ListRecords->record));
