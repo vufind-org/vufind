@@ -31,8 +31,8 @@
 namespace Finna\Wayfinder;
 
 use Laminas\Http\Response;
-use Laminas\Log\LoggerInterface;
 use Psr\Container\ContainerInterface;
+use Psr\Log\LoggerInterface;
 use VuFind\Log\LoggerAwareTrait;
 use VuFindHttp\HttpServiceInterface;
 

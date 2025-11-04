@@ -33,7 +33,7 @@ declare(strict_types=1);
 
 namespace Finna\Form\Handler;
 
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Form\Handler\HandlerInterface;
 use VuFind\I18n\Translator\TranslatorAwareInterface;

@@ -50,7 +50,7 @@ use function strlen;
  */
 class LinkedEvents implements
     \VuFindHttp\HttpServiceAwareInterface,
-    \Laminas\Log\LoggerAwareInterface,
+    \Psr\Log\LoggerAwareInterface,
     \VuFind\I18n\Translator\TranslatorAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;

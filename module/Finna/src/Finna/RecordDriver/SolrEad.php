@@ -51,7 +51,7 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
-class SolrEad extends SolrDefault implements \Laminas\Log\LoggerAwareInterface
+class SolrEad extends SolrDefault implements \Psr\Log\LoggerAwareInterface
 {
     use Feature\SolrFinnaTrait {
         getSupportedCitationFormats as getSupportedCitationFormatsFinna;

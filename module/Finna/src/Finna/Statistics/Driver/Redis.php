@@ -29,7 +29,7 @@
 
 namespace Finna\Statistics\Driver;
 
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Log\LoggerAwareTrait;
 
 /**

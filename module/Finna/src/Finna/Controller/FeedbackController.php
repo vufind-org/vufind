@@ -32,8 +32,6 @@
 
 namespace Finna\Controller;
 
-use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Form\Form;
 use VuFind\Log\LoggerAwareTrait;
 
 /**
@@ -46,7 +44,7 @@ use VuFind\Log\LoggerAwareTrait;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-class FeedbackController extends \VuFind\Controller\FeedbackController implements \Laminas\Log\LoggerAwareInterface
+class FeedbackController extends \VuFind\Controller\FeedbackController implements \Psr\Log\LoggerAwareInterface
 {
     use LoggerAwareTrait;
 

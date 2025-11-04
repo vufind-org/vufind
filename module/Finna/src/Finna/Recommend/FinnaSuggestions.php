@@ -48,7 +48,7 @@ class FinnaSuggestions implements
     \VuFind\I18n\Translator\TranslatorAwareInterface,
     \VuFind\Recommend\RecommendInterface,
     \VuFindHttp\HttpServiceAwareInterface,
-    \Laminas\Log\LoggerAwareInterface
+    \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;

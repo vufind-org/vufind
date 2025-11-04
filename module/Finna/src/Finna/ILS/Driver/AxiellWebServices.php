@@ -61,7 +61,7 @@ use function strlen;
  */
 class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase implements
     TranslatorAwareInterface,
-    \Laminas\Log\LoggerAwareInterface,
+    \Psr\Log\LoggerAwareInterface,
     \VuFindHttp\HttpServiceAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;

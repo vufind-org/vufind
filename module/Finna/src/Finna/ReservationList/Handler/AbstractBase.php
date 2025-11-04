@@ -49,7 +49,7 @@ use function in_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
  */
-abstract class AbstractBase implements HandlerInterface, \Laminas\Log\LoggerAwareInterface
+abstract class AbstractBase implements HandlerInterface, \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
     use GetServiceTrait;

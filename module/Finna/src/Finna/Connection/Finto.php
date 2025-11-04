@@ -30,7 +30,7 @@
 namespace Finna\Connection;
 
 use Laminas\Http\Client;
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Config\Config;
 use VuFind\Log\LoggerAwareTrait;
 

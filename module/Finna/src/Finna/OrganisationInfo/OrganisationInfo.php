@@ -54,7 +54,7 @@ use function is_array;
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
 class OrganisationInfo implements
-    \Laminas\Log\LoggerAwareInterface,
+    \Psr\Log\LoggerAwareInterface,
     \VuFind\I18n\HasSorterInterface,
     \VuFind\I18n\Translator\TranslatorAwareInterface
 {

@@ -35,8 +35,8 @@ declare(strict_types=1);
 namespace Finna\Form\Handler;
 
 use Finna\Db\Service\FinnaFeedbackServiceInterface;
-use Laminas\Log\LoggerAwareInterface;
 use Laminas\View\Renderer\RendererInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Form\Handler\HandlerInterface;
 use VuFind\Log\LoggerAwareTrait;

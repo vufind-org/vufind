@@ -30,8 +30,8 @@
 namespace Finna\AjaxHandler;
 
 use Finna\Db\Service\FinnaCacheServiceInterface;
-use Laminas\Log\LoggerAwareInterface;
 use Laminas\Mvc\Controller\Plugin\Params;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Config\Config;
 use VuFind\Log\LoggerAwareTrait;
 use VuFind\Record\Loader;

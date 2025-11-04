@@ -50,7 +50,7 @@ use function strlen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
-class SolrMarc extends \VuFind\RecordDriver\SolrMarc implements \Laminas\Log\LoggerAwareInterface
+class SolrMarc extends \VuFind\RecordDriver\SolrMarc implements \Psr\Log\LoggerAwareInterface
 {
     use Feature\SolrFinnaTrait;
     use Feature\FinnaMarcReaderTrait;

@@ -40,7 +40,7 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:record_drivers Wiki
  */
-class SolrAuthForward extends SolrAuthDefault implements \Laminas\Log\LoggerAwareInterface
+class SolrAuthForward extends SolrAuthDefault implements \Psr\Log\LoggerAwareInterface
 {
     use Feature\SolrAuthFinnaTrait;
     use Feature\SolrForwardTrait {

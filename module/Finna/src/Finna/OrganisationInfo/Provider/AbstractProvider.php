@@ -55,7 +55,7 @@ use function strlen;
 abstract class AbstractProvider implements
     TranslatorAwareInterface,
     \VuFindHttp\HttpServiceAwareInterface,
-    \Laminas\Log\LoggerAwareInterface,
+    \Psr\Log\LoggerAwareInterface,
     ProviderInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;

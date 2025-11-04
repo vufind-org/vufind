@@ -55,7 +55,7 @@ use function in_array;
  */
 class GetOrganisationInfo extends \VuFind\AjaxHandler\AbstractBase implements
     TranslatorAwareInterface,
-    \Laminas\Log\LoggerAwareInterface,
+    \Psr\Log\LoggerAwareInterface,
     \VuFindHttp\HttpServiceAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
@@ -304,7 +304,7 @@ class GetOrganisationInfo extends \VuFind\AjaxHandler\AbstractBase implements
                 'address' => $org['address'],
                 'services' => $org['allServices'] ?? [],
             ];
-            foreach ($org['allServices'] ?? [] as $type => $services) {
+            foreach ($org['allServices'] ?? [] as $services) {
                 foreach ($services as $service) {
                     $serviceList[] = $service['standardName'];
                 }
@@ -612,7 +612,6 @@ class GetOrganisationInfo extends \VuFind\AjaxHandler\AbstractBase implements
     protected function getLocationName(?string $locationId, array $orgInfo): string
     {
         if (null !== $locationId) {
-            $locationId = (string)$locationId;
             foreach ($orgInfo['list'] ?? [] as $location) {
                 if ((string)$location['id'] === $locationId) {
                     return $location['name'];
