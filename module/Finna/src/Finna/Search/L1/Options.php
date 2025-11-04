@@ -29,6 +29,8 @@
 
 namespace Finna\Search\L1;
 
+use VuFind\Config\ConfigManagerInterface;
+
 /**
  * Search Options for L1 index
  *
@@ -43,12 +45,12 @@ class Options extends \Finna\Search\Solr\Options
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(ConfigManagerInterface $configManager)
     {
         $this->mainIni = $this->searchIni = $this->facetsIni = 'L1';
-        parent::__construct($configLoader);
+        parent::__construct($configManager);
     }
 
     /**

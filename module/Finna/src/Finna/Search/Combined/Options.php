@@ -29,6 +29,8 @@
 
 namespace Finna\Search\Combined;
 
+use VuFind\Config\ConfigManagerInterface;
+
 /**
  * Combined search model.
  *
@@ -45,17 +47,17 @@ class Options extends \VuFind\Search\Combined\Options
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager         $configLoader   Config loader
+     * @param ConfigManagerInterface               $configManager  Config loader
      * @param \VuFind\Search\Options\PluginManager $optionsManager Options plugin manager
      */
     public function __construct(
-        \VuFind\Config\PluginManager $configLoader,
-        \VuFind\Search\Options\PluginManager $optionsManager
+        ConfigManagerInterface $configManager,
+        protected \VuFind\Search\Options\PluginManager $optionsManager
     ) {
-        parent::__construct($configLoader, $optionsManager);
+        parent::__construct($configManager, $optionsManager);
 
         // Use Solr preference for autocomplete setting
-        $searchSettings = $configLoader->get('searches')->toArray();
+        $searchSettings = $configManager->getConfigArray('searches');
         if (null !== ($enabled = $searchSettings['Autocomplete']['enabled'] ?? null)) {
             $this->autocompleteEnabled = $enabled;
         }

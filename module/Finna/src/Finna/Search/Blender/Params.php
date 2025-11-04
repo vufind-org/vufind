@@ -30,6 +30,7 @@
 namespace Finna\Search\Blender;
 
 use Finna\Search\Solr\AuthorityHelper;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
 use VuFindSearch\ParamBag;
 
@@ -58,33 +59,31 @@ class Params extends \VuFind\Search\Blender\Params
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Base\Options  $options       Options to use
-     * @param \VuFind\Config\PluginManager $configLoader  Config loader
-     * @param HierarchicalFacetHelper      $facetHelper   Hierarchical facet helper
-     * @param array                        $searchParams  Search params for backends
-     * @param \VuFind\Config\Config        $blenderConfig Blender configuration
-     * @param array                        $mappings      Blender mappings,
-     * @param AuthorityHelper              $authHelper    Authority helper
+     * @param \VuFind\Search\Base\Options $options       Options to use
+     * @param ConfigManagerInterface      $configManager Config manager
+     * @param HierarchicalFacetHelper     $facetHelper   Hierarchical facet helper
+     * @param array                       $searchParams  Search params for backends
+     * @param \VuFind\Config\Config       $blenderConfig Blender configuration
+     * @param array                       $mappings      Blender mappings
+     * @param AuthorityHelper             $authHelper    Authority helper
      */
     public function __construct(
         \VuFind\Search\Base\Options $options,
-        \VuFind\Config\PluginManager $configLoader,
+        ConfigManagerInterface $configManager,
         HierarchicalFacetHelper $facetHelper,
         array $searchParams,
         \VuFind\Config\Config $blenderConfig,
         array $mappings,
-        AuthorityHelper $authHelper
+        protected AuthorityHelper $authHelper
     ) {
         parent::__construct(
             $options,
-            $configLoader,
+            $configManager,
             $facetHelper,
             $searchParams,
             $blenderConfig,
             $mappings
         );
-
-        $this->authorityHelper = $authHelper;
     }
 
     /**

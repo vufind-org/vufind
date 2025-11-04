@@ -30,6 +30,8 @@
 
 namespace Finna\Search\Solr;
 
+use VuFind\Config\ConfigManagerInterface;
+
 /**
  * Solr Search Options
  *
@@ -64,11 +66,11 @@ class Options extends \VuFind\Search\Solr\Options
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(ConfigManagerInterface $configManager)
     {
-        parent::__construct($configLoader);
+        parent::__construct($configManager);
 
         $this->dateRangeVis = $this->facetSettings['SpecialFacets']['dateRangeVis'] ?? '';
 

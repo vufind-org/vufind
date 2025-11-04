@@ -103,23 +103,21 @@ class SideFacets extends \VuFind\Recommend\SideFacets implements TranslatorAware
         $iniName = $settings[2] ?? 'facets';
 
         // Load the desired facet information...
-        $config = $this->configLoader->get($iniName);
+        $config = $this->configManager->getConfigArray($iniName);
 
         // New items facets
-        if (isset($config->SpecialFacets->newItems)) {
-            $this->newItemsFacets = $config->SpecialFacets->newItems->toArray();
+        if (null !== ($facets = $config['SpecialFacets']['newItems'] ?? null)) {
+            $this->newItemsFacets = $facets;
         }
 
         // Fallback check for older style of enabling the map in facets
-        if (isset($config->SpecialFacets->finna_geographic)) {
-            $finna_geographic = $config->SpecialFacets->finna_geographic->toArray();
+        if (null !== ($finnaGeographic = $config['SpecialFacets']['finna_geographic'] ?? null)) {
             $this->geographicFacet['map_selection']
-                = in_array('geographic_facet:location_geo', $finna_geographic);
+                = in_array('geographic_facet:location_geo', $finnaGeographic);
         }
 
-        if (isset($config->Geographical->map_selection)) {
-            $this->geographicFacet['map_selection']
-                = (bool)$config->Geographical->map_selection;
+        if (null !== ($mapSelection = $config->Geographical->map_selection ?? null)) {
+            $this->geographicFacet['map_selection'] = (bool)$mapSelection;
         }
     }
 

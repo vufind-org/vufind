@@ -31,6 +31,7 @@
 namespace Finna\Search\Solr;
 
 use VuFind\Config\Config;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Solr\Utils;
 
 use function in_array;
@@ -98,21 +99,21 @@ class Params extends \VuFind\Search\Solr\Params
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Base\Options  $options         Options to use
-     * @param \VuFind\Config\PluginManager $configLoader    Config loader
-     * @param HierarchicalFacetHelper      $facetHelper     Hierarchical
-     * facet helper
-     * @param AuthorityHelper              $authorityHelper Authority helper
-     * @param \VuFind\Date\Converter       $dateConverter   Date converter
+     * @param \VuFind\Search\Base\Options $options         Options to use
+     * @param ConfigManagerInterface      $configManager   Config manager
+     * @param HierarchicalFacetHelper     $facetHelper     Hierarchical
+     *                                                     facet helper
+     * @param AuthorityHelper             $authorityHelper Authority helper
+     * @param \VuFind\Date\Converter      $dateConverter   Date converter
      */
     public function __construct(
         $options,
-        \VuFind\Config\PluginManager $configLoader,
+        ConfigManagerInterface $configManager,
         HierarchicalFacetHelper $facetHelper,
         AuthorityHelper $authorityHelper,
         \VuFind\Date\Converter $dateConverter
     ) {
-        parent::__construct($options, $configLoader, $facetHelper);
+        parent::__construct($options, $configManager, $facetHelper);
 
         $this->dateConverter = $dateConverter;
         $this->authorityHelper = $authorityHelper;

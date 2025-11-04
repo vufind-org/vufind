@@ -30,6 +30,8 @@
 
 namespace Finna\Search\Primo;
 
+use VuFind\Config\ConfigManagerInterface;
+
 /**
  * Primo Search Options
  *
@@ -54,11 +56,11 @@ class Options extends \VuFind\Search\Primo\Options
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(ConfigManagerInterface $configManager)
     {
-        parent::__construct($configLoader);
+        parent::__construct($configManager);
 
         // Load autocomplete preference:
         $this->configureAutocomplete($this->searchSettings);

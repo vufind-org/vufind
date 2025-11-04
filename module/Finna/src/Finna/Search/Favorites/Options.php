@@ -30,6 +30,7 @@
 namespace Finna\Search\Favorites;
 
 use Finna\Controller\MyResearchController;
+use VuFind\Config\ConfigManager;
 
 /**
  * Search Favorites Options
@@ -48,11 +49,11 @@ class Options extends \VuFind\Search\Favorites\Options
      * Constructor
      * Add the limit and views options to Favorites.
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(ConfigManager $configManager)
     {
-        parent::__construct($configLoader);
+        parent::__construct($configManager);
 
         if ($limit = $this->searchSettings['General']['default_limit'] ?? null) {
             $this->defaultLimit = $limit;

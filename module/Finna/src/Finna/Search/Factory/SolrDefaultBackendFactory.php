@@ -86,8 +86,8 @@ class SolrDefaultBackendFactory extends \VuFind\Search\Factory\SolrDefaultBacken
 
         // Apply deduplication also if it's not enabled by default (could be enabled
         // by a special filter):
-        $search = $this->config->get($this->searchConfig);
-        if (!isset($search->Records->deduplication)) {
+        $searchConfig = $this->configManager->getConfigArray($this->searchConfig);
+        if (!isset($searchConfig['Records']['deduplication'])) {
             $events = $this->serviceLocator->get('SharedEventManager');
             $this->getDeduplicationListener($backend, false)->attach($events);
         }
@@ -112,12 +112,12 @@ class SolrDefaultBackendFactory extends \VuFind\Search\Factory\SolrDefaultBacken
     protected function createQueryBuilder()
     {
         $specs  = $this->loadSpecs();
-        $config = $this->config->get('config');
-        $defaultDismax = $config->Index->default_dismax_handler ?? 'dismax';
+        $config = $this->configManager->getConfigArray('config');
+        $defaultDismax = $config['Index']['default_dismax_handler'] ?? 'dismax';
 
         // Remove ExactSettings unless explicitly enabled:
-        $search = $this->config->get($this->searchConfig);
-        if (!($search->General->enable_exact_phrase_search ?? false)) {
+        $searchConfig = $this->configManager->getConfigArray($this->searchConfig);
+        if (!($searchConfig['General']['enable_exact_phrase_search'] ?? false)) {
             foreach ($specs as $handler => $spec) {
                 if (isset($spec['ExactSettings'])) {
                     unset($specs[$handler]['ExactSettings']);
@@ -128,13 +128,11 @@ class SolrDefaultBackendFactory extends \VuFind\Search\Factory\SolrDefaultBacken
         $builder = new QueryBuilder($specs, $defaultDismax);
 
         // Configure builder:
-        $search = $this->config->get($this->searchConfig);
-        $caseSensitiveBooleans = $search->General->case_sensitive_bools ?? true;
-        $caseSensitiveRanges = $search->General->case_sensitive_ranges ?? true;
+        $caseSensitiveBooleans = $searchConfig['General']['case_sensitive_bools'] ?? true;
+        $caseSensitiveRanges = $searchConfig['General']['case_sensitive_ranges'] ?? true;
         $unicodeNormalizationForm
-            = $search->General->unicode_normalization_form ?? 'NFKC';
-        $searchFilters = isset($config->Index->search_filters)
-            ? $config->Index->search_filters->toArray() : [];
+            = $searchConfig['General']['unicode_normalization_form'] ?? 'NFKC';
+        $searchFilters = $config['Index']['search_filters'] ?? [];
         $helper = new LuceneSyntaxHelper(
             $caseSensitiveBooleans,
             $caseSensitiveRanges,
@@ -154,7 +152,7 @@ class SolrDefaultBackendFactory extends \VuFind\Search\Factory\SolrDefaultBacken
     protected function createSimilarBuilder()
     {
         return new \FinnaSearch\Backend\Solr\SimilarBuilder(
-            $this->config->get($this->searchConfig),
+            $this->configManager->getConfigObject($this->searchConfig),
             $this->uniqueKey
         );
     }
