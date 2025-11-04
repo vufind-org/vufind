@@ -20,7 +20,6 @@ $config = [
                     'FinnaConsole\Command\Util\ExpireFinnaCacheCommand' => 'FinnaConsole\Command\Util\ExpireFinnaCacheCommandFactory',
                     'FinnaConsole\Command\Util\ExpireUsers' => 'FinnaConsole\Command\Util\ExpireUsersFactory',
                     'FinnaConsole\Command\Util\ImportComments' => 'FinnaConsole\Command\Util\ImportCommentsFactory',
-                    'FinnaConsole\Command\Util\OnlinePaymentMonitor' => 'FinnaConsole\Command\Util\OnlinePaymentMonitorFactory',
                     'FinnaConsole\Command\Util\ProcessRecordStatsLog' => 'FinnaConsole\Command\Util\ProcessRecordStatsLogFactory',
                     'FinnaConsole\Command\Util\ProcessStatsQueue' => 'FinnaConsole\Command\Util\ProcessStatsQueueFactory',
                     'FinnaConsole\Command\Util\ScheduledAlerts' => 'VuFindConsole\Command\ScheduledSearch\NotifyCommandFactory',
@@ -39,7 +38,6 @@ $config = [
                     'util/expire_finna_cache' => 'FinnaConsole\Command\Util\ExpireFinnaCacheCommand',
                     'util/expire_users' => 'FinnaConsole\Command\Util\ExpireUsers',
                     'util/import_comments' => 'FinnaConsole\Command\Util\ImportComments',
-                    'util/online_payment_monitor' => 'FinnaConsole\Command\Util\OnlinePaymentMonitor',
                     'util/process_record_stats' => 'FinnaConsole\Command\Util\ProcessRecordStatsLog',
                     'util/verify_record_links' => 'FinnaConsole\Command\Util\VerifyRecordLinks',
                     'util/verify_resource_metadata' => 'FinnaConsole\Command\Util\VerifyResourceMetadata',
@@ -48,6 +46,7 @@ $config = [
 
                     // Back-compatibility:
                     'util/scheduled_alerts' => 'FinnaConsole\Command\Util\ScheduledAlerts',
+                    'util/online_payment_monitor' => \VuFindConsole\Command\OnlinePayment\MonitorCommand::class,
                 ],
             ],
         ],

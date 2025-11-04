@@ -47,7 +47,7 @@ use function intval;
 /**
  * Payment data to be sent to CPU payment gateway.
  *
- * @since 2015-05-19 MB, Version 1.0 created
+ * @since   2015-05-19 MB, Version 1.0 created
  * @version 1.0
  */
 class Payment
@@ -161,8 +161,8 @@ class Payment
      * Adds product into payment data.
      * Checks validity of product data before including it.
      *
-     * @see Product::isValid()
-     * @param Product $product Product
+     * @see    Product::isValid()
+     * @param  Product $product Product
      * @return Payment
      */
     public function addProduct(Product $product)
@@ -209,8 +209,8 @@ class Payment
      * Calculates sha256 signature.
      * Only mandatory properties and properties with values are used in calculation.
      *
-     * @param string $source Source identification given by CPU
-     * @param string $secret_key Secret Key identification given by CPU
+     * @param  string $source     Source identification given by CPU
+     * @param  string $secret_key Secret Key identification given by CPU
      * @return string sha256 hash signature
      */
     public function calculateHash($source, $secret_key)

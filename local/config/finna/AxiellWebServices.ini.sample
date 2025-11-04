@@ -195,7 +195,7 @@ enabled = false
 ;sort['AUTHOR ASCENDING'] = 'sort_author'
 ;sort['TITLE ASCENDING'] = 'sort_title'
 
-[onlinePayment]
+[OnlinePayment]
 ; Whether online payment is enabled. Default is false.
 enabled = true
 ; Transaction fee (in cents) added to each payment

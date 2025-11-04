@@ -72,7 +72,6 @@ use function strlen;
  */
 class MyResearchController extends \VuFind\Controller\MyResearchController
 {
-    use FinnaOnlinePaymentControllerTrait;
     use FinnaUnsupportedFunctionViewTrait;
     use FinnaPersonalInformationSupportTrait;
     use Feature\FinnaUserListTrait;
@@ -1198,9 +1197,6 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
 
         $view = parent::finesAction();
         $view->blocks = $this->getAccountBlocks($patron);
-        if (isset($patron['source'])) {
-            $this->handleOnlinePayment($patron, $view->fines, $view);
-        }
         return $view;
     }
 

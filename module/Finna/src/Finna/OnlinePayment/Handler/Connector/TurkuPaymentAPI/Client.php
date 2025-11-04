@@ -30,10 +30,9 @@
 
 namespace Finna\OnlinePayment\Handler\Connector\TurkuPaymentAPI;
 
-use Finna\OnlinePayment\Handler\Connector\Paytrail\PaytrailPaymentAPI\Client as FinnaPaytrailClient;
-use Laminas\Log\LoggerInterface;
 use Paytrail\SDK\Request\PaymentRequest;
 use Paytrail\SDK\Response\PaymentResponse;
+use Psr\Log\LoggerInterface;
 use VuFindHttp\HttpService;
 
 /**
@@ -46,7 +45,7 @@ use VuFindHttp\HttpService;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class Client extends FinnaPaytrailClient
+class Client extends \Paytrail\SDK\Client
 {
     /**
      * OId for authorized users

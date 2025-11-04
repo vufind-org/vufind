@@ -109,6 +109,11 @@ class KohaRestSuomi extends KohaRestSuomiVuFind
     {
         parent::init();
 
+        // BC for online payment configuration:
+        if (empty($this->config['OnlinePayment']) && !empty($this->config['onlinePayment'])) {
+            $this->config['OnlinePayment'] = $this->config['onlinePayment'];
+        }
+
         $this->groupHoldingsByLocation
             = $this->config['Holdings']['group_by_location']
             ?? '';
@@ -684,7 +689,7 @@ class KohaRestSuomi extends KohaRestSuomiVuFind
                     $amount += $fine['balance'];
                 }
             }
-            $config = $this->getConfig('onlinePayment');
+            $config = $this->getConfig('OnlinePayment');
             $nonPayableReason = false;
             if (isset($config['minimumFee']) && $amount < $config['minimumFee']) {
                 $nonPayableReason = 'online_payment_minimum_fee';
@@ -703,38 +708,42 @@ class KohaRestSuomi extends KohaRestSuomiVuFind
     }
 
     /**
-     * Mark fees as paid.
+     * Register a payment.
      *
      * This is called after a successful online payment.
      *
-     * @param array  $patron            Patron
-     * @param int    $amount            Amount to be registered as paid
-     * @param string $transactionId     Transaction ID
-     * @param int    $transactionNumber Internal transaction number
-     * @param ?array $fineIds           Fine IDs to mark paid or null for bulk
+     * @param array   $patron                  Patron
+     * @param int     $amount                  Amount to be registered as paid
+     * @param string  $localPaymentIdentifier  Local payment identifier
+     * @param ?string $remotePaymentIdentifier Remote payment identifier
+     * @param int     $paymentId               Internal payment id
+     * @param ?array  $fineIds                 Fine IDs to mark paid or null for bulk payment
      *
      * @throws ILSException
-     * @return true|string True on success, error description on error
+     * @return array Associative array with keys success (bool, always) and reason (string, on error)
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function markFeesAsPaid(
-        $patron,
-        $amount,
-        $transactionId,
-        $transactionNumber,
-        $fineIds = null
-    ) {
+    public function registerPayment(
+        array $patron,
+        int $amount,
+        string $localPaymentIdentifier,
+        ?string $remotePaymentIdentifier,
+        int $paymentId,
+        ?array $fineIds = null
+    ): array {
         $request = [
             'amount' => $amount / 100,
-            'note' => "Online transaction $transactionId",
+            'note' => "Online transaction $localPaymentIdentifier",
         ];
         $operator = $patron;
         if (
-            !empty($this->config['onlinePayment']['userId'])
-            && !empty($this->config['onlinePayment']['userPassword'])
+            !empty($this->config['OnlinePayment']['userId'])
+            && !empty($this->config['OnlinePayment']['userPassword'])
         ) {
             $operator = [
-                'cat_username' => $this->config['onlinePayment']['userId'],
-                'cat_password' => $this->config['onlinePayment']['userPassword'],
+                'cat_username' => $this->config['OnlinePayment']['userId'],
+                'cat_password' => $this->config['OnlinePayment']['userPassword'],
             ];
         }
 
@@ -754,7 +763,9 @@ class KohaRestSuomi extends KohaRestSuomiVuFind
         // Clear patron's block cache
         $cacheId = 'blocks|' . $patron['id'];
         $this->removeCachedData($cacheId);
-        return true;
+        return [
+            'success' => true,
+        ];
     }
 
     /**
@@ -886,7 +897,7 @@ class KohaRestSuomi extends KohaRestSuomiVuFind
             return ['enabled' => true];
         }
         $functionConfig = parent::getConfig($function, $params);
-        if ($functionConfig && 'onlinePayment' === $function) {
+        if ($functionConfig && 'OnlinePayment' === $function) {
             if (!isset($functionConfig['exactBalanceRequired'])) {
                 $functionConfig['exactBalanceRequired'] = false;
             }

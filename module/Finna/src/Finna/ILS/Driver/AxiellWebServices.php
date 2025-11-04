@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2015-2022.
+ * Copyright (C) The National Library of Finland 2015-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -39,6 +39,7 @@ use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface as TranslatorAwareInterface;
 use VuFind\ILS\Logic\AvailabilityStatus;
+use VuFind\ILS\Logic\OnlinePaymentTrait;
 
 use function count;
 use function in_array;
@@ -71,6 +72,9 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase implements
     }
     use \VuFind\Cache\CacheTrait;
     use FinnaCommonILSTrait;
+    use OnlinePaymentTrait {
+        fineIsPayable as fineIsPayableBase;
+    }
 
     /**
      * Date formatting object
@@ -335,6 +339,11 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase implements
     {
         if (empty($this->config)) {
             throw new ILSException('Configuration needs to be set.');
+        }
+
+        // BC for online payment configuration:
+        if (empty($this->config['OnlinePayment']) && !empty($this->config['onlinePayment'])) {
+            $this->config['OnlinePayment'] = $this->config['onlinePayment'];
         }
 
         if (isset($this->config['Catalog']['arena_member'])) {
@@ -1614,7 +1623,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase implements
     {
         if (isset($this->config[$function])) {
             $functionConfig = $this->config[$function];
-            if ('onlinePayment' === $function) {
+            if ('OnlinePayment' === $function) {
                 if (!isset($functionConfig['exactBalanceRequired'])) {
                     $functionConfig['exactBalanceRequired'] = true;
                 }
@@ -2217,11 +2226,6 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase implements
         $username = $user['cat_username'];
         $password = $user['cat_password'];
 
-        $paymentConfig = $this->config['onlinePayment'] ?? [];
-        $blockedTypes = $paymentConfig['nonPayable'] ?? [];
-        $payableMinDate
-            = strtotime($paymentConfig['payableFineDateThreshold'] ?? '-5 years');
-
         $function = 'GetDebts';
         $functionResult = 'debtsResponse';
         $conf = [
@@ -2268,35 +2272,17 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase implements
             // Round the amount in case it's a weird decimal number:
             $amount = round($amount);
             $description = $debt->debtType . ' - ' . $debt->debtNote;
-            $debtDate = $this->dateFormat->convertFromDisplayDate(
-                'U',
-                $this->formatDate($debt->debtDate)
-            );
-            $payable = $amount > 0 && $debtDate >= $payableMinDate;
-            if ($payable) {
-                foreach ($blockedTypes as $blockedType) {
-                    if (
-                        $blockedType === $description
-                        || (strncmp($blockedType, '/', 1) === 0
-                        && substr_compare($blockedType, '/', -1) === 0
-                        && preg_match($blockedType, $description))
-                    ) {
-                        $payable = false;
-                        break;
-                    }
-                }
-            }
             $fine = [
                 'debt_id' => $debt->id,
-                'fine_id' => $debt->id,
+                'fineId' => $debt->id,
                 'amount' => $amount,
                 'checkout' => '',
                 'fine' => $description,
                 'balance' => $amount,
                 'createdate' => $debt->debtDate,
-                'payableOnline' => $payable,
                 'organization' => trim($debt->organisation ?? ''),
             ];
+            $fine['payableOnline'] = $this->fineIsPayable($fine);
             $finesList[] = $fine;
         }
 
@@ -2317,64 +2303,30 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Return details on fees payable online.
-     *
-     * @param array  $patron          Patron
-     * @param array  $fines           Patron's fines
-     * @param ?array $selectedFineIds Selected fines
-     *
-     * @throws ILSException
-     * @return array Associative array of payment details,
-     * false if an ILSException occurred.
-     */
-    public function getOnlinePaymentDetails($patron, $fines, ?array $selectedFineIds)
-    {
-        if (!empty($fines)) {
-            $amount = 0;
-            foreach ($fines as $fine) {
-                if ($fine['payableOnline']) {
-                    $amount += $fine['balance'];
-                }
-            }
-            $config = $this->getConfig('onlinePayment');
-            $nonPayableReason = false;
-            if (isset($config['minimumFee']) && $amount < $config['minimumFee']) {
-                $nonPayableReason = 'online_payment_minimum_fee';
-            }
-            $res = ['payable' => empty($nonPayableReason), 'amount' => $amount];
-            if ($nonPayableReason) {
-                $res['reason'] = $nonPayableReason;
-            }
-            return $res;
-        }
-        return [
-            'payable' => false,
-            'amount' => 0,
-            'reason' => 'online_payment_minimum_fee',
-        ];
-    }
-
-    /**
-     * Mark fees as paid.
+     * Register a payment.
      *
      * This is called after a successful online payment.
      *
-     * @param array  $patron            Patron
-     * @param int    $amount            Amount to be registered as paid
-     * @param string $transactionId     Transaction ID
-     * @param int    $transactionNumber Internal transaction number
-     * @param ?array $fineIds           Fine IDs to mark paid or null for bulk
+     * @param array   $patron                  Patron
+     * @param int     $amount                  Amount to be registered as paid
+     * @param string  $localPaymentIdentifier  Local payment identifier
+     * @param ?string $remotePaymentIdentifier Remote payment identifier
+     * @param int     $paymentId               Internal payment id
+     * @param ?array  $fineIds                 Fine IDs to mark paid or null for bulk payment
      *
      * @throws ILSException
-     * @return true|string True on success, error description on error
+     * @return array Associative array with keys success (bool, always) and reason (string, on error)
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function markFeesAsPaid(
-        $patron,
-        $amount,
-        $transactionId,
-        $transactionNumber,
-        $fineIds = null
-    ) {
+    public function registerPayment(
+        array $patron,
+        int $amount,
+        string $localPaymentIdentifier,
+        ?string $remotePaymentIdentifier,
+        int $paymentId,
+        ?array $fineIds = null
+    ): array {
         $function = 'AddPayment';
         $functionResult = 'addPaymentResponse';
         $functionParam = 'addPaymentRequest';
@@ -2394,19 +2346,22 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase implements
             }
         );
 
-        $paymentConfig = $this->getConfig('onlinePayment');
+        $paymentConfig = $this->getConfig('OnlinePayment');
         if (
             $total < $amount
             || (!empty($paymentConfig['exactBalanceRequired']) && $total != $amount)
         ) {
-            return 'fines_updated';
+            return [
+                'success' => false,
+                'reason' => 'Payment::error_fines_changed',
+            ];
         }
 
-        $debtIds = array_column($payableFines, 'debt_id');
+        $debtIds = array_column($payableFines, 'fineId');
         $request = [
             'arenaMember'       => $this->arenaMember,
-            'orderId'           => (string)$transactionNumber,
-            'transactionNumber' => (string)$transactionId,
+            'orderId'           => (string)$localPaymentIdentifier,
+            'transactionNumber' => (string)$paymentId,
             'paymentAmount'     => $amount,
             // Comma-separated list of IDs since the API has it single-valued
             'debts'             => ['id' => implode(',', $debtIds)],
@@ -2443,7 +2398,9 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase implements
         $cacheKey = $this->getPatronCacheKey($patron['cat_username']);
         $this->putCachedData($cacheKey, null);
 
-        return true;
+        return [
+            'success' => true,
+        ];
     }
 
     /**
@@ -3489,5 +3446,41 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase implements
             return $wsdl;
         }
         return $this->pathResolver->getConfigPath($wsdl);
+    }
+
+    /**
+     * Check if a fine is payable.
+     *
+     * @param array $fine Fine
+     *
+     * @return bool
+     */
+    protected function fineIsPayable(array $fine): bool
+    {
+        if (!$this->fineIsPayableBase($fine)) {
+            return false;
+        }
+
+        $paymentConfig = $this->config['OnlinePayment'] ?? [];
+        $blockedTypes = $paymentConfig['nonPayable'] ?? [];
+        $payableMinDate = strtotime($paymentConfig['payableFineDateThreshold'] ?? '-5 years');
+
+        $debtDate = $this->dateFormat->convertFromDisplayDate(
+            'U',
+            $this->formatDate($fine['createdate'])
+        );
+        if ($debtDate < $payableMinDate) {
+            return false;
+        }
+        foreach ($blockedTypes as $blockedType) {
+            if (
+                $blockedType === $fine['fine']
+                || (str_starts_with($blockedType, '/')
+                && str_ends_with($blockedType, '/')
+                && preg_match($blockedType, $fine['fine']))
+            ) {
+                return false;
+            }
+        }
     }
 }

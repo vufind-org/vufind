@@ -41,18 +41,23 @@
 
 namespace Finna\OnlinePayment\Handler\Connector\Cpu;
 
+use VuFind\Log\LoggerAwareTrait;
+use VuFindHttp\HttpServiceAwareTrait;
+
 use function intval;
+use function strlen;
 
 /**
  * Client example of CPU Verkkomaksu API.
  * Handles validating and sending data to eCommerce service.
  *
- * @since 2015-05-19 MB, Version 1.0 created
+ * @since   2015-05-19 MB, Version 1.0 created
  * @version 1.0
  */
 class Client
 {
-    use \Finna\OnlinePayment\OnlinePaymentHttpRequestTrait;
+    use HttpServiceAwareTrait;
+    use LoggerAwareTrait;
 
     /**
      * Url of eCommerce service where payment data will be sent.
@@ -83,8 +88,8 @@ class Client
      * Constructor initializes object with client settings.
      *
      * @param string $service_url Url pointing to eCommerce payment checkout
-     * @param string $source Client account
-     * @param string $secret_key Client password
+     * @param string $source      Client account
+     * @param string $secret_key  Client password
      */
     public function __construct($service_url, $source, $secret_key)
     {
@@ -99,8 +104,8 @@ class Client
      *
      * Redirect customer to PaymentAddress after validating response data.
      *
-     * @param Payment $payment Payment data
-     * @return mixed array containing an errormessage, JSON response from eCommerce or false
+     * @param  Payment $payment Payment data
+     * @return mixed array containing an error message or JSON response from eCommerce
      */
     public function sendPayment(Payment $payment)
     {
@@ -129,18 +134,39 @@ class Client
                'Content-Type' => 'application/json; charset=utf-8',
             ];
 
-            $response = $this->postRequest(
+            $client = $this->httpService->createClient($this->service_url, 'POST', 30);
+            $client->setOptions($options);
+            $headers = array_merge(
+                [
+                    'Content-Type' => 'application/json',
+                    'Content-Length' => strlen($json_data),
+                ],
+                $headers
+            );
+            $client->setHeaders($headers);
+            $client->setRawBody($json_data);
+            $response = $client->send();
+
+            $response = $this->httpService->post(
                 $this->service_url,
                 $json_data,
                 $options,
                 $headers
             );
 
-            if (!$response) {
+            $status = $response->getStatusCode();
+            $content = $response->getBody();
+
+            if (!$response->isSuccess()) {
+                throw new \Exception(
+                    "Error posting request: invalid status code: $status"
+                    . ", url: $this->service_url, body: $json_data, headers: " . var_export($headers, true)
+                    . ", response: $content"
+                );
                 return ['error' => 'Failed to send payment'];
             }
 
-            return $response['response'];
+            return $content;
         }
 
         return ['error' => 'Error with settings'];
@@ -150,9 +176,9 @@ class Client
      * Calculates sha256 signature.
      * Only mandatory properties and properties with values are used in calculation.
      *
-     * @param Payment $payment Payment object
-     * @param string $source Source identification given by CPU
-     * @param string $secret_key Secret Key identification given by CPU
+     * @param  Payment $payment    Payment object
+     * @param  string  $source     Source identification given by CPU
+     * @param  string  $secret_key Secret Key identification given by CPU
      * @return string sha256 hash signature
      */
     public static function calculateHash(Payment $payment, $source, $secret_key)
@@ -223,7 +249,7 @@ class Client
     /**
      * Simple sanitazion method.
      *
-     * @param string $value Value to be sanitated
+     * @param  string $value Value to be sanitated
      * @return string Clean value
      */
     public static function sanitize($value)

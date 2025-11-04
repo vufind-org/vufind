@@ -183,6 +183,11 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function init()
     {
+        // BC for online payment configuration:
+        if (empty($this->config['OnlinePayment']) && !empty($this->config['onlinePayment'])) {
+            $this->config['OnlinePayment'] = $this->config['onlinePayment'];
+        }
+
         $this->holdingsOrganisationOrder
             = isset($this->config['Holdings']['holdingsOrganisationOrder'])
             ? explode(':', $this->config['Holdings']['holdingsOrganisationOrder'])
@@ -215,7 +220,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function getConfig($function, $params = null)
     {
-        if ('onlinePayment' === $function) {
+        if ('OnlinePayment' === $function) {
             $config = $this->config['OnlinePayment'] ?? [];
             if (!empty($config) && !isset($config['exactBalanceRequired'])) {
                 $config['exactBalanceRequired'] = false;
@@ -467,7 +472,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
                 $payableFines
             );
         }
-        $paymentConfig = $this->getConfig('onlinePayment');
+        $paymentConfig = $this->getConfig('OnlinePayment');
         $blockedTypes = $paymentConfig['nonPayable'] ?? [];
 
         $fines = [];
@@ -1458,7 +1463,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
      */
     public function supportsMethod($method, $params)
     {
-        if ($method == 'markFeesAsPaid') {
+        if ($method == 'registerPayment') {
             return $this->supportsOnlinePayment();
         }
 
@@ -1504,7 +1509,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
                 $allowPayment = false;
             }
         }
-        $config = $this->getConfig('onlinePayment');
+        $config = $this->getConfig('OnlinePayment');
         if (
             !$nonPayableReason && !empty($config['minimumFee'])
             && $amount < $config['minimumFee']
@@ -1524,29 +1529,33 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
     }
 
     /**
-     * Mark fees as paid.
+     * Register a payment.
      *
      * This is called after a successful online payment.
      *
-     * @param array  $patron            Patron
-     * @param int    $amount            Amount to be registered as paid
-     * @param string $transactionId     Transaction ID
-     * @param int    $transactionNumber Internal transaction number
-     * @param ?array $fineIds           Fine IDs to mark paid or null for bulk
+     * @param array   $patron                  Patron
+     * @param int     $amount                  Amount to be registered as paid
+     * @param string  $localPaymentIdentifier  Local payment identifier
+     * @param ?string $remotePaymentIdentifier Remote payment identifier
+     * @param int     $paymentId               Internal payment id
+     * @param ?array  $fineIds                 Fine IDs to mark paid or null for bulk payment
      *
      * @throws ILSException
-     * @return true|string True on success, error description on error
+     * @return array Associative array with keys success (bool, always) and reason (string, on error)
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function markFeesAsPaid(
-        $patron,
-        $amount,
-        $transactionId,
-        $transactionNumber,
-        $fineIds = null
-    ) {
+    public function registerPayment(
+        array $patron,
+        int $amount,
+        string $localPaymentIdentifier,
+        ?string $remotePaymentIdentifier,
+        int $paymentId,
+        ?array $fineIds = null
+    ): array {
         $userId = $patron['id'];
 
-        $paymentConfig = $this->getConfig('onlinePayment');
+        $paymentConfig = $this->getConfig('OnlinePayment');
         $fines = $this->getMyFines($patron);
         $payableFines = array_filter(
             $fines,
@@ -1566,7 +1575,10 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
             $total < $amount
             || (!empty($paymentConfig['exactBalanceRequired']) && $total != $amount)
         ) {
-            return 'fines_updated';
+            return [
+                'success' => false,
+                'reason' => 'Payment::error_fines_changed',
+            ];
         }
 
         $amountLeft = $amount;
@@ -1599,7 +1611,9 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
             }
         }
 
-        return true;
+        return [
+            'success' => true,
+        ];
     }
 
     /**
@@ -1609,7 +1623,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected function supportsOnlinePayment()
     {
-        $config = $this->getConfig('onlinePayment');
+        $config = $this->getConfig('OnlinePayment');
         return $config['enabled'] ?? false;
     }
 

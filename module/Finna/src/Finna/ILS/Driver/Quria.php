@@ -1325,7 +1325,7 @@ class Quria extends AxiellWebServices
         $username = $user['cat_username'];
         $password = $user['cat_password'];
 
-        $paymentConfig = $this->config['onlinePayment'] ?? [];
+        $paymentConfig = $this->config['OnlinePayment'] ?? [];
         $blockedTypes = $paymentConfig['nonPayable'] ?? [];
         $payableMinDate
             = strtotime($paymentConfig['payableFineDateThreshold'] ?? '-5 years');
@@ -1397,6 +1397,7 @@ class Quria extends AxiellWebServices
             $fine = [
                 'debt_id' => $debt->id,
                 'fine_id' => $debt->id,
+                'fineId' => $debt->id,
                 'amount' => $amount,
                 'checkout' => '',
                 'fine' => $description,

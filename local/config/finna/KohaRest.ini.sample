@@ -152,7 +152,7 @@ indexes = "868az"
 ; Whether to sort items by enumchron. Default is true.
 ;sort_by_enum_chron = false
 
-[onlinePayment]
+[OnlinePayment]
 ; Whether online payment is enabled. Default is false.
 enabled = true
 ; Transaction fee (in cents) added to each payment

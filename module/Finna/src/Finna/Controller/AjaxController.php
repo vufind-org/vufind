@@ -43,19 +43,6 @@ namespace Finna\Controller;
 class AjaxController extends \VuFind\Controller\AjaxController
 {
     /**
-     * Handle online payment notification callback.
-     *
-     * An empty response with HTTP code 200 is returned
-     *
-     * @return \Laminas\Http\Response
-     */
-    public function onlinePaymentNotifyAction()
-    {
-        // Use text/html to avoid any output
-        return $this->callAjaxMethod('onlinePaymentNotify', 'text/html');
-    }
-
-    /**
      * Handle a file download with AJAX call
      *
      * @return \Laminas\Http\Response

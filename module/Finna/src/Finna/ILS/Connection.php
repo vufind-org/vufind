@@ -451,22 +451,6 @@ class Connection extends \VuFind\ILS\Connection
     }
 
     /**
-     * Check if online payment is supported.
-     *
-     * @param array $functionConfig Function configuration values
-     * @param array $params         An array of function-specific params (or null)
-     *
-     * @return boolean
-     */
-    protected function checkMethodmarkFeesAsPaid($functionConfig, $params)
-    {
-        if ($this->checkCapability('markFeesAsPaid', [$params ?: []])) {
-            return ['function' => 'markFeesAsPaid'];
-        }
-        return false;
-    }
-
-    /**
      * Check if title lists are enabled
      *
      * @param array $functionConfig Function configuration values

@@ -179,17 +179,17 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend implements Translator
     {
         // Determine config file name based on class name:
         try {
-            $config = $this->configLoader->get(
+            $config = $this->configManager->getConfigArray(
                 $this->drivers[$source] . '_' . $source
-            )->toArray();
+            );
             if (!empty($config)) {
                 return $config;
             }
             // Fallback for KohaRestSuomi to also look for KohaRest_$source.ini
             if ('KohaRestSuomi' === $this->drivers[$source]) {
-                $config = $this->configLoader->get(
+                $config = $this->configManager->getConfigArray(
                     'KohaRest_' . $source
-                )->toArray();
+                );
                 if (!empty($config)) {
                     return $config;
                 }

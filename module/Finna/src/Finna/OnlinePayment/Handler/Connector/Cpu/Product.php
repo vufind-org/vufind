@@ -44,9 +44,8 @@ namespace Finna\OnlinePayment\Handler\Connector\Cpu;
 /**
  * Product data wrapper to make it easier to use and validate products.
  *
- * @since 2015-05-19 MB, version 1.0 created
+ * @since   2015-05-19 MB, version 1.0 created
  * @version 1.0
- *
  */
 class Product
 {
@@ -71,7 +70,7 @@ class Product
      * Price of single product vat included in cents.
      *
      * @example 20.50€ = 2050
-     * @var integer
+     * @var     integer
      */
     public $Price = null;
 
@@ -95,10 +94,10 @@ class Product
      * Constructor creates the product.
      * Sanitizes all the parameters to be fit for Product object.
      *
-     * @param string $code Product code
-     * @param integer $amount Amount ordered
-     * @param number $price Price of single product
-     * @param string $description Short product description
+     * @param string  $code        Product code
+     * @param integer $amount      Amount ordered
+     * @param number  $price       Price of single product
+     * @param string  $description Short product description
      */
     public function __construct($code, $amount = null, $price = null, $description = null)
     {

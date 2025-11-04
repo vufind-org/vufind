@@ -390,10 +390,6 @@ $config = [
             'Finna\LocationService\LocationService' => 'Finna\LocationService\LocationServiceFactory',
             'Finna\Mailer\Mailer' => 'VuFind\Mailer\Factory',
             'Finna\OAI\Server' => 'VuFind\OAI\ServerFactory',
-            'Finna\OnlinePayment\Handler\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
-            'Finna\OnlinePayment\OnlinePayment' => 'Finna\OnlinePayment\OnlinePaymentFactory',
-            'Finna\OnlinePayment\Receipt' => 'Finna\OnlinePayment\ReceiptFactory',
-            'Finna\OnlinePayment\Session' => 'Finna\OnlinePayment\OnlinePaymentSessionFactory',
             'Finna\OrganisationInfo\OrganisationInfo' => 'Finna\OrganisationInfo\OrganisationInfoFactory',
             'Finna\OrganisationInfo\Provider\Kirkanta' => 'Finna\OrganisationInfo\Provider\AbstractProviderFactory',
             'Finna\OrganisationInfo\Provider\MuseotFi' => 'Finna\OrganisationInfo\Provider\AbstractProviderFactory',
@@ -531,10 +527,6 @@ $config = [
                         'Finna\AjaxHandler\ReservationListFactory',
                     'Finna\AjaxHandler\ImportFavorites' =>
                         'Finna\AjaxHandler\ImportFavoritesFactory',
-                    'Finna\AjaxHandler\OnlinePaymentNotify' =>
-                        'Finna\AjaxHandler\AbstractOnlinePaymentActionFactory',
-                    'Finna\AjaxHandler\RegisterOnlinePayment' =>
-                        'Finna\AjaxHandler\AbstractOnlinePaymentActionFactory',
                     'Finna\AjaxHandler\SystemStatus' =>
                         'VuFind\AjaxHandler\SystemStatusFactory',
                     'Finna\AjaxHandler\WayfinderPlacementLinkLookup' =>
@@ -573,8 +565,6 @@ $config = [
                     'getUserList' => 'Finna\AjaxHandler\GetUserList',
                     'reservationList' => 'Finna\AjaxHandler\ReservationList',
                     'importFavorites' => 'Finna\AjaxHandler\ImportFavorites',
-                    'onlinePaymentNotify' => 'Finna\AjaxHandler\OnlinePaymentNotify',
-                    'registerOnlinePayment' => 'Finna\AjaxHandler\RegisterOnlinePayment',
                     'wayfinderPlacementLinkLookup' => 'Finna\AjaxHandler\WayfinderPlacementLinkLookup',
 
                     // Overrides:
@@ -799,7 +789,18 @@ $config = [
                     'VuFind\ILS\Driver\SierraRest' => 'Finna\ILS\Driver\SierraRest',
                 ],
             ],
-            'onlinepayment_handler' => [ /* see Finna\OnlinePayment\Handler\PluginManager for defaults */ ],
+            'onlinepayment_handler' => [
+                'factories' => [
+                    \Finna\OnlinePayment\Handler\CPU::class => \VuFind\OnlinePayment\Handler\AbstractBaseFactory::class,
+                    \Finna\OnlinePayment\HAndler\TurkuPaymentAPI::class
+                        => \VuFind\OnlinePayment\Handler\AbstractBaseFactory::class,
+                ],
+                'aliases' => [
+                    'CPU' => \Finna\OnlinePayment\Handler\CPU::class,
+                    'PaytrailPaymentAPI' => 'Paytrail',
+                    'TurkuPaymentAPI' => \Finna\OnlinePayment\Handler\TurkuPaymentAPI::class,
+                ],
+            ],
             'video_handler' => [ /* see Finna\Video\Handler\PluginManager for defaults */ ],
             'reservationlist_handler' => [ /* see Finna\ReservationList\Handler\PluginManager for defaults */ ],
             'recommend' => [

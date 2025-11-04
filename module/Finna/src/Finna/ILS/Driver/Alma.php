@@ -33,6 +33,7 @@ use Finna\ILS\Driver\Feature\FinnaCommonILSTrait;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\ILS\Logic\AvailabilityStatus;
+use VuFind\ILS\Logic\OnlinePaymentTrait;
 use VuFind\Marc\MarcReader;
 
 use function array_key_exists;
@@ -55,6 +56,9 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use FinnaCommonILSTrait;
+    use OnlinePaymentTrait {
+        fineIsPayable as fineIsPayableBase;
+    }
 
     /**
      * Simple cache to avoid repeated requests
@@ -191,7 +195,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                     }
                     $finesGrouped[$key]['amount'] += $fine['amount'];
                     $finesGrouped[$key]['balance'] += $fine['balance'];
-                    $finesGrouped[$key]['fine_id'] .= '|' . $fine['fine_id'];
+                    $finesGrouped[$key]['fineId'] .= '|' . $fine['fineId'];
                 } else {
                     $finesGrouped[$key] = $fine;
                 }
@@ -326,69 +330,30 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
     }
 
     /**
-     * Return details on fees payable online.
-     *
-     * @param array  $patron          Patron
-     * @param array  $fines           Patron's fines
-     * @param ?array $selectedFineIds Selected fines
-     *
-     * @throws ILSException
-     * @return array Associative array of payment details,
-     * false if an ILSException occurred.
-     */
-    public function getOnlinePaymentDetails($patron, $fines, ?array $selectedFineIds)
-    {
-        $amount = 0;
-        $payableFines = [];
-        foreach ($fines as $fine) {
-            if (
-                null !== $selectedFineIds
-                && !in_array($fine['fine_id'], $selectedFineIds)
-            ) {
-                continue;
-            }
-            if ($fine['payableOnline']) {
-                $amount += $fine['balance'];
-                $payableFines[] = $fine;
-            }
-        }
-        $paymentConfig = $this->config['OnlinePayment'] ?? [];
-        if ($amount >= ($paymentConfig['minimumFee'] ?? 0)) {
-            return [
-                'payable' => true,
-                'amount' => $amount,
-                'fines' => $payableFines,
-            ];
-        }
-
-        return [
-            'payable' => false,
-            'amount' => 0,
-            'reason' => 'online_payment_minimum_fee',
-        ];
-    }
-
-    /**
-     * Mark fees as paid.
+     * Register a payment.
      *
      * This is called after a successful online payment.
      *
-     * @param array  $patron            Patron
-     * @param int    $amount            Amount to be registered as paid
-     * @param string $transactionId     Transaction ID
-     * @param int    $transactionNumber Internal transaction number
-     * @param ?array $fineIds           Fine IDs to mark paid or null for bulk
+     * @param array   $patron                  Patron
+     * @param int     $amount                  Amount to be registered as paid
+     * @param string  $localPaymentIdentifier  Local payment identifier
+     * @param ?string $remotePaymentIdentifier Remote payment identifier
+     * @param int     $paymentId               Internal payment id
+     * @param ?array  $fineIds                 Fine IDs to mark paid or null for bulk payment
      *
      * @throws ILSException
-     * @return true|string True on success, error description on error
+     * @return array Associative array with keys success (bool, always) and reason (string, on error)
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function markFeesAsPaid(
-        $patron,
-        $amount,
-        $transactionId,
-        $transactionNumber,
-        $fineIds = null
-    ) {
+    public function registerPayment(
+        array $patron,
+        int $amount,
+        string $localPaymentIdentifier,
+        ?string $remotePaymentIdentifier,
+        int $paymentId,
+        ?array $fineIds = null
+    ): array {
         // Unpack grouped fine_id's:
         if (null !== $fineIds) {
             $newIds = [];
@@ -413,8 +378,8 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                     'op' => 'pay',
                     'amount' => sprintf('%0.02F', $fine['balance'] / 100),
                     'method' => 'ONLINE',
-                    'comment' => "Finna transaction $transactionNumber",
-                    'external_transaction_id' => $transactionId,
+                    'comment' => "Finna transaction $paymentId",
+                    'external_transaction_id' => $localPaymentIdentifier,
                 ];
                 $this->makeRequest(
                     '/users/' . rawurlencode($patron['id']) . '/fees/'
@@ -432,8 +397,8 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                 'op' => 'pay',
                 'amount' => sprintf('%0.02F', $amountRemaining / 100),
                 'method' => 'ONLINE',
-                'comment' => "Finna transaction $transactionNumber",
-                'external_transaction_id' => $transactionId,
+                'comment' => "Finna transaction $paymentId",
+                'external_transaction_id' => $localPaymentIdentifier,
             ];
             $this->makeRequest(
                 '/users/' . rawurlencode($patron['id']) . '/fees/all',
@@ -443,7 +408,12 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
             );
         }
 
-        return true;
+        $cacheId = 'alma|user|' . $patron['id'] . '|blocks';
+        $this->removeCachedData($cacheId);
+
+        return [
+            'success' => true,
+        ];
     }
 
     /**
@@ -544,7 +514,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
         $email = null;
         foreach ($contact->emails->email ?? [] as $item) {
             if ('true' === (string)$item['preferred']) {
-                $email = $item->email_address;
+                $email = $item;
                 break;
             }
         }
@@ -587,7 +557,7 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
                 'Y-m-d',
                 $this->dateConverter->convertFromDisplayDate('Y-m-d', $expiryDate)
             );
-            $diff = $date->diff(new \Datetime());
+            $diff = $date->diff(new \DateTime());
             if (!$diff->invert && $diff->days > 0) {
                 $expired = true;
             } elseif (
@@ -1187,13 +1157,6 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
      */
     public function getConfig($function, $params = null)
     {
-        if ('onlinePayment' === $function) {
-            $config = $this->config['OnlinePayment'] ?? [];
-            if (!empty($config) && !isset($config['exactBalanceRequired'])) {
-                $config['exactBalanceRequired'] = false;
-            }
-            return $config;
-        }
         if ('updateAddress' === $function) {
             $function = 'updateProfile';
         } elseif ('registerPatron' === $function) {
@@ -3183,39 +3146,50 @@ class Alma extends \VuFind\ILS\Driver\Alma implements TranslatorAwareInterface
      */
     protected function getFineList($patron)
     {
-        $paymentConfig = $this->config['OnlinePayment'] ?? [];
-        $blockedTypes = $paymentConfig['nonPayable'] ?? [];
-        $payableStatuses = $paymentConfig['payableStatuses'] ?? ['ACTIVE'];
         $xml = $this->makeRequest(
             '/users/' . rawurlencode($patron['id']) . '/fees'
         );
         $fineList = [];
         foreach ($xml as $fee) {
             $created = (string)$fee->creation_time;
-            $payable = false;
-            if (!empty($paymentConfig['enabled'])) {
-                $type = (string)$fee->type;
-                $status = (string)($fee->status ?? '');
-                $payable = in_array($status, $payableStatuses)
-                    && !in_array($type, $blockedTypes)
-                    && floatval($fee->balance) > 0;
-            }
             $feeType = $this->feeTypeMappings[(string)$fee->type]
                 ?? (string)$fee->type['desc'];
-            $fineList[] = [
+            $fine = [
+                'fineId'   => (string)$fee->id,
                 'fine_id'  => (string)$fee->id,
                 'title'    => (string)($fee->title ?? ''),
                 'amount'   => round(floatval($fee->original_amount) * 100),
                 'balance'  => round(floatval($fee->balance) * 100),
                 'createdate' => $this->parseDate($created, true),
                 'fine'     => $feeType,
-                'payableOnline' => $payable,
                 '_create_time' => (string)$fee->creation_time,
                 '_status_time' => (string)$fee->status_time,
-                '_barcode'    => (string)($fee->barcode ?? ''),
+                '_barcode' => (string)($fee->barcode ?? ''),
                 '_status'  => (string)$fee->status ?? '',
+                '_type'    => (string)$fee->type,
             ];
+            $fine['payableOnline'] = $this->fineIsPayable($fine);
+            $fineList[] = $fine;
         }
         return $fineList;
+    }
+
+    /**
+     * Check if a fine is payable.
+     *
+     * @param array $fine Fine
+     *
+     * @return bool
+     */
+    protected function fineIsPayable(array $fine): bool
+    {
+        if (!$this->fineIsPayableBase($fine)) {
+            return false;
+        }
+        $paymentConfig = $this->config['OnlinePayment'] ?? [];
+        $blockedTypes = $paymentConfig['nonPayable'] ?? [];
+        $payableStatuses = $paymentConfig['payableStatuses'] ?? ['ACTIVE'];
+        return in_array($fine['_status'], $payableStatuses)
+            && !in_array($fine['_type'], $blockedTypes);
     }
 }

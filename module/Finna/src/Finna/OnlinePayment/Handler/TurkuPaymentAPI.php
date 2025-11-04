@@ -30,14 +30,17 @@
 
 namespace Finna\OnlinePayment\Handler;
 
-use Finna\Db\Entity\FinnaTransactionEntityInterface;
 use Finna\OnlinePayment\Handler\Connector\TurkuPaymentAPI\Client;
 use Finna\OnlinePayment\Handler\Connector\TurkuPaymentAPI\Item;
 use Finna\OnlinePayment\Handler\Connector\TurkuPaymentAPI\PaymentRequest;
 use Finna\OnlinePayment\Handler\Connector\TurkuPaymentAPI\TurkuSignature;
+use Laminas\Http\PhpEnvironment\Response;
 use Paytrail\SDK\Model\CallbackUrl;
 use Paytrail\SDK\Model\Customer;
+use VuFind\Db\Entity\PaymentEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Type\AuditEventSubtype;
+use VuFind\Exception\PaymentException;
 
 /**
  * Turku Payment API handler
@@ -49,7 +52,7 @@ use VuFind\Db\Entity\UserEntityInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
  */
-class TurkuPaymentAPI extends AbstractBase
+class TurkuPaymentAPI extends \VuFind\OnlinePayment\Handler\AbstractBase
 {
     /**
      * Mappings from VuFind language codes to Paytrail
@@ -63,43 +66,41 @@ class TurkuPaymentAPI extends AbstractBase
     ];
 
     /**
-     * Start transaction.
+     * Start payment.
      *
-     * @param string              $returnBaseUrl  Return URL
-     * @param string              $notifyBaseUrl  Notify URL
-     * @param UserEntityInterface $user           User
-     * @param array               $patron         Patron information
-     * @param string              $driver         Patron MultiBackend ILS source
-     * @param int                 $amount         Amount (excluding transaction fee)
-     * @param int                 $transactionFee Transaction fee
-     * @param array               $fines          Fines data
-     * @param string              $currency       Currency
-     * @param string              $paymentParam   Payment status URL parameter
+     * Starts payment with the payment service and redirects the user to the service.
      *
-     * @return string Error message on error, otherwise redirects to payment handler.
+     * @param string              $returnBaseUrl Return URL
+     * @param string              $notifyBaseUrl Notify URL
+     * @param UserEntityInterface $user          User
+     * @param array               $patron        Patron information
+     * @param int                 $amount        Amount (excluding service fee)
+     * @param array               $fines         Fines data
+     * @param string              $paymentParam  Payment status URL parameter
+     *
+     * @return Response
+     *
+     * @throws PaymentException
      */
     public function startPayment(
         string $returnBaseUrl,
         string $notifyBaseUrl,
         UserEntityInterface $user,
         array $patron,
-        string $driver,
         int $amount,
-        int $transactionFee,
         array $fines,
-        string $currency,
         string $paymentParam
-    ) {
+    ): Response {
         $patronId = $patron['cat_username'];
-        $transactionId = $this->generateTransactionId($patronId);
+        $localIdentifier = $this->generateLocalIdentifier($patronId);
 
         $returnUrl = $this->addQueryParams(
             $returnBaseUrl,
-            [$paymentParam => $transactionId]
+            [$paymentParam => $localIdentifier]
         );
         $notifyUrl = $this->addQueryParams(
             $notifyBaseUrl,
-            [$paymentParam => $transactionId]
+            [$paymentParam => $localIdentifier]
         );
 
         $returnUrls = (new CallbackUrl())
@@ -117,185 +118,129 @@ class TurkuPaymentAPI extends AbstractBase
 
         $language = $this->languageMap[$this->getCurrentLanguageCode()] ?? 'FI';
         $sapOrganization = [
-            'sapSalesOrganization' => $this->config->sapSalesOrganization ?? '',
-            'sapDistributionChannel' => $this->config->sapDistributionChannel ?? '',
+            'sapSalesOrganization' => $this->config['sapSalesOrganization'] ?? '',
+            'sapDistributionChannel' => $this->config['sapDistributionChannel'] ?? '',
             'sapSector' => $this->config->sapSector ?? '',
         ];
-        $reference = preg_replace('/\PL/u', '', "{$transactionId}{$patronId}");
+        $reference = preg_replace('/\PL/u', '', "{$localIdentifier}{$patronId}");
+        $serviceFee = $this->getServiceFee();
         $paymentRequest = (new PaymentRequest())
             ->setUsePricesWithoutVat(true)
             ->setSapOrganizationDetails($sapOrganization)
-            ->setStamp($transactionId)
+            ->setStamp($localIdentifier)
             ->setRedirectUrls($returnUrls)
             ->setCallbackUrls($callbackUrls)
             ->setReference($reference)
             ->setCurrency('EUR')
             ->setLanguage($language)
-            ->setAmount(round($amount) + $transactionFee)
+            ->setAmount(round($amount) + $serviceFee)
             ->setCustomer($customer);
 
-        // Payment description in $this->config->paymentDescription is not supported
+        // Payment description in $this->config['paymentDescription'] is not supported
 
-        if (
-            isset($this->config->productCode)
-            || isset($this->config->transactionFeeProductCode)
-            || isset($this->config->productCodeMappings)
-            || isset($this->config->organizationProductCodeMappings)
-        ) {
-            // Map fines to items:
-            $productCode = !empty($this->config->productCode)
-                ? $this->config->productCode : '';
-            $productCodeMappings = $this->getProductCodeMappings();
-            $organizationProductCodeMappings
-                = $this->getOrganizationProductCodeMappings();
-            $items = [];
-            $sapProduct = [
-                'sapCode' => $this->config->sapCode ?? '',
-                'sapOfficeCode' => $this->config->sapOfficeCode ?? '',
-            ];
-            foreach ($fines as $fine) {
-                $fineType = $fine['fine'] ?? '';
-                $fineOrg = $fine['organization'] ?? '';
+        $items = [];
+        $sapProduct = [
+            'sapCode' => $this->config['sapCode'] ?? '',
+            'sapOfficeCode' => $this->config['sapOfficeCode'] ?? '',
+        ];
+        foreach ($fines as $fine) {
+            $code = $this->getFineProductCode($fine);
+            $code = mb_substr($code, 0, 100, 'UTF-8');
+            $fineDesc = $this->getFineDescription($fine, 1000);
+            $item = (new Item())
+                ->setSapProduct($sapProduct)
+                ->setDescription($fineDesc)
+                ->setProductCode($code)
+                ->setUnitPrice(round($fine['balance']))
+                ->setUnits(1)
+                ->setVatPercentage(0);
 
-                if (isset($productCodeMappings[$fineType])) {
-                    $code = $productCodeMappings[$fineType];
-                } elseif ($productCode) {
-                    $code = $productCode;
-                } else {
-                    $code = $fineType;
-                }
-                if (isset($organizationProductCodeMappings[$fineOrg])) {
-                    $code = $organizationProductCodeMappings[$fineOrg]
-                        . ($productCodeMappings[$fineType] ?? '');
-                }
-                $code = mb_substr($code, 0, 100, 'UTF-8');
-
-                $fineDesc = '';
-                if (!empty($fineType)) {
-                    $fineDesc
-                        = $this->translator->translate("fine_status_$fineType");
-                    if ("fine_status_$fineType" === $fineDesc) {
-                        $fineDesc = $this->translator->translate("status_$fineType");
-                        if ("status_$fineType" === $fineDesc) {
-                            $fineDesc = $fineType;
-                        }
-                    }
-                }
-                if (!empty($fine['title'])) {
-                    $title = mb_substr(
-                        $fine['title'],
-                        0,
-                        1000 - 4 - mb_strlen($fineDesc, 'UTF-8'),
-                        'UTF-8'
-                    );
-                    $fineDesc .= " ($title)";
-                }
-                $item = (new Item())
-                    ->setSapProduct($sapProduct)
-                    ->setDescription($fineDesc)
-                    ->setProductCode($code)
-                    ->setUnitPrice(round($fine['balance']))
-                    ->setUnits(1)
-                    ->setVatPercentage(0);
-
-                $items[] = $item;
-            }
-            if ($transactionFee) {
-                $code = $this->config->transactionFeeProductCode ?? $productCode;
-                $item = (new Item())
-                    ->setSapProduct($sapProduct)
-                    ->setDescription(
-                        'Palvelumaksu / Serviceavgift / Transaction fee'
-                    )
-                    ->setProductCode($code)
-                    ->setUnitPrice($transactionFee)
-                    ->setUnits(1)
-                    ->setVatPercentage(0);
-
-                $items[] = $item;
-            }
-            $paymentRequest->setItems($items);
+            $items[] = $item;
         }
+        if ($serviceFee) {
+            $item = (new Item())
+                ->setSapProduct($sapProduct)
+                ->setDescription($this->translator->translate('Payment::Service Fee'))
+                ->setProductCode($this->getServiceFeeProductCode())
+                ->setUnitPrice($serviceFee)
+                ->setUnits(1)
+                ->setVatPercentage(0);
+
+            $items[] = $item;
+        }
+        $paymentRequest->setItems($items);
 
         try {
             $paymentResponse = $this->initClient()->createPayment($paymentRequest);
         } catch (\Exception $e) {
             $request = json_encode($paymentRequest, JSON_PRETTY_PRINT);
             $this->logPaymentError(
-                'exception sending payment: ' . $e->getMessage(),
+                'Exception sending payment: ' . $e->getMessage(),
                 compact('user', 'patron', 'fines', 'request')
             );
             if (mb_strtolower($e->getMessage()) === 'email is empty') {
-                return 'Payment::email_address_missing';
+                throw new PaymentException('Payment::email_address_missing');
             }
-            return '';
+            throw new PaymentException('Payment::error_payment_request_failed');
         }
 
-        $transaction = $this->createTransactionEntity(
-            $transactionId,
-            $driver,
+        $payment = $this->createPaymentEntity(
+            $localIdentifier,
+            null,
             $user,
-            $patronId,
+            $patron,
             $amount,
-            $transactionFee,
-            $currency,
             $fines
         );
-        if (!$transaction) {
-            return 'Could not create transaction';
-        }
-
-        $this->redirectToPayment($paymentResponse->getHref(), $transaction);
-
-        return '';
+        return $this->redirectToPayment($paymentResponse->getHref(), $payment);
     }
 
     /**
      * Process the response from payment service.
      *
-     * @param FinnaTransactionEntityInterface $transaction Transaction
-     * @param \Laminas\Http\Request           $request     Request
+     * Validates the response from the payment service and marks the payment as paid as appropriate.
+     * Registration with ILS happens elsewhere.
      *
-     * @return array One of the result codes defined in AbstractBase and bool
-     * indicating whether the transaction was just now marked as paid
+     * @param PaymentEntityInterface $payment Payment
+     * @param \Laminas\Http\Request  $request Request
+     *
+     * @return int One of the result codes defined in AbstractBase
+     *
+     * @throws PaymentException
      */
     public function processPaymentResponse(
-        FinnaTransactionEntityInterface $transaction,
+        PaymentEntityInterface $payment,
         \Laminas\Http\Request $request
-    ): array {
+    ): int {
         if (!($params = $this->getPaymentResponseParams($request))) {
-            return [self::PAYMENT_FAILURE, false];
+            throw new PaymentException('Could not get payment response params');
         }
 
         // Make sure the transaction IDs match:
-        if ($transaction->getTransactionIdentifier() !== $params['checkout-stamp']) {
-            return [self::PAYMENT_FAILURE, false];
+        if ($payment->getLocalIdentifier() !== $params['checkout-stamp']) {
+            throw new PaymentException('Payment stamp mismatch');
         }
 
         $status = $params['checkout-status'];
         switch ($status) {
             case 'ok':
-                if ($marked = $transaction->isInProgress()) {
-                    $transaction->setPaid();
-                    $this->transactionService->persistEntity($transaction);
-                }
-                $this->addTransactionEvent($transaction, 'Transaction marked as paid');
-                return [self::PAYMENT_SUCCESS, $marked];
+                return self::PAYMENT_SUCCESS;
             case 'fail':
-                $transaction->setCanceled();
-                $this->transactionService->persistEntity($transaction);
-                $this->addTransactionEvent($transaction, 'Transaction marked as canceled');
-                return [self::PAYMENT_CANCEL, false];
+                return self::PAYMENT_CANCEL;
             case 'new':
             case 'pending':
             case 'delayed':
-                $this->addTransactionEvent($transaction, 'Transaction pending (received status $status)');
-                return [self::PAYMENT_PENDING, false];
+                return self::PAYMENT_PENDING;
         }
 
-        $this->logPaymentError("unknown status $status");
-        $this->addTransactionEvent($transaction, 'Received unknown status', ['status' => $status]);
-        return [self::PAYMENT_FAILURE, false];
+        $this->logPaymentError("Unknown status $status");
+        $this->addPaymentEvent(
+            $payment,
+            AuditEventSubtype::PaymentResponseHandler,
+            'Received unknown status',
+            ['status' => $status]
+        );
+        return self::PAYMENT_FAILURE;
     }
 
     /**
@@ -377,20 +322,20 @@ class TurkuPaymentAPI extends AbstractBase
     {
         foreach (['merchantId', 'secret', 'oId', 'url', 'platformName'] as $req) {
             if (!isset($this->config[$req])) {
-                $this->logPaymentError("missing parameter $req");
-                throw new \Exception('Missing parameter');
+                $this->logPaymentError("Missing payment configuration $req");
+                throw new \Exception('Missing payment configuration');
             }
         }
 
         return new Client(
             0,
-            $this->config->secret,
+            $this->config['secret'],
             'Finna',
-            $this->http,
-            $this->getLogger(),
-            $this->config->url,
-            $this->config->merchantId,
-            $this->config->oId
+            $this->httpService,
+            $this->logger,
+            $this->config['url'],
+            $this->config['merchantId'],
+            $this->config['oId']
         );
     }
 }
