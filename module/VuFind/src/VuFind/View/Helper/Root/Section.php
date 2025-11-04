@@ -62,21 +62,14 @@ class Section extends AbstractHelper
     protected string $defaultTemplateDir = 'Section';
 
     /**
-     * Sections.
+     * Section.
      *
-     * @var SectionInterface[]
+     * @var SectionInterface
      */
-    protected array $sections;
+    protected SectionInterface $section;
 
     /**
-     * Key of the current section.
-     *
-     * @var string
-     */
-    protected string $key;
-
-    /**
-     * Template to use for the current section.
+     * Template to use for the section.
      *
      * @var string
      */
@@ -106,11 +99,10 @@ class Section extends AbstractHelper
         ?string $template = null
     ): static {
         // Always call section service as the configuration might be different.
-        $this->sections[$key] = $this->sectionService->getSection($key, $config);
+        $this->section = $this->sectionService->getSection($key, $config);
         if (null === $template) {
             $template = $this->defaultTemplateDir . '/' . $key . '.phtml';
         }
-        $this->key = $key;
         $this->template = $template;
         return $this;
     }
@@ -125,7 +117,7 @@ class Section extends AbstractHelper
      */
     public function __call($methodName, $params)
     {
-        $method = [$this->sections[$this->key], $methodName];
+        $method = [$this->section, $methodName];
         if (is_callable($method)) {
             return call_user_func_array($method, $params);
         }
@@ -142,15 +134,14 @@ class Section extends AbstractHelper
      */
     public function render(array $context = []): string
     {
-        $mergedContext
-            = array_merge($this->sections[$this->key]->getContext(), $context);
+        $mergedContext = array_merge($this->section->getContext(), $context);
         $mergedContext[self::ADDITIONAL_CONTEXT_KEY] = $context;
         if ($this->getView()->resolver()->resolve($this->template)) {
             return $this->getView()->render($this->template, $mergedContext);
         } else {
             // Default to class-based template.
             $template = $this->defaultTemplateDir . '/%s.phtml';
-            $className = strtolower($this->sections[$this->key]::class);
+            $className = strtolower($this->section::class);
             return $this->renderClassTemplate($template, $className, $mergedContext);
         }
     }
