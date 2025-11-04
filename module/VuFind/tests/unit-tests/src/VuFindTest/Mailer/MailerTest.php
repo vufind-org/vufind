@@ -476,9 +476,9 @@ class MailerTest extends \PHPUnit\Framework\TestCase
 
         $callback = function ($message): bool {
             return 'to@example.com' == $message->getTo()[0]->toString()
-            && 'from@example.com' == $message->getFrom()[0]->toString()
-            && 'body' == $message->getBody()->getBody()
-            && 'Library Catalog Record: breadcrumb' == $message->getSubject();
+                && 'from@example.com' == $message->getFrom()[0]->toString()
+                && 'body' == $message->getBody()->getBody()
+                && 'Library Catalog Record: breadcrumb' == $message->getSubject();
         };
         $mailer = $this->getMailer($callback);
         $mailer->sendRecord('to@example.com', 'from@example.com', 'message', $driver, $view);
