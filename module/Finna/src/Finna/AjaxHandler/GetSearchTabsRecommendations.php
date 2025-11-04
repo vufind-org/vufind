@@ -156,7 +156,7 @@ class GetSearchTabsRecommendations extends \VuFind\AjaxHandler\AbstractBase impl
                         $otherResults = $this->searchRunner->run(
                             $uri->getQueryAsArray(),
                             $tab['class'],
-                            function ($runner, $params, $searchId) use ($count) {
+                            function ($runner, $params, $searchId) use ($count): void {
                                 $params->setLimit($count);
                                 $params->setPage(1);
                                 $params->resetFacetConfig();

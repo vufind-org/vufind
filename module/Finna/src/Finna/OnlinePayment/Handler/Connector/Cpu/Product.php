@@ -44,8 +44,12 @@ namespace Finna\OnlinePayment\Handler\Connector\Cpu;
 /**
  * Product data wrapper to make it easier to use and validate products.
  *
- * @since   2015-05-19 MB, version 1.0 created
- * @version 1.0
+ * @category VuFind
+ * @package  OnlinePayment
+ * @author   MB <asiakastuki@cpu.fi>
+ * @license  https://unlicense.org The Unlicense
+ * @link     https://www.cpu.fi/
+ * @since    2015-05-19 MB, version 1.0 created
  */
 class Product
 {

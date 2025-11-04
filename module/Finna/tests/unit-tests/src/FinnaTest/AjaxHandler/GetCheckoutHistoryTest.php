@@ -191,9 +191,8 @@ class GetCheckoutHistoryTest extends \VuFindTest\Unit\AjaxHandlerTestCase
      * @param array $expected          What is the expected result
      *
      * @return void
-     *
-     * @dataProvider getSuccessfulData
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getSuccessfulData')]
     public function testSuccess(int $defaultPageSize, int $batchLimit, array $transactionResult, array $expected)
     {
         $this->assertEquals(
@@ -211,9 +210,8 @@ class GetCheckoutHistoryTest extends \VuFindTest\Unit\AjaxHandlerTestCase
      * @param array $expected          What is the expected result
      *
      * @return void
-     *
-     * @dataProvider getFailuresData
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getFailuresData')]
     public function testFailures(int $defaultPageSize, int $batchLimit, array $transactionResult, array $expected)
     {
         $this->assertEquals(

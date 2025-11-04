@@ -85,7 +85,7 @@ class RecordPreviewController extends \VuFind\Controller\AbstractBase
         $sources = json_decode($body, true);
         array_walk(
             $sources,
-            function (&$a) {
+            function (&$a): void {
                 $a['institutionName'] = $this->translate(
                     '0/' . $a['institution'] . '/',
                     [],

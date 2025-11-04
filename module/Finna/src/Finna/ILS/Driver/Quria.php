@@ -924,7 +924,7 @@ class Quria extends AxiellWebServices
         $transactions = $this->objectToArray(
             $result->loanHistoryResponse->loanHistoryItems->loanHistoryItem ?? []
         );
-        foreach ($transactions as $transaction => $record) {
+        foreach ($transactions as $record) {
             $obj = $record->catalogueRecord;
             $title = $obj->title;
             if (!empty($record->note)) {

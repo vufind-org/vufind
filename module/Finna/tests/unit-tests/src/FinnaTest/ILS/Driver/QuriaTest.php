@@ -176,9 +176,9 @@ class QuriaTest extends \PHPUnit\Framework\TestCase
      * @param array  $expected   Expected results for the test
      * @param array  $config     Driver specific configuration
      *
-     * @return       void
-     * @dataProvider getTestGetMyProfileData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestGetMyProfileData')]
     public function testGetMyProfile(string $fixtureKey, array $expected, array $config = []): void
     {
         $conf = [
@@ -265,9 +265,9 @@ class QuriaTest extends \PHPUnit\Framework\TestCase
      * @param string $fixtureKey Response fixture
      * @param array  $expected   Expected results for the test
      *
-     * @return       void
-     * @dataProvider getTestPatronLoginData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestPatronLoginData')]
     public function testPatronLogin(string $fixtureKey, array $expected): void
     {
         $conf = [

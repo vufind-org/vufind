@@ -289,9 +289,9 @@ class FormTest extends \PHPUnit\Framework\TestCase
      * @param array  $expected Expected results
      * @param array  $patron   User patron.
      *
-     * @dataProvider getTestFormFieldValuesData
-     * @return       void
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestFormFieldValuesData')]
     public function testFormFieldValues(string $fixture, array $expected, array $patron): void
     {
         $formConfig = $this->getJsonFixture("form/$fixture", 'Finna');

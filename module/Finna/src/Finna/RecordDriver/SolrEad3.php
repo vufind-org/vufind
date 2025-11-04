@@ -247,7 +247,7 @@ class SolrEad3 extends SolrEad
             $localtype = (string)$node->attributes()->localtype;
             return $localtype && in_array($localtype, self::EXTERNAL_DATA_URLS);
         };
-        $processURL = function ($node) use ($preferredLangCodes, $isExternalUrl, &$urls) {
+        $processURL = function ($node) use ($preferredLangCodes, $isExternalUrl, &$urls): void {
             $attr = $node->attributes();
             $role = (string)($attr->linkrole ?? '');
             if (
@@ -962,7 +962,7 @@ class SolrEad3 extends SolrEad
             'fullres' => [],
         ];
         $xml = $this->getXmlRecord();
-        $addToResults = function ($imageData) use (&$result) {
+        $addToResults = function ($imageData) use (&$result): void {
             if (!$this->maxAmountOfImages()) {
                 $imageData = $this->ensureImageSizes($imageData);
                 $sizes = ['small', 'medium', 'large'];
@@ -1109,16 +1109,14 @@ class SolrEad3 extends SolrEad
             }
         }
 
-        if (!empty($images)) {
-            foreach ($images as $image) {
-                // If there is any leftover highresolution images,
-                // save them just in case
-                if (!empty($highResolution)) {
-                    $image['highResolution'] = $highResolution;
-                    $highResolution = [];
-                }
-                $addToResults($image);
+        foreach ($images as $image) {
+            // If there is any leftover highresolution images,
+            // save them just in case
+            if (!empty($highResolution)) {
+                $image['highResolution'] = $highResolution;
+                $highResolution = [];
             }
+            $addToResults($image);
         }
         if (!empty($ocrImages['items'])) {
             $this->sortImageUrls($ocrImages['items']);
@@ -1305,7 +1303,7 @@ class SolrEad3 extends SolrEad
             $restrictions[$type] = [];
         }
 
-        $processNode = function ($access) use (&$restrictions) {
+        $processNode = function ($access) use (&$restrictions): void {
             $attr = $access->attributes();
             if (! isset($attr->encodinganalog)) {
                 $restrictions['general'] = array_merge(

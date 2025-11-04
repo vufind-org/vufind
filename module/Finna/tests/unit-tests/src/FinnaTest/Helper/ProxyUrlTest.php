@@ -96,9 +96,9 @@ class ProxyUrlTest extends \PHPUnit\Framework\TestCase
      * @param string $permissionIni Path to the test permissions.ini
      * @param string $configIni     Path to the test config.ini
      *
-     * @return       void
-     * @dataProvider getTestInvokeData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestInvokeData')]
     public function testInvoke(string $url, string $expected, string $permissionIni, string $configIni): void
     {
         $permissionsFixture = $this->getFixture('proxyurl/' . $permissionIni, 'Finna');

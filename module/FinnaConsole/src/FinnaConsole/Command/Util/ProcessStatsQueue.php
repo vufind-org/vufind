@@ -108,7 +108,7 @@ class ProcessStatsQueue extends AbstractUtilCommand
      */
     protected function processSessions(): void
     {
-        $callback = function (array $entry) {
+        $callback = function (array $entry): void {
             $logEntry = $this->statisticsService->createSessionEntity()
                 ->setInstitution($entry['institution'])
                 ->setView($entry['view'])
@@ -128,7 +128,7 @@ class ProcessStatsQueue extends AbstractUtilCommand
      */
     protected function processPageViews(): void
     {
-        $callback = function (array $entry) {
+        $callback = function (array $entry): void {
             $logEntry = $this->statisticsService->createPageViewEntity()
                 ->setInstitution($entry['institution'])
                 ->setView($entry['view'])
@@ -203,7 +203,7 @@ class ProcessStatsQueue extends AbstractUtilCommand
      */
     protected function processRecordViews(): void
     {
-        $callback = function (array $entry) {
+        $callback = function (array $entry): void {
             $logEntry = $this->statisticsService->createRecordStatsLogEntity()
                 ->setInstitution($entry['institution'])
                 ->setView($entry['view'])

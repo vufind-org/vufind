@@ -88,7 +88,13 @@ class FinnaDueDateReminder implements FinnaDueDateReminderEntityInterface
      *
      * @var DateTime
      */
-    #[ORM\Column(name: 'notification_date', type: 'datetime', nullable: false, options: ['default' => 'CURRENT_TIMESTAMP'])]
+    #[ORM\Column(
+        name: 'notification_date',
+        type: 'datetime',
+        nullable: false,
+        options: ['default' => 'CURRENT_TIMESTAMP']
+    ),
+    ]
     protected DateTime $notificationDate;
 
     /**

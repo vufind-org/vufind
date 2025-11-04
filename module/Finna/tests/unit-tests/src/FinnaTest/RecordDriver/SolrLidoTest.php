@@ -341,10 +341,9 @@ class SolrLidoTest extends \PHPUnit\Framework\TestCase
      * @param string $function Function of the driver to test
      * @param array  $expected Result to be expected
      *
-     * @dataProvider getRepresentationsData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getRepresentationsData')]
     public function testRepresentations(
         string $function,
         array $expected
@@ -363,10 +362,9 @@ class SolrLidoTest extends \PHPUnit\Framework\TestCase
      * @param string $function Function of the driver to test
      * @param array  $expected Result to be expected
      *
-     * @dataProvider getFormatClassificationsData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getFormatClassificationsData')]
     public function testGetFormatClassifications(
         string $function,
         array $expected
@@ -387,10 +385,9 @@ class SolrLidoTest extends \PHPUnit\Framework\TestCase
      * @param string $function Function of the driver to test
      * @param array  $expected Result to be expected
      *
-     * @dataProvider getOtherClassificationsData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getOtherClassificationsData')]
     public function testGetOtherClassifications(
         string $function,
         array $expected
@@ -504,10 +501,9 @@ class SolrLidoTest extends \PHPUnit\Framework\TestCase
      * @param string $language Language
      * @param array  $expected Result to be expected
      *
-     * @dataProvider getMeasurementsByTypeData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getMeasurementsByTypeData')]
     public function testGetMeasurementsByType(
         string $function,
         string $language,
@@ -631,10 +627,9 @@ class SolrLidoTest extends \PHPUnit\Framework\TestCase
      * @param string $xmlFile  Xml record to use for the test
      * @param array  $expected Result to be expected
      *
-     * @dataProvider getAllSubjectHeadingsWithoutPlacesExtendedData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getAllSubjectHeadingsWithoutPlacesExtendedData')]
     public function testGetAllSubjectHeadingsWithoutPlacesExtended(
         string $language,
         string $xmlFile,
@@ -775,10 +770,9 @@ class SolrLidoTest extends \PHPUnit\Framework\TestCase
      * @param string $language Language
      * @param array  $expected Result to be expected
      *
-     * @dataProvider getPhysicalLocationsData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getPhysicalLocationsData')]
     public function testGetPhysicalLocations(
         string $language,
         array $expected
@@ -876,10 +870,9 @@ class SolrLidoTest extends \PHPUnit\Framework\TestCase
      * @param string $indexValue Index value to test
      * @param ?array $expected   Result to be expected
      *
-     * @dataProvider getDateRangeData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getDateRangeData')]
     public function testGetDateRange(
         string $indexValue,
         ?array $expected
@@ -953,10 +946,9 @@ class SolrLidoTest extends \PHPUnit\Framework\TestCase
      * @param array  $rawData  The additional tested data
      * @param string $language Language
      *
-     * @dataProvider getSummaryData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getSummaryData')]
     public function testGetSummary(
         $xmlFile,
         $expected,
@@ -1162,10 +1154,9 @@ class SolrLidoTest extends \PHPUnit\Framework\TestCase
      * @param string $language Language
      * @param array  $expected Result to be expected
      *
-     * @dataProvider getEventsData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getEventsData')]
     public function testGetEvents(
         string $language,
         array $expected
@@ -1242,10 +1233,9 @@ class SolrLidoTest extends \PHPUnit\Framework\TestCase
      *
      * @param array $expected Result to be expected
      *
-     * @dataProvider getRelatedPublicationsData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getRelatedPublicationsData')]
     public function testGetRelatedPublications(
         array $expected
     ): void {

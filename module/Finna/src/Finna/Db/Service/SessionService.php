@@ -55,7 +55,7 @@ class SessionService extends \VuFind\Db\Service\SessionService
         $newSession = !$this->getSessionById($sid, false);
         $result = parent::writeSession($sid, $data);
         if ($newSession) {
-            $this->triggerStatsSessionStart((string)$sid);
+            $this->triggerStatsSessionStart($sid);
         }
         return $result;
     }

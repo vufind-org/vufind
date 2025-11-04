@@ -1915,7 +1915,7 @@ class DefaultRecord extends \VuFind\RecordDataFormatter\Specs\DefaultRecord
             ) use (
                 &$lines,
                 &$pos
-            ) {
+            ): void {
                 $pos += 100;
                 $dataMethod = $data[0];
                 $template = $data[1];
@@ -1931,7 +1931,7 @@ class DefaultRecord extends \VuFind\RecordDataFormatter\Specs\DefaultRecord
             ) use (
                 &$lines,
                 &$pos
-            ) {
+            ): void {
                 $pos += 100;
                 $dataMethod = $data[0];
                 $callback = $data[1];

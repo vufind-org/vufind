@@ -135,9 +135,9 @@ class AlmaTest extends \PHPUnit\Framework\TestCase
      * @param string $userFixture     Path to user fixture
      * @param string $expectedFixture Path to expected fixture
      *
-     * @return       void
-     * @dataProvider getTestUpdateAddressData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestUpdateAddressData')]
     public function testUpdateAddress(
         array $patron,
         array $details,
@@ -198,9 +198,9 @@ class AlmaTest extends \PHPUnit\Framework\TestCase
      * @param string $fixtureKey Fixture key
      * @param array  $expected   Expected results
      *
-     * @return       void
-     * @dataProvider getTestPatronLoginData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestPatronLoginData')]
     public function testPatronLogin(string $fixtureKey, array $expected): void
     {
         $userFixture = $this->getFixture($fixtureKey, 'Finna');
@@ -334,9 +334,9 @@ class AlmaTest extends \PHPUnit\Framework\TestCase
      * @param string $fixtureKey Fixture key
      * @param array  $expected   Expected results
      *
-     * @return       void
-     * @dataProvider getTestGetMyProfileData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestGetMyProfileData')]
     public function testGetMyProfile(string $fixtureKey, array $expected): void
     {
         $profileFixture = $this->getFixture($fixtureKey, 'Finna');

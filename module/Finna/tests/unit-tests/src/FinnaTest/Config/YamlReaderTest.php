@@ -112,9 +112,9 @@ class YamlReaderTest extends \PHPUnit\Framework\TestCase
      * @param string $fixture  Fixture name
      * @param array  $expected Expected results
      *
-     * @dataProvider getTestGetFinnaData
-     * @return       void
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestGetFinnaData')]
     public function testGetFinna(string $fixture, array $expected): void
     {
         $resolverMap = [

@@ -467,7 +467,7 @@ class SolrLrmi extends SolrQdc
         usort(
             $materials,
             function ($a, $b) {
-                return (int)$a['position'] <=> (int)$b['position'];
+                return $a['position'] <=> $b['position'];
             }
         );
 

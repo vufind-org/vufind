@@ -118,9 +118,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      * @param string $expectedSort Expected Solr sort string
      *
      * @return void
-     *
-     * @dataProvider sortDataProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('sortDataProvider')]
     public function testSort(array $searchConfig, string $sort, string $expectedSort): void
     {
         $params = $this->getParams(mockConfig: $this->getMockConfigPluginManager(['searches' => $searchConfig]));

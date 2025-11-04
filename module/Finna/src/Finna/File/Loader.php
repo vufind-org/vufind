@@ -146,7 +146,7 @@ class Loader implements \VuFindHttp\HttpServiceAwareInterface
                     &$stdoutStream,
                     $format,
                     $fileName
-                ) {
+                ): void {
                     // Send headers and start output when the correct status code is received:
                     if ($response->getStatusCode() === 200) {
                         $contentType = $response->getHeader('Content-Type');

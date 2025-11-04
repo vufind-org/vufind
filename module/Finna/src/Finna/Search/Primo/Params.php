@@ -112,7 +112,7 @@ class Params extends \VuFind\Search\Primo\Params
     {
         $field = $this->getDateRangeSearchField();
         $filterList = $this->getFilterList();
-        foreach ($filterList as $facet => $filters) {
+        foreach ($filterList as $filters) {
             foreach ($filters as $filter) {
                 if ($filter['field'] == $field) {
                     return $filter;

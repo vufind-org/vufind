@@ -67,6 +67,7 @@ interface CommentsServiceInterface extends \VuFind\Db\Service\CommentsServiceInt
      *
      * @param ?UserEntityInterface $user     Reporter, or null to use current session
      * @param string               $recordId Record ID
+     * @param string               $source   Record source
      *
      * @return CommentsEntityInterface[]
      */

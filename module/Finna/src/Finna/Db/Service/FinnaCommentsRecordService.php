@@ -58,7 +58,7 @@ class FinnaResourceListService extends AbstractDbService implements FinnaComment
     /**
      * Find links by comment.
      *
-     * @param CommentsEntityInterface $comment
+     * @param CommentsEntityInterface $comment Comment
      *
      * @return FinnaCommentsRecordEntityInterface[]
      */

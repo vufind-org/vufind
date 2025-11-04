@@ -205,7 +205,7 @@ class Piwik extends \VuFind\View\Helper\Root\Piwik implements \VuFind\I18n\Trans
 
         $vars['Language'] = $this->translator->getLocale();
 
-        foreach ($params->getFilterList() as $filterType => $filters) {
+        foreach ($params->getFilterList() as $filters) {
             $facetType = null;
             foreach ($filters as $filter) {
                 if (!$facetType) {

@@ -154,7 +154,7 @@ class Connector extends \VuFindSearch\Backend\Primo\Connector
         $result = parent::process($data, $params);
 
         // Load API content as XML objects
-        $sxe = new \SimpleXmlElement($data);
+        $sxe = new \SimpleXMLElement($data);
 
         if ($sxe === false) {
             throw new \Exception('Error while parsing the document');
@@ -306,13 +306,13 @@ class Connector extends \VuFindSearch\Backend\Primo\Connector
         $attr = $sear->GETIT->attributes();
         if (!empty($attr->GetIt2)) {
             if (($url = (string)$attr->GetIt2) !== '') {
-                $result = (string)$url;
+                $result = $url;
             }
         }
 
         if (!empty($attr->GetIt1)) {
             if (($url = (string)$attr->GetIt1) !== '') {
-                $result = (string)$url;
+                $result = $url;
             }
         }
 

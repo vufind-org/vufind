@@ -362,7 +362,7 @@ class Params extends \VuFind\Search\Solr\Params
     public function getAuthorIdFilter($includeRole = false)
     {
         $result = [];
-        foreach ($this->getFilterList() as $key => $val) {
+        foreach ($this->getFilterList() as $val) {
             foreach ($val as $filterItem) {
                 $filter = $filterItem['value'] ?? null;
                 if (!$filter) {
@@ -493,7 +493,7 @@ class Params extends \VuFind\Search\Solr\Params
      */
     public function hasAuthorIdFilter()
     {
-        foreach ($this->getFilterList() as $field => $facets) {
+        foreach ($this->getFilterList() as $facets) {
             foreach ($facets as $facet) {
                 if (
                     in_array(

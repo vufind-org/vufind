@@ -129,7 +129,7 @@ class CommentRecord extends \VuFind\AjaxHandler\CommentRecord
             $results = $this->searchRunner->run(
                 ['lookfor' => 'local_ids_str_mv:"' . addcslashes($id, '"') . '"'],
                 $source,
-                function ($runner, $params, $searchId) {
+                function ($runner, $params, $searchId): void {
                     $params->setLimit(1000);
                     $params->setPage(1);
                     $params->resetFacetConfig();

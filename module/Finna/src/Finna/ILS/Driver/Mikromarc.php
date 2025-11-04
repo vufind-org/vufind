@@ -1703,7 +1703,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
 
         $statuses = [];
         $organisationTotal = [];
-        foreach ($result as $i => $item) {
+        foreach ($result as $item) {
             $statusCode = $this->getItemStatusCode($item);
             if ($statusCode === 'Withdrawn') {
                 continue;

@@ -432,7 +432,7 @@ class Navibar extends \Laminas\View\Helper\AbstractHelper
         $sortDataProcessed = [];
         ksort($sortDataOrder);
 
-        foreach ($sortDataOrder as $index => $menuKey) {
+        foreach ($sortDataOrder as $menuKey) {
             $sortDataProcessed[$menuKey] = $sortData[$menuKey];
             unset($sortData[$menuKey]);
         }

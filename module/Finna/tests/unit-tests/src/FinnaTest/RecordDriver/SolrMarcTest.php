@@ -80,10 +80,9 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
      * @param string $expected Expected result
      * @param string $title    Record title
      *
-     * @dataProvider getTestTitlePunctuationData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestTitlePunctuationData')]
     public function testTitlePunctuation(string $expected, string $title): void
     {
         $marc = [
@@ -309,10 +308,9 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
      * @param array  $dsConfig Datasource configuration
      * @param array  $expected Array of expected results
      *
-     * @dataProvider getTestHostRecordsData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestHostRecordsData')]
     public function testGetHostRecords(string $fixture, array $dsConfig, array $expected): void
     {
         $xml = $this->getFixture($fixture, 'Finna');
@@ -560,10 +558,9 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
      * @param array  $dsConfig Datasource configuration
      * @param array  $expected Array of expected results
      *
-     * @dataProvider getTestAllRecordLinksData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestAllRecordLinksData')]
     public function testGetAllRecordLinks(string $fixture, array $dsConfig, array $expected): void
     {
         $xml = $this->getFixture($fixture, 'Finna');

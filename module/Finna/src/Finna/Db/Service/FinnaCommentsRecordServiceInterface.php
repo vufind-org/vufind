@@ -55,7 +55,7 @@ interface FinnaCommentsRecordServiceInterface extends DbServiceInterface
     /**
      * Find links by comment.
      *
-     * @param CommentsEntityInterface $comment
+     * @param CommentsEntityInterface $comment Comment
      *
      * @return FinnaCommentsRecordEntityInterface[]
      */

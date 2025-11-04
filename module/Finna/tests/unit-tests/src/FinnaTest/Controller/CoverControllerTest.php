@@ -245,9 +245,9 @@ class CoverControllerTest extends \PHPUnit\Framework\TestCase
      * @param array    $params           Parameters for the action
      * @param Response $expected         Expected result
      *
-     * @return       void
-     * @dataProvider getTestImagePipedData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestImagePipedData')]
     public function testImagePiped(array $config, array $datasourceConfig, array $params, Response $expected): void
     {
         $coverController = $this->getCoverController($config, $datasourceConfig, $params);

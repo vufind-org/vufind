@@ -134,10 +134,9 @@ class SolrLrmiTest extends \PHPUnit\Framework\TestCase
      * @param string $function Function of the driver to test
      * @param mixed  $expected Result to be expected
      *
-     * @dataProvider getTestFunctionsData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestFunctionsData')]
     public function testFunctions(
         string $function,
         $expected
@@ -200,10 +199,9 @@ class SolrLrmiTest extends \PHPUnit\Framework\TestCase
      * @param string $language Language
      * @param array  $expected Result to be expected
      *
-     * @dataProvider getSummaryData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getSummaryData')]
     public function testSummary(
         string $language,
         array $expected
@@ -245,10 +243,9 @@ class SolrLrmiTest extends \PHPUnit\Framework\TestCase
      * @param array  $altTitles Alternative title index values to test
      * @param ?array $expected  Result to be expected
      *
-     * @dataProvider getAlternativeTitlesData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getAlternativeTitlesData')]
     public function testGetAlternativeTitles(
         string $title,
         array $altTitles,

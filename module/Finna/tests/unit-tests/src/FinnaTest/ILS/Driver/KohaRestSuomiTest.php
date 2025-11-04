@@ -371,9 +371,9 @@ class KohaRestSuomiTest extends \PHPUnit\Framework\TestCase
      * @param array  $expected    Expected results for the test
      * @param array  $config      Driver specific configuration
      *
-     * @return       void
-     * @dataProvider getTestGetMyProfileData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestGetMyProfileData')]
     public function testGetMyProfile(
         string $fixtureKey,
         string $fixtureKey2,
@@ -460,9 +460,9 @@ class KohaRestSuomiTest extends \PHPUnit\Framework\TestCase
      * @param string $fixtureKey Response fixture
      * @param array  $expected   Expected results for the test
      *
-     * @return       void
-     * @dataProvider getTestPatronLoginData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestPatronLoginData')]
     public function testPatronLogin(string $fixtureKey, array $expected): void
     {
         $patron = ['cat_username' => '1111', 'cat_password' => '2222'];

@@ -223,9 +223,9 @@ class ReservationListTest extends \PHPUnit\Framework\TestCase
      * @param int   $id      User id
      * @param array $prefill Data to prefill the list with
      *
-     * @return       void
-     * @dataProvider getProperListData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getProperListData')]
     public function testListCreation(int $id, array $prefill): void
     {
         $user = $this->getMockUser($id);
@@ -241,9 +241,9 @@ class ReservationListTest extends \PHPUnit\Framework\TestCase
      * @param int   $id      User id
      * @param array $prefill Array to prefill the list with
      *
-     * @return       void
-     * @dataProvider getFailingListData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getFailingListData')]
     public function testFailingListCreation(int $id, array $prefill): void
     {
         $this->expectException(Exception::class);
@@ -297,9 +297,9 @@ class ReservationListTest extends \PHPUnit\Framework\TestCase
      * @param int $ownerId   Owner id for the list
      * @param int $currentId Current user id for the list
      *
-     * @return       void
-     * @dataProvider getUserAccessSuccessData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getUserAccessSuccessData')]
     public function testUserAccessSuccess(int $ownerId, int $currentId): void
     {
         $ownerUser = $this->getMockUser($ownerId);
@@ -316,9 +316,9 @@ class ReservationListTest extends \PHPUnit\Framework\TestCase
      * @param int  $ownerId   Owner id for the list
      * @param ?int $currentId Current user id for the list or null for no user
      *
-     * @return       void
-     * @dataProvider getUserAccessFailureData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getUserAccessFailureData')]
     public function testUserAccessFailure(int $ownerId, ?int $currentId = null): void
     {
         $ownerUser = $this->getMockUser($ownerId);
@@ -362,9 +362,9 @@ class ReservationListTest extends \PHPUnit\Framework\TestCase
      * @param string $expected  Expected error value. Success for deletion also uses exception
      *                          for asserting that everything went well.
      *
-     * @return       void
-     * @dataProvider getTestDeletingListData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestDeletingListData')]
     public function testDeletingList(int $ownerId, ?int $currentId, string $expected): void
     {
         if ($expected === 'list_access_denied') {
@@ -447,9 +447,9 @@ class ReservationListTest extends \PHPUnit\Framework\TestCase
      * @param array $data     Data to pass for the list being ordered
      * @param array $expected Expected results
      *
-     * @return       void
-     * @dataProvider getTestSettingListOrderedData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestSettingListOrderedData')]
     public function testSettingListOrdered(int $ownerId, array $data, array $expected): void
     {
         if (!isset($data['pickup_date'])) {
@@ -679,9 +679,9 @@ class ReservationListTest extends \PHPUnit\Framework\TestCase
      * @param array  $requestValues  Request values to test
      * @param array  $expected       Expected values to be returned
      *
-     * @return       void
-     * @dataProvider getTestHandlerData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestHandlerData')]
     public function testHandlers(
         string $institution,
         string $listIdentifier,
@@ -834,9 +834,9 @@ class ReservationListTest extends \PHPUnit\Framework\TestCase
      * @param string $fixturePath Fixture path
      * @param array  $expected    Expected results
      *
-     * @return       void
-     * @dataProvider getTestgetListHandlerFromApiData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestgetListHandlerFromApiData')]
     public function testGetListHandlerFromApi(bool $success, string $fixturePath, array $expected): void
     {
         $config = Yaml::parse($this->getFixture($fixturePath, 'Finna'));

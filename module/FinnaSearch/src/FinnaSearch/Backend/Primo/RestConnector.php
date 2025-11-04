@@ -224,7 +224,7 @@ class RestConnector extends \VuFindSearch\Backend\Primo\RestConnector
      * @throws \Exception
      * @return string|false
      */
-    protected function getOpenUrl(\StdClass $doc)
+    protected function getOpenUrl(\stdClass $doc)
     {
         foreach ($doc->delivery->link ?? [] as $link) {
             if ('http://purl.org/pnx/linkType/openurl' === $link->linkType) {
@@ -237,9 +237,9 @@ class RestConnector extends \VuFindSearch\Backend\Primo\RestConnector
 
         if (!$result) {
             if (($url = (string)($doc->delivery->GetIt2->link ?? '')) !== '') {
-                $result = (string)$url;
+                $result = $url;
             } elseif (($url = (string)($doc->delivery->GetIt1[0]->links[0]->link ?? '')) !== '') {
-                $result = (string)$url;
+                $result = $url;
             }
         }
 

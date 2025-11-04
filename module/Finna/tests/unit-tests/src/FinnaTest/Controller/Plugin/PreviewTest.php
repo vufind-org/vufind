@@ -106,9 +106,8 @@ class PreviewTest extends \PHPUnit\Framework\TestCase
      * @param array  $recommendations Expected recommendations
      *
      * @return void
-     *
-     * @dataProvider previewProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('previewProvider')]
     public function testPreview(
         string $format,
         string $record,

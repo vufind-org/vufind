@@ -215,9 +215,9 @@ class MikroMarcTest extends \PHPUnit\Framework\TestCase
      * @param array  $expected   Expected results for the test
      * @param array  $config     Driver specific configuration
      *
-     * @return       void
-     * @dataProvider getTestGetMyProfileData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestGetMyProfileData')]
     public function testGetMyProfile(string $fixtureKey, array $expected, array $config = []): void
     {
         $requestMap = [
@@ -279,9 +279,9 @@ class MikroMarcTest extends \PHPUnit\Framework\TestCase
      * @param string $fixtureKey2 Response fixture 2
      * @param array  $expected    Expected results for the test
      *
-     * @return       void
-     * @dataProvider getTestPatronLoginData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestPatronLoginData')]
     public function testPatronLogin(string $fixtureKey, string $fixtureKey2, array $expected): void
     {
         $requestMap = [

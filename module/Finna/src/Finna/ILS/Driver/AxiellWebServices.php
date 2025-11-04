@@ -1693,7 +1693,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase implements
             'pages' => $result->$functionResult->nofPages,
         ];
         // Lets get a pretty list of results
-        foreach ($records as $key => $obj) {
+        foreach ($records as $obj) {
             $record = [
                 'id' => $obj->id ?? '0',
                 'title' => $obj->title ?? '',
@@ -1926,7 +1926,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase implements
         $transactions = $this->objectToArray(
             $result->loanHistoryResponse->loanHistoryItems->loanHistoryItem ?? []
         );
-        foreach ($transactions as $transaction => $record) {
+        foreach ($transactions as $record) {
             $obj = $record->catalogueRecord;
             $title = $obj->title;
             if (!empty($record->note)) {
@@ -2360,7 +2360,7 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase implements
         $debtIds = array_column($payableFines, 'fineId');
         $request = [
             'arenaMember'       => $this->arenaMember,
-            'orderId'           => (string)$localPaymentIdentifier,
+            'orderId'           => $localPaymentIdentifier,
             'transactionNumber' => (string)$paymentId,
             'paymentAmount'     => $amount,
             // Comma-separated list of IDs since the API has it single-valued

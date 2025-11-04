@@ -236,7 +236,7 @@ class SolrQdc extends \VuFind\RecordDriver\SolrDefault implements \Psr\Log\Logge
         $otherSizes = [];
         $highResolution = [];
         $rights = $this->getRights($language);
-        $addToResults = function ($imageData) use (&$results) {
+        $addToResults = function ($imageData) use (&$results): void {
             if (!$this->maxAmountOfImages()) {
                 if (!isset($imageData['urls']['small'])) {
                     $imageData['urls']['small'] = $imageData['urls']['medium']

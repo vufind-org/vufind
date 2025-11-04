@@ -309,7 +309,7 @@ class AuthorityHelper
         $results = $this->searchRunner->run(
             [],
             'Solr',
-            function ($runner, $params, $searchId) use ($onlyCount, $query) {
+            function ($runner, $params, $searchId) use ($onlyCount, $query): void {
                 $params->setLimit($onlyCount ? 0 : 100);
                 $params->setPage(1);
                 $params->addFilter($query);

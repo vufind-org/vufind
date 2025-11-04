@@ -64,7 +64,7 @@ class TabManager extends \VuFind\RecordTab\TabManager
      *
      * @return array
      */
-    protected function getTabServiceNames(AbstractRecordDriver $driver)
+    protected function getTabServiceNames(AbstractRecordDriver $driver): array
     {
         $result = parent::getTabServiceNames($driver);
         // Make sure Details is always the last tab
@@ -83,7 +83,7 @@ class TabManager extends \VuFind\RecordTab\TabManager
      * @param AbstractRecordDriver $driver   Record driver
      * @param array                $tabs     Details on available tabs (returned
      * from getTabsForRecord()).
-     * @param string               $fallback Fallback to use if no tab specified
+     * @param ?string              $fallback Fallback to use if no tab specified
      * or matched.
      *
      * @return string
@@ -91,8 +91,8 @@ class TabManager extends \VuFind\RecordTab\TabManager
     public function getDefaultTabForRecord(
         AbstractRecordDriver $driver,
         array $tabs,
-        $fallback = null
-    ) {
+        ?string $fallback = null
+    ): string {
         $result = parent::getDefaultTabForRecord($driver, $tabs, $fallback);
         if ('Details' === $result) {
             $result = '';

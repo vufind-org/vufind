@@ -65,9 +65,12 @@ class UserService extends \VuFind\Db\Service\UserService implements
     /**
      * Constructor
      *
-     * @param SessionContainer $userSessionContainer Session container for user data
-     * @param array            $config               Main configuration
-     * @param HMAC             $hmac                 HMAC service
+     * @param EntityManager       $entityManager        Doctrine ORM entity manager
+     * @param EntityPluginManager $entityPluginManager  VuFind entity plugin manager
+     * @param PersistenceManager  $persistenceManager   Entity persistence manager
+     * @param SessionContainer    $userSessionContainer Session container for user data
+     * @param array               $config               Main configuration
+     * @param HMAC                $hmac                 HMAC service
      */
     public function __construct(
         EntityManager $entityManager,

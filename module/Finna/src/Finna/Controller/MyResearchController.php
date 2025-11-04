@@ -655,7 +655,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                 + $this->getRequest()->getPost()->toArray()
                 + ['id' => $listId];
 
-            $setupCallback = function ($runner, $params, $searchId) {
+            $setupCallback = function ($runner, $params, $searchId): void {
                 $params->setLimit(1000);
             };
             $results = $runner->run($request, 'Favorites', $setupCallback);
@@ -1567,7 +1567,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
             return $tag['tag'] ?? '';
         };
 
-        $setupCallback = function ($searchRunner, $params, $runningSearchId) {
+        $setupCallback = function ($searchRunner, $params, $runningSearchId): void {
             $params->setLimit(1000);
         };
 

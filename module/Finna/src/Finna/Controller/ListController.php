@@ -213,7 +213,7 @@ class ListController extends \VuFind\Controller\AbstractBase
             return;
         }
         $runner = $this->serviceLocator->get(\VuFind\Search\SearchRunner::class);
-        $callback = function ($callback, $params, $runningSearchId) {
+        $callback = function ($callback, $params, $runningSearchId): void {
             $params->setLimit(100000);
         };
         $records = $runner->run(

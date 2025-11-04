@@ -51,8 +51,12 @@ use function strlen;
  * Client example of CPU Verkkomaksu API.
  * Handles validating and sending data to eCommerce service.
  *
- * @since   2015-05-19 MB, Version 1.0 created
- * @version 1.0
+ * @category VuFind
+ * @package  OnlinePayment
+ * @author   MB <asiakastuki@cpu.fi>
+ * @license  https://unlicense.org The Unlicense
+ * @link     https://www.cpu.fi/
+ * @since    2015-05-19 MB, Version 1.0 created
  */
 class Client
 {
@@ -104,7 +108,8 @@ class Client
      *
      * Redirect customer to PaymentAddress after validating response data.
      *
-     * @param  Payment $payment Payment data
+     * @param Payment $payment Payment data
+     *
      * @return mixed array containing an error message or JSON response from eCommerce
      */
     public function sendPayment(Payment $payment)
@@ -176,9 +181,10 @@ class Client
      * Calculates sha256 signature.
      * Only mandatory properties and properties with values are used in calculation.
      *
-     * @param  Payment $payment    Payment object
-     * @param  string  $source     Source identification given by CPU
-     * @param  string  $secret_key Secret Key identification given by CPU
+     * @param Payment $payment    Payment object
+     * @param string  $source     Source identification given by CPU
+     * @param string  $secret_key Secret Key identification given by CPU
+     *
      * @return string sha256 hash signature
      */
     public static function calculateHash(Payment $payment, $source, $secret_key)
@@ -249,7 +255,8 @@ class Client
     /**
      * Simple sanitazion method.
      *
-     * @param  string $value Value to be sanitated
+     * @param string $value Value to be sanitated
+     *
      * @return string Clean value
      */
     public static function sanitize($value)

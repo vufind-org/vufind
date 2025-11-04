@@ -59,7 +59,7 @@ class Sfx extends \VuFind\Resolver\Driver\Sfx
         try {
             libxml_use_internal_errors(true);
             libxml_clear_errors();
-            $xml = new \SimpleXmlElement($xmlstr);
+            $xml = new \SimpleXMLElement($xmlstr);
             if ($errors = libxml_get_errors()) {
                 $fatal = false;
                 foreach ($errors as $error) {

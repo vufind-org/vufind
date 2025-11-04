@@ -282,11 +282,11 @@ trait FinnaParams
             $from += 0.5;
             $to -= 0.5;
         }
-        $from = $from * 86400;
+        $from *= 86400;
         $from = new \DateTime("@{$from}");
         $from = $from->format('Y');
 
-        $to = $to * 86400;
+        $to *= 86400;
         $to = new \DateTime("@{$to}");
         $to = $to->format('Y');
 

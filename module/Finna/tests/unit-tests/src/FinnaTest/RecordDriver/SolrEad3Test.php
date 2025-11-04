@@ -132,10 +132,9 @@ class SolrEad3Test extends \PHPUnit\Framework\TestCase
      * @param string $language Language
      * @param array  $expected Result to be expected
      *
-     * @dataProvider getOtherRelatedMaterialData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getOtherRelatedMaterialData')]
     public function testGetOtherRelatedMaterial(
         string $language,
         array $expected
@@ -280,10 +279,9 @@ class SolrEad3Test extends \PHPUnit\Framework\TestCase
      * @param string $function Function of the driver to test
      * @param array  $expected Result to be expected
      *
-     * @dataProvider getAuthorData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getAuthorData')]
     public function testAuthors(
         string $function,
         array $expected
@@ -419,10 +417,9 @@ class SolrEad3Test extends \PHPUnit\Framework\TestCase
      * @param string $language Language
      * @param array  $expected Result to be expected
      *
-     * @dataProvider getAllSubjectHeadingsExtendedData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getAllSubjectHeadingsExtendedData')]
     public function testAllSubjectHeadingsExtended(
         string $language,
         array $expected
@@ -489,10 +486,9 @@ class SolrEad3Test extends \PHPUnit\Framework\TestCase
      * @param string $language Language
      * @param array  $expected Result to be expected
      *
-     * @dataProvider getPhysicalDescriptionsData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getPhysicalDescriptionsData')]
     public function testPhysicalDescriptions(
         string $language,
         array $expected
@@ -570,9 +566,9 @@ class SolrEad3Test extends \PHPUnit\Framework\TestCase
      * @param string $xmlPath  Path for the record xml
      * @param array  $expected Return value to be expected
      *
-     * @return       void
-     * @dataProvider getTestGetImagesData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestGetImagesData')]
     public function testGetImages(string $xmlPath, array $expected)
     {
         $driver = $this->getDriver($xmlPath, ['id' => 'test_id']);
@@ -616,10 +612,9 @@ class SolrEad3Test extends \PHPUnit\Framework\TestCase
      * @param string $language Language
      * @param array  $expected Result to be expected
      *
-     * @dataProvider getGeneralNotesData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getGeneralNotesData')]
     public function testGetGeneralNotes(
         string $language,
         array $expected

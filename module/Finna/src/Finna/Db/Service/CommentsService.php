@@ -70,7 +70,7 @@ class CommentsService extends \VuFind\Db\Service\CommentsService implements Comm
         EntityManager $entityManager,
         EntityPluginManager $entityPluginManager,
         PersistenceManager $persistenceManager,
-        protected Closure $sessionManagerLoder
+        protected Closure $sessionManagerLoader
     ) {
         parent::__construct($entityManager, $entityPluginManager, $persistenceManager);
     }
@@ -140,7 +140,7 @@ class CommentsService extends \VuFind\Db\Service\CommentsService implements Comm
             $params[':user'] = $user;
         } else {
             $dql .= ' ci.sessionId = :sessionId';
-            $params[':sessionId'] = (($this->sessionManagerLoder)())->getSessionId();
+            $params[':sessionId'] = (($this->sessionManagerLoader)())->getSessionId();
         }
         $subQuery = $this->entityManager->createQuery($dql)
             ->setParameters($params);

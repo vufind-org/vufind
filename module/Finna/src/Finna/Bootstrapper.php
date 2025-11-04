@@ -182,7 +182,7 @@ class Bootstrapper
         }
 
         $sm = $this->event->getApplication()->getServiceManager();
-        $callback = function ($event) use ($sm) {
+        $callback = function ($event) use ($sm): void {
             if (!($routeMatch = $event->getRouteMatch())) {
                 return;
             }

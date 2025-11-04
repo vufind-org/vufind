@@ -400,7 +400,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Psr\Log\Logg
      * @return array
      */
     protected function formatResourceMeasurements(
-        \SimpleXmlElement $measurements
+        \SimpleXMLElement $measurements
     ): array {
         $results = [];
         foreach ($measurements as $set) {
@@ -522,7 +522,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Psr\Log\Logg
             array $audios = [],
             array $videos = [],
             array $documents = []
-        ) use (&$results) {
+        ) use (&$results): void {
             if ($images) {
                 if (!$this->maxAmountOfImages()) {
                     $images = $this->ensureImageSizes($images);
@@ -729,7 +729,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Psr\Log\Logg
                 // Trim resulting strings
                 array_walk_recursive(
                     $imageResult,
-                    function (&$current) {
+                    function (&$current): void {
                         if (is_string($current)) {
                             $current = trim($current);
                         }
@@ -766,7 +766,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Psr\Log\Logg
      * @return array
      */
     protected function getResourceDescriptions(
-        \SimpleXmlElement $resourceSet,
+        \SimpleXMLElement $resourceSet,
         string $language
     ): array {
         $results = [];
@@ -798,7 +798,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Psr\Log\Logg
      * @return array
      */
     protected function getExtraDetails(
-        \SimpleXmlElement $resourceSet,
+        \SimpleXMLElement $resourceSet,
         string $language
     ): array {
         $result = [];
@@ -868,7 +868,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Psr\Log\Logg
         string $url,
         string $format,
         string $type,
-        ?\SimpleXmlElement $measurements
+        ?\SimpleXMLElement $measurements
     ): array {
         $type = $this->modelTypes[$type];
         $format = strtolower($format);
@@ -914,7 +914,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Psr\Log\Logg
         string $language,
         string $id = '',
         string $format = '',
-        ?\SimpleXmlElement $measurements = null
+        ?\SimpleXMLElement $measurements = null
     ): array {
         // Check if the image is really an image
         // Original images can be any type and are not displayed
@@ -964,7 +964,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Psr\Log\Logg
         string $url,
         string $format,
         string $description,
-        ?\SimpleXmlElement $measurements
+        ?\SimpleXMLElement $measurements
     ): array {
         if ($codec = $this->supportedAudioFormats[$format] ?? false) {
             if ($this->maxAmountOfURLs()) {
@@ -1006,7 +1006,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Psr\Log\Logg
         string $url,
         string $format,
         string $description,
-        ?\SimpleXmlElement $measurements
+        ?\SimpleXMLElement $measurements
     ): array {
         $mediaType = $this->supportedVideoFormats[$format] ?? false;
         if ($this->maxAmountOfURLs()) {
@@ -1088,7 +1088,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Psr\Log\Logg
      * @return array
      */
     protected function getResourceRights(
-        \SimpleXmlElement $resourceSet,
+        \SimpleXMLElement $resourceSet,
         string $language,
         bool $useDefault = true
     ): array {
@@ -2132,7 +2132,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Psr\Log\Logg
         }
         // Ensure that all the values are an array
         if (!$extended) {
-            foreach ($headings as $key => &$value) {
+            foreach ($headings as &$value) {
                 if (!is_array($value)) {
                     $value = [$value];
                 }
@@ -2833,7 +2833,7 @@ class SolrLido extends \VuFind\RecordDriver\SolrDefault implements \Psr\Log\Logg
                     && $checkLength !== strlen($checkItem)
                 ) {
                     $title = ltrim(substr($title, strlen($displayTitle)), ' .,;:!?');
-                    $collectedTitles[] = (string)$title;
+                    $collectedTitles[] = $title;
                 } elseif ($displayTitle !== $title) {
                     $collectedTitles[] = (string)$title;
                 }
