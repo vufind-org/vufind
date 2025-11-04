@@ -191,7 +191,7 @@ abstract class AbstractMenu extends AbstractBase implements NavigationInterface
             $availableGroups = [];
             foreach ($this->filterAvailable($menu) as $groupName => $group) {
                 // Skip groups without items to display.
-                if ($items = $this->filterAvailable($group['MenuItems'])) {
+                if ($items = $this->filterAvailable($group['MenuItems'] ?? [])) {
                     $group['MenuItems'] = $items;
                     $availableGroups[$groupName] = $group;
                 }
