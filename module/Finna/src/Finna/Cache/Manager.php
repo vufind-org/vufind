@@ -32,7 +32,6 @@
 namespace Finna\Cache;
 
 use Laminas\Cache\Service\StorageAdapterFactory;
-use VuFind\Config\Config;
 
 /**
  * Finna Cache Manager
@@ -89,17 +88,15 @@ class Manager extends \VuFind\Cache\Manager
     /**
      * Constructor
      *
-     * @param Config                $config       Main VuFind configuration
-     * @param Config                $searchConfig Search configuration
-     * @param StorageAdapterFactory $factory      Cache storage adapter factory
+     * @param array                 $config  Main VuFind configuration
+     * @param StorageAdapterFactory $factory Cache storage adapter factory
      */
     public function __construct(
-        Config $config,
-        Config $searchConfig,
+        array $config,
         StorageAdapterFactory $factory
     ) {
         $this->cacheSpecs = array_merge($this->cacheSpecs, $this->finnaCacheSpecs);
-        parent::__construct($config, $searchConfig, $factory);
+        parent::__construct($config, $factory);
     }
 
     /**

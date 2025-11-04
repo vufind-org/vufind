@@ -131,7 +131,7 @@ class GetRecordDriverRelatedRecords extends \VuFind\AjaxHandler\AbstractBase
                             ['lookfor' =>
                                 "{$field}:" . addcslashes($identifier, '"')],
                             $source,
-                            function ($runner, $params, $searchId) use ($driver) {
+                            function ($runner, $params, $searchId) use ($driver): void {
                                 $params->setLimit(1);
                                 $params->setPage(1);
                                 $params->resetFacetConfig();
