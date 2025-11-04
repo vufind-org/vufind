@@ -75,7 +75,7 @@ class AuthenticationStrategyFactory implements \Laminas\ServiceManager\Factory\F
         return new $requestedName(
             $container->get(\Finna\Auth\Manager::class),
             $container->get(\Finna\ILS\Connection::class),
-            $container->get(\Finna\Auth\ILSAuthenticator::class),
+            $container->get(\VuFind\Auth\ILSAuthenticator::class),
             new \Laminas\Session\Container(
                 'AuthenticationStrategy',
                 $container->get(\Laminas\Session\SessionManager::class)

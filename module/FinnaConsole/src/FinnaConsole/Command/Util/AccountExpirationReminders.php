@@ -324,10 +324,7 @@ class AccountExpirationReminders extends AbstractUtilCommand
             );
         }
 
-        $limitDate = date(
-            'Y-m-d',
-            strtotime(sprintf('-%d days', (int)$days - (int)$remindDaysBefore))
-        );
+        $limitDate = new DateTime(sprintf('-%d days', (int)$days - (int)$remindDaysBefore));
 
         $initialReminderThreshold = time() + $frequency * 86400;
 

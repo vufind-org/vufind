@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2024.
+ * Copyright (C) The National Library of Finland 2024-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -29,15 +29,17 @@
 
 namespace Finna\Db\Service;
 
+use Finna\Db\Entity\FinnaResourceList;
 use Finna\Db\Entity\FinnaResourceListEntityInterface;
-use Finna\Db\Table\FinnaResourceListResource;
+use Finna\Db\Entity\FinnaResourceListResourceEntityInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\AbstractDbService;
+use VuFind\Db\Service\DbServiceAwareInterface;
 use VuFind\Db\Service\DbServiceAwareTrait;
-use VuFind\Db\Table\DbTableAwareInterface;
-use VuFind\Db\Table\DbTableAwareTrait;
 use VuFind\Exception\RecordMissing as RecordMissingException;
+use VuFind\Log\LoggerAwareTrait;
 
 /**
  * Resource list service
@@ -49,10 +51,11 @@ use VuFind\Exception\RecordMissing as RecordMissingException;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class FinnaResourceListService extends AbstractDbService implements
-    DbTableAwareInterface,
-    FinnaResourceListServiceInterface
+    FinnaResourceListServiceInterface,
+    LoggerAwareInterface,
+    DbServiceAwareInterface
 {
-    use DbTableAwareTrait;
+    use LoggerAwareTrait;
     use DbServiceAwareTrait;
 
     /**
@@ -62,7 +65,7 @@ class FinnaResourceListService extends AbstractDbService implements
      */
     public function createEntity(): FinnaResourceListEntityInterface
     {
-        return $this->getDbTable(\Finna\Db\Table\FinnaResourceList::class)->createRow();
+        return $this->entityPluginManager->get(FinnaResourceListEntityInterface::class);
     }
 
     /**
@@ -74,7 +77,7 @@ class FinnaResourceListService extends AbstractDbService implements
      */
     public function deleteResourceList(FinnaResourceListEntityInterface $list): void
     {
-        $this->getDbTable(\Finna\Db\Table\FinnaResourceList::class)->delete(['id' => $list->getId()]);
+        $this->deleteEntity($list);
     }
 
     /**
@@ -95,37 +98,19 @@ class FinnaResourceListService extends AbstractDbService implements
         string $institution = '',
         ?string $listType = null
     ): array {
-        $listsContaining = iterator_to_array(
-            $this->getDbTable(FinnaResourceListResource::class)->select(
-                ['resource_id' => $resource->getId(), 'user_id' => $user->getId()]
-            )
-        );
-        if (!$listsContaining) {
-            return [];
-        }
-        $listIds = [];
-        if ($listsContaining) {
-            $listIds = array_map(
-                fn ($relation) => $relation->getListId(),
-                $listsContaining
-            );
-        }
-        $callback = function ($select) use ($listIdentifier, $user, $institution, $listType, $listIds) {
-            $select->where->equalTo('user_id', $user->getId());
-            if ($institution) {
-                $select->where->equalTo('institution', $institution);
-            }
-            if ($listIdentifier) {
-                $select->where->equalTo('list_config_identifier', $listIdentifier);
-            }
-            if ($listType) {
-                $select->where->equalTo('list_type', $listType);
-            }
-            $select->where->in('id', $listIds);
-        };
-        return iterator_to_array(
-            $this->getDbTable(\Finna\Db\Table\FinnaResourceList::class)->select($callback)
-        );
+        $dql = 'SELECT frl FROM ' . FinnaResourceListEntityInterface::class . ' frl '
+            . 'JOIN ' . FinnaResourceListResourceEntityInterface::class . ' frlr WITH frlr.list = frl.id '
+            . 'JOIN ' . ResourceEntityInterface::class . ' r WITH r.id = frlr.resource '
+            . 'WHERE r.recordId = :recordId AND frl.user = :user '
+            . 'ORDER BY frl.title';
+
+        $parameters = [
+            'user' => $user,
+            'recordId' => $resource->getRecordId(),
+        ];
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        return $query->getResult();
     }
 
     /**
@@ -138,7 +123,7 @@ class FinnaResourceListService extends AbstractDbService implements
      */
     public function getResourceListById(int $id): FinnaResourceListEntityInterface
     {
-        $result = $this->getDbTable(\Finna\Db\Table\FinnaResourceList::class)->select(['id' => $id])->current();
+        $result = $this->getEntityById(FinnaResourceList::class, $id);
         if (empty($result)) {
             throw new RecordMissingException('Cannot load reservation list ' . $id);
         }
@@ -161,22 +146,32 @@ class FinnaResourceListService extends AbstractDbService implements
         string $institution = '',
         ?string $listType = null
     ): array {
-        $callback = function ($select) use ($user, $listIdentifier, $listType, $institution) {
-            $select->where->equalTo('user_id', $user->getId());
-            if ($listType) {
-                $select->where->equalTo('list_type', $listType);
-            }
-            if ($institution) {
-                $select->where->equalTo('institution', $institution);
-            }
-            if ($listIdentifier) {
-                $select->where->equalTo('list_config_identifier', $listIdentifier);
-            }
-            $select->order('institution');
-        };
-        return iterator_to_array(
-            $this->getDbTable(\Finna\Db\Table\FinnaResourceList::class)->select($callback)
-        );
+        $dql = 'SELECT frl AS list_entity, COUNT(DISTINCT(frlr.resource)) AS count '
+            . 'FROM ' . FinnaResourceListEntityInterface::class . ' frl '
+            . 'LEFT JOIN ' . FinnaResourceListResourceEntityInterface::class . ' frlr WITH frlr.list = frl.id '
+            . 'WHERE frl.user = :user';
+
+        $parameters = compact('user');
+
+        if ($listIdentifier) {
+            $dql .= ' AND frl.listConfigIdentifier = :listConfigIdentifier';
+            $parameters['listConfigIdentifier'] = $listIdentifier;
+        }
+        if ($institution) {
+            $dql .= ' AND frl.institution = :institution';
+            $parameters['institution'] = $institution;
+        }
+        if ($listType) {
+            $dql .= ' AND frl.listType = :listType';
+            $parameters['listType'] = $listType;
+        }
+
+        $dql .= ' GROUP BY frl'
+            . ' ORDER BY frl.title';
+
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        return $query->getResult();
     }
 
     /**
@@ -197,35 +192,45 @@ class FinnaResourceListService extends AbstractDbService implements
         string $institution = '',
         ?string $listType = null
     ): array {
-        $listsContaining = iterator_to_array(
-            $this->getDbTable(FinnaResourceListResource::class)->select(
-                ['resource_id' => $resource->getId(), 'user_id' => $user->getId()]
-            )
+        $containingLists = $this->getListsContainingResource(
+            $user,
+            $resource,
+            $listIdentifier,
+            $institution,
+            $listType
         );
-        $listIds = [];
-        if ($listsContaining) {
-            $listIds = array_map(
-                fn ($relation) => $relation->getListId(),
-                $listsContaining
-            );
+        if (!$containingLists) {
+            return $containingLists;
         }
-        $callback = function ($select) use ($listIdentifier, $user, $institution, $listType, $listIds) {
-            $select->where->equalTo('user_id', $user->getId());
-            if ($institution) {
-                $select->where->equalTo('institution', $institution);
-            }
-            if ($listIdentifier) {
-                $select->where->equalTo('list_config_identifier', $listIdentifier);
-            }
-            if ($listType) {
-                $select->where->equalTo('list_type', $listType);
-            }
-            if ($listIds) {
-                $select->where->notIn('id', $listIds);
-            }
-        };
-        return iterator_to_array(
-            $this->getDbTable(\Finna\Db\Table\FinnaResourceList::class)->select($callback)
+        $listIds = array_map(
+            fn ($relation) => $relation->getListId(),
+            $containingLists
         );
+
+        $parameters = [
+            'userId' => $user->getId(),
+            'listsContaining' => $listIds,
+        ];
+
+        $dql = 'SELECT frl FROM ' . FinnaResourceListEntityInterface::class . ' frl '
+            . 'WHERE frl.id NOT IN (:listsContaining) AND frl.user = :userId';
+
+        if ($listIdentifier) {
+            $dql .= ' AND frl.listConfigIdentifier = :listConfigIdentifier';
+            $parameters['listConfigIdentifier'] = $listIdentifier;
+        }
+        if ($institution) {
+            $dql .= ' AND frl.institution = :institution';
+            $parameters['institution'] = $institution;
+        }
+        if ($listType) {
+            $dql .= ' AND frl.listType = :listType';
+            $parameters['listType'] = $listType;
+        }
+        $dql .= ' ORDER BY frl.title';
+
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        return $query->getResult();
     }
 }

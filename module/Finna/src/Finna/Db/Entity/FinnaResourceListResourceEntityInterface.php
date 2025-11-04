@@ -42,93 +42,93 @@ use VuFind\Db\Entity\UserEntityInterface;
  * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
- *
- * @property int $id
- * @property int $resource_id
- * @property int $list_id
- * @property int $user_id
- * @property string $notes
- * @property string $saved
  */
 interface FinnaResourceListResourceEntityInterface extends EntityInterface
 {
     /**
-     * Id getter
+     * Get identifier (returns null for an uninitialized or non-persisted object).
      *
      * @return ?int
      */
     public function getId(): ?int;
 
     /**
-     * Set resource id
+     * Get user.
      *
-     * @param ResourceEntityInterface $resource Resource entity
+     * @return UserEntityInterface
+     */
+    public function getUser(): UserEntityInterface;
+
+    /**
+     * Set user.
+     *
+     * @param UserEntityInterface $user User
+     *
+     * @return static
+     */
+    public function setUser(UserEntityInterface $user): static;
+
+    /**
+     * Get resource.
+     *
+     * @return ResourceEntityInterface
+     */
+    public function getResource(): ResourceEntityInterface;
+
+    /**
+     * Set resource.
+     *
+     * @param ResourceEntityInterface $resource Resource
      *
      * @return static
      */
     public function setResource(ResourceEntityInterface $resource): static;
 
     /**
-     * Get resource id
+     * Get user list.
      *
-     * @return int
+     * @return ?FinnaResourceListEntityInterface
      */
-    public function getResourceId(): int;
+    public function getResourceList(): ?FinnaResourceListEntityInterface;
 
     /**
-     * Get list id
+     * Set user list.
      *
-     * @return int
-     */
-    public function getListId(): int;
-
-    /**
-     * Set list id
-     *
-     * @param FinnaResourceListEntityInterface $list List entity
+     * @param ?FinnaResourceListEntityInterface $list User list
      *
      * @return static
      */
-    public function setList(FinnaResourceListEntityInterface $list): static;
+    public function setResourceList(?FinnaResourceListEntityInterface $list): static;
 
     /**
-     * Set saved
+     * Get notes.
+     *
+     * @return ?string
+     */
+    public function getNotes(): ?string;
+
+    /**
+     * Set notes.
+     *
+     * @param ?string $notes Notes associated with the resource
+     *
+     * @return static
+     */
+    public function setNotes(?string $notes): static;
+
+    /**
+     * Get saved date.
+     *
+     * @return DateTime
+     */
+    public function getSaved(): DateTime;
+
+    /**
+     * Set saved date.
      *
      * @param DateTime $dateTime Created date
      *
      * @return static
      */
     public function setSaved(DateTime $dateTime): static;
-
-    /**
-     * Get saved
-     *
-     * @return DateTime
-     */
-    public function getSaved(): Datetime;
-
-    /**
-     * Set notes
-     *
-     * @param string $note Note
-     *
-     * @return static
-     */
-    public function setNotes(string $note): static;
-
-    /**
-     * Get notes
-     *
-     * @return string
-     */
-    public function getNotes(): string;
-
-    /**
-     * Set user id from user entity
-     *
-     * @param UserEntityInterface $user User entity
-     *
-     * @return static
-     */
-    public function setUser(UserEntityInterface $user): static;
 }

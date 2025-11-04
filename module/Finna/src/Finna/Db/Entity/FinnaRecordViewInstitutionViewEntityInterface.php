@@ -43,14 +43,21 @@ use VuFind\Db\Entity\EntityInterface;
 interface FinnaRecordViewInstitutionViewEntityInterface extends EntityInterface
 {
     /**
-     * Id getter
+     * Get identifier (returns null for an uninitialized or non-persisted object).
      *
      * @return ?int
      */
     public function getId(): ?int;
 
     /**
-     * Institution setter
+     * Get institution.
+     *
+     * @return string
+     */
+    public function getInstitution(): string;
+
+    /**
+     * Set institution.
      *
      * @param string $institution Institution
      *
@@ -59,25 +66,18 @@ interface FinnaRecordViewInstitutionViewEntityInterface extends EntityInterface
     public function setInstitution(string $institution): static;
 
     /**
-     * Institution getter
+     * Set view.
      *
      * @return string
      */
-    public function getInstitution(): string;
+    public function getView(): string;
 
     /**
-     * View setter
+     * Get view.
      *
      * @param string $view View
      *
      * @return static
      */
     public function setView(string $view): static;
-
-    /**
-     * View getter
-     *
-     * @return string
-     */
-    public function getView(): string;
 }

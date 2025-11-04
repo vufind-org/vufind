@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2024.
+ * Copyright (C) The National Library of Finland 2024-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -43,19 +43,6 @@ use VuFind\Db\Entity\UserEntityInterface;
  * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     http://vufind.org   Main Site
- *
- * @property int    $id
- * @property int    $user_id
- * @property string $title
- * @property string $description
- * @property string $created
- * @property string $institution
- * @property string $list_config_identifier
- * @property string $list_type
- * @property string $ordered
- * @property string $pickup_date
- * @property string $connection
- * @property string $external_id
  */
 interface FinnaResourceListEntityInterface extends EntityInterface
 {
@@ -121,7 +108,7 @@ interface FinnaResourceListEntityInterface extends EntityInterface
      *
      * @return static
      */
-    public function setCreated(Datetime $dateTime): static;
+    public function setCreated(DateTime $dateTime): static;
 
     /**
      * Created getter

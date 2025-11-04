@@ -29,6 +29,7 @@
 
 namespace Finna\AjaxHandler;
 
+use Finna\Db\Service\UserResourceServiceInterface;
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\View\Renderer\RendererInterface;
 use VuFind\Db\Entity\UserEntityInterface;
@@ -51,14 +52,16 @@ class GetUserLists extends \VuFind\AjaxHandler\AbstractBase implements Translato
     /**
      * Constructor
      *
-     * @param ?UserEntityInterface     $user            Logged in user (or null)
-     * @param UserListServiceInterface $userListService UserList database service
-     * @param RendererInterface        $renderer        View renderer
-     * @param bool                     $enabled         Are lists enabled?
+     * @param ?UserEntityInterface         $user                Logged in user (or null)
+     * @param UserListServiceInterface     $userListService     UserList database service
+     * @param UserResourceServiceInterface $userResourceService UserResource database service
+     * @param RendererInterface            $renderer            View renderer
+     * @param bool                         $enabled             Are lists enabled?
      */
     public function __construct(
         protected ?UserEntityInterface $user,
         protected UserListServiceInterface $userListService,
+        protected UserResourceServiceInterface $userResourceService,
         protected RendererInterface $renderer,
         protected bool $enabled = true
     ) {
@@ -93,9 +96,16 @@ class GetUserLists extends \VuFind\AjaxHandler\AbstractBase implements Translato
 
         $activeId = (int)$params->fromPost('active');
         $lists = $this->userListService->getUserListsAndCountsByUser($this->user);
+        $totalResourceCount = $this->userResourceService->getTotalResourceCount($this->user);
+
         $html = $this->renderer->partial(
             'myresearch/mylist-navi.phtml',
-            ['user' => $this->user, 'activeId' => $activeId, 'lists' => $lists]
+            [
+                'user' => $this->user,
+                'activeId' => $activeId,
+                'lists' => $lists,
+                'totalResourceCount' => $totalResourceCount,
+            ]
         );
         return $this->formatResponse($html);
     }

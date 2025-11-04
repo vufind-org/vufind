@@ -31,8 +31,6 @@ namespace Finna\Db\Service;
 
 use VuFind\Db\Entity\AccessTokenEntityInterface;
 use VuFind\Db\Service\AccessTokenService as VuFindAccessTokenService;
-use VuFind\Db\Service\AccessTokenServiceInterface;
-use VuFind\Db\Table\DbTableAwareTrait;
 
 /**
  * Database service for access tokens.
@@ -43,12 +41,8 @@ use VuFind\Db\Table\DbTableAwareTrait;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class AccessTokenService extends VuFindAccessTokenService implements
-    AccessTokenServiceInterface,
-    \VuFind\Db\Table\DbTableAwareInterface
+class AccessTokenService extends VuFindAccessTokenService implements AccessTokenServiceInterface
 {
-    use DbTableAwareTrait;
-
     /**
      * Api key type in the table
      *
@@ -61,17 +55,13 @@ class AccessTokenService extends VuFindAccessTokenService implements
      *
      * @param string $token Token for the access_token
      *
-     * @return ?AccessTokenEntityInterface
+     * @return bool
      */
     public function isApiKeyActive(string $token): bool
     {
-        $res = $this->getDbTable(\VuFind\Db\Table\AccessToken::class)->select(
-            [
-                'data' => $token,
-                'type' => self::TYPE_API_KEY,
-            ]
-        )->current();
+        $token = $this->entityManager->getRepository(AccessTokenEntityInterface::class)
+            ->findOneBy(['data' => $token, 'type' => self::TYPE_API_KEY]);
 
-        return ($res && !$res->isRevoked()) ? true : false;
+        return $token && !$token->isRevoked();
     }
 }

@@ -30,10 +30,10 @@
 namespace Finna\ReservationList\Handler;
 
 use Exception;
-use Finna\Auth\ILSAuthenticator;
 use Finna\Db\Entity\FinnaResourceListEntityInterface;
 use Finna\ReservationList\Form\Form;
 use Psr\Container\ContainerInterface;
+use VuFind\Auth\ILSAuthenticator;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
 use VuFind\Service\GetServiceTrait;

@@ -60,11 +60,11 @@ interface FinnaCacheServiceInterface extends DbServiceInterface
     public function deleteCacheEntry(FinnaCacheEntityInterface $entity): void;
 
     /**
-     * Get cache item from database by id.
+     * Get cache item from database by resource id.
      *
-     * @param string $id Item id
+     * @param string $resourceId Resource id
      *
      * @return ?FinnaCacheEntityInterface
      */
-    public function getByResourceId(string $id): ?FinnaCacheEntityInterface;
+    public function getByResourceId(string $resourceId): ?FinnaCacheEntityInterface;
 }

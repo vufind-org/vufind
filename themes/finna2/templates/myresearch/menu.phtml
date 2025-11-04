@@ -17,6 +17,7 @@
         'lists' => $user ? $this->userlist()->getUserListsAndCountsByUser($user) : null,
         'results' => $this->results,
         'user' => $user,
+        'totalResourceCount' => $this->totalResourceCount,
       ];
     }
     $reservationLists = $this->reservationList($user)->getReservationListsForUser();
@@ -68,7 +69,7 @@
         'librarycards' => [
           'url' => 'librarycards-home',
           'translation' => 'Library Cards',
-          'show' => $user && $user->libraryCardsEnabled(),
+          'show' => $user && $this->accountCapabilities()->libraryCardsEnabled(),
         ],
       ];
     }

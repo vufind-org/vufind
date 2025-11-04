@@ -43,25 +43,25 @@ use VuFind\Db\Entity\EntityInterface;
 interface FinnaRecordViewRecordFormatEntityInterface extends EntityInterface
 {
     /**
-     * Id getter
+     * Get identifier (returns null for an uninitialized or non-persisted object).
      *
      * @return ?int
      */
     public function getId(): ?int;
 
     /**
-     * Formats setter
+     * Get formats.
+     *
+     * @return string
+     */
+    public function getFormats(): string;
+
+    /**
+     * Set formats.
      *
      * @param string $formats Formats
      *
      * @return static
      */
     public function setFormats(string $formats): static;
-
-    /**
-     * Formats getter
-     *
-     * @return string
-     */
-    public function getFormats(): string;
 }

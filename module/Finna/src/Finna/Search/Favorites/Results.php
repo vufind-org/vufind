@@ -29,7 +29,7 @@
 
 namespace Finna\Search\Favorites;
 
-use Finna\Db\Service\FinnaUserListServiceInterface;
+use Finna\Db\Service\UserListServiceInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
 
 use function assert;
@@ -57,12 +57,12 @@ class Results extends \VuFind\Search\Favorites\Results
         $list = $this->getListObject();
         $sort = $this->getParams()->getSort();
 
-        assert($this->userListService instanceof FinnaUserListServiceInterface);
+        assert($this->userListService instanceof UserListServiceInterface);
 
         if (
             $sort == 'custom_order'
             && (empty($list)
-            || !$this->userListService->isCustomOrderAvailable($list->getId()))
+            || !$this->userListService->isCustomOrderAvailable($list))
         ) {
             $sort = 'id desc';
         }

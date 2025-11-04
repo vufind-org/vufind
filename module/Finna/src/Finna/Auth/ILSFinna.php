@@ -107,6 +107,14 @@ trait ILSFinna
             }
         }
 
+        // Add institution prefix to id
+        if (isset($info['id'])) {
+            $config = $this->getConfig()->toArray();
+            if ($institution = $config['Site']['institution'] ?? null) {
+                $info['id'] = "$institution:" . $info['id'];
+            }
+        }
+
         $user = parent::processILSUser($info);
 
         // Set home library if not already set

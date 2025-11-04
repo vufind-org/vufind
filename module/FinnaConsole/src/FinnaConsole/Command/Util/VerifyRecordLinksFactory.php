@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2015-2020.
+ * Copyright (C) The National Library of Finland 2015-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -30,12 +30,16 @@
 
 namespace FinnaConsole\Command\Util;
 
-use Finna\Db\Service\FinnaRecordServiceInterface;
+use Finna\Db\Service\CommentsServiceInterface;
+use Finna\Db\Service\FinnaCommentsRecordServiceInterface;
+use Finna\Db\Service\RatingsServiceInterface;
+use Finna\Db\Service\RecordServiceInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Db\Service\ResourceServiceInterface;
 
 /**
  * Factory for the "verify record links" task.
@@ -70,10 +74,15 @@ class VerifyRecordLinksFactory implements FactoryInterface
     ) {
         $dbServiceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         return new $requestedName(
-            $dbServiceManager->get(FinnaRecordServiceInterface::class),
+            $container->get('doctrine.entitymanager.orm_vufind'),
+            $dbServiceManager->get(RecordServiceInterface::class),
+            $dbServiceManager->get(CommentsServiceInterface::class),
+            $dbServiceManager->get(FinnaCommentsRecordServiceInterface::class),
+            $dbServiceManager->get(RatingsServiceInterface::class),
+            $dbServiceManager->get(ResourceServiceInterface::class),
             $container->get(\VuFind\Search\BackendManager::class)->get('Solr'),
             $container->get(\VuFind\Record\Loader::class),
-            $container->get(\VuFind\Config\PluginManager::class)->get('searches'),
+            $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('searches'),
             ...($options ?? [])
         );
     }

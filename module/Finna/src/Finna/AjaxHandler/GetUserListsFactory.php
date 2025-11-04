@@ -29,6 +29,7 @@
 
 namespace Finna\AjaxHandler;
 
+use Finna\Db\Service\UserResourceServiceInterface;
 use Psr\Container\ContainerInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 
@@ -68,9 +69,11 @@ class GetUserListsFactory implements \Laminas\ServiceManager\Factory\FactoryInte
             throw new \Exception('Unexpected options passed to factory.');
         }
         $capabilities = $container->get(\VuFind\Config\AccountCapabilities::class);
+        $dbServiceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         return new $requestedName(
             $container->get(\VuFind\Auth\Manager::class)->getUserObject(),
-            $container->get(\VuFind\Db\Service\PluginManager::class)->get(UserListServiceInterface::class),
+            $dbServiceManager->get(UserListServiceInterface::class),
+            $dbServiceManager->get(UserResourceServiceInterface::class),
             $container->get('ViewRenderer'),
             $capabilities->getListSetting() !== 'disabled'
         );

@@ -38,7 +38,7 @@ namespace Finna\Db\Entity;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-interface FinnaRecordStatsLogEntityInterface extends FinnaBaseStatsLogEntityInterface
+interface FinnaRecordStatsLogEntityInterface extends FinnaBaseStatsEntityInterface
 {
     /**
      * Backend setter

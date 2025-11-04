@@ -97,13 +97,6 @@ interface FinnaResourceListResourceServiceInterface extends DbServiceInterface
     public function changeResourceId(int $old, int $new): void;
 
     /**
-     * Deduplicate rows (sometimes necessary after merging foreign key IDs).
-     *
-     * @return void
-     */
-    public function deduplicate(): void;
-
-    /**
      * Get resources for a resource list
      *
      * @param UserEntityInterface              $user   User entity

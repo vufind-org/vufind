@@ -44,14 +44,21 @@ use VuFind\Db\Entity\EntityInterface;
 interface FinnaCacheEntityInterface extends EntityInterface
 {
     /**
-     * Id getter
+     * Get identifier (returns null for an uninitialized or non-persisted object).
      *
      * @return ?int
      */
     public function getId(): ?int;
 
     /**
-     * Resource ID setter
+     * Get resource ID.
+     *
+     * @return string
+     */
+    public function getResourceId(): string;
+
+    /**
+     * Set resource ID.
      *
      * @param string $id Resource ID
      *
@@ -60,14 +67,14 @@ interface FinnaCacheEntityInterface extends EntityInterface
     public function setResourceId(string $id): static;
 
     /**
-     * Resource ID getter
+     * Get creation date.
      *
-     * @return string
+     * @return DateTime
      */
-    public function getResourceId(): string;
+    public function getCreated(): DateTime;
 
     /**
-     * Created setter
+     * Set creation date.
      *
      * @param DateTime $dateTime Created date
      *
@@ -76,14 +83,14 @@ interface FinnaCacheEntityInterface extends EntityInterface
     public function setCreated(DateTime $dateTime): static;
 
     /**
-     * Created getter
+     * Get modification UNIX timestamp.
      *
-     * @return DateTime
+     * @return int
      */
-    public function getCreated(): Datetime;
+    public function getModificationTimestamp(): int;
 
     /**
-     * Modification timestamp setter
+     * Set modification UNIX timestamp.
      *
      * @param int $mtime Unix timestamp of modification
      *
@@ -92,25 +99,18 @@ interface FinnaCacheEntityInterface extends EntityInterface
     public function setModificationTimestamp(int $mtime): static;
 
     /**
-     * Modification timestamp getter
+     * Get data.
      *
-     * @return int
+     * @return string
      */
-    public function getModificationTimestamp(): int;
+    public function getData(): string;
 
     /**
-     * Data setter
+     * Set data.
      *
      * @param string $data Data
      *
      * @return static
      */
     public function setData(string $data): static;
-
-    /**
-     * Data getter
-     *
-     * @return string
-     */
-    public function getData(): string;
 }

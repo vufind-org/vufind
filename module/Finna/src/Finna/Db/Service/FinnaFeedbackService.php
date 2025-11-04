@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2024.
+ * Copyright (C) The National Library of Finland 2024-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -31,8 +31,6 @@ namespace Finna\Db\Service;
 
 use Finna\Db\Entity\FinnaFeedbackEntityInterface;
 use VuFind\Db\Service\AbstractDbService;
-use VuFind\Db\Table\DbTableAwareInterface;
-use VuFind\Db\Table\DbTableAwareTrait;
 
 /**
  * Database service for feedback.
@@ -44,11 +42,8 @@ use VuFind\Db\Table\DbTableAwareTrait;
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 class FinnaFeedbackService extends AbstractDbService implements
-    DbTableAwareInterface,
     FinnaFeedbackServiceInterface
 {
-    use DbTableAwareTrait;
-
     /**
      * Create a Finna feedback entity object.
      *
@@ -56,6 +51,6 @@ class FinnaFeedbackService extends AbstractDbService implements
      */
     public function createEntity(): FinnaFeedbackEntityInterface
     {
-        return $this->getDbTable(\Finna\Db\Table\FinnaFeedback::class)->createRow();
+        return $this->entityPluginManager->get(FinnaFeedbackEntityInterface::class);
     }
 }

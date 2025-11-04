@@ -43,25 +43,25 @@ use VuFind\Db\Entity\EntityInterface;
 interface FinnaRecordViewRecordRightsEntityInterface extends EntityInterface
 {
     /**
-     * Id getter
+     * Get identifier (returns null for an uninitialized or non-persisted object).
      *
      * @return ?int
      */
     public function getId(): ?int;
 
     /**
-     * Rights setter
+     * Get rights.
+     *
+     * @return string
+     */
+    public function getRights(): string;
+
+    /**
+     * Set rights.
      *
      * @param string $rights Rights
      *
      * @return static
      */
     public function setRights(string $rights): static;
-
-    /**
-     * Rights getter
-     *
-     * @return string
-     */
-    public function getRights(): string;
 }

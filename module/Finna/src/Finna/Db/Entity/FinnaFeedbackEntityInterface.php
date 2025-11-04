@@ -29,8 +29,6 @@
 
 namespace Finna\Db\Entity;
 
-use VuFind\Db\Entity\FeedbackEntityInterface;
-
 /**
  * Interface for representing a feedback message.
  *
@@ -40,6 +38,6 @@ use VuFind\Db\Entity\FeedbackEntityInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-interface FinnaFeedbackEntityInterface extends FeedbackEntityInterface
+interface FinnaFeedbackEntityInterface extends \VuFind\Db\Entity\FeedbackEntityInterface
 {
 }

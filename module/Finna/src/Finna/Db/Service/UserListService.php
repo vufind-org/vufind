@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2024.
+ * Copyright (C) The National Library of Finland 2024-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -29,10 +29,14 @@
 
 namespace Finna\Db\Service;
 
+use DateTime;
+use Finna\Db\Entity\UserList;
+use Finna\Db\Entity\UserListEntityInterface;
+use Finna\Db\Entity\UserResourceEntityInterface;
+use VuFind\Db\Entity\EntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Entity\UserListEntityInterface;
 
-use function is_int;
+use function assert;
 
 /**
  * Database service for UserList.
@@ -43,50 +47,40 @@ use function is_int;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class UserListService extends \VuFind\Db\Service\UserListService implements FinnaUserListServiceInterface
+class UserListService extends \VuFind\Db\Service\UserListService implements UserListServiceInterface
 {
     /**
      * Check if custom favorite order is used in a list
      *
-     * @param UserListEntityInterface|int $listOrId List entity or ID.
+     * @param UserListEntityInterface $list List entity.
      *
      * @return bool
      */
-    public function isCustomOrderAvailable(UserListEntityInterface|int $listOrId)
+    public function isCustomOrderAvailable(UserListEntityInterface $list)
     {
-        $listId = is_int($listOrId) ? $listOrId : $listOrId?->getId();
-        $callback = function ($select) use ($listId) {
-            $select->where->equalTo('list_id', $listId);
-            $select->join(
-                ['r' => 'resource'],
-                'user_resource.resource_id = r.id',
-                ['record_id']
-            );
-            $select->where->isNotNull('finna_custom_order_index');
-        };
-        return $this->getDbTable('UserResource')->select($callback)->count() > 0;
+        $dql = 'SELECT ur FROM ' . UserResourceEntityInterface::class . ' ur'
+            . ' WHERE ur.list = :list AND ur.finnaCustomOrderIndex IS NOT NULL';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters(compact('list'));
+        $query->setMaxResults(1);
+        return $query->getOneOrNullResult() !== null;
     }
 
     /**
      * Get next available custom order index
      *
-     * @param UserListEntityInterface|int $listOrId List entity or ID.
+     * @param UserListEntityInterface $list List entity.
      *
      * @return int Next available index or zero if custom order is not used or list is empty
      */
-    public function getNextAvailableCustomOrderIndex(UserListEntityInterface|int $listOrId)
+    public function getNextAvailableCustomOrderIndex(UserListEntityInterface $list)
     {
-        $listId = is_int($listOrId) ? $listOrId : $listOrId?->getId();
-        $callback = function ($select) use ($listId) {
-            $select->where->equalTo('list_id', $listId);
-            $select->where->isNotNull('finna_custom_order_index');
-            $select->order('finna_custom_order_index DESC');
-        };
-        $result = $this->getDbTable('UserResource')->select($callback);
-        if ($result->count() > 0) {
-            return $result->current()->finna_custom_order_index + 1;
-        }
-        return 0;
+        $dql = 'SELECT MAX(ur.finnaCustomOrderIndex) FROM ' . UserResourceEntityInterface::class . ' ur'
+            . ' WHERE ur.list = :list';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters(compact('list'));
+        $result = $query->getOneOrNullResult();
+        return null === $result ? 0 : $result + 1;
     }
 
     /**
@@ -99,9 +93,8 @@ class UserListService extends \VuFind\Db\Service\UserListService implements Finn
      */
     public function getListByTitle(UserEntityInterface|int $userOrId, string $title): ?UserListEntityInterface
     {
-        $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
-        $result = $this->getDbTable('UserList')->getByTitle($userId, $title);
-        return false !== $result ? $result : null;
+        $user = $this->getDoctrineReference(UserEntityInterface::class, $userOrId);
+        return $this->entityManager->getRepository(UserListEntityInterface::class)->findOneBy(compact('user', 'title'));
     }
 
     /**
@@ -109,13 +102,16 @@ class UserListService extends \VuFind\Db\Service\UserListService implements Finn
      * list_entity and count keys.
      *
      * @param UserEntityInterface|int $userOrId User entity object or ID
+     * @param string|string[]         $types    Types of user lists to get. Set to an empty array to get all.
      *
      * @return array
      * @throws Exception
      */
-    public function getUserListsAndCountsByUser(UserEntityInterface|int $userOrId): array
-    {
-        $lists = parent::getUserListsAndCountsByUser($userOrId);
+    public function getUserListsAndCountsByUser(
+        UserEntityInterface|int $userOrId,
+        string|array $types = [UserList::TYPE_DEFAULT]
+    ): array {
+        $lists = parent::getUserListsAndCountsByUser($userOrId, $types);
 
         // Sort lists by id
         $listsSorted = [];
@@ -138,7 +134,21 @@ class UserListService extends \VuFind\Db\Service\UserListService implements Finn
      */
     public function saveCustomFavoriteOrder(UserEntityInterface $user, int $listId, array $orderedList): void
     {
-        $this->getDbTable('UserResource')->saveCustomFavoriteOrder($user->getId(), $listId, $orderedList);
+        $recordIndex = array_flip(array_values($orderedList));
+        $list = $this->getUserListById($listId);
+
+        $dql = 'SELECT ur, r FROM ' . UserResourceEntityInterface::class . ' ur'
+            . ' JOIN ur.resource r'
+            . ' WHERE ur.user = :user AND ur.list = :list';
+
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters(compact('user', 'list'));
+        foreach ($query->getResult() as $userResource) {
+            $recordId = $userResource->getResource()->getRecordId();
+            $userResource->setFinnaCustomOrderIndex($recordIndex[$recordId] ?? null);
+            $this->entityManager->persist($userResource);
+        }
+        $this->entityManager->flush();
     }
 
     /**
@@ -148,6 +158,20 @@ class UserListService extends \VuFind\Db\Service\UserListService implements Finn
      */
     public function getProtectedLists(): array
     {
-        return iterator_to_array($this->getDbTable('UserList')->select(['finna_protected' => 1]));
+        return $this->entityManager->getRepository(UserListEntityInterface::class)->findBy(['finnaProtected' => true]);
+    }
+
+    /**
+     * Persist an entity.
+     *
+     * @param EntityInterface $entity Entity to persist.
+     *
+     * @return void
+     */
+    public function persistEntity(EntityInterface $entity): void
+    {
+        assert($entity instanceof UserListEntityInterface);
+        $entity->setFinnaUpdated(new DateTime());
+        parent::persistEntity($entity);
     }
 }

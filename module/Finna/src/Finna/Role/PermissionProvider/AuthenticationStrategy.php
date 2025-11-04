@@ -30,10 +30,10 @@
 
 namespace Finna\Role\PermissionProvider;
 
-use Finna\Auth\ILSAuthenticator;
 use Finna\Auth\Manager as AuthManager;
 use Finna\ILS\Connection as ILSConnection;
 use Laminas\Session\Container as SessionContainer;
+use VuFind\Auth\ILSAuthenticator;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Role\PermissionProvider\PermissionProviderInterface;
 

@@ -40,8 +40,7 @@ use VuFind\Db\Entity\SearchEntityInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class SearchService extends \VuFind\Db\Service\SearchService implements
-    FinnaSearchServiceInterface
+class SearchService extends \VuFind\Db\Service\SearchService implements SearchServiceInterface
 {
     /**
      * Get distinct notification base URLs with scheduled alerts.
@@ -50,20 +49,11 @@ class SearchService extends \VuFind\Db\Service\SearchService implements
      */
     public function getScheduledNotificationBaseUrls(): array
     {
-        $table = $this->getDbTable('search');
-        $sql
-            = "SELECT distinct notification_base_url as url FROM {$table->getTable()}"
-            . " WHERE notification_base_url != '' AND notification_frequency != 0;";
+        $dql = 'SELECT DISTINCT s.notificationBaseUrl as url FROM ' . SearchEntityInterface::class
+            . " s WHERE s.notificationBaseUrl != '' AND s.notificationFrequency > 0";
 
-        $result = $table->getAdapter()->query(
-            $sql,
-            \Laminas\Db\Adapter\Adapter::QUERY_MODE_EXECUTE
-        );
-        $urls = [];
-        foreach ($result as $res) {
-            $urls[] = $res['url'];
-        }
-        return $urls;
+        $query = $this->entityManager->createQuery($dql);
+        return $query->getSingleColumnResult();
     }
 
     /**
@@ -75,12 +65,11 @@ class SearchService extends \VuFind\Db\Service\SearchService implements
      */
     public function getScheduledSearchesByBaseUrl(string $notificationBaseUrl): array
     {
-        $callback = function ($select) use ($notificationBaseUrl) {
-            $select->where->equalTo('saved', 1);
-            $select->where->greaterThan('notification_frequency', 0);
-            $select->where->equalTo('notification_base_url', $notificationBaseUrl);
-            $select->order('user_id');
-        };
-        return iterator_to_array($this->getDbTable('search')->select($callback));
+        $dql = 'SELECT s FROM ' . SearchEntityInterface::class
+            . ' WHERE s.notificationBaseUrl = :notificationBaseUrl AND s.notificationFrequency > 0 AND s.saved = 1'
+            . ' ORDER BY s.userId';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters(compact('notificationBaseUrl'));
+        return $query->getResult();
     }
 }

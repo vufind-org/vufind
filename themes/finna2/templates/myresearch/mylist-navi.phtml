@@ -1,6 +1,5 @@
 <!-- START of: finna - myresearch/mylist-navi.phtml -->
 <?php
-  $numOfResources = $user->getNumOfResources();
   $currentLimit = 20; // default limit for favorites
   if (isset($this->results)) {
      $limitList = $this->results->getParams()->getLimitList();
@@ -18,7 +17,7 @@
     <a role="menuitem" href="<?=$this->url('myresearch-favorites')?>?limit=<?=$currentLimit;?>" class="dropdown-item<?=!$activeId ? ' active' : ''?>" aria-current="<?= !$activeId ? 'page' : 'false' ?>">
       <div class="favorite-list-holder">
         <div class="float-start favorite-list-title"><?=$this->transEsc('default_list_title')?></div>
-        <div class="float-end">(<?=$numOfResources;?>)</div>
+        <div class="float-end">(<?=$this->totalResourceCount?>)</div>
       </div>
     </a>
   </li>

@@ -29,10 +29,9 @@
 
 namespace Finna\Statistics\Driver;
 
-use DateTime;
 use Finna\Db\Service\FinnaStatisticsServiceInterface;
 use Finna\Db\Type\FinnaStatisticsClientType;
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Log\LoggerAwareTrait;
 
 /**
@@ -76,7 +75,7 @@ class Database implements DriverInterface, LoggerAwareInterface
         $session = $this->statisticsService->createSessionEntity()
             ->setInstitution($institution)
             ->setView($view)
-            ->setDate(new DateTime())
+            ->setDate(date('Y-m-d'))
             ->setType(FinnaStatisticsClientType::from($type));
         $this->statisticsService->addSession($session);
     }
@@ -102,7 +101,7 @@ class Database implements DriverInterface, LoggerAwareInterface
         $pageView = $this->statisticsService->createPageViewEntity()
             ->setInstitution($institution)
             ->setView($view)
-            ->setDate(new DateTime())
+            ->setDate(date('Y-m-d'))
             ->setType(FinnaStatisticsClientType::from($type))
             ->setController($controller)
             ->setAction($action);
@@ -139,7 +138,7 @@ class Database implements DriverInterface, LoggerAwareInterface
         $recordView = $this->statisticsService->createRecordStatsLogEntity()
             ->setInstitution($institution)
             ->setView($view)
-            ->setDate(new DateTime())
+            ->setDate(date('Y-m-d'))
             ->setType(FinnaStatisticsClientType::from($type))
             ->setBackend($backend)
             ->setSource($source)

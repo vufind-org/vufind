@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2024.
+ * Copyright (C) The National Library of Finland 2024-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -29,12 +29,16 @@
 
 namespace Finna\Db\Service;
 
-use Finna\Db\Entity\FinnaUserCardEntityInterface;
-use Finna\Db\Entity\FinnaUserEntityInterface;
-use Laminas\Db\Sql\Select;
+use DateTime;
+use Doctrine\ORM\EntityManager;
+use Finna\Db\Entity\UserCardEntityInterface;
+use Finna\Db\Entity\UserEntityInterface;
+use Finna\Db\Entity\UserListEntityInterface;
 use Laminas\Session\Container as SessionContainer;
 use VuFind\Crypt\HMAC;
-use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Entity\PluginManager as EntityPluginManager;
+use VuFind\Db\Feature\DateTimeTrait;
+use VuFind\Db\PersistenceManager;
 use VuFind\Db\Service\DbServiceAwareInterface;
 use VuFind\Db\Service\DbServiceAwareTrait;
 use VuFind\Db\Service\UserCardServiceInterface;
@@ -53,8 +57,9 @@ use function in_array;
  */
 class UserService extends \VuFind\Db\Service\UserService implements
     DbServiceAwareInterface,
-    FinnaUserServiceInterface
+    UserServiceInterface
 {
+    use DateTimeTrait;
     use DbServiceAwareTrait;
 
     /**
@@ -65,11 +70,14 @@ class UserService extends \VuFind\Db\Service\UserService implements
      * @param HMAC             $hmac                 HMAC service
      */
     public function __construct(
+        EntityManager $entityManager,
+        EntityPluginManager $entityPluginManager,
+        PersistenceManager $persistenceManager,
         SessionContainer $userSessionContainer,
         protected array $config,
         protected HMAC $hmac
     ) {
-        parent::__construct($userSessionContainer);
+        parent::__construct($entityManager, $entityPluginManager, $persistenceManager, $userSessionContainer);
     }
 
     /**
@@ -96,7 +104,14 @@ class UserService extends \VuFind\Db\Service\UserService implements
     public function getUserByField(string $fieldName, int|string|null $fieldValue): ?UserEntityInterface
     {
         if ('email' === $fieldName) {
-            return $this->getDbTable('User')->getByEmailAndInstitutionPrefix($fieldValue);
+            $dql = 'SELECT u FROM ' . UserEntityInterface::class . ' u'
+                . " WHERE u.authMethod = 'database' AND u.email = :email AND u.username LIKE :usernamePrefix";
+            $query = $this->entityManager->createQuery($dql);
+            $query->setParameters([
+                'email' => $fieldValue,
+                'usernamePrefix' => $this->addInstitutionPrefix('') . '%',
+            ]);
+            return $query->getOneOrNullResult();
         }
         if (in_array($fieldName, ['username', 'cat_id'])) {
             $fieldValue = $this->addInstitutionPrefix($fieldValue);
@@ -114,15 +129,79 @@ class UserService extends \VuFind\Db\Service\UserService implements
      */
     public function setDueDateReminderForUser(UserEntityInterface $user, int $dueDateReminder): void
     {
-        assert($user instanceof FinnaUserEntityInterface);
+        assert($user instanceof UserEntityInterface);
         $user->setFinnaDueDateReminder($dueDateReminder);
         $this->persistEntity($user);
         $userCardService = $this->getDbService(UserCardServiceInterface::class);
         foreach ($userCardService->getLibraryCards($user, null, $user->getCatUsername()) as $card) {
-            assert($card instanceof FinnaUserCardEntityInterface);
+            assert($card instanceof UserCardEntityInterface);
             $card->setFinnaDueDateReminder($dueDateReminder);
             $userCardService->persistEntity($card);
         }
+    }
+
+    /**
+     * Retrieve protected users.
+     *
+     * @return UserEntityInterface[]
+     */
+    public function getProtectedUsers(): array
+    {
+        return $this->entityManager->getRepository(UserEntityInterface::class)->findBy(['finnaProtected' => true]);
+    }
+
+    /**
+     * Get users that haven't logged in since the given date.
+     *
+     * @param DateTime $lastLoginDateThreshold Last login date threshold
+     *
+     * @return UserEntityInterface[]
+     */
+    public function getExpiringUsers(DateTime $lastLoginDateThreshold): array
+    {
+        $dql = 'SELECT ul.user FROM ' . UserListEntityInterface::class . ' ul'
+            . ' WHERE ul.finnaProtected = 1';
+        $subQuery = $this->entityManager->createQuery($dql);
+
+        $dql = 'SELECT u FROM ' . UserEntityInterface::class . ' u'
+            . ' WHERE u.lastLogin != :nullDate AND u.lastLogin < :lastLoginDateThreshold AND u NOT IN (:subQuery)';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters([
+            'nullDate' => $this->getNonNullableDateTimeFromNullable(null),
+            'lastLoginDateThreshold' => $lastLoginDateThreshold,
+            'subQuery' => $subQuery,
+        ]);
+        return $query->getResult();
+    }
+
+    /**
+     * Get users with due date reminders.
+     *
+     * @return UserEntityInterface[]
+     */
+    public function getUsersWithDueDateReminders(): array
+    {
+        $dql = 'SELECT uc FROM ' . UserCardEntityInterface::class . ' WHERE uc.finnaDueDateReminder > 0';
+        $subQuery = $this->entityManager->createQuery($dql);
+
+        $dql = 'SELECT u FROM ' . UserEntityInterface::class . ' u'
+            . ' WHERE u IN (:subQuery)';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters(compact('subQuery'));
+        return $query->getResult();
+    }
+
+    /**
+     * Check if given nickname is available
+     *
+     * @param string $nickname Nickname
+     *
+     * @return bool
+     */
+    public function isNicknameAvailable(string $nickname): bool
+    {
+        return null
+            === $this->entityManager->getRepository(UserEntityInterface::class)->findBy(['finnaNickname' => $nickname]);
     }
 
     /**
@@ -141,73 +220,5 @@ class UserService extends \VuFind\Db\Service\UserService implements
             }
         }
         return $value;
-    }
-
-    /**
-     * Retrieve protected users.
-     *
-     * @return UserEntityInterface[]
-     */
-    public function getProtectedUsers(): array
-    {
-        return iterator_to_array($this->getDbTable('User')->select(['finna_protected' => 1]));
-    }
-
-    /**
-     * Get users that haven't logged in since the given date.
-     *
-     * @param string $lastLoginDateThreshold Last login date threshold
-     *
-     * @return UserEntityInterface[]
-     */
-    public function getExpiringUsers(string $lastLoginDateThreshold): array
-    {
-        $listSelect = new Select('user_list');
-        $listSelect->columns(['user_id']);
-        $listSelect->where->equalTo('finna_protected', 1);
-
-        $users = $this->getDbTable('User')->select(
-            function (Select $select) use ($lastLoginDateThreshold, $listSelect) {
-                $select->where->lessThan('last_login', $lastLoginDateThreshold);
-                $select->where->notEqualTo(
-                    'last_login',
-                    '2000-01-01 00:00:00'
-                );
-                $select->where->equalTo('finna_protected', 0);
-                $select->where->notIn('id', $listSelect);
-            }
-        );
-        return iterator_to_array($users);
-    }
-
-    /**
-     * Get users with due date reminders.
-     *
-     * @return UserEntityInterface[]
-     */
-    public function getUsersWithDueDateReminders(): array
-    {
-        $users = $this->getDbTable('User')->select(
-            function (Select $select) {
-                $subquery = new Select('user_card');
-                $subquery->columns(['user_id']);
-                $subquery->where->greaterThan('finna_due_date_reminder', 0);
-                $select->where->in('id', $subquery);
-                $select->order('username desc');
-            }
-        );
-        return iterator_to_array($users);
-    }
-
-    /**
-     * Check if given nickname is available
-     *
-     * @param string $nickname Nickname
-     *
-     * @return bool
-     */
-    public function isNicknameAvailable(string $nickname): bool
-    {
-        return null === $this->getDbTable('User')->select(['finna_nickname' => $nickname])->current();
     }
 }

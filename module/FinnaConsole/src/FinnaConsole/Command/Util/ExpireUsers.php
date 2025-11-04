@@ -31,6 +31,7 @@
 
 namespace FinnaConsole\Command\Util;
 
+use DateTime;
 use Finna\Db\Service\FinnaUserServiceInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
@@ -195,7 +196,7 @@ class ExpireUsers extends AbstractUtilCommand
      */
     protected function getExpiredUsers($days): array
     {
-        $expireDate = date('Y-m-d', strtotime(sprintf('-%d days', (int)$days)));
+        $expireDate = new DateTime(sprintf('-%d days', (int)$days));
         return $this->userService->getExpiringUsers($expireDate);
     }
 }

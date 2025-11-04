@@ -31,12 +31,12 @@ namespace FinnaConsole\Command\Util;
 
 use DateTime;
 use Finna\Db\Service\FinnaCommentsServiceInterface;
-use Finna\Db\Service\FinnaRatingsServiceInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use VuFind\Db\Service\RatingsServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Record\ResourcePopulator;
@@ -77,7 +77,7 @@ class ImportComments extends AbstractUtilCommand
      *
      * @param UserServiceInterface          $userService       User database service
      * @param FinnaCommentsServiceInterface $commentsService   Comments database service
-     * @param FinnaRatingsServiceInterface  $ratingsService    Ratings database service
+     * @param RatingsServiceInterface       $ratingsService    Ratings database service
      * @param ResourcePopulator             $resourcePopulator Resource populator
      * @param RecordLoader                  $recordLoader      Record loader
      * @param SearchRunner                  $searchRunner      Search runner
@@ -85,7 +85,7 @@ class ImportComments extends AbstractUtilCommand
     public function __construct(
         protected UserServiceInterface $userService,
         protected FinnaCommentsServiceInterface $commentsService,
-        protected FinnaRatingsServiceInterface $ratingsService,
+        protected RatingsServiceInterface $ratingsService,
         protected ResourcePopulator $resourcePopulator,
         protected RecordLoader $recordLoader,
         protected SearchRunner $searchRunner

@@ -33,9 +33,8 @@ namespace FinnaConsole\Command\Util;
 
 use Finna\Crypt\SecretCalculator;
 use Finna\Db\Entity\FinnaUserCardEntityInterface;
-use Finna\Db\Entity\FinnaUserEntityInterface;
 use Finna\Db\Service\FinnaDueDateReminderServiceInterface;
-use Finna\Db\Service\FinnaUserServiceInterface;
+use Finna\Db\Service\UserServiceInterface;
 use Laminas\Mvc\I18n\Translator;
 use Laminas\View\Renderer\PhpRenderer;
 use Laminas\View\Resolver\AggregateResolver;
@@ -119,7 +118,7 @@ class DueDateReminders extends AbstractUtilCommand
     /**
      * Constructor
      *
-     * @param FinnaUserServiceInterface            $userService            User database service
+     * @param UserServiceInterface                 $userService            User database service
      * @param UserCardServiceInterface             $userCardService        User card database service
      * @param FinnaDueDateReminderServiceInterface $dueDateReminderService Due date reminder database service
      * @param \VuFind\ILS\Connection               $catalog                ILS connection
@@ -133,7 +132,7 @@ class DueDateReminders extends AbstractUtilCommand
      * @param SecretCalculator                     $secretCalculator       Secret calculator
      */
     public function __construct(
-        protected FinnaUserServiceInterface $userService,
+        protected UserServiceInterface $userService,
         protected UserCardServiceInterface $userCardService,
         protected FinnaDueDateReminderServiceInterface $dueDateReminderService,
         protected \VuFind\ILS\Connection $catalog,

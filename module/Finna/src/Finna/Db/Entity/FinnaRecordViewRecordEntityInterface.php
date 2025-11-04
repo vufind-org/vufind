@@ -43,14 +43,21 @@ use VuFind\Db\Entity\EntityInterface;
 interface FinnaRecordViewRecordEntityInterface extends EntityInterface
 {
     /**
-     * Id getter
+     * Get identifier (returns null for an uninitialized or non-persisted object).
      *
      * @return ?int
      */
     public function getId(): ?int;
 
     /**
-     * Backend setter
+     * Get backend.
+     *
+     * @return string
+     */
+    public function getBackend(): string;
+
+    /**
+     * Set backend.
      *
      * @param string $backend Backend
      *
@@ -59,14 +66,14 @@ interface FinnaRecordViewRecordEntityInterface extends EntityInterface
     public function setBackend(string $backend): static;
 
     /**
-     * Backend getter
+     * Get source.
      *
      * @return string
      */
-    public function getBackend(): string;
+    public function getSource(): string;
 
     /**
-     * Source setter
+     * Set source.
      *
      * @param string $source Source
      *
@@ -75,14 +82,14 @@ interface FinnaRecordViewRecordEntityInterface extends EntityInterface
     public function setSource(string $source): static;
 
     /**
-     * Source getter
+     * Get record ID.
      *
      * @return string
      */
-    public function getSource(): string;
+    public function getRecordId(): string;
 
     /**
-     * Record Id setter
+     * Set record ID.
      *
      * @param string $recordId Record Id
      *
@@ -91,14 +98,14 @@ interface FinnaRecordViewRecordEntityInterface extends EntityInterface
     public function setRecordId(string $recordId): static;
 
     /**
-     * Record Id getter
+     * Get format.
      *
-     * @return string
+     * @return FinnaRecordViewRecordFormatEntityInterface
      */
-    public function getRecordId(): string;
+    public function getFormat(): FinnaRecordViewRecordFormatEntityInterface;
 
     /**
-     * Format setter
+     * Set format.
      *
      * @param FinnaRecordViewRecordFormatEntityInterface $format Format
      *
@@ -107,14 +114,14 @@ interface FinnaRecordViewRecordEntityInterface extends EntityInterface
     public function setFormat(FinnaRecordViewRecordFormatEntityInterface $format): static;
 
     /**
-     * Format getter
+     * Get usage rights.
      *
-     * @return FinnaRecordViewRecordFormatEntityInterface
+     * @return FinnaRecordViewRecordRightsEntityInterface
      */
-    public function getFormat(): FinnaRecordViewRecordFormatEntityInterface;
+    public function getUsageRights(): FinnaRecordViewRecordRightsEntityInterface;
 
     /**
-     * Usage rights setter
+     * Set usage rights.
      *
      * @param FinnaRecordViewRecordRightsEntityInterface $usageRights Usage rights
      *
@@ -125,14 +132,14 @@ interface FinnaRecordViewRecordEntityInterface extends EntityInterface
     ): static;
 
     /**
-     * Usage rights getter
+     * Get online.
      *
-     * @return FinnaRecordViewRecordRightsEntityInterface
+     * @return bool
      */
-    public function getUsageRights(): FinnaRecordViewRecordRightsEntityInterface;
+    public function getOnline(): bool;
 
     /**
-     * Online setter
+     * Set online.
      *
      * @param bool $online Online
      *
@@ -141,25 +148,18 @@ interface FinnaRecordViewRecordEntityInterface extends EntityInterface
     public function setOnline(bool $online): static;
 
     /**
-     * Online getter
+     * Get extra metadata.
      *
-     * @return bool
+     * @return ?string
      */
-    public function getOnline(): bool;
+    public function getExtraMetadata(): ?string;
 
     /**
-     * Extra metadata setter
+     * Set extra metadata.
      *
      * @param ?string $extraMetadata Extra metadata
      *
      * @return static
      */
     public function setExtraMetadata(?string $extraMetadata): static;
-
-    /**
-     * Extra metadata getter
-     *
-     * @return ?string
-     */
-    public function getExtraMetadata(): ?string;
 }

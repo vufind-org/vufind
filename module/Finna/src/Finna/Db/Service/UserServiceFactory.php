@@ -29,10 +29,10 @@
 
 namespace Finna\Db\Service;
 
-use Interop\Container\ContainerInterface;
-use Interop\Container\Exception\ContainerException;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Psr\Container\ContainerExceptionInterface as ContainerException;
+use Psr\Container\ContainerInterface;
 use VuFind\Db\Service\AbstractDbServiceFactory;
 
 /**
@@ -70,7 +70,7 @@ class UserServiceFactory extends AbstractDbServiceFactory
         }
         $sessionManager = $container->get(\Laminas\Session\SessionManager::class);
         $session = new \Laminas\Session\Container('Account', $sessionManager);
-        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config')->toArray();
+        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config');
         $hmac = $container->get(\VuFind\Crypt\HMAC::class);
         return parent::__invoke($container, $requestedName, [$session, $config, $hmac]);
     }

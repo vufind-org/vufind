@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2024.
+ * Copyright (C) The National Library of Finland 2024-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -33,8 +33,6 @@ use DateTime;
 use Finna\Db\Entity\FinnaDueDateReminderEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\AbstractDbService;
-use VuFind\Db\Table\DbTableAwareInterface;
-use VuFind\Db\Table\DbTableAwareTrait;
 
 /**
  * Database service for due date reminders.
@@ -46,11 +44,8 @@ use VuFind\Db\Table\DbTableAwareTrait;
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 class FinnaDueDateReminderService extends AbstractDbService implements
-    DbTableAwareInterface,
     FinnaDueDateReminderServiceInterface
 {
-    use DbTableAwareTrait;
-
     /**
      * Create a Finna entity object.
      *
@@ -58,7 +53,7 @@ class FinnaDueDateReminderService extends AbstractDbService implements
      */
     public function createEntity(): FinnaDueDateReminderEntityInterface
     {
-        return $this->getDbTable('FinnaDueDateReminder')->createRow();
+        return $this->entityPluginManager->get(FinnaDueDateReminderEntityInterface::class);
     }
 
     /**
@@ -75,13 +70,8 @@ class FinnaDueDateReminderService extends AbstractDbService implements
         string $loanId,
         DateTime $dueDate
     ): ?FinnaDueDateReminderEntityInterface {
-        return $this->getDbTable('DueDateReminder')->select(
-            [
-                'user_id' => $user->getId(),
-                'loan_id' => $loanId,
-                'due_date' => $dueDate->format('Y-m-d H:i:s'),
-            ]
-        )->current();
+        return $this->entityManager->getRepository(FinnaDueDateReminderEntityInterface::class)
+            ->findOneBy(compact('user', 'loanId', 'dueDate'));
     }
 
     /**
@@ -95,14 +85,12 @@ class FinnaDueDateReminderService extends AbstractDbService implements
      */
     public function addRemindedLoan(UserEntityInterface $user, string $loanId, DateTime $dueDate): void
     {
-        $this->getDbTable('DueDateReminder')->insert(
-            [
-                'user_id' => $user->getId(),
-                'loan_id' => $loanId,
-                'due_date' => $dueDate->format('Y-m-d H:i:s'),
-                'notification_date' => (new DateTime())->format('Y-m-d H:i:s'),
-            ]
-        );
+        $entity = $this->createEntity();
+        $entity->setUser($user)
+            ->setLoanId($loanId)
+            ->setDueDate($dueDate)
+            ->setNotificationDate(new DateTime());
+        $this->persistEntity($entity);
     }
 
     /**
@@ -115,11 +103,10 @@ class FinnaDueDateReminderService extends AbstractDbService implements
      */
     public function deleteRemindedLoan(UserEntityInterface $user, string $loanId): void
     {
-        $this->getDbTable('DueDateReminder')->delete(
-            [
-                'user_id' => $user->getId(),
-                'loan_id' => $loanId,
-            ]
-        );
+        $dql = 'DELETE ' . FinnaDueDateReminderEntityInterface::class . ' d'
+            . ' WHERE user = :user AND loanId = :loanId';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters(compact('user', 'loanId'));
+        $query->execute();
     }
 }

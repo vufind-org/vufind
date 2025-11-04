@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2024.
+ * Copyright (C) The National Library of Finland 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -31,34 +31,30 @@ namespace Finna\Db\Service;
 
 use Finna\Db\Entity\FinnaResourceListEntityInterface;
 use Finna\Db\Entity\FinnaResourceListResourceEntityInterface;
-use Finna\Db\Table\FinnaResourceListResource;
-use Finna\Db\Table\Resource;
-use Laminas\Db\Sql\Expression;
-use Laminas\Db\Sql\Select;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\AbstractDbService;
 use VuFind\Db\Service\DbServiceAwareInterface;
 use VuFind\Db\Service\DbServiceAwareTrait;
-use VuFind\Db\Table\DbTableAwareInterface;
-use VuFind\Db\Table\DbTableAwareTrait;
+use VuFind\Log\LoggerAwareTrait;
 
 /**
  * Finna resource list resource service.
  *
  * @category VuFind
- * @package  Db_Service
+ * @package  Database
  * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 class FinnaResourceListResourceService extends AbstractDbService implements
-    DbTableAwareInterface,
-    DbServiceAwareInterface,
-    FinnaResourceListResourceServiceInterface
+    FinnaResourceListResourceServiceInterface,
+    LoggerAwareInterface,
+    DbServiceAwareInterface
 {
+    use LoggerAwareTrait;
     use DbServiceAwareTrait;
-    use DbTableAwareTrait;
 
     /**
      * Create user/resource/list link if one does not exist; update notes if one does.
@@ -76,20 +72,19 @@ class FinnaResourceListResourceService extends AbstractDbService implements
         FinnaResourceListEntityInterface $list,
         string $notes = ''
     ): FinnaResourceListResourceEntityInterface {
-        $params = [
-            'resource_id' => $resource->getId(),
-            'list_id' => $list->getId(),
-            'user_id' => $user->getId(),
-        ];
-        if (!($result = $this->getDbTable(FinnaResourceListResource::class)->select($params)->current())) {
+        $result = $this->entityManager->getRepository(FinnaResourceListResourceEntityInterface::class)
+            ->findOneBy(compact('resource', 'user', 'list'));
+
+        if (null === $result) {
             $result = $this->createEntity()
-                ->setUser($user)
                 ->setResource($resource)
-                ->setNotes($notes)
-                ->setList($list);
+                ->setUser($user)
+                ->setResourceList($list);
         }
-        // Update the notes:
-        $result->setNotes($notes);
+        // Update the notes if not empty value:
+        if ($notes) {
+            $result->setNotes($notes);
+        }
         $this->persistEntity($result);
         return $result;
     }
@@ -109,27 +104,26 @@ class FinnaResourceListResourceService extends AbstractDbService implements
         UserEntityInterface $user,
         FinnaResourceListEntityInterface $list
     ): void {
-        // Build the where clause to figure out which rows to remove:
-        $callback = function ($select) use ($resourceId, $user, $list) {
-            $select->where->equalTo('user_id', $user->getId());
-            if (null !== $resourceId) {
-                $select->where->in('resource_id', (array)$resourceId);
-            }
-            $select->where->equalTo('list_id', $list->getId());
-        };
-
-        // Delete the rows:
-        $this->getDbTable(FinnaResourceListResource::class)->delete($callback);
+        $dql = 'DELETE FROM ' . FinnaResourceListResourceEntityInterface::class . ' frlr '
+            . 'WHERE frlr.resource IN (:resource_id) AND frlr.list = :list';
+        $parameters = [
+            'user' => $$user,
+            'resource' => (array)($resourceId ?? []),
+            'list' => $list,
+        ];
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $query->execute();
     }
 
     /**
-     * Create a UserResource entity object.
+     * Create a FinnaResourceListResource entity object.
      *
      * @return FinnaResourceListResourceEntityInterface
      */
     public function createEntity(): FinnaResourceListResourceEntityInterface
     {
-        return $this->getDbTable(FinnaResourceListResource::class)->createRow();
+        return $this->entityPluginManager->get(FinnaResourceListResourceEntityInterface::class);
     }
 
     /**
@@ -142,7 +136,12 @@ class FinnaResourceListResourceService extends AbstractDbService implements
      */
     public function changeResourceId(int $old, int $new): void
     {
-        $this->getDbTable(FinnaResourceListResource::class)->update(['resource_id' => $new], ['resource_id' => $old]);
+        $dql = 'UPDATE ' . FinnaResourceListResourceEntityInterface::class . ' e '
+            . 'SET e.resource = :new WHERE e.resource = :old';
+        $parameters = compact('new', 'old');
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $query->execute();
     }
 
     /**
@@ -163,53 +162,14 @@ class FinnaResourceListResourceService extends AbstractDbService implements
         int $offset = 0,
         int $limit = -1
     ): array {
-        $relations = iterator_to_array(
-            $this->getDbTable(FinnaResourceListResource::class)->select(
-                [
-                    'list_id' => $list->getId(),
-                    'user_id' => $user->getId(),
-                ]
-            )
-        );
-        $resourceIds = array_map(
-            fn ($relation) => $relation->getResourceId(),
-            $relations
-        );
-        if (!$resourceIds) {
-            return [];
-        }
-        $callback = function ($select) use ($sort, $offset, $limit, $resourceIds) {
-            $select->where->in('id', $resourceIds);
-            $columns = [
-                new Expression(
-                    'DISTINCT(?)',
-                    ['resource.id'],
-                    [Expression::TYPE_IDENTIFIER]
-                ), Select::SQL_STAR,
-            ];
-            $select->columns($columns);
-            if ($sort) {
-                Resource::applySort($select, $sort, 'resource', $columns);
-            }
-            if ($offset > 0) {
-                $select->offset($offset);
-            }
-            if ($limit > 0) {
-                $select->limit($limit);
-            }
-        };
-        return iterator_to_array(
-            $this->getDbTable(Resource::class)->select($callback)
-        );
-    }
+        $dql = 'SELECT DISTINCT frlr FROM ' . FinnaResourceListResourceEntityInterface::class . ' frlr '
+            . 'JOIN ' . ResourceEntityInterface::class . ' r WITH r.id = frlr.resource '
+            . 'WHERE frlr.user = :user AND frlr.list = :list';
 
-    /**
-     * Deduplicate rows (sometimes necessary after merging foreign key IDs).
-     *
-     * @return void
-     */
-    public function deduplicate(): void
-    {
-        $this->getDbTable(FinnaResourceListResource::class)->deduplicate();
+        $parameters = compact('user', 'list');
+
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        return $query->getResult();
     }
 }

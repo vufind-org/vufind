@@ -52,6 +52,13 @@ interface FinnaDueDateReminderEntityInterface extends EntityInterface
     public function getId(): ?int;
 
     /**
+     * Get user.
+     *
+     * @return UserEntityInterface
+     */
+    public function getUser(): UserEntityInterface;
+
+    /**
      * Set user.
      *
      * @param UserEntityInterface $user User owning the list.
@@ -61,14 +68,14 @@ interface FinnaDueDateReminderEntityInterface extends EntityInterface
     public function setUser(UserEntityInterface $user): static;
 
     /**
-     * Get user.
+     * Get loan ID.
      *
-     * @return UserEntityInterface
+     * @return string
      */
-    public function getUser(): UserEntityInterface;
+    public function getLoanId(): string;
 
     /**
-     * Loan Id setter
+     * Set loan ID.
      *
      * @param string $loanId Loan Id
      *
@@ -77,14 +84,14 @@ interface FinnaDueDateReminderEntityInterface extends EntityInterface
     public function setLoanId(string $loanId): static;
 
     /**
-     * Loan Id getter
+     * Get due date.
      *
-     * @return string
+     * @return DateTime
      */
-    public function getLoanId(): string;
+    public function getDueDate(): DateTime;
 
     /**
-     * Due date setter
+     * Set due date.
      *
      * @param DateTime $dateTime Due date
      *
@@ -93,25 +100,18 @@ interface FinnaDueDateReminderEntityInterface extends EntityInterface
     public function setDueDate(DateTime $dateTime): static;
 
     /**
-     * Due date getter
+     * Get notification date.
      *
      * @return DateTime
      */
-    public function getDueDate(): Datetime;
+    public function getNotificationDate(): DateTime;
 
     /**
-     * Notification date setter
+     * Set notification date.
      *
      * @param ?DateTime $dateTime Notification date
      *
      * @return static
      */
     public function setNotificationDate(?DateTime $dateTime): static;
-
-    /**
-     * Notification date getter
-     *
-     * @return DateTime
-     */
-    public function getNotificationDate(): Datetime;
 }

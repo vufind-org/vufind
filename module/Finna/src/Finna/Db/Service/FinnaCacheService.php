@@ -33,8 +33,6 @@ use DateTime;
 use Finna\Db\Entity\FinnaCacheEntityInterface;
 use VuFind\Db\Service\AbstractDbService;
 use VuFind\Db\Service\Feature\DeleteExpiredInterface;
-use VuFind\Db\Table\DbTableAwareInterface;
-use VuFind\Db\Table\DbTableAwareTrait;
 
 /**
  * Database service for Finna cache.
@@ -46,12 +44,9 @@ use VuFind\Db\Table\DbTableAwareTrait;
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 class FinnaCacheService extends AbstractDbService implements
-    DbTableAwareInterface,
     FinnaCacheServiceInterface,
     DeleteExpiredInterface
 {
-    use DbTableAwareTrait;
-
     /**
      * Create a FinnaCache entity object.
      *
@@ -59,7 +54,7 @@ class FinnaCacheService extends AbstractDbService implements
      */
     public function createEntity(): FinnaCacheEntityInterface
     {
-        return $this->getDbTable(\Finna\Db\Table\FinnaCache::class)->createRow();
+        return $this->entityPluginManager->get(FinnaCacheEntityInterface::class);
     }
 
     /**
@@ -72,20 +67,26 @@ class FinnaCacheService extends AbstractDbService implements
     public function deleteCacheEntry(FinnaCacheEntityInterface $entity): void
     {
         if ($id = $entity->getId()) {
-            $this->getDbTable(\Finna\Db\Table\FinnaCache::class)->delete(compact('id'));
+            $this->persistenceManager->deleteEntity($entity);
         }
     }
 
     /**
-     * Get cache item from database by id.
+     * Get cache item from database by resource id.
      *
-     * @param string $id Item id
+     * @param string $resourceId Resource id
      *
      * @return ?FinnaCacheEntityInterface
      */
-    public function getByResourceId(string $id): ?FinnaCacheEntityInterface
+    public function getByResourceId(string $resourceId): ?FinnaCacheEntityInterface
     {
-        return $this->getDbTable(\Finna\Db\Table\FinnaCache::class)->select(['resource_id' => $id])->current();
+        return $this->entityManager->getRepository(FinnaCacheEntityInterface::class)
+            ->findOneBy(compact('resourceId'));
+
+        $dql = 'SELECT c ' . FinnaCacheEntityInterface::class . ' c WHERE resourceId = :resourceId';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameter('resourceId', $id);
+        return $query->getOneOrNullResult();
     }
 
     /**
@@ -98,7 +99,18 @@ class FinnaCacheService extends AbstractDbService implements
      */
     public function deleteExpired(DateTime $dateLimit, ?int $limit = null): int
     {
-        return $this->getDbTable(\Finna\Db\Table\FinnaCache::class)
-            ->deleteExpired($dateLimit->format('Y-m-d H:i:s'), $limit);
+        $subQueryBuilder = $this->entityManager->createQueryBuilder();
+        $subQueryBuilder->select('c.id')
+            ->from(FinnaCacheEntityInterface::class, 'c')
+            ->where('c.created < :latestDate')
+            ->setParameter('latestDate', $dateLimit->format(VUFIND_DATABASE_DATETIME_FORMAT));
+        if ($limit) {
+            $subQueryBuilder->setMaxResults($limit);
+        }
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->delete(FinnaCacheEntityInterface::class, 'fc')
+            ->where('fc.id IN (:ids)')
+            ->setParameter('ids', $subQueryBuilder->getQuery()->getResult());
+        return $queryBuilder->getQuery()->execute();
     }
 }

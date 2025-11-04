@@ -225,24 +225,6 @@ CREATE TABLE `finna_session_stats` (
 
 /*!40101 SET @saved_cs_client     = @@character_set_client */;
 /*!40101 SET character_set_client = utf8mb4 */;
-CREATE TABLE `finna_record_stats` (
-  `institution` varchar(255) NOT NULL,
-  `view` varchar(255) NOT NULL,
-  -- Note: `crawler` is actually a bitmap for request type, but the name remains for
-  -- historical reasons.
-  `crawler` tinyint(1) NOT NULL,
-  `date` DATE NOT NULL,
-  `backend` varchar(128) NOT NULL,
-  `source` varchar(128) NOT NULL,
-  `count` int(11) NOT NULL DEFAULT 1,
-  PRIMARY KEY (`institution`, `view`, `crawler`, `date`, `backend`, `source`),
-  KEY `record_backend` (`backend`),
-  KEY `record_source` (`source`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 collate utf8mb4_bin;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8mb4 */;
 CREATE TABLE `finna_record_stats_log` (
   `institution` varchar(255) NOT NULL,
   `view` varchar(255) NOT NULL,

@@ -34,13 +34,13 @@
 
 namespace Finna\Controller;
 
-use Finna\Db\Entity\FinnaUserEntityInterface;
 use Finna\Db\Entity\FinnaUserResourceEntityInterface;
+use Finna\Db\Entity\UserEntityInterface;
 use Finna\Db\Service\FinnaFeedbackServiceInterface;
 use Finna\Db\Service\FinnaUserListServiceInterface;
 use Finna\Db\Service\FinnaUserServiceInterface;
 use Finna\Db\Service\UserListService as FinnaUserListService;
-use VuFind\Db\Entity\UserEntityInterface;
+use Finna\Db\Service\UserResourceService;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
@@ -574,15 +574,22 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                 $list && $list->isPublic()
                 && (!$user || $user->getId() != $list->getUser()?->getId())
             ) {
-                return $this->redirect()->toRoute('list-page', ['lid' => $list->id]);
+                return $this->redirect()->toRoute('list-page', ['lid' => $list->getId()]);
             }
             if ($list) {
                 $this->rememberCurrentSearchUrl();
+                // Find out the total favorite count:
+                $runner = $this->getService(\VuFind\Search\SearchRunner::class);
+                $favoritesResults = $runner->run([], 'Favorites');
+                $view->totalResourceCount = $this->getDbService(UserResourceService::class)
+                    ->getTotalResourceCount($user);
             } else {
                 $memory  = $this->serviceLocator->get(\VuFind\Search\Memory::class);
                 $memory->rememberSearch(
                     $this->url()->fromRoute('myresearch-favorites')
                 );
+                // The results represent all favorites, so get the total count directly:
+                $view->totalResourceCount = $results->getResultTotal();
             }
         }
 
@@ -722,7 +729,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                 $showError = true;
             }
 
-            assert($user instanceof FinnaUserEntityInterface);
+            assert($user instanceof UserEntityInterface);
             $nicknameAvailable = $this->isNicknameAvailable($values->finna_nickname);
             $nicknameValid = $this->validateNicknameFormat($values->finna_nickname);
             if (empty($values->finna_nickname)) {
@@ -760,7 +767,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
 
         // Check if due date reminder settings should be displayed
         $config = $this->getConfig();
-        $view->hideDueDateReminder = ($user instanceof FinnaUserEntityInterface)
+        $view->hideDueDateReminder = ($user instanceof UserEntityInterface)
             && ($user->getFinnaDueDateReminder() == 0)
             && ($config->Site->hideDueDateReminder ?? false);
         if (!$view->hideDueDateReminder && is_array($patron)) {
