@@ -303,6 +303,9 @@ class CAS extends AbstractBase
      */
     protected function setupCAS()
     {
+        if (!class_exists(\phpCAS::class)) {
+            throw new \Exception('php-cas module not found; install apereo/phpcas to use CAS');
+        }
         $casauth = new \phpCAS();
 
         // Check to see if phpCAS has already been setup. If it has, than skip as
