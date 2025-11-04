@@ -80,7 +80,7 @@
             <?php if ($this->cancelForm && isset($ilsDetails['cancel_details'])): ?>
               <input type="hidden" name="cancelAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>">
             <?php endif; ?>
-            <div class="checkbox">
+            <div class="checkbox record-checkbox">
               <label>
                 <input type="checkbox" name="selectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details'] ?? $ilsDetails['updateDetails']) ?>" id="checkbox_<?=$safeId?>" class="checkbox-select-item" aria-label="<?=$this->transEscAttr('select_item_hold_cancel')?>">
               </label>
