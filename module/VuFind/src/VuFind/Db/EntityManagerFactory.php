@@ -30,6 +30,7 @@
 namespace VuFind\Db;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Events;
 use DoctrineModule\Service\AbstractFactory;
 use DoctrineORMModule\Options\EntityManager as DoctrineORMModuleEntityManager;
 use Psr\Container\ContainerInterface;
@@ -88,7 +89,15 @@ class EntityManagerFactory extends AbstractFactory
         // Add the ResolveTargetEntityListener
         $evm->addEventSubscriber($rtel);
 
-        return new EntityManager($connection, $config, $evm);
+        $entityManager = new EntityManager($connection, $config, $evm);
+
+        // Add LoadClassMetadataListener:
+        $entityManager->getEventManager()->addEventListener(
+            Events::loadClassMetadata,
+            new LoadClassMetadataListener($entityManager, $pm->getAliases())
+        );
+
+        return $entityManager;
     }
 
     /**

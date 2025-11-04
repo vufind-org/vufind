@@ -109,7 +109,7 @@ class CreateHierarchyTreesCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $backendId = $input->getArgument('backend');
         $hierarchies = $this->resultsManager->get($backendId)
@@ -142,6 +142,6 @@ class CreateHierarchyTreesCommand extends Command
         }
         $output->writeln(count($list) . ' files');
 
-        return 0;
+        return self::SUCCESS;
     }
 }

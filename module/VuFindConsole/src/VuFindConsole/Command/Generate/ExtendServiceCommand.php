@@ -78,7 +78,7 @@ class ExtendServiceCommand extends AbstractCommand
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $source = $input->getArgument('config_path');
         $target = $input->getArgument('target_module');
@@ -88,9 +88,9 @@ class ExtendServiceCommand extends AbstractCommand
             $this->generatorTools->extendService($source, $target);
         } catch (\Exception $e) {
             $output->writeln($e->getMessage());
-            return 1;
+            return self::FAILURE;
         }
 
-        return 0;
+        return self::SUCCESS;
     }
 }

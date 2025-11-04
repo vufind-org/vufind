@@ -137,7 +137,7 @@ class DedupeCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $infile = $input->getArgument('input');
         if (empty($infile)) {
@@ -147,7 +147,7 @@ class DedupeCommand extends Command
         $inHandle = @fopen($infile, 'r');
         if (!$inHandle) {
             $output->writeln('Could not open input file: ' . $infile);
-            return 1;
+            return self::FAILURE;
         }
         $outfile = $input->getArgument('output');
         if (empty($outfile)) {
@@ -157,7 +157,7 @@ class DedupeCommand extends Command
         $outHandle = $this->openOutputFile($outfile);
         if (!$outHandle) {
             $output->writeln('Could not open output file: ' . $outfile);
-            return 1;
+            return self::FAILURE;
         }
 
         $last = '';
@@ -171,6 +171,6 @@ class DedupeCommand extends Command
         fclose($inHandle);
         $this->closeOutputFile($outHandle);
 
-        return 0;
+        return self::SUCCESS;
     }
 }
