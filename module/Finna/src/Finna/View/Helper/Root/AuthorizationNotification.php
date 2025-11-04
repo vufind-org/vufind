@@ -30,7 +30,7 @@
 
 namespace Finna\View\Helper\Root;
 
-use LmcRbacMvc\Service\AuthorizationService;
+use Lmc\Rbac\Mvc\Service\AuthorizationService;
 
 use function in_array;
 
