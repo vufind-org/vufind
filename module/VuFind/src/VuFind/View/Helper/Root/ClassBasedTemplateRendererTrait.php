@@ -172,7 +172,11 @@ trait ClassBasedTemplateRendererTrait
     protected function getBriefClass($className)
     {
         $classParts = explode('\\', $className);
-        return array_pop($classParts);
+        $className = array_pop($classParts);
+        // In case this is an anonymous class, we may need to strip off a suffix
+        // (needed, for example, for RecordDataFormatterTest):
+        $classNameParts = explode('@', $className);
+        return $classNameParts[0];
     }
 
     /**
