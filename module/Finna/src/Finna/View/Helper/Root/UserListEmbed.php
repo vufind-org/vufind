@@ -29,7 +29,7 @@
 
 namespace Finna\View\Helper\Root;
 
-use Finna\Db\Entity\FinnaUserListEntityInterface;
+use Finna\Db\Entity\UserListEntityInterface;
 use Laminas\Stdlib\Parameters;
 use VuFind\Db\Service\TagServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
@@ -134,7 +134,7 @@ class UserListEmbed extends \Laminas\View\Helper\AbstractHelper
 
         $resultsCopy->performAndProcessSearch();
         $list = $resultsCopy->getListObject();
-        assert($list instanceof FinnaUserListEntityInterface);
+        assert($list instanceof UserListEntityInterface);
 
         $listTags = null;
         if (($opt['tags'] ?? false) && $this->listTagsEnabled) {

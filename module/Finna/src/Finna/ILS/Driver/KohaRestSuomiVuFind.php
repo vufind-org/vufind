@@ -3,7 +3,7 @@
 /**
  * KohaRest ILS Driver for KohaSuomi (the VuFind base implementation part)
  *
- * PHP version 5
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2016-2021.
  *

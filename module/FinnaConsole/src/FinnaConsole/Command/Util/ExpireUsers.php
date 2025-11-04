@@ -32,7 +32,7 @@
 namespace FinnaConsole\Command\Util;
 
 use DateTime;
-use Finna\Db\Service\FinnaUserServiceInterface;
+use Finna\Db\Service\UserServiceInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -84,12 +84,12 @@ class ExpireUsers extends AbstractUtilCommand
     /**
      * Constructor
      *
-     * @param FinnaUserServiceInterface $userService        User database service
-     * @param UserAccountService        $userAccountService User account database service
-     * @param \VuFind\Config\Config     $config             Main configuration
+     * @param UserServiceInterface  $userService        User database service
+     * @param UserAccountService    $userAccountService User account database service
+     * @param \VuFind\Config\Config $config             Main configuration
      */
     public function __construct(
-        protected FinnaUserServiceInterface $userService,
+        protected UserServiceInterface $userService,
         protected UserAccountService $userAccountService,
         \VuFind\Config\Config $config
     ) {

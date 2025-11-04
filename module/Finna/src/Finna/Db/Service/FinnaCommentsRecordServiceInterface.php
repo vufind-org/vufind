@@ -29,7 +29,6 @@
 
 namespace Finna\Db\Service;
 
-use Finna\Db\Entity\FinnaCommentsRecord;
 use Finna\Db\Entity\FinnaCommentsRecordEntityInterface;
 use VuFind\Db\Entity\CommentsEntityInterface;
 use VuFind\Db\Service\DbServiceInterface;

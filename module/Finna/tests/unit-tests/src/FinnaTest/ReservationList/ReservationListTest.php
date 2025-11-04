@@ -31,9 +31,9 @@ namespace FinnaTest\ReservationList;
 
 use DateTime;
 use Exception;
-use Finna\Auth\ILSAuthenticator;
 use Finna\Cache\Manager;
-use Finna\Db\Row\FinnaResourceList;
+use Finna\Db\Entity\FinnaResourceList;
+use Finna\Db\Entity\User;
 use Finna\Db\Service\FinnaResourceListResourceService;
 use Finna\Db\Service\FinnaResourceListService;
 use Finna\Db\Service\UserService;
@@ -49,7 +49,7 @@ use Laminas\Session\Container;
 use Laminas\View\Renderer\PhpRenderer;
 use PHPUnit\Framework\MockObject\MockObject;
 use Symfony\Component\Yaml\Yaml;
-use VuFind\Db\Row\User;
+use VuFind\Auth\ILSAuthenticator;
 use VuFind\Db\Service\PluginManager;
 use VuFind\Db\Service\ResourceService;
 use VuFind\Db\Service\UserCardService;
@@ -99,34 +99,34 @@ class ReservationListTest extends \PHPUnit\Framework\TestCase
      * @param ?MockObject $listPluginManager     List plugin manager
      * @param array       $reservationListConfig Reservation list config
      *
-     * @return MockObject
+     * @return MockObject&ReservationListService
      */
     protected function getReservationListService(
         ?MockObject $mockHttpService = null,
         ?MockObject $listPluginManager = null,
         array $reservationListConfig = [],
-    ): MockObject {
+    ): MockObject&ReservationListService {
         $adapterOptions = new FilesystemOptions();
         $storage = $this->getMockBuilder(StorageInterface::class)->disableOriginalConstructor()->getMock();
         $storage->expects($this->any())->method('getOptions')->willReturn($adapterOptions);
         $cacheManager = $this->getMockBuilder(Manager::class)->disableOriginalConstructor()->getMock();
         $cacheManager->expects($this->any())->method('getCache')->willReturn($storage);
         $service = $this->getMockBuilder(ReservationListService::class)->onlyMethods(['createListForUser'])
-        ->setConstructorArgs([
-          $this->container->createMock(FinnaResourceListService::class),
-          $this->container->createMock(FinnaResourceListResourceService::class),
-          $this->container->createMock(ResourceService::class),
-          $this->container->createMock(UserService::class),
-          $this->container->createMock(ResourcePopulator::class),
-          $this->container->createMock(RecordLoader::class),
-          $this->container->createMock(Cache::class),
-          $this->container->createMock(Container::class),
-          $mockHttpService ??= $this->container->createMock(HttpService::class),
-          $this->container->createMock(ILSAuthenticator::class),
-          $cacheManager,
-          $listPluginManager ??= $this->container->createMock(HandlerPluginManager::class),
-          $reservationListConfig,
-        ])->getMock();
+          ->setConstructorArgs([
+            $this->container->createMock(FinnaResourceListService::class),
+            $this->container->createMock(FinnaResourceListResourceService::class),
+            $this->container->createMock(ResourceService::class),
+            $this->container->createMock(UserService::class),
+            $this->container->createMock(ResourcePopulator::class),
+            $this->container->createMock(RecordLoader::class),
+            $this->container->createMock(Cache::class),
+            $this->container->createMock(Container::class),
+            $mockHttpService ??= $this->container->createMock(HttpService::class),
+            $this->container->createMock(ILSAuthenticator::class),
+            $cacheManager,
+            $listPluginManager ??= $this->container->createMock(HandlerPluginManager::class),
+            $reservationListConfig,
+          ])->getMock();
         $newListTemplate = $this->getMockBuilder(FinnaResourceList::class)->onlyMethods(['getUser'])
           ->disableOriginalConstructor()->getMock();
         $service->expects($this->any())->method('createListForUser')->willReturnCallback(
@@ -461,7 +461,7 @@ class ReservationListTest extends \PHPUnit\Framework\TestCase
 
         $newList = $service->createListForUser($ownerUser);
         $service->setListOrdered($ownerUser, $newList, $data);
-        $this->assertEquals(true, $newList->__get('connection'));
+        $this->assertEquals(true, $newList->getConnection());
     }
 
     /**

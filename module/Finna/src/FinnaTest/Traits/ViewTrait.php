@@ -33,9 +33,9 @@ use Finna\View\Helper\Root\CleanHtmlFactory;
 use FinnaTest\Container\MockContainer;
 use stdClass;
 use VuFind\Cache\Manager as CacheManager;
-use VuFind\Config\Config;
-use VuFind\Config\PluginManager as ConfigPluginManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\View\Helper\Root\CleanHtml;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
  * Trait for tests involving Laminas Views.
@@ -48,6 +48,8 @@ use VuFind\View\Helper\Root\CleanHtml;
  */
 trait ViewTrait
 {
+    use ConfigRelatedServicesTrait;
+
     /**
      * Get a CleanHtml helper
      *
@@ -71,9 +73,8 @@ trait ViewTrait
             ]
         );
 
-        $configPluginManager = new MockContainer($this);
-        $configPluginManager->add('config', new Config());
-        $container->add(ConfigPluginManager::class, $configPluginManager);
+        $configManager = $this->getMockConfigManager(['config' => []]);
+        $container->add(ConfigManagerInterface::class, $configManager);
 
         $cacheOptions = $this->getMockBuilder(stdClass::class)
             ->addMethods(['getCacheDir'])

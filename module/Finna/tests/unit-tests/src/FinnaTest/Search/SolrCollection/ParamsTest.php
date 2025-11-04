@@ -32,7 +32,7 @@ namespace FinnaTest\Search\SolrCollection;
 use Finna\Search\SolrCollection\Options;
 use Finna\Search\SolrCollection\Params;
 use Laminas\Stdlib\Parameters;
-use VuFind\Config\PluginManager;
+use VuFind\Config\ConfigManagerInterface;
 
 /**
  * Solr Collection Search Object Params Test
@@ -50,16 +50,16 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get Params object
      *
-     * @param ?Options       $options    Options object (null to create)
-     * @param ?PluginManager $mockConfig Mock config plugin manager (null to create)
+     * @param ?Options                $options    Options object (null to create)
+     * @param ?ConfigManagerInterface $mockConfig Mock config plugin manager (null to create)
      *
      * @return Params
      */
     protected function getParams(
         ?Options $options = null,
-        ?PluginManager $mockConfig = null
+        ?ConfigManagerInterface $mockConfig = null
     ): Params {
-        $mockConfig ??= $this->getMockConfigPluginManager([]);
+        $mockConfig ??= $this->getMockConfigManager([]);
         return new Params(
             $options ?? new Options($mockConfig),
             $mockConfig,
@@ -69,14 +69,13 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get Options object
      *
-     * @param ?PluginManager $configManager Config manager for Options object (null
-     * for new mock)
+     * @param ?ConfigManagerInterface $configManager Config manager for Options object (null for new mock)
      *
      * @return Options
      */
-    protected function getOptions(?PluginManager $configManager = null): Options
+    protected function getOptions(?ConfigManagerInterface $configManager = null): Options
     {
-        return new Options($configManager ?? $this->getMockConfigPluginManager([]));
+        return new Options($configManager ?? $this->getMockConfigManager([]));
     }
 
     /**
@@ -87,7 +86,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     public function testFilters(): void
     {
         $options = $this->getOptions(
-            $this->getMockConfigPluginManager(
+            $this->getMockConfigManager(
                 ['Collection' => [
                     'SpecialFacets' => [
                         'dateRangeVis' => 'search_daterange_mv',
@@ -139,7 +138,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
 
         // Date range not defined as special facet
         $options = $this->getOptions(
-            $this->getMockConfigPluginManager(['Collection' => ['SpecialFacets' => [],]])
+            $this->getMockConfigManager(['Collection' => ['SpecialFacets' => [],]])
         );
         $params = $this->getParams($options);
         $params->initSpatialDateRangeFilter(new Parameters($query));

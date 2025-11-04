@@ -331,9 +331,6 @@ class TurkuPaymentAPI extends \VuFind\OnlinePayment\Handler\AbstractBase
             0,
             $this->config['secret'],
             'Finna',
-            $this->httpService,
-            $this->logger,
-            $this->config['url'],
             $this->config['merchantId'],
             $this->config['oId']
         );

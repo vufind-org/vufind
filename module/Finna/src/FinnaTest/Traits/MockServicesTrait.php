@@ -29,13 +29,18 @@
 
 namespace FinnaTest\Traits;
 
+use DateTime;
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityRepository;
+use Finna\Db\Entity\User;
 use Finna\Db\Service\AccessTokenService;
-use Laminas\Db\ResultSet\ResultSet;
 use Laminas\Http\Client;
 use Laminas\Http\Response;
 use PHPUnit\Framework\MockObject\MockObject;
-use VuFind\Db\Row\AccessToken;
-use VuFind\Db\Table\AccessToken as TableAccessToken;
+use VuFind\Db\Entity\AccessToken;
+use VuFind\Db\Entity\AccessTokenEntityInterface;
+use VuFind\Db\Entity\PluginManager as EntityPluginManager;
+use VuFind\Db\PersistenceManager;
 use VuFindHttp\HttpService;
 
 /**
@@ -52,21 +57,66 @@ trait MockServicesTrait
     /**
      * Get Finna access token service as a mocked service
      *
-     * @param array $dbEntities Array containing db entities to use as a database
-     *
      * @return MockObject
      */
-    public function getFinnaAccessTokenService(array $dbEntities = []): MockObject
+    public function getFinnaAccessTokenService(): MockObject
     {
-        $accessTokenService = $this->getMockBuilder(AccessTokenService::class)->onlyMethods(['getDbTable'])
-            ->disableOriginalConstructor()->getMock();
+        $accessTokens = [
+            [
+                'id' => 1,
+                'type' => 'access_token_other',
+                'user' => new User(),
+                'created' => new DateTime('2020-01-01 00:00:00'),
+                'data' =>  'something:else',
+                'revoked' => 0,
+            ],
+            [
+                'id' => 2,
+                'type' => 'api_key',
+                'user' => new User(),
+                'created' => new DateTime('2020-01-01 00:00:00'),
+                'data' => 'test_key_123',
+                'revoked' => 0,
+            ],
+            [
+                'id' => 3,
+                'type' => 'api_key',
+                'user' => new User(),
+                'created' => new DateTime('2020-01-01 00:00:00'),
+                'data' => 'not_going_to_work_123',
+                'revoked' => 1,
+            ],
+        ];
 
-        $accessTokens = [];
-        foreach ($dbEntities as $entity) {
-            $accessTokens[] = $this->getMockedRowObject(AccessToken::class, $entity);
-        }
-        $accessTokenTable = $this->getMockedTableObject(TableAccessToken::class, $accessTokens);
-        $accessTokenService->expects($this->any())->method('getDbTable')->willReturn($accessTokenTable);
+        $repository = $this->createMock(EntityRepository::class);
+        $repository->expects($this->any())
+            ->method('findOneBy')
+            ->willReturnCallback(
+                function (array $params) use ($accessTokens): ?MockObject {
+                    foreach ($accessTokens as $token) {
+                        foreach ($params as $key => $value) {
+                            if ($token[$key] !== $value) {
+                                continue 2;
+                            }
+                        }
+                        return $this->getMockedEntity(AccessToken::class, $token);
+                    }
+                    return null;
+                }
+            );
+        $entityManager = $this->createMock(EntityManager::class);
+        $entityManager->expects($this->any())
+            ->method('getRepository')
+            ->with(AccessTokenEntityInterface::class)
+            ->willReturn($repository);
+        $accessTokenService = $this->getMockBuilder(AccessTokenService::class)->onlyMethods([])
+            ->setConstructorArgs([
+                $entityManager,
+                $this->createMock(EntityPluginManager::class),
+                $this->createMock(PersistenceManager::class),
+            ])
+            ->getMock();
+
         return $accessTokenService;
     }
 
@@ -99,15 +149,15 @@ trait MockServicesTrait
     }
 
     /**
-     * Create a mocked row object
+     * Create a mocked entity
      *
-     * @param string      $name     Row class name
+     * @param string      $name     Entity class name
      * @param array       $data     Array containing data as key => value
      * @param ?MockObject $template Template for row object
      *
      * @return MockObject
      */
-    public function getMockedRowObject(string $name, array $data, ?MockObject $template = null): MockObject
+    public function getMockedEntity(string $name, array $data, ?MockObject $template = null): MockObject
     {
         if (null === $template) {
             $rowObject = $this->getMockBuilder($name)->onlyMethods([])->disableOriginalConstructor()->getMock();
@@ -116,53 +166,9 @@ trait MockServicesTrait
         }
 
         foreach ($data as $key => $value) {
-            $rowObject->__set($key, $value);
+            $method = 'set' . str_replace(' ', '', ucwords(str_replace('_', ' ', $key)));
+            $rowObject->$method($value);
         }
         return $rowObject;
-    }
-
-    /**
-     * Create a mocked table object
-     *
-     * @param string      $name          Table class name
-     * @param array       $dbRows        Database rows
-     * @param ?MockObject $tableTemplate Mocked table
-     * @param ?MockObject $newEntity     Mocked row template as new entity
-     *
-     * @return MockObject
-     */
-    public function getMockedTableObject(
-        string $name,
-        array $dbRows,
-        ?MockObject $tableTemplate = null,
-        ?MockObject $newEntity = null
-    ): MockObject {
-        if (null !== $tableTemplate) {
-            return clone $tableTemplate;
-        }
-        $mockedTable = $this->getMockBuilder($name)->onlyMethods(['select', 'createRow', 'delete'])
-            ->disableOriginalConstructor()->getMock();
-
-        $mockedTable->expects($this->any())->method('select')->willReturnCallback(function ($query) use ($dbRows) {
-            $resultSetRow = $this->getMockBuilder(ResultSet::class)->onlyMethods(['current'])
-                ->disableOriginalConstructor()->getMock();
-            $foundEntities = [];
-            foreach ($dbRows as $entity) {
-                // Loop through select query keys and values and compare those to the object
-                foreach ($query as $key => $value) {
-                    if ($entity->__get($key) !== $value) {
-                        continue 2;
-                    }
-                }
-                $foundEntities[] = $entity;
-            }
-            $resultSetRow->expects($this->any())->method('current')->willReturn($foundEntities[0] ?? null);
-            return $resultSetRow;
-        });
-        $mockedTable->expects($this->any())->method('delete')->willReturn(1);
-        if ($newEntity) {
-            $mockedTable->expects($this->any())->method('createRow')->willReturn($newEntity);
-        }
-        return $mockedTable;
     }
 }

@@ -29,6 +29,8 @@
 
 namespace Finna\Search\EncapsulatedRecords;
 
+use VuFind\Config\ConfigManagerInterface;
+
 /**
  * Encapsulated Records Search Options
  *
@@ -43,11 +45,12 @@ class Options extends \VuFind\Search\Base\Options
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(ConfigManagerInterface $configManager)
     {
-        parent::__construct($configLoader);
+        parent::__construct($configManager);
+
         $this->viewOptions = [
             'grid' => 'Grid',
             'list' => 'List',

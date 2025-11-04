@@ -30,7 +30,7 @@
 namespace FinnaConsole\Command\Util;
 
 use DateTime;
-use Finna\Db\Service\FinnaCommentsServiceInterface;
+use Finna\Db\Service\CommentsServiceInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -75,16 +75,16 @@ class ImportComments extends AbstractUtilCommand
     /**
      * Constructor
      *
-     * @param UserServiceInterface          $userService       User database service
-     * @param FinnaCommentsServiceInterface $commentsService   Comments database service
-     * @param RatingsServiceInterface       $ratingsService    Ratings database service
-     * @param ResourcePopulator             $resourcePopulator Resource populator
-     * @param RecordLoader                  $recordLoader      Record loader
-     * @param SearchRunner                  $searchRunner      Search runner
+     * @param UserServiceInterface     $userService       User database service
+     * @param CommentsServiceInterface $commentsService   Comments database service
+     * @param RatingsServiceInterface  $ratingsService    Ratings database service
+     * @param ResourcePopulator        $resourcePopulator Resource populator
+     * @param RecordLoader             $recordLoader      Record loader
+     * @param SearchRunner             $searchRunner      Search runner
      */
     public function __construct(
         protected UserServiceInterface $userService,
-        protected FinnaCommentsServiceInterface $commentsService,
+        protected CommentsServiceInterface $commentsService,
         protected RatingsServiceInterface $ratingsService,
         protected ResourcePopulator $resourcePopulator,
         protected RecordLoader $recordLoader,

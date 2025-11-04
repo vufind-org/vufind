@@ -3482,5 +3482,6 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase implements
                 return false;
             }
         }
+        return true;
     }
 }

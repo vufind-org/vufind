@@ -1593,7 +1593,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
             // only seems to accept a number.
             $request = [
                 'Amount' => $payAmount / 100.0,
-                'DibsTransactionId' => $transactionNumber,
+                'DibsTransactionId' => $paymentId,
                 'DibsPaymentDate' => date(DATE_RFC3339_EXTENDED),
             ];
 

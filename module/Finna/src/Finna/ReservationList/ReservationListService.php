@@ -33,7 +33,6 @@ namespace Finna\ReservationList;
 
 use DateTime;
 use Exception;
-use Finna\Auth\ILSAuthenticator;
 use Finna\Db\Entity\FinnaResourceListEntityInterface;
 use Finna\Db\Service\FinnaResourceListResourceServiceInterface;
 use Finna\Db\Service\FinnaResourceListServiceInterface;
@@ -42,6 +41,7 @@ use Finna\ReservationList\Handler\PluginManager;
 use Laminas\Session\Container;
 use Laminas\Stdlib\Parameters;
 use TypeError;
+use VuFind\Auth\ILSAuthenticator;
 use VuFind\Cache\Manager;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;

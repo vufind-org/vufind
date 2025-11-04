@@ -37,8 +37,6 @@ use VuFind\Db\Entity\EntityInterface;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
 
-use function get_class;
-
 /**
  * Abstract base class for a command that updates records.
  *
@@ -77,20 +75,7 @@ abstract class AbstractRecordUpdateCommand extends Command
         if (null === $this->description) {
             throw new \Exception('description empty');
         }
-        $name = null;
-        if (empty($this->defaultName)) {
-            $className = get_class($this);
-            $parts = explode('\\', $className);
-            $name = strtolower(
-                preg_replace(
-                    '/(?<=[a-z])([A-Z])/',
-                    '-$1',
-                    array_pop($parts)
-                )
-            );
-            $name = strtolower(array_pop($parts)) . "/$name";
-        }
-        parent::__construct($name);
+        parent::__construct();
     }
 
     /**

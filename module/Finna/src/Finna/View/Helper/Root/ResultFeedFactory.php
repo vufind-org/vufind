@@ -31,6 +31,7 @@
 
 namespace Finna\View\Helper\Root;
 
+use Finna\Db\Service\UserResourceServiceInterface;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
@@ -77,7 +78,8 @@ class ResultFeedFactory implements FactoryInterface
         $helper = new $requestedName(
             $viewRenderer->plugin('record'),
             $viewRenderer->plugin('recordImage'),
-            $dbServiceManager->get(CommentsServiceInterface::class)
+            $dbServiceManager->get(CommentsServiceInterface::class),
+            $dbServiceManager->get(UserResourceServiceInterface::class)
         );
         $helper->registerExtensions($container);
         return $helper;

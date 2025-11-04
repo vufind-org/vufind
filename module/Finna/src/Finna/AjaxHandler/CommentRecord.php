@@ -30,7 +30,7 @@
 
 namespace Finna\AjaxHandler;
 
-use Finna\Db\Service\FinnaCommentsServiceInterface;
+use Finna\Db\Service\CommentsServiceInterface;
 use Laminas\Mvc\Controller\Plugin\Params;
 use VuFind\Search\SearchRunner;
 
@@ -78,7 +78,7 @@ class CommentRecord extends \VuFind\AjaxHandler\CommentRecord
      */
     public function handleRequest(Params $params)
     {
-        assert($this->commentsService instanceof FinnaCommentsServiceInterface);
+        assert($this->commentsService instanceof CommentsServiceInterface);
 
         // Make sure comments are enabled:
         if (!$this->enabled) {

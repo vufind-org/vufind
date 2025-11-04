@@ -149,7 +149,7 @@ class EDS extends \VuFind\RecordDriver\EDS
      */
     public function getHighlightedSummary()
     {
-        return [$this->getItemsAbstract()];
+        return [$this->getAbstractNotes()];
     }
 
     /**
@@ -296,7 +296,7 @@ class EDS extends \VuFind\RecordDriver\EDS
      */
     public function getSummary()
     {
-        return [$this->getItemsAbstract()];
+        return [$this->getAbstractNotes()];
     }
 
     /**

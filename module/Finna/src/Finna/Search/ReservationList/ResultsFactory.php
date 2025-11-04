@@ -82,8 +82,6 @@ class ResultsFactory extends \VuFind\Search\Results\ResultsFactory
             $requestedName,
             [$resourceService, $listService]
         );
-        $init = new \LmcRbacMvc\Initializer\AuthorizationServiceInitializer();
-        $init($container, $obj);
         return $obj;
     }
 }

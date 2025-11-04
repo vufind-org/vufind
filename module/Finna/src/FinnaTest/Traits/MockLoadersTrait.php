@@ -39,6 +39,7 @@ use Finna\RecordDriver\SolrLido;
 use Finna\RecordDriver\SolrMarc;
 use Finna\RecordDriver\SolrQdc;
 use FinnaSearch\Backend\Solr\Response\Json\RecordCollection;
+use FinnaTest\Container\MockContainer;
 use GuzzleHttp\Client;
 use GuzzleHttp\Psr7\Response;
 use Laminas\Mvc\I18n\Translator;
@@ -127,31 +128,25 @@ trait MockLoadersTrait
      */
     public function getRecordDriverPluginManager(array $config = []): \Finna\RecordDriver\PluginManager
     {
-        $configContainer = $this->getMockBuilder(\VuFind\Config\PluginManager::class)->onlyMethods(['get'])
+        $configManager = $this->getMockBuilder(\VuFind\Config\ConfigManager::class)->onlyMethods(['getConfigObject'])
             ->disableOriginalConstructor()->getMock();
         $configMap = [
             ['config', null, new Config($config)],
         ];
-        $configContainer->expects($this->any())->method('get')->willReturnMap($configMap);
+        $configManager->expects($this->any())->method('getConfigObject')->willReturnMap($configMap);
 
-        $dbTablePluginManager = $this->getMockBuilder(\VuFind\Db\Table\PluginManager::class)->onlyMethods([])
-            ->disableOriginalConstructor()->getMock();
         $dbServicePluginManager = $this->getMockBuilder(\VuFind\Db\Service\PluginManager::class)->onlyMethods([])
             ->disableOriginalConstructor()->getMock();
         $translator = $this->getMockBuilder(Translator::class)->onlyMethods([])
             ->disableOriginalConstructor()->getMock();
 
         // Create a mock container for factory
-        $mockContainer = $this->getMockBuilder(\VuFind\Config\PluginManager::class)->onlyMethods(['get'])
-            ->disableOriginalConstructor()->getMock();
-        $serviceMap = [
-            ['Missing', null, new Missing()],
-            [\VuFind\Config\PluginManager::class, null, $configContainer],
-            [\VuFind\Db\Table\PluginManager::class, null, $dbTablePluginManager],
-            [\VuFind\Db\Service\PluginManager::class, null, $dbServicePluginManager],
-            [Translator::class, null, $translator],
-        ];
-        $mockContainer->expects($this->any())->method('get')->willReturnMap($serviceMap);
+        $mockContainer = new MockContainer($this);
+        $mockContainer->add('Missing', new Missing());
+        $mockContainer->add(\VuFind\Config\ConfigManagerInterface::class, $configManager);
+        $mockContainer->add(\VuFind\Db\Service\PluginManager::class, $dbServicePluginManager);
+        $mockContainer->add(Translator::class, $translator);
+
         return $this->getMockBuilder(\Finna\RecordDriver\PluginManager::class)->onlyMethods([])
             ->setConstructorArgs([$mockContainer, []])->getMock();
     }

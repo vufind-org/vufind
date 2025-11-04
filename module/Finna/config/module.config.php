@@ -393,6 +393,7 @@ $config = [
             'Finna\OrganisationInfo\OrganisationInfo' => 'Finna\OrganisationInfo\OrganisationInfoFactory',
             'Finna\OrganisationInfo\Provider\Kirkanta' => 'Finna\OrganisationInfo\Provider\AbstractProviderFactory',
             'Finna\OrganisationInfo\Provider\MuseotFi' => 'Finna\OrganisationInfo\Provider\AbstractProviderFactory',
+            \Finna\Ratings\RatingsService::class => \VuFind\Ratings\RatingsServiceFactory::class,
             'Finna\Record\Loader' => 'Finna\Record\LoaderFactory',
             \Finna\Record\ResourcePopulator::class => \VuFind\Record\ResourcePopulatorFactory::class,
             'Finna\RecordDriver\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
@@ -436,6 +437,7 @@ $config = [
             'VuFind\ILS\Connection' => 'Finna\ILS\Connection',
             'VuFind\Mailer\Mailer' => 'Finna\Mailer\Mailer',
             'VuFind\OAI\Server' => 'Finna\OAI\Server',
+            \VuFind\Ratings\RatingsService::class => \Finna\Ratings\RatingsService::class,
             'VuFind\Record\Loader' => 'Finna\Record\Loader',
             \VuFind\Record\ResourcePopulator::class => \Finna\Record\ResourcePopulator::class,
             'VuFind\RecordTab\TabManager' => 'Finna\RecordTab\TabManager',
@@ -602,10 +604,10 @@ $config = [
             'content_description' => [],
             'db_entity' => [
                 'aliases' => [
+                    \Finna\Db\Entity\CommentsEntityInterface::class
+                        => \Finna\Db\Entity\Comments::class,
                     \Finna\Db\Entity\FinnaCacheEntityInterface::class
                         => \Finna\Db\Entity\FinnaCache::class,
-                    \Finna\Db\Entity\FinnaCommentsEntityInterface::class
-                        => \Finna\Db\Entity\Comments::class,
                     \Finna\Db\Entity\FinnaCommentsInappropriateEntityInterface::class
                         => \Finna\Db\Entity\FinnaCommentsInappropriate::class,
                     \Finna\Db\Entity\FinnaCommentsRecordEntityInterface::class
@@ -792,7 +794,7 @@ $config = [
             'onlinepayment_handler' => [
                 'factories' => [
                     \Finna\OnlinePayment\Handler\CPU::class => \VuFind\OnlinePayment\Handler\AbstractBaseFactory::class,
-                    \Finna\OnlinePayment\HAndler\TurkuPaymentAPI::class
+                    \Finna\OnlinePayment\Handler\TurkuPaymentAPI::class
                         => \VuFind\OnlinePayment\Handler\AbstractBaseFactory::class,
                 ],
                 'aliases' => [

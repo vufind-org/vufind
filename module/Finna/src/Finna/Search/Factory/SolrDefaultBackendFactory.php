@@ -188,13 +188,11 @@ class SolrDefaultBackendFactory extends \VuFind\Search\Factory\SolrDefaultBacken
         if (!getenv('VUFIND_API_CALL')) {
             return $hf;
         }
-        $search = $this->config->get($this->searchConfig);
+        $search = $this->configManager->getConfigArray($this->searchConfig);
 
         // API hidden filters
-        if (isset($search->ApiHiddenFilters)) {
-            foreach ($search->ApiHiddenFilters as $filter) {
-                $hf[] = $filter;
-            }
+        foreach ($search['ApiHiddenFilters'] ?? [] as $filter) {
+            $hf[] = $filter;
         }
 
         return $hf;
@@ -211,7 +209,7 @@ class SolrDefaultBackendFactory extends \VuFind\Search\Factory\SolrDefaultBacken
     {
         $url = parent::getSolrUrl();
         $config ??= $this->mainConfig;
-        if (is_array($url) && !empty($this->config->get($config)->Index->shuffle)) {
+        if (is_array($url) && !empty($this->configManager->getConfigArray($config)['Index']['shuffle'])) {
             shuffle($url);
         }
         return $url;

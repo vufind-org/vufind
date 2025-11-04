@@ -3,7 +3,7 @@
 /**
  * Dummy MetaLib view helper (for legacy code template code)
  *
- * PHP version 5
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2016.
  *

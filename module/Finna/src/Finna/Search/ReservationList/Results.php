@@ -31,10 +31,11 @@
 namespace Finna\Search\ReservationList;
 
 use Finna\Db\Entity\FinnaResourceListEntityInterface;
+use Finna\Db\Entity\UserEntityInterface;
 use Finna\Db\Service\FinnaResourceListResourceServiceInterface;
 use Finna\Db\Service\FinnaResourceListServiceInterface;
-use LmcRbacMvc\Service\AuthorizationServiceAwareInterface;
-use LmcRbacMvc\Service\AuthorizationServiceAwareTrait;
+use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareInterface;
+use Lmc\Rbac\Mvc\Service\AuthorizationServiceAwareTrait;
 use VuFind\Exception\ListPermission as ListPermissionException;
 use VuFind\Record\Cache;
 use VuFind\Record\Loader;
@@ -61,7 +62,7 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
     /**
      * Object if user is logged in, false otherwise.
      *
-     * @var \VuFind\Db\Row\User|bool
+     * @var ?UserEntityInterface
      */
     protected $user = null;
 
@@ -73,14 +74,14 @@ class Results extends BaseResults implements AuthorizationServiceAwareInterface
     protected $list = false;
 
     /**
-     * Resource table
+     * Resource list service
      *
      * @var FinnaResourceListResourceServiceInterface
      */
     protected $resourceListResourceService;
 
     /**
-     * UserList table
+     * UserList service
      *
      * @var FinnaResourceListServiceInterface
      */

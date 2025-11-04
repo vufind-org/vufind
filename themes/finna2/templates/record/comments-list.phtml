@@ -4,7 +4,7 @@
   $inappropriateComments = [];
   $user = $this->auth()->getUserObject();
   if ($comments) {
-     $inappropriateComments = $this->driver->tryMethod('getInappropriateComments', [$user?->getId()]);
+     $inappropriateComments = $this->driver->tryMethod('getInappropriateComments', [$user]);
   }
   $ratingAllowed = $this->driver->isRatingAllowed();
 ?>

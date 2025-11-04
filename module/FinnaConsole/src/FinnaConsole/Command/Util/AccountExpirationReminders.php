@@ -33,8 +33,8 @@ namespace FinnaConsole\Command\Util;
 
 use DateInterval;
 use DateTime;
-use Finna\Db\Entity\FinnaUserEntityInterface;
-use Finna\Db\Service\FinnaUserServiceInterface;
+use Finna\Db\Entity\UserEntityInterface;
+use Finna\Db\Service\UserServiceInterface;
 use Laminas\I18n\Translator\Translator;
 use Laminas\I18n\Translator\TranslatorInterface;
 use Laminas\View\Resolver\AggregateResolver;
@@ -153,7 +153,7 @@ class AccountExpirationReminders extends AbstractUtilCommand
     /**
      * Constructor
      *
-     * @param FinnaUserServiceInterface          $userService      User database service
+     * @param UserServiceInterface               $userService      User database service
      * @param SearchServiceInterface             $searchService    Search database service
      * @param ResourceServiceInterface           $resourceService  Resource database service
      * @param UserListServiceInterface           $userListService  User list database service
@@ -165,7 +165,7 @@ class AccountExpirationReminders extends AbstractUtilCommand
      * @param \VuFind\Config\PluginManager       $configManager    Config manager
      */
     public function __construct(
-        protected FinnaUserServiceInterface $userService,
+        protected UserServiceInterface $userService,
         protected SearchServiceInterface $searchService,
         protected ResourceServiceInterface $resourceService,
         protected UserListServiceInterface $userListService,
@@ -309,7 +309,7 @@ class AccountExpirationReminders extends AbstractUtilCommand
      * @param int $remindDaysBefore How many days before expiration reminder starts
      * @param int $frequency        The freqency in days for reminding the user
      *
-     * @return FinnaUserEntityInterface[]
+     * @return UserEntityInterface[]
      */
     protected function getUsersToRemind($days, $remindDaysBefore, $frequency): array
     {
@@ -332,7 +332,7 @@ class AccountExpirationReminders extends AbstractUtilCommand
 
         $results = [];
         foreach ($users as $user) {
-            assert($user instanceof FinnaUserEntityInterface);
+            assert($user instanceof UserEntityInterface);
             $secsSinceLast = time() - ($user->getFinnaLastExpirationReminderDate()?->getTimestamp() ?? 0);
             if ($secsSinceLast < $frequency * 86400) {
                 continue;
@@ -390,12 +390,12 @@ class AccountExpirationReminders extends AbstractUtilCommand
     /**
      * Send account expiration reminder for a user.
      *
-     * @param FinnaUserEntityInterface $user           User.
-     * @param int                      $expirationDays Number of days after the account expires.
+     * @param UserEntityInterface $user           User.
+     * @param int                 $expirationDays Number of days after the account expires.
      *
      * @return bool
      */
-    protected function sendAccountExpirationReminder(FinnaUserEntityInterface $user, int $expirationDays): bool
+    protected function sendAccountExpirationReminder(UserEntityInterface $user, int $expirationDays): bool
     {
         if (str_contains($user->getUsername(), ':')) {
             [$userInstitution, $userName] = explode(':', $user->getUsername(), 2);

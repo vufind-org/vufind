@@ -29,7 +29,7 @@
 
 namespace FinnaConsole\Command\Lists;
 
-use Finna\Db\Service\FinnaUserListServiceInterface;
+use Finna\Db\Service\UserListServiceInterface;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
@@ -52,9 +52,9 @@ class ListProtected extends Command
     /**
      * Constructor
      *
-     * @param FinnaUserListServiceInterface $userListService User list database service
+     * @param UserListServiceInterface $userListService User list database service
      */
-    public function __construct(protected FinnaUserListServiceInterface $userListService)
+    public function __construct(protected UserListServiceInterface $userListService)
     {
         parent::__construct();
     }

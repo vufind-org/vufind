@@ -32,8 +32,6 @@ namespace Finna\OnlinePayment\Handler\Connector\TurkuPaymentAPI;
 
 use Paytrail\SDK\Request\PaymentRequest;
 use Paytrail\SDK\Response\PaymentResponse;
-use Psr\Log\LoggerInterface;
-use VuFindHttp\HttpService;
 
 /**
  * Turku Payment API client
@@ -85,26 +83,20 @@ class Client extends \Paytrail\SDK\Client
     /**
      * Client constructor.
      *
-     * @param int             $merchantId       The merchant.
-     * @param string          $secretKey        The secret key.
-     * @param string          $platformName     Platform name.
-     * @param HttpService     $http             HTTP service.
-     * @param LoggerInterface $logger           Logger.
-     * @param string          $baseUrl          Service base url.
-     * @param string          $merchantIdString Merchant id as a string.
-     * @param string          $oId              oId.
+     * @param int    $merchantId       The merchant.
+     * @param string $secretKey        The secret key.
+     * @param string $platformName     Platform name.
+     * @param string $merchantIdString Merchant id as a string.
+     * @param string $oId              oId.
      */
     public function __construct(
         int $merchantId,
         string $secretKey,
         string $platformName,
-        HttpService $http,
-        LoggerInterface $logger,
-        string $baseUrl,
         string $merchantIdString,
         string $oId
     ) {
-        parent::__construct($merchantId, $secretKey, $platformName, $http, $logger, $baseUrl);
+        parent::__construct($merchantId, $secretKey, $platformName);
         $this->setMerchantIdString($merchantIdString);
         $this->setOId($oId);
         $this->generateTimeStamp();

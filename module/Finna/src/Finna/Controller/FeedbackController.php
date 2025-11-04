@@ -32,7 +32,11 @@
 
 namespace Finna\Controller;
 
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Form\Form;
 use VuFind\Log\LoggerAwareTrait;
+
+use function assert;
 
 /**
  * Feedback Controller
@@ -94,6 +98,7 @@ class FeedbackController extends \VuFind\Controller\FeedbackController implement
      */
     protected function prefillUserInfo(Form $form, ?UserEntityInterface $user)
     {
+        assert($form instanceof \Finna\Form\Form);
         return $form->setContactInformation($user);
     }
 }

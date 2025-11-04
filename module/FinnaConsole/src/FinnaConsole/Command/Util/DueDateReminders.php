@@ -32,7 +32,8 @@
 namespace FinnaConsole\Command\Util;
 
 use Finna\Crypt\SecretCalculator;
-use Finna\Db\Entity\FinnaUserCardEntityInterface;
+use Finna\Db\Entity\UserCardEntityInterface;
+use Finna\Db\Entity\UserEntityInterface;
 use Finna\Db\Service\FinnaDueDateReminderServiceInterface;
 use Finna\Db\Service\UserServiceInterface;
 use Laminas\Mvc\I18n\Translator;
@@ -247,11 +248,11 @@ class DueDateReminders extends AbstractUtilCommand
     /**
      * Get reminders for a user.
      *
-     * @param FinnaUserEntityInterface $user User.
+     * @param UserEntityInterface $user User.
      *
      * @return array Array of loans to be reminded and possible login errors.
      */
-    protected function getReminders(FinnaUserEntityInterface $user): array
+    protected function getReminders(UserEntityInterface $user): array
     {
         if (trim($user->getEmail()) === '') {
             $this->warn(
@@ -264,7 +265,7 @@ class DueDateReminders extends AbstractUtilCommand
         $remindLoans = [];
         $errors = [];
         foreach ($this->userCardService->getLibraryCards($user) as $card) {
-            assert($card instanceof FinnaUserCardEntityInterface);
+            assert($card instanceof UserCardEntityInterface);
             if (!$card->getId() || $card->getFinnaDueDateReminder() === 0) {
                 continue;
             }
@@ -381,13 +382,13 @@ class DueDateReminders extends AbstractUtilCommand
     /**
      * Send reminders for a user.
      *
-     * @param FinnaUserEntityInterface $user        User.
-     * @param array                    $remindLoans Loans to be reminded.
-     * @param array                    $errors      Errors in due date checking.
+     * @param UserEntityInterface $user        User.
+     * @param array               $remindLoans Loans to be reminded.
+     * @param array               $errors      Errors in due date checking.
      *
      * @return boolean success.
      */
-    protected function sendReminder(FinnaUserEntityInterface $user, $remindLoans, $errors)
+    protected function sendReminder(UserEntityInterface $user, $remindLoans, $errors)
     {
         if (trim($user->getEmail()) === '') {
             $this->msg(

@@ -37,6 +37,7 @@ use Generator;
 use Laminas\Http\Headers;
 use Laminas\Http\PhpEnvironment\Response;
 use Laminas\Stdlib\Parameters;
+use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Config\Config;
 use VuFind\Cover\CachingProxy;
 use VuFind\Http\PhpEnvironment\Request;
@@ -57,38 +58,6 @@ class CoverControllerTest extends \PHPUnit\Framework\TestCase
     use FixtureTrait;
     use MockLoadersTrait;
     use MockServicesTrait;
-
-    /**
-     * Database containing access tokens
-     *
-     * @var array
-     */
-    protected array $accessTokenDb = [
-      [
-        'id' => 1,
-        'type' => 'access_token_other',
-        'user_id' => 1,
-        'created' => '2020-01-01 00:00:00',
-        'data' =>  'something:else',
-        'revoked' => 0,
-      ],
-      [
-        'id' => 2,
-        'type' => 'api_key',
-        'user_id' => 2,
-        'created' => '2020-01-01 00:00:00',
-        'data' => 'test_key_123',
-        'revoked' => 0,
-      ],
-      [
-        'id' => 3,
-        'type' => 'api_key',
-        'user_id' => 3,
-        'created' => '2020-01-01 00:00:00',
-        'data' => 'not_going_to_work_123',
-        'revoked' => 1,
-      ],
-    ];
 
     /**
      * Data provider for testing image piping
@@ -262,13 +231,13 @@ class CoverControllerTest extends \PHPUnit\Framework\TestCase
      * @param array $datasourceConfig Datasource config
      * @param array $params           Test params for requesting image
      *
-     * @return CoverController
+     * @return MockObject&CoverController
      */
     protected function getCoverController(
         array $config = [],
         array $datasourceConfig = [],
         array $params = []
-    ): CoverController {
+    ): MockObject&CoverController {
         $records = [
           [
             'fixture' => 'lido/lido_test.xml',
@@ -286,7 +255,7 @@ class CoverControllerTest extends \PHPUnit\Framework\TestCase
           'https://largekuvanlinkki.com',
         ]);
 
-        $accessTokenService = $this->getFinnaAccessTokenService($this->accessTokenDb);
+        $accessTokenService = $this->getFinnaAccessTokenService();
 
         $coverControllerMock = $this->getMockBuilder(CoverController::class)
           ->onlyMethods(['getRequest'])->setConstructorArgs([

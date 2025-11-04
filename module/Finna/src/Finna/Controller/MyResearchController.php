@@ -34,16 +34,14 @@
 
 namespace Finna\Controller;
 
-use Finna\Db\Entity\FinnaUserResourceEntityInterface;
 use Finna\Db\Entity\UserEntityInterface;
+use Finna\Db\Entity\UserResourceEntityInterface;
 use Finna\Db\Service\FinnaFeedbackServiceInterface;
-use Finna\Db\Service\FinnaUserListServiceInterface;
-use Finna\Db\Service\FinnaUserServiceInterface;
 use Finna\Db\Service\UserListService as FinnaUserListService;
+use Finna\Db\Service\UserListServiceInterface;
 use Finna\Db\Service\UserResourceService;
+use Finna\Db\Service\UserServiceInterface;
 use VuFind\Db\Service\SearchServiceInterface;
-use VuFind\Db\Service\UserListServiceInterface;
-use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Exception\ListPermission as ListPermissionException;
@@ -381,9 +379,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                 ->get(\VuFind\Favorites\FavoritesService::class);
 
             $recordLoader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
-            $tableManager = $this->serviceLocator
-                ->get(\VuFind\Db\Table\PluginManager::class);
-            $userResource = $tableManager->get(\VuFind\Db\Table\UserResource::class);
+            $userResourceService = $this->getDbService(UserResourceService::class);
 
             $notesSeparator = '#### ' . $this->translate('Loan History') . "\n";
 
@@ -421,15 +417,15 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                     $notesBlocks = [];
 
                     // Keep existing notes
-                    $savedData = $userResource->getSavedData(
+                    $allSavedData = $userResourceService->getFavoritesForRecord(
                         $current['id'],
                         $current['source'] ?? DEFAULT_SEARCH_BACKEND,
                         $listId ?? null,
-                        $user->getId()
-                    )->current();
+                        $user
+                    );
+                    $savedData = current($allSavedData);
                     if (!empty($savedData['notes'])) {
-                        $notesBlocks
-                            = explode($notesSeparator, $savedData['notes']);
+                        $notesBlocks = explode($notesSeparator, $savedData['notes']);
                         // Separate any other notes from the loan notes blocks
                         $otherBlock = strncmp(
                             $savedData['notes'],
@@ -691,7 +687,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         $userService = $this->getDbService(UserServiceInterface::class);
         $values = $this->getRequest()->getPost();
         if (isset($values->due_date_reminder)) {
-            if ($userService instanceof FinnaUserServiceInterface) {
+            if ($userService instanceof UserServiceInterface) {
                 $userService->setDueDateReminderForUser($user, (int)$values->due_date_reminder);
                 $this->flashMessenger()->addSuccessMessage('profile_update');
             }
@@ -1121,7 +1117,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
         ) {
             $orderedList = $this->params()->fromPost('orderedList');
             $userListService = $this->getDbService(\VuFind\Db\Service\UserListServiceInterface::class);
-            assert($userListService instanceof FinnaUserListServiceInterface);
+            assert($userListService instanceof UserListServiceInterface);
             if (
                 empty($listID)
                 || empty($orderedList)
@@ -1230,18 +1226,11 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                 }
                 $secretService = $this->serviceLocator->get(\VuFind\Crypt\SecretCalculator::class);
                 $secret = $secretService->getDueDateReminderUnsubscribeSecret($user);
-                // TODO: Remove old secret when table class no longer exists:
-                $dueDateTable = $this->getTable('duedatereminder');
-                $oldSecret = $dueDateTable->getUnsubscribeSecret(
-                    $this->serviceLocator->get(\VuFind\Crypt\HMAC::class),
-                    $user,
-                    $user->getId()
-                );
-                if ($key !== $secret && $key !== $oldSecret) {
+                if ($key !== $secret) {
                     throw new \Exception('Invalid parameters.');
                 }
                 $userService = $this->getDbService(UserServiceInterface::class);
-                if ($userService instanceof FinnaUserServiceInterface) {
+                if ($userService instanceof UserServiceInterface) {
                     $userService->setDueDateReminderForUser($user, 0);
                     $view->success = true;
                 }
@@ -1605,7 +1594,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                     'source' => $record->getSourceIdentifier(),
                     'notes' => $notes[0] ?? null,
                     'tags' => array_map($getTag, $tags),
-                    'order' => $userResource instanceof FinnaUserResourceEntityInterface
+                    'order' => $userResource instanceof UserResourceEntityInterface
                         ? $userResource->getFinnaCustomOrderIndex()
                         : null,
                 ];
@@ -1627,7 +1616,7 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
     protected function isNicknameAvailable($nickname): bool
     {
         $userService = $this->getDbService(UserServiceInterface::class);
-        assert($userService instanceof FinnaUserServiceInterface);
+        assert($userService instanceof UserServiceInterface);
         return $userService->isNicknameAvailable($nickname);
     }
 

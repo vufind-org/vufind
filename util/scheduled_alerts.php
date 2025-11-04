@@ -2,7 +2,7 @@
 /**
  * Command-line tool to send scheduled alerts.
  *
- * PHP version 5
+ * PHP version 8
  *
  * Copyright (C) The National Library of Finland 2015.
  *

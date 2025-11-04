@@ -176,7 +176,7 @@ class VerifyRecordLinks extends AbstractUtilCommand
 
             foreach ($comments as $comment) {
                 $lastId = $comment->getId();
-                $resource = $this->resourceService->getResourceById($comment->getResourceId());
+                $resource = $comment->getResource();
                 if (!$resource || 'Solr' !== $resource->getSource()) {
                     continue;
                 }
@@ -418,7 +418,7 @@ class VerifyRecordLinks extends AbstractUtilCommand
             ];
         }
         // Try to load the records. The resources for any changed records are updated automatically.
-        $records = $recordLoader->loadBatch($ids, true);
+        $records = $this->recordLoader->loadBatch($ids, true);
 
         // Report results:
         $fixed = 0;

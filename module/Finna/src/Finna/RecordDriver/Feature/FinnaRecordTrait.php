@@ -31,6 +31,8 @@
 
 namespace Finna\RecordDriver\Feature;
 
+use Finna\Db\Entity\UserEntityInterface;
+use Finna\Db\Service\CommentsServiceInterface;
 use Finna\RecordDriver\RenderContext;
 
 use function count;
@@ -195,16 +197,17 @@ trait FinnaRecordTrait
     /**
      * Get inappropriate comments for this record reported by the given user.
      *
-     * @param ?int $userId Reporter ID or null to use current session
+     * @param ?UserEntityInterface $user Reporter, or null to use current session
      *
      * @return array
      */
-    public function getInappropriateComments($userId)
+    public function getInappropriateComments(?UserEntityInterface $user)
     {
-        $table = $this->getDbTable('CommentsInappropriate');
-        return $table->getForRecord(
-            $userId,
-            $this->getUniqueID()
+        $commentsService = $this->getDbService(CommentsServiceInterface::class);
+        return $commentsService->getInappropriateForRecord(
+            $user,
+            $this->getUniqueID(),
+            $this->getSourceIdentifier()
         );
     }
 
@@ -349,29 +352,6 @@ trait FinnaRecordTrait
         }
 
         return '';
-    }
-
-    /**
-     * Get saved time associated with this record in a user list.
-     *
-     * @param int $list_id List id
-     * @param int $user_id List owner id
-     *
-     * @return timestamp
-     */
-    public function getListSavedDate($list_id, $user_id)
-    {
-        $db = $this->getDbTable('UserResource');
-        $data = $db->getSavedData(
-            $this->getUniqueId(),
-            $this->getSourceIdentifier(),
-            $list_id,
-            $user_id
-        );
-        foreach ($data as $current) {
-            return $current->saved;
-        }
-        return null;
     }
 
     /**

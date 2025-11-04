@@ -29,6 +29,8 @@
 
 namespace Finna\Search\SolrBrowse;
 
+use VuFind\Config\ConfigManagerInterface;
+
 /**
  * SolrBrowse Search Options
  *
@@ -92,11 +94,11 @@ class Options extends \Finna\Search\Solr\Options
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(ConfigManagerInterface $configManager)
     {
-        parent::__construct($configLoader);
+        parent::__construct($configManager);
 
         // Override default sort to always be by title:
         $this->defaultSort = 'title';

@@ -32,8 +32,7 @@
 
 namespace Finna\View\Helper\Root;
 
-use Finna\Db\Entity\FinnaUserEntityInterface;
-use VuFind\Db\Entity\UserEntityInterface;
+use Finna\Db\Entity\UserEntityInterface;
 
 /**
  * User public name view helper
@@ -62,7 +61,7 @@ class UserPublicName extends \Laminas\View\Helper\AbstractHelper implements
     public function __invoke(?UserEntityInterface $user)
     {
         $username = '';
-        if ($user instanceof FinnaUserEntityInterface) {
+        if ($user instanceof UserEntityInterface) {
             if (!empty($nickname = $user->getFinnaNickname())) {
                 $nicknameDescription = strtolower($this->translate('finna_nickname'));
                 $username = "$nickname ($nicknameDescription)";

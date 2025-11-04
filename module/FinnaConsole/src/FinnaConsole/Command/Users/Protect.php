@@ -29,7 +29,8 @@
 
 namespace FinnaConsole\Command\Users;
 
-use Finna\Db\Entity\FinnaUserEntityInterface;
+use Finna\Db\Entity\UserEntityInterface;
+use Symfony\Component\Console\Attribute\AsCommand;
 use VuFind\Db\Entity\EntityInterface;
 
 use function assert;
@@ -43,6 +44,9 @@ use function assert;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'users/protect'
+)]
 class Protect extends \FinnaConsole\Command\AbstractRecordUpdateCommand
 {
     /**
@@ -68,7 +72,7 @@ class Protect extends \FinnaConsole\Command\AbstractRecordUpdateCommand
      */
     protected function changeRecord(EntityInterface $record): bool
     {
-        assert($record instanceof FinnaUserEntityInterface);
+        assert($record instanceof UserEntityInterface);
         if ($record->getFinnaProtected()) {
             return false;
         }

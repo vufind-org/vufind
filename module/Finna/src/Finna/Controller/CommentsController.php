@@ -30,7 +30,7 @@
 
 namespace Finna\Controller;
 
-use Finna\Db\Service\FinnaCommentsServiceInterface;
+use Finna\Db\Service\CommentsServiceInterface;
 
 use function assert;
 
@@ -96,7 +96,7 @@ class CommentsController extends \VuFind\Controller\CommentsController
         $user = $this->getUser();
         $sessionId = $this->serviceLocator->get(\Laminas\Session\SessionManager::class)->getId();
         $service = $this->getDbService(\VuFind\Db\Service\CommentsServiceInterface::class);
-        assert($service instanceof FinnaCommentsServiceInterface);
+        assert($service instanceof CommentsServiceInterface);
         $service->markCommentInappropriate($user, (int)$id, $reason, $message, $sessionId);
     }
 }

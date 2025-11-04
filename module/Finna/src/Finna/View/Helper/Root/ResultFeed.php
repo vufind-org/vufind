@@ -31,6 +31,7 @@
 
 namespace Finna\View\Helper\Root;
 
+use Finna\Db\Service\UserResourceServiceInterface;
 use Finna\View\Helper\Root\RecordImage as RecordImageHelper;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Service\CommentsServiceInterface;
@@ -63,14 +64,16 @@ class ResultFeed extends \VuFind\View\Helper\Root\ResultFeed
     /**
      * Constructor
      *
-     * @param RecordHelper             $recordHelper      Record helper
-     * @param RecordImageHelper        $recordImageHelper Record image helper
-     * @param CommentsServiceInterface $commentsService   Comments database service
+     * @param RecordHelper                 $recordHelper        Record helper
+     * @param RecordImageHelper            $recordImageHelper   Record image helper
+     * @param CommentsServiceInterface     $commentsService     Comments database service
+     * @param UserResourceServiceInterface $userResourceService User resource database service
      */
     public function __construct(
         protected RecordHelper $recordHelper,
         protected RecordImageHelper $recordImageHelper,
-        protected CommentsServiceInterface $commentsService
+        protected CommentsServiceInterface $commentsService,
+        protected UserResourceServiceInterface $userResourceService
     ) {
     }
 
@@ -117,14 +120,14 @@ class ResultFeed extends \VuFind\View\Helper\Root\ResultFeed
         $entry->setLink($url);
 
         if ($this->list) {
-            if (method_exists($record, 'getListSavedDate')) {
-                $saved = $record->getListSavedDate(
-                    $this->list->id,
-                    $this->list->user_id
-                );
-                if ($saved) {
-                    $entry->setDateModified(new \DateTime($saved));
-                }
+            $resources = $this->userResourceService->getFavoritesForRecord(
+                $record->getUniqueId(),
+                $record->getSourceIdentifier(),
+                $this->list,
+                $this->list->getUser()
+            );
+            if ($saved = current($resources)?->getSaved()) {
+                $entry->setDateModified($saved);
             }
         } else {
             $date = $this->getDateModified($record);

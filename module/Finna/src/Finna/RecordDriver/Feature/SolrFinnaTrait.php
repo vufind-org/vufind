@@ -924,32 +924,6 @@ trait SolrFinnaTrait
     }
 
     /**
-     * Add or update user's rating for the record.
-     *
-     * @param int  $userId ID of the user posting the rating
-     * @param ?int $rating The user-provided rating, or null to clear any existing
-     * rating
-     *
-     * @return void
-     */
-    public function addOrUpdateRating(int $userId, ?int $rating): void
-    {
-        parent::addOrUpdateRating($userId, $rating);
-
-        // Also update ratings of any duplicates:
-        $mergedData = $this->getMergedRecordData();
-        if (empty($mergedData['records'])) {
-            return;
-        }
-        $source = $this->getSourceIdentifier();
-        $resources = $this->getDbTable('Resource');
-        foreach ($mergedData['records'] as $record) {
-            $resource = $resources->findResource($record['id'], $source);
-            $resource->addOrUpdateRating($userId, $rating);
-        }
-    }
-
-    /**
      * Support method for getOpenURL() -- pick the OpenURL format.
      *
      * @return string

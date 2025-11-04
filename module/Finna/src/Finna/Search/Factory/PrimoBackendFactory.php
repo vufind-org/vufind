@@ -46,38 +46,11 @@ use FinnaSearch\Backend\Primo\RestConnector;
 class PrimoBackendFactory extends \VuFind\Search\Factory\PrimoBackendFactory
 {
     /**
-     * Primo connector class
-     *
-     * @var string
-     */
-    protected $connectorClass = Connector::class;
-
-    /**
      * Primo REST API connector class
      *
      * @var string
      */
     protected $restConnectorClass = RestConnector::class;
-
-    /**
-     * Create the Primo Central connector.
-     *
-     * Finna: Add hidden filters and set cache manager
-     *
-     * @return Connector
-     */
-    protected function createConnector()
-    {
-        $connector = parent::createConnector();
-
-        if ($this->primoConfig->HiddenFilters) {
-            $connector->setHiddenFilters(
-                $this->primoConfig->HiddenFilters->toArray()
-            );
-        }
-
-        return $connector;
-    }
 
     /**
      * Create the Primo Central REST connector.
@@ -88,7 +61,7 @@ class PrimoBackendFactory extends \VuFind\Search\Factory\PrimoBackendFactory
     {
         $connector = parent::createRestConnector();
 
-        if ($this->primoConfig->HiddenFilters) {
+        if ($this->primoConfig->HiddenFilters && ($connector instanceof RestConnector)) {
             $connector->setHiddenFilters(
                 $this->primoConfig->HiddenFilters->toArray()
             );

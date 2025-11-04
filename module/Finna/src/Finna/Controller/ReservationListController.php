@@ -98,7 +98,7 @@ class ReservationListController extends AbstractBase
      *
      * @return mixed The value of the specified parameter.
      */
-    protected function getParam(string $param, mixed $default = null): mixed
+    protected function getParamFromRequest(string $param, mixed $default = null): mixed
     {
         return $this->params()->fromRoute($param)
             ?? $this->params()->fromPost($param)
@@ -134,10 +134,10 @@ class ReservationListController extends AbstractBase
         }
         $view = $this->createViewModel(
             [
-                'institution' => $this->getParam('institution'),
-                'listIdentifier' => $this->getParam('listIdentifier'),
-                'recordId' => $this->getParam('recordId'),
-                'source' => $this->getParam('source'),
+                'institution' => $this->getParamFromRequest('institution'),
+                'listIdentifier' => $this->getParamFromRequest('listIdentifier'),
+                'recordId' => $this->getParamFromRequest('recordId'),
+                'source' => $this->getParamFromRequest('source'),
             ]
         );
         $driver = $this->getRecordLoader()->load(
@@ -207,10 +207,10 @@ class ReservationListController extends AbstractBase
 
         $view = $this->createViewModel(
             [
-                'source' => $this->getParam('source'),
-                'recordId' => $this->getParam('recordId'),
-                'institution' => $this->getParam('institution'),
-                'listIdentifier' => $this->getParam('listIdentifier'),
+                'source' => $this->getParamFromRequest('source'),
+                'recordId' => $this->getParamFromRequest('recordId'),
+                'institution' => $this->getParamFromRequest('institution'),
+                'listIdentifier' => $this->getParamFromRequest('listIdentifier'),
             ]
         );
         $listHandler = $this->reservationListService->getListHandler(
@@ -233,14 +233,14 @@ class ReservationListController extends AbstractBase
                 $this->flashMessenger()->addErrorMessage('csrf_validation_failed');
                 return $view;
             }
-            $title = $this->getParam('title');
+            $title = $this->getParamFromRequest('title');
             if (!$title) {
                 return $view;
             }
             $list = $this->reservationListService->createListForUser($user);
             $newListValues = [
                 'title' => $title,
-                'desc' => $this->getParam('desc'),
+                'desc' => $this->getParamFromRequest('desc'),
                 'institution' => $listHandler->getInstitution(),
                 'listIdentifier' => $listHandler->getIdentifier(),
                 'connection' => $listHandler->getConnectionType(),
@@ -271,7 +271,7 @@ class ReservationListController extends AbstractBase
         }
         try {
             $list = $this->reservationListService->getListById(
-                $this->getParam('listId'),
+                $this->getParamFromRequest('listId'),
                 $user
             );
         } catch (RecordMissingException $e) {
@@ -338,7 +338,7 @@ class ReservationListController extends AbstractBase
             return $this->forceLogin();
         }
 
-        $listId = $this->getParam('listId');
+        $listId = $this->getParamFromRequest('listId');
         $list = $this->reservationListService->getListById($listId, $user);
         if ($list->getOrdered()) {
             throw new \VuFind\Exception\Forbidden('List already ordered');
@@ -405,8 +405,8 @@ class ReservationListController extends AbstractBase
         if (!$user) {
             return $this->forceLogin();
         }
-        $institution = $this->getParam('institution');
-        $listIdentifier = $this->getParam('listIdentifier');
+        $institution = $this->getParamFromRequest('institution');
+        $listIdentifier = $this->getParamFromRequest('listIdentifier');
         $listHandler = $this->reservationListService->getListHandler(
             $institution,
             $listIdentifier
@@ -493,8 +493,8 @@ class ReservationListController extends AbstractBase
         if (!$user) {
             return $this->forceLogin();
         }
-        $listID = $this->getParam('listId');
-        if ($this->getParam('confirm')) {
+        $listID = $this->getParamFromRequest('listId');
+        if ($this->getParamFromRequest('confirm')) {
             try {
                 $list = $this->reservationListService->getListById((int)$listID, $user);
                 $this->reservationListService->destroyList($list, $user);
@@ -534,7 +534,7 @@ class ReservationListController extends AbstractBase
             return $this->forceLogin();
         }
 
-        $listID = $this->getParam('listID', false);
+        $listID = $this->getParamFromRequest('listID', false);
         if (false === $listID) {
             throw new \Exception('List ID not defined in deleteBulkAction');
         }

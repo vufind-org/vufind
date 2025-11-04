@@ -211,7 +211,7 @@ class CPU extends \VuFind\OnlinePayment\Handler\AbstractBase
         } catch (\Exception $e) {
             $this->logPaymentError(
                 'Exception sending payment: ' . $e->getMessage(),
-                compact('user', 'patron', 'fines', 'payment')
+                compact('user', 'patron', 'fines', 'paymentRequest')
             );
             throw new PaymentException('Payment::error_payment_request_failed');
         }
@@ -219,7 +219,7 @@ class CPU extends \VuFind\OnlinePayment\Handler\AbstractBase
             $errorMessage = $response['error'] ?? 'sendPayment returned false';
             $this->logPaymentError(
                 'Error sending payment: ' . $errorMessage,
-                compact('user', 'patron', 'fines', 'payment')
+                compact('user', 'patron', 'fines', 'paymentRequest')
             );
             throw new PaymentException('Payment::error_payment_request_failed');
         }
@@ -229,7 +229,7 @@ class CPU extends \VuFind\OnlinePayment\Handler\AbstractBase
         if (empty($response->Id) || empty($response->Status)) {
             $this->logPaymentError(
                 'Error starting payment, no response',
-                compact('user', 'patron', 'fines', 'payment')
+                compact('user', 'patron', 'fines', 'paymentRequest')
             );
             throw new PaymentException('Payment::error_payment_request_failed');
         }
@@ -243,19 +243,21 @@ class CPU extends \VuFind\OnlinePayment\Handler\AbstractBase
             // System error or Request failed.
             $this->logPaymentError(
                 'Error starting transaction',
-                compact('response', 'user', 'patron', 'fines', 'payment')
+                compact('response', 'user', 'patron', 'fines', 'paymentRequest')
             );
             throw new PaymentException('Payment::error_payment_request_failed');
         }
 
         $params = [
-            $transactionId, $status,
-            $response->Reference, $response->PaymentAddress,
+            $localIdentifier,
+            $status,
+            $response->Reference,
+            $response->PaymentAddress,
         ];
         if (!$this->verifyHash($params, $response->Hash)) {
             $this->logPaymentError(
                 'Error starting transaction, invalid checksum',
-                compact('response', 'user', 'patron', 'fines', 'payment')
+                compact('response', 'user', 'patron', 'fines', 'paymentRequest')
             );
             throw new PaymentException('Payment::error_payment_request_failed');
         }
@@ -264,7 +266,7 @@ class CPU extends \VuFind\OnlinePayment\Handler\AbstractBase
             // Already processed
             $this->logPaymentError(
                 'Error starting transaction, transaction already processed',
-                compact('response', 'user', 'patron', 'fines', 'payment')
+                compact('response', 'user', 'patron', 'fines', 'paymentRequest')
             );
             throw new PaymentException('Payment::error_payment_request_failed');
         }
@@ -273,7 +275,7 @@ class CPU extends \VuFind\OnlinePayment\Handler\AbstractBase
             // Order exists
             $this->logPaymentError(
                 'Error starting transaction, order exists',
-                compact('response', 'user', 'patron', 'fines', 'payment')
+                compact('response', 'user', 'patron', 'fines', 'paymentRequest')
             );
             throw new PaymentException('Payment::error_payment_request_failed');
         }
@@ -282,7 +284,7 @@ class CPU extends \VuFind\OnlinePayment\Handler\AbstractBase
             // Cancelled
             $this->logPaymentError(
                 'Error starting transaction, order cancelled',
-                compact('response', 'user', 'patron', 'fines', 'payment')
+                compact('response', 'user', 'patron', 'fines', 'paymentRequest')
             );
             throw new PaymentException('Payment::error_payment_request_failed');
         }
@@ -295,7 +297,7 @@ class CPU extends \VuFind\OnlinePayment\Handler\AbstractBase
 
         $this->logPaymentError(
             'Error starting transaction, order cancelled',
-            compact('response', 'user', 'patron', 'fines', 'payment')
+            compact('response', 'user', 'patron', 'fines', 'paymentRequest')
         );
         throw new PaymentException('Payment::error_payment_request_failed');
     }
