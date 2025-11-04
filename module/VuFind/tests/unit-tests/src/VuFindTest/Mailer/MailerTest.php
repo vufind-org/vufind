@@ -277,7 +277,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
 
                 body
                 EOT,
-            subjectInBody:false
+            subjectInBody: false
         );
     }
 
