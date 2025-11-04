@@ -404,7 +404,7 @@ class Folio extends AbstractAPI implements
         } catch (\Exception $e) {
             // Errors in init() should not be fatal, it could prevent using EDS when FOLIO fails
             $this->token = $this->tokenExpiration = null;
-            $this->logError("Failed to get a token to initialize the FOLIO driver: " . $e->getMessage());
+            $this->logError('Failed to get a token to initialize the FOLIO driver: ' . $e->getMessage());
         }
     }
 
