@@ -106,7 +106,7 @@ class ThemeCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $source = $input->getArgument('source');
         $target = $input->getArgument('target');
@@ -116,9 +116,9 @@ class ThemeCommand extends Command
         $force = $input->getOption('force') ? true : false;
         if (!$this->compiler->compile($source, $target, $force)) {
             $output->writeln($this->compiler->getLastError());
-            return 1;
+            return self::FAILURE;
         }
         $output->writeln('Success.');
-        return 0;
+        return self::SUCCESS;
     }
 }

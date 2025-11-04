@@ -34,7 +34,7 @@ use Doctrine\ORM\Mapping as ORM;
 use VuFind\Db\Feature\DateTimeTrait;
 
 /**
- * Session
+ * Entity model for session table
  *
  * @category VuFind
  * @package  Database

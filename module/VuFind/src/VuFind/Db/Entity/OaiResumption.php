@@ -35,7 +35,7 @@ use Doctrine\ORM\Mapping as ORM;
 use VuFind\Db\Feature\DateTimeTrait;
 
 /**
- * OaiResumption
+ * Entity model for oai_resumption table
  *
  * @category VuFind
  * @package  Database

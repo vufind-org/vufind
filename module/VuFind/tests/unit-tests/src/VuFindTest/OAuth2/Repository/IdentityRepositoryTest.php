@@ -118,9 +118,8 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
      * @param ?bool $blocks Blocks status
      *
      * @return void
-     *
-     * @dataProvider getTestIdentityRepositoryData
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestIdentityRepositoryData')]
     public function testIdentityRepository(?bool $blocks): void
     {
         $accessTokenService = $this->getMockAccessTokenService();
@@ -298,12 +297,12 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
         $ils->expects($this->once())
             ->method('patronLogin')
             ->with('user', 'pass')
-            ->will($this->returnValue($patron));
+            ->willReturn($patron);
 
         $ils->expects($this->once())
             ->method('getMyProfile')
             ->with($patron)
-            ->will($this->returnValue($profile));
+            ->willReturn($profile);
 
         if (null === $blocks) {
             $ils->expects($this->once())
@@ -319,7 +318,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
             $ils->expects($this->once())
                 ->method('getAccountBlocks')
                 ->with($patron)
-                ->will($this->returnValue($blocks ? ['Simulated block'] : []));
+                ->willReturn($blocks ? ['Simulated block'] : []);
         }
 
         return $ils;
@@ -342,7 +341,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
 
         $ils->expects($this->once())
             ->method('patronLogin')
-            ->will($this->throwException($exception));
+            ->willThrowException($exception);
 
         return $ils;
     }

@@ -145,9 +145,8 @@ class AssetPipelineTest extends \PHPUnit\Framework\TestCase
      * @param bool        $expectGrouped Do we expect the pipeline to be applied (true) or not (false)?
      *
      * @return void
-     *
-     * @dataProvider isPipelineEnabledForTypeProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('isPipelineEnabledForTypeProvider')]
     public function testIsPipelineEnabledForType(
         string|bool $config,
         string $type,
@@ -272,9 +271,8 @@ class AssetPipelineTest extends \PHPUnit\Framework\TestCase
      * @param array  $expectedGroupedAssets Expected processed assets
      *
      * @return void
-     *
-     * @dataProvider groupAssetsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('groupAssetsProvider')]
     public function testGroupAssets(array $assets, string $type, array $expectedGroupedAssets): void
     {
         $themeInfo = $this->createMock(ThemeInfo::class);
@@ -397,9 +395,8 @@ class AssetPipelineTest extends \PHPUnit\Framework\TestCase
      * @param array  $expectedResult Expected final result
      *
      * @return void
-     *
-     * @dataProvider processGroupedAssetsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('processGroupedAssetsProvider')]
     public function testProcessGroupedAssets(array $groupedAssets, string $type, array $expectedResult): void
     {
         $pipeline = $this->getMockPipeline(

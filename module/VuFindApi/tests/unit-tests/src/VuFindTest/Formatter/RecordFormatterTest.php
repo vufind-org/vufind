@@ -86,7 +86,7 @@ class RecordFormatterTest extends \PHPUnit\Framework\TestCase
         $mockRecordLinker
             = $container->get(\VuFind\View\Helper\Root\RecordLinker::class);
         $mockRecordLinker->expects($this->any())->method('getUrl')
-            ->will($this->returnValue('http://record'));
+            ->willReturn('http://record');
         $hm->setService('recordLinker', $mockRecordLinker);
         return $hm;
     }

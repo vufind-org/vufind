@@ -72,7 +72,7 @@ class BackendTest extends TestCase
         $conn = $this->getConnectorMock(['getRecord']);
         $conn->expects($this->once())
             ->method('getRecord')
-            ->will($this->returnValue($this->loadResponse('single-record')));
+            ->willReturn($this->loadResponse('single-record'));
 
         $back = new Backend($conn);
         $back->setIdentifier('test');
@@ -128,7 +128,7 @@ class BackendTest extends TestCase
         $conn = $this->getConnectorMock(['getRecord']);
         $conn->expects($this->once())
             ->method('getRecord')
-            ->will($this->throwException(new SummonException()));
+            ->willThrowException(new SummonException());
         $back = new Backend($conn, $fact);
         $back->retrieve('id');
     }
@@ -143,7 +143,7 @@ class BackendTest extends TestCase
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
             ->method('query')
-            ->will($this->returnValue($this->loadResponse('search')));
+            ->willReturn($this->loadResponse('search'));
 
         $back = new Backend($conn);
         $back->setIdentifier('test');
@@ -180,7 +180,7 @@ class BackendTest extends TestCase
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
             ->method('query')
-            ->will($this->throwException(new SummonException()));
+            ->willThrowException(new SummonException());
         $back = new Backend($conn, $fact);
         $back->search(new Query(), 1, 1);
     }
@@ -198,7 +198,7 @@ class BackendTest extends TestCase
         $conn->expects($this->once())
             ->method('query')
             ->with($this->equalTo($expectedParams))
-            ->will($this->returnValue(['recordCount' => 0, 'documents' => []]));
+            ->willReturn(['recordCount' => 0, 'documents' => []]);
         $back = new Backend($conn);
         $back->search(new Query('baz', 'boo'), 0, 10, $myParams);
     }

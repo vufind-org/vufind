@@ -55,7 +55,7 @@ class ShortenUrlTest extends \PHPUnit\Framework\TestCase
         $container = new \VuFindTest\Container\MockContainer($this);
         $service = $container->createMock(Database::class, ['shorten']);
         $service->expects($this->once())->method('shorten')
-            ->with($this->equalTo('foo'))->will($this->returnValue('bar'));
+            ->with($this->equalTo('foo'))->willReturn('bar');
         $container->set(UrlShortenerInterface::class, $service);
         $factory = new ShortenUrlFactory();
         $helper = $factory($container, ShortenUrl::class);

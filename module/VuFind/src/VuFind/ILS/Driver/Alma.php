@@ -54,7 +54,7 @@ use function is_callable;
  */
 class Alma extends AbstractBase implements
     \VuFindHttp\HttpServiceAwareInterface,
-    \Laminas\Log\LoggerAwareInterface,
+    \Psr\Log\LoggerAwareInterface,
     TranslatorAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
@@ -581,7 +581,7 @@ class Alma extends AbstractBase implements
     protected function getFulfillmentUnitByLocation($locationCode, $fulfillmentUnits)
     {
         foreach ($fulfillmentUnits as $key => $val) {
-            if (array_search($locationCode, $val) !== false) {
+            if (in_array($locationCode, $val)) {
                 return $key;
             }
         }

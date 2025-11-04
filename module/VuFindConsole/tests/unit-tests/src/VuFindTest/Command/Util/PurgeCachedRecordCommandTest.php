@@ -73,9 +73,8 @@ class PurgeCachedRecordCommandTest extends \PHPUnit\Framework\TestCase
      * @param ?bool  $resourceRetVal What, if anything the resource delete method is expected to return
      *
      * @return void
-     *
-     * @dataProvider basicOperationProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('basicOperationProvider')]
     public function testBasicOperation(
         string $source,
         string $id,

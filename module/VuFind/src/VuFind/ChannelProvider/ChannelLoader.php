@@ -83,7 +83,7 @@ class ChannelLoader
     protected function performChannelSearch($searchRequest, $providers, $source)
     {
         // Perform search and configure providers:
-        $callback = function ($runner, $params) use ($providers) {
+        $callback = function ($runner, $params) use ($providers): void {
             foreach ($providers as $provider) {
                 $provider->configureSearchParams($params);
             }

@@ -93,9 +93,8 @@ class EscapeOrCleanHtmlTest extends \PHPUnit\Framework\TestCase
      * @param string                $expected         Expected result
      *
      * @return void
-     *
-     * @dataProvider escapeOrCleanHtmlProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('escapeOrCleanHtmlProvider')]
     public function testEscapeOrCleanHtml(
         $input,
         ?string $dataContext,

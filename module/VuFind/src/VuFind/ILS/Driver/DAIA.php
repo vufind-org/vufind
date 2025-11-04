@@ -35,7 +35,7 @@
 namespace VuFind\ILS\Driver;
 
 use DOMDocument;
-use Laminas\Log\LoggerAwareInterface as LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Exception\ILS as ILSException;
 use VuFindHttp\HttpServiceAwareInterface as HttpServiceAwareInterface;
 
@@ -670,7 +670,7 @@ class DAIA extends AbstractBase implements
 
         // prepare DOMDocument as json_encode does not support save attributes if
         // elements have values (see http://stackoverflow.com/a/20506281/2115462)
-        $prepare = function ($domNode) use (&$prepare) {
+        $prepare = function ($domNode) use (&$prepare): void {
             foreach ($domNode->childNodes as $node) {
                 if ($node->hasChildNodes()) {
                     $prepare($node);

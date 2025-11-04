@@ -14,6 +14,7 @@
 <div class="<?=$this->layoutClass('mainbody')?>">
   <?=$this->component('page-title', ['title' => $this->translate('Your Checked Out Items'), 'headTitle' => $this->translate('Checked Out Items')]);?>
   <?=$this->flashmessages()?>
+  <?=$this->methodTimedBlocks('Renewals')?>
 
   <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->getUserObject()]); ?>
 

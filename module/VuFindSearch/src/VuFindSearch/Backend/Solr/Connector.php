@@ -60,7 +60,7 @@ use function strlen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class Connector implements \Laminas\Log\LoggerAwareInterface
+class Connector implements \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
     use \VuFindSearch\Backend\Feature\ConnectorCacheTrait;
@@ -288,7 +288,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         if (count($params) > 0) {
             $urlSuffix .= '?' . implode('&', $params->request());
         }
-        $callback = function ($client) use ($document) {
+        $callback = function ($client) use ($document): void {
             $client->setEncType($document->getContentType());
             $body = $document->getContent();
             $client->setRawBody($body);
@@ -315,7 +315,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         $paramString = implode('&', $params->request());
         if (strlen($paramString) > self::MAX_GET_URL_LENGTH) {
             $method = Request::METHOD_POST;
-            $callback = function ($client) use ($paramString) {
+            $callback = function ($client) use ($paramString): void {
                 $client->setRawBody($paramString);
                 $client->setEncType(HttpClient::ENC_URLENCODED);
                 $client->setHeaders(['Content-Length' => strlen($paramString)]);

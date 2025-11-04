@@ -111,9 +111,8 @@ class SchemaOrgTest extends \PHPUnit\Framework\TestCase
      * @param string   $expected Expected return value
      *
      * @return void
-     *
-     * @dataProvider getRecordTypesProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getRecordTypesProvider')]
     public function testGetRecordTypes(array $types, string $expected): void
     {
         $helper = $this->getHelper(true);

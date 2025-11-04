@@ -54,6 +54,12 @@ class TabManagerTest extends \PHPUnit\Framework\TestCase
      */
     protected array $defaultConfig = [
         'RecordTabs' => [
+            'VuFind\RecordDriver\AbstractBase' => [
+                'tabs' => [
+                    'foo' => 'bar',
+                ],
+                'defaultTab' => null,
+            ],
             'VuFind\RecordDriver\EDS' => [
                 'tabs' => [
                     'xyzzy' => 'yzzyx',
@@ -63,6 +69,14 @@ class TabManagerTest extends \PHPUnit\Framework\TestCase
                 'backgroundLoadedTabs' => ['xyzzy'],
             ],
         ],
+        'CollectionTabs' => [
+            'VuFind\RecordDriver\AbstractBase' => [
+                'tabs' => [
+                    'coll' => 'ection',
+                ],
+                'defaultTab' => null,
+            ],
+        ],
     ];
 
     /**
@@ -70,33 +84,15 @@ class TabManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @param ?RecordTabPluginManager $recordTabPluginManager Plugin manager to use (null for default)
      * @param ?ConfigManagerInterface $configManager          Config manager to use (null for default)
+     * @param array                   $legacyConfig           Legacy config
      *
      * @return TabManager
      */
     protected function getTabManager(
         ?RecordTabPluginManager $recordTabPluginManager = null,
-        ?ConfigManagerInterface $configManager = null
+        ?ConfigManagerInterface $configManager = null,
+        array $legacyConfig = []
     ): TabManager {
-        $legacyConfig = [
-            'vufind' => [
-                'recorddriver_collection_tabs' => [
-                    'VuFind\RecordDriver\AbstractBase' => [
-                        'tabs' => [
-                            'coll' => 'ection',
-                        ],
-                        'defaultTab' => null,
-                    ],
-                ],
-                'recorddriver_tabs' => [
-                    'VuFind\RecordDriver\AbstractBase' => [
-                        'tabs' => [
-                            'foo' => 'bar',
-                        ],
-                        'defaultTab' => null,
-                    ],
-                ],
-            ],
-        ];
         return new TabManager(
             $recordTabPluginManager ?? $this->getMockRecordTabPluginManager(),
             $configManager
@@ -121,6 +117,41 @@ class TabManagerTest extends \PHPUnit\Framework\TestCase
         $pm->expects($this->any())->method('get')
             ->willReturn($mockTab);
         return $pm;
+    }
+
+    /**
+     * Test deprecated config warning.
+     *
+     * @return void
+     */
+    public function testDeprecatedConfigTriggersWarning(): void
+    {
+        $this->expectExceptionMessage(
+            'Using deprecated way of fetching tab configuration! Use RecordTabs.ini instead.'
+        );
+        $errorCallback = function (int $code, string $msg): void {
+            throw new \Exception($msg, $code);
+        };
+        $legacyConfig = [
+            'vufind' => [
+                'recorddriver_tabs' => [
+                    'VuFind\RecordDriver\AbstractBase' => [
+                        'tabs' => [
+                            'foo' => 'bar',
+                        ],
+                        'defaultTab' => null,
+                    ],
+                ],
+            ],
+        ];
+        set_error_handler($errorCallback, E_USER_WARNING);
+        try {
+            $this->getTabManager(legacyConfig: $legacyConfig);
+        } catch (\Throwable $e) {
+            throw $e;
+        } finally {
+            restore_error_handler();
+        }
     }
 
     /**

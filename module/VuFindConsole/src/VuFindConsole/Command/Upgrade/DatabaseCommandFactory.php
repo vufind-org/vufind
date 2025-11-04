@@ -35,6 +35,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Cache\Manager as CacheManager;
 use VuFind\Db\ConnectionFactory;
 use VuFind\Db\Migration\MigrationManager;
 
@@ -72,6 +73,7 @@ class DatabaseCommandFactory implements FactoryInterface
             // Defer MigrationManager build so database errors don't break other console utils:
             Closure::fromCallable(fn () => $container->get(MigrationManager::class)),
             $container->get(ConnectionFactory::class),
+            $container->get(CacheManager::class),
             ...($options ?? [])
         );
     }

@@ -103,9 +103,8 @@ class CASTest extends \PHPUnit\Framework\TestCase
      * @param string $key Key to omit
      *
      * @return void
-     *
-     * @dataProvider configKeyProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('configKeyProvider')]
     public function testConfigValidation(string $key): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
@@ -188,9 +187,8 @@ class CASTest extends \PHPUnit\Framework\TestCase
      * @param string $host Expected hostname extracted from $url
      *
      * @return void
-     *
-     * @dataProvider fallbackUrlProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('fallbackUrlProvider')]
     public function testBaseUrlConfigFallback(string $url, string $host): void
     {
         $config = $this->getAuthConfig([], ['Site' => ['url' => $url]]);

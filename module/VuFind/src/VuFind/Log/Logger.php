@@ -29,10 +29,9 @@
 
 namespace VuFind\Log;
 
-use Laminas\Log\Logger as BaseLogger;
-use Laminas\Log\Writer\WriterInterface;
-use Laminas\Stdlib\SplPriorityQueue;
-use Traversable;
+use Monolog\Logger as MonologLogger;
+use Psr\Log\LoggerInterface;
+use Psr\Log\LogLevel;
 use VuFind\Net\UserIpReader;
 
 use function in_array;
@@ -41,6 +40,7 @@ use function is_bool;
 use function is_float;
 use function is_int;
 use function is_object;
+use function is_string;
 
 /**
  * This class wraps the BaseLogger class to allow for log verbosity
@@ -51,39 +51,230 @@ use function is_object;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Logger extends BaseLogger
+class Logger implements LoggerInterface
 {
     /**
      * Is debug logging enabled?
      *
      * @var bool
      */
-    protected $debugNeeded = false;
+    protected bool $debugNeeded = false;
 
     /**
-     * User IP address reader
+     * Monolog logger instance
      *
-     * @var UserIpReader
+     * @var MonologLogger
      */
-    protected $userIpReader;
+    protected MonologLogger $monologLogger;
+
+    protected const LEVEL_MAP = [
+        'crit'       => LogLevel::CRITICAL,
+        'err'       => LogLevel::ERROR,
+        'warn'      => LogLevel::WARNING,
+    ];
 
     /**
      * Constructor
      *
-     * Set options for a logger. Accepted options are:
-     * - writers: array of writers to add to this logger
-     * - exceptionhandler: if true register this logger as exceptionhandler
-     * - errorhandler: if true register this logger as errorhandler
-     *
-     * @param UserIpReader      $userIpReader User IP reader
-     * @param array|Traversable $options      Configuration options
-     *
-     * @throws \Laminas\Log\Exception\InvalidArgumentException
+     * @param UserIpReader   $userIpReader  User IP reader service
+     * @param ?MonologLogger $monologLogger Optional Monolog logger instance
      */
-    public function __construct(UserIpReader $userIpReader, $options = null)
+    public function __construct(protected UserIpReader $userIpReader, ?MonologLogger $monologLogger)
     {
-        $this->userIpReader = $userIpReader;
-        parent::__construct($options);
+        $this->monologLogger = $monologLogger ?? new MonologLogger('default');
+    }
+
+    /**
+     * System is unusable.
+     *
+     * @param string|\Stringable $message Log message
+     * @param mixed[]            $context Additional context data
+     *
+     * @return void
+     */
+    public function emergency(string|\Stringable $message, array $context = []): void
+    {
+        $this->log(LogLevel::EMERGENCY, $message, $context);
+    }
+
+    /**
+     * System is unusable.
+     *
+     * @param string|\Stringable $message Log message
+     * @param mixed[]            $context Additional context data
+     *
+     * @return void
+     *
+     * @deprecated
+     */
+    public function emerg(string|\Stringable $message, array $context = []): void
+    {
+        $this->emergency($message, $context);
+    }
+
+    /**
+     * Action must be taken immediately.
+     *
+     * @param string|\Stringable $message Log message
+     * @param mixed[]            $context Additional context data
+     *
+     * @return void
+     */
+    public function alert(string|\Stringable $message, array $context = []): void
+    {
+        $this->log(LogLevel::ALERT, $message, $context);
+    }
+
+    /**
+     * Critical conditions.
+     *
+     * @param string|\Stringable $message Log message
+     * @param mixed[]            $context Additional context data
+     *
+     * @return void
+     */
+    public function critical(string|\Stringable $message, array $context = []): void
+    {
+        $this->log(LogLevel::CRITICAL, $message, $context);
+    }
+
+    /**
+     * Critical conditions.
+     *
+     * @param string|\Stringable $message Log message
+     * @param mixed[]            $context Additional context data
+     *
+     * @return void
+     *
+     * @deprecated
+     */
+    public function crit(string|\Stringable $message, array $context = []): void
+    {
+        $this->critical($message, $context);
+    }
+
+    /**
+     * Runtime errors that do not require immediate action but should typically
+     * be logged and monitored.
+     *
+     * @param string|\Stringable $message Log message
+     * @param mixed[]            $context Additional context data
+     *
+     * @return void
+     */
+    public function error(string|\Stringable $message, array $context = []): void
+    {
+        $this->log(LogLevel::ERROR, $message, $context);
+    }
+
+    /**
+     * Runtime errors that do not require immediate action but should typically
+     * be logged and monitored.
+     *
+     * @param string|\Stringable $message Log message
+     * @param mixed[]            $context Additional context data
+     *
+     * @return void
+     *
+     * @deprecated
+     */
+    public function err(string|\Stringable $message, array $context = []): void
+    {
+        $this->error($message, $context);
+    }
+
+    /**
+     * Exceptional occurrences that are not errors.
+     *
+     * @param string|\Stringable $message Log message
+     * @param mixed[]            $context Additional context data
+     *
+     * @return void
+     */
+    public function warning(string|\Stringable $message, array $context = []): void
+    {
+        $this->log(LogLevel::WARNING, $message, $context);
+    }
+
+    /**
+     * Exceptional occurrences that are not errors.
+     *
+     * @param string|\Stringable $message Log message
+     * @param mixed[]            $context Additional context data
+     *
+     * @return void
+     *
+     * @deprecated
+     */
+    public function warn(string|\Stringable $message, array $context = []): void
+    {
+        $this->warning($message, $context);
+    }
+
+    /**
+     * Normal but significant events.
+     *
+     * @param string|\Stringable $message Log message
+     * @param mixed[]            $context Additional context data
+     *
+     * @return void
+     */
+    public function notice(string|\Stringable $message, array $context = []): void
+    {
+        $this->log(LogLevel::NOTICE, $message, $context);
+    }
+
+    /**
+     * Interesting events.
+     *
+     * @param string|\Stringable $message Log message
+     * @param mixed[]            $context Additional context data
+     *
+     * @return void
+     */
+    public function info(string|\Stringable $message, array $context = []): void
+    {
+        $this->log(LogLevel::INFO, $message, $context);
+    }
+
+    /**
+     * Detailed debug information.
+     *
+     * @param string|\Stringable $message Log message
+     * @param mixed[]            $context Additional context data
+     *
+     * @return void
+     */
+    public function debug(string|\Stringable $message, array $context = []): void
+    {
+        $this->log(LogLevel::DEBUG, $message, $context);
+    }
+
+    /**
+     * Logs with an arbitrary level.
+     *
+     * @param mixed              $level   Log level
+     * @param string|\Stringable $message Log message
+     * @param mixed[]            $context Additional context data
+     *
+     * @return void
+     *
+     * @throws \Psr\Log\InvalidArgumentException
+     */
+    public function log($level, string|\Stringable $message, array $context = []): void
+    {
+        // Map incoming level (e.g., 'err', 'warn') to Monolog/PSR-3 constant.
+        $monologLevel = is_string($level) && isset(self::LEVEL_MAP[$level])
+            ? self::LEVEL_MAP[$level]
+            : $level;
+
+        if (is_array($message)) {
+            $context['vufind_log_details'] = $message;
+            $mainMonologMessage = 'Exception/Detailed log. See context for levels.';
+        } else {
+            $mainMonologMessage = $message;
+        }
+        $this->monologLogger->log($monologLevel, $mainMonologMessage, $context);
     }
 
     /**
@@ -101,60 +292,6 @@ class Logger extends BaseLogger
             $this->debugNeeded = $newState;
         }
         return $this->debugNeeded;
-    }
-
-    /**
-     * Add a message as a log entry
-     *
-     * @param int               $priority Priority
-     * @param mixed             $message  Message
-     * @param array|Traversable $extra    Extras
-     *
-     * @return Logger
-     */
-    public function log($priority, $message, $extra = [])
-    {
-        // Special case to handle arrays of messages (for multi-verbosity-level
-        // logging, not supported by base class):
-        if (is_array($message)) {
-            $timestamp = new \DateTime();
-            foreach ($this->writers->toArray() as $writer) {
-                $writer->write(
-                    [
-                        'timestamp'    => $timestamp,
-                        'priority'     => (int)$priority,
-                        'priorityName' => $this->priorities[$priority],
-                        'message'      => $message,
-                        'extra'        => $extra,
-                    ]
-                );
-            }
-            return $this;
-        }
-        return parent::log($priority, $message, $extra);
-    }
-
-    /**
-     * Given an exception, return a severity level for logging purposes.
-     *
-     * @param \Exception $error Exception to analyze
-     *
-     * @return int
-     */
-    protected function getSeverityFromException($error)
-    {
-        // If the exception provides the severity level, use it:
-        if ($error instanceof \VuFind\Exception\SeverityLevelInterface) {
-            return $error->getSeverityLevel();
-        }
-        // Treat unexpected or 5xx errors as more severe than 4xx errors.
-        if (
-            $error instanceof \VuFind\Exception\HttpStatusInterface
-            && in_array($error->getHttpStatus(), [403, 404])
-        ) {
-            return BaseLogger::WARN;
-        }
-        return BaseLogger::CRIT;
     }
 
     /**
@@ -223,25 +360,36 @@ class Logger extends BaseLogger
             5 => $baseError . $detailedServer . $detailedBacktrace,
         ];
 
-        $this->log($this->getSeverityFromException($error), $errorDetails);
+        $this->log(
+            $this->getSeverityFromException($error),
+            $baseError,
+            [
+                'details' => $errorDetails,
+            ]
+        );
     }
 
     /**
-     * Remove a writer.
+     * Given an exception, return a severity level for logging purposes.
      *
-     * @param WriterInterface $writer Writer to remove
+     * @param \Exception $error Exception to analyze
      *
-     * @return void
+     * @return int
      */
-    public function removeWriter(WriterInterface $writer): void
+    protected function getSeverityFromException($error)
     {
-        $newQueue = new SplPriorityQueue();
-        foreach ($this->getWriters() as $i => $current) {
-            if ($current !== $writer) {
-                $newQueue->insert($current, $i);
-            }
+        // If the exception provides the severity level, use it:
+        if ($error instanceof \VuFind\Exception\SeverityLevelInterface) {
+            return $error->getSeverityLevel();
         }
-        $this->setWriters($newQueue);
+
+        if (
+            $error instanceof \VuFind\Exception\HttpStatusInterface
+            && in_array($error->getHttpStatus(), [403, 404])
+        ) {
+            return LogLevel::WARNING;
+        }
+        return LogLevel::CRITICAL;
     }
 
     /**

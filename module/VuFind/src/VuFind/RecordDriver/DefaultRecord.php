@@ -462,7 +462,7 @@ class DefaultRecord extends AbstractBase
         }
 
         // deduplicate
-        $dedup = function (&$array1, &$array2) {
+        $dedup = function (&$array1, &$array2): void {
             if (!empty($array1) && !empty($array2)) {
                 $keys = array_keys($array1);
                 foreach ($keys as $author) {
@@ -481,7 +481,7 @@ class DefaultRecord extends AbstractBase
         $dedup($authors['secondary'], $authors['corporate']);
         $dedup($authors['primary'], $authors['secondary']);
 
-        $dedup_data = function (&$array) {
+        $dedup_data = function (&$array): void {
             foreach ($array as $author => $data) {
                 foreach ($data as $field => $values) {
                     if (is_array($values)) {

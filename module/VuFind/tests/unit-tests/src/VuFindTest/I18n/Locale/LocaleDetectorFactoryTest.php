@@ -95,7 +95,7 @@ class LocaleDetectorFactoryTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()->getMock();
         $mockSettings->expects($this->once())
             ->method('browserLanguageDetectionEnabled')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $this->assertEquals(
             [
                 LocaleDetectorParamStrategy::class,
@@ -119,7 +119,7 @@ class LocaleDetectorFactoryTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()->getMock();
         $mockSettings->expects($this->once())
             ->method('browserLanguageDetectionEnabled')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
         $this->assertEquals(
             [
                 LocaleDetectorParamStrategy::class,

@@ -121,9 +121,8 @@ class ConfigUpgradeTest extends ConfigTestCase
      * @param string $expectedGenerator Expected Generator
      *
      * @return void
-     *
-     * @dataProvider upgradeTestProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('upgradeTestProvider')]
     public function testUpgrade($fixture, $expectedGenerator): void
     {
         $baseConfig = $this->readConfig('config', $this->baseDirPath);

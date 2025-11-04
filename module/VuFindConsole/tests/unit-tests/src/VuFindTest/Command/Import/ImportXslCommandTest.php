@@ -109,7 +109,7 @@ class ImportXslCommandTest extends \PHPUnit\Framework\TestCase
                 $this->equalTo('bar.properties'),
                 $this->equalTo('SolrTest'),
                 $this->equalTo(true)
-            )->will($this->throwException($e));
+            )->willThrowException($e);
         $command = new ImportXslCommand($importer);
         $commandTester = new CommandTester($command);
         $commandTester->execute(

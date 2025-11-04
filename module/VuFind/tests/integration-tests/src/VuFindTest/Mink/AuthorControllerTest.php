@@ -110,9 +110,8 @@ class AuthorControllerTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $path Starting URL path to test
      *
      * @return void
-     *
-     * @dataProvider authorPathsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('authorPathsProvider')]
     public function testAuthorSearchDoesNotBreakSearchBox(string $path): void
     {
         $session = $this->getMinkSession();

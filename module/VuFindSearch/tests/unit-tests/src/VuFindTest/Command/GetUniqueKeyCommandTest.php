@@ -56,7 +56,7 @@ class GetUniqueKeyCommandTest extends TestCase
             ->getMockBuilder(\VuFindSearch\Backend\BrowZine\Backend::class)
             ->disableOriginalConstructor()->getMock();
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue('foo'));
+            ->willReturn('foo');
         $command->execute($backend);
     }
 
@@ -74,7 +74,7 @@ class GetUniqueKeyCommandTest extends TestCase
             ->getMockBuilder(\VuFindSearch\Backend\BrowZine\Backend::class)
             ->disableOriginalConstructor()->getMock();
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue('bar'));
+            ->willReturn('bar');
         $command->execute($backend);
     }
 
@@ -89,14 +89,14 @@ class GetUniqueKeyCommandTest extends TestCase
             ->getMockBuilder(\VuFindSearch\Backend\Solr\Connector::class)
             ->disableOriginalConstructor()->getMock();
         $connector->expects($this->once())->method('getUniqueKey')
-            ->will($this->returnValue('foo'));
+            ->willReturn('foo');
         $backend = $this
             ->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
             ->disableOriginalConstructor()->getMock();
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue('bar'));
+            ->willReturn('bar');
         $backend->expects($this->once())->method('getConnector')
-            ->will($this->returnValue($connector));
+            ->willReturn($connector);
         $command = new GetUniqueKeyCommand('bar', []);
         $this->assertEquals('foo', $command->execute($backend)->getResult());
     }

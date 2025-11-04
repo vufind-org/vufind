@@ -5,13 +5,13 @@
 
     $basePath = rtrim($this->url('home'), '/') . '/api/v1';
     $info = [
-        'title' => $this->config->Site->title,
+        'title' => $this->config['Site']['title'],
         'version' => $this->version,
     ];
-    if ($description = $this->config->API->description ?? '') {
+    if ($description = $this->config['API']['description'] ?? '') {
         $info['description'] = $description;
     }
-    if ($termsUrl = $this->config->API->termsOfServiceUrl ?? '') {
+    if ($termsUrl = $this->config['API']['termsOfServiceUrl'] ?? '') {
         $info['termsOfService'] = $termsUrl;
     }
 ?>
@@ -24,6 +24,15 @@
         }
     ],
     "components": {
+<?php if ($this->apiKeysEnabled): ?>
+        "securitySchemes": {
+            "ApiKeyAuth": {
+                "type": "apiKey",
+                "in": "header",
+                "name": <?=json_encode($this->apiKeyHeaderField)?>
+            }
+        },
+<?php endif; ?>
         "schemas": {
             "Success": {
                 "type": "object",
@@ -47,6 +56,21 @@
                         "description": "Status code",
                         "type": "string",
                         "enum": ["ERROR"]
+                    },
+                    "statusMessage": {
+                        "description": "A descriptive error message",
+                        "type": "string"
+                    }
+                },
+                "required": ["status", "statusMessage"]
+            },
+            "Unauthorized": {
+                "type": "object",
+                "properties": {
+                    "status": {
+                        "description": "Status code",
+                        "type": "string",
+                        "enum": ["UNAUTHORIZED"]
                     },
                     "statusMessage": {
                         "description": "A descriptive error message",

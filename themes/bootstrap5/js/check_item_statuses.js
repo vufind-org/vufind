@@ -197,10 +197,19 @@ VuFind.register('itemStatuses', function ItemStatuses() {
    * @param {HTMLElement} el The element representing the item.
    */
   function checkItemStatus(el) {
-    const hiddenIdEl = el.querySelector(".hiddenId");
+    let hiddenIdEl = el.querySelector(".hiddenId");
+    // hiddenoverrideId is an ID provided by a search backend, when 
+    // the ID required for item status lookup is different from the
+    // record ID.
+    const hiddenOverrideIdEl = el.querySelector(".hiddenOverrideId");
+
+    if (hiddenOverrideIdEl != null) {
+      hiddenIdEl = hiddenOverrideIdEl;
+    }
 
     if (
       hiddenIdEl === null ||
+      hiddenIdEl.value === "" ||
       el.classList.contains("js-item-pending") ||
       el.classList.contains("js-item-done")
     ) {

@@ -36,7 +36,7 @@ namespace VuFind\Cache;
 use Laminas\Cache\Service\StorageAdapterFactory;
 use Laminas\Cache\Storage\Capabilities;
 use Laminas\Cache\Storage\StorageInterface;
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use stdClass;
 use VuFind\Log\LoggerAwareTrait;
 
@@ -354,24 +354,16 @@ class Manager implements LoggerAwareInterface
     }
 
     /**
-     * Add a file cache to the manager and ensure that necessary directory exists.
+     * Ensure that a cache directory exists.
      *
-     * @param string $cacheName    Name of new cache to create
      * @param string $dirName      Directory to use for storage
      * @param array  $overrideOpts Options to override default values.
      *
      * @return void
      */
-    protected function createFileCache($cacheName, $dirName, $overrideOpts = [])
+    public function ensureCacheDirectoryExists($dirName, $overrideOpts = [])
     {
         $opts = array_merge($this->defaults, $overrideOpts);
-        if ($opts['disabled'] ?? false) {
-            $this->createNoCache($cacheName);
-            return;
-        } else {
-            // Laminas does not support "disabled = false"; unset to avoid error.
-            unset($opts['disabled']);
-        }
 
         if (!is_dir($dirName)) {
             if (isset($opts['umask'])) {
@@ -401,6 +393,30 @@ class Manager implements LoggerAwareInterface
                 $this->directoryCreationError = true;
             }
         }
+    }
+
+    /**
+     * Add a file cache to the manager and ensure that necessary directory exists.
+     *
+     * @param string $cacheName    Name of new cache to create
+     * @param string $dirName      Directory to use for storage
+     * @param array  $overrideOpts Options to override default values.
+     *
+     * @return void
+     */
+    protected function createFileCache($cacheName, $dirName, $overrideOpts = [])
+    {
+        $opts = array_merge($this->defaults, $overrideOpts);
+        if ($opts['disabled'] ?? false) {
+            $this->createNoCache($cacheName);
+            return;
+        } else {
+            // Laminas does not support "disabled = false"; unset to avoid error.
+            unset($opts['disabled']);
+        }
+
+        $this->ensureCacheDirectoryExists($dirName, $opts);
+
         if (empty($opts)) {
             $opts = ['cache_dir' => $dirName];
         } elseif (is_array($opts)) {
@@ -441,7 +457,7 @@ class Manager implements LoggerAwareInterface
             $eventManager = $laminasCache->getEventManager();
             $eventManager->attach(
                 'getCapabilities.post',
-                function ($event) use ($laminasCache) {
+                function ($event) use ($laminasCache): void {
                     $oldCapacities = $event->getResult();
                     $newCapacities = new Capabilities(
                         $laminasCache,

@@ -137,14 +137,16 @@ class Holds
      * Public method for getting item holdings from the catalog and selecting which
      * holding method to call
      *
-     * @param string $id      A Bib ID
-     * @param array  $ids     A list of Source Records (if catalog is for a
-     * consortium)
-     * @param array  $options Optional options to pass on to getHolding()
+     * @param string $id            A Bib ID
+     * @param array  $ids           A list of Source Records (if catalog is for a consortium)
+     * @param array  $options       Optional options to pass on to getHolding()
+     * @param array  $linkOverrides Optional id and source to override standard record driver
+     * values (used for backends like EDS where the ILS bib ID differs from the record ID used
+     * to create a link).
      *
      * @return array A sorted results set
      */
-    public function getHoldings($id, $ids = null, $options = [])
+    public function getHoldings($id, $ids = null, $options = [], array $linkOverrides = [])
     {
         // Retrieve stored patron credentials; it is the responsibility of the
         // controller and view to inform the user that these credentials are
@@ -183,22 +185,24 @@ class Holds
         if ($mode == 'disabled') {
             $holdings = $this->standardHoldings($result);
         } elseif ($mode == 'driver') {
-            $holdings = $this->driverHoldings($result, $config, !empty($blocks));
+            $holdings = $this->driverHoldings($result, $config, !empty($blocks), $linkOverrides);
         } else {
-            $holdings = $this->generateHoldings($result, $mode, $config);
+            $holdings = $this->generateHoldings($result, $mode, $config, $linkOverrides);
         }
 
         $holdings = $this->processStorageRetrievalRequests(
             $holdings,
             $id,
             $patron,
-            !empty($blocks)
+            !empty($blocks),
+            $linkOverrides
         );
         $holdings = $this->processILLRequests(
             $holdings,
             $id,
             $patron,
-            !empty($blocks)
+            !empty($blocks),
+            $linkOverrides
         );
 
         $result['blocks'] = $blocks;
@@ -235,10 +239,13 @@ class Holds
      * @param array $result          A result set returned from a driver
      * @param array $holdConfig      Hold configuration from driver
      * @param bool  $requestsBlocked Are user requests blocked?
+     * @param array $linkOverrides   Optional id and source to override standard record driver
+     * values (used for backends like EDS where the ILS bib ID differs from the record ID used
+     * to create a link).
      *
      * @return array A sorted results set
      */
-    protected function driverHoldings($result, $holdConfig, $requestsBlocked)
+    protected function driverHoldings($result, $holdConfig, $requestsBlocked, array $linkOverrides = [])
     {
         $holdings = [];
 
@@ -256,7 +263,8 @@ class Holds
                             $copy['link'] = $this->getRequestDetails(
                                 $copy,
                                 $holdConfig['HMACKeys'],
-                                'Hold'
+                                'Hold',
+                                $linkOverrides
                             );
                             $copy['linkLightbox'] = true;
                             // If we are unsure whether hold options are available,
@@ -276,14 +284,17 @@ class Holds
     /**
      * Protected method for vufind (i.e. User) defined holdings
      *
-     * @param array  $result     A result set returned from a driver
-     * @param string $type       The holds mode to be applied from:
+     * @param array  $result        A result set returned from a driver
+     * @param string $type          The holds mode to be applied from:
      * (all, holds, recalls, availability)
-     * @param array  $holdConfig Hold configuration from driver
+     * @param array  $holdConfig    Hold configuration from driver
+     * @param array  $linkOverrides Optional id and source to override standard record driver
+     * values (used for backends like EDS where the ILS bib ID differs from the record ID used
+     * to create a link).
      *
      * @return array A sorted results set
      */
-    protected function generateHoldings($result, $type, $holdConfig)
+    protected function generateHoldings($result, $type, $holdConfig, array $linkOverrides = [])
     {
         $holdings = [];
         $any_available = false;
@@ -350,7 +361,8 @@ class Holds
                                     = $this->getRequestDetails(
                                         $copy,
                                         $holdConfig['HMACKeys'],
-                                        'Hold'
+                                        'Hold',
+                                        $linkOverrides
                                     );
                                 $holdings[$location_key][$copy_key]['linkLightbox']
                                     = true;
@@ -371,6 +383,9 @@ class Holds
      * @param string $id              Record ID
      * @param array  $patron          Patron
      * @param bool   $requestsBlocked Are user requests blocked?
+     * @param array  $linkOverrides   Optional id and source to override standard record driver
+     * values (used for backends like EDS where the ILS bib ID differs from the record ID used
+     * to create a link).
      *
      * @return array Modified holdings
      */
@@ -378,7 +393,8 @@ class Holds
         $holdings,
         $id,
         $patron,
-        $requestsBlocked
+        $requestsBlocked,
+        array $linkOverrides = []
     ) {
         if (!is_array($holdings)) {
             return $holdings;
@@ -407,7 +423,8 @@ class Holds
                     $copy['storageRetrievalRequestLink'] = $this->getRequestDetails(
                         $copy,
                         $requestConfig['HMACKeys'],
-                        'StorageRetrievalRequest'
+                        'StorageRetrievalRequest',
+                        $linkOverrides
                     );
                     // If we are unsure whether request options are
                     // available, set a flag so we can check later via AJAX:
@@ -426,10 +443,13 @@ class Holds
      * @param string $id              Record ID
      * @param array  $patron          Patron
      * @param bool   $requestsBlocked Are user requests blocked?
+     * @param array  $linkOverrides   Optional id and source to override standard record driver
+     * values (used for backends like EDS where the ILS bib ID differs from the record ID used
+     * to create a link).
      *
      * @return array Modified holdings
      */
-    protected function processILLRequests($holdings, $id, $patron, $requestsBlocked)
+    protected function processILLRequests($holdings, $id, $patron, $requestsBlocked, array $linkOverrides = [])
     {
         if (!is_array($holdings)) {
             return $holdings;
@@ -457,7 +477,8 @@ class Holds
                     $copy['ILLRequestLink'] = $this->getRequestDetails(
                         $copy,
                         $requestConfig['HMACKeys'],
-                        'ILLRequest'
+                        'ILLRequest',
+                        $linkOverrides
                     );
                     // If we are unsure whether request options are
                     // available, set a flag so we can check later via AJAX:
@@ -474,13 +495,16 @@ class Holds
      *
      * Supplies holdLogic with the form details required to place a request
      *
-     * @param array  $details  An array of item data
-     * @param array  $HMACKeys An array of keys to hash
-     * @param string $action   The action for which the details are built
+     * @param array  $details       An array of item data
+     * @param array  $HMACKeys      An array of keys to hash
+     * @param string $action        The action for which the details are built
+     * @param array  $linkOverrides Optional id and source to override standard record driver
+     * values (used for backends like EDS where the ILS bib ID differs from the record ID used
+     * to create a link).
      *
-     * @return array             Details for generating URL
+     * @return array Details for generating URL
      */
-    protected function getRequestDetails($details, $HMACKeys, $action)
+    protected function getRequestDetails($details, $HMACKeys, $action, array $linkOverrides = [])
     {
         // Include request type in the details
         $details['requestType'] = $action;
@@ -510,9 +534,11 @@ class Holds
 
         // Build Params
         return [
-            'action' => $action, 'record' => $details['id'],
-            'source' => $details['source'] ?? DEFAULT_SEARCH_BACKEND,
-            'query' => $queryString, 'anchor' => '#tabnav',
+            'action' => $action,
+            'record' => $linkOverrides['id'] ?? $details['id'],
+            'source' => $linkOverrides['source'] ?? $details['source'] ?? DEFAULT_SEARCH_BACKEND,
+            'query' => $queryString,
+            'anchor' => '#tabnav',
         ];
     }
 

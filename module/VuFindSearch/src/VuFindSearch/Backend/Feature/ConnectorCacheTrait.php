@@ -36,7 +36,7 @@ namespace VuFindSearch\Backend\Feature;
 use Laminas\Cache\Storage\Adapter\Memcached;
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\Http\Client as HttpClient;
-use Laminas\Log\LoggerInterface;
+use Psr\Log\LoggerInterface;
 
 /**
  * Caching support trait for connectors.

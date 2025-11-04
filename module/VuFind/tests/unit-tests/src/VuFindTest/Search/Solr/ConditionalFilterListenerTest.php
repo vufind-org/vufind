@@ -241,7 +241,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $mockAuth->expects($this->any())->method('isGranted')
             ->with($this->equalTo('conditionalFilter.sample'))
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $listener->setAuthorizationService($mockAuth);
 
         $event = $this->getMockPreEvent($params);
@@ -276,7 +276,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $mockAuth->expects($this->any())->method('isGranted')
             ->with($this->equalTo('conditionalFilter.sample'))
-            ->will($this->returnValue(false));
+            ->willReturn(false);
         $listener->setAuthorizationService($mockAuth);
         $event = $this->getMockPreEvent($params);
         $listener->onSearchPre($event);
@@ -305,7 +305,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $mockAuth->expects($this->any())->method('isGranted')
             ->with($this->equalTo('conditionalFilter.sample'))
-            ->will($this->returnValue(false));
+            ->willReturn(false);
         $listener->setAuthorizationService($mockAuth);
         $event = $this->getMockPreEvent($params);
         $listener->onSearchPre($event);
@@ -340,7 +340,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $mockAuth->expects($this->any())->method('isGranted')
             ->with($this->equalTo('conditionalFilter.sample'))
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $listener->setAuthorizationService($mockAuth);
         $event = $this->getMockPreEvent($params);
         $listener->onSearchPre($event);

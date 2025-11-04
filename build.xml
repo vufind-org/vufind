@@ -77,7 +77,7 @@
   <property name="marc_bib_dir" value="${srcdir}/tests/data" /><!-- directory containing MARC bib records for test environment -->
   <property name="marc_authority_dir" value="${marc_bib_dir}/authority" /><!-- directory containing MARC authority records for test environment -->
 
-  <property name="version" value="10.2.0" />
+  <property name="version" value="10.2.1" />
 
   <property name="mysqlconnectionargs" value="-h ${mysqlhost} -P ${mysqlport} -u ${mysqlrootuser}" />
   <!-- Add password if not empty -->
@@ -150,6 +150,7 @@
     <phingcall target="eslint-report"/>
     <phingcall target="jshint-report"/>
     <phingcall target="phpstan-checkstyle"/>
+    <phingcall target="rector-console"/>
   </target>
 
   <!-- Quality Assurance Tasks -->
@@ -172,10 +173,13 @@
     <phingcall target="phpcs-console"/>
     <phingcall target="php-cs-fixer-dryrun"/>
     <phingcall target="phpstan-console"/>
+    <phingcall target="rector-console"/>
   </target>
 
   <!-- Fix PHP Tasks -->
   <target name="fix-php" description="quality assurance php tasks">
+    <!-- Rector may introduce style issues, so run it first -->
+    <phingcall target="rector"/>
     <phingcall target="php-cs-fixer"/>
     <phingcall target="phpcbf"/>
   </target>
@@ -265,6 +269,18 @@
     </exec>
   </target>
 
+  <!-- Rector -->
+  <target name="rector-console">
+    <exec executable="${srcdir}/vendor/bin/rector" escape="false" passthru="true" checkreturn="true">
+      <arg line="--config=${srcdir}/tests/rector.php --dry-run" />
+    </exec>
+  </target>
+  <target name="rector">
+    <exec executable="${srcdir}/vendor/bin/rector" escape="false" passthru="true" checkreturn="true">
+      <arg line="--config=${srcdir}/tests/rector.php" />
+    </exec>
+  </target>
+
   <!-- ESLint -->
   <target name="eslint">
     <exec executable="npx" escape="false" checkreturn="true" passthru="true">
@@ -348,8 +364,23 @@
     </if>
   </target>
 
+  <target name="prepare-html-validation-log" description="Prepare HTML validation log file">
+    <if>
+      <istrue value="${html_validator_log_file}" />
+      <then>
+        <if>
+          <available file="${html_validator_log_file}" />
+          <then>
+            <move file="${html_validator_log_file}" tofile="${html_validator_log_file}.1" overwrite="true" />
+          </then>
+        </if>
+        <touch file="${html_validator_log_file}" />
+      </then>
+    </if>
+  </target>
+
   <!-- PHPUnit -->
-  <target name="phpunit" description="Run tests">
+  <target name="phpunit" description="Run tests" depends="prepare-html-validation-log">
     <!-- Clean up any previous tmp files but keep the directory if it exists to avoid changing its permissions -->
     <property name="coveragedir" value="${builddir}/reports/coverage" />
     <if>
@@ -414,7 +445,7 @@
   </target>
 
   <!-- PHPUnit without logging output -->
-  <target name="phpunitfast" description="Run tests">
+  <target name="phpunitfast" description="Run tests" depends="prepare-html-validation-log">
     <exec dir="${srcdir}/module/VuFind/tests" executable="${sh}" passthru="true" checkreturn="true">
       <arg line="-c &apos;${phpunit_command} ${phpunit_extra_params}&apos;" />
       <env key="VUFIND_MINK_DRIVER" value="${mink_driver}" />
@@ -434,7 +465,7 @@
   </target>
 
   <!-- PHPUnit without logging output, stopping at first error or failure -->
-  <target name="phpunitfaster" description="Run tests until first failure">
+  <target name="phpunitfaster" description="Run tests until first failure" depends="prepare-html-validation-log">
     <exec dir="${srcdir}/module/VuFind/tests" executable="${sh}" passthru="true" checkreturn="true">
       <arg line="-c &apos;${phpunit_command} --stop-on-defect ${phpunit_extra_params}&apos;" />
       <env key="VUFIND_MINK_DRIVER" value="${mink_driver}" />
@@ -469,16 +500,16 @@
         <not><available file="${srcdir}/solr/.disableAutomaticInstall" /></not>
       </and>
       <then>
-        <!-- make sure we don't run out of memory or time during installation: -->
-        <php expression="ini_set('memory_limit', '1G');" />
-        <php expression="ini_set('default_socket_timeout', '600');" />
-
         <!-- download from Apache if not already present in the downloads cache -->
         <if>
           <not><available file="${downloadsdir}/solr-${solr_version}.tgz" /></not>
            <then>
             <mkdir dir="${downloadsdir}" />
-            <httpget url="https://archive.apache.org/dist/solr/solr/${solr_version}/solr-${solr_version}.tgz" dir="${downloadsdir}" />
+            <exec executable="php" checkreturn="true" passthru="true">
+              <arg line="${srcdir}/public/index.php util/download https://archive.apache.org/dist/solr/solr/${solr_version}/solr-${solr_version}.tgz ${downloadsdir}/solr-${solr_version}.tgz" />
+              <env key="VUFIND_HOME" value="${srcdir}" />
+              <env key="VUFIND_LOCAL_DIR" value="${localdir}" />
+            </exec>
           </then>
         </if>
         <!-- unpack the archive into solr/vendor -->
@@ -864,19 +895,23 @@ return [
         <if>
           <equals arg1="${psql_needs_sudo}" arg2="false" />
           <then>
+            <!-- do not use ON_ERROR_STOP here, since the pre-commands may include "already exists" errors we can safely ignore -->
             <exec executable="psql" passthru="true" checkreturn="true">
               <arg line="-f ${pgsqldatabaseprecommands} ${pgsqlrootuser}" />
             </exec>
+            <!-- use ON_ERROR_STOP to detect syntax errors in pgsql.sql -->
             <exec executable="psql" passthru="true" checkreturn="true">
-              <arg line="-f ${pgsqldatabasemainpostcommands} --dbname=${vufinddb}" />
+              <arg line="-f ${pgsqldatabasemainpostcommands} -v ON_ERROR_STOP=1 --dbname=${vufinddb}" />
             </exec>
           </then>
           <else>
+            <!-- do not use ON_ERROR_STOP here, since the pre-commands may include "already exists" errors we can safely ignore -->
             <exec executable="sudo" checkreturn="true">
               <arg line="su -c &quot;psql -f ${pgsqldatabaseprecommands}&quot; ${pgsqlrootuser}" />
             </exec>
+            <!-- use ON_ERROR_STOP to detect syntax errors in pgsql.sql -->
             <exec executable="sudo" checkreturn="true">
-              <arg line="su -c &quot;psql -f ${pgsqldatabasemainpostcommands} --dbname=${vufinddb}&quot; ${pgsqlrootuser}" />
+              <arg line="su -c &quot;psql -f ${pgsqldatabasemainpostcommands}  -v ON_ERROR_STOP=1 --dbname=${vufinddb}&quot; ${pgsqlrootuser}" />
             </exec>
           </else>
         </if>

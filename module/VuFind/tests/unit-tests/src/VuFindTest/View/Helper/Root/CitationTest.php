@@ -51,7 +51,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
      * @var array
      */
     protected $citations = [
-        // @codingStandardsIgnoreStart
+        // phpcs:disable
         [
             'raw' => [
                 'SecondaryAuthors' => ['Shafer, Kathleen Newton'],
@@ -358,7 +358,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
             'mla' => 'One, Person. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19-21, https://doi.org/testDOI.',
             'chicago' => 'One, Person. &quot;Test Article.&quot; <i>Test Journal</i> 1, no. 7 (1999): 19-21. https://doi.org/testDOI.',
         ],
-        // @codingStandardsIgnoreEnd
+        // phpcs:enable
     ];
 
     /**

@@ -4,6 +4,16 @@
     'biblio' => $this->translate('Bibliographic Index'),
     'authority' => $this->translate('Authority Index'),
   ];
+  $escapeAndFormatDate = function ($date) {
+    if (empty($date)) {
+      return '-';
+    }
+    // Sometimes the milliseconds are missing; add them so DATE_RFC3339_EXTENDED doesn't complain:
+    if (!preg_match('/\.\d+Z$/', $date)) {
+      $date = str_replace('Z', '.000Z', $date);
+    }
+    return $this->escapeHtml($this->dateTime()->convertToDisplayDateAndTime(DATE_RFC3339_EXTENDED, $date));
+  };
 ?>
 <div class="<?=$this->layoutClass('mainbody')?>">
   <?=$this->component('page-title', ['title' => $this->translate('VuFind Administration'), 'headTitle' => $this->translate('VuFind Administration - Home')]);?>
@@ -31,23 +41,15 @@
           <th><?=$this->transEsc('Start Time')?>: </th>
           <?php $startTime = $core->xpath('//lst[@name="' . $coreName . '"]/date[@name="startTime"]') ?>
           <td>
-            <?php $startTime = (string)array_pop($startTime); ?>
-            <?=!empty($startTime)
-              ? $this->escapeHtml($this->dateTime()->convertToDisplayDateAndTime(DATE_RFC3339_EXTENDED, $startTime))
-              : '-'
-            ?>
+            <?=$escapeAndFormatDate((string)array_pop($startTime))?>
           </td>
         </tr>
         <tr>
           <th><?=$this->transEsc('Last Modified')?>: </th>
           <?php $lastModified = $core->xpath('//lst[@name="' . $coreName . '"]/lst/date[@name="lastModified"]') ?>
           <td>
-            <?php $lastModified = (string)array_pop($lastModified); ?>
-            <?=!empty($lastModified)
-              ? $this->escapeHtml($this->dateTime()->convertToDisplayDateAndTime(DATE_RFC3339_EXTENDED, $lastModified))
-              : '-'
-            ?>
-            </td>
+            <?=$escapeAndFormatDate((string)array_pop($lastModified))?>
+          </td>
         </tr>
         <tr>
           <th><?=$this->transEsc('Uptime')?>: </th>

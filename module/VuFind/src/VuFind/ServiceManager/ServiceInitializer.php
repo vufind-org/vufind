@@ -90,7 +90,7 @@ class ServiceInitializer implements InitializerInterface
                 $sm->get(\VuFind\Db\Service\PluginManager::class)
             );
         }
-        if ($instance instanceof \Laminas\Log\LoggerAwareInterface) {
+        if ($instance instanceof \Psr\Log\LoggerAwareInterface) {
             $instance->setLogger($sm->get(\VuFind\Log\Logger::class));
         }
         if ($instance instanceof \VuFind\I18n\Translator\TranslatorAwareInterface) {
@@ -98,6 +98,9 @@ class ServiceInitializer implements InitializerInterface
         }
         if ($instance instanceof \VuFindHttp\HttpServiceAwareInterface) {
             $instance->setHttpService($sm->get(\VuFindHttp\HttpService::class));
+        }
+        if ($instance instanceof \VuFind\Http\GuzzleServiceAwareInterface) {
+            $instance->setGuzzleService($sm->get(\VuFind\Http\GuzzleService::class));
         }
         if ($instance instanceof AuthorizationServiceAwareInterface) {
             $instance->setAuthorizationService($sm->get(AuthorizationService::class));

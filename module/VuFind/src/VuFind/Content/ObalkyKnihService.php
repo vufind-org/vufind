@@ -42,7 +42,7 @@ use function count;
  */
 class ObalkyKnihService implements
     \VuFindHttp\HttpServiceAwareInterface,
-    \Laminas\Log\LoggerAwareInterface
+    \Psr\Log\LoggerAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\Cache\CacheTrait;

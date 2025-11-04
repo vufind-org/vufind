@@ -74,10 +74,10 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $conn = $this->getConnectorMock(['search', 'show', 'stat']);
         $conn->expects($this->once())
             ->method('search')
-            ->will($this->returnValue($this->loadResponse('pp2search')));
+            ->willReturn($this->loadResponse('pp2search'));
         $conn->expects($this->once())
             ->method('show')
-            ->will($this->returnValue($this->loadResponse('pp2show')));
+            ->willReturn($this->loadResponse('pp2show'));
         $conn->expects($this->exactly(2))
             ->method('stat')
             ->willReturnOnConsecutiveCalls(

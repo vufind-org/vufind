@@ -106,8 +106,8 @@ class SessionServiceTest extends \PHPUnit\Framework\TestCase
             ->willReturn($queryBuilder);
         $query = $this->getMockBuilder(\Doctrine\ORM\AbstractQuery::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['getResult'])
-            ->getMockForAbstractClass();
+            ->onlyMethods(['getResult', 'getSQL', '_doExecute'])
+            ->getMock();
         $query->expects($this->once())->method('getResult')
             ->willReturn($result);
         $queryBuilder->expects($this->once())->method('getQuery')
@@ -294,8 +294,8 @@ class SessionServiceTest extends \PHPUnit\Framework\TestCase
             ->willReturn($queryBuilder);
         $query = $this->getMockBuilder(\Doctrine\ORM\AbstractQuery::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['execute'])
-            ->getMockForAbstractClass();
+            ->onlyMethods(['execute', 'getSQL', '_doExecute'])
+            ->getMock();
         $query->expects($this->once())->method('execute')
             ->willReturn($this->anything());
         $queryBuilder->expects($this->once())->method('getQuery')

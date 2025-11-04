@@ -66,9 +66,8 @@ class CurrencyFormatter
      */
     public function __construct($defaultCurrency = null, $locale = null)
     {
-        // Initialize number formatter:
-        $locale ??= setlocale(LC_MONETARY, '');
-        $this->formatter = new NumberFormatter($locale, NumberFormatter::CURRENCY);
+        // Initialize number formatter (an empty string makes NumberFormatter use the default locale):
+        $this->formatter = new NumberFormatter($locale ?? '', NumberFormatter::CURRENCY);
 
         // Initialize default currency:
         if (null === $defaultCurrency) {
