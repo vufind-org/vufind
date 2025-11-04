@@ -40,6 +40,7 @@ use VuFind\ILS\Connection;
 
 use function array_key_exists;
 use function count;
+use function in_array;
 
 /**
  * Account menu
@@ -126,7 +127,7 @@ class AccountMenu extends AbstractMenu
             if (count($diff) === 2) {
                 // Setting is one of the three. If one of the two other settings
                 // exists then this setting is optional.
-                return !(count(array_intersect($diff, array_keys($context))) > 0);
+                return count(array_intersect($diff, array_keys($context))) === 0;
             }
             if ($setting === 'label' && array_key_exists('template', $context)) {
                 // Label is not required when a template setting exists.
@@ -438,9 +439,15 @@ class AccountMenu extends AbstractMenu
      */
     protected function checkUserContent(): bool
     {
-        return ('enabled' === $this->accountCapabilities->getCommentSetting())
-            || ('enabled' === $this->accountCapabilities->getRatingSetting())
-            || ('enabled' === $this->accountCapabilities->getTagSetting());
+        return in_array(
+            'enabled',
+            [
+                $this->accountCapabilities->getCommentSetting(),
+                $this->accountCapabilities->getRatingSetting(),
+                $this->accountCapabilities->getTagSetting(),
+            ],
+            true
+        );
     }
 
     /**

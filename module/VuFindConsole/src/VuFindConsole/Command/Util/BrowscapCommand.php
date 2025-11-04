@@ -162,12 +162,12 @@ class BrowscapCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         ini_set('memory_limit', '1024M');
         if ($input->getArgument('function') !== 'update') {
             $output->writeln('<error>Invalid function specified</error>');
-            return Command::FAILURE;
+            return self::FAILURE;
         }
         switch ($input->getOption('file-type')) {
             case 'full':
@@ -181,7 +181,7 @@ class BrowscapCommand extends Command
                 break;
             default:
                 $output->writeln('<error>Invalid file-type specified</error>');
-                return Command::FAILURE;
+                return self::FAILURE;
         }
 
         $browscapCache = $this->cacheManager->getCache('browscap');
@@ -195,7 +195,7 @@ class BrowscapCommand extends Command
             $bc->checkUpdate();
         } catch (\BrowscapPHP\Exception\NoNewVersionException $e) {
             $logger->info('No newer version available.');
-            return Command::SUCCESS;
+            return self::SUCCESS;
         } catch (\BrowscapPHP\Exception\NoCachedVersionException $e) {
             $logger->info('No cached version available.');
         } catch (\Exception $e) {
@@ -208,6 +208,6 @@ class BrowscapCommand extends Command
 
         $this->checkCachePermissions($logger, $browscapCache);
 
-        return Command::SUCCESS;
+        return self::SUCCESS;
     }
 }
