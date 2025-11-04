@@ -17,14 +17,14 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Related_Records
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_a_related_record_module Wiki
+ * @link     https://vufind.org/wiki/development:plugins:related_records_modules Wiki
  */
 
 namespace Finna\Related;
@@ -36,7 +36,7 @@ namespace Finna\Related;
  * @package  Related_Records
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:building_a_related_record_module Wiki
+ * @link     https://vufind.org/wiki/development:plugins:related_records_modules Wiki
  */
 class Nothing implements \VuFind\Related\RelatedInterface
 {
