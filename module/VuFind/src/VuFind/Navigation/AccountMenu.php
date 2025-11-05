@@ -38,6 +38,8 @@ use VuFind\DigitalContent\OverdriveConnector;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Connection;
 
+use function in_array;
+
 /**
  * Account menu
  *
@@ -366,9 +368,15 @@ class AccountMenu extends AbstractMenu
      */
     protected function checkUserContent(): bool
     {
-        return ('enabled' === $this->accountCapabilities->getCommentSetting())
-            || ('enabled' === $this->accountCapabilities->getRatingSetting())
-            || ('enabled' === $this->accountCapabilities->getTagSetting());
+        return in_array(
+            'enabled',
+            [
+                $this->accountCapabilities->getCommentSetting(),
+                $this->accountCapabilities->getRatingSetting(),
+                $this->accountCapabilities->getTagSetting(),
+            ],
+            true
+        );
     }
 
     /**

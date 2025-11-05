@@ -683,7 +683,7 @@ $config = [
                 'class' => \Doctrine\ORM\Mapping\Driver\AttributeDriver::class,
                 'cache' => $doctrineCacheType,
                 'paths' => [
-                    'module/VuFind/src/VuFind/Db/Entity',
+                    __DIR__ . '/../src/VuFind/Db/Entity',
                 ],
             ],
             'orm_default' => [

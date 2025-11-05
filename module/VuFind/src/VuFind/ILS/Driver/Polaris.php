@@ -31,6 +31,7 @@ namespace VuFind\ILS\Driver;
 use VuFind\Exception\ILS as ILSException;
 
 use function count;
+use function in_array;
 use function intval;
 use function strlen;
 
@@ -286,15 +287,10 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             //$holdings_response = $holdings_response_array[0];
             $copy_count++;
 
-            $availability = 0;
-            if (
-                ($holdings_response->CircStatus == 'In')
-                || ($holdings_response->CircStatus == 'Just Returned')
-                || ($holdings_response->CircStatus == 'On Shelf')
-                || ($holdings_response->CircStatus == 'Available - Check shelves')
-            ) {
-                $availability = 1;
-            }
+            $availability = in_array(
+                $holdings_response->CircStatus,
+                ['In', 'Just Returned', 'On Shelf', 'Available - Check shelves']
+            ) ? 1 : 0;
 
             $duedate = '';
             if ($holdings_response->DueDate) {

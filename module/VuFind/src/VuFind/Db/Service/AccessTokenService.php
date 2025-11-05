@@ -31,7 +31,7 @@ namespace VuFind\Db\Service;
 
 use DateTime;
 use VuFind\Db\Entity\AccessTokenEntityInterface;
-use VuFind\Db\Entity\User;
+use VuFind\Db\Entity\UserEntityInterface;
 
 /**
  * Database service for access tokens.
@@ -101,7 +101,7 @@ class AccessTokenService extends AbstractDbService implements
     {
         $type = 'openid_nonce';
         $token = $this->getByIdAndType((string)$userId, $type);
-        $token->setUser($this->entityManager->getReference(User::class, $userId));
+        $token->setUser($this->getDoctrineReference(UserEntityInterface::class, $userId));
         $token->setData($nonce);
         $this->persistEntity($token);
     }

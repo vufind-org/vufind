@@ -134,7 +134,7 @@ class EDS extends DefaultRecord
     public function pubTypeRtacEnabled()
     {
         $pubTypeId = $this->fields['Header']['PubTypeId'];
-        return !($pubTypeId === 'ebook');
+        return $pubTypeId !== 'ebook';
     }
 
     /**
