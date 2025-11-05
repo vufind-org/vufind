@@ -73,7 +73,7 @@ class Demo implements IdentifierLinkerInterface
                         'label' => 'Demonstrating ' . strtoupper($type) . " link for $id with icon "
                             . ($icon ?? '[null]'),
                         'localIcon' => $icon,
-                        'linkType' => rand(0, 1) ? 'foo' : 'bar',
+                        'linkType' => rand(0, 1) ? 'foo-link-type' : 'bar-link-type',
                     ];
                 }
             }
