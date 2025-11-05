@@ -280,7 +280,7 @@ class RateLimiterManager implements LoggerAwareInterface, TranslatorAwareInterfa
         $isCrawler = null;
         foreach ($this->config['Policies'] ?? [] as $name => $settings) {
             if (null !== ($loggedIn = $settings['loggedIn'] ?? null)) {
-                if ($loggedIn !== ($this->userId ? true : false)) {
+                if ($loggedIn !== ((bool)$this->userId)) {
                     continue;
                 }
             }
