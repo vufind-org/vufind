@@ -46,7 +46,8 @@ use function constant;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  *
- * @deprecated This integration cannot be maintained due to the abandonment of https://github.com/apereo/phpCAS
+ * @deprecated This integration cannot be maintained due to the abandonment of the apereo/phpCAS library.
+ * Use OpenIDConnect instead if possible.
  */
 class CAS extends AbstractBase
 {
