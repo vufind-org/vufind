@@ -74,20 +74,20 @@ class EntityManagerFactory extends AbstractFactory
         assert($options instanceof DoctrineORMModuleEntityManager);
         $connection = $container->get($options->getConnection());
         $config = $container->get($options->getConfiguration());
+        $entityPluginManager = $container->get(\VuFind\Db\Entity\PluginManager::class);
 
         $entityManager = new EntityManager($connection, $config, $connection->getEventManager());
 
         // Add entity mappings to class metadata factory:
         $metadataFactory = $entityManager->getMetadataFactory();
         if ($metadataFactory instanceof ClassMetadataMappingsInterface) {
-            $pm = $container->get(\VuFind\Db\Entity\PluginManager::class);
-            $metadataFactory->setAliases($pm->getAliases());
+            $metadataFactory->setAliases($entityPluginManager->getAliases());
         }
 
         // Add LoadClassMetadataListener:
         $entityManager->getEventManager()->addEventListener(
             Events::loadClassMetadata,
-            new LoadClassMetadataListener($entityManager, $pm->getAliases())
+            new LoadClassMetadataListener($entityManager, $entityPluginManager->getAliases())
         );
 
         return $entityManager;
