@@ -1997,8 +1997,8 @@ class PAIA extends DAIA
     {
         // TODO: make this more configurable
         return isset($patron['status']) && $patron['status'] == 0
-        && isset($patron['expires']) && $patron['expires'] > date('Y-m-d')
-        && in_array(self::SCOPE_WRITE_ITEMS, $this->getScope());
+            && isset($patron['expires']) && $patron['expires'] > date('Y-m-d')
+            && in_array(self::SCOPE_WRITE_ITEMS, $this->getScope());
     }
 
     /**

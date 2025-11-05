@@ -284,7 +284,7 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
         // check first if OpenURLs are enabled for this RecordDriver
         // check second if OpenURLs are enabled for this context
         // check last if any rules apply
-        return !(!$this->recordDriver->getOpenUrl() || !$this->checkContext() || !$this->checkIfRulesApply());
+        return $this->recordDriver->getOpenUrl() && $this->checkContext() && $this->checkIfRulesApply();
     }
 
     /**

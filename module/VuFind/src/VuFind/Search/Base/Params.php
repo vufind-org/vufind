@@ -1740,8 +1740,7 @@ class Params
     {
         // Extract field and value from URL string:
         [$field, $value] = $this->parseFilter($filter);
-        return isset($this->hiddenFilters[$field])
-        && in_array($value, $this->hiddenFilters[$field]);
+        return in_array($value, $this->hiddenFilters[$field] ?? []);
     }
 
     /**
