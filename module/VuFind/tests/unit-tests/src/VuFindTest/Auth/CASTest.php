@@ -46,18 +46,6 @@ class CASTest extends \PHPUnit\Framework\TestCase
     use \VuFindTest\Feature\ReflectionTrait;
 
     /**
-     * Setup method
-     *
-     * @return void
-     */
-    public function setUp(): void
-    {
-        if (PHP_VERSION_ID >= 80400) {
-            $this->markTestSkipped('PHP-CAS is no longer supported and throws deprecation warnings in PHP 8.4+.');
-        }
-    }
-
-    /**
      * Get an authentication object.
      *
      * @param ?array $config Configuration to use (null for default)
