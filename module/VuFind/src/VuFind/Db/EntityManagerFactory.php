@@ -84,6 +84,12 @@ class EntityManagerFactory extends AbstractFactory
             $metadataFactory->setMappings($pm->getAliases());
         }
 
+        // Add LoadClassMetadataListener:
+        $entityManager->getEventManager()->addEventListener(
+            Events::loadClassMetadata,
+            new LoadClassMetadataListener($entityManager, $pm->getAliases())
+        );
+
         return $entityManager;
     }
 
