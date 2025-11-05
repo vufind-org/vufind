@@ -274,17 +274,11 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
         if ($this->useQuery) {
             $queryObject = $this->results->getParams()->getQuery();
             $query = is_callable([$queryObject, 'getString'])
-                ? strtolower($queryObject->getString())
+                ? $this->normalizeQueryString($queryObject->getString())
                 : '';
-            if ($this->useQueryReplacePattern) {
-                $query = preg_replace($this->useQueryReplacePattern, '', $query);
-            }
             if (strlen($query) >= $this->useQueryMinLength) {
                 foreach ($nameToDatabase as $name => $databaseInfo) {
-                    $name = strtolower($name);
-                    if ($this->useQueryReplacePattern) {
-                        $name = preg_replace($this->useQueryReplacePattern, '', $name);
-                    }
+                    $name = $this->normalizeQueryString($name);
                     if (str_contains($name, $query)) {
                         $databases[$databaseInfo['url']] = $databaseInfo;
                     }
@@ -313,6 +307,23 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
         }
 
         return $databases;
+    }
+
+    /**
+     * Normalize a query string or database name for comparison with each other.
+     * Force to lower case, and remove any characters specified by a regex.
+     *
+     * @param string $str The query string or database name
+     *
+     * @return string The normalized string
+     */
+    protected function normalizeQueryString(string $str): string
+    {
+        $str = strtolower($str);
+        if ($this->useQueryReplacePattern) {
+            $str = preg_replace($this->useQueryReplacePattern, '', $str);
+        }
+        return $str;
     }
 
     /**
