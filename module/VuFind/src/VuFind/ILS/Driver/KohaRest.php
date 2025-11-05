@@ -1406,8 +1406,12 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                     );
                 }
                 if ($result && $result['code'] >= 300) {
-                    $results[$requestId]['status']
-                        = $result['data']['error'] ?? 'hold_error_update_failed';
+                    if (!empty($result['data']['error'])) {
+                        $results[$requestId]['status']
+                            = ($this->config['Catalog']['translationPrefix'] ?? '') . $result['data']['error'];
+                    } else {
+                        $results[$requestId]['status'] = 'hold_error_update_failed';
+                    }
                 }
             }
             if (empty($results[$requestId]['errors'])) {
@@ -1656,8 +1660,12 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         );
 
         if ($result['code'] >= 300) {
-            $message = $result['data']['error']
-                ?? 'storage_retrieval_request_error_fail';
+            if (!empty($result['data']['error'])) {
+                $message = ($this->config['Catalog']['translationPrefix'] ?? '')
+                    . $result['data']['error'];
+            } else {
+                $message = 'storage_retrieval_request_error_fail';
+            }
             return [
                 'success' => false,
                 'sysMessage' => $message,
@@ -1920,9 +1928,14 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             ]
         );
         if ($result['code'] >= 300) {
+            if (!empty($result['data']['error'])) {
+                $msg = ($this->config['Catalog']['translationPrefix'] ?? '') . $result['data']['error'];
+            } else {
+                $msg = $result['code'];
+            }
             return [
                 'success' => false,
-                'error' => $result['data']['error'] ?? $result['code'],
+                'error' => $msg,
             ];
         }
         return [
@@ -2413,7 +2426,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                     } else {
                         $parts = explode('::', $code, 2);
                         if (isset($parts[1])) {
-                            $statuses[] = $parts[1];
+                            $statuses[] = ($this->config['Catalog']['translationPrefix'] ?? '') . $parts[1];
                         }
                     }
                 }
@@ -2479,7 +2492,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         // Replace ':' in status key if used as status since ':' is
         // the namespace separator in translatable strings:
         return $this->itemStatusMappings[$statusKey]
-            ?? $data['code'] ?? str_replace(':', '_', $statusKey);
+            ?? $data['code']
+            ?? ($this->config['Catalog']['translationPrefix'] ?? '') . str_replace(':', '_', $statusKey);
     }
 
     /**
