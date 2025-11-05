@@ -115,7 +115,7 @@ class Backend extends AbstractBackend
      */
     public function retrieve($id, ?ParamBag $params = null)
     {
-        $response   = $this->connector->getRecord($id, $params);
+        $response   = $this->connector->getRecord($id);
         $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
         return $collection;
