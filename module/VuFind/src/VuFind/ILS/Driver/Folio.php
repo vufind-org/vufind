@@ -402,7 +402,8 @@ class Folio extends AbstractAPI implements
                 $this->checkTenantToken();
             }
         } catch (\Exception $e) {
-            // Errors in init() should not be fatal, it could prevent using EDS when FOLIO fails
+            // Errors in init() should not be fatal,
+            // it could prevent using other configured search handlers when FOLIO fails
             $this->token = $this->tokenExpiration = null;
             $this->logError('Failed to get a token to initialize the FOLIO driver: ' . $e->getMessage());
         }
