@@ -31,7 +31,6 @@ namespace VuFind\Db\Service;
 
 use DateTime;
 use VuFind\Db\Entity\AccessTokenEntityInterface;
-use VuFind\Db\Entity\User;
 use VuFind\Db\Entity\UserEntityInterface;
 
 /**
