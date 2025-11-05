@@ -107,7 +107,7 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
 
     /**
      * When using the query string as a match point, the query string and
-     * database names will first be normalize by removing the characters
+     * database names will first be normalized by removing the characters
      * in this regular expression.
      *
      * @var string
