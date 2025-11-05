@@ -46,7 +46,6 @@
     "require": {
         "php": ">=8.2",
         "ahand/mobileesp": "dev-master",
-        "apereo/phpcas": "1.6.1",
         "browscap/browscap-php": "^7.2",
         "cap60552/php-sip2": "1.0.0",
         "colinmollenhour/credis": "1.17.0",
@@ -135,6 +134,9 @@
         "pietercolpaert/hardf": "0.5.0",
         "rector/rector": "2.2.6",
         "squizlabs/php_codesniffer": "4.0.0"
+    },
+    "suggest": {
+        "apereo/phpcas": "Allows CAS authentication to be used. Note that this functionality is deprecated."
     },
     "extra": {
         "merge-plugin": {

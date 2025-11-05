@@ -95,7 +95,7 @@ class UserListService extends AbstractDbService implements
      */
     public function getUserListById(int $id): UserListEntityInterface
     {
-        $result = $this->getEntityById(\VuFind\Db\Entity\UserList::class, $id);
+        $result = $this->getEntityById(\VuFind\Db\Entity\UserListEntityInterface::class, $id);
         if (empty($result)) {
             throw new RecordMissingException('Cannot load list ' . $id);
         }
