@@ -52,7 +52,7 @@ class ParamsFactory extends \VuFind\Search\Params\ParamsFactory
      *
      * @var string
      */
-    protected $configIni = 'Blender';
+    protected $blenderIni = 'Blender';
 
     /**
      * Configuration file to read Blender mappings settings from
@@ -61,7 +61,7 @@ class ParamsFactory extends \VuFind\Search\Params\ParamsFactory
      *
      * @var string
      */
-    protected $mappingsConfigYaml = 'BlenderMappings';
+    protected $blenderMappingsYaml = 'BlenderMappings';
 
     /**
      * Create an object
@@ -86,11 +86,11 @@ class ParamsFactory extends \VuFind\Search\Params\ParamsFactory
             throw new \Exception('Unexpected options passed to factory.');
         }
         $blenderConfig = $container->get(\VuFind\Config\ConfigManagerInterface::class)
-            ->getConfigObject($this->configIni);
+            ->getConfigObject($this->blenderIni);
         $backendConfig = $blenderConfig->Backends
             ? $blenderConfig->Backends->toArray() : [];
         if (!$backendConfig) {
-            throw new \Exception('No backends enabled in ' . $this->configIni . '.ini');
+            throw new \Exception('No backends enabled in ' . $this->blenderIni . '.ini');
         }
 
         $facetHelper
@@ -103,7 +103,7 @@ class ParamsFactory extends \VuFind\Search\Params\ParamsFactory
         }
 
         $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
-        $blenderMappings = $yamlReader->get($this->mappingsConfigYaml . '.yaml');
+        $blenderMappings = $yamlReader->get($this->blenderMappingsYaml . '.yaml');
         return parent::__invoke(
             $container,
             $requestedName,
