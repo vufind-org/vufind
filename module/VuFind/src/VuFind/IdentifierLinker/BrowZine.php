@@ -98,7 +98,7 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
      * @param string $serviceKey Key being extracted from response
      * @param array  $config     Service-specific configuration settings
      *
-     * @return array{link: string, label: string, data: array, localIcon: ?string, icon: ?string}
+     * @return array{link: string, label: string, data: array, localIcon: ?string, icon: ?string, linkType: ?string}
      */
     protected function processServiceLink(array $data, string $serviceKey, array $config): array
     {
@@ -113,7 +113,7 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
         if ('bestIntegratorLink' == $serviceKey) {
             $result['link'] = $serviceData['bestLink'] ?? $result['link'];
 
-            $linkType = $serviceData['linkType'] ?? false;
+            $linkType = $serviceData['linkType'] ?? null;
             $specificConfig = $this->getBestIntegratorLinks()[$linkType] ?? false;
             if ($specificConfig) {
                 $config = $specificConfig;
