@@ -113,7 +113,7 @@ class ThemeCommand extends Command
         if (empty($target)) {
             $target = "{$source}_compiled";
         }
-        $force = $input->getOption('force') ? true : false;
+        $force = (bool)$input->getOption('force');
         if (!$this->compiler->compile($source, $target, $force)) {
             $output->writeln($this->compiler->getLastError());
             return self::FAILURE;

@@ -1576,7 +1576,7 @@ class PAIA extends DAIA
             }
 
             // status: provided (the document is ready to be used by the patron)
-            $result['available'] = $doc['status'] == 4 ? true : false;
+            $result['available'] = $doc['status'] == 4;
 
             $results[] = $result;
         }

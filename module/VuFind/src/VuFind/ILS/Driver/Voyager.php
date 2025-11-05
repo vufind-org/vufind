@@ -1732,7 +1732,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      */
     protected function processMyHoldsData($sqlRow)
     {
-        $available = ($sqlRow['HOLD_RECALL_STATUS'] == 2) ? true : false;
+        $available = $sqlRow['HOLD_RECALL_STATUS'] == 2;
         $expireDate = $this->translate('Unknown');
         // Convert Voyager Format to display format
         if (!empty($sqlRow['EXPIRE_DATE'])) {
@@ -1925,7 +1925,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log
      */
     protected function processMyStorageRetrievalRequestsData($sqlRow)
     {
-        $available = ($sqlRow['STATUS'] == 4) ? true : false;
+        $available = $sqlRow['STATUS'] == 4;
         $expireDate = '';
         $processedDate = '';
         $statusDate = '';
