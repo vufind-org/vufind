@@ -106,7 +106,10 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
      */
     protected function filterRequiresFacetOperator($field)
     {
-        return !(str_starts_with($field, 'LIMIT') || str_starts_with($field, 'EXPAND') || str_starts_with($field, 'SEARCHMODE') || str_starts_with($field, 'PublicationDate'));
+        return !(str_starts_with($field, 'LIMIT')
+            || str_starts_with($field, 'EXPAND')
+            || str_starts_with($field, 'SEARCHMODE')
+            || str_starts_with($field, 'PublicationDate'));
     }
 
     /**

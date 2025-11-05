@@ -2551,7 +2551,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         if (isset($unavail['ArticleRequest::NotAllowed'])) {
             return false;
         }
-        return !(empty($this->config['StorageRetrievalRequests']['allow_checked_out']) && isset($unavail['Item::CheckedOut']));
+        return !(empty($this->config['StorageRetrievalRequests']['allow_checked_out'])
+            && isset($unavail['Item::CheckedOut']));
     }
 
     /**

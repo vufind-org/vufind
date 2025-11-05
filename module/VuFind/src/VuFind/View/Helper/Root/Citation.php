@@ -550,7 +550,7 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
         // Is it a roman numeral?  (This check could be smarter, but it's probably
         // good enough as it is).
         // If we got this far, it's not a suffix.
-        return (bool) preg_match('/^[MDCLXVI]+$/', $str);
+        return (bool)preg_match('/^[MDCLXVI]+$/', $str);
     }
 
     /**

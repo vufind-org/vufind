@@ -93,6 +93,7 @@ class ClientRepository implements ClientRepositoryInterface
         if (!($config = $this->oauth2Config['Clients'][$clientIdentifier] ?? null)) {
             return false;
         }
-        return !(($config['isConfidential'] ?? false) && (empty($config['secret']) || !password_verify($clientSecret ?? '', $config['secret'])));
+        return !(($config['isConfidential'] ?? false)
+            && (empty($config['secret']) || !password_verify($clientSecret ?? '', $config['secret'])));
     }
 }
