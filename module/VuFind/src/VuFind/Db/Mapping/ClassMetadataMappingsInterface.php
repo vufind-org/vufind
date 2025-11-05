@@ -41,21 +41,21 @@ namespace VuFind\Db\Mapping;
 interface ClassMetadataMappingsInterface
 {
     /**
-     * Add a mapping.
+     * Add an alias.
      *
      * @param string $alias  Name to be mapped.
      * @param string $target Target name.
      *
      * @return void
      */
-    public function addMapping(string $alias, string $target): void;
+    public function addAlias(string $alias, string $target): void;
 
     /**
-     * Set all mappings.
+     * Set all aliases.
      *
-     * @param array $mappings Mappings with names to map as keys and targets as values.
+     * @param array $aliases Aliases with names to map as keys and targets as values.
      *
      * @return void
      */
-    public function setMappings(array $mappings): void;
+    public function setAliases(array $aliases): void;
 }

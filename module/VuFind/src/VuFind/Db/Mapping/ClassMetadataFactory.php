@@ -43,35 +43,35 @@ use Doctrine\Persistence\Mapping\ClassMetadata;
 class ClassMetadataFactory extends \Doctrine\ORM\Mapping\ClassMetadataFactory implements ClassMetadataMappingsInterface
 {
     /**
-     * Mappings for entity classes or interfaces
+     * Alias mappings.
      *
      * @var array
      */
-    protected array $mappings = [];
+    protected array $aliases = [];
 
     /**
-     * Add a mapping.
+     * Add an alias.
      *
      * @param string $alias  Name to be mapped.
      * @param string $target Target name.
      *
      * @return void
      */
-    public function addMapping(string $alias, string $target): void
+    public function addAlias(string $alias, string $target): void
     {
-        $this->mappings[$alias] = $target;
+        $this->aliases[$alias] = $target;
     }
 
     /**
-     * Set all mappings.
+     * Set all aliases.
      *
-     * @param array $mappings Mappings with names to map as keys and targets as values.
+     * @param array $aliases Aliases with names to map as keys and targets as values.
      *
      * @return void
      */
-    public function setMappings(array $mappings): void
+    public function setAliases(array $aliases): void
     {
-        $this->mappings = $mappings;
+        $this->aliases = $aliases;
     }
 
     /**
@@ -86,7 +86,7 @@ class ClassMetadataFactory extends \Doctrine\ORM\Mapping\ClassMetadataFactory im
      */
     public function getMetadataFor(string $className)
     {
-        return parent::getMetadataFor($this->mapClassName($className));
+        return parent::getMetadataFor($this->resolveClassName($className));
     }
 
     /**
@@ -98,7 +98,7 @@ class ClassMetadataFactory extends \Doctrine\ORM\Mapping\ClassMetadataFactory im
      */
     public function hasMetadataFor(string $className)
     {
-        return parent::hasMetadataFor($this->mapClassName($className));
+        return parent::hasMetadataFor($this->resolveClassName($className));
     }
 
     /**
@@ -113,7 +113,39 @@ class ClassMetadataFactory extends \Doctrine\ORM\Mapping\ClassMetadataFactory im
      */
     public function setMetadataFor(string $className, ClassMetadata $class)
     {
-        parent::setMetadataFor($this->mapClassName($className), $class);
+        parent::setMetadataFor($this->resolveClassName($className), $class);
+    }
+
+    /**
+     * Actually loads the metadata from the underlying metadata.
+     *
+     * @param ClassMetadata  $class                Class
+     * @param ?ClassMetadata $parent               Parent class
+     * @param bool           $rootEntityFound      True when there is another entity (non-mapped superclass) class above
+     * the current class in the PHP class hierarchy.
+     * @param array          $nonSuperclassParents All parent class names that are not marked as mapped superclasses,
+     * with the direct parent class being the first and the root entity class the last element.
+     *
+     * @return void
+     */
+    protected function doLoadMetadata(
+        $class,
+        $parent,
+        $rootEntityFound,
+        array $nonSuperclassParents
+    ) {
+        parent::doLoadMetadata($class, $parent, $rootEntityFound, $nonSuperclassParents);
+
+        foreach ($class->associationMappings as &$mapping) {
+            $mapping['targetEntity'] = $this->resolveClassName($mapping['targetEntity']);
+        }
+        unset($mapping);
+        // VuFind doesn't use single table inheritance that would require discriminator mapping, but we handle this here
+        // anyway for the sake of completeness:
+        foreach ($class->discriminatorMap as &$mapping) {
+            $mapping = $this->resolveClassName($mapping);
+        }
+        unset($mapping);
     }
 
     /**
@@ -123,8 +155,8 @@ class ClassMetadataFactory extends \Doctrine\ORM\Mapping\ClassMetadataFactory im
      *
      * @return string
      */
-    protected function mapClassName(string $className): string
+    protected function resolveClassName(string $className): string
     {
-        return $this->mappings[$className] ?? $className;
+        return $this->aliases[$className] ?? $className;
     }
 }

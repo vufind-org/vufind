@@ -81,7 +81,7 @@ class EntityManagerFactory extends AbstractFactory
         $metadataFactory = $entityManager->getMetadataFactory();
         if ($metadataFactory instanceof ClassMetadataMappingsInterface) {
             $pm = $container->get(\VuFind\Db\Entity\PluginManager::class);
-            $metadataFactory->setMappings($pm->getAliases());
+            $metadataFactory->setAliases($pm->getAliases());
         }
 
         // Add LoadClassMetadataListener:
