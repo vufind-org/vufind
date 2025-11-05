@@ -1,7 +1,7 @@
 <?php $baseLinkAttrs = ['class' => 'icon-link', 'rel' => 'noreferrer'] + (($newWindow ?? false) ? ['target' => '_blank'] : []); ?>
 <?php foreach ($data ?? [] as $link): ?>
     <div class="identifierLink" 
-        <?php if (isset($link['linkType'])): ?>data-link-type="<?=$link['linkType']?>" <?php endif; ?>
+        <?php if (isset($link['linkType'])): ?>data-link-type="<?=$this->escapeHtmlAttr($link['linkType'])?>" <?php endif; ?>
     >
         <a<?=$this->htmlAttributes($baseLinkAttrs + ['href' => $link['link']])?>>
             <?php if (isset($link['icon'])): ?>
