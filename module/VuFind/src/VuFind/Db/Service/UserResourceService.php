@@ -122,8 +122,7 @@ class UserResourceService extends AbstractDbService implements
             . 'COUNT(u.id) AS total '
             . 'FROM ' . UserResourceEntityInterface::class . ' u';
         $query = $this->entityManager->createQuery($dql);
-        $stats = current($query->getResult());
-        return $stats;
+        return $query->getSingleResult();
     }
 
     /**
@@ -146,8 +145,8 @@ class UserResourceService extends AbstractDbService implements
         $user = $this->getDoctrineReference(UserEntityInterface::class, $userOrId);
         $list = $this->getDoctrineReference(UserListEntityInterface::class, $listOrId);
         $params = compact('resource', 'list', 'user');
-        $result = current($this->entityManager->getRepository(UserResourceEntityInterface::class)
-            ->findBy($params));
+        $result = $this->entityManager->getRepository(UserResourceEntityInterface::class)
+            ->findOneBy($params);
 
         if (empty($result)) {
             $result = $this->createEntity()
