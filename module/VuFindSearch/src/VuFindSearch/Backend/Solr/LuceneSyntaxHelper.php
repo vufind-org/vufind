@@ -174,13 +174,8 @@ class LuceneSyntaxHelper
         ) {
             return true;
         }
-
         // Check for boosts:
-        if (preg_match('/[\^][0-9]+/', $searchString)) {
-            return true;
-        }
-
-        return false;
+        return (bool) preg_match('/[\^][0-9]+/', $searchString);
     }
 
     /**

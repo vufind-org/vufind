@@ -1996,14 +1996,9 @@ class PAIA extends DAIA
     public function checkRequestIsValid($id, $data, $patron)
     {
         // TODO: make this more configurable
-        if (
-            isset($patron['status']) && $patron['status'] == 0
-            && isset($patron['expires']) && $patron['expires'] > date('Y-m-d')
-            && in_array(self::SCOPE_WRITE_ITEMS, $this->getScope())
-        ) {
-            return true;
-        }
-        return false;
+        return isset($patron['status']) && $patron['status'] == 0
+        && isset($patron['expires']) && $patron['expires'] > date('Y-m-d')
+        && in_array(self::SCOPE_WRITE_ITEMS, $this->getScope());
     }
 
     /**

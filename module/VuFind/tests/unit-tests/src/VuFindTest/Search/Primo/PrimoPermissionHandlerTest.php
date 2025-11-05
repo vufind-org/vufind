@@ -903,10 +903,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      */
     public function handlerMemberAuthNotSuccessfullCallback($param): bool
     {
-        if ($param == 'primo.MEMBER') {
-            return false;
-        }
-        return false;
+        return $param != 'primo.MEMBER';
     }
 
     /**
@@ -919,10 +916,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      */
     public function handlerMemberAuthSuccessfullCallback($param): bool
     {
-        if ($param == 'primo.MEMBER') {
-            return true;
-        }
-        return false;
+        return $param == 'primo.MEMBER';
     }
 
     /**
@@ -935,10 +929,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      */
     public function handlerDefaultAuthSuccessfullCallback($param): bool
     {
-        if ($param == 'primo.defaultRule') {
-            return true;
-        }
-        return false;
+        return $param == 'primo.defaultRule';
     }
 
     /**
@@ -951,10 +942,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
      */
     public function handlerDefaultAuthNotSuccessfullCallback($param): bool
     {
-        if ($param == 'primo.defaultRule') {
-            return false;
-        }
-        return false;
+        return $param != 'primo.defaultRule';
     }
 
     /**
@@ -973,10 +961,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
         if ($param == 'primo.isAtMEMBER') {
             return true;
         }
-        if ($param == 'primo.isOnCampusAtMEMBER') {
-            return true;
-        }
-        return false;
+        return $param == 'primo.isOnCampusAtMEMBER';
     }
 
     /**
@@ -995,10 +980,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
         if ($param == 'primo.isAtMEMBER') {
             return true;
         }
-        if ($param == 'primo.isOnCampusAtMEMBER') {
-            return false;
-        }
-        return false;
+        return $param != 'primo.isOnCampusAtMEMBER';
     }
 
     /**
@@ -1014,10 +996,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
         if ($param == 'primo.defaultRule') {
             return false;
         }
-        if ($param == 'primo.isAtMEMBER') {
-            return false;
-        }
-        return false;
+        return $param != 'primo.isAtMEMBER';
     }
 
     /**
@@ -1033,9 +1012,6 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
         if ($param == 'primo.defaultRule') {
             return true;
         }
-        if ($param == 'primo.isAtMEMBER') {
-            return false;
-        }
-        return false;
+        return $param != 'primo.isAtMEMBER';
     }
 }

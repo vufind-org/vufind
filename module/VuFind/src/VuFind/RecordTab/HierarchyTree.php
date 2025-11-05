@@ -156,14 +156,9 @@ class HierarchyTree extends AbstractBase
                 return true;
             }
         }
-
         // Currently displaying top of tree?  Disable partial hierarchy:
-        if ($this->getActiveTree() == $recordDriver->getUniqueId()) {
-            return true;
-        }
-
         // Only if we got this far is it appropriate to use a partial hierarchy:
-        return false;
+        return $this->getActiveTree() == $recordDriver->getUniqueId();
     }
 
     /**

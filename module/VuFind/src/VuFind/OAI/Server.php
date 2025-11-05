@@ -1186,10 +1186,7 @@ class Server
         if ($from_time > $until_time) {
             throw new \Exception('noRecordsMatch:from vs. until');
         }
-        if ($from_time < $this->normalizeDate($this->earliestDatestamp)) {
-            return true;
-        }
-        return false;
+        return $from_time < $this->normalizeDate($this->earliestDatestamp);
     }
 
     /**
