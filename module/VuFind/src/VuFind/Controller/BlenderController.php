@@ -29,8 +29,6 @@
 
 namespace VuFind\Controller;
 
-use Laminas\ServiceManager\ServiceLocatorInterface;
-
 /**
  * Blended Search Controller
  *
