@@ -134,9 +134,9 @@ class CPU extends \VuFind\OnlinePayment\Handler\AbstractBase
         $paymentRequest->LastName = empty($lastname) ? 'ei tietoa' : $lastname;
 
         $lang = $this->getCurrentLanguageCode();
-        if (!empty($this->config['supportedLanguages'])) {
+        if (!empty($this->paymentConfig['supportedLanguages'])) {
             $languageMappings = [];
-            foreach (explode(':', $this->config['supportedLanguages']) as $item) {
+            foreach (explode(':', $this->paymentConfig['supportedLanguages']) as $item) {
                 $parts = explode('=', $item, 2);
                 if (count($parts) != 2) {
                     continue;
@@ -148,7 +148,7 @@ class CPU extends \VuFind\OnlinePayment\Handler\AbstractBase
             }
         }
 
-        $paymentRequest->Description = $this->config['paymentDescription'] ?? '';
+        $paymentRequest->Description = $this->paymentConfig['paymentDescription'] ?? '';
 
         $paymentRequest->ReturnAddress = $returnUrl;
         $paymentRequest->NotificationAddress = $notifyUrl;
@@ -405,16 +405,16 @@ class CPU extends \VuFind\OnlinePayment\Handler\AbstractBase
     protected function initCpu(): Client
     {
         foreach (['merchantId', 'secret', 'url'] as $req) {
-            if (!isset($this->config[$req])) {
+            if (!isset($this->paymentConfig[$req])) {
                 $this->logPaymentError("Missing payment configuration $req");
                 throw new \Exception('Missing payment configuration');
             }
         }
 
         $module = new Client(
-            $this->config['url'],
-            $this->config['merchantId'],
-            $this->config['secret']
+            $this->paymentConfig['url'],
+            $this->paymentConfig['merchantId'],
+            $this->paymentConfig['secret']
         );
         $module->setHttpService($this->httpService);
         $module->setLogger($this->logger);
@@ -431,7 +431,7 @@ class CPU extends \VuFind\OnlinePayment\Handler\AbstractBase
      */
     protected function verifyHash($params, $hash)
     {
-        $params[] = $this->config['secret'];
+        $params[] = $this->paymentConfig['secret'];
         return hash('sha256', implode('&', $params)) === $hash;
     }
 }

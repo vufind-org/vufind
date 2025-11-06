@@ -92,7 +92,7 @@ class TurkuPaymentAPI extends \VuFind\OnlinePayment\Handler\AbstractBase
         string $paymentParam
     ): Response {
         $patronId = $patron['cat_username'];
-        $localIdentifier = $this->generateLocalIdentifier($patronId);
+        $localIdentifier = $this->generateLocalIdentifier($patron);
 
         $returnUrl = $this->addQueryParams(
             $returnBaseUrl,
@@ -118,9 +118,9 @@ class TurkuPaymentAPI extends \VuFind\OnlinePayment\Handler\AbstractBase
 
         $language = $this->languageMap[$this->getCurrentLanguageCode()] ?? 'FI';
         $sapOrganization = [
-            'sapSalesOrganization' => $this->config['sapSalesOrganization'] ?? '',
-            'sapDistributionChannel' => $this->config['sapDistributionChannel'] ?? '',
-            'sapSector' => $this->config->sapSector ?? '',
+            'sapSalesOrganization' => $this->paymentConfig['sapSalesOrganization'] ?? '',
+            'sapDistributionChannel' => $this->paymentConfig['sapDistributionChannel'] ?? '',
+            'sapSector' => $this->paymentConfig['sapSector'] ?? '',
         ];
         $reference = preg_replace('/\PL/u', '', "{$localIdentifier}{$patronId}");
         $serviceFee = $this->getServiceFee();
@@ -140,8 +140,8 @@ class TurkuPaymentAPI extends \VuFind\OnlinePayment\Handler\AbstractBase
 
         $items = [];
         $sapProduct = [
-            'sapCode' => $this->config['sapCode'] ?? '',
-            'sapOfficeCode' => $this->config['sapOfficeCode'] ?? '',
+            'sapCode' => $this->paymentConfig['sapCode'] ?? '',
+            'sapOfficeCode' => $this->paymentConfig['sapOfficeCode'] ?? '',
         ];
         foreach ($fines as $fine) {
             $code = $this->getFineProductCode($fine);
@@ -298,9 +298,9 @@ class TurkuPaymentAPI extends \VuFind\OnlinePayment\Handler\AbstractBase
                 $params,
                 $body,
                 $params['Authorization'],
-                $this->config['secret'] ?? '',
+                $this->paymentConfig['secret'] ?? '',
                 $params['X-TURKU-TS'] ?? $params['X-Turku-Ts'] ?? '',
-                $this->config['platformName']
+                $this->paymentConfig['platformName']
             );
         } catch (\Exception $e) {
             $this->logPaymentError(
@@ -321,7 +321,7 @@ class TurkuPaymentAPI extends \VuFind\OnlinePayment\Handler\AbstractBase
     protected function initClient(): Client
     {
         foreach (['merchantId', 'secret', 'oId', 'url', 'platformName'] as $req) {
-            if (!isset($this->config[$req])) {
+            if (!isset($this->paymentConfig[$req])) {
                 $this->logPaymentError("Missing payment configuration $req");
                 throw new \Exception('Missing payment configuration');
             }
@@ -329,10 +329,10 @@ class TurkuPaymentAPI extends \VuFind\OnlinePayment\Handler\AbstractBase
 
         return new Client(
             0,
-            $this->config['secret'],
+            $this->paymentConfig['secret'],
             'Finna',
-            $this->config['merchantId'],
-            $this->config['oId']
+            $this->paymentConfig['merchantId'],
+            $this->paymentConfig['oId']
         );
     }
 }
