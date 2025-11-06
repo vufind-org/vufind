@@ -189,8 +189,8 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
             ?? $this->useQuery;
         $this->useQueryMinLength = $databasesConfig['useQueryMinLength']
             ?? $this->useQueryMinLength;
-        $this->useQueryReplacePattern = $databasesConfig['useQueryReplacePattern']
-            ?? $this->useQueryReplacePattern;
+        $queryReplaceConfig = $databasesConfig['useQueryReplacePattern'] ?? $this->useQueryReplacePattern;
+        $this->useQueryReplacePattern = $queryReplaceConfig ?: '';
 
         $this->useLibGuides = $databasesConfig['useLibGuides']
             ?? $this->useLibGuides;
