@@ -327,7 +327,7 @@ class Paytrail extends AbstractBase
         }
 
         return new Client(
-            $this->paymentConfig['merchantId'],
+            (int)$this->paymentConfig['merchantId'],
             $this->paymentConfig['secret'],
             $this->config['Site']['generator'] ?? 'VuFind'
         );
