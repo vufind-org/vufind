@@ -283,9 +283,11 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
                     if (str_contains($normalizedName, $query)) {
                         $databases[$databaseInfo['url']] = $databaseInfo;
                     }
-                    if ($this->useQueryMaxDifference && 
+                    if (
+                        $this->useQueryMaxDifference &&
                         levenshtein(substr($normalizedName, 0, strlen($query)), $query)
-                            <= $this->useQueryMaxDifference) {
+                            <= $this->useQueryMaxDifference
+                    ) {
                         $databases[$databaseInfo['url']] = $databaseInfo;
                     }
                     if (count($databases) >= $this->limit) {
