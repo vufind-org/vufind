@@ -74,8 +74,8 @@ class RedisFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
 
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config')->Statistics ?? null;
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)
+            ->getConfigObject('config')->Statistics ?? null;
         return new $requestedName(
             $this->getConnection($config),
             $config->redis_key_prefix ?? Redis::DEFAULT_KEY_PREFIX

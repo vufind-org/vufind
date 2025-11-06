@@ -71,7 +71,7 @@ class GetDateRangeVisualFactory implements \Laminas\ServiceManager\Factory\Facto
         }
         $result = new $requestedName(
             $container->get(\VuFind\Session\Settings::class),
-            $container->get(\VuFind\Config\PluginManager::class),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class),
             $container->get(\VuFind\Search\Results\PluginManager::class)
         );
         return $result;

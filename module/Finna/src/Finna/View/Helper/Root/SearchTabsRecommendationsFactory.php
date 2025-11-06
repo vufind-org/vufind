@@ -68,10 +68,8 @@ class SearchTabsRecommendationsFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config
-            = $container->get(\VuFind\Config\PluginManager::class)->get('config');
-        $recommendationConfig = isset($config->SearchTabsRecommendations)
-            ? $config->SearchTabsRecommendations->toArray() : [];
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
+        $recommendationConfig = $config['SearchTabsRecommendations'] ?? [];
 
         return new $requestedName($recommendationConfig);
     }

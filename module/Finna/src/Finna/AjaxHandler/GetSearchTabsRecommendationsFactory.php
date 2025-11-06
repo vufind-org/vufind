@@ -72,7 +72,7 @@ class GetSearchTabsRecommendationsFactory implements \Laminas\ServiceManager\Fac
         $dbServiceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         $result = new $requestedName(
             $container->get(\VuFind\Session\Settings::class),
-            $container->get(\VuFind\Config\PluginManager::class)->get('config'),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config'),
             $dbServiceManager->get(\VuFind\Db\Service\SearchServiceInterface::class),
             $container->get(\VuFind\Search\Results\PluginManager::class),
             $container->get('ViewRenderer'),

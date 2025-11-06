@@ -71,7 +71,7 @@ class OntologyFactory implements FactoryInterface
             $container->get(\Finna\Connection\Finto::class),
             $container->get(\VuFind\Cookie\CookieManager::class),
             $container->get('ViewHelperManager')->get('url'),
-            $container->get(\VuFind\Config\PluginManager::class),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class),
             $container->get(\VuFind\Search\SearchRunner::class)
         );
     }

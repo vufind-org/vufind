@@ -70,7 +70,7 @@ class LoaderFactory extends \VuFind\Record\LoaderFactory
                 ->getUserLocale()
         );
         $redirectSources
-            = $container->get(\VuFind\Config\PluginManager::class)->get('config')
+            = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config')
             ->Record->missing_record_redirect ?? null;
         if ($redirectSources) {
             $loader->setRecordRedirectionRules($redirectSources);

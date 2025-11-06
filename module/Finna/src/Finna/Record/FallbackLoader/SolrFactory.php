@@ -64,7 +64,7 @@ class SolrFactory extends \VuFind\Record\FallbackLoader\SolrFactory
         $requestedName,
         ?array $options = null
     ) {
-        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config')->toArray();
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         return parent::__invoke($container, $requestedName, [$config]);
     }
 }

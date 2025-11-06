@@ -89,8 +89,7 @@ class BrowseSearchController extends SearchController
      */
     protected function browse($type)
     {
-        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
-            ->get('browse');
+        $config = $this->serviceLocator->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('browse');
         if (!isset($config['General'][$type]) || !$config['General'][$type]) {
             throw new BadRequestException("Browse action $type is disabled");
         }

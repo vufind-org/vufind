@@ -68,7 +68,7 @@ class BazaarApiControllerFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class);
-        return new $requestedName($container, $config->get('config'));
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
+        return new $requestedName($container, $config);
     }
 }

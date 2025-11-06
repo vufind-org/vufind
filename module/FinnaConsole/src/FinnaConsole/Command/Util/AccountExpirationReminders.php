@@ -35,14 +35,15 @@ use DateInterval;
 use DateTime;
 use Finna\Db\Entity\UserEntityInterface;
 use Finna\Db\Service\UserServiceInterface;
-use Laminas\I18n\Translator\Translator;
-use Laminas\I18n\Translator\TranslatorInterface;
+use Laminas\Mvc\I18n\Translator;
+use Laminas\Translator\TranslatorInterface;
 use Laminas\View\Resolver\AggregateResolver;
 use Laminas\View\Resolver\TemplatePathStack;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\Db\Service\TagServiceInterface;
@@ -162,7 +163,7 @@ class AccountExpirationReminders extends AbstractUtilCommand
      * @param \VuFind\Config\Config              $datasourceConfig Data source config
      * @param Mailer                             $mailer           Mailer
      * @param TranslatorInterface                $translator       Translator
-     * @param \VuFind\Config\PluginManager       $configManager    Config manager
+     * @param ConfigManagerInterface             $configManager    Config manager
      */
     public function __construct(
         protected UserServiceInterface $userService,
@@ -174,10 +175,10 @@ class AccountExpirationReminders extends AbstractUtilCommand
         protected \VuFind\Config\Config $datasourceConfig,
         Mailer $mailer,
         TranslatorInterface $translator,
-        protected \VuFind\Config\PluginManager $configManager
+        protected ConfigManagerInterface $configManager
     ) {
         $this->urlHelper = $renderer->plugin('url');
-        $this->translator = $translator;
+        $this->setTranslator($translator);
         $this->mailer = $mailer;
 
         parent::__construct();

@@ -68,13 +68,13 @@ class AuthorityHelperFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $confManager = $container->get(\VuFind\Config\PluginManager::class);
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
         return new $requestedName(
             $container->get(\VuFind\Record\Loader::class),
             $container->get(\VuFind\Search\SearchRunner::class),
             $container->get('ViewRenderer')->plugin('translate'),
-            $confManager->get('config'),
-            $confManager->get('authority')
+            $configManager->getConfigObject('config'),
+            $configManager->getConfigObject('authority')
         );
     }
 }

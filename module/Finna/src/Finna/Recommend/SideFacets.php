@@ -56,13 +56,6 @@ class SideFacets extends \VuFind\Recommend\SideFacets implements TranslatorAware
     use SideFacetsTrait;
 
     /**
-     * Authority helper
-     *
-     * @var \Finna\Search\Solr\AuthorityHelper
-     */
-    protected $authorityHelper;
-
-    /**
      * Display the map under region facet
      *
      * @var array
@@ -74,17 +67,16 @@ class SideFacets extends \VuFind\Recommend\SideFacets implements TranslatorAware
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager                 $configLoader    Configuration loader
+     * @param \VuFind\Config\configManagerInterface        $configManager   Configuration loader
      * @param \Finna\Search\Solr\AuthorityHelper           $authorityHelper Authority helper
      * @param ?\VuFind\Search\Solr\HierarchicalFacetHelper $facetHelper     Helper for handling hierarchical facets
      */
     public function __construct(
-        \VuFind\Config\PluginManager $configLoader,
-        \Finna\Search\Solr\AuthorityHelper $authorityHelper,
+        \VuFind\Config\configManagerInterface $configManager,
+        protected \Finna\Search\Solr\AuthorityHelper $authorityHelper,
         ?\VuFind\Search\Solr\HierarchicalFacetHelper $facetHelper = null
     ) {
-        parent::__construct($configLoader, $facetHelper);
-        $this->authorityHelper = $authorityHelper;
+        parent::__construct($configManager, $facetHelper);
     }
 
     /**

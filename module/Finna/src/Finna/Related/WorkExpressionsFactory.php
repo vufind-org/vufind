@@ -72,7 +72,7 @@ class WorkExpressionsFactory implements FactoryInterface
         }
         return new $requestedName(
             $container->get(\VuFindSearch\Service::class),
-            $container->get(\VuFind\Config\PluginManager::class)->get('searches')
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('searches')
         );
     }
 }

@@ -69,7 +69,7 @@ class GetOrganisationInfoFactory implements \Laminas\ServiceManager\Factory\Fact
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $facetConfig = $container->get(\VuFind\Config\PluginManager::class)->get('facets');
+        $facetConfig = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('facets');
         $result = new $requestedName(
             $container->get(\VuFind\Session\Settings::class),
             $container->get(\Finna\OrganisationInfo\OrganisationInfo::class),

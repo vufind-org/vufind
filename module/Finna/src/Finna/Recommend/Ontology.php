@@ -30,7 +30,7 @@
 namespace Finna\Recommend;
 
 use Finna\Connection\Finto;
-use VuFind\Config\PluginManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Cookie\CookieManager;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
@@ -64,41 +64,6 @@ class Ontology implements RecommendInterface, TranslatorAwareInterface
      * @var string
      */
     public const COOKIE_NAME = 'ontologyRecommend';
-
-    /**
-     * Finto connection class.
-     *
-     * @var Finto
-     */
-    protected $finto;
-
-    /**
-     * Cookie manager.
-     *
-     * @var CookieManager
-     */
-    protected $cookieManager;
-
-    /**
-     * Url helper.
-     *
-     * @var Url
-     */
-    protected $urlHelper;
-
-    /**
-     * Configuration loader
-     *
-     * @var PluginManager
-     */
-    protected $configLoader;
-
-    /**
-     * Search runner
-     *
-     * @var SearchRunner
-     */
-    protected $searchRunner;
 
     /**
      * Maximum number of search terms for recommendation processing. Setting to
@@ -227,24 +192,19 @@ class Ontology implements RecommendInterface, TranslatorAwareInterface
     /**
      * Ontology constructor.
      *
-     * @param Finto         $finto         Finto connection class
-     * @param CookieManager $cookieManager Cookie manager
-     * @param Url           $urlHelper     Url helper
-     * @param PluginManager $configLoader  Configuration loader
-     * @param SearchRunner  $searchRunner  Search runner
+     * @param Finto                  $finto         Finto connection class
+     * @param CookieManager          $cookieManager Cookie manager
+     * @param Url                    $urlHelper     Url helper
+     * @param ConfigManagerInterface $configManager Configuration loader
+     * @param SearchRunner           $searchRunner  Search runner
      */
     public function __construct(
-        Finto $finto,
-        CookieManager $cookieManager,
-        Url $urlHelper,
-        PluginManager $configLoader,
-        SearchRunner $searchRunner
+        protected Finto $finto,
+        protected CookieManager $cookieManager,
+        protected Url $urlHelper,
+        protected ConfigManagerInterface $configManager,
+        protected SearchRunner $searchRunner
     ) {
-        $this->finto = $finto;
-        $this->cookieManager = $cookieManager;
-        $this->urlHelper = $urlHelper;
-        $this->configLoader = $configLoader;
-        $this->searchRunner = $searchRunner;
     }
 
     /**
@@ -267,7 +227,7 @@ class Ontology implements RecommendInterface, TranslatorAwareInterface
             ? 'OntologyModuleRecommendations' : $settings[0];
         $iniName = $settings[1] ?? 'searches';
 
-        $config = $this->configLoader->get($iniName)->get($sectionName);
+        $config = $this->configManager->getConfigObject($iniName)->get($sectionName);
 
         $this->maxSearchTerms = $config->get('maxSearchTerms');
         $this->maxApiCalls = $config->get('maxApiCalls');

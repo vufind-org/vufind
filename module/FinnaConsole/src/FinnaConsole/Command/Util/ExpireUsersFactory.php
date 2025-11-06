@@ -73,7 +73,7 @@ class ExpireUsersFactory implements FactoryInterface
         return new $requestedName(
             $dbServiceManager->get(UserServiceInterface::class),
             $container->get(UserAccountService::class),
-            $container->get(\VuFind\Config\PluginManager::class)->get('config')
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config')
         );
     }
 }

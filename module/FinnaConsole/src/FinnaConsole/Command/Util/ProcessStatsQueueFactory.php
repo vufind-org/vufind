@@ -68,7 +68,8 @@ class ProcessStatsQueueFactory implements FactoryInterface
         ?array $options = null
     ) {
         $dbServiceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
-        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config')->Statistics ?? null;
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)
+            ->getConfigObject('config')->Statistics ?? null;
         return new $requestedName(
             $dbServiceManager->get(FinnaStatisticsServiceInterface::class),
             $this->getConnection($config),

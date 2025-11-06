@@ -71,8 +71,8 @@ class RedisFactory extends \VuFind\Session\RedisFactory
             throw new \Exception('Unexpected options passed to factory.');
         }
 
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config')->Session ?? null;
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)
+            ->getConfigObject('config')->Session ?? null;
         $service = new $requestedName($this->getConnection($config), $config);
         $service->setDbServiceManager(
             $container->get(\VuFind\Db\Service\PluginManager::class)

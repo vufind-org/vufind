@@ -76,10 +76,10 @@ class DueDateRemindersFactory implements FactoryInterface
         $requestedName,
         ?array $options = null
     ) {
-        $configReader = $container->get(\VuFind\Config\PluginManager::class);
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
 
         // We need to initialize the theme so that the view renderer works:
-        $mainConfig = $configReader->get('config');
+        $mainConfig = $configManager->getConfigObject('config');
         $theme = new \VuFindTheme\Initializer($mainConfig->Site, $container);
         $theme->init();
 
@@ -90,8 +90,8 @@ class DueDateRemindersFactory implements FactoryInterface
             $dbServiceManager->get(FinnaDueDateReminderServiceInterface::class),
             $container->get(Connection::class),
             $container->get(ILSAuthenticator::class),
-            $configReader->get('config'),
-            $configReader->get('datasources'),
+            $configManager->getConfigObject('config'),
+            $configManager->getConfigObject('datasources'),
             $container->get('ViewRenderer'),
             $container->get(Loader::class),
             $container->get(Mailer::class),

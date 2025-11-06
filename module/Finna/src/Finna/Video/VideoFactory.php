@@ -70,7 +70,7 @@ class VideoFactory implements FactoryInterface
         }
         return new $requestedName(
             $container->get(\Finna\Video\Handler\PluginManager::class),
-            $container->get(\VuFind\Config\PluginManager::class)->get('datasources')
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('datasources')
         );
     }
 }

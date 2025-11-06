@@ -71,7 +71,7 @@ class GetFeedFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         }
         $result = new $requestedName(
             $container->get(\VuFind\Session\Settings::class),
-            $container->get(\VuFind\Config\PluginManager::class)->get('rss'),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('rss'),
             $container->get(\Finna\Feed\Feed::class),
             $container->get(\VuFind\Record\Loader::class),
             $container->get(\VuFind\ILS\Connection::class),

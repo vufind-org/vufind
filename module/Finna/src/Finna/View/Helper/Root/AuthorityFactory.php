@@ -69,7 +69,7 @@ class AuthorityFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            $container->get(\VuFind\Config\PluginManager::class)->get('authority'),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('authority'),
             $container->get(\Finna\Search\Solr\AuthorityHelper::class)
         );
     }

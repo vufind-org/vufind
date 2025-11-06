@@ -68,10 +68,10 @@ class SystemMessagesFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class);
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
         return new $requestedName(
-            $config->get('config'),
-            $config->get('system'),
+            $configManager->getConfigObject('config'),
+            $configManager->getConfigObject('system'),
             new \Laminas\Session\Container(
                 SystemMessages::SESSION_NAME,
                 $container->get(\Laminas\Session\SessionManager::class)

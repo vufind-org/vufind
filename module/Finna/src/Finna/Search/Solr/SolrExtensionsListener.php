@@ -231,9 +231,8 @@ class SolrExtensionsListener
         }
         // Not in params, check config:
         if (null === $sources) {
-            $config = $this->serviceLocator
-                ->get(\VuFind\Config\PluginManager::class);
-            $searchConfig = $config->get($this->searchConfig);
+            $configManager = $this->serviceLocator->get(\VuFind\Config\ConfigManagerInterface::class);
+            $searchConfig = $configManager->getConfigObject($this->searchConfig);
             $sources = $searchConfig->Records->sources ?? null;
         }
 
@@ -393,8 +392,8 @@ class SolrExtensionsListener
         }
 
         // Check for config:
-        $configManager = $this->serviceLocator->get(\VuFind\Config\PluginManager::class);
-        $searchConfig = $configManager->get($this->searchConfig);
+        $configManager = $this->serviceLocator->get(\VuFind\Config\ConfigManagerInterface::class);
+        $searchConfig = $configManager->getConfigObject($this->searchConfig);
         if (null === $hideHiddenComponentsPart) {
             $hideHiddenComponentsPart = $searchConfig->General->hide_component_parts ?? false;
         }
@@ -516,8 +515,8 @@ class SolrExtensionsListener
      */
     protected function handleAvailabilityFilters(EventInterface $event)
     {
-        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class);
-        $searchConfig = $config->get($this->searchConfig);
+        $configManager = $this->serviceLocator->get(\VuFind\Config\ConfigManagerInterface::class);
+        $searchConfig = $configManager->getConfigObject($this->searchConfig);
         if (!empty($searchConfig->Records->sources)) {
             $params = $event->getParam('command')->getSearchParameters();
             $filters = $params->get('fq');

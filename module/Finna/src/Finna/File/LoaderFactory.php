@@ -70,7 +70,7 @@ class LoaderFactory implements FactoryInterface
         }
         $loader = new $requestedName(
             $container->get(\VuFind\Cache\Manager::class),
-            $container->get(\VuFind\Config\PluginManager::class)->get('config'),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config'),
             $container->get(\VuFind\Http\GuzzleService::class)
         );
         return $loader;

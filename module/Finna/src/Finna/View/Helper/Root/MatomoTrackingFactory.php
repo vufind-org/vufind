@@ -68,6 +68,8 @@ class MatomoTrackingFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        return new $requestedName($container->get(\VuFind\Config\PluginManager::class)->get('config')->toArray());
+        return new $requestedName(
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config')
+        );
     }
 }

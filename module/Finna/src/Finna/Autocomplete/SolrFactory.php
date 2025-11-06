@@ -71,11 +71,11 @@ class SolrFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
         $requestedName,
         ?array $options = null
     ) {
-        $config = $container->get(\VuFind\Config\PluginManager::class);
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
         return new $requestedName(
             $container->get(\VuFind\Search\Results\PluginManager::class),
-            $config->get('facets'),
-            $config->get('searches'),
+            $configManager->getConfigObject('facets'),
+            $configManager->getConfigObject('searches'),
             $container->get('ViewHelperManager')->get('url'),
         );
     }

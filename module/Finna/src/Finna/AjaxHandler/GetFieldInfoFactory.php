@@ -72,7 +72,7 @@ class GetFieldInfoFactory implements \Laminas\ServiceManager\Factory\FactoryInte
         }
         $dbServiceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         $result = new $requestedName(
-            $container->get(\VuFind\Config\PluginManager::class)->get('config'),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config'),
             $container->get(\VuFind\Session\Settings::class),
             $container->get(\VuFind\Record\Loader::class),
             $container->get('ViewRenderer')->plugin('record'),

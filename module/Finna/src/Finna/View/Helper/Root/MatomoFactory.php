@@ -68,8 +68,7 @@ class MatomoFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
         $request = $container->get('Request');
         $router = $container->get('Router');
         $locale = $container->get(\VuFind\I18n\Locale\LocaleSettings::class);

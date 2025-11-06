@@ -34,6 +34,8 @@ use Finna\AjaxHandler\GetCheckoutHistoryFactory;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Auth\Manager;
 use VuFind\Config\Config;
+use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\ILS\Connection;
 
@@ -62,9 +64,9 @@ class GetCheckoutHistoryTest extends \VuFindTest\Unit\AjaxHandlerTestCase
     ): GetCheckoutHistory {
         // Set up auth manager with user:
         $this->container->set(Manager::class, $this->getMockAuthManager($user));
-        $mockConfigManager = $this->container->createMock(\VuFind\Config\PluginManager::class, ['get']);
-        $mockConfigManager->expects($this->once())->method('get')->with('config')->willReturn($testConfig);
-        $this->container->set(\VuFind\Config\PluginManager::class, $mockConfigManager);
+        $mockConfigManager = $this->container->createMock(ConfigManager::class, ['getConfigObject']);
+        $mockConfigManager->expects($this->once())->method('getConfigObject')->with('config')->willReturn($testConfig);
+        $this->container->set(ConfigManagerInterface::class, $mockConfigManager);
         // Build the handler:
         $factory = new GetCheckoutHistoryFactory();
         return $factory($this->container, GetCheckoutHistory::class);

@@ -73,7 +73,7 @@ class AccountExpirationRemindersFactory implements FactoryInterface
         $requestedName,
         ?array $options = null
     ) {
-        $configManager = $container->get(\VuFind\Config\PluginManager::class);
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
 
         // We need to initialize the theme so that the view renderer works:
         $mainConfig = $configManager->get('config');
@@ -88,9 +88,9 @@ class AccountExpirationRemindersFactory implements FactoryInterface
             $dbServiceManager->get(UserListServiceInterface::class),
             $dbServiceManager->get(TagServiceInterface::class),
             $container->get('ViewRenderer'),
-            $configManager->get('datasources'),
+            $configManager->getConfigObject('datasources'),
             $container->get(Mailer::class),
-            $container->get(\Laminas\I18n\Translator\TranslatorInterface::class),
+            $container->get(\Laminas\I18n\Translator\Translator::class),
             $configManager,
             ...($options ?? [])
         );

@@ -68,14 +68,14 @@ class LinkedEventsFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class);
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
         return new $requestedName(
-            $config->get('OrganisationInfo'),
+            $configManager->getConfigObject('OrganisationInfo'),
             $container->get(\VuFind\Date\Converter::class),
             $container->get('ControllerPluginManager')->get('url'),
             $container->get('ViewRenderer')->plugin('cleanHtml'),
             $container->get(\VuFind\Cache\Manager::class),
-            $config->get('config')
+            $configManager->getConfigObject('config')
         );
     }
 }

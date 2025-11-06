@@ -78,7 +78,7 @@ class AuthorityRecommendFactory implements \Laminas\ServiceManager\Factory\Facto
                 $container->get(\Laminas\Session\SessionManager::class)
             ),
             $container->get(\VuFind\Cookie\CookieManager::class),
-            $container->get(\VuFind\Config\PluginManager::class)->get('config')
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config')
         );
     }
 }

@@ -74,9 +74,9 @@ class ImportCommentsFactory implements FactoryInterface
         ?array $options = null
     ) {
         // We need to initialize the theme so that the view renderer works:
-        $configManager = $container->get(\VuFind\Config\PluginManager::class);
-        $mainConfig = $configManager->get('config');
-        $theme = new \VuFindTheme\Initializer($mainConfig->Site, $container);
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
+        $mainConfig = $configManager->getConfigArray('config');
+        $theme = new \VuFindTheme\Initializer($mainConfig['Site'], $container);
         $theme->init();
 
         $dbServiceManager = $container->get(\VuFind\Db\Service\PluginManager::class);

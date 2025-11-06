@@ -68,11 +68,11 @@ class ProxyUrlFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options sent to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class);
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
         return new $requestedName(
-            $config->get('config'),
+            $configManager->getConfigObject('config'),
             $container->get(\VuFind\Cache\Manager::class)->getCache('object'),
-            $config->get('permissions'),
+            $configManager->getConfigObject('permissions'),
             $container->get(\VuFind\Net\IpAddressUtils::class)
         );
     }

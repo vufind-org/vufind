@@ -74,8 +74,7 @@ class AbstractProviderFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
         return new $requestedName(
-            $container->get(\VuFind\Config\PluginManager::class)
-                ->get('OrganisationInfo'),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('OrganisationInfo'),
             $container->get(\VuFind\Cache\Manager::class),
             $container->get(\VuFind\Date\Converter::class),
             $container->get('ControllerPluginManager')->get('url'),

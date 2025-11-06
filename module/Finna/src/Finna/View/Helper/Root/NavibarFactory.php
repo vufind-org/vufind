@@ -69,7 +69,7 @@ class NavibarFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         return new $requestedName(
-            $container->get(\VuFind\Config\PluginManager::class)->get('navibar'),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('navibar'),
             $container->get('Finna\OrganisationInfo\OrganisationInfo'),
             $container->get('Router')
         );

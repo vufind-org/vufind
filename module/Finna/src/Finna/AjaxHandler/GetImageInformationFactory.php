@@ -75,7 +75,7 @@ class GetImageInformationFactory implements \Laminas\ServiceManager\Factory\Fact
         $dbServicePm = $container->get(\VuFind\Db\Service\PluginManager::class);
         $result = new $requestedName(
             $container->get(\VuFind\Session\Settings::class),
-            $container->get(\VuFind\Config\PluginManager::class)->get('config'),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config'),
             $container->get(\VuFind\Record\Loader::class),
             $container->get(\VuFind\Auth\Manager::class)->getUserObject(),
             $dbServicePm->get(UserListServiceInterface::class),

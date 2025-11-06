@@ -67,7 +67,7 @@ class GetCheckoutHistoryFactory extends AbstractIlsAndUserActionFactory
         $requestedName,
         ?array $options = null
     ) {
-        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
         $options = [
             $container->get(\VuFind\Record\Loader::class),
             $config->Catalog->loan_history_download_batch_limit ?? 1000,

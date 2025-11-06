@@ -69,7 +69,7 @@ class TranslationFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         $config
-            = $container->get(\VuFind\Config\PluginManager::class)->get('config');
+            = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
         return new $requestedName(
             $config['Site']['language'] ?? 'en'
         );

@@ -211,8 +211,8 @@ class DeduplicationListener extends \VuFind\Search\Solr\DeduplicationListener
             return $result;
         }
 
-        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class);
-        $searchConfig = $config->get($this->searchConfig);
+        $configManager = $this->serviceLocator->get(\VuFind\Config\ConfigManagerInterface::class);
+        $searchConfig = $configManager->getConfigObject($this->searchConfig);
         if (!isset($searchConfig->Records->apiExcludedSources)) {
             return $result;
         }
@@ -232,8 +232,8 @@ class DeduplicationListener extends \VuFind\Search\Solr\DeduplicationListener
      */
     protected function determineSourcePriority($recordSources)
     {
-        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class);
-        $mainConfig = $config->get('config');
+        $configManager = $this->serviceLocator->get(\VuFind\Config\ConfigManagerInterface::class);
+        $mainConfig = $configManager->getConfigObject('config');
         // Sort sources alphabetically if necessary
         if (!empty($mainConfig->Record->sort_sources)) {
             $translator
@@ -267,9 +267,9 @@ class DeduplicationListener extends \VuFind\Search\Solr\DeduplicationListener
         // If handling an API call, remove excluded sources so that they don't get
         // become preferred (they will get filtered out of the dedup data later)
         if (getenv('VUFIND_API_CALL')) {
-            $searchConfig = $config->get($this->searchConfig);
-            if (isset($searchConfig->Records->apiExcludedSources)) {
-                $excluded = explode(',', $searchConfig->Records->apiExcludedSources);
+            $searchConfig = $configManager->getConfigArray($this->searchConfig);
+            if ($apiExcludedSources = $searchConfig['Records']['apiExcludedSources'] ?? null) {
+                $excluded = explode(',', $apiExcludedSources);
                 $recordSources = array_diff($recordSources, $excluded);
             }
         }
@@ -292,8 +292,8 @@ class DeduplicationListener extends \VuFind\Search\Solr\DeduplicationListener
             return;
         }
 
-        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class);
-        $searchConfig = $config->get($this->searchConfig);
+        $configManager = $this->serviceLocator->get(\VuFind\Config\ConfigManagerInterface::class);
+        $searchConfig = $configManager->getConfigObject($this->searchConfig);
         if (!isset($searchConfig->Records->apiExcludedSources)) {
             return;
         }

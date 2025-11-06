@@ -66,8 +66,8 @@ class FormFactory extends \VuFind\Form\FormFactory
         $requestedName,
         ?array $options = null
     ) {
-        $configManager = $container->get(\VuFind\Config\PluginManager::class);
-        $config = $configManager->get('config')->toArray();
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
+        $config = $configManager->getConfigArray('config');
 
         $form = parent::__invoke($container, $requestedName, $options);
         if (isset($config['Site']['institution'])) {
@@ -90,7 +90,7 @@ class FormFactory extends \VuFind\Form\FormFactory
         $form->setRecordRequestFormsWithBarcode(
             (array)($config['Record']['repository_library_request_form'] ?? null)
         );
-        $form->setDataSourceConfig($configManager->get('datasources')->toArray());
+        $form->setDataSourceConfig($configManager->getConfigArray('datasources'));
         $form->setRecordLoader($container->get(\VuFind\Record\Loader::class));
         return $form;
     }

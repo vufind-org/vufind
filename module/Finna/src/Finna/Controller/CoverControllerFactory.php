@@ -73,15 +73,15 @@ class CoverControllerFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory.');
         }
         $dbManager = $container->get(PluginManager::class);
-        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
-        $configArray = $config?->Content?->toArray() ?? [];
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
+        $contentConfig = $configManager->getConfigArray('config')['Content'] ?? [];
         return new $requestedName(
             $container->get(\VuFind\Cover\Loader::class),
             $container->get(\VuFind\Cover\CachingProxy::class),
             $container->get(\VuFind\Session\Settings::class),
-            $container->get(\VuFind\Config\PluginManager::class)->get('datasources'),
+            $configManager->getConfigObject('datasources'),
             $container->get(\VuFind\Record\Loader::class),
-            $configArray,
+            $contentConfig,
             $container->get(\Finna\File\Loader::class),
             $dbManager->get(\VuFind\Db\Service\AccessTokenService::class)
         );

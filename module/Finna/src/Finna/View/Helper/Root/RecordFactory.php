@@ -72,7 +72,7 @@ class RecordFactory implements FactoryInterface
         }
         $helper = new Record(
             $container->get(TagsService::class),
-            $container->get(\VuFind\Config\PluginManager::class)->get('config'),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config'),
             $container->get(\VuFind\Record\Loader::class),
             $container->get('ViewHelperManager')->get('recordImage'),
             $container->get(\Finna\Search\Solr\AuthorityHelper::class),

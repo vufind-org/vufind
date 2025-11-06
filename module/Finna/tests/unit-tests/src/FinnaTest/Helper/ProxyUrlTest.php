@@ -33,7 +33,8 @@ use Finna\View\Helper\Root\ProxyUrl;
 use Finna\View\Helper\Root\ProxyUrlFactory;
 use Generator;
 use VuFind\Config\Config;
-use VuFind\Config\PluginManager;
+use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Net\IpAddressUtils;
 use VuFindTest\Feature\FixtureTrait;
 
@@ -107,13 +108,13 @@ class ProxyUrlTest extends \PHPUnit\Framework\TestCase
         $permissions = new Config(parse_ini_string($permissionsFixture, true));
         $factory = new ProxyUrlFactory();
 
-        $configPluginManager = $this->container->createMock(PluginManager::class, ['get']);
-        $configPluginManager->expects($this->any())->method('get')->willReturnCallback(
+        $configManager = $this->container->createMock(ConfigManager::class, ['getConfigObject']);
+        $configManager->expects($this->any())->method('getConfigObject')->willReturnCallback(
             function ($param) use ($config, $permissions) {
                 return $param === 'config' ? $config : $permissions;
             }
         );
-        $this->container->set(\VuFind\Config\PluginManager::class, $configPluginManager);
+        $this->container->set(ConfigManagerInterface::class, $configManager);
 
         $ipAddressUtils = $this->container->createMock(IpAddressUtils::class, []);
         $this->container->set(IpAddressUtils::class, $ipAddressUtils);

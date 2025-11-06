@@ -72,7 +72,7 @@ class GetPiwikPopularSearchesFactory implements \Laminas\ServiceManager\Factory\
         $result = new $requestedName(
             $container->get(\VuFind\Session\Settings::class),
             $container->get(\VuFind\Cache\Manager::class),
-            $container->get(\VuFind\Config\PluginManager::class)->get('config'),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config'),
             $container->get('ViewRenderer')
         );
         $result->setLogger($container->get(\VuFind\Log\Logger::class));

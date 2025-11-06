@@ -71,12 +71,12 @@ class SolrAuthFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
         $requestedName,
         ?array $options = null
     ) {
-        $configManager = $container->get(\VuFind\Config\PluginManager::class);
-        $config = $configManager->get('authority');
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
+        $authorityConfig = $configManager->getConfigObject('authority');
         return new $requestedName(
             $container->get(\VuFind\Search\Results\PluginManager::class),
-            $config,
-            $config,
+            $authorityConfig,
+            $authorityConfig,
             $container->get('ViewHelperManager')->get('url'),
         );
     }

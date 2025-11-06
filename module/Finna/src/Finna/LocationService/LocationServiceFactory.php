@@ -71,8 +71,7 @@ class LocationServiceFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
         return new $requestedName(
-            $container->get(\VuFind\Config\PluginManager::class)
-                ->get('LocationService')
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('LocationService')
         );
     }
 }
