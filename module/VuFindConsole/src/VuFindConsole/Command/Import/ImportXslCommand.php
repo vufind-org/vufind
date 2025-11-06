@@ -120,7 +120,7 @@ class ImportXslCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $testMode = $input->getOption('test-only') ? true : false;
+        $testMode = (bool)$input->getOption('test-only');
         $index = $input->getOption('index');
         $xml = $input->getArgument('XML_file');
         $properties = $input->getArgument('properties_file');

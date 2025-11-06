@@ -175,8 +175,8 @@ class DatabaseCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $sqlOnly = $input->getOption('sql-only') ? true : false;
-        $interactive = $input->getOption('interactive') ? true : false;
+        $sqlOnly = (bool)$input->getOption('sql-only');
+        $interactive = (bool)$input->getOption('interactive');
         if ($sqlOnly && $interactive) {
             $output->writeln('--sql-only and --interactive options are incompatible; choose only one');
             return self::FAILURE;

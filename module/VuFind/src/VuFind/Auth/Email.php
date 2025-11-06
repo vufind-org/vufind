@@ -127,7 +127,7 @@ class Email extends AbstractBase
     public function needsCsrfCheck($request)
     {
         // Disable CSRF if we get a hash in the request
-        return $request->getQuery('hash') ? false : true;
+        return !(bool)$request->getQuery('hash');
     }
 
     /**

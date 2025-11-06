@@ -676,6 +676,7 @@ $config = [
                 'metadata_cache' => $doctrineCacheType,
                 'hydration_cache' => $doctrineCacheType,
                 'proxy_dir' => LOCAL_CACHE_DIR . (PHP_SAPI == 'cli' ? '/cli' : '') . '/doctrine-proxies',
+                'class_metadata_factory_name' => \VuFind\Db\Mapping\ClassMetadataFactory::class,
             ],
         ],
         'driver' => [

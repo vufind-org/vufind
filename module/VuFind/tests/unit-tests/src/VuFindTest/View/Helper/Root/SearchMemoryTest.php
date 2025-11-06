@@ -158,7 +158,7 @@ class SearchMemoryTest extends \PHPUnit\Framework\TestCase
         $memory->expects($this->once())->method('getLastSearch')->willReturn($results);
         $helper = $this->getSearchMemoryViewHelper($memory);
         $helper->setView($this->getConfiguredView($results->getParams()));
-        $this->assertEquals('/foo/bar', $helper->getLastSearchUrl('Solr'));
+        $this->assertEquals('/foo/bar', $helper->getLastSearchUrl());
     }
 
     /**
@@ -172,7 +172,7 @@ class SearchMemoryTest extends \PHPUnit\Framework\TestCase
         $memory->expects($this->once())->method('getLastSearch')->willReturn(null);
         $helper = $this->getSearchMemoryViewHelper($memory);
         $helper->setView($this->getConfiguredView($this->createMock(Params::class)));
-        $this->assertNull($helper->getLastSearchUrl('Solr'));
+        $this->assertNull($helper->getLastSearchUrl());
     }
 
     /**
