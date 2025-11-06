@@ -63,7 +63,7 @@ trait BatchTrait
      *
      * @return void
      */
-    public function setBatchSizeFromOptions(array $options)
+    public function setBatchSizeFromOptions(array $options): void
     {
         // Calculate batch size
         $itemsPerRow = $options['itemsPerRow'] ?? 6;
