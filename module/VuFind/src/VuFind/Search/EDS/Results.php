@@ -153,7 +153,10 @@ class Results extends \VuFind\Search\Base\Results
      */
     public function getMaxScore()
     {
-        if (empty($this->results)) {
+        if (
+            empty($this->results) ||
+            'relevance' != $this->getParams()->getSort()
+        ) {
             return null;
         }
         return $this->results[0]->getScore();
