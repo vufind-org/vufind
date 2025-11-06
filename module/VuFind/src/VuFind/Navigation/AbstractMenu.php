@@ -186,20 +186,58 @@ abstract class AbstractMenu extends AbstractBase implements NavigationInterface
     public function getMenu(): array
     {
         if (!isset($this->menu)) {
-            $menu = $this->getConfig() ?: static::getDefaultMenuConfig();
-
-            $availableGroups = [];
-            foreach ($this->filterAvailable($menu) as $groupName => $group) {
-                // Skip groups without items to display.
-                if ($items = $this->filterAvailable($group['MenuItems'] ?? [])) {
-                    $group['MenuItems'] = $items;
-                    $availableGroups[$groupName] = $group;
-                }
-            }
-            $this->menu = $availableGroups;
+            $config = $this->getConfig() ?: static::getDefaultMenuConfig();
+            $this->menu = $this->processGroups($config);
         }
-
         return $this->menu;
+    }
+
+    /**
+     * Process and filter groups.
+     *
+     * @param array $groups Groups to process and filter
+     *
+     * @return array
+     */
+    protected function processGroups(array $groups): array
+    {
+        $availableGroups = [];
+        foreach ($this->filterAvailable($groups) as $groupName => $group) {
+            if ($group = $this->processGroup($group)) {
+                $availableGroups[$groupName] = $group;
+            }
+        }
+        return $availableGroups;
+    }
+
+    /**
+     * Process or filter group.
+     *
+     * @param array $group Group to process
+     *
+     * @return array|false Processed group or false if group should be filtered
+     */
+    protected function processGroup(array $group): array|false
+    {
+        $items = $this->processItems($group['MenuItems'] ?? []);
+        // Skip groups without items to display.
+        if (!empty($items)) {
+            $group['MenuItems'] = $items;
+            return $group;
+        }
+        return false;
+    }
+
+    /**
+     * Process menu items.
+     *
+     * @param array $items Items to process
+     *
+     * @return array
+     */
+    protected function processItems(array $items): array
+    {
+        return $this->filterAvailable($items);
     }
 
     /**
