@@ -278,8 +278,7 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
                 : '';
             if (strlen($query) >= $this->useQueryMinLength) {
                 foreach ($nameToDatabase as $name => $databaseInfo) {
-                    $name = $this->normalizeQueryString($name);
-                    if (str_contains($name, $query)) {
+                    if (str_contains($this->normalizeQueryString($name), $query)) {
                         $databases[$databaseInfo['url']] = $databaseInfo;
                     }
                     if (count($databases) >= $this->limit) {
