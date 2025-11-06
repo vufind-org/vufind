@@ -32,7 +32,6 @@ namespace VuFind\RecordDriver;
 use function count;
 use function floatval;
 use function in_array;
-use function intval;
 use function is_array;
 use function is_callable;
 use function strlen;

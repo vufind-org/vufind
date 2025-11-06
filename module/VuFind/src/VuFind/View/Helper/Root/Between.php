@@ -68,7 +68,7 @@ class Between extends \Laminas\View\Helper\AbstractHelper
         $placements = array_fill(0, count($recommendations), false);
         $placements[0] = max(
             $this->minPlacement,
-            $this->getMaxScoreDiffIndex($results)
+            $this->getMaxScoreDiffIndex($results->getScores())
         );
 
         return $placements;
@@ -77,18 +77,20 @@ class Between extends \Laminas\View\Helper\AbstractHelper
     /**
      * Return the maximum difference in relevancy score between two consecutive search results.
      *
-     * @param Results $results The primary search results
+     * @param array $scores Scores of the primary search results
      *
      * @return ?int The index of the first of the pair of results with the biggest diff score
      */
-    protected function getMaxScoreDiffIndex(Results $results)
+    public function getMaxScoreDiffIndex(array $scores)
     {
         $maxDiff = 0;
         $maxDiffIndex = 0;
-        $scores = $results->getScores();
         $lastScore = null;
         $recordIndex = 0;
         foreach ($scores as $score) {
+            if (!$score) {
+                continue;
+            }
             if ($recordIndex > 0) {
                 $diff = $lastScore - $score;
                 if ($diff > $maxDiff) {
