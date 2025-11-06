@@ -101,9 +101,17 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
     /**
      * Minimum string length of a query to use as a match point
      *
-     * @var bool
+     * @var int
      */
     protected $useQueryMinLength = 3;
+
+    /**
+     * Maximum levenshtein distance to match a query with the start
+     * of a database name
+     *
+     * @var int
+     */
+    protected $useQueryMaxDifference = 2;
 
     /**
      * Configuration of whether to use LibGuides as a data source
@@ -123,6 +131,8 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
     /**
      * URL to a list of all available databases, for display in the results list,
      * or false to omit.
+     *
+     * @var bool|string
      */
     protected $linkToAllDatabases = false;
 
@@ -180,6 +190,8 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
             ?? $this->useQuery;
         $this->useQueryMinLength = $databasesConfig['useQueryMinLength']
             ?? $this->useQueryMinLength;
+        $this->useQueryMaxDifference = $databasesConfig['useQueryMaxDifference']
+            ?? $this->useQueryMaxDifference;
 
         $this->useLibGuides = $databasesConfig['useLibGuides']
             ?? $this->useLibGuides;
@@ -267,7 +279,13 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
                 : '';
             if (strlen($query) >= $this->useQueryMinLength) {
                 foreach ($nameToDatabase as $name => $databaseInfo) {
-                    if (str_contains(strtolower($name), $query)) {
+                    $normalizedName = strtolower($name);
+                    if (str_contains($normalizedName, $query)) {
+                        $databases[$databaseInfo['url']] = $databaseInfo;
+                    }
+                    if ($this->useQueryMaxDifference && 
+                        levenshtein(substr($normalizedName, 0, strlen($query)), $query)
+                            <= $this->useQueryMaxDifference) {
                         $databases[$databaseInfo['url']] = $databaseInfo;
                     }
                     if (count($databases) >= $this->limit) {
