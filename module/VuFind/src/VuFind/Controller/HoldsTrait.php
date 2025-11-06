@@ -104,14 +104,13 @@ trait HoldsTrait
         $requestedItemId = $this->params()->fromPost('item_id') ?: $this->params()->fromQuery('item_id');
         if ($requestedItemId) {
             $holdings = $catalog->getHolding($gatheredDetails['id'], $patron);
-            $requestedItem = null;
+            $gatheredDetails['requestedItem'] = null;
             foreach ($holdings['holdings'] as $item) {
                 if ($item['item_id'] === $requestedItemId) {
-                    $requestedItem = $item;
+                    $gatheredDetails['requestedItem'] = $item;
                     break;
                 }
             }
-            $gatheredDetails['requestedItem'] = $requestedItem;
         }
 
         $extraHoldFields = isset($checkHolds['extraHoldFields'])
