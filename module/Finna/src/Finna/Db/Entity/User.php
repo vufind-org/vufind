@@ -51,7 +51,7 @@ class User extends \VuFind\Db\Entity\User implements UserEntityInterface
      * @var int
      */
     #[ORM\Column(name: 'finna_due_date_reminder', type: 'integer', nullable: false)]
-    protected int $finnaDueDateReminder;
+    protected int $finnaDueDateReminder = 0;
 
     /**
      * Finna last account expiration reminder date.
@@ -82,6 +82,16 @@ class User extends \VuFind\Db\Entity\User implements UserEntityInterface
      */
     #[ORM\Column(name: 'finna_protected', type: 'boolean', nullable: false, options: ['default' => false])]
     protected bool $finnaProtected = false;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        parent::__construct();
+        // Set the default values as DateTime objects
+        $this->finnaLastExpirationReminder = $this->getUnassignedDefaultDateTime();
+    }
 
     /**
      * Due date reminder setting setter

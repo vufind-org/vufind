@@ -52,7 +52,7 @@ class UserCard extends \VuFind\Db\Entity\UserCard implements UserCardEntityInter
      * @var int
      */
     #[ORM\Column(name: 'finna_due_date_reminder', type: 'integer', nullable: false)]
-    protected int $finnaDueDateReminder;
+    protected int $finnaDueDateReminder = 0;
 
     /**
      * Due date reminder setting setter
