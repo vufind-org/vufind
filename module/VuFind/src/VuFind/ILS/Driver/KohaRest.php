@@ -1406,12 +1406,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                     );
                 }
                 if ($result && $result['code'] >= 300) {
-                    if (!empty($result['data']['error'])) {
-                        $results[$requestId]['status']
-                            = ($this->config['Catalog']['translationPrefix'] ?? '') . $result['data']['error'];
-                    } else {
-                        $results[$requestId]['status'] = 'hold_error_update_failed';
-                    }
+                    $results[$requestId]['status'] = empty($result['data']['error'])
+                        ? 'hold_error_update_failed'
+                        : $this->getPrefixedMessage($result['data']['error']);
                 }
             }
             if (empty($results[$requestId]['errors'])) {
@@ -1660,12 +1657,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         );
 
         if ($result['code'] >= 300) {
-            if (!empty($result['data']['error'])) {
-                $message = ($this->config['Catalog']['translationPrefix'] ?? '')
-                    . $result['data']['error'];
-            } else {
-                $message = 'storage_retrieval_request_error_fail';
-            }
+            $message = empty($result['data']['error'])
+                ? 'storage_retrieval_request_error_fail'
+                : $this->getPrefixedMessage($result['data']['error']);
             return [
                 'success' => false,
                 'sysMessage' => $message,
@@ -1928,11 +1922,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             ]
         );
         if ($result['code'] >= 300) {
-            if (!empty($result['data']['error'])) {
-                $msg = ($this->config['Catalog']['translationPrefix'] ?? '') . $result['data']['error'];
-            } else {
-                $msg = $result['code'];
-            }
+            $msg = empty($result['data']['error'])
+                ? $result['code']
+                : $this->getPrefixedMessage($result['data']['error']);
             return [
                 'success' => false,
                 'error' => $msg,
@@ -2426,7 +2418,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                     } else {
                         $parts = explode('::', $code, 2);
                         if (isset($parts[1])) {
-                            $statuses[] = ($this->config['Catalog']['translationPrefix'] ?? '') . $parts[1];
+                            $statuses[] = $this->getPrefixedMessage($parts[1]);
                         }
                     }
                 }
@@ -2493,7 +2485,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         // the namespace separator in translatable strings:
         return $this->itemStatusMappings[$statusKey]
             ?? $data['code']
-            ?? ($this->config['Catalog']['translationPrefix'] ?? '') . str_replace(':', '_', $statusKey);
+            ?? $this->getPrefixedMessage(str_replace(':', '_', $statusKey));
     }
 
     /**
@@ -2797,12 +2789,12 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 break;
         }
 
-        $prefix = $ilsMsg
-            ? ($this->config['Catalog']['translationPrefix'] ?? '')
-            : '';
+        $message = $ilsMsg
+            ? $this->getPrefixedMessage($error)
+            : $error;
         return [
             'success' => false,
-            'sysMessage' => $prefix . $error,
+            'sysMessage' => $message,
         ];
     }
 
@@ -3195,5 +3187,17 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     {
         $code = trim($kohaFine['debit_type']) ?? '';
         return $this->feeTypeToTaxRateMappings[$code] ?? 0;
+    }
+
+    /**
+     * Add translation prefix to a given message
+     *
+     * @param string $msg Message
+     *
+     * @return string
+     */
+    protected function getPrefixedMessage(string $msg): string
+    {
+        return ($this->config['Catalog']['translationPrefix'] ?? '') . $msg;
     }
 }
