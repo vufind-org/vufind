@@ -79,15 +79,16 @@ class Between extends \Laminas\View\Helper\AbstractHelper
      *
      * @param array $scores Scores of the primary search results
      *
-     * @return ?int The index of the first of the pair of results with the biggest diff score
+     * @return ?int The index of the second of the pair of results with the biggest diff score
      */
     public function getMaxScoreDiffIndex(array $scores)
     {
         $maxDiff = 0;
         $maxDiffIndex = 0;
         $lastScore = null;
-        $recordIndex = 0;
+        $recordIndex = -1;
         foreach ($scores as $score) {
+            $recordIndex++;
             if (!$score) {
                 continue;
             }
@@ -99,7 +100,6 @@ class Between extends \Laminas\View\Helper\AbstractHelper
                 }
             }
             $lastScore = $score;
-            $recordIndex++;
         }
         return $maxDiffIndex;
     }
