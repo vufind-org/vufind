@@ -109,7 +109,7 @@ class UserListService extends \VuFind\Db\Service\UserListService implements User
      */
     public function getUserListsAndCountsByUser(
         UserEntityInterface|int $userOrId,
-        string|array $types = [UserList::TYPE_DEFAULT]
+        string|array $types = [UserListEntityInterface::TYPE_DEFAULT]
     ): array {
         $lists = parent::getUserListsAndCountsByUser($userOrId, $types);
 
