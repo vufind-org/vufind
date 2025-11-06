@@ -32,7 +32,6 @@
 namespace VuFind\Db\Service;
 
 use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Entity\UserList;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Exception\RecordMissing as RecordMissingException;
 
@@ -87,7 +86,7 @@ interface UserListServiceInterface extends DbServiceInterface
     public function getPublicLists(
         array $includeFilter = [],
         array $excludeFilter = [],
-        string|array $types = [UserList::TYPE_DEFAULT]
+        string|array $types = [UserListEntityInterface::TYPE_DEFAULT]
     ): array;
 
     /**
@@ -102,7 +101,7 @@ interface UserListServiceInterface extends DbServiceInterface
      */
     public function getUserListsAndCountsByUser(
         UserEntityInterface|int $userOrId,
-        string|array $types = [UserList::TYPE_DEFAULT]
+        string|array $types = [UserListEntityInterface::TYPE_DEFAULT]
     ): array;
 
     /**
@@ -124,7 +123,7 @@ interface UserListServiceInterface extends DbServiceInterface
         bool $publicOnly = true,
         bool $andTags = true,
         bool $caseSensitiveTags = false,
-        string|array $types = [UserList::TYPE_DEFAULT]
+        string|array $types = [UserListEntityInterface::TYPE_DEFAULT]
     ): array;
 
     /**
@@ -137,7 +136,7 @@ interface UserListServiceInterface extends DbServiceInterface
      */
     public function getUserListsByUser(
         UserEntityInterface|int $userOrId,
-        string|array $types = [UserList::TYPE_DEFAULT]
+        string|array $types = [UserListEntityInterface::TYPE_DEFAULT]
     ): array;
 
     /**
@@ -155,6 +154,6 @@ interface UserListServiceInterface extends DbServiceInterface
         string $recordId,
         string $source = DEFAULT_SEARCH_BACKEND,
         UserEntityInterface|int|null $userOrId = null,
-        string|array $types = [UserList::TYPE_DEFAULT]
+        string|array $types = [UserListEntityInterface::TYPE_DEFAULT]
     ): array;
 }
