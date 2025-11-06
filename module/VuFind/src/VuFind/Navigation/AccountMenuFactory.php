@@ -83,6 +83,7 @@ class AccountMenuFactory extends AbstractMenuFactory
                 $container->get(\VuFind\ILS\Connection::class),
                 $container->get(\VuFind\Auth\ILSAuthenticator::class),
                 $connector,
+                ...$options ?? [],
             ]
         );
     }
