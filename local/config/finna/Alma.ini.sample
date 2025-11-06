@@ -248,10 +248,15 @@ indexes = "868az"
 [OnlinePayment]
 ; Whether online payment is enabled. Default is false.
 ;enabled = true
-; Fee types listed are not payable online.
+; Alma fee types listed are not payable online.
 ;nonPayable[] = 'LOSTITEMREPLACEMENTFEE'
 ; Fee statuses listed are payable online. Default is ACTIVE.
 ;payableStatuses[] = 'ACTIVE'
+; Fine types that prevent payment completely
+;blockingNonPayableTypes[] = "XYZ"
+; Fine descriptions that prevent payment completely (enclose in // for regular expressions; modifiers supported,
+; other enclosures not)
+;blockingNonPayableDescriptions[] = "/Debt.*collection/"
 ; Transaction fee (in cents) added to each payment
 ;transactionFee = 0
 ; Minimum fee (in cents) allowed to be paid online

@@ -341,11 +341,6 @@ class AxiellWebServices extends \VuFind\ILS\Driver\AbstractBase implements
             throw new ILSException('Configuration needs to be set.');
         }
 
-        // BC for online payment configuration:
-        if (empty($this->config['OnlinePayment']) && !empty($this->config['onlinePayment'])) {
-            $this->config['OnlinePayment'] = $this->config['onlinePayment'];
-        }
-
         if (isset($this->config['Catalog']['arena_member'])) {
             $this->arenaMember = $this->config['Catalog']['arena_member'];
         } else {

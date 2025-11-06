@@ -257,4 +257,18 @@ class Demo extends \VuFind\ILS\Driver\Demo
         ];
         return $result;
     }
+
+    /**
+     * Generate random fines
+     *
+     * @return array
+     */
+    protected function getRandomFines(): array
+    {
+        $fines = parent::getRandomFines();
+        foreach ($fines as &$fine) {
+            $fine['organization'] ??= $this->getFakeLoc();
+        }
+        return $fines;
+    }
 }

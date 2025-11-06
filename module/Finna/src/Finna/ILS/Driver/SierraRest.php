@@ -154,6 +154,15 @@ class SierraRest extends \VuFind\ILS\Driver\SierraRest
      */
     public function init()
     {
+        // BC for product code mappings:
+        if (
+            isset($this->config['OnlinePayment']['productCodeMappings'])
+            && !isset($this->config['OnlinePayment']['driverProductCodeMappings'])
+        ) {
+            $this->config['OnlinePayment']['driverProductCodeMappings']
+                = $this->config['OnlinePayment']['productCodeMappings'];
+        }
+
         parent::init();
 
         if ($types = $this->config['OnlinePayment']['fineTypes'] ?? '') {
@@ -166,19 +175,6 @@ class SierraRest extends \VuFind\ILS\Driver\SierraRest
         if (isset($this->config['Catalog'][$key])) {
             $this->daysBeforeAccountExpirationNotification
                 = $this->config['Catalog'][$key];
-        }
-
-        if ($mappings = $this->config['OnlinePayment']['productCodeMappings'] ?? []) {
-            foreach ($mappings as $mapping) {
-                $parts = explode('=', $mapping, 2);
-                if (!isset($parts[1])) {
-                    continue;
-                }
-                $this->productCodeMappings[] = [
-                    'productCode' => $parts[0],
-                    'regexp' => $parts[1],
-                ];
-            }
         }
     }
 

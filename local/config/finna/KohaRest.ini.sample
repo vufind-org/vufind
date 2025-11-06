@@ -155,8 +155,8 @@ indexes = "868az"
 [OnlinePayment]
 ; Whether online payment is enabled. Default is false.
 enabled = true
-; Transaction fee (in cents) added to each payment
-;transactionFee = 50
+; Service fee (in cents) added to each payment
+;serviceFee = 50
 ; Minimum fee (in cents) allowed to be paid online
 minimumFee = 65
 ; Email address for transactions that could not be registered.
@@ -171,6 +171,11 @@ currency = 'EUR'
 ;nonPayableTypes[] = "LOST"
 ; Non-payable fine statuses:
 ;nonPayableStatuses[] = "UNRETURNED"
+; Fine types that prevent payment completely
+;blockingNonPayableTypes[] = "XYZ"
+; Fine descriptions that prevent payment completely (enclose in // for regular expressions; modifiers supported,
+; other enclosures not)
+;blockingNonPayableDescriptions[] = "/Debt.*collection/"
 
 
 [PasswordRecovery]

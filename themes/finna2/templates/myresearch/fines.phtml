@@ -37,7 +37,7 @@
         }
       }
       $balance = isset($record['balance']) ? $this->safeMoneyFormat($record['balance'] / 100.00) : '';
-      if ($this->onlinePayment && !$record['payableOnline']) {
+      if ($this->onlinePayment && !($record['payableOnline'] ?? false)) {
         // Note: `online_payment_nonpayable_fees` should be translated with transEsc, but is left unescaped
         // for historical reasons:
         $balance = '<span class="online-payment-nonpayable">' . $balance
@@ -47,7 +47,7 @@
       // Build 'select' last, it needs $fine:
       $select = '';
       if ($this->onlinePaymentEnabled && $this->selectFees) {
-        if ($record['payableOnline']) {
+        if ($record['payableOnline'] ?? false) {
           ob_start();
           ?>
             <div class="checkbox-container">
@@ -58,7 +58,7 @@
                     <?=isset($fine) ? ('(' . $this->transEsc($fine) . ')') : ''?>
                     <?=$this->safeMoneyFormat($record['balance'] / 100.00)?>
                   </span>
-                  <input class="checkbox-select-item" type="checkbox" name="selectedIDS[]" value="<?=$this->escapeHtmlAttr($record['fine_id'])?>" data-amount="<?=$this->escapeHtmlAttr($record['balance'])?>">
+                  <input class="checkbox-select-item" type="checkbox" name="selectedIDS[]" value="<?=$this->escapeHtmlAttr($record['fineId'])?>" data-amount="<?=$this->escapeHtmlAttr($record['balance'])?>">
                 </label>
             </div>
           <?php
@@ -104,7 +104,7 @@
 <div class="<?=$this->layoutClass('mainbody-myresearch')?>">
   <div class="my-research-content">
     <?php if ($user): ?>
-      <?php if (!empty($this->registerPayment)): ?>
+      <?php if (!empty($this->registerPaymentLocalIdentifier)): ?>
         <div class="alert alert-info">
           <span class="register-payment-spinner"><?=$this->icon('spinner') ?> <?=$this->translate('Registering Payment');?></span>
           <div id="online-payment-status" class="info hide"></div>
@@ -302,14 +302,9 @@
   </div>
 </div>
 <?php
-  if (!empty($this->registerPayment)) {
-    $paramsJson = json_encode($registerPaymentParams);
-    $js = <<<JS
-        $(document).ready(function() {
-          finna.onlinePayment.registerPayment($paramsJson);
-        });
-        JS;
-    echo $this->assetManager()->outputInlineScriptString($js);
+  if ($this->registerPaymentLocalIdentifier) {
+    $identifierJson = json_encode($this->registerPaymentLocalIdentifier);
+    echo $this->assetManager()->outputInlineScriptString("VuFind.fines.registerPayment($identifierJson);");
   }
 ?>
 

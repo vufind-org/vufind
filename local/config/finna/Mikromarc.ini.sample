@@ -159,7 +159,7 @@ method = driver
 [OnlinePayment]
 ; Whether online payment is enabled. Default is false.
 ;enabled = true
-; Fee types listed are not payable online.
+; Mikromarc fee types listed are not payable online.
 ; 8 = lost item replacement message
 ; 11 = lost item replacement fee
 nonPayable[] = 8

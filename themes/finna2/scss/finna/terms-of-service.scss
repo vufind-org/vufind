@@ -1,3 +1,8 @@
+.terms-of-service-logo {
+   width: 5rem;
+   margin-bottom: 1rem;
+}
+
 .terms-of-service {
     margin-top: 20px;
     font-size: 15px;
@@ -11,7 +16,7 @@
     }
 }
 
-.terms-of-service-text {
+.terms-of-service__text {
     margin-bottom: 0.5em;
     // Hacks to make the dialog fit the screen since scrolling a modal is erratic
     // with Safari on iOS
