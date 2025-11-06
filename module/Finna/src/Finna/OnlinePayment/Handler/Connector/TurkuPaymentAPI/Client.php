@@ -32,6 +32,9 @@ namespace Finna\OnlinePayment\Handler\Connector\TurkuPaymentAPI;
 
 use Paytrail\SDK\Request\PaymentRequest;
 use Paytrail\SDK\Response\PaymentResponse;
+use VuFindHttp\HttpServiceAwareTrait;
+
+use function in_array;
 
 /**
  * Turku Payment API client
@@ -45,6 +48,8 @@ use Paytrail\SDK\Response\PaymentResponse;
  */
 class Client extends \Paytrail\SDK\Client
 {
+    use HttpServiceAwareTrait;
+
     /**
      * OId for authorized users
      *
@@ -88,13 +93,15 @@ class Client extends \Paytrail\SDK\Client
      * @param string $platformName     Platform name.
      * @param string $merchantIdString Merchant id as a string.
      * @param string $oId              oId.
+     * @param string $baseUrl          Service base url.
      */
     public function __construct(
         int $merchantId,
         string $secretKey,
         string $platformName,
         string $merchantIdString,
-        string $oId
+        string $oId,
+        protected string $baseUrl
     ) {
         parent::__construct($merchantId, $secretKey, $platformName);
         $this->setMerchantIdString($merchantIdString);
@@ -183,27 +190,23 @@ class Client extends \Paytrail\SDK\Client
         $this->requestBody = json_encode($payment, JSON_UNESCAPED_SLASHES);
         $headers = $this->getHeaders('POST', null, null);
 
-        $response = $this->http_client->request(
-            'POST',
-            '',
-            [
-                'body' => $this->requestBody,
-                'headers' => $headers,
-            ]
-        );
-        if (!$response) {
-            throw new \Exception('Request failed');
+        $response = $this->httpService->post($this->baseUrl, $this->requestBody, headers: $headers);
+        if (!in_array($response->getStatusCode(), [200, 201])) {
+            throw new \Exception('Request failed: ' . $response->getStatusCode() . ': ' . $response->getBody());
         }
 
         $body = $response->getBody();
         // Handle header data and validate authorization field:
-        $responseHeaders = $response->getHeaders();
+        $responseHeaders = $response->getHeaders()->toArray();
+        foreach ($responseHeaders as $key => $value) {
+            $responseHeaders[strtolower($key)] = $value;
+        }
         TurkuSignature::validateHash(
             [],
             $body,
-            $responseHeaders['authorization'][0] ?? '',
+            $responseHeaders['authorization'] ?? '',
             $this->secretKey,
-            $responseHeaders['x-turku-ts'][0],
+            $responseHeaders['x-turku-ts'] ?? '',
             $this->platformName
         );
         // Create response:

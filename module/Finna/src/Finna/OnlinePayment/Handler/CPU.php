@@ -92,8 +92,7 @@ class CPU extends \VuFind\OnlinePayment\Handler\AbstractBase
         array $fines,
         string $paymentParam
     ): Response {
-        $patronId = $patron['cat_username'];
-        $localIdentifier = $this->generateLocalIdentifier($patronId);
+        $localIdentifier = $this->generateLocalIdentifier($patron);
 
         $returnUrl = $this->addQueryParams(
             $returnBaseUrl,

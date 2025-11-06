@@ -152,13 +152,6 @@ class Client
             $client->setRawBody($json_data);
             $response = $client->send();
 
-            $response = $this->httpService->post(
-                $this->service_url,
-                $json_data,
-                $options,
-                $headers
-            );
-
             $status = $response->getStatusCode();
             $content = $response->getBody();
 

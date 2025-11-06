@@ -327,12 +327,15 @@ class TurkuPaymentAPI extends \VuFind\OnlinePayment\Handler\AbstractBase
             }
         }
 
-        return new Client(
+        $client = new Client(
             0,
             $this->paymentConfig['secret'],
             'Finna',
             $this->paymentConfig['merchantId'],
-            $this->paymentConfig['oId']
+            $this->paymentConfig['oId'],
+            $this->paymentConfig['url']
         );
+        $client->setHttpService($this->httpService);
+        return $client;
     }
 }
