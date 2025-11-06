@@ -108,9 +108,7 @@
 </div>
 <?php
     $js = <<<JS
-        VuFind.getPromise('document-ready').then(() => {
-          recordDocReady();
-        });
+        VuFind.listenOnce('ready', recordDocReady);
         JS;
 
     echo $this->assetManager()->outputInlineScriptString($js);

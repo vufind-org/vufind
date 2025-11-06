@@ -17,21 +17,6 @@ var VuFind = (function VuFind() {
   var _iconsCache = {};
 
   /**
-   * Object containing resolve functions of promises. Key is the same as the promises key and value a resolve function.
-   * @member {object}
-   */
-  let _resolves = {};
-
-  /**
-   * Object containing promises where key is the identifier and value is the promise.
-   * @member {object}
-   */
-  let _promises = {
-    'cookie-consent-initialized': new Promise((resolve) => _resolves['cookie-consent-initialized'] = resolve),
-    'document-ready': new Promise((resolve) => _resolves['document-ready'] = resolve)
-  };
-
-  /**
    * Element creator function
    * @param {string}         tagName   Element tag name
    * @param {string}         className Element class
@@ -52,6 +37,13 @@ var VuFind = (function VuFind() {
   // Event controls
 
   let listeners = {};
+
+  /**
+   * Object containing arguments for events emitted.
+   * @member {object}
+   */
+  let _resolves = {};
+
   /**
    * Remove a listener function from a specific event.
    * @param {string}   event The name of the event.
@@ -69,16 +61,25 @@ var VuFind = (function VuFind() {
       listeners[event].splice(index, 1);
     }
   }
-  
+
   /**
    * Add a function to be called when an event is emitted.
    * @param {string}   event          The name of the event.
    * @param {Function} fn             The function to call when the event is emitted.
    * @param {object}   [options]      Options for the listener.
    * @param {boolean}  [options.once] If true, the listener will be removed after being called once (default = false).
-   * @returns {Function} A function to remove the listener.
+   * @returns {Function} A function to remove the listener or an empty function in case it was resolved immediately.
    */
-  function listen(event, fn, { once = false } = {}) {
+  function listen(event, fn, { once = false} = {}) {
+    // Run the script immediately if it has been resolved.
+    if (_resolves[event]) {
+      fn(..._resolves[event]);
+      // Return an empty function if script was meant to run only once and it was resolved.
+      // This keeps the structure similar and does not need any additional checks.
+      if (once) {
+        return () => {};
+      }
+    }
     if (typeof listeners[event] === "undefined") {
       listeners[event] = [];
     }
@@ -98,6 +99,16 @@ var VuFind = (function VuFind() {
     // This is common for similar libraries
     return removeListener;
   }
+
+  /**
+   * Add function to be called once when an event is emitted or resolved.
+   *
+   * @param {string} event The name of the event.
+   * @param {Function} fn The function to call when the event is emitted.
+   */
+  function listenOnce(event, fn) {
+    return listen(event, fn, {once: true});
+  }
   
   /**
    * Broadcast an event, passing arguments to all registered listeners.
@@ -110,51 +121,13 @@ var VuFind = (function VuFind() {
     if (typeof listeners[event] === "undefined") {
       return;
     }
-
+    _resolves[event] = [...args];
     // iterate over a copy of the listeners array
     // this prevents listeners from being skipped
     // if the listener before it is removed during execution
     for (const fn of Array.from(listeners[event])) {
       fn(...args);
     }
-  }
-  // Promises and resolves.
-
-  /**
-   * Create a promise for an event. Promises are useful in situations, where code requires something to be available
-   * before executing. I.e calling getPromise('document-ready').then(() => {...code}) will execute the function
-   * after VuFind module has called resolvePromise('document-ready'). After promise has been resolved, every
-   * call to getPromise('document-ready).then() will succeed.
-   * @param {string} identifier Identifier for the promise. Same identifier has to be used with resolvePromise.
-   * @returns {Promise} Promise which has to be resolved by using resolvePromise
-   */
-  function createPromise(identifier) {
-    if (!_promises[identifier]) {
-      _promises[identifier] = new Promise((resolve) => _resolves[identifier] = resolve);
-    }
-    return _promises[identifier];
-  }
-
-  /**
-   * Get a promise.
-   * @param {string} identifier Identifier for the promise.
-   * @returns {Promise|undefined} Promise or undefined.
-   */
-  function getPromise(identifier) {
-    return _promises[identifier] || undefined;
-  }
-
-  /**
-   * Resolve a promise to allow continue of the code.
-   * @param {string} identifier Identifier for the promise to resolve.
-   * @returns {Promise|undefined} Resolved promise or undefined
-   */
-  function resolvePromise(identifier) {
-    if (!_resolves[identifier]) {
-      return undefined;
-    }
-    _resolves[identifier]();
-    return _resolves[identifier];
   }
 
   // Module control
@@ -703,11 +676,10 @@ var VuFind = (function VuFind() {
     addIcons: addIcons,
     addTranslations: addTranslations,
     init: init,
-    createPromise: createPromise,
     el: el,
     emit: emit,
-    getPromise: getPromise,
     listen: listen,
+    listenOnce: listenOnce,
     unlisten: unlisten,
     evalCallback: evalCallback,
     getCspNonce: getCspNonce,
@@ -715,7 +687,6 @@ var VuFind = (function VuFind() {
     isPrinting: isPrinting,
     refreshPage: refreshPage,
     register: register,
-    resolvePromise: resolvePromise,
     setCspNonce: setCspNonce,
     spinner: spinner,
     spinnerElement: spinnerElement,
@@ -1049,8 +1020,6 @@ function setupMultiILSLoginFields(loginMethods, idPrefix) {
 
 document.addEventListener('DOMContentLoaded', () => {
   VuFind.emit("ready");
-  // Resolve the promise so any waiting or new script can safely be executed
-  VuFind.resolvePromise('document-ready');
   // Start up all of our submodules
   VuFind.init();
   // Off canvas

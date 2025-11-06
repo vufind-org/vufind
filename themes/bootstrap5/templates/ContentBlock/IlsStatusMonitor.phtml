@@ -1,6 +1,6 @@
 <?php
 $ilsStatusScript = <<<JS
-    VuFind.getPromise('document-ready').then(() => {
+    VuFind.listenOnce('ready', () => {
       $.ajax({
           dataType: 'json',
           method: 'GET',

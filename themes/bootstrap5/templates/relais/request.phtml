@@ -10,7 +10,7 @@
 <?php
   $this->assetManager()->appendScriptLink('relais.js');
   $js = <<<JS
-      VuFind.getPromise('document-ready').then(() => {
+      VuFind.listenOnce('ready', () => {
         VuFind.relais.addItem('{$oclc}', '{$failLink}');
       });
       JS;

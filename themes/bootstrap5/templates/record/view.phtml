@@ -111,7 +111,7 @@
 </div>
 <?php
     $js = <<<JS
-        VuFind.getPromise('document-ready').then(() => {
+        VuFind.listenOnce('ready', () => {
           recordDocReady();
         });
         JS;

@@ -28,7 +28,7 @@
   $oclc = $this->escapeJs($driver->tryMethod('getCleanOCLCNum'));
   $failLink = $this->escapeJs($this->relais()->getSearchLink($driver));
   $js = <<<JS
-      VuFind.getPromise('document-ready').then(() => {
+      VuFind.listenOnce('ready', () => {
         VuFind.relais.checkAvailability('{$addLink}', '{$oclc}', '{$failLink}')
       });
       JS;

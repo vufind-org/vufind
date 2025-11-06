@@ -34,7 +34,7 @@
           recommendationContainer.append(recommendation);
           recommendation.style.display = 'inherit';
         }
-        VuFind.getPromise('document-ready').then(() => {
+        VuFind.listenOnce('ready', () => {
           addRecommendation_$recommendationClass();
         });
         JS;
@@ -63,7 +63,7 @@
           combinedJumpLinks.style.visibility = "inherit";
         }
       }
-      VuFind.getPromise('document-ready').then(() => {
+      VuFind.listenOnce('ready', () => {
         updateJumpLink_$classId();
       });
       JS;

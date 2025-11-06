@@ -146,7 +146,7 @@
     echo $this->assetManager()->outputInlineScriptLink('hold.js');
 
     $js = <<<JS
-        VuFind.getPromise('document-ready').then(() => {
+        VuFind.listenOnce('ready', () => {
           setUpHoldRequestForm("{$this->escapeHtml($this->driver->getUniqueId())}");
         });
         JS;

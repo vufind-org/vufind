@@ -86,7 +86,7 @@
     echo $this->assetManager()->outputInlineScriptLink('hold.js');
 
     $js = <<<JS
-        VuFind.getPromise('document-ready').then(() => {
+        VuFind.listenOnce('ready', () => {
           setupHoldEditForm();
         });
         JS;
