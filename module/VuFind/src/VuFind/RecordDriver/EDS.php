@@ -30,6 +30,7 @@
 namespace VuFind\RecordDriver;
 
 use function count;
+use function floatval;
 use function in_array;
 use function intval;
 use function is_array;
@@ -135,7 +136,24 @@ class EDS extends DefaultRecord
     public function pubTypeRtacEnabled()
     {
         $pubTypeId = $this->fields['Header']['PubTypeId'];
-        return !($pubTypeId === 'ebook');
+        return $pubTypeId !== 'ebook';
+    }
+
+    /**
+     * Return the relevancy score for this record.
+     *
+     * @return ?float
+     */
+    public function getScore()
+    {
+        $score =
+            $this->fields['Header']['PreciseRelevancyScore']
+            ?? $this->fields['Header']['RelevancyScore']
+            ?? null;
+        if ($score) {
+            return floatval($score);
+        }
+        return $score;
     }
 
     /**

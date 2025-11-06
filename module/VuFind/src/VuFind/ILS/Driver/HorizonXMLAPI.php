@@ -168,7 +168,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     {
         $renewData = [];
 
-        $renewData['renewable'] = ($requested == 0) ? true : false;
+        $renewData['renewable'] = $requested == 0;
 
         if (!$renewData['renewable']) {
             $renewData['message'] = 'renew_item_requested';

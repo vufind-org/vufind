@@ -80,13 +80,13 @@ class ConfigCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         try {
             $this->upgrader->run(Version::getBuildVersion());
         } catch (\Exception $e) {
             $output->writeln((string)$e);
-            return Command::FAILURE;
+            return self::FAILURE;
         }
         foreach ($this->upgrader->getWarnings() as $warning) {
             $output->writeln($warning);
@@ -94,6 +94,6 @@ class ConfigCommand extends Command
         $output->writeln('Configuration upgrade successful! Please review your configurations.');
         $output->writeln('The automatic update process sometimes re-enables disabled settings and removes comments.');
         $output->writeln('Backups of your old configurations have been created for comparison purposes.');
-        return Command::SUCCESS;
+        return self::SUCCESS;
     }
 }

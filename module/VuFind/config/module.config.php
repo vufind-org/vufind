@@ -676,6 +676,7 @@ $config = [
                 'metadata_cache' => $doctrineCacheType,
                 'hydration_cache' => $doctrineCacheType,
                 'proxy_dir' => LOCAL_CACHE_DIR . (PHP_SAPI == 'cli' ? '/cli' : '') . '/doctrine-proxies',
+                'class_metadata_factory_name' => \VuFind\Db\Mapping\ClassMetadataFactory::class,
             ],
         ],
         'driver' => [
@@ -683,7 +684,7 @@ $config = [
                 'class' => \Doctrine\ORM\Mapping\Driver\AttributeDriver::class,
                 'cache' => $doctrineCacheType,
                 'paths' => [
-                    'module/VuFind/src/VuFind/Db/Entity',
+                    __DIR__ . '/../src/VuFind/Db/Entity',
                 ],
             ],
             'orm_default' => [

@@ -195,7 +195,7 @@ class MonitorCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->output = $output;
         $this->retryMinutes = (int)$input->getOption('retry-duration');
@@ -207,7 +207,7 @@ class MonitorCommand extends Command
         // Abort if we have an invalid minimum paid age.
         if ($this->minimumPaidAge < 10) {
             $output->writeln('Minimum paid age must be at least 10 seconds');
-            return 1;
+            return self::FAILURE;
         }
 
         $this->msg('Online payment monitor started');
@@ -236,7 +236,7 @@ class MonitorCommand extends Command
 
         $this->msg('Online payment monitor completed');
 
-        return 0;
+        return self::SUCCESS;
     }
 
     /**

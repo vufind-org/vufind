@@ -133,7 +133,7 @@ class Results extends \VuFind\Search\Base\Results
     }
 
     /**
-     * Get the scores of the results
+     * Get an array of the record ID mapped to its score.
      *
      * @return array
      */
@@ -141,10 +141,7 @@ class Results extends \VuFind\Search\Base\Results
     {
         $scoreMap = [];
         foreach ($this->results as $record) {
-            $score = $record->getScore() ?? false;
-            if ($score) {
-                $scoreMap[$record->getUniqueId()] = $score;
-            }
+            $scoreMap[$record->getUniqueId()] = $record->getScore();
         }
         return $scoreMap;
     }
@@ -152,10 +149,16 @@ class Results extends \VuFind\Search\Base\Results
     /**
      * Getting the highest relevance of all the results
      *
-     * @return null|float
+     * @return ?float
      */
     public function getMaxScore()
     {
-        return $this->results[0]->getScore() ?? null;
+        if (
+            empty($this->results) ||
+            'relevance' != $this->getParams()->getSort()
+        ) {
+            return null;
+        }
+        return $this->results[0]->getScore();
     }
 }

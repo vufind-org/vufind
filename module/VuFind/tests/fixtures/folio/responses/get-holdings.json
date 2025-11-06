@@ -324,7 +324,7 @@
                     },
                     "permanentLocation" : {
                         "id" : "1a9efad5-d360-49c7-9d32-3dc502e13979",
-                        "name" : "MSU Main Library [mnmn]"
+                        "name" : "Main Library [mnmn]"
                     },
                     "metadata" : {
                         "createdDate" : "2022-06-25T11:54:53.311+00:00",
@@ -342,13 +342,122 @@
                     "isBoundWith" : false,
                     "effectiveLocation" : {
                         "id" : "1a9efad5-d360-49c7-9d32-3dc502e13979",
-                        "name" : "MSU Main Library [mnmn]"
+                        "name" : "Main Library [mnmn]"
                     }
                 }
             ],
             "totalRecords": 2,
             "resultInfo": {
                 "totalRecords": 2,
+                "facets": [],
+                "diagnostics": []
+            }
+        },
+        "bodyType": "json",
+        "status": 200
+    },
+    {
+        "expectedMethod": "GET",
+        "expectedPath": "\/inventory-storage\/bound-with-parts",
+        "expectedParams": {
+            "query": "holdingsRecordId == (\"abbd2c2b-b2a1-4324-bd24-10f990cfc594\" OR \"2216df84-b841-490c-8bde-b83076c5c4f4\")",
+            "offset": 0,
+            "limit": 1000
+        },
+        "body": {
+            "boundWithParts": [
+                {
+                    "id": "0348a94e-cfb4-49bf-8cf0-f0d66825abc6",
+                    "holdingsRecordId": "2216df84-b841-490c-8bde-b83076c5c4f4",
+                    "itemId": "393c1119-d9b8-4f69-bb44-4a44dbe16c3e",
+                    "metadata": {
+                        "createdDate": "2022-06-25T21:30:58.975+00:00",
+                        "createdByUserId": "dccd30a7-b899-4d1c-9299-9384c2c3b806",
+                        "updatedDate": "2022-06-25T21:30:58.975+00:00",
+                        "updatedByUserId": "dccd30a7-b899-4d1c-9299-9384c2c3b806"
+                    }
+                }
+            ],
+            "totalRecords": 1
+        },
+        "bodyType": "json",
+        "status": 200
+    },
+    {
+        "expectedMethod": "GET",
+        "expectedPath": "\/inventory\/items",
+        "expectedParams": {
+            "query": "id == (\"393c1119-d9b8-4f69-bb44-4a44dbe16c3e\")",
+            "offset": 0,
+            "limit": 1000
+        },
+        "body": {
+            "items": [
+                {
+                    "id": "393c1119-d9b8-4f69-bb44-4a44dbe16c3e",
+                    "_version": "3",
+                    "status": {
+                        "name": "Available",
+                        "date": "2024-12-02T20:25:03.853+00:00"
+                    },
+                    "administrativeNotes": [],
+                    "title": "The robots of dawn / Isaac Asimov.",
+                    "callNumber": "PS3551.S5 R6 1983b",
+                    "hrid": "it00009945278",
+                    "contributorNames": [
+                        {
+                            "name": "Asimov, Isaac, 1920-1992"
+                        }
+                    ],
+                    "discoverySuppress": false,
+                    "holdingsRecordId": "a3f2f930-334b-42d8-a242-4a5ee24d0189",
+                    "itemLevelCallNumber": "PS3551.S5 R6 1983b",
+                    "itemLevelCallNumberTypeId": "7b83d42e-91ae-4447-baa5-944558277a19",
+                    "copyNumber": "1",
+                    "notes": [],
+                    "circulationNotes": [],
+                    "tags": {
+                        "tagList": []
+                    },
+                    "yearCaption": [],
+                    "electronicAccess": [],
+                    "statisticalCodeIds": [],
+                    "purchaseOrderLineIdentifier": null,
+                    "materialType": {
+                        "id": "ee8ef550-f7ec-436d-8f46-bda56d1c9f06",
+                        "name": "Printed Material"
+                    },
+                    "permanentLoanType" : {
+                        "id" : "d012791f-4e26-4dc2-a279-b6a42b1df315",
+                        "name" : "Can Circulate"
+                    },
+                    "permanentLocation" : {
+                        "id" : "1a9efad5-d360-49c7-9d32-3dc502e13979",
+                        "name" : "Main Library [mnmn]"
+                    },
+                    "metadata": {
+                        "createdDate": "2022-06-25T12:02:51.721+00:00",
+                        "createdByUserId": "74725d2d-38f8-4144-a819-16597053a4d1",
+                        "updatedDate": "2024-12-02T20:25:03.850+00:00",
+                        "updatedByUserId": "74725d2d-38f8-4144-a819-16597053a4d1"
+                    },
+                    "effectiveCallNumberComponents": {
+                        "callNumber": "PS3551.S5 R6 1983b",
+                        "prefix": null,
+                        "suffix": null,
+                        "typeId": "5063b20c-6ee9-4e58-80b0-695adbd48627"
+                    },
+                    "effectiveShelvingOrder": "PS 43551 S5 R6 41983B 11",
+                    "isBoundWith": true,
+                    "effectiveLocation" : {
+                        "id" : "1a9efad5-d360-49c7-9d32-3dc502e13979",
+                        "name" : "Main Library [mnmn]"
+                    }
+                }
+            ],
+            "totalRecords": 1,
+            "resultInfo": {
+                "totalRecords": 1,
                 "facets": [],
                 "diagnostics": []
             }
@@ -383,9 +492,9 @@
                 },
                 {
                     "id": "1a9efad5-d360-49c7-9d32-3dc502e13979",
-                    "name": "MSU Main Library [mnmn]",
+                    "name": "Main Library [mnmn]",
                     "code": "mnmn",
-                    "discoveryDisplayName": "MSU Main Library",
+                    "discoveryDisplayName": "Main Library",
                     "isActive": true,
                     "institutionId": "36e4348f-9f47-4181-bd06-736f9d081766",
                     "campusId": "085b4924-e163-4ee6-9924-67cf5b55da39",

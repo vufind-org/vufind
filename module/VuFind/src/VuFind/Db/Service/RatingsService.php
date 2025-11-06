@@ -185,8 +185,7 @@ class RatingsService extends AbstractDbService implements
             . 'COUNT(r.id) AS total '
             . 'FROM ' . RatingsEntityInterface::class . ' r';
         $query = $this->entityManager->createQuery($dql);
-        $stats = current($query->getResult());
-        return $stats;
+        return $query->getSingleResult();
     }
 
     /**
@@ -217,7 +216,7 @@ class RatingsService extends AbstractDbService implements
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
 
-        if ($existing = current($query->getResult())) {
+        if ($existing = $query->getOneOrNullResult()) {
             if (null === $rating) {
                 $this->entityManager->remove($existing);
             } else {
