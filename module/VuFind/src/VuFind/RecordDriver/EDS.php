@@ -157,20 +157,6 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Return the relevancy score for this record.
-     *
-     * @return ?int
-     */
-    public function getScore()
-    {
-        $score = $this->fields['Header']['RelevancyScore'] ?? null;
-        if ($score) {
-            return intval($score);
-        }
-        return $score;
-    }
-
-    /**
      * Does this record support the holdings tab?
      *
      * @return bool
