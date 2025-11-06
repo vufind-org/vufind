@@ -50,13 +50,6 @@ class UserList implements UserListEntityInterface
     use DateTimeTrait;
 
     /**
-     * Constant for default type of user list.
-     *
-     * @var string
-     */
-    public const TYPE_DEFAULT = 'default';
-
-    /**
      * Unique ID.
      *
      * @var int
