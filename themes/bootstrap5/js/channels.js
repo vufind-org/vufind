@@ -47,18 +47,16 @@ VuFind.register("channels", function Channels() {
     // Remove from dropdowns
     const group = link.closest(".channel-add-menu").dataset.group;
     const token = link.dataset.token;
-    let groupMenus = Array.from(document.querySelectorAll(`[data-group="${group}"]`));
-    for (const menu of groupMenus) {
-      const doomed = menu.querySelector(`[data-token="${token}"]`);
-      if (doomed) {
-        doomed.remove();
+    const relatedMenus = Array.from(document.querySelectorAll(`.channel-add-menu[data-group="${group}"]`))
+    for (const menu of relatedMenus) {
+      // Remove add links for this channel
+      const usedMenuItem = menu.querySelector(`[data-token="${token}"]`);
+      if (usedMenuItem) {
+        usedMenuItem.remove();
       }
+      // Remove empty menus
       if (menu.querySelector(".channel-add-link") === null) {
-        for (const emptyMenu of groupMenus) {
-          emptyMenu.remove();
-        }
-        groupMenus = null;
-        break;
+        menu.remove();
       }
     }
 
@@ -76,8 +74,13 @@ VuFind.register("channels", function Channels() {
           // Make sure the channel has content
           if (channelEl.querySelectorAll(".channel-item").length > 0) {
             // Add related channels menu
-            if (groupMenus) {
-              channelEl.querySelector(".channel-title").after(groupMenus[0].cloneNode(true));
+            const relatedMenu = document.querySelector(`.channel-add-menu[data-group="${group}"]`);
+            if (relatedMenu) {
+              channelEl.querySelector(".channel-title").after(relatedMenu.cloneNode(true));
+            }
+            // Clamp new titles
+            for (const titleEl of channelEl.querySelectorAll(".channel-item-title")) {
+              clampLines(titleEl);
             }
             // Add channel
             callerChannelEl.after(channelEl);
