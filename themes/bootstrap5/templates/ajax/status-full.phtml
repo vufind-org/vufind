@@ -8,7 +8,7 @@
   <?php foreach (array_slice($this->statusItems, 0, $maxItems) as $item): ?>
     <?php
       $callNumPrefix = !empty($item['callnumber_prefix']) ? $item['callnumber_prefix'] . ' ' : '';
- 
+
       $itemHasAdditionalHoldingsFields = false;
       foreach ($this->holdingsTextFieldNames as $holdingsTextField) {
         if (!empty($item[$holdingsTextField])) {
