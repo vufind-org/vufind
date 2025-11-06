@@ -29,7 +29,9 @@
 
 namespace VuFind\Db\Mapping;
 
+use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\Persistence\Mapping\ClassMetadata;
+use ReflectionException;
 
 /**
  * Extended Doctrine class metadata factory.
