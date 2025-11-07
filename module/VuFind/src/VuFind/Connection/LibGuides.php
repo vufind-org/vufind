@@ -140,17 +140,19 @@ class LibGuides implements
     /**
      * Load all LibGuides AZ databases.
      *
+     * @param bool $includeTypes Include database types in the response
+     *
      * @return object|null A JSON object of all LibGuides databases, or null
      * if an error occurs
      */
-    public function getAZ()
+    public function getAZ($includeTypes = false)
     {
         if (!$this->authenticateAndSetHeaders()) {
             return null;
         }
 
         $result = $this->doGet(
-            $this->baseUrl . '/az?expand=az_props'
+            $this->baseUrl . '/az?expand=az_props' . ($includeTypes ? ',az_types' : '')
         );
 
         if (isset($result->errorCode)) {
