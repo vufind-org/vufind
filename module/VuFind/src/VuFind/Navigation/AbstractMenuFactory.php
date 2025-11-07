@@ -78,7 +78,7 @@ class AbstractMenuFactory implements FactoryInterface
         );
         $sectionService = $container->get(\VuFind\Section\SectionServiceInterface::class);
         $menu->setSectionService($sectionService);
-        $menu->localizeConfig();
+        $menu->localizeSectionConfig();
         return $menu;
     }
 }

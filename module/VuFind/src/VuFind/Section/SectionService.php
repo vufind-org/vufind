@@ -106,9 +106,9 @@ class SectionService implements SectionServiceInterface
         // Get plugin and initialize with key and optionally configuration,
         // depending on plugin type.
         $plugin = $pluginManager->get($type);
-        $plugin->setKey($key);
+        $plugin->setSectionKey($key);
         if ($pluginManager !== $this->navigationPm) {
-            $plugin->setConfig($config);
+            $plugin->setSectionConfig($config);
         }
 
         return $plugin;
@@ -135,7 +135,7 @@ class SectionService implements SectionServiceInterface
         bool $useFirst = true
     ): array {
         return $section->localizeSettings(
-            ($settings ?? $section->getConfig()),
+            ($settings ?? $section->getSectionConfig()),
             $this->userLocale,
             $this->fallbackLocales,
             $contextKey,

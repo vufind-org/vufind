@@ -134,7 +134,7 @@ class Section extends AbstractHelper
      */
     public function render(array $context = []): string
     {
-        $mergedContext = array_merge($this->section->getContext(), $context);
+        $mergedContext = array_merge($this->section->getSectionContext(), $context);
         $mergedContext[self::ADDITIONAL_CONTEXT_KEY] = $context;
         if ($this->getView()->resolver()->resolve($this->template)) {
             return $this->getView()->render($this->template, $mergedContext);

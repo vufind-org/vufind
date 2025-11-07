@@ -130,7 +130,7 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         if ($plugin instanceof AbstractMenu) {
             $sectionService = $container->get(SectionServiceInterface::class);
             $plugin->setSectionService($sectionService);
-            $plugin->localizeConfig();
+            $plugin->localizeSectionConfig();
         }
         if (!$allowOverride = $pluginManager->getAllowOverride()) {
             $pluginManager->setAllowOverride(true);

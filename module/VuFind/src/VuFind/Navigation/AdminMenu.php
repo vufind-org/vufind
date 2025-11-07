@@ -43,11 +43,11 @@ class AdminMenu extends AbstractMenu
     /**
      * Constructor.
      *
-     * @param array $config                 Menu configuration
+     * @param array $sectionConfig          Menu configuration
      * @param bool  $showOverdriveAdminMenu Show Overdrive admin menu item?
      */
     public function __construct(
-        array $config,
+        array $sectionConfig,
         protected bool $showOverdriveAdminMenu
     ) {
         $this->addRequiredSettings(
@@ -57,7 +57,7 @@ class AdminMenu extends AbstractMenu
             ],
             self::ITEM_CONTEXT
         );
-        parent::__construct($config);
+        parent::__construct($sectionConfig);
     }
 
     /**
@@ -65,9 +65,9 @@ class AdminMenu extends AbstractMenu
      *
      * @return array
      */
-    public function getContext(): array
+    public function getSectionContext(): array
     {
-        $context = parent::getContext();
+        $context = parent::getSectionContext();
         $context['items'] = $this->getMenu()['Admin']['MenuItems'];
         return $context;
     }

@@ -71,27 +71,27 @@ abstract class AbstractMenu extends AbstractBase implements NavigationInterface
     /**
      * Constructor.
      *
-     * @param array $config Configuration
+     * @param array $sectionConfig Section configuration
      */
-    public function __construct(array $config)
+    public function __construct(array $sectionConfig)
     {
         $this->requiredSettings[self::GROUP_CONTEXT] ??= [];
         $this->requiredSettings[self::ITEM_CONTEXT] ??= [];
         $this->localizableSettings[self::GROUP_CONTEXT] ??= [];
         $this->localizableSettings[self::ITEM_CONTEXT] ??= [];
-        $this->setConfig($config);
+        $this->setSectionConfig($sectionConfig);
     }
 
     /**
      * Set section configuration.
      *
-     * @param array $config Configuration
+     * @param array $sectionConfig Section configuration
      *
      * @return $this
      */
-    public function setConfig(array $config): static
+    public function setSectionConfig(array $sectionConfig): static
     {
-        parent::setConfig($config);
+        parent::setSectionConfig($sectionConfig);
         $this->menu = null;
         return $this;
     }
@@ -110,14 +110,14 @@ abstract class AbstractMenu extends AbstractBase implements NavigationInterface
     }
 
     /**
-     * Localize the configuration.
+     * Localize section configuration.
      *
      * Navigation items do not localize the configuration when it is set due to
      * backward compatibility.
      *
      * @return static
      */
-    public function localizeConfig(): static
+    public function localizeSectionConfig(): static
     {
         $config = $this->sectionService->localizeSettings($this);
         foreach ($config as $group => $settings) {
@@ -136,7 +136,7 @@ abstract class AbstractMenu extends AbstractBase implements NavigationInterface
                     );
             }
         }
-        $this->setConfig($config);
+        $this->setSectionConfig($config);
         return $this;
     }
 
@@ -170,7 +170,7 @@ abstract class AbstractMenu extends AbstractBase implements NavigationInterface
      *
      * @return array
      */
-    public function getContext(): array
+    public function getSectionContext(): array
     {
         return [
             'menu' => $this->getMenu(),
@@ -186,7 +186,7 @@ abstract class AbstractMenu extends AbstractBase implements NavigationInterface
     public function getMenu(): array
     {
         if (!isset($this->menu)) {
-            $config = $this->getConfig() ?: static::getDefaultMenuConfig();
+            $config = $this->getSectionConfig() ?: static::getDefaultMenuConfig();
             $this->menu = $this->processGroups($config);
         }
         return $this->menu;

@@ -57,7 +57,7 @@ class AccountMenu extends AbstractMenu
     /**
      * Constructor.
      *
-     * @param array               $config              Menu configuration
+     * @param array               $sectionConfig       Menu configuration
      * @param AccountCapabilities $accountCapabilities Account capabilities
      * @param Manager             $authManager         Authentication manager
      * @param Connection          $ilsConnection       ILS connection
@@ -65,18 +65,18 @@ class AccountMenu extends AbstractMenu
      * @param ?OverdriveConnector $overdriveConnector  Overdrive connector
      */
     public function __construct(
-        array $config,
+        array $sectionConfig,
         protected AccountCapabilities $accountCapabilities,
         protected Manager $authManager,
         protected Connection $ilsConnection,
         protected ILSAuthenticator $ilsAuthenticator,
         protected ?OverdriveConnector $overdriveConnector,
     ) {
-        if (isset($config['MenuItems'])) {
+        if (isset($sectionConfig['MenuItems'])) {
             // backward compatibility for outdated legacy AccountMenu configurations
             $default = static::getDefaultMenuConfig();
-            $default['Account']['MenuItems'] = $config['MenuItems'];
-            $config = $default;
+            $default['Account']['MenuItems'] = $sectionConfig['MenuItems'];
+            $sectionConfig = $default;
         }
         $this->addRequiredSettings(
             [
@@ -100,7 +100,7 @@ class AccountMenu extends AbstractMenu
             ],
             self::ITEM_CONTEXT
         );
-        parent::__construct($config);
+        parent::__construct($sectionConfig);
     }
 
     /**
@@ -142,9 +142,9 @@ class AccountMenu extends AbstractMenu
      *
      * @return array
      */
-    public function getContext(): array
+    public function getSectionContext(): array
     {
-        $context = parent::getContext();
+        $context = parent::getSectionContext();
         // set items for legacy backward compatibility, might be removed in future releases
         $context['items'] = $this->getMenu()['Account']['MenuItems'];
         return $context;

@@ -45,39 +45,39 @@ interface SectionInterface extends ConfigSettingPropertiesInterface
     /**
      * Set section key.
      *
-     * @param string $key Key
+     * @param string $sectionKey Section key
      *
      * @return $this
      */
-    public function setKey(string $key): static;
+    public function setSectionKey(string $sectionKey): static;
 
     /**
      * Return section key.
      *
      * @return string
      */
-    public function getKey(): string;
+    public function getSectionKey(): string;
 
     /**
      * Set section configuration.
      *
-     * @param array $config Configuration
+     * @param array $sectionConfig Section configuration
      *
      * @return $this
      */
-    public function setConfig(array $config): static;
+    public function setSectionConfig(array $sectionConfig): static;
 
     /**
      * Return section configuration.
      *
      * @return array
      */
-    public function getConfig(): array;
+    public function getSectionConfig(): array;
 
     /**
      * Return context variables that can be used to render the section.
      *
      * @return array
      */
-    public function getContext(): array;
+    public function getSectionContext(): array;
 }

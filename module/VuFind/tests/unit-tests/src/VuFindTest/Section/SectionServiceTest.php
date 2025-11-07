@@ -139,7 +139,7 @@ class SectionServiceTest extends AbstractSectionTestCase
                 ],
             ],
         ];
-        $localizedConfig = $this->getAccountMenu($config)->getConfig();
+        $localizedConfig = $this->getAccountMenu($config)->getSectionConfig();
         $this->assertEquals(
             'English language URL',
             $localizedConfig['Account']['MenuItems'][0]['url']

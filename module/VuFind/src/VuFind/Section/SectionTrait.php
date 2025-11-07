@@ -45,29 +45,29 @@ trait SectionTrait
     use ConfigSettingPropertiesTrait;
 
     /**
-     * Key.
+     * Section key.
      *
      * @var string
      */
-    protected string $key;
+    protected string $sectionKey;
 
     /**
-     * Configuration.
+     * Section configuration.
      *
      * @var array
      */
-    protected array $config;
+    protected array $sectionConfig;
 
     /**
      * Set section configuration.
      *
-     * @param array $config Configuration
+     * @param array $sectionConfig Section configuration
      *
      * @return $this
      */
-    public function setConfig(array $config): static
+    public function setSectionConfig(array $sectionConfig): static
     {
-        $this->config = $this->validateSettings($config);
+        $this->sectionConfig = $this->validateSettings($sectionConfig);
         return $this;
     }
 
@@ -76,21 +76,21 @@ trait SectionTrait
      *
      * @return array
      */
-    public function getConfig(): array
+    public function getSectionConfig(): array
     {
-        return $this->config;
+        return $this->sectionConfig;
     }
 
     /**
      * Set section key.
      *
-     * @param string $key Key
+     * @param string $sectionKey Section key
      *
      * @return $this
      */
-    public function setKey(string $key): static
+    public function setSectionKey(string $sectionKey): static
     {
-        $this->key = $key;
+        $this->sectionKey = $sectionKey;
         return $this;
     }
 
@@ -99,9 +99,9 @@ trait SectionTrait
      *
      * @return string
      */
-    public function getKey(): string
+    public function getSectionKey(): string
     {
-        return $this->key;
+        return $this->sectionKey;
     }
 
     /**
@@ -109,9 +109,9 @@ trait SectionTrait
      *
      * @return array
      */
-    public function getContext(): array
+    public function getSectionContext(): array
     {
-        return $this->config;
+        return $this->sectionConfig;
     }
 
     /**
