@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2011-2024.
+ * Copyright (C) Villanova University 2011-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -45,6 +45,13 @@ use PHPUnit\Framework\ExpectationFailedException;
 class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
+     * Selector for finding a complete channel.
+     *
+     * @var string
+     */
+    protected $channelSelector = 'div.channel';
+
+    /**
      * Get a reference to a standard search results page.
      *
      * @param string $q Search to perform on Channels page
@@ -68,9 +75,9 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     {
         $page = $this->getChannelsPage();
         // Channels are here
-        $this->findCss($page, 'div.channel-wrapper');
+        $this->findCss($page, $this->channelSelector);
         // Check number of channels
-        $channels = $page->findAll('css', 'div.channel-wrapper');
+        $channels = $page->findAll('css', $this->channelSelector);
         $this->assertCount(6, $channels);
         // Make sure search input matches url
         $this->assertEquals(
@@ -87,17 +94,17 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     public function testAddChannels(): void
     {
         $page = $this->getChannelsPage();
-        $channel = $this->findCss($page, 'div.channel-wrapper');
+        $channel = $this->findCss($page, $this->channelSelector);
         // Initial counts
-        $this->assertCount(6, $page->findAll('css', 'div.channel-wrapper'));
-        $this->assertCount(8, $channel->findAll('css', '.channel-add-menu .dropdown-menu li'));
+        $this->assertCount(6, $page->findAll('css', $this->channelSelector));
+        $this->assertCount(8, $channel->findAll('css', '.channel-add-link'));
         // Click first add button
-        $this->clickCss($channel, '.add-btn');
+        $this->clickCss($channel, '.channel-add-more-btn');
         // Post count
-        $this->waitStatement('$("div.channel-wrapper").length === 8');
-        $this->waitStatement('$(".channel-add-menu:first .dropdown-menu li").length === 6');
-        $this->assertCount(8, $page->findAll('css', 'div.channel-wrapper'));
-        $this->assertCount(6, $channel->findAll('css', '.channel-add-menu .dropdown-menu li'));
+        $this->waitStatement('$("div.channel").length === 8');
+        $this->waitStatement('$(".channel-add-menu:first .channel-add-link").length === 6');
+        $this->assertCount(8, $page->findAll('css', $this->channelSelector));
+        $this->assertCount(6, $channel->findAll('css', '.channel-add-link'));
     }
 
     /**
@@ -108,11 +115,11 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     public function testSwitchToSearch(): void
     {
         $page = $this->getChannelsPage();
-        $channel = $this->findCss($page, 'div.channel-wrapper');
-        // Click dropdown to display links
-        $this->clickCss($channel, '.dropdown');
+        $channel = $this->findCss($page, $this->channelSelector);
+        // Click options dropdown to display links
+        $this->clickCss($channel, '.channel-options');
         // Click link to go to search results
-        $this->clickCss($channel, '.channel_search');
+        $this->clickCss($channel, '.channel-options .fa-search');
         // Make sure the search translated
         $this->assertEquals(
             'building:"weird_ids.mrc"',
@@ -171,7 +178,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     {
         // Ensure that any "Loading..." popover is not being displayed:
         $this->waitForPageLoad($page);
-        $popoverContents = $this->findCssAndGetText($page, '.popover');
+        $popoverContents = $this->findCssAndGetText($page, '.channels-quick-look');
         // The popover should contain an appropriate title and metadata:
         $this->assertStringContainsString($expectedTitle, $popoverContents);
         $this->assertStringContainsString('Description', $popoverContents);
@@ -193,7 +200,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('popoversProvider')]
-    public function testPopovers(
+    public function testQuickLookPopovers(
         string $query,
         string $record1,
         string $title1,
@@ -203,20 +210,20 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     ): void {
         $page = $this->getChannelsPage($query);
         // Click a record to open the popover:
-        $this->clickCss($page, '.channel-record[data-record-id="' . $record1 . '"]');
+        $this->clickCss($page, '.channel-item[data-record-id="' . $record1 . '"] .channel-quick-look-btn');
         // The popover should contain an appropriate title and metadata:
         $popoverContents = $this->assertPopoverTitleAndDescription($page, $title1);
         // Click a different record (or the second instance of the same record, if that's what we're testing):
         $title2Target = $record2ChannelIndex === null
             ? $page : $this->findCss($page, '.channel', index: $record2ChannelIndex);
-        $this->clickCss($title2Target, '.channel-record[data-record-id="' . $record2 . '"]');
+        $this->clickCss($title2Target, '.channel-item[data-record-id="' . $record2 . '"] .channel-quick-look-btn');
         $this->assertPopoverTitleAndDescription($page, $title2);
         // Now click back to the original record; the popover should contain the same contents.
-        $this->clickCss($page, '.channel-record[data-record-id="' . $record1 . '"]');
-        $popoverContents3 = $this->findCssAndGetText($page, '.popover');
+        $this->clickCss($page, '.channel-item[data-record-id="' . $record1 . '"] .channel-quick-look-btn');
+        $popoverContents3 = $this->findCssAndGetText($page, '.channels-quick-look');
         $this->assertEquals($popoverContents, $popoverContents3);
         // Finally, click through to the record page.
-        $link = $this->findCss($page, '.popover a', null, 1);
+        $link = $this->findCss($page, '.ql-view-record-btn');
         $this->assertEquals('View Record', $link->getText());
         $link->click();
         $this->waitForPageLoad($page);
