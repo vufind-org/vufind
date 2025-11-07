@@ -32,6 +32,7 @@ namespace VuFindTest\Mink;
 use Behat\Mink\Element\Element;
 use Exception;
 use PHPUnit\Framework\ExpectationFailedException;
+use VuFindTest\Feature\DemoDriverTestTrait;
 
 /**
  * Mink channels test class.
@@ -44,6 +45,8 @@ use PHPUnit\Framework\ExpectationFailedException;
  */
 class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
 {
+    use DemoDriverTestTrait;
+
     /**
      * Selector for finding a complete channel.
      *
@@ -228,5 +231,58 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         $link->click();
         $this->waitForPageLoad($page);
         $this->assertEquals($title1, $this->findCssAndGetText($page, 'h1'));
+    }
+
+    /**
+     * Data provider for testILSChannel().
+     *
+     * @return array[]
+     */
+    public static function ilsChannelProvider(): array
+    {
+        return [
+            'New ILS Items' => ['newilsitems', 'New Items'],
+            'Recently Returned' => ['recentlyreturned', 'Recently Returned'],
+            'Trending ILS Items' => ['trendingilsitems', 'Trending Items'],
+        ];
+    }
+
+    /**
+     * Test ILS-powered channels
+     *
+     * @param string $channel       Name of channel to test
+     * @param string $expectedTitle Expected channel title
+     * @param string $bibId1        First test record to include in channel
+     * @param string $bibId2        Second test record to include in channel
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('ilsChannelProvider')]
+    public function testILSChannel(
+        string $channel,
+        string $expectedTitle,
+        string $bibId1 = 'testsample1',
+        string $bibId2 = 'testsample2'
+    ): void {
+        $this->changeConfigs(
+            [
+                'channels' => [
+                    'source.Solr' => [
+                        'home' => [$channel],
+                    ],
+                ],
+                'config' => [
+                    'Catalog' => ['driver' => 'Demo'],
+                ],
+                'Demo' => $this->getDemoIniOverrides($bibId1, $bibId2),
+            ],
+        );
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Channels/Home');
+        $page = $session->getPage();
+        $this->assertEquals($expectedTitle, $this->findCssAndGetText($page, 'h2.channel-title'));
+        $this->assertCount(2, $page->findAll('css', 'li.channel-item'));
+        $this->assertCount(1, $page->findAll('css', 'li.channel-item[data-record-id="' . $bibId1 . '"]'));
+        $this->assertCount(1, $page->findAll('css', 'li.channel-item[data-record-id="' . $bibId2 . '"]'));
     }
 }
