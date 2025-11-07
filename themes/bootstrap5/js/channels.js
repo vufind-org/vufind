@@ -47,7 +47,7 @@ VuFind.register("channels", function Channels() {
     // Remove from dropdowns
     const group = link.closest(".channel-add-menu").dataset.group;
     const token = link.dataset.token;
-    const relatedMenus = Array.from(document.querySelectorAll(`.channel-add-menu[data-group="${group}"]`))
+    const relatedMenus = Array.from(document.querySelectorAll(`.channel-add-menu[data-group="${group}"]`));
     for (const menu of relatedMenus) {
       // Remove add links for this channel
       const usedMenuItem = menu.querySelector(`[data-token="${token}"]`);
