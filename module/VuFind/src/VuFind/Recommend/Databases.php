@@ -396,8 +396,8 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
             if ($type == str_replace(' ', '_', $databaseType->name)) {
                 return true;
             }
-            return false;
         }
+        return false;
     }
 
     /**
