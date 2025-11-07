@@ -372,11 +372,11 @@ class WebCrawlCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         // Get command line parameters:
-        $testMode = $input->getOption('test-only') ? true : false;
-        $this->bypassCacheExpiration = $input->getOption('use-expired-cache') ? true : false;
+        $testMode = (bool)$input->getOption('test-only');
+        $this->bypassCacheExpiration = (bool)$input->getOption('use-expired-cache');
         $index = $input->getOption('index');
 
         // Get the time we started indexing -- we'll delete records older than this
@@ -420,6 +420,6 @@ class WebCrawlCommand extends Command
             }
             $this->solr->optimize($index);
         }
-        return $error ? 1 : 0;
+        return $error ? self::FAILURE : self::SUCCESS;
     }
 }

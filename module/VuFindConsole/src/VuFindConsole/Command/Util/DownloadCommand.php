@@ -134,7 +134,7 @@ class DownloadCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $url = $input->getArgument('url');
         $targetFile = $input->getArgument('target-file');
@@ -147,11 +147,11 @@ class DownloadCommand extends Command
         if (file_exists($targetFile)) {
             if (!$overwrite) {
                 $output->writeln("<error>Target file $targetFile already exists</error>");
-                return Command::FAILURE;
+                return self::FAILURE;
             }
             if (!unlink($targetFile)) {
                 $output->writeln("<error>Could not remove existing target file $targetFile</error>");
-                return Command::FAILURE;
+                return self::FAILURE;
             }
         }
 
@@ -159,7 +159,7 @@ class DownloadCommand extends Command
         if (file_exists($partialFile)) {
             if (!unlink($partialFile)) {
                 $output->writeln("<error>Could not remove existing partial file $partialFile</error>");
-                return Command::FAILURE;
+                return self::FAILURE;
             }
         }
 
@@ -213,16 +213,16 @@ class DownloadCommand extends Command
         }
         if ($response->getStatusCode() !== 200) {
             $output->writeLn("<error>Download failed: '$partialFile' to '$targetFile'</error>");
-            return Command::FAILURE;
+            return self::FAILURE;
         }
         if (!rename($partialFile, $targetFile)) {
             $output->writeLn("<error>Could not rename '$partialFile' to '$targetFile'</error>");
-            return Command::FAILURE;
+            return self::FAILURE;
         }
         if (!$output->isQuiet()) {
             $output->writeLn('Download complete');
         }
-        return Command::SUCCESS;
+        return self::SUCCESS;
     }
 
     /**

@@ -58,7 +58,7 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
                 $this->equalTo('search-results'),
                 $this->equalTo([]),
                 $this->equalTo(['query' => $expectedQuery])
-            )->will($this->returnValue('foo'));
+            )->willReturn('foo');
         return $mock;
     }
 

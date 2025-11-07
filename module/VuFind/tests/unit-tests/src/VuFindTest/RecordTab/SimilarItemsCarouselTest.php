@@ -81,16 +81,16 @@ class SimilarItemsCarouselTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $recordDriver->expects($this->once())->method('getSourceIdentifier')
-            ->will($this->returnValue('foo'));
+            ->willReturn('foo');
         $recordDriver->expects($this->once())->method('getUniqueId')
-            ->will($this->returnValue('bar'));
+            ->willReturn('bar');
         $obj->setRecordDriver($recordDriver);
 
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
             ->disableOriginalConstructor()
             ->getMock();
         $commandObj->expects($this->once())->method('getResult')
-            ->will($this->returnValue($rci));
+            ->willReturn($rci);
 
         $checkCommand = function ($command) {
             return $command::class === \VuFindSearch\Command\SimilarCommand::class
@@ -100,7 +100,7 @@ class SimilarItemsCarouselTest extends \PHPUnit\Framework\TestCase
         };
         $service->expects($this->once())->method('invoke')
             ->with($this->callback($checkCommand))
-            ->will($this->returnValue($commandObj));
+            ->willReturn($commandObj);
         $this->assertSame($rci, $obj->getResults());
     }
 }

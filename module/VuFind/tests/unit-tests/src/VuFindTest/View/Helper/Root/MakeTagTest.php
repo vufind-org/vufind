@@ -276,7 +276,12 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
             throw new \Exception($msg, $code);
         };
         set_error_handler($errorCallback, E_USER_WARNING);
-        $helper('marquee', 'Now Playing: A Simpler Time!');
-        restore_error_handler();
+        try {
+            $helper('marquee', 'Now Playing: A Simpler Time!');
+        } catch (\Throwable $e) {
+            throw $e;
+        } finally {
+            restore_error_handler();
+        }
     }
 }

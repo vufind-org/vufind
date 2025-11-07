@@ -56,7 +56,7 @@ class AlphabeticBrowseCommandTest extends TestCase
             ->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
             ->disableOriginalConstructor()->getMock();
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue($backendId));
+            ->willReturn($backendId);
         $backend->expects($this->once())->method('alphabeticBrowse')
             ->with(
                 $this->equalTo('source'),
@@ -65,7 +65,7 @@ class AlphabeticBrowseCommandTest extends TestCase
                 $this->equalTo(10),
                 $this->equalTo($params),
                 $this->equalTo(-1)
-            )->will($this->returnValue('result'));  // not a realistic value!
+            )->willReturn('result');  // not a realistic value!
         $command = new AlphabeticBrowseCommand(
             $backendId,
             'source',

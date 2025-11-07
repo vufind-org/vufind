@@ -95,7 +95,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
             false
         );
         $record->getView()->expects($this->any())->method('render')
-            ->will($this->throwException(new RuntimeException('boom')));
+            ->willThrowException(new RuntimeException('boom'));
         $record->getCoreMetadata();
     }
 

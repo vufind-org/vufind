@@ -216,6 +216,7 @@ class GuzzleService implements HttpServiceInterface
         if (null !== $timeout) {
             $guzzleConfig['timeout'] = $timeout;
         }
+        $guzzleConfig['http_errors'] = false;
 
         // Handle maxredirects:
         if (isset($guzzleConfig['maxredirects'])) {

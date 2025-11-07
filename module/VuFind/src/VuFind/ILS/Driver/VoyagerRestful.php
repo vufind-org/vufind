@@ -544,9 +544,7 @@ class VoyagerRestful extends Voyager implements
                             $row['id'],
                             $row['item_id']
                         );
-                        $addStorageRetrievalLink = $storageRetrieval
-                            ? true
-                            : false;
+                        $addStorageRetrievalLink = $storageRetrieval;
                     } else {
                         $storageRetrieval = 'auto';
                         $addStorageRetrievalLink = 'check';
@@ -2132,7 +2130,7 @@ class VoyagerRestful extends Voyager implements
                 $count = ($reply == 'ok') ? $count + 1 : $count;
 
                 $response[$itemId] = [
-                    'success' => ($reply == 'ok') ? true : false,
+                    'success' => $reply == 'ok',
                     'status' => ($reply == 'ok')
                         ? 'hold_cancel_success' : 'hold_cancel_fail',
                     'sysMessage' => ($reply == 'ok') ? false : $reply,
@@ -2640,7 +2638,7 @@ class VoyagerRestful extends Voyager implements
                 $count = ($reply == 'ok') ? $count + 1 : $count;
 
                 $response[$itemId] = [
-                    'success' => ($reply == 'ok') ? true : false,
+                    'success' => $reply == 'ok',
                     'status' => ($reply == 'ok')
                         ? 'storage_retrieval_request_cancel_success'
                         : 'storage_retrieval_request_cancel_fail',
@@ -3266,7 +3264,7 @@ class VoyagerRestful extends Voyager implements
                 $count = ($reply == 'ok') ? $count + 1 : $count;
 
                 $response[$itemId] = [
-                    'success' => ($reply == 'ok') ? true : false,
+                    'success' => $reply == 'ok',
                     'status' => ($reply == 'ok')
                         ? 'ill_request_cancel_success' : 'ill_request_cancel_fail',
                     'sysMessage' => ($reply == 'ok') ? false : $reply,

@@ -795,13 +795,13 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
             ->onlyMethods(['getResult', 'execute'])
             ->getMock();
         $commandObj->expects($this->once())->method('getResult')
-            ->will($this->returnValue($result));
+            ->willReturn($result);
         $checkCommand = function ($command) {
             return $command::class === \VuFindSearch\Backend\Solr\Command\RawJsonSearchCommand::class;
         };
         $searchService->expects($this->once())->method('invoke')
             ->with($this->callback($checkCommand))
-            ->will($this->returnValue($commandObj));
+            ->willReturn($commandObj);
         return new Explanation(
             $paramsObj,
             $searchService,

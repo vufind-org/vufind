@@ -59,9 +59,9 @@ class ScssBuilderCommand extends Command
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $output->writeln('<error>This utility is no longer supported. Please use `npm run build:css` instead.</error>');
-        return Command::FAILURE;
+        return self::FAILURE;
     }
 }

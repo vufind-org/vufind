@@ -229,11 +229,11 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
         $mockMessenger->expects($this->any())
             ->method('getMessages')
             ->with($this->isType('string'))
-            ->will($this->returnCallback($getMessages));
+            ->willReturnCallback($getMessages);
         $mockMessenger->expects($this->any())
             ->method('getCurrentMessages')
             ->with($this->isType('string'))
-            ->will($this->returnValue([]));
+            ->willReturn([]);
 
         $fm = new Flashmessages($mockMessenger);
 

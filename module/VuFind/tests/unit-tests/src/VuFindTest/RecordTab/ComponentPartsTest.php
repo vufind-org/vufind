@@ -95,7 +95,7 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $recordDriver->expects($this->any())->method('tryMethod')
             ->with($this->equalTo('getChildRecordCount'))
-            ->will($this->returnValue($childCount));
+            ->willReturn($childCount);
         $obj->setRecordDriver($recordDriver);
         $this->assertSame($expectedResult, $obj->isActive());
     }
@@ -117,14 +117,14 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $recordDriver->expects($this->any())->method('getUniqueID')
-            ->will($this->returnValue('foo'));
+            ->willReturn('foo');
         $recordDriver->expects($this->any())->method('getSourceIdentifier')
-            ->will($this->returnValue('bar'));
+            ->willReturn('bar');
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
             ->disableOriginalConstructor()
             ->getMock();
         $commandObj->expects($this->once())->method('getResult')
-            ->will($this->returnValue($rci));
+            ->willReturn($rci);
         $checkCommand = function ($command) {
             return $command::class === \VuFindSearch\Command\SearchCommand::class
                 && $command->getTargetIdentifier() === 'bar'
@@ -138,7 +138,7 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
         };
         $service->expects($this->once())->method('invoke')
             ->with($this->callback($checkCommand))
-            ->will($this->returnValue($commandObj));
+            ->willReturn($commandObj);
         $obj = new ComponentParts($service);
         $obj->setRecordDriver($recordDriver);
         $this->assertEquals($rci, $obj->getResults());
