@@ -285,4 +285,31 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertCount(1, $page->findAll('css', 'li.channel-item[data-record-id="' . $bibId1 . '"]'));
         $this->assertCount(1, $page->findAll('css', 'li.channel-item[data-record-id="' . $bibId2 . '"]'));
     }
+
+    /**
+     * Test Solr-powered new items channel
+     *
+     * @return void
+     */
+    public function testNewItemsChannel(): void
+    {
+        $this->changeConfigs(
+            [
+                'channels' => [
+                    'source.Solr' => [
+                        'home' => ['newsearchitems'],
+                    ],
+                ],
+            ],
+        );
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Channels/Home');
+        $page = $session->getPage();
+        $this->assertEquals('New Items', $this->findCssAndGetText($page, 'h2.channel-title'));
+        // In case test data changes, we won't make specific assertions about specific records,
+        // but we can assume that we'll get at least two pages worth of them!
+        $this->assertCount(6, $page->findAll('css', 'li.channel-item:not(.hidden-batch-item)'));
+        $this->clickCss($page, '.channel-load-more-btn');
+        $this->assertCount(12, $page->findAll('css', 'li.channel-item:not(.hidden-batch-item)'));
+    }
 }
