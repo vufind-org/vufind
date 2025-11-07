@@ -270,7 +270,7 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
         if ($resultsFromSearchResult = $this->getResultsFromSearchResultFacets()) {
             $groupedResults['results'] = $resultsFromSearchResult;
         }
-        
+
         return $groupedResults;
     }
 
