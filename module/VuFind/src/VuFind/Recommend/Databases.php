@@ -369,7 +369,7 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
             }
             $databaseInfo = $nameToDatabase[$name] ?? null;
             if ($databaseInfo) {
-                if ($databaseType && !$this->databaseHasType($databaseInfo, $databaseType)) {
+                if ($databaseType && !$this->databaseMatchesType($databaseInfo, $databaseType)) {
                     continue;
                 }
                 $databases[$databaseInfo['url']] = $databaseInfo;
@@ -383,21 +383,28 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
 
     /**
      * Return true if the given database info indicates that the database
-     * belongs to the given type.
+     * belongs to the given type. Or if the type begins with '-', then
+     * returns true if the given database info does *not* include that type.
      *
      * @param array  $databaseInfo The database info from LibGuides and/or config
      * @param string $type         The database type
      *
      * @return bool
      */
-    protected function databaseHasType($databaseInfo, $type)
+    protected function databaseMatchesType($databaseInfo, $type)
     {
+        $resultOnMatch = true;
+        if (str_starts_with($type, '-')) {
+            $type = substr($type, 1);
+            $resultOnMatch = false;
+        }
         foreach (($databaseInfo['az_types'] ?? []) as $databaseType) {
-            if ($type == str_replace(' ', '_', $databaseType->name)) {
-                return true;
+            $normalizedDatabaseTypeName = preg_replace('/[\s\&]/', '_', $databaseType->name);
+            if ($type == $normalizedDatabaseTypeName) {
+                return $resultOnMatch;
             }
         }
-        return false;
+        return !$resultOnMatch;
     }
 
     /**
