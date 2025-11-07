@@ -82,10 +82,9 @@ class SummonTopicsTest extends \PHPUnit\Framework\TestCase
         $request = $this->getMockBuilder(\Laminas\Stdlib\Parameters::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $options = $this->getMockBuilder(\VuFind\Search\Base\Options::class)
+        $options = $this->getMockBuilder(\VuFind\Search\Summon\Options::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['getSearchAction'])
-            ->addMethods(['setMaxTopicRecommendations'])
+            ->onlyMethods(['getSearchAction', 'setMaxTopicRecommendations'])
             ->getMock();
         $parms->expects($this->once())->method('getSearchClassId')
             ->willReturn('Summon');
@@ -124,10 +123,9 @@ class SummonTopicsTest extends \PHPUnit\Framework\TestCase
             ->willReturn($parms);
         $parms->expects($this->once())->method('setBasicSearch')
             ->with($this->anything(), $this->equalTo('AllFields'));
-        $options = $this->getMockBuilder(\VuFind\Search\Base\Options::class)
+        $options = $this->getMockBuilder(\VuFind\Search\Summon\Options::class)
             ->disableOriginalConstructor()
-            ->addMethods(['setMaxTopicRecommendations'])
-            ->onlyMethods(['getSearchAction'])
+            ->onlyMethods(['getSearchAction', 'setMaxTopicRecommendations'])
             ->getMock();
         $results->expects($this->once())->method('getOptions')
             ->willReturn($options);
