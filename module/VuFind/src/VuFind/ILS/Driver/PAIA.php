@@ -1491,7 +1491,7 @@ class PAIA extends DAIA
             && $this->paiaCheckScope(self::SCOPE_WRITE_ITEMS))
             ? $result['item_id'] : '';
 
-        // edition (0..1) URI of a the document (no particular copy)
+        // edition (0..1) URI of the document (no particular copy)
         // hook for retrieving alternative ItemId in case PAIA does not
         // the needed id
         $result['id'] = (isset($doc['edition'])
