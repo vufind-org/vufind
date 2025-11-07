@@ -1186,10 +1186,7 @@ class Server
         if ($from_time > $until_time) {
             throw new \Exception('noRecordsMatch:from vs. until');
         }
-        if ($from_time < $this->normalizeDate($this->earliestDatestamp)) {
-            return true;
-        }
-        return false;
+        return $from_time < $this->normalizeDate($this->earliestDatestamp);
     }
 
     /**
@@ -1344,7 +1341,7 @@ class Server
     protected function showError($code, $message)
     {
         // Certain errors should not echo parameters:
-        $echoParams = !($code == 'badVerb' || $code == 'badArgument');
+        $echoParams = $code != 'badVerb' && $code != 'badArgument';
         $response = $this->createResponse($echoParams);
 
         $xml = $response->addChild('error', htmlspecialchars($message));

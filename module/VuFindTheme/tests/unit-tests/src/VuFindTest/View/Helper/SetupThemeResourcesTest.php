@@ -118,15 +118,24 @@ class SetupThemeResourcesTest extends \PHPUnit\Framework\TestCase
     {
         $mock = $this->getMockBuilder(\Laminas\View\Helper\HeadMeta::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['__invoke'])
-            // These are side effects of __call and need to be added for mocking:
-            ->addMethods(['prependHttpEquiv', 'appendName'])
+            ->onlyMethods(['__invoke', '__call'])
             ->getMock();
         $mock->expects($this->any())->method('__invoke')->willReturn($mock);
-        $mock->expects($this->once())->method('prependHttpEquiv')
-            ->with($this->equalTo('Content-Type'), $this->equalTo('text/html; charset=utf-8'));
-        $mock->expects($this->once())->method('appendName')
-            ->with($this->equalTo('Generator'), $this->equalTo('fake-generator'));
+        $mock->expects($this->exactly(2))
+            ->method('__call')
+            ->willReturnCallback(function ($method, $args) use ($mock) {
+                if ($method === 'prependHttpEquiv') {
+                    $this->assertEquals('Content-Type', $args[0]);
+                    $this->assertEquals('text/html; charset=utf-8', $args[1]);
+                    return $mock;
+                }
+                if ($method === 'appendName') {
+                    $this->assertEquals('Generator', $args[0]);
+                    $this->assertEquals('fake-generator', $args[1]);
+                    return $mock;
+                }
+                return null;
+            });
         return $mock;
     }
 

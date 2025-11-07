@@ -31,6 +31,7 @@ namespace VuFindTest\Auth;
 
 use Closure;
 use PHPUnit\Framework\MockObject\MockObject;
+use Throwable;
 use VuFind\Auth\EmailAuthenticator;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Auth\Manager;
@@ -65,9 +66,8 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
         $manager->expects($this->any())->method('getUserObject')->willReturn($user);
         $manager->expects($this->once())->method('updateSession')->with($this->equalTo($user));
         $details = ['foo' => 'bar'];
-        $connection = $this->getMockConnection(['patronLogin']);
-        $connection->expects($this->once())->method('patronLogin')
-            ->with($this->equalTo('user'), $this->equalTo('pass'))->willReturn($details);
+        $connection = $this->getMockConnection();
+        $this->addPatronLoginToMock($connection, $details);
         $auth = $this->getAuthenticator($manager, $connection);
         $mockServices = new MockDbServicePluginManager($this);
         $userService = $this->createMock(UserServiceInterface::class);
@@ -90,9 +90,8 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
         $manager = $this->getMockManager(['getUserObject']);
         $manager->expects($this->any())->method('getUserObject')->willReturn(null);
         $details = false;
-        $connection = $this->getMockConnection(['patronLogin']);
-        $connection->expects($this->once())->method('patronLogin')
-            ->with($this->equalTo('user'), $this->equalTo('pass'))->willReturn($details);
+        $connection = $this->getMockConnection();
+        $this->addPatronLoginToMock($connection, $details);
         $auth = $this->getAuthenticator($manager, $connection);
         $this->assertEquals($details, $auth->newCatalogLogin('user', 'pass'));
     }
@@ -108,10 +107,8 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
         $this->expectExceptionMessage('kaboom');
 
         $manager = $this->getMockManager();
-        $connection = $this->getMockConnection(['patronLogin']);
-        $connection->expects($this->once())->method('patronLogin')
-            ->with($this->equalTo('user'), $this->equalTo('pass'))
-            ->willThrowException(new \VuFind\Exception\ILS('kaboom'));
+        $connection = $this->getMockConnection();
+        $this->addPatronLoginToMock($connection, new \VuFind\Exception\ILS('kaboom'));
         $auth = $this->getAuthenticator($manager, $connection);
         $auth->newCatalogLogin('user', 'pass');
     }
@@ -142,9 +139,8 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
         $manager = $this->getMockManager(['getUserObject']);
         $manager->expects($this->any())->method('getUserObject')->willReturn($user);
         $details = ['foo' => 'bar'];
-        $connection = $this->getMockConnection(['patronLogin']);
-        $connection->expects($this->once())->method('patronLogin')
-            ->with($this->equalTo('user'), $this->equalTo('pass'))->willReturn($details);
+        $connection = $this->getMockConnection();
+        $this->addPatronLoginToMock($connection, $details);
         $auth = $this->getAuthenticator($manager, $connection);
         $this->assertEquals($details, $auth->storedCatalogLogin());
 
@@ -168,9 +164,8 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
         $user->expects($this->once())->method('setCatPassEnc')->with(null)->willReturn($user);
         $manager = $this->getMockManager(['getUserObject']);
         $manager->expects($this->any())->method('getUserObject')->willReturn($user);
-        $connection = $this->getMockConnection(['patronLogin']);
-        $connection->expects($this->once())->method('patronLogin')
-            ->with($this->equalTo('user'), $this->equalTo('pass'))->willReturn(false);
+        $connection = $this->getMockConnection();
+        $this->addPatronLoginToMock($connection, false);
         $auth = $this->getAuthenticator($manager, $connection);
         $this->assertEquals(false, $auth->storedCatalogLogin());
     }
@@ -190,11 +185,8 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
         $user->expects($this->any())->method('getRawCatPassword')->willReturn('pass');
         $manager = $this->getMockManager(['getUserObject']);
         $manager->expects($this->any())->method('getUserObject')->willReturn($user);
-        $connection = $this->getMockConnection(['patronLogin']);
-        $connection->expects($this->once())
-            ->method('patronLogin')
-            ->with($this->equalTo('user'), $this->equalTo('pass'))
-            ->willThrowException(new \VuFind\Exception\ILS('kaboom'));
+        $connection = $this->getMockConnection();
+        $this->addPatronLoginToMock($connection, new \VuFind\Exception\ILS('kaboom'));
         $auth = $this->getAuthenticator($manager, $connection);
         $auth->storedCatalogLogin();
     }
@@ -307,18 +299,41 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock ILS connection
      *
-     * @param array $methods Methods to mock
-     *
      * @return MockObject&ILSConnection
      */
-    protected function getMockConnection(array $methods = []): MockObject&ILSConnection
+    protected function getMockConnection(): MockObject&ILSConnection
     {
-        // We need to use addMethods here instead of onlyMethods, because
-        // we're generally mocking behavior that gets handled by __call
-        // instead of by real methods on the Connection class.
-        return $this->getMockBuilder(\VuFind\ILS\Connection::class)
-            ->disableOriginalConstructor()
-            ->addMethods($methods)
-            ->getMock();
+        return $this->createMock(\VuFind\ILS\Connection::class);
+    }
+
+    /**
+     * Add patronLogin functionality to a mock ILS connection.
+     *
+     * @param MockObject&ILSConnection $connection Mock object to update
+     * @param mixed                    $return     Value to return or Exception to throw
+     * @param string                   $user       Expected username
+     * @param string                   $pass       Expected password
+     *
+     * @return void
+     */
+    protected function addPatronLoginToMock(
+        MockObject&ILSConnection $connection,
+        mixed $return,
+        string $user = 'user',
+        string $pass = 'pass'
+    ): void {
+        $connection->expects($this->once())->method('__call')->willReturnCallback(
+            function ($method, $args) use ($user, $pass, $return) {
+                if ($method !== 'patronLogin') {
+                    return null;
+                }
+                $this->assertEquals($user, $args[0]);
+                $this->assertEquals($pass, $args[1]);
+                if ($return instanceof Throwable) {
+                    throw $return;
+                }
+                return $return;
+            }
+        );
     }
 }
