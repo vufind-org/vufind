@@ -55,13 +55,40 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     protected $channelSelector = 'div.channel';
 
     /**
+     * Get a reference to a standard channels home page.
+     *
+     * @return Element
+     */
+    protected function getChannelsHomePage(): Element
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Channels/Home');
+        return $session->getPage();
+    }
+
+    /**
+     * Get a reference to a standard record-based results page.
+     *
+     * @param string $id Record to look up
+     *
+     * @return Element
+     */
+    protected function getChannelsRecordPage(string $id = 'testsample1'): Element
+    {
+        $session = $this->getMinkSession();
+        $path = '/Channels/Record?id=' . urlencode($id);
+        $session->visit($this->getVuFindUrl() . $path);
+        return $session->getPage();
+    }
+
+    /**
      * Get a reference to a standard search results page.
      *
      * @param string $q Search to perform on Channels page
      *
      * @return Element
      */
-    protected function getChannelsPage(string $q = 'building:"weird_ids.mrc"'): Element
+    protected function getChannelsSearchPage(string $q = 'building:"weird_ids.mrc"'): Element
     {
         $session = $this->getMinkSession();
         $path = '/Channels/Search?lookfor=' . urlencode($q);
@@ -70,13 +97,38 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Make sure the page works, channels exists, search
+     * Make sure the record page works, channels exists, search
      *
      * @return void
      */
-    public function testBasic(): void
+    public function testBasicRecord(): void
     {
-        $page = $this->getChannelsPage();
+        $id = 'testsample1';
+        $page = $this->getChannelsRecordPage($id);
+        // Channels are here
+        $this->findCss($page, $this->channelSelector);
+        // Check number of channels
+        $channels = $page->findAll('css', $this->channelSelector);
+        $this->assertCount(4, $channels);
+        // Make sure appropriate similar records are displayed:
+        $this->assertEquals(
+            'Similar Items: Journal of rational emotive therapy :',
+            $this->findCssAndGetText($page, 'h2.channel-title')
+        );
+        // Similar record drop-down menu contains appropriate view record link:
+        $link = $this->findCss($page, '.channel-options a');
+        $this->assertEquals('View Record', $link->getText());
+        $this->assertStringEndsWith("/$id", $link->getAttribute('href'));
+    }
+
+    /**
+     * Make sure the search page works, channels exists, search
+     *
+     * @return void
+     */
+    public function testBasicSearch(): void
+    {
+        $page = $this->getChannelsSearchPage();
         // Channels are here
         $this->findCss($page, $this->channelSelector);
         // Check number of channels
@@ -96,7 +148,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testAddChannels(): void
     {
-        $page = $this->getChannelsPage();
+        $page = $this->getChannelsSearchPage();
         $channel = $this->findCss($page, $this->channelSelector);
         // Initial counts
         $this->assertCount(6, $page->findAll('css', $this->channelSelector));
@@ -117,7 +169,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testSwitchToSearch(): void
     {
-        $page = $this->getChannelsPage();
+        $page = $this->getChannelsSearchPage();
         $channel = $this->findCss($page, $this->channelSelector);
         // Click options dropdown to display links
         $this->clickCss($channel, '.channel-options');
@@ -211,7 +263,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         string $title2,
         ?int $record2ChannelIndex
     ): void {
-        $page = $this->getChannelsPage($query);
+        $page = $this->getChannelsSearchPage($query);
         // Click a record to open the popover:
         $this->clickCss($page, '.channel-item[data-record-id="' . $record1 . '"] .channel-quick-look-btn');
         // The popover should contain an appropriate title and metadata:
@@ -277,9 +329,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
                 'Demo' => $this->getDemoIniOverrides($bibId1, $bibId2),
             ],
         );
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Channels/Home');
-        $page = $session->getPage();
+        $page = $this->getChannelsHomePage();
         $this->assertEquals($expectedTitle, $this->findCssAndGetText($page, 'h2.channel-title'));
         $this->assertCount(2, $page->findAll('css', 'li.channel-item'));
         $this->assertCount(1, $page->findAll('css', 'li.channel-item[data-record-id="' . $bibId1 . '"]'));
@@ -302,14 +352,39 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
                 ],
             ],
         );
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Channels/Home');
-        $page = $session->getPage();
+        $page = $this->getChannelsHomePage();
         $this->assertEquals('New Items', $this->findCssAndGetText($page, 'h2.channel-title'));
         // In case test data changes, we won't make specific assertions about specific records,
         // but we can assume that we'll get at least two pages worth of them!
         $this->assertCount(6, $page->findAll('css', 'li.channel-item:not(.hidden-batch-item)'));
         $this->clickCss($page, '.channel-load-more-btn');
         $this->assertCount(12, $page->findAll('css', 'li.channel-item:not(.hidden-batch-item)'));
+    }
+
+    /**
+     * Test Random channel
+     *
+     * @return void
+     */
+    public function testRandomChannel(): void
+    {
+        $this->changeConfigs(
+            [
+                'channels' => [
+                    'source.Solr' => [
+                        'home' => ['random'],
+                    ],
+                ],
+            ],
+        );
+        $page = $this->getChannelsHomePage();
+        $this->assertEquals('Random items from your results', $this->findCssAndGetText($page, 'h2.channel-title'));
+        // Since selected records are random, we can't make specific assertions about specific records,
+        // but we can assume that we'll get at least four pages worth of them!
+        $this->assertCount(6, $page->findAll('css', 'li.channel-item:not(.hidden-batch-item)'));
+        $this->clickCss($page, '.channel-load-more-btn');
+        $this->clickCss($page, '.channel-load-more-btn');
+        $this->clickCss($page, '.channel-load-more-btn');
+        $this->assertCount(24, $page->findAll('css', 'li.channel-item:not(.hidden-batch-item)'));
     }
 }
