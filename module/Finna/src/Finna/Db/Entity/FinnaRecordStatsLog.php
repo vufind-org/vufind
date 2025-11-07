@@ -53,7 +53,7 @@ class FinnaRecordStatsLog extends FinnaBaseStats implements FinnaRecordStatsLogE
      */
     #[ORM\Column(name: 'backend', type: 'string', length: 128, nullable: false)]
     #[ORM\Id]
-    protected int $backend;
+    protected string $backend;
 
     /**
      * Source
@@ -62,7 +62,7 @@ class FinnaRecordStatsLog extends FinnaBaseStats implements FinnaRecordStatsLogE
      */
     #[ORM\Column(name: 'source', type: 'string', length: 255, nullable: false)]
     #[ORM\Id]
-    protected int $source;
+    protected string $source;
 
     /**
      * Record ID
@@ -71,7 +71,7 @@ class FinnaRecordStatsLog extends FinnaBaseStats implements FinnaRecordStatsLogE
      */
     #[ORM\Column(name: 'record_id', type: 'string', length: 255, nullable: false)]
     #[ORM\Id]
-    protected int $recordId;
+    protected string $recordId;
 
     /**
      * Formats.
@@ -79,7 +79,7 @@ class FinnaRecordStatsLog extends FinnaBaseStats implements FinnaRecordStatsLogE
      * @var string
      */
     #[ORM\Column(name: 'formats', type: 'string', length: 255, nullable: false)]
-    protected int $formats;
+    protected string $formats;
 
     /**
      * Usage rights
@@ -87,7 +87,7 @@ class FinnaRecordStatsLog extends FinnaBaseStats implements FinnaRecordStatsLogE
      * @var string
      */
     #[ORM\Column(name: 'usage_rights', type: 'string', length: 255, nullable: false)]
-    protected int $usageRights;
+    protected string $usageRights;
 
     /**
      * Online

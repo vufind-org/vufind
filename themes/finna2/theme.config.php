@@ -222,7 +222,6 @@ return [
         [ 'file' => 'finna-comments.js' ],
         [ 'file' => 'finna-common.js' ],
         [ 'file' => 'finna-content-feed.js' ],
-        [ 'file' => 'finna-fines.js' ],
         [ 'file' => 'finna-item-status.js' ],
         [ 'file' => 'finna-adv-search.js' ],
         [ 'file' => 'finna-daterange-vis.js' ],

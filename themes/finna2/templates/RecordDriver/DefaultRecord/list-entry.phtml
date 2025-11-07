@@ -25,14 +25,17 @@
 <?php endif; ?>
 <!-- start list-entry -->
 <div class="result record-container myresearch-row <?=$this->record($this->driver)->getContainerJsClasses()?>">
-    <div class="checkbox-container">
-      <div class="checkbox">
-        <?php // Request a checkbox with a label (can't add the label here as checkbox template contains more than one field): ?>
-        <?=$this->record($this->driver)->getCheckbox('', false, true) ?>
-      </div>
+  <div class="checkbox-container">
+    <div class="checkbox">
+      <?php // Request a checkbox with a label (can't add the label here as checkbox template contains more than one field): ?>
+      <?=$this->record($this->driver)->getCheckbox('', false, true) ?>
     </div>
-    <input type="hidden" value="<?=$this->escapeHtmlAttr($id) ?>" class="hiddenId">
-    <input type="hidden" value="<?=$this->escapeHtmlAttr($source) ?>" class="hiddenSource">
+  </div>
+  <input type="hidden" value="<?=$this->escapeHtmlAttr($id) ?>" class="hiddenId">
+  <input type="hidden" value="<?=$this->escapeHtmlAttr($source) ?>" class="hiddenSource">
+  <?php if (isset($this->overrideId)): // hiddenOverrideId is used for availability checking for non SOLR records?>
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->overrideId) ?>" class="hiddenOverrideId">
+  <?php endif; ?>
 
   <div class="media">
     <div class="media-left">

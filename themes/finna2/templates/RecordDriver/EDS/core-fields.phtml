@@ -1,101 +1,46 @@
 <!-- START of: finna - RecordDriver/EDS/core-fields.phtml -->
 <?php
-  $edsConfig = $this->config()->get('EDS');
-  $authorDisplay = strtolower($edsConfig->AuthorDisplay->DetailPageFormat ?? 'Long');
+  $formatter = $this->recordDataFormatter($this->driver);
+  $coreFields = $formatter->getData($formatter->getDefaults($this->defaults ?? 'core'));
+  $dbLabel = $this->driver->getDbLabel();
+  $accessLevel = $this->driver->getAccessLevel();
+  $restrictedView = empty($accessLevel) ? false : true;
+  $searchOptions = $this->searchOptions($this->driver->getSourceIdentifier());
 ?>
 <div class="record-details">
-  <table class="table table-condensed table-finna-record" summary="<?=$this->transEsc('Bibliographic Details')?>" role="presentation" tabindex="-1">
-    <?php foreach ($this->driver->getItems($this->defaults) as $key => $item): ?>
-      <?php if (!empty($item['Data']) && !in_array($item['Label'], $this->ignoreDetailsFields ?? [])): ?>
-        <?php if ('Au' == $item['Group'] && $authorDisplay == 'short'): ?>
-          <tr class="record-<?=strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $item['Label']))?>">
-            <th scope="row"><?=empty($item['Label']) ? '' : $this->transEsc($item['Label']) . ':'?></th>
-            <?php
-              $authors = $driver->getPrimaryAuthorsWithHighlighting();
-              $authorCount = count($authors);
-              $authorNameLimit = $edsConfig->AuthorDisplay->ShortAuthorLimit ?? 3;
-            ?>
-            <?php if ($authorCount > 1): ?>
-              <td class="record__biblio-value">
-              <?php foreach ($authors as $i => $author): ?>
-                <span class="author"><a href="<?=$this->record($driver)->getLink('author', $this->highlight($author, null, true, false))?>"><?=$this->highlight($author)?></a></span><?php
-                  if ($authorCount == ($i + 1)) {
-                    break;
-                  } elseif (($i + 1) >= $authorNameLimit) {
-                    echo ' ' . $this->transEsc('more_authors_abbrev');
-                    break;
-                  }
-                ?><?php endforeach; ?>
-              </td>
-            <?php else: ?>
-              <?=$this->driver->linkUrls($item['Data'])?>
-            <?php endif; ?>
-          </tr>
-        <?php elseif ('AuInfo' == $item['Group'] && $authorDisplay == 'short'): ?>
-          <?php /* Do nothing: skip AuInfo data in short author mode... */ ?>
-        <?php else: ?>
-          <tr class="record-<?=strtolower(preg_replace('/[^a-zA-Z0-9]/', '', $item['Label']))?>">
-            <th scope="row"><?php if (!empty($item['Label'])): ?><?=$this->transEsc($item['Label'])?>:<?php endif; ?></th>
-            <td class="record__biblio-value">
-              <div class="truncate-field">
-                <p><?=$this->driver->linkUrls($item['Data'])?></p>
-              </div>
-            </td>
-          </tr>
-        <?php endif; ?>
-      <?php endif; ?>
-    <?php endforeach; ?>
-
-    <?php if (!empty($this->dbLabel)): ?>
-      <tr>
-        <th scope="row"><?=$this->transEsc('Database')?>:</th>
-        <td><?=$this->escapeHtml($this->dbLabel)?></td>
-      </tr>
-    <?php endif; ?>
-
-    <?php if ($this->driver->hasHTMLFullTextAvailable() && empty($this->restrictedView)):
-      $fullText = $this->driver->getHtmlFullText();?>
-      <tr id="html">
-        <td colspan="2">
-          <div class="truncate-field" data-rows="15">
-            <?=$fullText?>
-          </div>
-        </td>
-      </tr>
-    <?php elseif ($this->driver->hasHTMLFullTextAvailable() && !empty($this->restrictedView)): ?>
-      <tr id="html">
-        <td>
-          <?=$this->transEsc('Full text is not displayed to guests')?>
-        </td>
-        <td>
-          <a class="login" href="<?=$this->url('myresearch-home')?>" rel="nofollow">
-            <strong><?=$this->transEsc('Login for full access')?></strong>
-          </a>
-        </td>
-      </tr>
-    <?php endif; ?>
-  </table>
-
-  <div class="resultItemLine4 custom-links">
-    <?php $customLinks = array_merge($this->driver->getFTCustomLinks(), $this->driver->getCustomLinks());
-    if (!empty($customLinks)): ?>
-      <?php foreach ($customLinks as $customLink): ?>
-      <?php $url = $customLink['Url'] ?? '';
-          $mot = $customLink['MouseOverText'] ?? '';
-          $icon = $customLink['Icon'] ?? '';
-          $name = $customLink['Text'] ?? '';
-      ?>
-      <span>
-        <a href="<?=$this->escapeHtmlAttr($url)?>" target="_blank" title="<?=$this->escapeHtmlAttr($mot)?>" class="custom-link">
-          <?php if ($icon): ?><img src="<?=$this->escapeHtmlAttr($icon)?>"> <?php endif; ?><?=$this->escapeHtml($name)?>
-        </a>
-        <br>
-      </span>
+  <?php if ($searchOptions->showRestrictedViewWarning() && $restrictedView): ?>
+    <?=$this->render('error/restrictedViewWarning.phtml')?>
+  <?php endif; ?>
+  <?php if (!empty($coreFields)): ?>
+    <table <?php if (!empty($this->tableId)): ?>id="<?=$this->tableId ?>" <?php endif; ?>class="table table-condensed table-finna-record">
+      <caption class="visually-hidden"><?=$this->transEsc($this->caption ?? 'Bibliographic Details')?></caption>
+      <?php foreach ($coreFields as $current): ?>
+        <tr class="record__biblio-value"><th><?=$this->transEsc($current['label'])?>:</th><td><?=$current['value']?></td></tr>
       <?php endforeach; ?>
-    <?php endif; ?>
-  </div>
+      <?php if ($dbLabel): ?>
+        <tr>
+          <th><?=$this->transEsc('Database')?>:</th>
+          <td><?=$this->escapeHtml($dbLabel)?></td>
+        </tr>
+      <?php endif; ?>
 
-  <?php $openUrl = $this->openUrl($this->driver, 'record'); ?>
-  <?=$openUrl ? $openUrl->renderMoreOptions() : '' ?>
+      <?php if ($this->driver->hasHTMLFullTextAvailable() && !$restrictedView): ?>
+        <?php $fullText = $this->driver->getHtmlFullText(); ?>
+        <tr id="html">
+          <td colspan="2">
+            <?=$fullText?>
+          </td>
+        </tr>
+      <?php elseif ($this->driver->hasHTMLFullTextAvailable() && $restrictedView): ?>
+        <tr id="html">
+          <td colspan="2">
+            <div class="alert alert-info">
+              <?=$this->transEsc('Full text is not displayed to guests')?>
+              <?=$this->render('error/loginForAccess.phtml')?>
+            </div>
+          </td>
+        </tr>
+      <?php endif; ?>
+    </table>
+  <?php endif; ?>
 </div>
-<!-- END of: finna - RecordDriver/EDS/core-fields.phtml -->

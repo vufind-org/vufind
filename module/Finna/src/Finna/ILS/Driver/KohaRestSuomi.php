@@ -692,7 +692,7 @@ class KohaRestSuomi extends KohaRestSuomiVuFind
             $config = $this->getConfig('OnlinePayment');
             $nonPayableReason = false;
             if (isset($config['minimumFee']) && $amount < $config['minimumFee']) {
-                $nonPayableReason = 'online_payment_minimum_fee';
+                $nonPayableReason = 'Payment::minimum_payment';
             }
             $res = ['payable' => empty($nonPayableReason), 'amount' => $amount];
             if ($nonPayableReason) {
@@ -703,7 +703,7 @@ class KohaRestSuomi extends KohaRestSuomiVuFind
         return [
             'payable' => false,
             'amount' => 0,
-            'reason' => 'online_payment_minimum_fee',
+            'reason' => 'Payment::minimum_payment',
         ];
     }
 

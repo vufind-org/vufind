@@ -1491,7 +1491,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
             return [
                 'payable' => false,
                 'amount' => 0,
-                'reason' => 'online_payment_minimum_fee',
+                'reason' => 'Payment::minimum_payment',
             ];
         }
 
@@ -1501,7 +1501,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
         foreach ($fines as $fine) {
             if (!$fine['payableOnline']) {
                 $nonPayableReason
-                    = 'online_payment_fines_contain_nonpayable_fees';
+                    = 'Payment::fines_contain_nonpayable_fees';
             } else {
                 $amount += $fine['balance'];
             }
@@ -1514,7 +1514,7 @@ class Mikromarc extends \VuFind\ILS\Driver\AbstractBase implements
             !$nonPayableReason && !empty($config['minimumFee'])
             && $amount < $config['minimumFee']
         ) {
-            $nonPayableReason = 'online_payment_minimum_fee';
+            $nonPayableReason = 'Payment::minimum_payment';
         }
 
         $res = [

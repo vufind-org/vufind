@@ -510,23 +510,27 @@
 
 .fines-info-area {
   margin-bottom: 15px;
-  div.card-holder {
-    display: flex;
-    align-items: center;
-    font-weight: bold;
-  }
   .amount {
     font-weight: bold;
   }
-  .online-payment-info {
+  .online-payment-payable-info {
     display: flex;
     align-items: baseline;
+    margin-bottom: 0.5rem;
+
+    .online-payment-payable {
+      padding: 0.25rem 0;
+    }
   }
-  #online_payment_minimum_payment {
-    margin: 0 0 0 1em;
-    padding: 6px;
+  .online-payment-minimum-payment {
+      @extend .alert-warning;
+      color: var(--bs-alert-color);
+      background-color: var(--bs-alert-bg);
+      border-color: var(--bs-alert-border-color);
+      margin-left: 1rem;
+      padding: 0.25rem;
   }
-  .last-transaction-information {
+  .last-payment-information {
     @extend .alert;
 
     background: $gray-ultralight;
@@ -537,6 +541,9 @@
       flex: 1 1;
     }
   }
+}
+.online-payment-status-note {
+  font-weight: bold;
 }
 
 .toolbar-sticky-container {
@@ -691,7 +698,7 @@ form#renewals, form#update_holds, form#purge_history {
     }
   }
   @media screen {
-    @include media-breakpoint-up(sm) {
+    @include media-breakpoint-up(xl) {
       .balance {
         text-align: right;
       }

@@ -86,8 +86,8 @@ class Connection extends \VuFind\ILS\Connection
      * A support method for checkFunction(). This is responsible for checking
      * the driver configuration to determine if the system supports Holds.
      *
-     * @param array $functionConfig The Hold configuration values
-     * @param array $params         An array of function-specific params (or null)
+     * @param array  $functionConfig The Hold configuration values
+     * @param ?array $params         An array of function-specific params (or null)
      *
      * @return mixed On success, an associative array with specific function keys
      * and values either for placing holds via a form or a URL; on failure, false.
@@ -112,9 +112,9 @@ class Connection extends \VuFind\ILS\Connection
      * the driver configuration to determine if the system supports storage
      * retrieval requests.
      *
-     * @param array $functionConfig The storage retrieval request configuration
+     * @param array  $functionConfig The storage retrieval request configuration
      * values
-     * @param array $params         An array of function-specific params (or null)
+     * @param ?array $params         An array of function-specific params (or null)
      *
      * @return mixed On success, an associative array with specific function keys
      * and values either for placing requests via a form; on failure, false.
@@ -142,8 +142,8 @@ class Connection extends \VuFind\ILS\Connection
      * the driver configuration to determine if the system supports storage
      * retrieval requests.
      *
-     * @param array $functionConfig The ILL request configuration values
-     * @param array $params         An array of function-specific params (or null)
+     * @param array  $functionConfig The ILL request configuration values
+     * @param ?array $params         An array of function-specific params (or null)
      *
      * @return mixed On success, an associative array with specific function keys
      * and values either for placing requests via a form; on failure, false.
@@ -453,8 +453,8 @@ class Connection extends \VuFind\ILS\Connection
     /**
      * Check if title lists are enabled
      *
-     * @param array $functionConfig Function configuration values
-     * @param array $params         An array of function-specific params (or null)
+     * @param array  $functionConfig Function configuration values
+     * @param ?array $params         An array of function-specific params (or null)
      *
      * @return mixed array|false
      */
@@ -472,8 +472,8 @@ class Connection extends \VuFind\ILS\Connection
     /**
      * Check if self-registration.
      *
-     * @param array $functionConfig Function configuration values
-     * @param array $params         An array of function-specific params (or null)
+     * @param array  $functionConfig Function configuration values
+     * @param ?array $params         An array of function-specific params (or null)
      *
      * @return boolean
      */

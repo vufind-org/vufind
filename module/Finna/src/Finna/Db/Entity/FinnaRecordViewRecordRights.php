@@ -55,11 +55,11 @@ class FinnaRecordViewRecordRights implements FinnaRecordViewRecordRightsEntityIn
     protected int $id;
 
     /**
-     * Rights.
+     * Usage rights.
      *
      * @var string
      */
-    #[ORM\Column(name: 'rights', type: 'string', length: 255, nullable: false)]
+    #[ORM\Column(name: 'usage_rights', type: 'string', length: 255, nullable: false)]
     protected string $rights;
 
     /**

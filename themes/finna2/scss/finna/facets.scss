@@ -183,14 +183,15 @@ span.badge.cb-facet {
   .facet {
     padding: 3px 3px 2px 8px;
     display: flex;
-    .text {
+
+    .main-link, .text {
       flex-grow: 1;
       overflow: hidden;
+    }
 
-      .facet-value {
-        overflow: hidden;
-        text-overflow: ellipsis;
-      }
+    .text .facet-value {
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
   }
   .title {
@@ -217,7 +218,7 @@ span.badge.cb-facet {
     flex-shrink: 0;
     align-items: center;
   }
-  .text, .hierarchical-facet-anchor {
+  .main-link, .text, .hierarchical-facet-anchor {
     display: flex;
     gap: 0.25rem;
     align-items: center;

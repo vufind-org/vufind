@@ -42,6 +42,8 @@ use Finna\Db\Service\UserListServiceInterface;
 use Finna\Db\Service\UserResourceService;
 use Finna\Db\Service\UserServiceInterface;
 use VuFind\Db\Service\SearchServiceInterface;
+use VuFind\Db\Type\AuditEventSubtype;
+use VuFind\Db\Type\AuditEventType;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Exception\ListPermission as ListPermissionException;
@@ -156,6 +158,18 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                 $patron
             )
             : [];
+
+        if ($renewResult) {
+            $this->getAuditEventService()->addEvent(
+                AuditEventType::ILS,
+                AuditEventSubtype::RenewLoans,
+                $this->getUser(),
+                data: [
+                    'username' => $patron['cat_username'],
+                    'result' => $renewResult,
+                ]
+            );
+        }
 
         // By default, assume we will not need to display a renewal form:
         $renewForm = false;
@@ -1234,6 +1248,14 @@ class MyResearchController extends \VuFind\Controller\MyResearchController
                     $userService->setDueDateReminderForUser($user, 0);
                     $view->success = true;
                 }
+                $this->getAuditEventService()->addEvent(
+                    AuditEventType::User,
+                    AuditEventSubtype::Update,
+                    $user,
+                    data: [
+                        'due_date_reminder' => 0,
+                    ]
+                );
             }
         } else {
             $view->unsubscribeUrl

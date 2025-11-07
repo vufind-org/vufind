@@ -13,6 +13,7 @@
 @import "finna/image-popup";
 @import "finna/finna-header";
 @import "finna/combinedlist";
+@import "finna/eds";
 @import "finna/grid-view";
 @import "finna/holdings";
 @import "finna/public-favorites";
@@ -402,40 +403,21 @@ label.list-group-item {
 @media screen {
   @include media-breakpoint-down(sm) {
     .table-responsive {
-      border: none;
-      thead, tfoot > tr > th {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        margin: -1px;
-        padding: 0;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        border: 0;
-      }
-      tbody > tr {
-        display: block;
-        margin-bottom: $line-height-computed;
-        border: 1px solid $gray-lighter;
-      }
-      td, tbody > tr > th {
-        display: flex;
-        align-items: first baseline;
-        background: #fff;
-        &:not(.user-account-table-select):before {
-          display: flex;
-          flex-basis: 40%;
-          flex-shrink: 0;
-          font-weight: bold;
-          content: attr(data-label);
-        }
-      }
-      tbody > tr > td:nth-child(even) {
-        background-color: $table-bg-accent;
-      }
-      tfoot > tr > td {
-        border-top: none;
-      }
+      --bs-table-striped-bg: #{$table-bg-accent};
+      box-shadow: none;
+
+      @include table-responsive;
+    }
+  }
+}
+/* ------ Responsive table for non-ultrawide screen size ------ */
+@include media-breakpoint-down(xl) {
+  @media screen {
+    .table-responsive.table-responsive__lg {
+      --bs-table-striped-bg: #{$table-bg-accent};
+      box-shadow: none;
+
+      @include table-responsive;
     }
   }
 }

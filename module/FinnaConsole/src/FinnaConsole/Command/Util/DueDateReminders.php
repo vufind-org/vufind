@@ -70,11 +70,6 @@ class DueDateReminders extends AbstractUtilCommand
     use EmailWithRetryTrait;
 
     /**
-     * Date format for due dates in database.
-     */
-    public const DUE_DATE_FORMAT = 'Y-m-d H:i:s';
-
-    /**
      * URL Helper
      *
      * @var \VuFind\View\Helper\Root\Url
