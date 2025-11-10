@@ -444,11 +444,9 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             }
 
             // Call number
-            if ($row['ITEM_CALL_NUM'] != null) {
-                $call_num = $row['ITEM_CALL_NUM'];
-            } else {
-                $call_num = $row['BIB_CALL_NUM'];
-            }
+            $call_num = $row['ITEM_CALL_NUM'] != null
+                ? $row['ITEM_CALL_NUM']
+                : $row['BIB_CALL_NUM'];
 
             $temp = [
                 'id'            => $id,
@@ -557,11 +555,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
 
         // Set a flag for super users, better then
         //  the full function call inside the loop
-        if (in_array($patron_type, $type_list['Super User'])) {
-            $super_user = true;
-        } else {
-            $super_user = false;
-        }
+        $super_user = in_array($patron_type, $type_list['Super User']);
         // External Users cannot place a request
         if (in_array($patron_type, $type_list['Externals'])) {
             return $holdings;
@@ -1443,11 +1437,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     {
         // Change this value for debugging
         // eg. strtotime('25-12-2009') = Christmas
-        if ($fake_time) {
-            $time = strtotime($fake_time);
-        } else {
-            $time = strtotime('now');
-        }
+        $time = $fake_time ? strtotime($fake_time) : strtotime('now');
         $today = date('d-m-Y', $time);
         $time_format = 'H:i:s';
 

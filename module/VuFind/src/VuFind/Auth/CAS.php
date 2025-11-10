@@ -189,11 +189,7 @@ class CAS extends AbstractBase
     public function getSessionInitiator(string $target): ?string
     {
         $config = $this->getConfig();
-        if (isset($config->CAS->target)) {
-            $casTarget = $config->CAS->target;
-        } else {
-            $casTarget = $target;
-        }
+        $casTarget = $config->CAS->target ?? $target;
         $append = (str_contains($casTarget, '?')) ? '&' : '?';
         $sessionInitiator = $config->CAS->login
             . '?service=' . urlencode($casTarget)

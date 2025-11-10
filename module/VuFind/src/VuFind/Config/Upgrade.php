@@ -222,11 +222,9 @@ class Upgrade implements LoggerAwareInterface
         foreach ($custom_ini as $k => $v) {
             // Make a recursive call if we need to merge array values into an
             // existing key... otherwise just drop the value in place.
-            if (is_array($v) && isset($config_ini[$k])) {
-                $config_ini[$k] = self::iniMerge($config_ini[$k], $custom_ini[$k]);
-            } else {
-                $config_ini[$k] = $v;
-            }
+            $config_ini[$k] = is_array($v) && isset($config_ini[$k])
+                ? self::iniMerge($config_ini[$k], $custom_ini[$k])
+                : $v;
         }
         return $config_ini;
     }

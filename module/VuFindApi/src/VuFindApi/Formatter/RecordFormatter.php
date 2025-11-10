@@ -182,11 +182,9 @@ class RecordFormatter extends BaseFormatter
                 continue;
             }
             $method = $this->recordFields[$field]['vufind.method'];
-            if (strncmp($method, 'Formatter::', 11) == 0) {
-                $value = $this->{substr($method, 11)}($record);
-            } else {
-                $value = $record->tryMethod($method);
-            }
+            $value = strncmp($method, 'Formatter::', 11) == 0
+                ? $this->{substr($method, 11)}($record)
+                : $record->tryMethod($method);
             $result[$field] = $value;
         }
         // Convert any translation aware string classes to strings

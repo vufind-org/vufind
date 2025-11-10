@@ -755,11 +755,7 @@ class Params
         }
 
         // Validate and assign the sort value:
-        if ($this->isValidSort($sort)) {
-            $this->sort = $sort;
-        } else {
-            $this->sort = $this->getDefaultSort();
-        }
+        $this->sort = $this->isValidSort($sort) ? $sort : $this->getDefaultSort();
 
         // In RSS mode, we may want to adjust sort settings:
         if (!$this->skipRssSort && $this->getView() == 'rss') {

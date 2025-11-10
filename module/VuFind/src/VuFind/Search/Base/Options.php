@@ -864,11 +864,9 @@ abstract class Options implements TranslatorAwareInterface
             $defaultDelimiter = $this->getDefaultFacetDelimiter();
             foreach ($this->delimitedFacets as $current) {
                 $parts = explode('|', $current, 2);
-                if (count($parts) == 2) {
-                    $this->processedDelimitedFacets[$parts[0]] = $parts[1];
-                } else {
-                    $this->processedDelimitedFacets[$parts[0]] = $defaultDelimiter;
-                }
+                $this->processedDelimitedFacets[$parts[0]] = count($parts) == 2
+                    ? $parts[1]
+                    : $defaultDelimiter;
             }
         }
         return $this->processedDelimitedFacets;
