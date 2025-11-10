@@ -39,7 +39,6 @@
       'data-batch-size' => $channel['config']['batchSize'],
       'data-page-size' => $channel['config']['pageSize'],
       'data-row-size' => $channel['config']['rowSize'],
-      'id' => $channelID,
     ]);
   ?>
   <div class="channel" <?=$providerData ?>>
@@ -95,6 +94,7 @@
 
     <ul
       class="channel-list"
+      id="<?=$this->escapeHtmlAttr($channelID) ?>"
       data-group="<?=$this->escapeHtmlAttr($groupId) ?>"
       style="--row-size:<?=$this->escapeHtmlAttr($channel['config']['rowSize']) ?>"
     >

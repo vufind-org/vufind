@@ -61,7 +61,6 @@ VuFind.register("channels", function Channels() {
     }
 
     // Get and parse results
-    let ariaAnnounced = false;
     fetch(link.getAttribute("href"))
       .then(function addChannelResponse(res) {
         return res.text();
@@ -85,13 +84,6 @@ VuFind.register("channels", function Channels() {
             }
             // Add channel
             callerChannelEl.after(channelEl);
-
-            // Announce to screen readers
-            if (!ariaAnnounced) {
-              ariaAnnounceNewChannel(callerChannelEl, channelEl);
-              ariaAnnounced = true;
-            }
-
             continue;
           }
 
@@ -179,7 +171,7 @@ VuFind.register("channels", function Channels() {
 
     // Out of records
     if (hiddenItems.length < Number(targetChannel.dataset.rowSize)) {
-      ariaAnnounceNewItems(firstNewItem, hiddenItems.length);
+      ariaAnnounce(pageSize, hiddenItems.length);
       hideLoadMoreBtn(btn);
       return;
     }
@@ -187,7 +179,7 @@ VuFind.register("channels", function Channels() {
     // How many more records do we need?
     const neededCount = pageSize - hiddenItems.length;
     if (neededCount <= 0) {
-      ariaAnnounceNewItems(firstNewItem, pageSize);
+      ariaAnnounce(firstNewItem, pageSize);
       return; // skip loading more records
     }
 
@@ -231,7 +223,7 @@ VuFind.register("channels", function Channels() {
           hideLoadMoreBtn(btn);
         }
 
-        ariaAnnounceNewItems(firstNewItem, pageSize);
+        ariaAnnounce(firstNewItem, pageSize);
       });
 
     // Set button to next, next page
@@ -321,39 +313,15 @@ VuFind.register("channels", function Channels() {
       });
   }
 
-  function ariaAnnounce(channel, newChildren) {
-    const messageEl = channel.querySelector(".gallery-polite-alert");
-    messageEl.replaceChildren(...newChildren);
-  }
-
-  function ariaAnnounceNewChannel(channel, newChannel) {
-    // Make link
-    const newChannelLink = document.createElement("a");
-    newChannelLink.textContent = VuFind.translate("channel_new_channel_aria_link");
-    newChannelLink.setAttribute("href", `#${newChannel.id}`);
-
-    // Announce
-    ariaAnnounce(channel, [
-      VuFind.translate("channel_new_channel_aria_message"),
-      " ", // space before link
-      newChannelLink
-    ]);
-  }
-
-  function ariaAnnounceNewItems(firstNewItem, count) {
+  function ariaAnnounce(firstNewItem, count) {
     const channel = firstNewItem.closest(".channel");
+    const messageEl = channel.querySelector(".gallery-polite-alert");
+    messageEl.textContent = VuFind.translate("channel_more_items_aria_message", { "%%count%%": count });
 
-    // Make link
     const firstNewItemLink = document.createElement("a");
     firstNewItemLink.textContent = VuFind.translate("channel_more_items_aria_link");
     firstNewItemLink.setAttribute("href", `#${firstNewItem.id}`);
-
-    // Announce
-    ariaAnnounce(channel, [
-      VuFind.translate("channel_more_items_aria_message", { "%%count%%": count }),
-      " ", // space before link
-      firstNewItemLink
-    ]);
+    messageEl.append(" ", firstNewItemLink);
   }
 
   /**
