@@ -106,7 +106,7 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
     protected $useQueryMinLength = 3;
 
     /**
-     * Maximum levenshtein distance to match a query with the start
+     * Maximum Levenshtein distance to match a query with the start
      * of a database name
      *
      * @var int
