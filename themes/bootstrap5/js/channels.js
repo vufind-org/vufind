@@ -47,7 +47,7 @@ VuFind.register("channels", function Channels() {
     // Remove from dropdowns
     const group = link.closest(".channel-add-menu").dataset.group;
     const token = link.dataset.token;
-    const relatedMenus = Array.from(document.querySelectorAll(`.channel-add-menu[data-group="${group}"]`))
+    const relatedMenus = Array.from(document.querySelectorAll(`.channel-add-menu[data-group="${group}"]`));
     for (const menu of relatedMenus) {
       // Remove add links for this channel
       const usedMenuItem = menu.querySelector(`[data-token="${token}"]`);
@@ -244,9 +244,10 @@ VuFind.register("channels", function Channels() {
   /**
    * @param {HTMLElement} record Channel item to preview
    * @param {string} channelID record's channel id (hard to get from quicklook)
+   * @param {string} htmlContent HTML content to display (record metadata)
    * @returns {string} HTML of quick look controls
    */
-  function quickLookHeader(record, channelID) {
+  function formatQuickLook(record, channelID, htmlContent) {
     const template = document.getElementById("template-channels-quick-look");
     const content = template.content.cloneNode(true).children[0];
 
@@ -286,6 +287,10 @@ VuFind.register("channels", function Channels() {
       nextBtn.setAttribute("disabled", "");
     }
 
+    const parser = new DOMParser();
+    const contentDoc = parser.parseFromString(htmlContent, "text/html");
+    content.append(contentDoc.body.firstChild);
+
     return content.outerHTML;
   }
 
@@ -312,7 +317,7 @@ VuFind.register("channels", function Channels() {
     })
       .then((res) => res.text())
       .then(function quickLookFetchDone(htmlContent) {
-        VuFind.lightbox.render(`${quickLookHeader(record, channelID)} ${htmlContent}`);
+        VuFind.lightbox.render(formatQuickLook(record, channelID, htmlContent));
       });
   }
 
