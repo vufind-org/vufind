@@ -150,20 +150,28 @@ VuFind.register("channels", function Channels() {
       return false;
     }
 
+    // Prep for aria announcement
+    let firstNewItem = null;
+
     // Reveal hidden items
     const targetChannel = btn.closest(".channel");
     const pageSize = Number(targetChannel.dataset.pageSize);
-    const hiddenItems = targetChannel.querySelectorAll(".hidden-batch-item");
 
     // Reveal hidden items (limit to pageSize)
-    hiddenItems.forEach((item, index) => {
-      if (index < pageSize) {
-        item.classList.remove("hidden-batch-item");
-      }
-    });
+    const hiddenItems = Array.from(targetChannel.querySelectorAll(".hidden-batch-item"));
+    if (hiddenItems.length > 0) {
+      firstNewItem = hiddenItems[0];
+
+      hiddenItems.forEach((item, index) => {
+        if (index < pageSize) {
+          item.classList.remove("hidden-batch-item");
+        }
+      });
+    }
 
     // Out of records
     if (hiddenItems.length < Number(targetChannel.dataset.rowSize)) {
+      ariaAnnounce(pageSize, hiddenItems.length);
       hideLoadMoreBtn(btn);
       return;
     }
@@ -171,6 +179,7 @@ VuFind.register("channels", function Channels() {
     // How many more records do we need?
     const neededCount = pageSize - hiddenItems.length;
     if (neededCount <= 0) {
+      ariaAnnounce(firstNewItem, pageSize);
       return; // skip loading more records
     }
 
@@ -193,10 +202,18 @@ VuFind.register("channels", function Channels() {
         const targetList = targetChannel.querySelector(".channel-list");
         for (let i = 0; i < records.length; i++) {
           const record = records[i];
+
+          if (firstNewItem === null) {
+            firstNewItem = record;
+          }
+
+          // Prepare for append
           record.classList.remove("hidden");
           if (i >= neededCount) {
             record.classList.add("hidden-batch-item");
           }
+
+          // Append
           targetList.append(record);
           clampLines(record.querySelector(".channel-item-title"));
         }
@@ -205,6 +222,8 @@ VuFind.register("channels", function Channels() {
         if (records.length < Number(targetChannel.dataset.batchSize)) {
           hideLoadMoreBtn(btn);
         }
+
+        ariaAnnounce(firstNewItem, pageSize);
       });
 
     // Set button to next, next page
@@ -287,6 +306,17 @@ VuFind.register("channels", function Channels() {
       .then(function quickLookFetchDone(htmlContent) {
         VuFind.lightbox.render(`${quickLookHeader(record, channelID)} ${htmlContent}`);
       });
+  }
+
+  function ariaAnnounce(firstNewItem, count) {
+    const channel = firstNewItem.closest(".channel");
+    const messageEl = channel.querySelector(".gallery-polite-alert");
+    messageEl.textContent = VuFind.translate("channel_more_items_aria_message", { "%%count%%": count });
+
+    const firstNewItemLink = document.createElement("a");
+    firstNewItemLink.textContent = VuFind.translate("channel_more_items_aria_link");
+    firstNewItemLink.setAttribute("href", `#${firstNewItem.id}`);
+    messageEl.append(" ", firstNewItemLink);
   }
 
   /**
