@@ -249,19 +249,6 @@ header .container.navbar {
     display: none;
   }
 
-  .record-checkbox {
-    padding: .4rem;
-    height: fit-content;
-
-    input[type="checkbox"] {
-      margin: 0;
-    }
-  }
-
-  .record-number {
-    padding-top: .2rem;
-  }
-
   .title,
   .result-author,
   .fulltext {
@@ -293,14 +280,22 @@ header .container.navbar {
 
   @include media-breakpoint-up(sm) {
     .record-checkbox {
-      display: block;
-      flex: 0;
+      display: flex;
+      flex: none;
+      align-items: center;
+      gap: 0.2em;
+      height: fit-content;
       cursor: pointer;
+
+      input[type="checkbox"] {
+        margin: 0;
+      }
     }
     .record-number {
       display: block;
-      flex: 0 2rem;
-      text-align: center;
+      flex: none;
+      min-width: 2ch;
+      text-align: end;
     }
   }
 }
