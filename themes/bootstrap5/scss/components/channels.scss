@@ -119,7 +119,7 @@
   padding: 0.25em;
   color: white;
   background-color: black;
-  border-color: black;
+  border: 1px solid black;
 
   &:hover,
   &:focus {
@@ -131,6 +131,11 @@
   display: block;
 }
 
+.ql-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
 .ql-view-record-btn {
   display: block;
   margin-block: 1rem;

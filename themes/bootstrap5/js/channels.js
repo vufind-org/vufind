@@ -78,12 +78,12 @@ VuFind.register("channels", function Channels() {
             if (relatedMenu) {
               channelEl.querySelector(".channel-title").after(relatedMenu.cloneNode(true));
             }
+            // Add channel
+            callerChannelEl.after(channelEl);
             // Clamp new titles
             for (const titleEl of channelEl.querySelectorAll(".channel-item-title")) {
               clampLines(titleEl);
             }
-            // Add channel
-            callerChannelEl.after(channelEl);
             continue;
           }
 
@@ -159,6 +159,7 @@ VuFind.register("channels", function Channels() {
     hiddenItems.forEach((item, index) => {
       if (index < pageSize) {
         item.classList.remove("hidden-batch-item");
+        clampLines(item.querySelector(".channel-item-title"));
       }
     });
 
@@ -224,19 +225,30 @@ VuFind.register("channels", function Channels() {
     const template = document.getElementById("template-channels-quick-look");
     const content = template.content.cloneNode(true).children[0];
 
+    // set title
     const titleLink = record.querySelector(".channel-item-title");
-    content.querySelector(".ql-title").textContent = titleLink.textContent;
+    const qlTitleEl = content.querySelector(".ql-title");
+    if (titleLink.title) {
+      qlTitleEl.textContent = titleLink.title;
+      qlTitleEl.setAttribute("title", titleLink.title);
+    } else {
+      qlTitleEl.textContent = titleLink.textContent;
+      qlTitleEl.removeAttribute("title");
+    }
+
+    // update View Record link
     content
       .querySelector(".ql-view-record-btn")
       .setAttribute("href", titleLink.getAttribute("href"));
 
+    // Set data for prev and next buttons
     const id = record.dataset.recordId;
     const source = record.dataset.recordSource;
     content.setAttribute("data-channel-id", channelID);
     content.setAttribute("data-record-id", id);
     content.setAttribute("data-record-source", source);
 
-    // Set URL for quicklook
+    // Set URL for Explore related channels button
     const expandParams = new URLSearchParams({ id, source }); // escape
     content
       .querySelector(".ql-expand-btn")
@@ -273,6 +285,15 @@ VuFind.register("channels", function Channels() {
    * @returns {void}
    */
   function quickLook(record, _channelID = null) {
+    const channelID = _channelID === null
+      ? record.closest(".channel").getAttribute("id")
+      : _channelID;
+
+    // Load more options if we're past the end of what's available
+    if (record.classList.contains("hidden-batch-item")) {
+      loadMoreItems({ target: document.querySelector(`#${channelID} .channel-load-more-btn`) });
+    }
+
     const titleLink = record.querySelector(".channel-item-title");
     const href = titleLink.getAttribute("href");
 
@@ -281,9 +302,6 @@ VuFind.register("channels", function Channels() {
     const formData = new FormData();
     formData.append("tab", "description");
 
-    const channelID = _channelID === null
-      ? record.closest(".channel-list").getAttribute("id")
-      : _channelID;
     fetch(VuFind.path + getUrlRoot(href) + "/AjaxTab", {
       method: "POST",
       body: formData,
