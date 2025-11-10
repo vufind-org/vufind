@@ -199,11 +199,8 @@ class RandomTest extends \PHPUnit\Framework\TestCase
      */
     protected function getConfiguredParamsMock($query, $paramBag)
     {
-        $params = $this->getMockBuilder(\VuFind\Search\Base\Params::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['getQuery', 'getSearchClassId'])
-            ->addMethods(['getBackendParameters'])
-            ->getMock();
+        // Use Solr instead of Base to ensure we can mock getBackendParameters:
+        $params = $this->createMock(\VuFind\Search\Solr\Params::class);
         $params->expects($this->once())->method('getQuery')
             ->willReturn($query);
         $params->expects($this->once())->method('getBackendParameters')

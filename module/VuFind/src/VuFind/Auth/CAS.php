@@ -45,6 +45,9 @@ use function constant;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
+ *
+ * @deprecated This integration cannot be maintained due to the abandonment of the apereo/phpCAS library.
+ * Use OpenIDConnect instead if possible.
  */
 class CAS extends AbstractBase
 {
@@ -301,6 +304,9 @@ class CAS extends AbstractBase
      */
     protected function setupCAS()
     {
+        if (!class_exists(\phpCAS::class)) {
+            throw new \Exception('php-cas module not found; install apereo/phpcas to use CAS');
+        }
         $casauth = new \phpCAS();
 
         // Check to see if phpCAS has already been setup. If it has, than skip as

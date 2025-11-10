@@ -380,7 +380,7 @@ class ResultScroller extends AbstractPlugin
 
     /**
      * Return a modified results array for the case where we need to retrieve data
-     * from the the first page of results
+     * from the first page of results
      *
      * @param array   $retVal     Return values (in progress)
      * @param Results $lastSearch Representation of last search
@@ -417,7 +417,7 @@ class ResultScroller extends AbstractPlugin
 
     /**
      * Return a modified results array for the case where we need to retrieve data
-     * from the the last page of results
+     * from the last page of results
      *
      * @param array   $retVal     Return values (in progress)
      * @param Results $lastSearch Representation of last search

@@ -106,6 +106,15 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
     protected $useQueryMinLength = 3;
 
     /**
+     * When using the query string as a match point, the query string and
+     * database names will first be normalized by removing the characters
+     * in this regular expression. If empty, no normalization will occur.
+     *
+     * @var string
+     */
+    protected $useQueryReplacePattern = '/[-\/\.,:]/';
+
+    /**
      * Maximum Levenshtein distance to match a query with the start
      * of a database name
      *
@@ -190,6 +199,8 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
             ?? $this->useQuery;
         $this->useQueryMinLength = $databasesConfig['useQueryMinLength']
             ?? $this->useQueryMinLength;
+        $queryReplaceConfig = $databasesConfig['useQueryReplacePattern'] ?? $this->useQueryReplacePattern;
+        $this->useQueryReplacePattern = $queryReplaceConfig ?: '';
         $this->useQueryMaxDifference = $databasesConfig['useQueryMaxDifference']
             ?? $this->useQueryMaxDifference;
 
@@ -275,11 +286,11 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
         if ($this->useQuery) {
             $queryObject = $this->results->getParams()->getQuery();
             $query = is_callable([$queryObject, 'getString'])
-                ? strtolower($queryObject->getString())
+                ? $this->normalizeQueryString($queryObject->getString())
                 : '';
             if (strlen($query) >= $this->useQueryMinLength) {
                 foreach ($nameToDatabase as $name => $databaseInfo) {
-                    $normalizedName = strtolower($name);
+                    $normalizedName = $this->normalizeQueryString($name);
                     if (str_contains($normalizedName, $query)) {
                         $databases[$databaseInfo['url']] = $databaseInfo;
                     }
@@ -315,6 +326,23 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
         }
 
         return $databases;
+    }
+
+    /**
+     * Normalize a query string or database name for comparison with each other.
+     * Force to lower case, and remove any characters specified by a regex.
+     *
+     * @param string $str The query string or database name
+     *
+     * @return string The normalized string
+     */
+    protected function normalizeQueryString(string $str): string
+    {
+        $str = strtolower($str);
+        if ($this->useQueryReplacePattern) {
+            $str = preg_replace($this->useQueryReplacePattern, '', $str);
+        }
+        return $str;
     }
 
     /**

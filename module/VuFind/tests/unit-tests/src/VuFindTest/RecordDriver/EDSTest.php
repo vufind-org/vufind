@@ -1105,4 +1105,26 @@ class EDSTest extends \PHPUnit\Framework\TestCase
         $driver = $this->getDriver('catalog_record_patron_empowerment_ebook');
         $this->assertFalse($driver->pubTypeRtacEnabled());
     }
+
+    /**
+     * Test relevancy score (present)
+     *
+     * @return void
+     */
+    public function testRelevancyScorePresent(): void
+    {
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertEquals(908.217102050781, $driver->getScore());
+    }
+
+    /**
+     * Test relevancy score (absent)
+     *
+     * @return void
+     */
+    public function testRelevancyScoreAbsent(): void
+    {
+        $driver = $this->getDriver('valid-eds-record-2');
+        $this->assertNull($driver->getScore());
+    }
 }
