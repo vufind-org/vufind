@@ -113,7 +113,7 @@ class Export
                     break;
                 case 'config':
                 case 'encodedConfig':
-                    $value = null !== $configValue = $this->mainConfig[$parts[1]][$parts[2]] ?? null
+                    $value = null !== ($configValue = $this->mainConfig[$parts[1]][$parts[2]] ?? null)
                         ? $configValue
                         : $parts[3];
                     if ($parts[0] == 'encodedConfig') {
