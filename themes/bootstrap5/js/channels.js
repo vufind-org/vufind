@@ -5,12 +5,17 @@ VuFind.register("channels", function Channels() {
    * @param {string} channelID Channel to search
    * @param {string} source Record source
    * @param {string} id Record ID
-   * @returns {HTMLElement} Channel item matching the record source and ID
+   * @returns {HTMLElement|null} Channel item matching the record source and ID
    */
   function findChannelItem(channelID, source, id) {
-    return document.querySelector(
-      `#${channelID} [data-record-source="${source}"][data-record-id="${id}"]`
-    );
+    const channel = document.getElementById(channelID);
+    // avoid bad selectors with sources or ids
+    for (const item of channel.querySelectorAll(".channel-item")) {
+      if (item.dataset.recordId === id && item.dataset.recordSource === source) {
+        return item;
+      }
+    }
+    return null;
   }
 
   /**
