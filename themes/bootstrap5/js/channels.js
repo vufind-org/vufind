@@ -39,59 +39,6 @@ VuFind.register("channels", function Channels() {
   }
 
   /**
-   * Add an aria-polite message to a channel
-   * @param  {HTMLElement} channel Target channel
-   * @param  {Array<Node>} newChildren Elements and strings to populate message
-   * @return void
-   */
-  function ariaAnnounce(channel, newChildren) {
-    const messageEl = channel.querySelector(".gallery-polite-alert");
-    messageEl.replaceChildren(...newChildren);
-  }
-
-  /**
-   * Format an aria-polite message from a new channel
-   * @param  {HTMLElement} channel Target channel
-   * @param  {HTMLElement} newChannel New channel
-   * @return void
-   */
-  function ariaAnnounceNewChannel(channel, newChannel) {
-    // Make link
-    const newChannelLink = document.createElement("a");
-    newChannelLink.textContent = VuFind.translate("channel_new_channel_aria_link");
-    newChannelLink.setAttribute("href", `#${newChannel.id}`);
-
-    // Announce
-    ariaAnnounce(channel, [
-      VuFind.translate("channel_new_channel_aria_message"),
-      " ", // space before link
-      newChannelLink
-    ]);
-  }
-
-  /**
-   * Format an aria-polite message from a new channel
-   * @param  {HTMLElement} firstNewItem First new item
-   * @param  {number} count Number of added items
-   * @return void
-   */
-  function ariaAnnounceNewItems(firstNewItem, count) {
-    const channel = firstNewItem.closest(".channel");
-
-    // Make link
-    const firstNewItemLink = document.createElement("a");
-    firstNewItemLink.textContent = VuFind.translate("channel_more_items_aria_link");
-    firstNewItemLink.setAttribute("href", `#${firstNewItem.id}`);
-
-    // Announce
-    ariaAnnounce(channel, [
-      VuFind.translate("channel_more_items_aria_message", { "%%count%%": count }),
-      " ", // space before link
-      firstNewItemLink
-    ]);
-  }
-
-  /**
    * @param {HTMLElement} link .channel-add-link
    * @returns {void}
    */
@@ -372,6 +319,41 @@ VuFind.register("channels", function Channels() {
       .then(function quickLookFetchDone(htmlContent) {
         VuFind.lightbox.render(formatQuickLook(record, channelID, htmlContent));
       });
+  }
+
+  function ariaAnnounce(channel, newChildren) {
+    const messageEl = channel.querySelector(".gallery-polite-alert");
+    messageEl.replaceChildren(...newChildren);
+  }
+
+  function ariaAnnounceNewChannel(channel, newChannel) {
+    // Make link
+    const newChannelLink = document.createElement("a");
+    newChannelLink.textContent = VuFind.translate("channel_new_channel_aria_link");
+    newChannelLink.setAttribute("href", `#${newChannel.id}`);
+
+    // Announce
+    ariaAnnounce(channel, [
+      VuFind.translate("channel_new_channel_aria_message"),
+      " ", // space before link
+      newChannelLink
+    ]);
+  }
+
+  function ariaAnnounceNewItems(firstNewItem, count) {
+    const channel = firstNewItem.closest(".channel");
+
+    // Make link
+    const firstNewItemLink = document.createElement("a");
+    firstNewItemLink.textContent = VuFind.translate("channel_more_items_aria_link");
+    firstNewItemLink.setAttribute("href", `#${firstNewItem.id}`);
+
+    // Announce
+    ariaAnnounce(channel, [
+      VuFind.translate("channel_more_items_aria_message", { "%%count%%": count }),
+      " ", // space before link
+      firstNewItemLink
+    ]);
   }
 
   /**
