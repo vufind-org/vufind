@@ -608,10 +608,16 @@ class Upgrade implements LoggerAwareInterface
 
         // Update Syndetics config:
         if (isset($newConfig['Syndetics']['url'])) {
-            $newConfig['Syndetics']['use_ssl']
-                = (!str_contains($newConfig['Syndetics']['url'], 'https://'))
-                ? '' : 1;
             unset($newConfig['Syndetics']['url']);
+        }
+        if (isset($newConfig['Syndetics']['use_ssl'])) {
+            unset($newConfig['Syndetics']['use_ssl']);
+        }
+        if (isset($newConfig['Syndetics']['plus'])) {
+            unset($newConfig['Syndetics']['plus']);
+        }
+        if (isset($newConfig['Syndetics']['plus_id'])) {
+            unset($newConfig['Syndetics']['plus_id']);
         }
 
         // Convert spellchecker 'simple' option

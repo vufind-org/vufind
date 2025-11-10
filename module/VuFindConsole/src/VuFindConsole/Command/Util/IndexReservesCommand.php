@@ -263,7 +263,7 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->output = $output;
         $startTime = date('Y-m-d H:i:s');
@@ -294,14 +294,14 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
                 $this->showTimestampedMessage('Found reserve count: ' . count($reserves));
             } catch (\Exception $e) {
                 $this->showTimestampedMessage($e->getMessage());
-                return 1;
+                return self::FAILURE;
             }
         } elseif ($delimiter !== $this->defaultDelimiter) {
             $this->output->writeln('-d (delimiter) is meaningless without -f (filename)');
-            return 1;
+            return self::FAILURE;
         } elseif ($template !== $this->defaultTemplate) {
             $this->output->writeln('-t (template) is meaningless without -f (filename)');
-            return 1;
+            return self::FAILURE;
         } else {
             try {
                 $this->showTimestampedMessage('Starting reserves processing from ILS');
@@ -321,7 +321,7 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
                 $this->showTimestampedMessage('Found reserve count: ' . count($reserves ?? []));
             } catch (\Exception $e) {
                 $this->showTimestampedMessage($e->getMessage());
-                return 1;
+                return self::FAILURE;
             }
         }
 
@@ -353,7 +353,7 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
             $this->showTimestampedMessage('Successfully loaded ' . count($reserves) . ' rows.');
             $endTime = date('Y-m-d H:i:s');
             $this->showTimestampedMessage('Started at: ' . $startTime . ' Completed at: ' . $endTime);
-            return 0;
+            return self::SUCCESS;
         }
         $missing = array_merge(
             empty($instructors) ? ['instructors'] : [],
@@ -362,6 +362,6 @@ class IndexReservesCommand extends AbstractSolrAndIlsCommand
             empty($reserves) ? ['reserves'] : []
         );
         $this->showTimestampedMessage('Unable to load data. No data found for: ' . implode(', ', $missing));
-        return 1;
+        return self::FAILURE;
     }
 }

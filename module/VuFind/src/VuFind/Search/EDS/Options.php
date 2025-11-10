@@ -699,7 +699,7 @@ class Options extends AbstractEDSOptions
                     'eds_limiter_' . $key,
                     $limiter['Label']
                 ),
-                'selected' => ('y' == $limiter['DefaultOn']) ? true : false,
+                'selected' => 'y' == $limiter['DefaultOn'],
             ];
         }
         return $ssLimiterOptions;

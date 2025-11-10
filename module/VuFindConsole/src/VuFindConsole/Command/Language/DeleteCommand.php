@@ -87,7 +87,7 @@ class DeleteCommand extends AbstractCommand
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $target = $input->getArgument('target');
 
@@ -95,7 +95,7 @@ class DeleteCommand extends AbstractCommand
         $target = $key . ' = ';
 
         if (!($dir = $this->getLangDir($output, $domain))) {
-            return 1;
+            return self::FAILURE;
         }
         $callback = function ($full) use ($output, $target): void {
             $lines = file($full);
@@ -117,6 +117,6 @@ class DeleteCommand extends AbstractCommand
         };
         $this->processDirectory($dir, $callback, [$output, 'writeln']);
 
-        return 0;
+        return self::SUCCESS;
     }
 }

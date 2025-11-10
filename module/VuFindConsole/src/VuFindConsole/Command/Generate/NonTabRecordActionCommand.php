@@ -102,7 +102,7 @@ class NonTabRecordActionCommand extends AbstractCommand
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $action = $input->getArgument('action');
         $module = $input->getArgument('target_module');
@@ -137,6 +137,6 @@ class NonTabRecordActionCommand extends AbstractCommand
 
         // Write updated configuration
         $this->generatorTools->writeModuleConfig($configPath, $config);
-        return 0;
+        return self::SUCCESS;
     }
 }

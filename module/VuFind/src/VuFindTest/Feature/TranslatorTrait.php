@@ -53,16 +53,13 @@ trait TranslatorTrait
      */
     protected function getMockTranslator(array $translations, string $locale = 'en'): MockObject&Translator
     {
-        $callback = function ($str, $domain) use ($translations) {
-            return $translations[$domain][$str] ?? $str;
-        };
-        $translator = $this->getMockBuilder(Translator::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['translate'])
-            ->addMethods(['getLocale'])
-            ->getMock();
-        $translator->expects($this->any())->method('translate')->willReturnCallback($callback);
-        $translator->expects($this->any())->method('getLocale')->willReturn($locale);
+        $translator = $this->createMock(Translator::class);
+        $translator->expects($this->any())->method('translate')->willReturnCallback(
+            fn ($str, $domain) => $translations[$domain][$str] ?? $str
+        );
+        $translator->expects($this->any())->method('__call')->willReturnCallback(
+            fn ($method) => $method === 'getLocale' ? $locale : null
+        );
         return $translator;
     }
 }

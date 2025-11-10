@@ -66,13 +66,9 @@ class SessionService extends AbstractDbService implements
      */
     public function getSessionById(string $sid, bool $create = true): ?SessionEntityInterface
     {
-        $queryBuilder = $this->entityManager->createQueryBuilder();
-        $queryBuilder->select('s')
-            ->from(SessionEntityInterface::class, 's')
-            ->where('s.sessionId = :sid')
-            ->setParameter('sid', $sid);
-        $query = $queryBuilder->getQuery();
-        $session = current($query->getResult()) ?: null;
+        $session = $this->entityManager
+            ->getRepository(SessionEntityInterface::class)
+            ->findOneBy(['sessionId' => $sid]);
         if ($create && empty($session)) {
             $now = new \DateTime();
             $session = $this->createEntity()

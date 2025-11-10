@@ -302,6 +302,10 @@ class SierraRest extends AbstractBase implements
      *   - last pickup date for holds
      * v5.1 (technically still v5 but added in a later revision):
      *   - summary holdings information (especially for serials)
+     * v6:
+     *   - patron authentication with global patron data access using a method other than "native"
+     * v6.4 (technically still v6 but added in a later revision):
+     *   - return date included in new entries of checkout history (no change in API request needed)
      *
      * Note that API version 3 is deprecated in Sierra 5.1 and will be removed later
      * on (reported March 2020).
@@ -1011,6 +1015,9 @@ class SierraRest extends AbstractBase implements
         $items = $this->getItemsWithBibsForTransactions($result['entries'], $patron);
         $transactions = [];
         foreach ($result['entries'] as $entry) {
+            $returnDate = ($date = $entry['returnDate'] ?? null)
+                ? $this->dateConverter->convertToDisplayDate('Y-m-d', $date)
+                : false;
             $transaction = [
                 'id' => '',
                 'row_id' => $this->extractId($entry['id']),
@@ -1019,6 +1026,7 @@ class SierraRest extends AbstractBase implements
                     'Y-m-d',
                     $entry['outDate']
                 ),
+                'returnDate' => $returnDate,
             ];
             $item = $items[$transaction['item_id']] ?? null;
             $transaction['volume'] = $item ? $this->extractVolume($item) : '';
