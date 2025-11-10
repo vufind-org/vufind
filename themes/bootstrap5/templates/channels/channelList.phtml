@@ -18,12 +18,16 @@
   ]);
 ?>
 
-<?php if (empty($token) && ($displaySearchBox ?? true)): ?>
+<?php if (empty($token) && ($displaySearchBox ?? true)): // no results ?>
   <form action="<?=$this->url('channels-search')?>" class="channel-search form-inline">
     <?=$this->transEsc('channel_searchbox_label')?>
     <input type="text" name="lookfor" class="form-control" value="<?=$this->escapeHtmlAttr($this->lookfor) ?>" aria-label="<?=$this->transEscAttr('search_terms') ?>">
     <input type="submit" value="<?=$this->transEscAttr('Submit')?>" class="btn btn-default">
   </form>
+<?php endif; ?>
+
+<?php if (count($this->channels) === 0): ?>
+  <p><?=$this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->escapeHtml($lookfor)]) ?></p>
 <?php endif; ?>
 
 <?php foreach ($this->channels as $channel): ?>
