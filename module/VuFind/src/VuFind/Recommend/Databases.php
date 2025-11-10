@@ -101,7 +101,7 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
     /**
      * Minimum string length of a query to use as a match point
      *
-     * @var bool
+     * @var int
      */
     protected $useQueryMinLength = 3;
 
@@ -113,6 +113,14 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
      * @var string
      */
     protected $useQueryReplacePattern = '/[-\/\.,:]/';
+
+    /**
+     * Maximum Levenshtein distance to match a query with the start
+     * of a database name
+     *
+     * @var int
+     */
+    protected $useQueryMaxDifference = 2;
 
     /**
      * Configuration of whether to use LibGuides as a data source
@@ -132,6 +140,8 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
     /**
      * URL to a list of all available databases, for display in the results list,
      * or false to omit.
+     *
+     * @var bool|string
      */
     protected $linkToAllDatabases = false;
 
@@ -191,6 +201,8 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
             ?? $this->useQueryMinLength;
         $queryReplaceConfig = $databasesConfig['useQueryReplacePattern'] ?? $this->useQueryReplacePattern;
         $this->useQueryReplacePattern = $queryReplaceConfig ?: '';
+        $this->useQueryMaxDifference = $databasesConfig['useQueryMaxDifference']
+            ?? $this->useQueryMaxDifference;
 
         $this->useLibGuides = $databasesConfig['useLibGuides']
             ?? $this->useLibGuides;
@@ -278,7 +290,12 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
                 : '';
             if (strlen($query) >= $this->useQueryMinLength) {
                 foreach ($nameToDatabase as $name => $databaseInfo) {
-                    if (str_contains($this->normalizeQueryString($name), $query)) {
+                    $normalizedName = $this->normalizeQueryString($name);
+                    $nameContainsQuery = str_contains($normalizedName, $query);
+                    $nameResemblesQuery = $this->useQueryMaxDifference &&
+                        (levenshtein(substr($normalizedName, 0, strlen($query)), $query)
+                            <= $this->useQueryMaxDifference);
+                    if ($nameContainsQuery || $nameResemblesQuery) {
                         $databases[$databaseInfo['url']] = $databaseInfo;
                     }
                     if (count($databases) >= $this->limit) {
