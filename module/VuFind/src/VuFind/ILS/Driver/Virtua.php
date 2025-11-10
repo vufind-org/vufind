@@ -444,9 +444,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             }
 
             // Call number
-            $call_num = $row['ITEM_CALL_NUM'] != null
-                ? $row['ITEM_CALL_NUM']
-                : $row['BIB_CALL_NUM'];
+            $call_num = $row['ITEM_CALL_NUM'] ?? $row['BIB_CALL_NUM'];
 
             $temp = [
                 'id'            => $id,

@@ -130,9 +130,9 @@ class Connector implements \Psr\Log\LoggerAwareInterface
         $this->url = $url;
         $this->map = $map;
         $this->uniqueKey = $uniqueKey;
-        $this->clientFactory = $cf instanceof HttpClient ? function () use ($cf) {
-            return clone $cf;
-        } : $cf;
+        $this->clientFactory = $cf instanceof HttpClient
+            ? fn () => clone $cf
+            : $cf;
     }
 
     /// Public API

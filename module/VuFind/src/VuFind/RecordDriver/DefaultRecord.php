@@ -977,7 +977,6 @@ class DefaultRecord extends AbstractBase
         $format = $this->getOpenUrlFormat();
         $method = "get{$format}OpenUrlParams";
         $params = method_exists($this, $method)
-
             ? $this->$method()
             : $this->getUnknownFormatOpenUrlParams($format);
 
