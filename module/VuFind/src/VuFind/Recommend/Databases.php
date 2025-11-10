@@ -291,14 +291,11 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
             if (strlen($query) >= $this->useQueryMinLength) {
                 foreach ($nameToDatabase as $name => $databaseInfo) {
                     $normalizedName = $this->normalizeQueryString($name);
-                    if (str_contains($normalizedName, $query)) {
-                        $databases[$databaseInfo['url']] = $databaseInfo;
-                    }
-                    if (
-                        $this->useQueryMaxDifference &&
-                        levenshtein(substr($normalizedName, 0, strlen($query)), $query)
-                            <= $this->useQueryMaxDifference
-                    ) {
+                    $nameContainsQuery = str_contains($normalizedName, $query);
+                    $nameResemblesQuery = $this->useQueryMaxDifference &&
+                        (levenshtein(substr($normalizedName, 0, strlen($query)), $query)
+                            <= $this->useQueryMaxDifference);
+                    if ($nameContainsQuery || $nameResemblesQuery) {
                         $databases[$databaseInfo['url']] = $databaseInfo;
                     }
                     if (count($databases) >= $this->limit) {
