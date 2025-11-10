@@ -380,7 +380,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected function getCacheKey($suffix = null)
     {
-        return 'KohaRest' . '-' . md5($this->config['Catalog']['host'] . $suffix);
+        return 'KohaRest-' . md5($this->config['Catalog']['host'] . $suffix);
     }
 
     /**

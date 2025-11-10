@@ -1912,11 +1912,11 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      */
     public function patronLogin($username, $password)
     {
-        $request = 'LookupPatron' . '&id=' . urlencode($username)
+        $request = 'LookupPatron&id=' . urlencode($username)
             . '&id_type=userid';
 
         if ($this->validatePasswords) {
-            $request = 'AuthenticatePatron' . '&username='
+            $request = 'AuthenticatePatron&username='
                 . urlencode($username) . '&password=' . $password;
         }
 

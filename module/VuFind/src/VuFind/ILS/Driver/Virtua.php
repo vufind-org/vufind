@@ -1755,24 +1755,24 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
 
         // Have to use raw post data because of the way
         //   virtua expects the barcodes to come across.
-        $post_data  = 'function=' . 'RENEWAL';
-        $post_data .= '&search=' . 'PATRON';
+        $post_data  = 'function=RENEWAL';
+        $post_data .= '&search=PATRON';
         $post_data .= '&sessionid=' . "$session_id";
-        $post_data .= '&skin=' . 'homepage';
+        $post_data .= '&skin=homepage';
         $post_data .= '&lng=' . $this->getConfiguredLanguage();
-        $post_data .= '&inst=' . 'consortium';
+        $post_data .= '&inst=consortium';
         $post_data .= '&conf=' . urlencode('.&#047;chameleon.conf');
-        $post_data .= '&u1=' . '12';
-        $post_data .= '&SourceScreen=' . 'PATRONACTIVITY';
-        $post_data .= '&pos=' . '1';
+        $post_data .= '&u1=12';
+        $post_data .= '&SourceScreen=PATRONACTIVITY';
+        $post_data .= '&pos=1';
         $post_data .= '&patronid=' . $patron['cat_username'];
         $post_data .= '&patronhost='
             . urlencode($this->config['Catalog']['patron_host']);
         $post_data .= '&host='
             . urlencode($this->config['Catalog']['host_string']);
         $post_data .= '&itembarcode=' . implode('&itembarcode=', $item_list);
-        $post_data .= '&submit=' . 'Renew';
-        $post_data .= '&reset=' . 'Clear';
+        $post_data .= '&submit=Renew';
+        $post_data .= '&reset=Clear';
 
         $result = $this->httpRequest($virtua_url, null, $post_data);
 

@@ -20,4 +20,4 @@ return RectorConfig::configure()
     ])
     ->withTypeCoverageLevel(0)
     ->withDeadCodeLevel(6)
-    ->withCodeQualityLevel(20);
+    ->withCodeQualityLevel(22);
