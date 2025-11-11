@@ -673,6 +673,9 @@ form#renewals, form#update_holds, form#purge_history {
       border-right: none;
     }
   }
+  th {
+    vertical-align: middle;
+  }
   td {
     border-right: 1px solid $body-bg;
     vertical-align: middle;
