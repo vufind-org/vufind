@@ -78,12 +78,14 @@ trait HoldsTrait
         if (!$gatheredDetails) {
             return $this->redirectToRecord();
         }
+
         // the gatheredDetails['id'] is the original ID, but for API Holds (e.g. EDS)
         // we may need to use the override ID. So only in that case we will set it to the
         // value returned by getUniqueIDOverrideForRequest.
         if ($originalId != $id && $originalId == $gatheredDetails['id']) {
             $gatheredDetails['id'] = $id;
         }
+
         // Block invalid requests:
         $validRequest = $catalog->checkRequestIsValid(
             $id,
@@ -96,6 +98,19 @@ trait HoldsTrait
                     ? $validRequest['status'] : 'hold_error_blocked'
             );
             return $this->redirectToRecord('#top');
+        }
+
+        // Attach holdings data from requested item for template use
+        $requestedItemId = $this->params()->fromPost('item_id') ?: $this->params()->fromQuery('item_id');
+        if ($requestedItemId) {
+            $holdings = $catalog->getHolding($gatheredDetails['id'], $patron);
+            $gatheredDetails['requestedItem'] = null;
+            foreach ($holdings['holdings'] as $item) {
+                if ($item['item_id'] === $requestedItemId) {
+                    $gatheredDetails['requestedItem'] = $item;
+                    break;
+                }
+            }
         }
 
         $extraHoldFields = isset($checkHolds['extraHoldFields'])

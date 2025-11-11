@@ -2535,10 +2535,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     protected function itemHoldAllowed($item)
     {
         $unavail = $item['availability']['unavailabilities'] ?? [];
-        if (!isset($unavail['Hold::NotHoldable'])) {
-            return true;
-        }
-        return false;
+        return !isset($unavail['Hold::NotHoldable']);
     }
 
     /**
@@ -2554,13 +2551,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         if (isset($unavail['ArticleRequest::NotAllowed'])) {
             return false;
         }
-        if (
-            empty($this->config['StorageRetrievalRequests']['allow_checked_out'])
-            && isset($unavail['Item::CheckedOut'])
-        ) {
-            return false;
-        }
-        return true;
+        return !(empty($this->config['StorageRetrievalRequests']['allow_checked_out'])
+            && isset($unavail['Item::CheckedOut']));
     }
 
     /**
@@ -3132,10 +3124,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             return false;
         }
         $paymentConfig = $this->config['OnlinePayment'] ?? [];
-        if (in_array($fine['__status'], $paymentConfig['nonPayableStatuses'] ?? [])) {
-            return false;
-        }
-        return true;
+        return !in_array($fine['__status'], $paymentConfig['nonPayableStatuses'] ?? []);
     }
 
     /**
@@ -3151,10 +3140,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             return true;
         }
         $paymentConfig = $this->config['OnlinePayment'] ?? [];
-        if (in_array($fine['__status'], $paymentConfig['blockingNonPayableStatuses'] ?? [])) {
-            return true;
-        }
-        return false;
+        return in_array($fine['__status'], $paymentConfig['blockingNonPayableStatuses'] ?? []);
     }
 
     /**

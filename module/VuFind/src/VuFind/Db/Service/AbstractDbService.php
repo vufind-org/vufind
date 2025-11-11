@@ -84,6 +84,21 @@ abstract class AbstractDbService implements DbServiceInterface
     }
 
     /**
+     * Detach an entity.
+     *
+     * Makes the Entity Manager stop tracking the entity. This can save memory and work, but also helps when the target
+     * entity of this entity with "ON DELETE SET NULL" is going to be deleted.
+     *
+     * @param EntityInterface $entity Entity to detach.
+     *
+     * @return void
+     */
+    public function detachEntity(EntityInterface $entity): void
+    {
+        $this->entityManager->detach($entity);
+    }
+
+    /**
      * Delete an entity.
      *
      * @param EntityInterface $entity Entity to persist.

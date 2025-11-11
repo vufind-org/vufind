@@ -14,7 +14,7 @@ VuFind.register('lightbox', function Lightbox() {
   var _modal, _modalBody, _clickedButton = null;
   // Boostrap modal
   var _bsModal = null;
-  
+
   /**
    * Store the currently clicked button element to be used later in form submission.
    */
@@ -475,10 +475,10 @@ VuFind.register('lightbox', function Lightbox() {
    * @param {KeyboardEvent} event The keyboard event.
    */
   function onKeydown(event) {
-    if (event.keyCode === 27) { // esc
+    if (event.key === 'Escape') { // esc
       close();
     }
-    if (event.keyCode === 9) { // tab
+    if (event.key === 'Tab') { // tab
       retainFocus(event);
     }
   }
