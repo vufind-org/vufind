@@ -40,6 +40,8 @@ use VuFind\XSLT\Importer;
 use VuFindSearch\Backend\Solr\Document\RawXMLDocument;
 
 use function is_string;
+use function ord;
+use function strlen;
 
 /**
  * Console command: web crawler
@@ -115,12 +117,20 @@ class WebCrawlCommand extends Command
      *
      * @param string $url URL to download
      *
-     * @return string     Filename of downloaded content
+     * @return string     Filename of downloaded (and decompressed if needed) content
      */
     protected function downloadFile($url)
     {
         $file = tempnam('/tmp', 'sitemap');
-        file_put_contents($file, file_get_contents($url));
+        $content = file_get_contents($url);
+        // Check if content is gzipped (magic bytes: 0x1f 0x8b).
+        if (strlen($content) >= 2 && ord($content[0]) === 0x1f && ord($content[1]) === 0x8b) {
+            $content = gzdecode($content);
+            if ($content === false) {
+                throw new \Exception("Failed to decompress gzipped sitemap from $url");
+            }
+        }
+        file_put_contents($file, $content);
         return $file;
     }
 

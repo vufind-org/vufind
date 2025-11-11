@@ -282,7 +282,6 @@ return [
             'overdrive-help' => 'FontAwesome:question-circle',
             'overdrive-place-hold' => 'Alias:place-hold',
             'overdrive-return' => 'FontAwesome:undo',
-            'overdrive-return-rtl' => 'FontAwesome:undo',
             'overdrive-sign-in' => 'FontAwesome:sign-in',
             'overdrive-success' => 'FontAwesome:check',
             'overdrive-suspend-hold' => 'Alias:place-hold',

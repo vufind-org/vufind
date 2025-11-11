@@ -139,11 +139,9 @@ class RateLimiterManagerFactory implements FactoryInterface
             return new RejectAll();
         }
         $rateLimiterConfig['id'] = $policyId;
-        if (null !== $userId && !($policy['preferIPAddress'] ?? false)) {
-            $clientId = "u:$userId";
-        } else {
-            $clientId = "ip:$clientIp";
-        }
+        $clientId = null !== $userId && !($policy['preferIPAddress'] ?? false)
+            ? "u:$userId"
+            : "ip:$clientIp";
         $factory = new RateLimiterFactory($rateLimiterConfig, $this->createCache($config, $configSection));
         return $factory->create($clientId);
     }

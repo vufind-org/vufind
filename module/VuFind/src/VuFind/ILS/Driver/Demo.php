@@ -1132,6 +1132,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                     'U',
                     strtotime("now - $day_overdue days")
                 ),
+                'organization' => $this->getFakeLoc(),
             ];
 
             $fine['payableOnline'] = $this->fineIsPayable($fine);

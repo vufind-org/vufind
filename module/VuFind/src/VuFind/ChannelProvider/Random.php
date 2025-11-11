@@ -140,11 +140,9 @@ class Random extends AbstractChannelProvider implements TranslatorAwareInterface
     public function getFromSearch(Results $results, $channelToken = null)
     {
         $params = $results->getParams();
-        if ('retain' !== $this->mode) {
-            $randomParams = $this->paramManager->get($params->getSearchClassId());
-        } else {
-            $randomParams = clone $params;
-        }
+        $randomParams = 'retain' !== $this->mode
+            ? $this->paramManager->get($params->getSearchClassId())
+            : clone $params;
         $channel = $this->buildChannelFromParams($randomParams);
         return (count($channel['contents']) > 0) ? [$channel] : [];
     }

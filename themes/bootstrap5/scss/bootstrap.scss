@@ -629,11 +629,6 @@ body.rtl .dropdown-menu {
 .fines-info-area {
   margin-bottom: 1rem;
 
-  div.card-holder {
-    display: flex;
-    align-items: center;
-    font-weight: bold;
-  }
   .amount {
     font-weight: bold;
   }
@@ -655,17 +650,6 @@ body.rtl .dropdown-menu {
       padding: 0.25rem;
     }
   }
-  .last-transaction-information {
-    @extend .alert;
-
-    background: lighten($gray-lighter, 20%);
-    border: 1px solid $gray-lighter;
-    display: flex;
-    align-items: center;
-    div {
-      flex: 1 1;
-    }
-  }
 }
 .online-payment .toolbar {
   .checkbox {
@@ -675,12 +659,14 @@ body.rtl .dropdown-menu {
     display: inline-flex;
   }
 }
-.terms-of-service__text {
+.confirm-payment {
+  .terms-of-service__text {
+      margin-bottom: 1rem;
+  }
+  .terms-of-service-logo {
+    width: 5rem;
     margin-bottom: 1rem;
-}
-.terms-of-service-logo {
-   width: 5rem;
-   margin-bottom: 1rem;
+  }
 }
 .last-payment-information {
   @extend .alert;

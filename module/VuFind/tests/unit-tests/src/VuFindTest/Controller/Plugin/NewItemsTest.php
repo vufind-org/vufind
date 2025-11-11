@@ -92,15 +92,13 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetFundList()
     {
-        $catalog = $this->getMockBuilder(\VuFind\ILS\Connection::class)
-            ->onlyMethods(['checkCapability'])
-            ->addMethods(['getFunds'])
-            ->disableOriginalConstructor()
-            ->getMock();
+        $catalog = $this->createMock(\VuFind\ILS\Connection::class);
         $catalog->expects($this->once())->method('checkCapability')
             ->with($this->equalTo('getFunds'))->willReturn(true);
-        $catalog->expects($this->once())->method('getFunds')
-            ->willReturn(['a', 'b', 'c']);
+        $catalog->expects($this->once())->method('__call')
+            ->willReturnCallback(
+                fn ($method) => $method === 'getFunds' ? ['a', 'b', 'c'] : null
+            );
         $controller = $this->getMockBuilder(\VuFind\Controller\SearchController::class)
             ->disableOriginalConstructor()->getMock();
         $controller->expects($this->once())->method('getILS')
@@ -218,20 +216,23 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockCatalog(): \VuFind\ILS\Connection
     {
-        $catalog = $this->getMockBuilder(\VuFind\ILS\Connection::class)
-            ->addMethods(['getNewItems'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $catalog->expects($this->once())->method('getNewItems')
-            ->with(
-                $this->equalTo(1),
-                $this->equalTo(200),
-                $this->equalTo(10),
-                $this->equalTo('a')
-            )
-            ->willReturn(
-                ['results' => [['id' => 1], ['id' => 2]]]
-            );
+        $catalog = $this->createMock(\VuFind\ILS\Connection::class);
+
+        $catalog->expects($this->once())->method('__call')
+        ->willReturnCallback(
+            function ($method, $args) {
+                if ($method !== 'getNewItems') {
+                    return null;
+                }
+
+                $this->assertEquals(1, $args[0]);
+                $this->assertEquals(200, $args[1]);
+                $this->assertEquals(10, $args[2]);
+                $this->assertEquals('a', $args[3]);
+
+                return ['results' => [['id' => 1], ['id' => 2]]];
+            }
+        );
         return $catalog;
     }
 
