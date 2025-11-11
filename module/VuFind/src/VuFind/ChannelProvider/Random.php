@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Channels
@@ -140,11 +140,9 @@ class Random extends AbstractChannelProvider implements TranslatorAwareInterface
     public function getFromSearch(Results $results, $channelToken = null)
     {
         $params = $results->getParams();
-        if ('retain' !== $this->mode) {
-            $randomParams = $this->paramManager->get($params->getSearchClassId());
-        } else {
-            $randomParams = clone $params;
-        }
+        $randomParams = 'retain' !== $this->mode
+            ? $this->paramManager->get($params->getSearchClassId())
+            : clone $params;
         $channel = $this->buildChannelFromParams($randomParams);
         return (count($channel['contents']) > 0) ? [$channel] : [];
     }

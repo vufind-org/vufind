@@ -1,7 +1,4 @@
 <?php
-    // Set page title.
-    $this->headTitle($this->translate('bulk_save_cart'));
-
     // Set up breadcrumbs:
     $this->breadcrumbs()->reset();
     if ($url = $this->searchMemory()->getLastSearchUrl()) {
@@ -9,7 +6,7 @@
     }
     $this->breadcrumbs()->add($this->translate('bulk_save_cart'), active: true);
 ?>
-<h2><?=$this->transEsc('bulk_save_cart')?></h2>
+<?=$this->component('page-title', ['title' => $this->translate('bulk_save_cart')]);?>
 
 <?=$this->flashmessages()?>
 
@@ -67,6 +64,17 @@
   $script = <<<JS
       $('button.btn.hidden').removeClass('hidden');
       $('#itemhide').removeClass('show');
+
+      const form = document.querySelector(".form-cart-save");
+      form.addEventListener("keypress", function cartSaveEnter(event) {
+        // Make Enter key submit save form unless a button is the target (prevents unexpected/undesired
+        // "create list" default behavior):
+        if (event.key === "Enter" && event.target.nodeName !== 'BUTTON') {
+          form.querySelector('.btn[value="Save"]').click();
+          event.preventDefault();
+          return false;
+        }
+      });
       JS;
 ?>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET') ?>
+<?=$this->assetManager()->outputInlineScriptString($script) ?>

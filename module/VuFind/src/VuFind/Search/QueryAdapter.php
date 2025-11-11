@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Solr
@@ -194,7 +194,7 @@ class QueryAdapter implements QueryAdapterInterface
      */
     public function fromRequest(Parameters $request, $defaultHandler)
     {
-        // Check for a work keys query first (id and keys included for back-compatibility):
+        // Check for a work keys query first (id and keys included for back-compatibility with legacy code):
         if (
             $request->get('search') === 'versions'
             || ($request->offsetExists('id') && $request->offsetExists('keys'))
@@ -242,7 +242,7 @@ class QueryAdapter implements QueryAdapterInterface
 
         return (count($groups) > 0)
             ? new QueryGroup($request->get('join', 'AND'), $groups)
-            : new Query();
+            : new Query(handler: $request->get('type'));
     }
 
     /**

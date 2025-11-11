@@ -115,7 +115,7 @@
   <?php endif; ?>
   <?php foreach ($holding['textfields'] ?? [] as $textFieldName => $textFields): ?>
     <tr>
-      <?php // Translation for summary is a special case for backwards-compatibility ?>
+      <?php // Translation for summary is a special case for legacy backwards-compatibility ?>
       <th><?=$textFieldName == 'summary' ? $this->transEsc('Volume Holdings') : $this->transEsc(ucfirst($textFieldName))?>:</th>
       <td>
         <?php foreach ($textFields as $current): ?>

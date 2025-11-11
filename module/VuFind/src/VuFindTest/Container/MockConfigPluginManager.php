@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -37,6 +37,9 @@ namespace VuFindTest\Container;
  * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
+ *
+ * @deprecated Use ConfigRelatedServicesTrait to create config related mocks. Also, \VuFind\Config\PluginManager is
+ * deprecated and replaced by \VuFind\Config\ConfigManager.
  */
 class MockConfigPluginManager extends \VuFind\Config\PluginManager
 {

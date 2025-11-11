@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -33,6 +33,7 @@ namespace VuFind\RecordDriver;
 use VuFind\RecordDriver\Feature\MarcAdvancedTrait;
 use VuFind\RecordDriver\Feature\MarcBasicTrait;
 use VuFind\RecordDriver\Feature\MarcReaderTrait;
+use VuFind\String\PropertyString;
 
 /**
  * Model for MARC records in ProQuest Federated Search Gateway.
@@ -83,7 +84,7 @@ class ProQuestFSG extends DefaultRecord
      */
     public function getShortTitle()
     {
-        return html_entity_decode(strip_tags($this->marcGetShortTitle()));
+        return PropertyString::fromHtml($this->marcGetShortTitle());
     }
 
     /**
@@ -93,7 +94,7 @@ class ProQuestFSG extends DefaultRecord
      */
     public function getTitle()
     {
-        return html_entity_decode(strip_tags($this->marcGetTitle()));
+        return PropertyString::fromHtml($this->marcGetTitle());
     }
 
     /**

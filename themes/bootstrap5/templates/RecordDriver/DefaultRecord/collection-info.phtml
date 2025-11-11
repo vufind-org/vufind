@@ -1,4 +1,4 @@
-<?php $this->headScript()->appendFile('collection_record.js'); ?>
+<?php $this->assetManager()->appendScriptLink('collection_record.js'); ?>
 <div class="media">
   <?php
     $QRCode = $this->record($this->driver)->getQRCode('core');

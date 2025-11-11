@@ -38,7 +38,8 @@
     $keyboardLayouts = $this->searchbox()->getKeyboardLayouts();
     $handlers = $this->searchbox()->getHandlers(
         $this->searchClassId,
-        $this->searchIndex ?? null
+        $this->searchIndex ?? null,
+        $hiddenFilters
     );
     $handlerCount = count($handlers);
     $basicSearch = $this->searchbox()->combinedHandlersActive() ? 'combined-searchbox' : $options->getSearchAction();
@@ -54,7 +55,8 @@
         $checkboxFilters = is_array($this->checkboxFilters) ? $this->checkboxFilters : [];
     }
     $filterDetails = $this->searchbox()->getFilterDetails($filterList, $checkboxFilters);
-    $showFilters = $filterDetails && ($results || $options->getRetainFilterSetting());
+    $retainFilters = $this->retainFilters ?? $options->getRetainFilterSetting();
+    $showFilters = $filterDetails && ($results || $retainFilters);
 ?>
 <?php $tabConfig = $this->searchTabs()->getTabConfig($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, $hiddenFilters); ?>
 <?php if ($this->searchType == 'advanced'): ?>
@@ -110,6 +112,7 @@
           if ($this->searchbox()->autocompleteApplyActiveFilters($this->searchClassId)) {
             $searchboxAttributes['data-autocomplete-apply-active-filters'] = 'true';
           }
+          $searchboxAttributes['data-autocomplete-display-limit'] = $this->searchbox()->autocompleteDisplayLimit($this->searchClassId);
         }
         if (!empty($keyboardLayouts)) {
           $searchboxAttributes['class'] .= ' with-keyboard-selection';
@@ -128,14 +131,14 @@
           ><?=$this->icon('ui-reset-search');?></button>
           <?php if (!empty($keyboardLayouts)): ?>
             <?php
-            $this->headScript()->appendFile('vendor/js.cookie.js');
-            $this->headScript()->appendFile('vendor/simple-keyboard/index.js');
-            $this->headScript()->appendFile('vendor/simple-keyboard-layouts/index.js');
-            $this->headLink()->appendStylesheet('vendor/simple-keyboard/index.css');
+            $this->assetManager()->appendScriptLink('vendor/js.cookie.js');
+            $this->assetManager()->appendScriptLink('vendor/simple-keyboard/index.js');
+            $this->assetManager()->appendScriptLink('vendor/simple-keyboard-layouts/index.js');
+            $this->assetManager()->appendStyleLink('vendor/simple-keyboard/index.css');
             ?>
             <div class="keyboard-selection dropdown">
               <button class="btn btn-primary dropdown-toggle" type="button" id="keyboard-selection-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <?=$this->icon('keyboard-o') ?>
+                <?=$this->icon('keyboard') ?>
                 <?=$this->icon('dropdown-caret') ?>
               </button>
               <ul class="dropdown-menu" aria-labelledby="keyboard-selection-button">
@@ -203,7 +206,7 @@
         <?php endforeach; ?>
       <?php endif; ?>
       <?php if (($hasDefaultsApplied ?? false) || !empty($filterDetails)): ?>
-        <?php if ($options->getRetainFilterSetting()): ?>
+        <?php if ($retainFilters): ?>
           <?php foreach ($filterDetails as $current): ?>
             <input class="applied-filter" id="<?=$this->escapeHtmlAttr($current['id'])?>" type="hidden" name="filter[]" value="<?=$this->escapeHtmlAttr($current['value'])?>">
           <?php endforeach; ?>
@@ -226,7 +229,11 @@
         if (!empty($lastLimit)) {
           echo '<input type="hidden" name="limit" value="' . $this->escapeHtmlAttr($lastLimit) . '">';
         }
-        if (!empty($lastSort) && $lastSort !== $params?->getDefaultSort()) {
+        if (
+          !empty($lastSort)
+          && $lastSort !== $params?->getDefaultSort()
+          && $params?->isValidSort($lastSort, allowHiddenSort: false)
+        ) {
           echo '<input type="hidden" name="sort" value="' . $this->escapeHtmlAttr($lastSort) . '">';
         }
       ?>

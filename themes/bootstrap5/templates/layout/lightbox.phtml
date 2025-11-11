@@ -3,6 +3,9 @@
 <?=$this->matomo(['context' => $this->layoutContext ?? 'lightbox'])?>
 <?=$this->googleanalytics($this->serverUrl(true))?>
 <?php if ($this->session()->put('reset_account_status', null) && $this->auth()->getManager()->ajaxEnabled()) {
-  $this->inlineScript()->setAllowArbitraryAttributes(true);
-  echo $this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, 'VuFind.account.clearAllCaches();', 'SET', ['data-lightbox-run' => 'always']);
+  echo $this->assetManager()->outputInlineScriptString(
+      script: 'VuFind.account.clearAllCaches();',
+      attrs: ['data-lightbox-run' => 'always'],
+      options: ['allow_arbitrary_attributes' => true]
+  );
 }

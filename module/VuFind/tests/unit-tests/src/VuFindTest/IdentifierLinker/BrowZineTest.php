@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -100,41 +100,115 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
         return [
             'unfiltered' => [
                 [],
+                [],
+                [],
                 [
                     0 => [
                         [
                             'link' => 'https://weblink',
                             'label' => 'View Complete Issue',
                             'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-open-book-icon.svg',
+                            'linkType' => 'browzineWebLink',
                         ],
                         [
                             'link' => 'https://fulltext',
                             'label' => 'PDF Full Text',
                             'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
+                            'linkType' => 'fullTextFile',
                         ],
                     ],
                 ],
             ],
             'exclude filter' => [
                 ['filterType' => 'exclude', 'filter' => ['browzineWebLink']],
+                [],
+                [],
                 [
                     0 => [
                         [
                             'link' => 'https://fulltext',
                             'label' => 'PDF Full Text',
                             'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
+                            'linkType' => 'fullTextFile',
                         ],
                     ],
                 ],
             ],
             'include filter' => [
                 ['filterType' => 'include', 'filter' => ['browzineWebLink']],
+                [],
+                [],
                 [
                     0 => [
                         [
                             'link' => 'https://weblink',
                             'label' => 'View Complete Issue',
                             'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-open-book-icon.svg',
+                            'linkType' => 'browzineWebLink',
+                        ],
+                    ],
+                ],
+            ],
+            'best integrator link with no section in config' => [
+                [],
+                ['bestIntegratorLink' => 'Get full text|browzine-best'],
+                null,
+                [
+                    0 => [
+                        [
+                            'link' => 'https://fulltext',
+                            'label' => 'PDF Full Text',
+                            'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
+                            'linkType' => 'fullTextFile',
+                        ],
+                    ],
+                ],
+            ],
+            'best integrator link with empty config section' => [
+                [],
+                ['bestIntegratorLink' => 'Get full text|browzine-best'],
+                [],
+                [
+                    0 => [
+                        [
+                            'link' => 'https://fulltext',
+                            'label' => 'Get full text',
+                            'localIcon' => 'browzine-best',
+                            'linkType' => 'fullTextFile',
+                        ],
+                    ],
+                ],
+            ],
+            'best integrator link with configured label' => [
+                [],
+                ['bestIntegratorLink' => 'Get full text|browzine-best'],
+                ['fullTextFile' =>
+                    'Fancy Full Text|browzine-pdf|' .
+                    'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg'],
+                [
+                    0 => [
+                        [
+                            'link' => 'https://fulltext',
+                            'label' => 'Fancy Full Text',
+                            'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
+                            'linkType' => 'fullTextFile',
+                        ],
+                    ],
+                ],
+            ],
+            'best integrator link with browzine label override' => [
+                ['useBrowzineLabel' => true],
+                ['bestIntegratorLink' => 'Get full text|browzine-best'],
+                ['fullTextFile' =>
+                    'PDF Full Text|browzine-pdf|' .
+                    'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg'],
+                [
+                    0 => [
+                        [
+                            'link' => 'https://fulltext',
+                            'label' => 'Download Best PDF Ever',
+                            'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
+                            'linkType' => 'fullTextFile',
                         ],
                     ],
                 ],
@@ -145,14 +219,21 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
     /**
      * Build the BrowZine handler to test.
      *
-     * @param array $ids     ID test data
-     * @param array $rawData Raw data for connector to return
-     * @param array $config  BrowZine configuration
+     * @param array  $ids                       ID test data
+     * @param array  $rawData                   Raw data for connector to return
+     * @param array  $identifierLinksConfig     BrowZine configuration for identifier links
+     * @param ?array $doiServicesConfig         BrowZine configuration for DOI services
+     * @param ?array $bestIntegratorLinksConfig BrowZine configuration for bestIntegratorLinks
      *
      * @return BrowZine
      */
-    protected function getBrowZineHandler(array $ids, array $rawData, array $config = []): BrowZine
-    {
+    protected function getBrowZineHandler(
+        array $ids,
+        array $rawData,
+        array $identifierLinksConfig = [],
+        ?array $doiServicesConfig = null,
+        ?array $bestIntegratorLinksConfig = null
+    ): BrowZine {
         $connector = $this->getMockConnector($ids[0], $rawData);
         $ss = $this->getSearchService($this->getBackendManager($connector));
 
@@ -160,10 +241,19 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
         // injected. We'll use a mock container to set up all the dependencies.
         $container = new \VuFindTest\Container\MockContainer($this);
         $container->set(\VuFindSearch\Service::class, $ss);
-        $configObj = new \VuFind\Config\Config(['IdentifierLinks' => $config]);
-        $mockConfigManager = $this->createMock(\VuFind\Config\PluginManager::class);
-        $mockConfigManager->expects($this->once())->method('get')->with('BrowZine')->willReturn($configObj);
-        $container->set(\VuFind\Config\PluginManager::class, $mockConfigManager);
+        $configArray = ['IdentifierLinks' => $identifierLinksConfig];
+        if ($doiServicesConfig) {
+            $configArray['DOIServices'] = $doiServicesConfig;
+        }
+        if ($bestIntegratorLinksConfig !== null) {
+            $configArray['BestIntegratorLinks'] = $bestIntegratorLinksConfig;
+        }
+        $mockConfigManager = $this->createMock(\VuFind\Config\ConfigManagerInterface::class);
+        $mockConfigManager->expects($this->once())
+            ->method('getConfigArray')
+            ->with('BrowZine')
+            ->willReturn($configArray);
+        $container->set(\VuFind\Config\ConfigManagerInterface::class, $mockConfigManager);
         $factory = new BrowZineFactory();
         return $factory($container, BrowZine::class);
     }
@@ -171,18 +261,29 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
     /**
      * Test a DOI API response.
      *
-     * @param array $config           Configuration
-     * @param array $expectedResponse Expected response
+     * @param array $identifierLinksConfig     BrowZine configuration for identifier links
+     * @param array $doiServicesConfig         BrowZine configuration for DOI services
+     * @param array $bestIntegratorLinksConfig BrowZine configuration for bestIntegratorLinks
+     * @param array $expectedResponse          Expected response
      *
      * @return void
-     *
-     * @dataProvider doiProvider
      */
-    public function testDOIApiSuccess(array $config, array $expectedResponse): void
-    {
+    #[\PHPUnit\Framework\Attributes\DataProvider('doiProvider')]
+    public function testDOIApiSuccess(
+        array $identifierLinksConfig,
+        array $doiServicesConfig,
+        ?array $bestIntegratorLinksConfig,
+        array $expectedResponse
+    ): void {
         $rawData = $this->getJsonFixture('browzine/doi.json');
         $ids = [['doi' => '10.1155/2020/8690540']];
-        $browzine = $this->getBrowZineHandler($ids, $rawData, $config);
+        $browzine = $this->getBrowZineHandler(
+            $ids,
+            $rawData,
+            $identifierLinksConfig,
+            $doiServicesConfig,
+            $bestIntegratorLinksConfig
+        );
         foreach ($expectedResponse[0] as & $current) {
             $current['data'] = $rawData['data'];
         }
@@ -208,6 +309,7 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
                         'label' => 'Browse Available Issues',
                         'data' => $rawData['data'][0],
                         'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-open-book-icon.svg',
+                        'linkType' => 'browzineWebLink',
                     ],
                 ],
             ],

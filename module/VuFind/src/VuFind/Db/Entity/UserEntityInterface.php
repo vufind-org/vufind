@@ -17,11 +17,11 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Db_Interface
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
@@ -35,12 +35,16 @@ use DateTime;
  * Interface for representing a user account record.
  *
  * @category VuFind
- * @package  Db_Interface
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-interface UserEntityInterface extends EntityInterface
+
+interface UserEntityInterface extends
+    EntityInterface,
+    ExchangeArrayInterface,
+    \Lmc\Rbac\Identity\IdentityInterface
 {
     /**
      * Get identifier (returns null for an uninitialized or non-persisted object).
@@ -340,18 +344,18 @@ interface UserEntityInterface extends EntityInterface
     /**
      * Last login setter.
      *
-     * @param DateTime $dateTime Last login date
+     * @param ?DateTime $dateTime Last login date
      *
      * @return static
      */
-    public function setLastLogin(DateTime $dateTime): static;
+    public function setLastLogin(?DateTime $dateTime): static;
 
     /**
      * Last login getter
      *
-     * @return DateTime
+     * @return ?DateTime
      */
-    public function getLastLogin(): DateTime;
+    public function getLastLogin(): ?DateTime;
 
     /**
      * Created setter
@@ -367,7 +371,7 @@ interface UserEntityInterface extends EntityInterface
      *
      * @return DateTime
      */
-    public function getCreated(): Datetime;
+    public function getCreated(): DateTime;
 
     /**
      * Set email verification date (or null for unverified).

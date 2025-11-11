@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -33,7 +33,7 @@ namespace VuFindTest\Recommend;
 use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Config\Config;
-use VuFind\Config\PluginManager as ConfigPluginManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Connection\LibGuides;
 use VuFind\Recommend\LibGuidesProfile;
 use VuFind\Search\Base\Options;
@@ -221,7 +221,7 @@ class LibGuidesProfileTest extends \PHPUnit\Framework\TestCase
         // Build query Params
         $queryParams = new Params(
             $this->createStub(Options::class),
-            $this->createStub(ConfigPluginManager::class)
+            $this->createStub(ConfigManagerInterface::class)
         );
         $queryParams->getQuery()->setString($queryString);
 

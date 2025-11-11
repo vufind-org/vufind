@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -31,7 +31,7 @@
 
 namespace VuFindTest\Search\Solr;
 
-use VuFind\Config\PluginManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\I18n\Sorter;
 use VuFind\Record\Loader;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
@@ -56,7 +56,7 @@ use function get_class;
  */
 class ResultsTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
     use \VuFindTest\Feature\TranslatorTrait;
 
     /**
@@ -130,7 +130,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                 ],
             ]
         );
-        $mockConfig = $this->createMock(PluginManager::class);
+        $mockConfig = $this->createMock(ConfigManagerInterface::class);
         $options = new Options($mockConfig);
         $options->setTranslator($mockTranslator);
         $options->setTranslatedFacets(
@@ -228,7 +228,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $commandObj->expects($this->once())->method('getResult')
-            ->will($this->returnValue($collection));
+            ->willReturn($collection);
 
         $checkCommand = function ($command) use ($expectedParams) {
             return $command::class === \VuFindSearch\Command\SearchCommand::class
@@ -240,7 +240,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         };
         $searchService->expects($this->once())->method('invoke')
             ->with($this->callback($checkCommand))
-            ->will($this->returnValue($commandObj));
+            ->willReturn($commandObj);
         return $searchService;
     }
 
@@ -483,7 +483,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         $response ??= $this->searchResponse;
         $params ??= $this->getParams(
             null,
-            $this->getMockConfigPluginManager($this->searchConfig)
+            $this->getMockConfigManager($this->searchConfig)
         );
 
         $collection = new RecordCollection($response);
@@ -495,30 +495,30 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $commandObj->expects($this->once())->method('getResult')
-            ->will($this->returnValue($collection));
+            ->willReturn($collection);
 
         $checkCommand = function ($command) {
             return $command::class === \VuFindSearch\Command\SearchCommand::class;
         };
         $searchService->expects($this->once())->method('invoke')
             ->with($this->callback($checkCommand))
-            ->will($this->returnValue($commandObj));
+            ->willReturn($commandObj);
         return $this->getResults($params, $searchService);
     }
 
     /**
      * Get Params object
      *
-     * @param ?Options       $options    Options object (null to create)
-     * @param ?PluginManager $mockConfig Mock config plugin manager (null to create)
+     * @param ?Options                $options    Options object (null to create)
+     * @param ?ConfigManagerInterface $mockConfig Mock ConfigManager (null to create)
      *
      * @return Params
      */
     protected function getParams(
         ?Options $options = null,
-        ?PluginManager $mockConfig = null
+        ?ConfigManagerInterface $mockConfig = null
     ): Params {
-        $mockConfig ??= $this->createMock(PluginManager::class);
+        $mockConfig ??= $this->createMock(ConfigManagerInterface::class);
         return new Params(
             $options ?? new Options($mockConfig),
             $mockConfig

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -29,10 +29,14 @@
 
 namespace VuFind\Db\Service;
 
+use Doctrine\ORM\Tools\Pagination\Paginator as DoctrinePaginator;
+use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as DoctrinePaginatorAdapter;
+use Laminas\Paginator\Paginator;
+use Psr\Log\LoggerAwareInterface;
+use VuFind\Db\Entity\RatingsEntityInterface;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Table\DbTableAwareInterface;
-use VuFind\Db\Table\DbTableAwareTrait;
+use VuFind\Log\LoggerAwareTrait;
 
 use function is_int;
 
@@ -46,10 +50,12 @@ use function is_int;
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 class RatingsService extends AbstractDbService implements
-    DbTableAwareInterface,
+    DbServiceAwareInterface,
+    LoggerAwareInterface,
     RatingsServiceInterface
 {
-    use DbTableAwareTrait;
+    use DbServiceAwareTrait;
+    use LoggerAwareTrait;
 
     /**
      * Get average rating and rating count associated with the specified record.
@@ -62,7 +68,31 @@ class RatingsService extends AbstractDbService implements
      */
     public function getRecordRatings(string $id, string $source, ?int $userId): array
     {
-        return $this->getDbTable('ratings')->getForResource($id, $source, $userId);
+        $resourceService = $this->getDbService(ResourceServiceInterface::class);
+        $resource = $resourceService->getResourceByRecordId($id, $source);
+        if (!$resource) {
+            return [
+                'count' => 0,
+                'rating' => 0,
+            ];
+        }
+        $dql = 'SELECT COUNT(r.id) AS count, AVG(r.rating) AS rating '
+            . 'FROM ' . RatingsEntityInterface::class . ' r ';
+
+        $dqlWhere[] = 'r.resource = :resource';
+        $parameters['resource'] = $resource;
+        if (null !== $userId) {
+            $dqlWhere[] = 'r.user = :user';
+            $parameters['user'] = $userId;
+        }
+        $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $result = $query->getResult();
+        return [
+            'count' => $result[0]['count'],
+            'rating' => floor($result[0]['rating'] ?? 0) ?? 0,
+        ];
     }
 
     /**
@@ -80,7 +110,50 @@ class RatingsService extends AbstractDbService implements
         string $source,
         array $groups
     ): array {
-        return $this->getDbTable('ratings')->getCountsForResource($id, $source, $groups);
+        $result = [
+            'count' => 0,
+            'rating' => 0,
+            'groups' => [],
+        ];
+        foreach (array_keys($groups) as $key) {
+            $result['groups'][$key] = 0;
+        }
+
+        $resourceService = $this->getDbService(ResourceServiceInterface::class);
+        $resource = $resourceService->getResourceByRecordId($id, $source);
+        if (!$resource) {
+            return $result;
+        }
+        $dql = 'SELECT COUNT(r.id) AS count, r.rating AS rating '
+            . 'FROM ' . RatingsEntityInterface::class . ' r '
+            . 'WHERE r.resource = :resource '
+            . 'GROUP BY rating';
+
+        $parameters['resource'] = $resource;
+
+        $query = $this->entityManager->createQuery($dql);
+
+        $query->setParameters($parameters);
+        $queryResult = $query->getResult();
+
+        $ratingTotal = 0;
+        $groupCount = 0;
+        foreach ($queryResult as $rating) {
+            $result['count'] += $rating['count'];
+            $ratingTotal += $rating['rating'];
+            ++$groupCount;
+            foreach ($groups as $key => $range) {
+                if (
+                    $rating['rating'] >= $range[0]
+                    && $rating['rating'] <= $range[1]
+                ) {
+                    $result['groups'][$key] = ($result['groups'][$key] ?? 0)
+                        + $rating['count'];
+                }
+            }
+        }
+        $result['rating'] = $groupCount ? floor($ratingTotal / $groupCount) : 0;
+        return $result;
     }
 
     /**
@@ -92,9 +165,12 @@ class RatingsService extends AbstractDbService implements
      */
     public function deleteByUser(UserEntityInterface|int $userOrId): void
     {
-        $this->getDbTable('ratings')->deleteByUser(
-            is_int($userOrId) ? $this->getDbTable('user')->getById($userOrId) : $userOrId
-        );
+        $dql = 'DELETE FROM ' . RatingsEntityInterface::class . ' r '
+            . 'WHERE r.user = :user';
+        $parameters['user'] = is_int($userOrId) ? $userOrId : $userOrId->getId();
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $query->execute();
     }
 
     /**
@@ -104,7 +180,12 @@ class RatingsService extends AbstractDbService implements
      */
     public function getStatistics(): array
     {
-        return $this->getDbTable('ratings')->getStatistics();
+        $dql = 'SELECT COUNT(DISTINCT(r.user)) AS users, '
+            . 'COUNT(DISTINCT(r.resource)) AS resources, '
+            . 'COUNT(r.id) AS total '
+            . 'FROM ' . RatingsEntityInterface::class . ' r';
+        $query = $this->entityManager->createQuery($dql);
+        return $query->getSingleResult();
     }
 
     /**
@@ -122,8 +203,125 @@ class RatingsService extends AbstractDbService implements
         UserEntityInterface|int $userOrId,
         ?int $rating
     ): int {
-        $resource = is_int($resourceOrId)
-            ? $this->getDbTable('resource')->select(['id' => $resourceOrId])->current() : $resourceOrId;
-        return $resource->addOrUpdateRating(is_int($userOrId) ? $userOrId : $userOrId->getId(), $rating);
+        if (null !== $rating && ($rating < 0 || $rating > 100)) {
+            throw new \Exception('Rating value out of range');
+        }
+
+        $dql = 'SELECT r '
+            . 'FROM ' . RatingsEntityInterface::class . ' r '
+            . 'WHERE r.user = :user AND r.resource = :resource';
+        $resource = $this->getDoctrineReference(ResourceEntityInterface::class, $resourceOrId);
+        $user = $this->getDoctrineReference(UserEntityInterface::class, $userOrId);
+        $parameters = compact('resource', 'user');
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+
+        if ($existing = $query->getOneOrNullResult()) {
+            if (null === $rating) {
+                $this->entityManager->remove($existing);
+            } else {
+                $existing->setRating($rating);
+            }
+            $updatedRatingId = $existing->getId();
+            try {
+                $this->entityManager->flush();
+            } catch (\Exception $e) {
+                $this->logError('Rating update failed: ' . $e->getMessage());
+                throw $e;
+            }
+            return $updatedRatingId;
+        }
+
+        if (null === $rating) {
+            return 0;
+        }
+
+        $row = $this->createEntity()
+            ->setResource($resource)
+            ->setUser($user)
+            ->setRating($rating)
+            ->setCreated(new \DateTime());
+        try {
+            $this->persistEntity($row);
+        } catch (\Exception $e) {
+            $this->logError('Could not save rating: ' . $e->getMessage());
+            return 0;
+        }
+        return $row->getId();
+    }
+
+    /**
+     * Create a ratings entity.
+     *
+     * @return RatingsEntityInterface
+     */
+    public function createEntity(): RatingsEntityInterface
+    {
+        return $this->entityPluginManager->get(RatingsEntityInterface::class);
+    }
+
+    /**
+     * Delete ratings by given user and rating ids.
+     *
+     * @param array $ids    Array of rating ids
+     * @param int   $userId User ID
+     *
+     * @return void
+     */
+    public function deleteByIdsAndUserId(array $ids, int $userId): void
+    {
+        $dql = 'DELETE FROM ' . RatingsEntityInterface::class . ' ra '
+         . 'WHERE ra.user = :user AND ra.id IN (:ids)';
+
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters([
+            'user' => $userId,
+            'ids'  => $ids,
+        ]);
+        $query->execute();
+    }
+
+    /**
+     * Get a paginated result of all ratings by user id.
+     *
+     * @param int    $userId User Id
+     * @param int    $limit  Limit
+     * @param int    $page   Page
+     * @param string $sort   Sort
+     *
+     * @return Paginator
+     */
+    public function getRatingsPaginator(
+        int $userId,
+        int $limit,
+        int $page,
+        string $sort
+    ): Paginator {
+        $dql = 'SELECT r.id, r.rating, r.created AS created, '
+            . 'u.id AS user_id, u.username AS username, '
+            . 'res.id AS resource_id, res.recordId AS record_id, res.source AS source, res.title AS title '
+            . 'FROM ' . RatingsEntityInterface::class . ' r '
+            . 'LEFT JOIN r.user u '
+            . 'LEFT JOIN r.resource res '
+            . 'WHERE r.user = :userId';
+
+        $parameters = ['userId' => $userId];
+
+        $sortOrder = $sort ? $sort : 'created DESC';
+
+        $dql .= ' ORDER BY ' . $sortOrder;
+
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $query->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit);
+
+        $doctrinePaginator = new DoctrinePaginator($query);
+        $doctrinePaginator->setUseOutputWalkers(false);
+
+        $paginator = new Paginator(new DoctrinePaginatorAdapter($doctrinePaginator));
+        $paginator->setItemCountPerPage($limit);
+        $paginator->setCurrentPageNumber($page);
+        return $paginator;
     }
 }

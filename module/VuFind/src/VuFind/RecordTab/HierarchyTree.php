@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -156,14 +156,9 @@ class HierarchyTree extends AbstractBase
                 return true;
             }
         }
-
-        // Currently displaying top of tree?  Disable partial hierarchy:
-        if ($this->getActiveTree() == $recordDriver->getUniqueId()) {
-            return true;
-        }
-
-        // Only if we got this far is it appropriate to use a partial hierarchy:
-        return false;
+        // If displaying the top of the tree, we should show the full hierarchy;
+        // otherwise, if we got this far, it is appropriate to use a partial hierarchy.
+        return $this->getActiveTree() == $recordDriver->getUniqueId();
     }
 
     /**

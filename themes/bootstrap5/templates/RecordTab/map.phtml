@@ -1,8 +1,8 @@
 <?php
-  $this->headScript()->appendFile('vendor/leaflet/leaflet.js');
-  $this->headScript()->appendFile('vendor/leaflet/leaflet.latlng-graticule.js');
-  $this->headScript()->appendFile('map_tab_leaflet.js');
-  $this->headLink()->appendStylesheet('vendor/leaflet/leaflet.css');
+  $this->assetManager()->appendScriptLink('vendor/leaflet/leaflet.js');
+  $this->assetManager()->appendScriptLink('vendor/leaflet/leaflet.latlng-graticule.js');
+  $this->assetManager()->appendScriptLink('map_tab_leaflet.js');
+  $this->assetManager()->appendStyleLink('vendor/leaflet/leaflet.css');
   $this->jsTranslations()->addStrings(
       ['Coordinates' => 'Coordinates', 'no_description' => 'no_description']
   );
@@ -17,5 +17,5 @@
 ?>
 <div id="wrap" style="width: inherit; height: 479px">
   <div id="map-canvas" style="width: 100%; height: 100%"></div>
-  <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $jsLoad, 'SET')?>
+  <?=$this->assetManager()->outputInlineScriptString($jsLoad)?>
 </div>

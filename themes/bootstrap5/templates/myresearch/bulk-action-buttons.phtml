@@ -82,27 +82,27 @@
     ob_start();
   ?>
     <ul class="selection-controls-bar">
-      <?php if(in_array($checkboxSelectAllType, ['on_page', 'both'])): ?>
+      <?php if (in_array($checkboxSelectAllType, ['on_page', 'both'])): ?>
         <li class="bulk-checkbox">
           <?php $selectAllCheckboxId = $this->idPrefix . 'myresearchCheckAll'; ?>
-          <label <?=$this->htmlAttributes(['for' => $selectAllCheckboxId])?>>
-            <input <?=$this->htmlAttributes(['type' => 'checkbox', 'name' => 'selectAll', 'class' => 'checkbox-select-all', 'id' => $selectAllCheckboxId])?>>
+          <label<?=$this->htmlAttributes(['for' => $selectAllCheckboxId])?>>
+            <input<?=$this->htmlAttributes(['type' => 'checkbox', 'name' => 'selectAll', 'class' => 'checkbox-select-all', 'id' => $selectAllCheckboxId])?>>
             <?=$this->transEsc('select_all_on_page')?>
           </label>
         </li>
       <?php endif; ?>
-      <?php if($multiPageSelection && in_array($checkboxSelectAllType, ['global', 'both'])): ?>
+      <?php if ($multiPageSelection && in_array($checkboxSelectAllType, ['global', 'both'])): ?>
         <li class="bulk-checkbox">
           <div class="select-all-global hidden">
             <?php $selectAllGlobalCheckboxId = $this->idPrefix . 'myresearchCheckAllGlobal'; ?>
-            <label <?=$this->htmlAttributes(['for' => $selectAllGlobalCheckboxId])?>>
-              <input <?=$this->htmlAttributes(['type' => 'checkbox', 'name' => 'selectAllGlobal', 'class' => 'checkbox-select-all-global', 'id' => $selectAllGlobalCheckboxId])?>>
+            <label<?=$this->htmlAttributes(['for' => $selectAllGlobalCheckboxId])?>>
+              <input<?=$this->htmlAttributes(['type' => 'checkbox', 'name' => 'selectAllGlobal', 'class' => 'checkbox-select-all-global', 'id' => $selectAllGlobalCheckboxId])?>>
               <?=$this->transEsc('select_all')?>
             </label>
           </div>
         </li>
       <?php endif; ?>
-      <?php if($multiPageSelection): ?>
+      <?php if ($multiPageSelection): ?>
         <li>
           <button type="button" class="clear-selection hidden"></button>
         </li>

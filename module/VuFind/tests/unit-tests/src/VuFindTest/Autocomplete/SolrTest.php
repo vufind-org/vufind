@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -43,49 +43,7 @@ use VuFind\Autocomplete\Solr;
 class SolrTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\ReflectionTrait;
-
-    /**
-     * Get mock search options.
-     *
-     * @return \VuFind\Search\Solr\Options
-     */
-    protected function getMockOptions()
-    {
-        return $this->getMockBuilder(\VuFind\Search\Solr\Options::class)
-            ->disableOriginalConstructor()->getMock();
-    }
-
-    /**
-     * Get mock results plugin manager.
-     *
-     * @return \VuFind\Search\Results\PluginManager
-     */
-    protected function getMockResults()
-    {
-        $results = $this->getMockBuilder(\VuFind\Search\Solr\Results::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['getOptions'])
-            ->getMock();
-        $results->expects($this->any())->method('getOptions')
-            ->will($this->returnValue($this->getMockOptions()));
-        return $results;
-    }
-
-    /**
-     * Get mock results plugin manager.
-     *
-     * @return \VuFind\Search\Results\PluginManager
-     */
-    protected function getMockResultsPluginManager()
-    {
-        $rpm = $this->getMockBuilder(\VuFind\Search\Results\PluginManager::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['get'])
-            ->getMock();
-        $rpm->expects($this->any())->method('get')
-            ->will($this->returnValue($this->getMockResults()));
-        return $rpm;
-    }
+    use \VuFindTest\Feature\SearchObjectsTrait;
 
     /**
      * Test that configuration is parsed correctly.
@@ -94,27 +52,49 @@ class SolrTest extends \PHPUnit\Framework\TestCase
      */
     public function testSetConfigDefaults()
     {
-        $solr = new Solr($this->getMockResultsPluginManager());
+        $solr = new Solr($this->getMockResultsPluginManager(allowDefaultFallback: true));
         $solr->setConfig('');
         $this->assertEquals(null, $this->getProperty($solr, 'handler'));
         $this->assertEquals(['title'], $this->getProperty($solr, 'displayField'));
         $this->assertEquals(null, $this->getProperty($solr, 'sortField'));
         $this->assertEquals([], $this->getProperty($solr, 'filters'));
+        $this->assertNull($this->getProperty($solr, 'limit'));
+    }
+
+    /**
+     * Data provider for testSetConfig().
+     *
+     * @return array[]
+     */
+    public static function setConfigProvider(): array
+    {
+        $filters = ['FF1:FV1', 'FF2:FV2'];
+        return [
+            'default limit, filters' => ['Handler:Display:Sort:FF1:FV1:FF2:FV2', $filters, null],
+            'non-default limit, filters' => ['Handler:Display:Sort:20:FF1:FV1:FF2:FV2', $filters, 20],
+            'default limit, no filters' => ['Handler:Display:Sort', [], null],
+            'non-default limit, no filters' => ['Handler:Display:Sort:20', [], 20],
+        ];
     }
 
     /**
      * Test that configuration is parsed correctly.
      *
+     * @param string   $config          Config to test
+     * @param string[] $expectedFilters Filters expected to be parsed from the config
+     * @param ?int     $expectedLimit   Limit expected to be parsed from the config
+     *
      * @return void
      */
-    public function testSetConfig()
+    #[\PHPUnit\Framework\Attributes\DataProvider('setConfigProvider')]
+    public function testSetConfig(string $config, array $expectedFilters, ?int $expectedLimit)
     {
-        $solr = new Solr($this->getMockResultsPluginManager());
-        $solr->setConfig('Handler:Display:Sort:FF1:FV1:FF2:FV2');
+        $solr = new Solr($this->getMockResultsPluginManager(allowDefaultFallback: true));
+        $solr->setConfig($config);
         $this->assertEquals('Handler', $this->getProperty($solr, 'handler'));
         $this->assertEquals(['Display'], $this->getProperty($solr, 'displayField'));
         $this->assertEquals('Sort', $this->getProperty($solr, 'sortField'));
-        $expected = ['FF1:FV1', 'FF2:FV2'];
-        $this->assertEquals($expected, $this->getProperty($solr, 'filters'));
+        $this->assertEquals($expectedFilters, $this->getProperty($solr, 'filters'));
+        $this->assertEquals($expectedLimit, $this->getProperty($solr, 'limit'));
     }
 }

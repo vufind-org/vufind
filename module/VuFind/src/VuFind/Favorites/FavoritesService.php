@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Favorites
@@ -35,7 +35,6 @@ use Laminas\Stdlib\Parameters;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
-use VuFind\Db\Service\Feature\TransactionInterface;
 use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\ResourceTagsServiceInterface;
 use VuFind\Db\Service\UserListServiceInterface;
@@ -72,21 +71,21 @@ class FavoritesService implements TranslatorAwareInterface
     /**
      * Constructor
      *
-     * @param ResourceServiceInterface                          $resourceService     Resource database service
-     * @param ResourceTagsServiceInterface&TransactionInterface $resourceTagsService Resource tags database service
-     * @param UserListServiceInterface                          $userListService     UserList database service
-     * @param UserResourceServiceInterface                      $userResourceService UserResource database service
-     * @param UserServiceInterface                              $userService         User database service
-     * @param ResourcePopulator                                 $resourcePopulator   Resource populator service
-     * @param TagsService                                       $tagsService         Tags service
-     * @param RecordLoader                                      $recordLoader        Record loader
-     * @param ?RecordCache                                      $recordCache         Record cache (optional)
-     * @param ?Container                                        $session             Session container for remembering
-     * state (optional)
+     * @param ResourceServiceInterface     $resourceService     Resource database service
+     * @param ResourceTagsServiceInterface $resourceTagsService Resource tags database service
+     * @param UserListServiceInterface     $userListService     UserList database service
+     * @param UserResourceServiceInterface $userResourceService UserResource database service
+     * @param UserServiceInterface         $userService         User database service
+     * @param ResourcePopulator            $resourcePopulator   Resource populator service
+     * @param TagsService                  $tagsService         Tags service
+     * @param RecordLoader                 $recordLoader        Record loader
+     * @param ?RecordCache                 $recordCache         Record cache (optional)
+     * @param ?Container                   $session             Session container for remembering
+     *                                                          state (optional)
      */
     public function __construct(
         protected ResourceServiceInterface $resourceService,
-        protected ResourceTagsServiceInterface&TransactionInterface $resourceTagsService,
+        protected ResourceTagsServiceInterface $resourceTagsService,
         protected UserListServiceInterface $userListService,
         protected UserResourceServiceInterface $userResourceService,
         protected UserServiceInterface $userService,

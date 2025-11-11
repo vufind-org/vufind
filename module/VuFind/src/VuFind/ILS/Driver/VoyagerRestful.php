@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -317,11 +317,7 @@ class VoyagerRestful extends Voyager implements
      */
     public function getConfig($function, $params = [])
     {
-        if (isset($this->config[$function])) {
-            $functionConfig = $this->config[$function];
-        } else {
-            $functionConfig = false;
-        }
+        $functionConfig = $this->config[$function] ?? false;
 
         return $functionConfig;
     }
@@ -544,9 +540,7 @@ class VoyagerRestful extends Voyager implements
                             $row['id'],
                             $row['item_id']
                         );
-                        $addStorageRetrievalLink = $storageRetrieval
-                            ? true
-                            : false;
+                        $addStorageRetrievalLink = $storageRetrieval;
                     } else {
                         $storageRetrieval = 'auto';
                         $addStorageRetrievalLink = 'check';
@@ -2132,7 +2126,7 @@ class VoyagerRestful extends Voyager implements
                 $count = ($reply == 'ok') ? $count + 1 : $count;
 
                 $response[$itemId] = [
-                    'success' => ($reply == 'ok') ? true : false,
+                    'success' => $reply == 'ok',
                     'status' => ($reply == 'ok')
                         ? 'hold_cancel_success' : 'hold_cancel_fail',
                     'sysMessage' => ($reply == 'ok') ? false : $reply,
@@ -2640,7 +2634,7 @@ class VoyagerRestful extends Voyager implements
                 $count = ($reply == 'ok') ? $count + 1 : $count;
 
                 $response[$itemId] = [
-                    'success' => ($reply == 'ok') ? true : false,
+                    'success' => $reply == 'ok',
                     'status' => ($reply == 'ok')
                         ? 'storage_retrieval_request_cancel_success'
                         : 'storage_retrieval_request_cancel_fail',
@@ -3266,7 +3260,7 @@ class VoyagerRestful extends Voyager implements
                 $count = ($reply == 'ok') ? $count + 1 : $count;
 
                 $response[$itemId] = [
-                    'success' => ($reply == 'ok') ? true : false,
+                    'success' => $reply == 'ok',
                     'status' => ($reply == 'ok')
                         ? 'ill_request_cancel_success' : 'ill_request_cancel_fail',
                     'sysMessage' => ($reply == 'ok') ? false : $reply,

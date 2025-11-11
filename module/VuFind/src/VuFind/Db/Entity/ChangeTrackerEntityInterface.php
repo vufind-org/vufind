@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -52,11 +52,11 @@ interface ChangeTrackerEntityInterface extends EntityInterface
     public function setId(string $id): static;
 
     /**
-     * Getter for identifier.
+     * Get identifier (returns null for an uninitialized or non-persisted object).
      *
-     * @return string
+     * @return ?string
      */
-    public function getId(): string;
+    public function getId(): ?string;
 
     /**
      * Setter for index name (formerly core).

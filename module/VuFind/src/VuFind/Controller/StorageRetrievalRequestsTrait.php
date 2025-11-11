@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -28,6 +28,9 @@
  */
 
 namespace VuFind\Controller;
+
+use VuFind\Db\Type\AuditEventSubtype;
+use VuFind\Db\Type\AuditEventType;
 
 use function in_array;
 use function is_array;
@@ -141,6 +144,17 @@ trait StorageRetrievalRequestsTrait
                     ];
                     $this->flashMessenger()->addMessage($msg, 'success');
                     $this->getViewRenderer()->plugin('session')->put('reset_account_status', true);
+
+                    $this->getAuditEventService()->addEvent(
+                        AuditEventType::ILS,
+                        AuditEventSubtype::PlaceStorageRetrievalRequest,
+                        $this->getUser(),
+                        data: [
+                            'username' => $patron['cat_username'],
+                            'details' => $details,
+                        ]
+                    );
+
                     return $this->redirectToRecord($this->inLightbox() ? '?layout=lightbox' : '');
                 } else {
                     // Failure: use flash messenger to display messages, stay on
@@ -168,10 +182,10 @@ trait StorageRetrievalRequestsTrait
             $defaultPickup = false;
         }
 
-        $config = $this->getConfig();
-        $homeLibrary = ($config->Account->set_home_library ?? true)
+        $config = $this->getConfigArray();
+        $homeLibrary = ($config['Account']['set_home_library'] ?? true)
             ? $this->getUser()->getHomeLibrary() : '';
-        // helpText is only for backward compatibility:
+        // helpText is only for backward compatibility with legacy code:
         $helpText = $helpTextHtml = $checkRequests['helpText'];
 
         $view = $this->createViewModel(

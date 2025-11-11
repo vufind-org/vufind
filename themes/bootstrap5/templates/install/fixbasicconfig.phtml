@@ -1,12 +1,9 @@
 <?php
-    // Set page title.
-    $this->headTitle($this->translate('auto_configure_title'));
-
     // Set up breadcrumbs:
     $this->breadcrumbs()->set($this->translate('auto_configure_title'), $this->url('install-home'))
       ->add($this->translate('Fix Basic Config'), active: true);
 ?>
-<h2><?=$this->transEsc('auto_configure_title')?></h2>
+<?=$this->component('page-title', ['title' => $this->translate('auto_configure_title')]);?>
 
 <?php if (isset($this->configDir)): ?>
   <p>VuFind® cannot write to <b><?=$this->escapeHtml($this->configDir)?></b>.</p>

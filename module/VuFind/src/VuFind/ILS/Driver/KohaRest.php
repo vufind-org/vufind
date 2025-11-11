@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2016-2023.
+ * Copyright (C) The National Library of Finland 2016-2025.
  * Copyright (C) Moravian Library 2019.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -36,6 +36,7 @@ use VuFind\Date\DateException;
 use VuFind\Exception\AuthToken as AuthTokenException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Logic\AvailabilityStatus;
+use VuFind\ILS\Logic\OnlinePaymentTrait;
 use VuFind\Service\CurrencyFormatter;
 
 use function array_key_exists;
@@ -63,7 +64,7 @@ use function is_string;
 class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     \VuFindHttp\HttpServiceAwareInterface,
     \VuFind\I18n\Translator\TranslatorAwareInterface,
-    \Laminas\Log\LoggerAwareInterface,
+    \Psr\Log\LoggerAwareInterface,
     \VuFind\I18n\HasSorterInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
@@ -71,6 +72,10 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     use \VuFind\Cache\CacheTrait;
     use \VuFind\ILS\Driver\OAuth2TokenTrait;
     use \VuFind\I18n\HasSorterTrait;
+    use OnlinePaymentTrait {
+        fineIsPayable as fineIsPayableBase;
+        fineBlocksPayment as fineBlocksPaymentBase;
+    }
 
     /**
      * Library prefix
@@ -159,6 +164,13 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         'HE' => 'Hold Expired',
         'RENT' => 'Rental',
     ];
+
+    /**
+     * Mappings from fee types to tax percents (1/100ths of a percent)
+     *
+     * @var array
+     */
+    protected $feeTypeToTaxRateMappings = [];
 
     /**
      * Mappings from renewal block reasons
@@ -325,6 +337,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 $this->config['FeeTypeMappings']
             );
         }
+        $this->feeTypeToTaxRateMappings = $this->config['OnlinePayment']['feeTypeToTaxRateMappings'] ?? [];
 
         if (!empty($this->config['PatronStatusMappings'])) {
             $this->patronStatusMappings = array_merge(
@@ -367,7 +380,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected function getCacheKey($suffix = null)
     {
-        return 'KohaRest' . '-' . md5($this->config['Catalog']['host'] . $suffix);
+        return 'KohaRest-' . md5($this->config['Catalog']['host'] . $suffix);
     }
 
     /**
@@ -646,18 +659,17 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         if (200 !== $result['code']) {
             throw new ILSException('Problem with Koha REST API.');
         }
-
-        return [
-            'id' => $data['patron_id'],
-            'firstname' => $data['firstname'],
-            'lastname' => $data['surname'],
-            'cat_username' => $username,
-            'cat_password' => (string)$password,
-            'email' => $data['email'],
-            'major' => null,
-            'college' => null,
-            'home_library' => $data['library_id'],
-        ];
+        return $this->createPatronArray(
+            id: $data['patron_id'],
+            cat_username: $username,
+            cat_password: (string)$password,
+            firstname:  $data['firstname'],
+            lastname: $data['surname'],
+            email: $data['email'],
+            nonDefaultFields: [
+                'home_library' => $data['library_id'],
+            ]
+        );
     }
 
     /**
@@ -705,20 +717,23 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         }
 
         $result = $result['data'];
-        return [
-            'firstname' => $result['firstname'],
-            'lastname' => $result['surname'],
-            'phone' => $result['phone'],
-            'mobile_phone' => $result['mobile'],
-            'email' => $result['email'],
-            'address1' => $result['address'],
-            'address2' => $result['address2'],
-            'zip' => $result['postal_code'],
-            'city' => $result['city'],
-            'country' => $result['country'],
-            'expiration_date' => $this->convertDate($result['expiry_date'] ?? null),
-            'birthdate' => $result['date_of_birth'] ?? '',
-        ];
+        return $this->createProfileArray(
+            firstname: $result['firstname'],
+            lastname: $result['surname'],
+            phone: $result['phone'],
+            mobile_phone: $result['mobile'],
+            address1: $result['address'],
+            address2: $result['address2'],
+            zip: $result['postal_code'],
+            city: $result['city'],
+            country: $result['country'],
+            expiration_date: $this->convertDate($result['expiry_date'] ?? null),
+            birthdate: $result['date_of_birth'] ?? '',
+            home_library: isset($result['library_id']) ? (string)$result['library_id'] : null,
+            nonDefaultFields: [
+                'email' => $result['email'],
+            ]
+        );
     }
 
     /**
@@ -1280,7 +1295,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             'pickup_library_id' => $pickUpLocation,
             'notes' => $comment,
             'expiration_date' => !empty($holdDetails['requiredByTS'])
-                        ? date('Y-m-d', $holdDetails['requiredByTS'])
+                        ? gmdate('Y-m-d', $holdDetails['requiredByTS'])
                         : null,
         ];
         if ($level == 'copy') {
@@ -1340,6 +1355,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      * @param array $patron       Patron array
      *
      * @return array Associative array of the results
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function updateHolds(
         array $holdsDetails,
@@ -1674,25 +1691,91 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                     $bibId = $item['biblio_id'];
                 }
             }
-            $type = trim($entry['debit_type']);
-            $type = $this->translate($this->feeTypeMappings[$type] ?? $type);
+            $debitType = trim($entry['debit_type']);
+            $type = $this->feeTypeMappings[$debitType] ?? $debitType;
             $description = trim($entry['description']);
-            if ($description !== $type) {
-                $type .= " - $description";
-            }
             $fine = [
-                'amount' => $entry['amount'] * 100,
-                'balance' => $entry['amount_outstanding'] * 100,
+                'fineId' => $entry['account_line_id'],
+                'amount' => (int)round($entry['amount'] * 100),
+                'balance' => (int)round($entry['amount_outstanding'] * 100),
                 'fine' => $type,
+                'description' => $description,
                 'createdate' => $this->convertDate($entry['date'] ?? null),
                 'checkout' => '',
+                'organization' => $entry['library_id'] ?? '',
+                '__status' => trim($entry['status'] ?? ''),
             ];
             if (null !== $bibId) {
                 $fine['id'] = $bibId;
             }
+            $fine['payableOnline'] = $this->fineIsPayable($fine);
+            $fine['taxPercent'] = $this->getFineTaxRate($fine, $entry);
             $fines[] = $fine;
         }
         return $fines;
+    }
+
+    /**
+     * Register a payment.
+     *
+     * This is called after a successful online payment.
+     *
+     * @param array   $patron                  Patron
+     * @param int     $amount                  Amount to be registered as paid
+     * @param string  $localPaymentIdentifier  Local payment identifier
+     * @param ?string $remotePaymentIdentifier Remote payment identifier
+     * @param int     $paymentId               Internal payment id
+     * @param ?array  $fineIds                 Fine IDs to mark paid or null for bulk payment
+     *
+     * @throws ILSException
+     * @return array Associative array with keys success (bool, always) and reason (string, on error)
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function registerPayment(
+        array $patron,
+        int $amount,
+        string $localPaymentIdentifier,
+        ?string $remotePaymentIdentifier,
+        int $paymentId,
+        ?array $fineIds = null
+    ): array {
+        $note = "Online payment $localPaymentIdentifier";
+        if ($remotePaymentIdentifier) {
+            $note .= " / $remotePaymentIdentifier";
+        }
+        $request = [
+            'credit_type' => 'PAYMENT',
+            'amount' => $amount / 100,
+            'note' => $note,
+        ];
+        if (null !== $fineIds) {
+            $request['account_lines_ids'] = $fineIds;
+        }
+
+        $result = $this->makeRequest(
+            [
+                'path' => ['v1', 'patrons', $patron['id'], 'account', 'credits'],
+                'json' => $request,
+                'method' => 'POST',
+                'errors' => true,
+            ]
+        );
+        if ($result['code'] >= 300) {
+            $error = "Failed to mark payment of $amount paid for patron"
+                . " {$patron['id']}: {$result['code']}: " . var_export($result, true);
+            $this->logError($error);
+            return [
+                'success' => false,
+                'reason' => 'Payment::error_payment_request_failed',
+            ];
+        }
+        // Clear patron's block cache
+        $cacheId = 'blocks|' . $patron['id'];
+        $this->removeCachedData($cacheId);
+        return [
+            'success' => true,
+        ];
     }
 
     /**
@@ -1727,16 +1810,117 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         );
 
         if (200 !== $result['code']) {
-            if (400 === $result['code']) {
-                $message = 'password_error_invalid';
-            } else {
-                $message = 'An error has occurred';
-            }
+            $message = 400 === $result['code'] ? 'password_error_invalid' : 'An error has occurred';
             return [
                 'success' => false, 'status' => $message,
             ];
         }
         return ['success' => true, 'status' => 'change_password_ok'];
+    }
+
+    /**
+     * Get a password recovery data for a user
+     *
+     * @param array $params Required params such as cat_username and email
+     *
+     * @return array Associative array of the results
+     */
+    public function getPasswordRecoveryData($params)
+    {
+        // We need a username and an email address to find the account:
+        if (empty($params['cat_username'])) {
+            return [
+                'success' => false,
+                'error' => 'Username cannot be blank',
+            ];
+        }
+        if (empty($params['email'])) {
+            return [
+                'success' => false,
+                'error' => 'no_email_address',
+            ];
+        }
+
+        $result = $this->makeRequest(
+            [
+                'path' => 'v1/patrons',
+                'query' => [
+                    '_match' => 'exact',
+                    'cardnumber' => $params['cat_username'],
+                    'email' => $params['email'],
+                ],
+                'errors' => true,
+            ]
+        );
+
+        if (200 === $result['code']) {
+            if (!empty($result['data'][0])) {
+                return [
+                    'success' => true,
+                    'data' => [
+                        'username' => $params['cat_username'],
+                        'email' => $params['email'],
+                        'details' => [
+                            'id' => $result['data'][0]['patron_id'],
+                        ],
+                    ],
+                ];
+            } else {
+                return [
+                    'success' => false,
+                    'error' => 'recovery_user_not_found',
+                ];
+            }
+        }
+
+        if (404 !== $result['code']) {
+            throw new ILSException('Problem with Koha REST API.');
+        }
+        return [
+            'success' => false,
+            'error' => 'recovery_user_not_found',
+        ];
+    }
+
+    /**
+     * Reset a user's password using password recovery data.
+     *
+     * @param array $details Driver-specific account recovery details.
+     * @param array $params  User-entered form parameters.
+     *
+     * @throws ILSException
+     * @return array Status
+     */
+    public function resetPassword(array $details, array $params)
+    {
+        if (empty($details['id']) || empty($params['password'])) {
+            return [
+                'success' => false,
+                'error' => 'error_inconsistent_parameters',
+            ];
+        }
+        $request = [
+            'password' => $params['password'],
+            'password_2' => $params['password'],
+        ];
+
+        $result = $this->makeRequest(
+            [
+                'path' => ['v1', 'patrons', $details['id'], 'password'],
+                'json' => $request,
+                'method' => 'POST',
+                'errors' => true,
+            ]
+        );
+        if ($result['code'] >= 300) {
+            return [
+                'success' => false,
+                'error' => $result['data']['error'] ?? $result['code'],
+            ];
+        }
+        return [
+            'success' => true,
+        ];
     }
 
     /**
@@ -1793,7 +1977,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 'default_sort' => '-checkout_date',
                 'purge_all' => $this->config['TransactionHistory']['purgeAll'] ?? true,
             ];
-        } elseif ('getMyTransactions' === $function) {
+        }
+        if ('getMyTransactions' === $function) {
             $limit = $this->config['Loans']['max_page_size'] ?? 100;
             return [
                 'max_results' => $limit,
@@ -1806,7 +1991,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 ],
                 'default_sort' => '+due_date',
             ];
-        } elseif ('Holdings' === $function) {
+        }
+        if ('Holdings' === $function) {
             $config = $this->config['Holdings'] ?? [];
             if ($limitByType = $this->config['Holdings']['itemLimitByType'] ?? null) {
                 $biblio = $this->getBiblio($params['id']);
@@ -1816,6 +2002,10 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
                 }
             }
             return $config;
+        }
+        if ('getPasswordRecoveryData' === $function || 'resetPassword' === $function) {
+            $config = $this->config['PasswordRecovery'] ?? [];
+            return ($config['enabled'] ?? false) ? $config : false;
         }
 
         return $this->config[$function] ?? false;
@@ -2135,7 +2325,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             $extraStatusInformation = [];
             if ($transit = $avail['unavailabilities']['Item::Transfer'] ?? null) {
                 if (null !== ($toLibrary = $transit['to_library'] ?? null)) {
-                    $extraStatusInformation['location'] = $this->getLibraryName($transit['to_library']);
+                    $extraStatusInformation['location'] = $this->getLibraryName($toLibrary);
                     if ($status == 'HoldingStatus::transit_to_date') {
                         $extraStatusInformation['date'] = $this->convertDate(
                             $transit['datesent'],
@@ -2341,10 +2531,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     protected function itemHoldAllowed($item)
     {
         $unavail = $item['availability']['unavailabilities'] ?? [];
-        if (!isset($unavail['Hold::NotHoldable'])) {
-            return true;
-        }
-        return false;
+        return !isset($unavail['Hold::NotHoldable']);
     }
 
     /**
@@ -2360,13 +2547,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         if (isset($unavail['ArticleRequest::NotAllowed'])) {
             return false;
         }
-        if (
-            empty($this->config['StorageRetrievalRequests']['allow_checked_out'])
-            && isset($unavail['Item::CheckedOut'])
-        ) {
-            return false;
-        }
-        return true;
+        return !(empty($this->config['StorageRetrievalRequests']['allow_checked_out'])
+            && isset($unavail['Item::CheckedOut']));
     }
 
     /**
@@ -2923,5 +3105,53 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     protected function formatMoney($amount)
     {
         return $this->currencyFormatter->convertToDisplayFormat($amount);
+    }
+
+    /**
+     * Check if a fine is payable.
+     *
+     * @param array $fine Fine
+     *
+     * @return bool
+     */
+    protected function fineIsPayable(array $fine): bool
+    {
+        if (!$this->fineIsPayableBase($fine)) {
+            return false;
+        }
+        $paymentConfig = $this->config['OnlinePayment'] ?? [];
+        return !in_array($fine['__status'], $paymentConfig['nonPayableStatuses'] ?? []);
+    }
+
+    /**
+     * Check if a fine should completely block payment.
+     *
+     * @param array $fine Fine
+     *
+     * @return bool
+     */
+    protected function fineBlocksPayment(array $fine): bool
+    {
+        if ($this->fineBlocksPaymentBase($fine)) {
+            return true;
+        }
+        $paymentConfig = $this->config['OnlinePayment'] ?? [];
+        return in_array($fine['__status'], $paymentConfig['blockingNonPayableStatuses'] ?? []);
+    }
+
+    /**
+     * Get tax rate for a fine.
+     *
+     * @param array $fine     Fine
+     * @param array $kohaFine Koha fine entry
+     *
+     * @return int 1/100ths of a percent
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function getFineTaxRate(array $fine, array $kohaFine): int
+    {
+        $code = trim($kohaFine['debit_type']) ?? '';
+        return $this->feeTypeToTaxRateMappings[$code] ?? 0;
     }
 }

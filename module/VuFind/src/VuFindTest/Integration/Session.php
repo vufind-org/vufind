@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -62,6 +62,13 @@ class Session extends \Behat\Mink\Session
     protected $disableWhoops = false;
 
     /**
+     * API key token to request header
+     *
+     * @var ?string
+     */
+    protected ?string $apiKeyToken = null;
+
+    /**
      * Set remote code coverage configuration
      *
      * @param string $testName    Test name
@@ -90,6 +97,19 @@ class Session extends \Behat\Mink\Session
     }
 
     /**
+     * Set API key token to request header
+     *
+     * @param string $token API key token
+     *
+     * @return static
+     */
+    public function setApiKeyToken(string $token): static
+    {
+        $this->apiKeyToken = $token;
+        return $this;
+    }
+
+    /**
      * Visit specified URL and automatically start session if not already running.
      *
      * @param string $url url of the page
@@ -113,6 +133,9 @@ class Session extends \Behat\Mink\Session
         }
         if ($this->disableWhoops) {
             $this->setRequestHeader('X-VuFind-Disable-Whoops', '1');
+        }
+        if ($this->apiKeyToken) {
+            $this->setRequestHeader(VUFIND_API_KEY_DEFAULT_HEADER_FIELD, $this->apiKeyToken);
         }
 
         parent::visit($url);

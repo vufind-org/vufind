@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -106,19 +106,19 @@ class ThemeCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $source = $input->getArgument('source');
         $target = $input->getArgument('target');
         if (empty($target)) {
             $target = "{$source}_compiled";
         }
-        $force = $input->getOption('force') ? true : false;
+        $force = (bool)$input->getOption('force');
         if (!$this->compiler->compile($source, $target, $force)) {
             $output->writeln($this->compiler->getLastError());
-            return 1;
+            return self::FAILURE;
         }
         $output->writeln('Success.');
-        return 0;
+        return self::SUCCESS;
     }
 }

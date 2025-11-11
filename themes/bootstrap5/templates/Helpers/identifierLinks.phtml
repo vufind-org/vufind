@@ -1,5 +1,5 @@
 <?php
-    $attribs = ['class' => 'identifierLink', 'data-instance' => $instance ?? 0];
+    $attribs = ['class' => 'identifierLinks', 'data-instance' => $instance ?? 0];
     if (!empty($doi)) {
         $attribs['data-doi'] = $doi;
     }
@@ -9,6 +9,6 @@
     if (!empty($issn)) {
         $attribs['data-issn'] = $issn;
     }
+    echo $this->assetManager()->outputInlineScriptLink('identifierLinks.js');
 ?>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::FILE, 'identifierLinks.js', 'SET');?>
-<span <?=$this->htmlAttributes($attribs)?>></span>
+<div<?=$this->htmlAttributes($attribs)?>></div>

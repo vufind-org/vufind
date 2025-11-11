@@ -2,6 +2,16 @@
 /*exported loadMapSelection */
 //Coordinate order:  Storage and Query: WENS ; Display: WSEN
 
+/**
+ * Initialize a Leaflet map.
+ * @param {string}       geoField      The name of the geospatial field.
+ * @param {Array}        boundingBox   An array of four numbers representing the initial search box coordinates.
+ * @param {string}       baseURL       The base URL for the search results page.
+ * @param {string}       homeURL       The URL for VuFind's home page (root of application).
+ * @param {string}       searchParams  Existing search parameters to be appended to new search URLs.
+ * @param {Array<Array>} resultsCoords An array of search results; each result is [id, title, west, east, north, south].
+ * @param {Array}        basemap       An array containing the URL template and attribution for the map's basemap.
+ */
 function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams, resultsCoords, basemap) {
   // Initialize variables
   var searchboxLayer = L.featureGroup();
@@ -63,8 +73,9 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
     }
   });
 
-  // Handle user interaction with markers and rectangles
-  //----------------------------------------------------//
+  /**
+   * Handle user interaction with markers and rectangles
+   */
   function onClick() {
     mapSearch.eachLayer(function msl(layer) {
       if (layer.options.id === "mRect") {
@@ -301,9 +312,9 @@ function loadMapSelection(geoField, boundingBox, baseURL, homeURL, searchParams,
     var di_south = di_sw.lat;
     var di_west = di_sw.lng;
 
-    //Create search query
+    // Create search query
     var rawFilter = geoField + ':Intersects(ENVELOPE(' + di_west + ', ' + di_east + ', ' + di_north + ', ' + di_south + '))';
-    location.href = baseURL + searchParams + "&filter[]=" + rawFilter;
+    location.href = baseURL + searchParams + "&filter%5B%5D=" + rawFilter;
   }, this);
 
   document.getElementById("draw_box").onclick = function drawSearchBox() {

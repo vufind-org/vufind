@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_WorldCat2
@@ -29,7 +29,7 @@
 
 namespace VuFind\Search\WorldCat2;
 
-use function count;
+use VuFind\Config\ConfigManagerInterface;
 
 /**
  * WorldCat v2 Search Options
@@ -42,74 +42,29 @@ use function count;
  */
 class Options extends \VuFind\Search\Base\Options
 {
-    use \VuFind\Config\Feature\ExplodeSettingTrait;
-
     /**
      * Max number of terms allowed in a search.
      *
      * @var int
      */
-    protected int $termsLimit = 30;
+    protected int $termsLimit;
 
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(ConfigManagerInterface $configManager)
     {
-        parent::__construct($configLoader);
         $this->searchIni = $this->facetsIni = 'WorldCat2';
-
-        // Load the configuration file:
-        $searchSettings = $configLoader->get($this->searchIni);
+        $this->advancedFacetSettingsSection = 'Advanced_Facet_Settings';
+        parent::__construct($configManager);
 
         // Term limit setup:
-        if (isset($searchSettings->General->terms_limit)) {
-            $this->termsLimit = $searchSettings->General->terms_limit;
-        }
-
-        // Limit setup:
-        if (isset($searchSettings->General->default_limit)) {
-            $this->defaultLimit = $searchSettings->General->default_limit;
-        }
-        if (isset($searchSettings->General->limit_options)) {
-            $this->limitOptions = $this->explodeListSetting($searchSettings->General->limit_options);
-        }
+        $this->termsLimit = $this->searchSettings['General']['terms_limit'] ?? 30;
 
         // Search handler setup:
         $this->defaultHandler = 'kw';
-        foreach ($searchSettings->Basic_Searches ?? [] as $key => $value) {
-            $this->basicHandlers[$key] = $value;
-        }
-        foreach ($searchSettings->Advanced_Searches ?? [] as $key => $value) {
-            $this->advancedHandlers[$key] = $value;
-        }
-
-        // Load sort preferences:
-        foreach ($searchSettings->Sorting ?? [] as $key => $value) {
-            $this->sortOptions[$key] = $value;
-        }
-        $this->defaultSort = $searchSettings->General->default_sort ?? 'bestMatch';
-        foreach ($searchSettings->DefaultSortingByType ?? [] as $key => $val) {
-            $this->defaultSortByHandler[$key] = $val;
-        }
-        // Load list view for result (controls AJAX embedding vs. linking)
-        if (isset($searchSettings->List->view)) {
-            $this->listviewOption = $searchSettings->List->view;
-        }
-
-        // Load default filters, if any:
-        if (isset($searchSettings->General->default_filters)) {
-            $this->defaultFilters = $searchSettings->General->default_filters->toArray();
-        }
-
-        $facetConf = $configLoader->get($this->facetsIni);
-        if (count($facetConf->Advanced_Facet_Settings->translated_facets ?? []) > 0) {
-            $this->setTranslatedFacets(
-                $facetConf->Advanced_Facet_Settings->translated_facets->toArray()
-            );
-        }
     }
 
     /**

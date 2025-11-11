@@ -45,3 +45,7 @@ Admin:
       label: od_admin_menu
       route: admin/overdrive
       checkMethod: checkShowOverdrive
+
+    - name: payment
+      label: Online Payment
+      route: admin/payment

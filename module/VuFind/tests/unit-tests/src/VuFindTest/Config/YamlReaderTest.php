@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -33,8 +33,8 @@ namespace VuFindTest\Config;
 
 use Laminas\Cache\Storage\StorageInterface;
 use VuFind\Config\YamlReader;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 use VuFindTest\Feature\FixtureTrait;
-use VuFindTest\Feature\PathResolverTrait;
 
 /**
  * Config YamlReader Test Class
@@ -49,7 +49,7 @@ use VuFindTest\Feature\PathResolverTrait;
 class YamlReaderTest extends \PHPUnit\Framework\TestCase
 {
     use FixtureTrait;
-    use PathResolverTrait;
+    use ConfigRelatedServicesTrait;
 
     /**
      * Test that the cache is updated as expected.
@@ -61,7 +61,7 @@ class YamlReaderTest extends \PHPUnit\Framework\TestCase
         $yamlData = ['foo' => 'bar'];
         $cache = $this->createMock(StorageInterface::class);
         $cache->expects($this->once())->method('getItem')
-            ->will($this->returnValue(null));
+            ->willReturn(null);
         $cache->expects($this->once())->method('setItem')
             ->with($this->matchesRegularExpression('/\d+/'), $this->equalTo($yamlData));
         $manager = $this->getMockBuilder(\VuFind\Cache\Manager::class)
@@ -69,17 +69,17 @@ class YamlReaderTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $manager->expects($this->once())->method('getCache')
             ->with($this->equalTo('yaml'))
-            ->will($this->returnValue($cache));
+            ->willReturn($cache);
         $reader = $this->getMockBuilder(YamlReader::class)
             ->onlyMethods(['parseYaml'])
-            ->setConstructorArgs([$manager])
+            ->setConstructorArgs([$this->getPathResolver(), $manager])
             ->getMock();
         $reader->expects($this->once())
             ->method('parseYaml')
             ->with(
                 $this->equalTo(null),
                 $this->matchesRegularExpression('/.*searchspecs.yaml/')
-            )->will($this->returnValue($yamlData));
+            )->willReturn($yamlData);
         $this->assertEquals($yamlData, $reader->get('searchspecs.yaml'));
     }
 
@@ -93,17 +93,17 @@ class YamlReaderTest extends \PHPUnit\Framework\TestCase
         $yamlData = ['foo' => 'bar'];
         $cache = $this->createMock(StorageInterface::class);
         $cache->expects($this->once())->method('getItem')
-            ->will($this->returnValue($yamlData));
+            ->willReturn($yamlData);
         $cache->expects($this->never())->method('setItem');
         $manager = $this->getMockBuilder(\VuFind\Cache\Manager::class)
             ->disableOriginalConstructor()
             ->getMock();
         $manager->expects($this->once())->method('getCache')
             ->with($this->equalTo('yaml'))
-            ->will($this->returnValue($cache));
+            ->willReturn($cache);
         $reader = $this->getMockBuilder(YamlReader::class)
             ->onlyMethods(['parseYaml'])
-            ->setConstructorArgs([$manager])
+            ->setConstructorArgs([$this->getPathResolver(), $manager])
             ->getMock();
         $reader->expects($this->never())->method('parseYaml');
         // Test twice to confirm that cache is only called once (due to secondary
@@ -122,17 +122,17 @@ class YamlReaderTest extends \PHPUnit\Framework\TestCase
         $yamlData = ['foo' => 'bar'];
         $cache = $this->createMock(StorageInterface::class);
         $cache->expects($this->exactly(2))->method('getItem')
-            ->will($this->returnValue($yamlData));
+            ->willReturn($yamlData);
         $cache->expects($this->never())->method('setItem');
         $manager = $this->getMockBuilder(\VuFind\Cache\Manager::class)
             ->disableOriginalConstructor()
             ->getMock();
         $manager->expects($this->exactly(2))->method('getCache')
             ->with($this->equalTo('yaml'))
-            ->will($this->returnValue($cache));
+            ->willReturn($cache);
         $reader = $this->getMockBuilder(YamlReader::class)
             ->onlyMethods(['parseYaml'])
-            ->setConstructorArgs([$manager])
+            ->setConstructorArgs([$this->getPathResolver(), $manager])
             ->getMock();
         $reader->expects($this->never())->method('parseYaml');
         // Test twice to confirm that cache is re-checked in response to third
@@ -149,7 +149,6 @@ class YamlReaderTest extends \PHPUnit\Framework\TestCase
     public function testParentConfig(): void
     {
         $reader = new YamlReader(
-            null,
             $this->getPathResolver($this->getFixtureDir() . 'configs/yaml')
         );
         $config = $reader->get('yamlreader-child.yaml');

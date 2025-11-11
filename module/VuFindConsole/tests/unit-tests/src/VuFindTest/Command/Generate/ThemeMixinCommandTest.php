@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -55,7 +55,7 @@ class ThemeMixinCommandTest extends \PHPUnit\Framework\TestCase
         $generator->expects($this->once())
             ->method('generate')
             ->with($this->equalTo('custom'))
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $command = new ThemeMixinCommand($generator);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
@@ -79,10 +79,10 @@ class ThemeMixinCommandTest extends \PHPUnit\Framework\TestCase
         $generator->expects($this->once())
             ->method('generate')
             ->with($this->equalTo('foo'))
-            ->will($this->returnValue(false));
+            ->willReturn(false);
         $generator->expects($this->once())
             ->method('getLastError')
-            ->will($this->returnValue('fake error'));
+            ->willReturn('fake error');
         $command = new ThemeMixinCommand($generator);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['name' => 'foo']);

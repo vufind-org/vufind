@@ -39,9 +39,9 @@
 
   // Load Javascript dependencies into header:
   $this->render('search/results-scripts.phtml', compact('displayVersions'));
-  $this->headScript()->appendFile('combined-search.js');
+  $this->assetManager()->appendScriptLink('combined-search.js');
   // Style
-  $this->headLink()->appendStylesheet('combined-search.css');
+  $this->assetManager()->appendStyleLink('combined-search.css');
 ?>
 <?=$this->flashmessages()?>
 <h1 class="visually-hidden"><?=$this->escapeHtml($headTitle)?></h1>

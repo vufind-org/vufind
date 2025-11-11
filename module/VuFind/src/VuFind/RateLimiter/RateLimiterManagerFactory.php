@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Service
@@ -76,7 +76,7 @@ class RateLimiterManagerFactory implements FactoryInterface
         ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
 
         $this->serviceLocator = $container;
@@ -135,12 +135,13 @@ class RateLimiterManagerFactory implements FactoryInterface
         }
 
         $rateLimiterConfig = $policy[$configSection] ?? [];
-        $rateLimiterConfig['id'] = $policyId;
-        if (null !== $userId && !($policy['preferIPAddress'] ?? false)) {
-            $clientId = "u:$userId";
-        } else {
-            $clientId = "ip:$clientIp";
+        if ('reject_all' === ($rateLimiterConfig['policy'] ?? null)) {
+            return new RejectAll();
         }
+        $rateLimiterConfig['id'] = $policyId;
+        $clientId = null !== $userId && !($policy['preferIPAddress'] ?? false)
+            ? "u:$userId"
+            : "ip:$clientIp";
         $factory = new RateLimiterFactory($rateLimiterConfig, $this->createCache($config, $configSection));
         return $factory->create($clientId);
     }

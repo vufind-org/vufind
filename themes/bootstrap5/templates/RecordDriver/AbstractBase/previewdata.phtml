@@ -78,7 +78,7 @@
             // add the necessary identifier code:
             if (!empty($html)) {
                 $html .= '<span class="previewBibkeys ' . $idClasses . '"></span>';
-                $this->headScript()->appendFile('preview.js');
+                $this->assetManager()->appendScriptLink('preview.js');
                 echo $html;
             }
         }

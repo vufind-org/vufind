@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -106,6 +106,16 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Standard teardown method.
+     *
+     * @return void
+     */
+    public function tearDown(): void
+    {
+        $this->tearDownLiveDatabaseContainer();
+    }
+
+    /**
      * Get an authentication object.
      *
      * @param ?array $config             Configuration to use (null for default)
@@ -132,7 +142,6 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
             $this->createMock(\VuFind\Auth\ILSAuthenticator::class)
         );
         $obj->setDbServiceManager($this->getLiveDbServiceManager());
-        $obj->setDbTableManager($this->getLiveTableManager());
         $obj->setConfig($config);
         return $obj;
     }

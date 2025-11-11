@@ -19,7 +19,7 @@ return [
          * - media: e.g. 'print'
          * - extras: array of additional attributes
          *
-         * Strings are supported for backwards compatibility reasons. examples:
+         * Strings are supported for legacy backwards compatibility reasons. examples:
          * - 'example.css' => same as ['file' => 'example.css']
          * - 'example.css:print' => same as
          *   ['file' => 'example.css', 'media' => 'print']
@@ -48,7 +48,7 @@ return [
          * Entries with neither priority nor load_after will be loaded after all
          * other entries.
          *
-         * Strings are supported for backwards compatibility reasons. example:
+         * Strings are supported for legacy backwards compatibility reasons. example:
          * - 'example.js' => same as ['file' => 'example.js']
          */
         ['file' => 'polyfills.js', 'priority' => 100],
@@ -157,9 +157,14 @@ return [
              * for a strong inheritance safety net but this is not required.
              */
             'barcode' => 'FontAwesome:barcode',
+            'browzine-best' => 'FontAwesome:file-lines',
+            'browzine-concern' => 'FontAwesome:exclamation',
+            'browzine-delivery' => 'FontAwesome:paper-plane',
             'browzine-issue' => 'Alias:format-serial',
+            'browzine-link-resolver' => 'FontAwesome:file',
             'browzine-pdf' => 'FontAwesome:file-pdf-o',
             'browzine-retraction' => 'FontAwesome:exclamation',
+            'browzine-view' => 'FontAwesome:file',
             'cart' => 'FontAwesome:suitcase',
             'cart-add' => 'FontAwesome:plus',
             'cart-empty' => 'FontAwesome:times',
@@ -167,9 +172,11 @@ return [
             'cite' => 'FontAwesome:asterisk',
             'cites' => 'Unicode:275D',
             'cited-by' => 'Unicode:275E',
+            'clone' => 'FontAwesome:clone',
             'collapse' => 'Collapse:_', // uses the icons below
             'collapse-close' => 'FontAwesome:chevron-up',
             'collapse-open' => 'FontAwesome:chevron-down',
+            'user-content' => 'FontAwesome:comment',
             'cover-replacement' => 'FontAwesome:question',
             'currency-eur' => 'FontAwesome:eur',
             'currency-gbp' => 'FontAwesome:gbp',
@@ -183,6 +190,7 @@ return [
             'currency-won' => 'FontAwesome:won',
             'currency-yen' => 'FontAwesome:yen',
             'dropdown-caret' => 'FontAwesome:caret-down',
+            'explain' => 'FontAwesome:question-circle',
             'export' => 'FontAwesome:external-link',
             'external-link' => 'FontAwesome:link',
             'facet-applied' => 'FontAwesome:check',
@@ -222,6 +230,7 @@ return [
             'format-newspaper' => 'FontAwesome:file-text-o',
             'format-online' => 'FontAwesome:laptop',
             'format-painting' => 'FontAwesome:picture-o',
+            'format-pdf' => 'FontAwesome:file-pdf',
             'format-photo' => 'FontAwesome:picture-o',
             'format-photonegative' => 'FontAwesome:picture-o',
             'format-physicalobject' => 'FontAwesome:archive',
@@ -249,7 +258,9 @@ return [
             'hierarchy-noncollapsible' => 'Alias:facet-noncollapsible',
             'hierarchy-record' => 'FontAwesome:file-o',
             'hierarchy-tree' => 'FontAwesome:sitemap',
+            'keyboard' => 'FontAwesome:keyboard-o',
             'lightbox-close' => 'FontAwesome:times',
+            'link' => 'FontAwesome:link',
             'more' => 'FontAwesome:chevron-circle-right',
             'more-rtl' => 'FontAwesome:chevron-circle-left',
             'my-account' => 'FontAwesome:user-circle-o',

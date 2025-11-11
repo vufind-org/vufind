@@ -48,7 +48,7 @@
         ]
     );
   ?>
-  <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, "$('#reservesSearchForm_lookfor').focus()", 'SET')?>
+  <?=$this->assetManager()->outputInlineScriptString("$('#reservesSearchForm_lookfor').focus()")?>
 
   <div class="resulthead">
     <div class="float-start">

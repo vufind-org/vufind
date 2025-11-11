@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -87,9 +87,8 @@ class VuFindHighlighterTest extends \PHPUnit\Framework\TestCase
      * @param string $expected Expected result
      *
      * @return void
-     *
-     * @dataProvider getHighlightDataProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getHighlightDataProvider')]
     public function testGetHighlight(string $url, string $expected): void
     {
         $this->proxyUrl
@@ -111,16 +110,16 @@ class VuFindHighlighterTest extends \PHPUnit\Framework\TestCase
     {
         return [
             'http' => [
-                'http://vufind.org',
-                '<a href="URL_WITH_PROXY">http://vufind.org</a>',
+                'https://vufind.org',
+                '<a href="URL_WITH_PROXY">https://vufind.org</a>',
             ],
             'complex link' => [
                 'https://vufind.org?foo=1&bar=2#xyzzy',
                 '<a href="URL_WITH_PROXY">https://vufind.org?foo=1&bar=2#xyzzy</a>',
             ],
             'quotes' => [
-                'http://vufind.org/path/with"quotes"/?q=search',
-                '<a href="URL_WITH_PROXY">http://vufind.org/path/with"quotes"/?q=search</a>',
+                'https://vufind.org/path/with"quotes"/?q=search',
+                '<a href="URL_WITH_PROXY">https://vufind.org/path/with"quotes"/?q=search</a>',
             ],
             'no scheme' => [
                 'vufind.org',

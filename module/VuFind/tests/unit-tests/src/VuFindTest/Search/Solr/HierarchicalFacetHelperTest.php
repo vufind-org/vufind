@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2014-2020.
+ * Copyright (C) The National Library of Finland 2014-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -248,6 +248,42 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('1/Book/Section/', $facetList[4]['value']);
         $this->assertEquals('1/Audio/Music/', $facetList[5]['value']);
         $this->assertEquals('1/Audio/Spoken/', $facetList[6]['value']);
+    }
+
+    /**
+     * Tests for sortFacetList (top level only by field value)
+     *
+     * @return void
+     */
+    public function testSortFacetListTopLevelByFieldValue(): void
+    {
+        $facetList = $this->facetList;
+        $this->helper->sortFacetList($facetList, 'top-value');
+        $this->assertEquals('0/AV/', $facetList[0]['value']);
+        $this->assertEquals('0/Audio/', $facetList[1]['value']);
+        $this->assertEquals('0/Book/', $facetList[2]['value']);
+        $this->assertEquals('1/Book/BookPart/', $facetList[3]['value']);
+        $this->assertEquals('1/Book/Section/', $facetList[4]['value']);
+        $this->assertEquals('1/Audio/Spoken/', $facetList[5]['value']);
+        $this->assertEquals('1/Audio/Music/', $facetList[6]['value']);
+    }
+
+    /**
+     * Tests for sortFacetList (all levels by field value)
+     *
+     * @return void
+     */
+    public function testSortFacetListAllLevelsByFieldValue(): void
+    {
+        $facetList = $this->facetList;
+        $this->helper->sortFacetList($facetList, 'all-value');
+        $this->assertEquals('0/AV/', $facetList[0]['value']);
+        $this->assertEquals('0/Audio/', $facetList[1]['value']);
+        $this->assertEquals('0/Book/', $facetList[2]['value']);
+        $this->assertEquals('1/Audio/Music/', $facetList[3]['value']);
+        $this->assertEquals('1/Audio/Spoken/', $facetList[4]['value']);
+        $this->assertEquals('1/Book/BookPart/', $facetList[5]['value']);
+        $this->assertEquals('1/Book/Section/', $facetList[6]['value']);
     }
 
     /**
@@ -505,9 +541,9 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
         ];
         $options = $this->getMockOptions();
         $options->expects($this->any())->method('getHierarchicalExcludeFilters')
-            ->will($this->returnValue($exclude));
+            ->willReturn($exclude);
         $options->expects($this->any())->method('getHierarchicalFacetFilters')
-            ->will($this->returnValue([]));
+            ->willReturn([]);
         $filtered = $this->helper->filterFacets($facet, $facetList, $options);
         $this->assertEquals($expected, $filtered);
     }
@@ -571,9 +607,9 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
         ];
         $options = $this->getMockOptions();
         $options->expects($this->any())->method('getHierarchicalExcludeFilters')
-            ->will($this->returnValue([]));
+            ->willReturn([]);
         $options->expects($this->any())->method('getHierarchicalFacetFilters')
-            ->will($this->returnValue($filters));
+            ->willReturn($filters);
         $filtered = $this->helper->filterFacets($facet, $facetList, $options);
         $this->assertEquals($expected, $filtered);
     }

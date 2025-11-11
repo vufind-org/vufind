@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -28,6 +28,9 @@
  */
 
 namespace VuFind\Controller;
+
+use VuFind\Db\Type\AuditEventSubtype;
+use VuFind\Db\Type\AuditEventType;
 
 use function count;
 use function in_array;
@@ -52,6 +55,10 @@ trait HoldsTrait
     public function holdAction()
     {
         $driver = $this->loadRecord();
+        // Holds on API records (as opposed to Solr records; e.g. EDS) may require a different ID.
+        // This id can be obtained from the getUniqueIDOverrideForRequest method
+        $originalId = $driver->getUniqueID();
+        $id = $driver->tryMethod('getUniqueIDOverrideForRequest', default: $originalId);
 
         // Stop now if the user does not have valid catalog credentials available:
         if (!is_array($patron = $this->catalogLogin())) {
@@ -60,13 +67,7 @@ trait HoldsTrait
 
         // If we're not supposed to be here, give up now!
         $catalog = $this->getILS();
-        $checkHolds = $catalog->checkFunction(
-            'Holds',
-            [
-                'id' => $driver->getUniqueID(),
-                'patron' => $patron,
-            ]
-        );
+        $checkHolds = $catalog->checkFunction('Holds', compact('id', 'patron'));
         if (!$checkHolds) {
             return $this->redirectToRecord();
         }
@@ -78,9 +79,16 @@ trait HoldsTrait
             return $this->redirectToRecord();
         }
 
+        // the gatheredDetails['id'] is the original ID, but for API Holds (e.g. EDS)
+        // we may need to use the override ID. So only in that case we will set it to the
+        // value returned by getUniqueIDOverrideForRequest.
+        if ($originalId != $id && $originalId == $gatheredDetails['id']) {
+            $gatheredDetails['id'] = $id;
+        }
+
         // Block invalid requests:
         $validRequest = $catalog->checkRequestIsValid(
-            $driver->getUniqueID(),
+            $id,
             $gatheredDetails,
             $patron
         );
@@ -92,17 +100,31 @@ trait HoldsTrait
             return $this->redirectToRecord('#top');
         }
 
-        // Send various values to the view so we can build the form:
-        $requestGroups = $catalog->checkCapability(
-            'getRequestGroups',
-            [$driver->getUniqueID(), $patron, $gatheredDetails]
-        ) ? $catalog->getRequestGroups(
-            $driver->getUniqueID(),
-            $patron,
-            $gatheredDetails
-        ) : [];
+        // Attach holdings data from requested item for template use
+        $requestedItemId = $this->params()->fromPost('item_id') ?: $this->params()->fromQuery('item_id');
+        if ($requestedItemId) {
+            $holdings = $catalog->getHolding($gatheredDetails['id'], $patron);
+            $gatheredDetails['requestedItem'] = null;
+            foreach ($holdings['holdings'] as $item) {
+                if ($item['item_id'] === $requestedItemId) {
+                    $gatheredDetails['requestedItem'] = $item;
+                    break;
+                }
+            }
+        }
+
         $extraHoldFields = isset($checkHolds['extraHoldFields'])
             ? explode(':', $checkHolds['extraHoldFields']) : [];
+
+        // Send various values to the view so we can build the form:
+        $requestGroups = [];
+        $requestGroupsArgs = [$id, $patron, $gatheredDetails];
+        if (
+            in_array('requestGroup', $extraHoldFields)
+            && $catalog->checkCapability('getRequestGroups', $requestGroupsArgs)
+        ) {
+            $requestGroups = $catalog->getRequestGroups(...$requestGroupsArgs);
+        }
 
         $requestGroupNeeded = in_array('requestGroup', $extraHoldFields)
             && !empty($requestGroups)
@@ -119,14 +141,16 @@ trait HoldsTrait
             // group, so make sure pickup locations match with the group
             $pickupDetails['requestGroupId'] = $requestGroups[0]['id'];
         }
-        $pickup = $catalog->getPickUpLocations($patron, $pickupDetails);
 
         // Check that there are pick up locations to choose from if the field is
         // required:
-        if (in_array('pickUpLocation', $extraHoldFields) && !$pickup) {
-            $this->flashMessenger()
-                ->addErrorMessage('No pickup locations available');
-            return $this->redirectToRecord('#top');
+        $pickup = [];
+        if (in_array('pickUpLocation', $extraHoldFields)) {
+            $pickup = $catalog->getPickUpLocations($patron, $pickupDetails);
+            if (!$pickup) {
+                $this->flashMessenger()->addErrorMessage('No pickup locations available');
+                return $this->redirectToRecord('#top');
+            }
         }
 
         $proxiedUsers = [];
@@ -134,7 +158,7 @@ trait HoldsTrait
             in_array('proxiedUsers', $extraHoldFields)
             && $catalog->checkCapability(
                 'getProxiedUsers',
-                [$driver->getUniqueID(), $patron, $gatheredDetails]
+                [$id, $patron, $gatheredDetails]
             )
         ) {
             $proxiedUsers = $catalog->getProxiedUsers($patron);
@@ -210,6 +234,17 @@ trait HoldsTrait
                             ->addWarningMessage($results['warningMessage']);
                     }
                     $this->getViewRenderer()->plugin('session')->put('reset_account_status', true);
+
+                    $this->getAuditEventService()->addEvent(
+                        AuditEventType::ILS,
+                        AuditEventSubtype::PlaceHold,
+                        $this->getUser(),
+                        data: [
+                            'username' => $patron['cat_username'],
+                            'details' => $holdDetails,
+                        ]
+                    );
+
                     return $this->redirectToRecord($this->inLightbox() ? '?layout=lightbox' : '');
                 } else {
                     // Failure: use flash messenger to display messages, stay on
@@ -231,20 +266,27 @@ trait HoldsTrait
         $defaultStartDate = $dateConverter->convertToDisplayDate('U', time());
 
         // Find and format the default required date:
-        $defaultRequiredTS = $this->holds()->getDefaultRequiredDate(
-            $checkHolds,
-            $catalog,
-            $patron,
-            $gatheredDetails
-        );
-        $defaultRequiredDate = $defaultRequiredTS
-            ? $dateConverter->convertToDisplayDate(
-                'U',
-                $defaultRequiredTS
-            ) : '';
+        $defaultRequiredDate = '';
+        if (
+            in_array('requiredByDate', $extraHoldFields)
+            || in_array('requiredByDateOptional', $extraHoldFields)
+        ) {
+            $defaultRequiredTS = $this->holds()->getDefaultRequiredDate(
+                $checkHolds,
+                $catalog,
+                $patron,
+                $gatheredDetails
+            );
+            $defaultRequiredDate = $defaultRequiredTS
+                ? $dateConverter->convertToDisplayDate(
+                    'U',
+                    $defaultRequiredTS
+                ) : '';
+        }
         try {
-            $defaultPickup
-                = $catalog->getDefaultPickUpLocation($patron, $gatheredDetails);
+            $defaultPickup = empty($pickup)
+                ? false
+                : $catalog->getDefaultPickUpLocation($patron, $gatheredDetails);
         } catch (\Exception $e) {
             $defaultPickup = false;
         }
@@ -256,10 +298,10 @@ trait HoldsTrait
             $defaultRequestGroup = false;
         }
 
-        $config = $this->getConfig();
-        $homeLibrary = ($config->Account->set_home_library ?? true)
+        $config = $this->getConfigArray();
+        $homeLibrary = ($config['Account']['set_home_library'] ?? true)
             ? $this->getUser()->getHomeLibrary() : '';
-        // helpText is only for backward compatibility:
+        // helpText is only for backward compatibility with legacy code:
         $helpText = $helpTextHtml = $checkHolds['helpText'];
 
         $view = $this->createViewModel(

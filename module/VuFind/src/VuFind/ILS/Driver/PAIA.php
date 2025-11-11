@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -464,6 +464,8 @@ class PAIA extends DAIA
      * or may be ignored.
      *
      * @return string       The default pickup location for the patron.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getDefaultPickUpLocation($patron = null, $holdDetails = null)
     {
@@ -496,6 +498,8 @@ class PAIA extends DAIA
      *
      * @return array               An array of data on each request including
      * whether or not it was successful and a system message (if available)
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function cancelStorageRetrievalRequests($cancelDetails)
     {
@@ -570,6 +574,8 @@ class PAIA extends DAIA
      *
      * @return mixed An array of data on the request including
      * whether or not it was successful and a system message (if available)
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function placeILLRequest($details)
     {
@@ -627,6 +633,8 @@ class PAIA extends DAIA
      *
      * @return array               An array of data on each request including
      * whether or not it was successful and a system message (if available)
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function cancelILLRequests($cancelDetails)
     {
@@ -715,6 +723,8 @@ class PAIA extends DAIA
      * @param array $patron The patron array from patronLogin
      *
      * @return array Additional fee data for the item
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function getAdditionalFeeData($fee, $patron = null)
     {
@@ -771,35 +781,29 @@ class PAIA extends DAIA
      */
     public function getMyProfile($patron)
     {
-        if (is_array($patron)) {
-            $type = isset($patron['type'])
-                ? implode(
-                    ', ',
-                    array_map(
-                        [$this, 'getReadableGroupType'],
-                        (array)$patron['type']
-                    )
-                )
-                : null;
-            return [
-                'firstname'  => $patron['firstname'],
-                'lastname'   => $patron['lastname'],
-                'address1'   => $patron['address'],
-                'address2'   => null,
-                'city'       => null,
-                'country'    => null,
-                'zip'        => null,
-                'phone'      => null,
-                'mobile_phone' => null,
-                'group'      => $type,
-                // PAIA specific custom values
-                'expires'    => isset($patron['expires'])
-                    ? $this->convertDate($patron['expires']) : null,
-                'statuscode' => $patron['status'] ?? null,
-                'canWrite'   => in_array(self::SCOPE_WRITE_ITEMS, $this->getScope()),
-            ];
+        if (!is_array($patron)) {
+            return [];
         }
-        return [];
+        $type = isset($patron['type'])
+            ? implode(
+                ', ',
+                array_map(
+                    [$this, 'getReadableGroupType'],
+                    (array)$patron['type']
+                )
+            )
+            : null;
+        return $this->createProfileArray(
+            firstname: $patron['firstname'],
+            lastname: $patron['lastname'],
+            address1: $patron['address'],
+            group: $type,
+            nonDefaultFields: [
+                'expires' => isset($patron['expires']) ? $this->convertDate($patron['expires']) : null,
+                'statuscode' => $patron['status'] ?? null,
+                'canWrite' => in_array(self::SCOPE_WRITE_ITEMS, $this->getScope()),
+            ]
+        );
     }
 
     /**
@@ -871,6 +875,8 @@ class PAIA extends DAIA
      * @return array An associative array with two keys: 'count' (the number of items
      * in the 'results' array) and 'results' (an array of associative arrays, each
      * with a single key: 'id', a record ID).
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getNewItems($page, $limit, $daysOld, $fundID)
     {
@@ -895,6 +901,8 @@ class PAIA extends DAIA
      *
      * @return array        An array of associative arrays with locationID and
      * locationDisplay keys
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getPickUpLocations($patron = null, $holdDetails = null)
     {
@@ -1426,21 +1434,22 @@ class PAIA extends DAIA
         // TODO: implement parsing of user details according to types set
         // (cf. https://github.com/gbv/paia/issues/29)
 
-        $user = [];
-        $user['id']        = $patron;
-        $user['firstname'] = $firstname;
-        $user['lastname']  = $lastname;
-        $user['email']     = ($user_response['email'] ?? '');
-        $user['major']     = null;
-        $user['college']   = null;
         // add other information from PAIA - we don't want anything to get lost
         // while parsing
+        $undefinedData = [];
         foreach ($user_response as $key => $value) {
-            if (!isset($user[$key])) {
-                $user[$key] = $value;
+            if (in_array($key, ['id', 'firstname', 'lastname', 'email'])) {
+                continue;
             }
+            $undefinedData[$key] = $value;
         }
-        return $user;
+        return $this->createPatronArray(
+            id: $patron,
+            firstname: $firstname,
+            lastname: $lastname,
+            email: $user_response['email'] ?? null,
+            nonDefaultFields: $undefinedData
+        );
     }
 
     /**
@@ -1482,7 +1491,7 @@ class PAIA extends DAIA
             && $this->paiaCheckScope(self::SCOPE_WRITE_ITEMS))
             ? $result['item_id'] : '';
 
-        // edition (0..1) URI of a the document (no particular copy)
+        // edition (0..1) URI of the document (no particular copy)
         // hook for retrieving alternative ItemId in case PAIA does not
         // the needed id
         $result['id'] = (isset($doc['edition'])
@@ -1567,7 +1576,7 @@ class PAIA extends DAIA
             }
 
             // status: provided (the document is ready to be used by the patron)
-            $result['available'] = $doc['status'] == 4 ? true : false;
+            $result['available'] = $doc['status'] == 4;
 
             $results[] = $result;
         }
@@ -1987,14 +1996,9 @@ class PAIA extends DAIA
     public function checkRequestIsValid($id, $data, $patron)
     {
         // TODO: make this more configurable
-        if (
-            isset($patron['status']) && $patron['status'] == 0
+        return isset($patron['status']) && $patron['status'] == 0
             && isset($patron['expires']) && $patron['expires'] > date('Y-m-d')
-            && in_array(self::SCOPE_WRITE_ITEMS, $this->getScope())
-        ) {
-            return true;
-        }
-        return false;
+            && in_array(self::SCOPE_WRITE_ITEMS, $this->getScope());
     }
 
     /**

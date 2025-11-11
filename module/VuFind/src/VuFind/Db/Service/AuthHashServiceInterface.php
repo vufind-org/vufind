@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -42,7 +42,19 @@ use VuFind\Db\Entity\AuthHashEntityInterface;
  */
 interface AuthHashServiceInterface extends DbServiceInterface
 {
-    public const TYPE_EMAIL = 'email'; // EmailAuthenticator
+    /**
+     * Hash type for email authentication
+     *
+     * @var string
+     */
+    public const TYPE_EMAIL = 'email';
+
+    /**
+     * Hash type for ILS password recovery
+     *
+     * @var string
+     */
+    public const TYPE_ILS_RECOVERY = 'ils_recovery';
 
     /**
      * Create an auth_hash entity object.

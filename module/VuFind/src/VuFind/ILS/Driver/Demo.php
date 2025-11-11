@@ -10,7 +10,7 @@
  * PHP version 8
  *
  * Copyright (C) Villanova University 2007, 2022.
- * Copyright (C) The National Library of Finland 2014.
+ * Copyright (C) The National Library of Finland 2014-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,8 +22,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -42,6 +42,7 @@ use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Logic\AvailabilityStatus;
 use VuFind\ILS\Logic\AvailabilityStatusInterface;
+use VuFind\ILS\Logic\OnlinePaymentTrait;
 use VuFindSearch\Command\RandomCommand;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Service as SearchService;
@@ -67,6 +68,7 @@ use function strlen;
 class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
 {
     use \VuFind\I18n\HasSorterTrait;
+    use OnlinePaymentTrait;
 
     /**
      * Catalog ID used to distinguish between multiple Demo driver instances with the
@@ -252,6 +254,23 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             $this->defaultPickUpLocation = false;
         }
         $this->checkIntermittentFailure();
+    }
+
+    /**
+     * Helper method to determine whether or not a certain method can be
+     * called on this driver. Required method for any smart drivers.
+     *
+     * @param string $method The name of the called method.
+     * @param array  $params Array of passed parameters
+     *
+     * @return bool True if the method can be called with the given parameters,
+     * false otherwise.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function supportsMethod($method, $params)
+    {
+        return is_callable([$this, $method]);
     }
 
     /**
@@ -513,7 +532,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             'callnumber_prefix' => $this->getFakeCallNumPrefix(),
             'duedate'      => '',
             'is_holdable'  => true,
-            'addLink'      => $patron ? true : false,
+            'addLink'      => (bool)$patron,
             'level'        => 'copy',
             'storageRetrievalRequest' => 'auto',
             'addStorageRetrievalRequestLink' => $patron ? 'check' : false,
@@ -913,7 +932,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             $status[$i] += $this->getLoanTypeForHolding();
             $volume = intdiv($issue, 4) + 1;
             $seriesIssue = $issue % 4;
-            $issue = $issue + 1;
+            $issue += 1;
             $status[$i]['enumchron'] = "volume $volume, issue $seriesIssue";
             if (rand(1, 100) <= ($this->config['Holdings']['boundWithProbability'] ?? 25)) {
                 $status[$i]['bound_with_records'] = [];
@@ -1011,21 +1030,18 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     {
         $this->checkIntermittentFailure();
 
-        $user = [
-            'id'           => trim($username),
-            'firstname'    => 'Lib',
-            'lastname'     => 'Rarian',
-            'cat_username' => trim($username),
-            'cat_password' => trim($password),
-            'email'        => 'Lib.Rarian@library.not',
-            'major'        => null,
-            'college'      => null,
-        ];
-
         $loginMethod = $this->config['Catalog']['loginMethod'] ?? 'password';
-        if ('email' === $loginMethod) {
-            $user['email'] = $username;
-            $user['cat_password'] = '';
+        $isEmailLogin = $loginMethod === 'email';
+
+        $user = $this->createPatronArray(
+            id: $username,
+            firstname: 'Lib',
+            lastname: 'Rarian',
+            cat_username: $username,
+            cat_password: $isEmailLogin ? '' : $password,
+            email: $isEmailLogin ? $username : 'Lib.Rarian@library.not'
+        );
+        if ($isEmailLogin) {
             return $user;
         }
 
@@ -1056,21 +1072,20 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         $age = rand(13, 113);
         $birthDate = new \DateTime();
         $birthDate->sub(new \DateInterval("P{$age}Y"));
-        $patron = [
-            'firstname'       => 'Lib-' . $patron['cat_username'],
-            'lastname'        => 'Rarian',
-            'address1'        => 'Somewhere...',
-            'address2'        => 'Over the Rainbow',
-            'zip'             => '12345',
-            'city'            => 'City',
-            'country'         => 'Country',
-            'phone'           => '1900 CALL ME',
-            'mobile_phone'    => '1234567890',
-            'group'           => 'Library Staff',
-            'expiration_date' => 'Someday',
-            'birthdate'       => $birthDate->format('Y-m-d'),
-        ];
-        return $patron;
+        return $this->createProfileArray(
+            firstname: 'Lib-' . $patron['cat_username'],
+            lastname: 'Rarian',
+            address1: 'Somewhere...',
+            address2: 'Over the Rainbow',
+            zip: '12345',
+            city: 'City',
+            country: 'Country',
+            phone: '1900 CALL ME',
+            mobile_phone: '1234567890',
+            group: 'Library Staff',
+            expiration_date: 'Someday',
+            birthdate: $birthDate->format('Y-m-d')
+        );
     }
 
     /**
@@ -1085,6 +1100,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
         $fines = rand() % 20 - 2;
 
         $fineList = [];
+        $firstId = rand(1, 1000);
         for ($i = 0; $i < $fines; $i++) {
             // How many days overdue is the item?
             $day_overdue = rand() % 30 + 5;
@@ -1092,41 +1108,47 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             $checkout = strtotime('now - ' . ($day_overdue + 14) . ' days');
             // 1 in 10 chance of this being a "Manual Fee":
             if (rand(1, 10) === 1) {
-                $fine = 2.50;
+                $amount = 2.50;
                 $type = 'Manual Fee';
             } else {
                 // 50c a day fine
-                $fine = $day_overdue * 0.50;
+                $amount = $day_overdue * 0.50;
                 // After 20 days it becomes 'Long Overdue'
                 $type = $day_overdue > 20 ? 'Long Overdue' : 'Overdue';
             }
+            // 50% chance they've paid half of it:
+            $balance = (rand() % 100 > 49 ? $amount / 2 : $amount);
 
-            $fineList[] = [
-                'amount'   => $fine * 100,
-                'checkout' => $this->dateConverter
-                    ->convertToDisplayDate('U', $checkout),
-                'createdate' => $this->dateConverter
-                    ->convertToDisplayDate('U', time()),
+            $fine = [
+                'fineId'  => (string)($firstId + $i),
+                'amount'   => (int)round($amount * 100),
+                'checkout' => $this->dateConverter->convertToDisplayDate('U', $checkout),
+                'createdate' => $this->dateConverter->convertToDisplayDate('U', time()),
                 'fine'     => $type,
-                // Additional description for long overdue fines:
+                // Additional description:
                 'description' => 'Manual Fee' === $type ? 'Interlibrary loan request fee' : '',
-                // 50% chance they've paid half of it
-                'balance'  => (rand() % 100 > 49 ? $fine / 2 : $fine) * 100,
+                'balance'  => (int)round($balance * 100),
                 'duedate'  => $this->dateConverter->convertToDisplayDate(
                     'U',
                     strtotime("now - $day_overdue days")
                 ),
+                'organization' => $this->getFakeLoc(),
             ];
+
+            $fine['payableOnline'] = $this->fineIsPayable($fine);
+
             // Some fines will have no id or title:
             if (rand() % 3 != 1) {
                 if ($this->idsInMyResearch) {
-                    [$fineList[$i]['id'], $fineList[$i]['title']]
+                    [$fine['id'], $fine['title']]
                         = $this->getRandomBibIdAndTitle();
-                    $fineList[$i]['source'] = $this->getRecordSource();
+                    $fine['source'] = $this->getRecordSource();
                 } else {
-                    $fineList[$i]['title'] = 'Demo Title ' . $i;
+                    $fine['title'] = 'Demo Title ' . $i;
                 }
             }
+
+            $fineList[] = $fine;
         }
         return $fineList;
     }
@@ -1152,6 +1174,65 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 : $this->getRandomFines();
         }
         return $session->fines;
+    }
+
+    /**
+     * Register a payment.
+     *
+     * This is called after a successful online payment.
+     *
+     * @param array   $patron                  Patron
+     * @param int     $amount                  Amount to be registered as paid
+     * @param string  $localPaymentIdentifier  Local payment identifier
+     * @param ?string $remotePaymentIdentifier Remote payment identifier
+     * @param int     $paymentId               Internal payment id
+     * @param ?array  $fineIds                 Fine IDs to mark paid or null for bulk payment
+     *
+     * @throws ILSException
+     * @return array Associative array with keys success (bool, always) and reason (string, on error)
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function registerPayment(
+        array $patron,
+        int $amount,
+        string $localPaymentIdentifier,
+        ?string $remotePaymentIdentifier,
+        int $paymentId,
+        ?array $fineIds = null
+    ): array {
+        if ($this->isFailing(__METHOD__, 10)) {
+            throw new ILSException('Payment::registration_failed');
+        }
+
+        $session = $this->getSession($patron['id'] ?? null);
+        $paid = 0;
+        foreach ($session->fines ?? [] as $key => $fine) {
+            if (
+                ($fine['payableOnline'] ?? false)
+                && (!$fineIds || in_array($fine['fineId'] ?? '', $fineIds))
+            ) {
+                unset($session->fines[$key]);
+                $paid += $fine['balance'];
+            }
+        }
+        if ($paid < $amount) {
+            $session->fines[] = [
+                'amount'   => $paid - $amount,
+                'createdate' => $this->dateConverter->convertToDisplayDate('U', time()),
+                'fine'     => 'Balance',
+                'balance'  => $paid - $amount,
+            ];
+        }
+
+        // Delay for a bit to avoid a race condition with session updates during CI. When this method is called via the
+        // OnlinePaymentRegister AJAX handler, the "main" request that initiated the AJAX request may be slower to shut
+        // down and write the session data due to code coverage analysis. Since we also update the session with the new
+        // fines, we need to ensure it happens later.
+        sleep(2);
+        return [
+            'success' => true,
+        ];
     }
 
     /**
@@ -2102,7 +2183,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                             'U',
                             $transactions[$i]['rawduedate']
                         );
-                    $transactions[$i]['renew'] = $transactions[$i]['renew'] + 1;
+                    $transactions[$i]['renew'] += 1;
                     $transactions[$i]['renewable']
                         = $transactions[$i]['renew']
                         < $transactions[$i]['renewLimit'];
@@ -2718,6 +2799,84 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     }
 
     /**
+     * Get password recovery data for a user
+     *
+     * @param array $params Required params such as cat_username and email
+     *
+     * @return array Associative array of the results
+     */
+    public function getPasswordRecoveryData($params)
+    {
+        // We need a username and an email address to find the account:
+        if (empty($params['cat_username'])) {
+            return [
+                'success' => false,
+                'error' => 'Username cannot be blank',
+            ];
+        }
+        if (empty($params['email'])) {
+            return [
+                'success' => false,
+                'error' => 'no_email_address',
+            ];
+        }
+
+        $this->checkIntermittentFailure();
+        if ($this->isFailing(__METHOD__, 33)) {
+            return ['success' => false, 'error' => 'Demonstrating failure; keep trying and it will work eventually.'];
+        }
+
+        if (isset($this->config['Users']) && !isset($this->config['Users'][$params['cat_username']])) {
+            return [
+                'success' => false,
+                'error' => 'recovery_user_not_found',
+            ];
+        }
+
+        return [
+            'success' => true,
+            'data' => [
+                'username' => $params['cat_username'],
+                'email' => $params['email'],
+                'details' => [
+                    'cat_username' => 'demo',
+                    'email' => $params['email'],
+                ],
+            ],
+        ];
+    }
+
+    /**
+     * Reset a user's password using password recovery data.
+     *
+     * @param array $details Driver-specific account recovery details.
+     * @param array $params  User-entered form parameters.
+     *
+     * @throws ILSException
+     * @return array Status
+     */
+    public function resetPassword(array $details, array $params)
+    {
+        if (!($this->config['PasswordRecovery']['enabled'] ?? false)) {
+            throw new ILSException('Recovery disabled');
+        }
+        if (empty($details['cat_username']) || empty($details['email']) || empty($params['password'])) {
+            return [
+                'success' => false,
+                'error' => 'error_inconsistent_parameters',
+            ];
+        }
+        $this->checkIntermittentFailure();
+        if (!$this->isFailing(__METHOD__, 33)) {
+            return ['success' => true];
+        }
+        return [
+            'success' => false,
+            'error' => 'Demonstrating failure; keep trying and it will work eventually.',
+        ];
+    }
+
+    /**
      * Public Function which specifies renew, hold and cancel settings.
      *
      * @param string $function The name of the feature to be checked
@@ -2812,6 +2971,17 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                 'loginMethod'
                     => $this->config['Catalog']['loginMethod'] ?? 'password',
             ];
+        }
+        if ('getPasswordRecoveryData' === $function || 'resetPassword' === $function) {
+            $config = $this->config['PasswordRecovery'] ?? [];
+            return ($config['enabled'] ?? false) ? $config : false;
+        }
+        if ($function == 'OnlinePayment') {
+            return $this->config['OnlinePayment'] ?? [];
+        }
+
+        if ('TimedBlocks' === $function) {
+            return $this->config['TimedBlocks'] ?? [];
         }
 
         return [];

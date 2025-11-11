@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Form
@@ -31,8 +31,8 @@ declare(strict_types=1);
 
 namespace VuFind\Form\Handler;
 
-use Laminas\Log\LoggerAwareInterface;
 use Laminas\View\Renderer\RendererInterface;
+use Psr\Log\LoggerAwareInterface;
 use Symfony\Component\Mime\Address;
 use VuFind\Config\Config;
 use VuFind\Db\Entity\UserEntityInterface;
@@ -196,7 +196,8 @@ class Email implements HandlerInterface, LoggerAwareInterface
                 $emailMessage,
                 null,
                 !empty($replyToEmail)
-                    ? new Address($replyToEmail, $replyToName) : null
+                    ? new Address($replyToEmail, $replyToName) : null,
+                false
             );
             return true;
         } catch (MailException $e) {
