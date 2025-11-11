@@ -59,7 +59,7 @@ class SetRecordCollectionFactoryCommandTest extends TestCase
             ->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
             ->disableOriginalConstructor()->getMock();
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue($backendId));
+            ->willReturn($backendId);
         $backend->expects($this->once())->method('setRecordCollectionFactory')
             ->with($this->equalTo($factory));
         $command = new SetRecordCollectionFactoryCommand($backendId, $factory);

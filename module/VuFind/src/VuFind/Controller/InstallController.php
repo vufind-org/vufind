@@ -176,12 +176,13 @@ class InstallController extends AbstractBase
     public function fixbasicconfigAction()
     {
         $view = $this->createViewModel();
-        $config = $this->getForcedLocalConfigPath('config.ini');
+        $config = $this->getConfigArray();
+        $configPath = $this->getForcedLocalConfigPath('config.ini');
         try {
             if (!$this->installBasicConfig()) {
                 throw new \Exception('Cannot copy file into position.');
             }
-            $writer = new ConfigWriter($config);
+            $writer = new ConfigWriter($configPath);
             // Choose secure defaults when creating initial config.ini:
             $this->fixSecurityConfiguration($config, $writer);
             // Set appropriate URLs:
@@ -195,7 +196,7 @@ class InstallController extends AbstractBase
                 throw new \Exception('Cannot write config to disk.');
             }
         } catch (\Exception $e) {
-            $view->configDir = dirname($config);
+            $view->configDir = dirname($configPath);
             if (
                 function_exists('posix_getpwuid')
                 && function_exists('posix_geteuid')

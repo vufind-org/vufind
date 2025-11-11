@@ -24,7 +24,7 @@
  * @package  View_Helpers
  * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/ Wiki
+ * @link     https://vufind.org/wiki/ Wiki
  */
 
 namespace VuFind\View\Helper\Root;
@@ -39,7 +39,7 @@ use VuFind\DeveloperSettings\DeveloperSettingsService;
  * @package  View_Helpers
  * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/ Wiki
+ * @link     https://vufind.org/wiki/ Wiki
  */
 class DeveloperSettings extends AbstractHelper
 {

@@ -86,7 +86,7 @@ class EdsTest extends \PHPUnit\Framework\TestCase
         $backend->expects($this->once())
             ->method('autocomplete')
             ->with($this->equalTo('query'), $this->equalTo('rawqueries'))
-            ->will($this->returnValue([1, 2, 3]));
+            ->willReturn([1, 2, 3]);
         $this->assertEquals([1, 2, 3], $eds->getSuggestions('query'));
     }
 
@@ -104,7 +104,7 @@ class EdsTest extends \PHPUnit\Framework\TestCase
         $backend->expects($this->once())
             ->method('autocomplete')
             ->with($this->equalTo('query'), $this->equalTo('holdings'))
-            ->will($this->returnValue([4, 5]));
+            ->willReturn([4, 5]);
         $this->assertEquals([4, 5], $eds->getSuggestions('query'));
     }
 }

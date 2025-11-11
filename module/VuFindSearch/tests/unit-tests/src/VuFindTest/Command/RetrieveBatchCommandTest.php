@@ -60,12 +60,12 @@ class RetrieveBatchCommandTest extends TestCase
             ->disableOriginalConstructor()->getMock();
         $command = new RetrieveBatchCommand($backendId, $ids, $params);
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue($backendId));
+            ->willReturn($backendId);
         $backend->expects($this->once())->method('retrieveBatch')
             ->with(
                 $this->equalTo($ids),
                 $this->equalTo($params)
-            )->will($this->returnValue('result'));
+            )->willReturn('result');
         $this->assertEquals('result', $command->execute($backend)->getResult());
     }
 
@@ -92,7 +92,7 @@ class RetrieveBatchCommandTest extends TestCase
             [['id1', $params], ['id2', $params]],
             $rci
         );
-        $rci->expects($this->once())->method('first')->will($this->returnValue($record));
+        $rci->expects($this->once())->method('first')->willReturn($record);
         $rci->expects($this->once())->method('add')->with($this->equalTo($record));
         $this->assertEquals($rci, $command->execute($backend)->getResult());
     }

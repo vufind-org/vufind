@@ -60,7 +60,7 @@ class TemplateBasedTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $locator->expects($this->once())->method('determineTemplateAndRenderer')
             ->with($this->equalTo('templates/ContentBlock/TemplateBased/'), $this->equalTo('foo'))
-            ->will($this->returnValue($details));
+            ->willReturn($details);
         $block = new \VuFind\ContentBlock\TemplateBased($locator);
         $block->setConfig('foo');
         $this->assertEquals(
@@ -91,7 +91,7 @@ class TemplateBasedTest extends \PHPUnit\Framework\TestCase
                 $this->equalTo('templates/customBasePath/'),
                 $this->equalTo('bar'),
                 $this->equalTo('%pathPrefix%/%pageName%')
-            )->will($this->returnValue($details));
+            )->willReturn($details);
         $block = new \VuFind\ContentBlock\TemplateBased($locator);
         $block->setConfig('foo');
         $this->assertEquals(
@@ -118,7 +118,7 @@ class TemplateBasedTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $locator->expects($this->once())->method('determineTemplateAndRenderer')
             ->with($this->equalTo('templates/ContentBlock/TemplateBased/'), $this->equalTo('foo'))
-            ->will($this->returnValue($details));
+            ->willReturn($details);
         $block = new \VuFind\ContentBlock\TemplateBased($locator);
         $block->setConfig('foo');
         $this->assertEquals(
@@ -147,7 +147,7 @@ class TemplateBasedTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $locator->expects($this->once())->method('determineTemplateAndRenderer')
             ->with($this->equalTo('templates/ContentBlock/TemplateBased/'), $this->equalTo($file))
-            ->will($this->returnValue($details));
+            ->willReturn($details);
         $block = new \VuFind\ContentBlock\TemplateBased($locator);
         $block->setConfig($file);
         $this->assertEquals(

@@ -73,11 +73,9 @@ class ResourceTagsService extends AbstractDbService implements
         $newOrder = [];
         foreach ($order as $next) {
             if (in_array($next, $legalSorts)) {
-                if ('posted asc' === $next || 'posted desc' === $next) {
-                    $newOrder[] = $next;
-                } else {
-                    $newOrder[] = $next . 'Sort ASC';
-                }
+                $newOrder[] = 'posted asc' === $next || 'posted desc' === $next
+                    ? $next
+                    : $next . 'Sort ASC';
             }
         }
         return $newOrder;
@@ -215,7 +213,7 @@ class ResourceTagsService extends AbstractDbService implements
 
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
-        $result = current($query->getResult());
+        $result = $query->getOneOrNullResult();
 
         // Only create row if it does not already exist:
         if (empty($result)) {
@@ -560,8 +558,7 @@ class ResourceTagsService extends AbstractDbService implements
             . 'FROM ' . ResourceTagsEntityInterface::class . ' rt '
             . 'WHERE rt.user IS NULL';
         $query = $this->entityManager->createQuery($dql);
-        $stats = current($query->getResult());
-        return $stats['total'];
+        return $query->getSingleScalarResult();
     }
 
     /**

@@ -81,11 +81,9 @@ class ProxyUrl extends \Laminas\View\Helper\AbstractHelper implements
     public function __invoke($url)
     {
         $useWebService = $this->config->EZproxy->prefixLinksWebServiceUrl ?? false;
-        if ($useWebService) {
-            $usePrefix = $this->checkUrl($url) ?? $this->checkConfig();
-        } else {
-            $usePrefix = $this->checkConfig();
-        }
+        $usePrefix = $useWebService
+            ? $this->checkUrl($url) ?? $this->checkConfig()
+            : $this->checkConfig();
 
         return ($usePrefix && isset($this->config->EZproxy->host))
             ? $this->config->EZproxy->host . '/login?qurl=' . urlencode($url)

@@ -56,11 +56,11 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
         $generator->expects($this->once())
             ->method('generate')
             ->with($this->equalTo('custom'))
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $generator->expects($this->once())
             ->method('configure')
             ->with($this->equalTo($config), $this->equalTo('custom'))
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $command = new ThemeCommand($generator, $config);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
@@ -83,14 +83,14 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
         $generator->expects($this->once())
             ->method('generate')
             ->with($this->equalTo('foo'))
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $generator->expects($this->once())
             ->method('configure')
             ->with($this->equalTo($config), $this->equalTo('foo'))
-            ->will($this->returnValue(false));
+            ->willReturn(false);
         $generator->expects($this->once())
             ->method('getLastError')
-            ->will($this->returnValue('fake error'));
+            ->willReturn('fake error');
         $command = new ThemeCommand($generator, $config);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['name' => 'foo']);

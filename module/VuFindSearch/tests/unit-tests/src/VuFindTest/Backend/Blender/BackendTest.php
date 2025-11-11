@@ -1021,19 +1021,19 @@ class BackendTest extends TestCase
             ->getMock();
         $collection->expects($this->once())
             ->method('getErrors')
-            ->will($this->returnValue($errors));
+            ->willReturn($errors);
         $collection->expects($this->once())
             ->method('getRecords')
-            ->will($this->returnValue([]));
+            ->willReturn([]);
         $collection->expects($this->any())
             ->method('getFacets')
-            ->will($this->returnValue($facets));
+            ->willReturn($facets);
         $backend = $this->getMockBuilder(\VuFindSearch\Backend\EDS\Backend::class)
             ->disableOriginalConstructor()
             ->getMock();
         $backend->expects($this->once())
             ->method('search')
-            ->will($this->returnValue($collection));
+            ->willReturn($collection);
 
         return $backend;
     }
@@ -1147,7 +1147,7 @@ class BackendTest extends TestCase
             ->getMock();
         $connector->expects($this->any())
             ->method('query')
-            ->will($this->returnCallback($callback));
+            ->willReturnCallback($callback);
 
         return $connector;
     }
@@ -1239,7 +1239,7 @@ class BackendTest extends TestCase
             ->getMock();
         $connector->expects($this->any())
             ->method('call')
-            ->will($this->returnCallback($callback));
+            ->willReturnCallback($callback);
 
         $cache = $this->createMock(\Laminas\Cache\Storage\StorageInterface::class);
         $container = $this->getMockBuilder(\Laminas\Session\Container::class)
@@ -1258,10 +1258,10 @@ class BackendTest extends TestCase
 
         $backend->expects($this->any())
             ->method('getAuthenticationToken')
-            ->will($this->returnValue('auth1234'));
+            ->willReturn('auth1234');
         $backend->expects($this->any())
             ->method('getSessionToken')
-            ->will($this->returnValue('sess1234'));
+            ->willReturn('sess1234');
 
         $backend->setIdentifier('EDS');
         return $backend;

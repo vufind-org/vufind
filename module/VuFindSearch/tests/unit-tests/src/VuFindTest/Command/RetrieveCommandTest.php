@@ -59,12 +59,12 @@ class RetrieveCommandTest extends TestCase
             ->getMock();
         $command = new RetrieveCommand($backendId, 'id', $params);
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue($backendId));
+            ->willReturn($backendId);
         $backend->expects($this->once())->method('retrieve')
             ->with(
                 $this->equalTo('id'),
                 $this->equalTo($params)
-            )->will($this->returnValue($result));
+            )->willReturn($result);
         $this->assertEquals($result, $command->execute($backend)->getResult());
     }
 

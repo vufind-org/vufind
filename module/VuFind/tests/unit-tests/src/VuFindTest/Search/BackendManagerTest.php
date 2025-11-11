@@ -58,7 +58,7 @@ class BackendManagerTest extends \PHPUnit\Framework\TestCase
         $registry = $this->createMock(\Laminas\ServiceManager\ServiceLocatorInterface::class);
         $registry->expects($this->once())
             ->method('get')
-            ->will($this->returnValue('not-an-object'));
+            ->willReturn('not-an-object');
         $manager = new BackendManager($registry);
         $manager->get('not-an-object');
     }
@@ -76,7 +76,7 @@ class BackendManagerTest extends \PHPUnit\Framework\TestCase
         $registry = $this->createMock(\Laminas\ServiceManager\ServiceLocatorInterface::class);
         $registry->expects($this->once())
             ->method('get')
-            ->will($this->returnValue($this));
+            ->willReturn($this);
         $manager = new BackendManager($registry);
         $manager->get('not-a-backend');
     }

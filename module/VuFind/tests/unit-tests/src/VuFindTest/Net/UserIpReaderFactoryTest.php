@@ -66,7 +66,7 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
             ->getMockBuilder(\Laminas\Http\PhpEnvironment\Request::class)
             ->disableOriginalConstructor()->getMock();
         $mockRequest->expects($this->once())->method('getServer')
-            ->will($this->returnValue(new Parameters($server)));
+            ->willReturn(new Parameters($server));
         $container->set('Request', $mockRequest);
         return $container;
     }

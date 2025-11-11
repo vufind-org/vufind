@@ -68,7 +68,7 @@ class IndexTest extends \PHPUnit\Framework\TestCase
         $fq = ['format:Book'];
         $fetcher = $this->getMockIdFetcher();
         $fetcher->expects($this->once())->method('getInitialOffset')
-            ->will($this->returnValue('*'));
+            ->willReturn('*');
         $fetcher->expects($this->once())->method('setupBackend')
             ->with($this->equalTo($backendId));
         $this->expectConsecutiveCalls(

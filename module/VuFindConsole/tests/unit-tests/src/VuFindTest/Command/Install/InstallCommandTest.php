@@ -123,7 +123,7 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
         ];
         $command->expects($this->exactly(2))->method('buildDirs')
             ->with($this->equalTo($expectedDirs))
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $expectedEnvBat = "@set VUFIND_HOME=$expectedBaseDir\n"
             . "@set VUFIND_LOCAL_DIR=$localFixtures\n"
             . "@set SOLR_PORT=8080\n";
@@ -191,7 +191,7 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
         $command->expects($this->exactly(5))->method('backUpFile')->willReturn(true);
         $command->expects($this->once())->method('buildDirs')
             ->with($this->equalTo($expectedDirs))
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $expectedEnvBat = "@set VUFIND_HOME=$expectedBaseDir\n"
             . "@set VUFIND_LOCAL_DIR=$localFixtures\n"
             . "@set SOLR_PORT=8983\n";

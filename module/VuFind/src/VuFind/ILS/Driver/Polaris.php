@@ -31,6 +31,7 @@ namespace VuFind\ILS\Driver;
 use VuFind\Exception\ILS as ILSException;
 
 use function count;
+use function in_array;
 use function intval;
 use function strlen;
 
@@ -286,15 +287,10 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             //$holdings_response = $holdings_response_array[0];
             $copy_count++;
 
-            $availability = 0;
-            if (
-                ($holdings_response->CircStatus == 'In')
-                || ($holdings_response->CircStatus == 'Just Returned')
-                || ($holdings_response->CircStatus == 'On Shelf')
-                || ($holdings_response->CircStatus == 'Available - Check shelves')
-            ) {
-                $availability = 1;
-            }
+            $availability = in_array(
+                $holdings_response->CircStatus,
+                ['In', 'Just Returned', 'On Shelf', 'Available - Check shelves']
+            ) ? 1 : 0;
 
             $duedate = '';
             if ($holdings_response->DueDate) {
@@ -356,11 +352,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getConfig($function, $params = [])
     {
-        if (isset($this->config[$function])) {
-            $functionConfig = $this->config[$function];
-        } else {
-            $functionConfig = false;
-        }
+        $functionConfig = $this->config[$function] ?? false;
         return $functionConfig;
     }
 
@@ -698,11 +690,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         foreach ($response->PatronItemsOutGetRows as $trResponse) {
             // any more renewals available?
-            if (($trResponse->RenewalLimit - $trResponse->RenewalCount) > 0) {
-                $renewable = true;
-            } else {
-                $renewable = false;
-            }
+            $renewable = $trResponse->RenewalLimit - $trResponse->RenewalCount > 0;
             $transactions[] = [
                 'duedate' => $this->formatJSONTime($trResponse->DueDate),
                 'id'      => $trResponse->BibID,
@@ -890,11 +878,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         $penultimate_page = $pages - 1;
 
-        if ($penultimate_page > 0) {
-            $page_offset = $penultimate_page;
-        } else {
-            $page_offset = $pages;
-        }
+        $page_offset = $penultimate_page > 0 ? $penultimate_page : $pages;
 
         $checkouts = [];
         while ($page_offset <= $pages) {

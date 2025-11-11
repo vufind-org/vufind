@@ -267,18 +267,15 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         );
 
         $this->assertEquals(200, $response->getStatusCode());
-        $tokenResult = json_decode($response->getBody(), true);
+        $tokenResult = json_decode($response->getBody()->getContents(), true);
         $this->assertArrayHasKey('id_token', $tokenResult);
         $this->assertArrayHasKey('token_type', $tokenResult);
 
         // Fetch public key to verify idToken:
         $response = $this->httpGet($this->getVuFindUrl() . '/OAuth2/jwks');
-        $this->assertEquals(
-            200,
-            $response->getStatusCode(),
-            'Response: ' . $response->getContent()
-        );
-        $jwks = json_decode($response->getBody(), true);
+        $jwksBody = $response->getBody()->getContents();
+        $this->assertEquals(200, $response->getStatusCode(), "Response: $jwksBody");
+        $jwks = json_decode($jwksBody, true);
         $this->assertArrayHasKey('n', $jwks['keys'][0] ?? []);
 
         $idToken = \Firebase\JWT\JWT::decode(
@@ -312,19 +309,16 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         $response = $this->httpGet(
             $this->getVuFindUrl() . '/OAuth2/userinfo',
             [],
-            '',
+            null,
             [
                 'Authorization' => $tokenResult['token_type'] . ' '
                 . $tokenResult['access_token'],
             ]
         );
-        $this->assertEquals(
-            200,
-            $response->getStatusCode(),
-            'Response: ' . $response->getContent()
-        );
+        $userInfoBody = $response->getBody()->getContents();
+        $this->assertEquals(200, $response->getStatusCode(), "Response: $userInfoBody");
 
-        $userInfo = json_decode($response->getBody(), true);
+        $userInfo = json_decode($userInfoBody, true);
         $this->assertEquals($idToken->sub, $userInfo['sub']);
         $this->assertEquals($nonce, $userInfo['nonce']);
         $this->assertEquals('Tester McTestenson', $userInfo['name']);
@@ -353,13 +347,9 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
             http_build_query($tokenParams),
             'application/x-www-form-urlencoded'
         );
-        $this->assertEquals(401, $response->getStatusCode());
-        $this->assertEquals(
-            401,
-            $response->getStatusCode(),
-            'Response: ' . $response->getContent()
-        );
-        $tokenResult = json_decode($response->getBody(), true);
+        $tokenBody = $response->getBody()->getContents();
+        $this->assertEquals(401, $response->getStatusCode(), "Response: $tokenBody");
+        $tokenResult = json_decode($tokenBody, true);
         $this->assertArrayHasKey('error', $tokenResult);
         $this->assertEquals('invalid_client', $tokenResult['error']);
     }
@@ -553,11 +543,9 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         ];
 
         $response = $this->httpGet($this->getVuFindUrl() . '/.well-known/openid-configuration');
-        $this->assertEquals(
-            'application/json',
-            $response->getHeaders()->get('Content-Type')->getFieldValue()
-        );
-        $json = $response->getBody();
+        $contentTypeHeader = $response->getHeader('Content-Type');
+        $this->assertEquals(['application/json'], $contentTypeHeader);
+        $json = $response->getBody()->getContents();
         $this->assertJsonStringEqualsJsonString(json_encode($expected), $json);
     }
 

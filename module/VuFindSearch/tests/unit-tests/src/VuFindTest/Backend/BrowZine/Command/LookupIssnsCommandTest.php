@@ -54,10 +54,10 @@ class LookupIssnsCommandTest extends TestCase
             ->getMockBuilder(\VuFindSearch\Backend\BrowZine\Backend::class)
             ->disableOriginalConstructor()->getMock();
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue('BrowZine'));
+            ->willReturn('BrowZine');
         $backend->expects($this->once())->method('lookupIssns')
             ->with($this->equalTo(['1111-1111']))
-            ->will($this->returnValue('foo'));
+            ->willReturn('foo');
         $command = new LookupIssnsCommand('BrowZine', ['1111-1111']);
         $this->assertEquals('foo', $command->execute($backend)->getResult());
     }
