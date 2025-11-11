@@ -67,7 +67,7 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
             ->with($this->equalTo('vufind_sessions/foo'))
             ->willReturn('bar');
         $config = [
-            'memcache_client' => 'Memcached',
+            'memcache_client' => \Memcached::class,
         ];
         $handler = $this->getHandler($config, $memcache);
         $this->assertEquals('bar', $handler->read('foo'));
@@ -103,7 +103,7 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
                 $this->equalTo(3600)
             )->willReturn(true);
         $config = [
-            'memcache_client' => 'Memcached',
+            'memcache_client' => \Memcached::class,
         ];
         $handler = $this->getHandler($config, $memcache);
         $this->assertTrue($handler->write('foo', 'stuff'));
@@ -143,7 +143,7 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
             'memcache_host' => 'myhost',
             'memcache_port' => 1234,
             'memcache_connection_timeout' => 2,
-            'memcache_client' => 'Memcached',
+            'memcache_client' => \Memcached::class,
         ];
         $handler = $this->getHandler($config, $memcache);
         $this->assertTrue($handler->write('foo', 'stuff'));
@@ -173,7 +173,7 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
             ->with($this->equalTo('vufind_sessions/foo'))
             ->willReturn(true);
         $config = [
-            'memcache_client' => 'Memcached',
+            'memcache_client' => \Memcached::class,
         ];
         $handler = $this->getHandler($config, $memcache);
         $this->setUpDestroyExpectations('foo');
