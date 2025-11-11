@@ -19,8 +19,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  EBSCO
@@ -35,6 +35,7 @@ namespace VuFind\Search\EDS;
 
 use VuFindSearch\ParamBag;
 
+use function count;
 use function in_array;
 
 /**
@@ -105,15 +106,10 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
      */
     protected function filterRequiresFacetOperator($field)
     {
-        if (
-            str_starts_with($field, 'LIMIT') ||
-            str_starts_with($field, 'EXPAND') ||
-            str_starts_with($field, 'SEARCHMODE') ||
-            str_starts_with($field, 'PublicationDate')
-        ) {
-            return false;
-        }
-        return true;
+        return !(str_starts_with($field, 'LIMIT')
+            || str_starts_with($field, 'EXPAND')
+            || str_starts_with($field, 'SEARCHMODE')
+            || str_starts_with($field, 'PublicationDate'));
     }
 
     /**
@@ -144,5 +140,33 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
             return 'OR';
         }
         return parent::getFacetOperator($field);
+    }
+
+    /**
+     * Return the value for which search view we use
+     *
+     * @return string
+     */
+    public function getEbscoView()
+    {
+        $viewArr = explode('_', $this->view ?? '');
+        return (1 < count($viewArr)) ? $viewArr[1] : $this->options->getEbscoView();
+    }
+
+    /**
+     * Basic 'getter' for list of available view options.
+     *
+     * @return array
+     */
+    public function getViewList()
+    {
+        $list = [];
+        foreach ($this->getOptions()->getViewOptions() as $key => $value) {
+            $list[$key] = [
+                'desc' => $value,
+                'selected' => ($key == $this->getView() . '_' . $this->getEbscoView()),
+            ];
+        }
+        return $list;
     }
 }

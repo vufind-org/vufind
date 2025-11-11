@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -203,6 +203,38 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test that the advanced search breadcrumb is operational.
+     *
+     * @return void
+     */
+    public function testAdvancedSearchBreadcrumb()
+    {
+        $session = $this->getMinkSession();
+        $page = $this->goToAdvancedSearch($session);
+
+        // Check breadcrumb without link
+        $this->assertEquals('Search', $this->findCssAndGetHtml($page, '.breadcrumb-item'));
+
+        // Enter and submit search
+        $this->findCssAndSetValue($page, '#search_lookfor0_0', 'miller');
+        $this->findCss($page, '[type=submit]')->press();
+
+        // Check for proper search
+        $this->assertEquals(
+            '(All Fields:miller)',
+            $this->findCssAndGetHtml($page, '.adv_search_terms strong')
+        );
+
+        // Test breadcrumb link
+        $this->editAdvancedSearch($page);
+        $this->clickCss($page, '.breadcrumb-item a');
+        $this->assertEquals(
+            '(All Fields:miller)',
+            $this->findCssAndGetHtml($page, '.adv_search_terms strong')
+        );
+    }
+
+    /**
      * Test that the advanced search form works correctly with a NOT group combined
      * with another group.
      *
@@ -279,7 +311,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->goToAdvancedSearch($session);
         // By default, everything is sorted alphabetically:
         $this->assertEquals(
-            'Article Book Book Chapter Conference Proceeding eBook Electronic Journal Microfilm',
+            'Article Book Book Chapter Conference Proceeding eBook Electronic Journal Manuscript Microfilm',
             $this->findCssAndGetText($page, '#limit_format')
         );
         // Change the language:
@@ -288,7 +320,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         // Still sorted alphabetically, even though in a different language:
         $this->assertEquals(
-            'Artikel Buch Buchkapitel E-Book Elektronisch Mikrofilm Tagungsbericht Zeitschrift',
+            'Artikel Buch Buchkapitel E-Book Elektronisch Manuskript Mikrofilm Tagungsbericht Zeitschrift',
             $this->findCssAndGetText($page, '#limit_format')
         );
     }
@@ -315,7 +347,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->goToAdvancedSearch($session);
         // By default, everything is sorted alphabetically:
         $this->assertEquals(
-            'Book eBook Article Book Chapter Conference Proceeding Electronic Journal Microfilm',
+            'Book eBook Article Book Chapter Conference Proceeding Electronic Journal Manuscript Microfilm',
             $this->findCssAndGetText($page, '#limit_format')
         );
         // Change the language:
@@ -324,7 +356,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         // Still sorted alphabetically, even though in a different language:
         $this->assertEquals(
-            'Buch E-Book Artikel Buchkapitel Elektronisch Mikrofilm Tagungsbericht Zeitschrift',
+            'Buch E-Book Artikel Buchkapitel Elektronisch Manuskript Mikrofilm Tagungsbericht Zeitschrift',
             $this->findCssAndGetText($page, '#limit_format')
         );
     }
@@ -387,10 +419,9 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
      * @param ?string $defaultSort  Default sort option
      * @param string  $expectedSort Expected sort order of options
      *
-     * @dataProvider hierarchicalFacetFiltersProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('hierarchicalFacetFiltersProvider')]
     public function testHierarchicalFacetsFilters(?string $sort, ?string $defaultSort, string $expectedSort): void
     {
         $config = [
@@ -440,5 +471,45 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $expectedValue = $this->getExpectedHierarchicalFacetFilterText($expectedSort, 1);
         $this->assertAppliedFilter($page, 0, 'hierarchy', $expectedValue);
+    }
+
+    /**
+     * Test that checkbox facets work on the advanced search screen.
+     *
+     * @return void
+     */
+    public function testAdvancedCheckboxes(): void
+    {
+        // Activate checkboxes on advanced search:
+        $this->changeConfigs(
+            [
+                'facets' => [
+                    'Advanced_Settings' => [
+                        'special_facets' => 'checkboxes,illustrated,daterange',
+                    ],
+                    'CheckboxFacets' => [
+                        'id:testbug2' => 'The Test Record',
+                    ],
+                ],
+            ]
+        );
+        $session = $this->getMinkSession();
+        $page = $this->goToAdvancedSearch($session);
+
+        // Confirm expected label text:
+        $checkboxSelector = '.checkbox-filters .checkbox label';
+        $this->assertEquals('The Test Record', $this->findCssAndGetText($page, $checkboxSelector));
+
+        // Select checkbox and submit search:
+        $this->clickCss($page, $checkboxSelector);
+        $this->clickCss($page, '.adv-submit .btn-primary');
+        $this->waitForPageLoad($page);
+
+        // Confirm expected result -- just the record specified by the checkbox filter:
+        $this->assertEquals('Showing 1 - 1 results of 1', $this->findCssAndGetText($page, '.js-search-stats'));
+        $this->assertStringStartsWith(
+            'La congiura dei Principi Napoletani 1701',
+            $this->findCssAndGetText($page, '.result-body .title')
+        );
     }
 }

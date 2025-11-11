@@ -45,7 +45,7 @@ body {
   height: $banner-height-sm;
   display: inline-block;
 }
-@media (min-width: 768px) {
+@include media-breakpoint-up(sm) {
   .banner .navbar-right { margin-top: calc((#{$banner-height} - 50px) / 2); }
   .banner .navbar-brand {
     width: calc((170 / 65) * #{$banner-height});
@@ -61,18 +61,10 @@ header {
   a,
   .nav a,
   .btn-link,
+  .btn-link:hover,
   button.dropdown-toggle {
     color: $white;
     background-color: transparent;
-  }
-  .btn-primary {
-    color: $black;
-    background-color: $header-light;
-  }
-  .btn-primary:hover {
-    color: $black;
-    background-color: $header-light;
-    border-color: $black;
   }
   .nav.navbar-nav > li > a,
   .nav.navbar-nav button.dropdown-toggle {
@@ -113,6 +105,25 @@ header {
   }
 }
 
+.searchForm {
+  .btn-primary {
+    color: $black;
+    background-color: $header-light;
+    border-color: $input-border-color;
+  }
+  .btn-primary:hover {
+    color: $black;
+    background-color: $header-light;
+    border-color: $black;
+  }
+  .btn-link {
+    color: $white;
+    &:hover, &:focus-visible {
+      background: rgba(0, 0, 0, .1);
+    }
+  }
+}
+
 #account-icon {
   &.notification-level-1, &.notification-level-2, &.notification-level-3 {
     margin-left: -.25rem;
@@ -120,7 +131,8 @@ header {
     margin-bottom: -.5rem;
     padding: 0.5rem;
     background-color: $header-light;
-    border-radius: 100%;
+    border-radius: 50%;
+    line-height: 1;
   }
 }
 #login-dropdown .login-dropdown-caret:hover,
@@ -166,7 +178,12 @@ a:hover .login-dropdown-caret {
 .myresearch-menu a:hover { background-color: $white; }
 .myresearch-menu a.active:hover {
   color: $white;
-  background-color: $brand-primary;
+  background-color: $primary;
+}
+
+/* --- PubDateVis --- */
+#dateVisColorSettings {
+  outline-color: #afafaf54; // selection color
 }
 
 /* --- Record --- */
@@ -183,7 +200,6 @@ a:hover .login-dropdown-caret {
 .comment-list { margin-top: .5rem; }
 .comment { margin-bottom: .5rem; }
 .comment .delete { font-size: $reduced-font-size; }
-.comment-form .btn-primary { margin-top: .25rem; }
 .tagList .tag .fa-close { margin: 0; }
 
 /* --- Sidebar --- */
@@ -192,9 +208,10 @@ a:hover .login-dropdown-caret {
   font-size: $reduced-font-size;
   background-color: $light-gray;
 
-  h1,h2,h3,h4 { margin-top: 0; }
+  h1,h2,h3:not(#acc-menu-lists-header):not(#acc-menu-favs-header),h4 { margin-top: 0; }
 
-  .facet-group {
+  .facet-group,
+  .datevis-form {
     background-color: $sidebar-item-bg;
     color: $sidebar-item-color;
   }
@@ -225,7 +242,7 @@ a:hover .login-dropdown-caret {
 
   .more-btn, .less-btn {
     border: 0;
-    border-bottom: 1px solid $list-group-border;
+    border-bottom: 1px solid $list-group-border-color;
     border-radius: 0;
   }
 
@@ -236,12 +253,10 @@ a:hover .login-dropdown-caret {
 
 .facet .badge {
   flex-shrink: 0;
-  max-height: 19px;
-  line-height: .8;
   background-color: $sidebar-item-badge;
 }
 
-@media (min-width: 768px) and (max-width: 991px) {
+@include media-breakpoint-between(sm, md) {
   .sidebar .facet {
     flex-flow: wrap;
 
@@ -254,7 +269,7 @@ a:hover .login-dropdown-caret {
   }
 }
 
-@media (max-width: 1399px) {
+@include media-breakpoint-down(xl) {
   .sidebar {
     padding: 1rem 0.5rem 0.5rem 0.5rem;
   }

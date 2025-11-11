@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -131,16 +131,18 @@ interface SearchServiceInterface extends DbServiceInterface
     ): array;
 
     /**
-     * Set invalid user_id values in the table to null; return count of affected rows.
-     *
-     * @return int
-     */
-    public function cleanUpInvalidUserIds(): int;
-
-    /**
      * Get saved searches with missing checksums (used for cleaning up legacy data).
      *
      * @return SearchEntityInterface[]
      */
     public function getSavedSearchesWithMissingChecksums(): array;
+
+    /**
+     * Delete a search entity.
+     *
+     * @param SearchEntityInterface|int $searchOrId Search entity object or ID to delete
+     *
+     * @return void
+     */
+    public function deleteSearch(SearchEntityInterface|int $searchOrId): void;
 }

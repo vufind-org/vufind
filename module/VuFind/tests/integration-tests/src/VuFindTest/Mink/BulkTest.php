@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -190,10 +190,9 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that the save control works.
      *
-     * @depends testBulkEmail
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testBulkEmail')]
     public function testBulkSave(): void
     {
         $page = $this->setUpGenericBulkTest();
@@ -235,9 +234,8 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      * Test that we can bulk-delete records from a favorites list.
      *
      * @return void
-     *
-     * @depends testBulkSave
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testBulkSave')]
     public function testBulkDeleteFromList(): void
     {
         // Log in to account that owns the list:
@@ -270,13 +268,13 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#modal input[type="submit"]');
         $this->waitForPageLoad($page);
 
-        // If all records were deleted, success message should be visible in
-        // lightbox, and delete button should be gone after lightbox is closed.
+        // If all records were deleted, success message should be visible, and delete button should be gone after
+        // lightbox is closed.
+        $this->waitForLightboxHidden();
         $this->assertEquals(
             'Your saved item(s) were deleted.',
-            $this->findCssAndGetText($page, '.modal .alert-success')
+            $this->findCssAndGetText($page, '.alert-success')
         );
-        $this->closeLightbox($page, true);
         $this->unfindCss($page, 'button[name="delete"]');
     }
 
@@ -299,9 +297,8 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $idPrefix Prefix for bulk control IDs.
      *
      * @return void
-     *
-     * @dataProvider topOrBottomProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('topOrBottomProvider')]
     public function testBulkExport(string $idPrefix): void
     {
         $session = $this->getMinkSession();
@@ -343,9 +340,8 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $idPrefix Prefix for bulk control IDs.
      *
      * @return void
-     *
-     * @dataProvider topOrBottomProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('topOrBottomProvider')]
     public function testBulkPrint(string $idPrefix): void
     {
         $session = $this->getMinkSession();
@@ -376,9 +372,8 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      * Test that the print control works.
      *
      * @return void
-     *
-     * @depends testBulkEmail
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testBulkEmail')]
     public function testBulkActionLimits(): void
     {
         $session = $this->getMinkSession();

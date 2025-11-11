@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -31,9 +31,12 @@
 namespace VuFind\Db\Service;
 
 use DateTime;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\SessionEntityInterface;
-use VuFind\Db\Table\DbTableAwareInterface;
-use VuFind\Db\Table\DbTableAwareTrait;
+use VuFind\Exception\SessionExpired as SessionExpiredException;
+use VuFind\Log\LoggerAwareTrait;
+
+use function intval;
 
 /**
  * Database service for Session.
@@ -46,11 +49,11 @@ use VuFind\Db\Table\DbTableAwareTrait;
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 class SessionService extends AbstractDbService implements
-    DbTableAwareInterface,
+    LoggerAwareInterface,
     SessionServiceInterface,
     Feature\DeleteExpiredInterface
 {
-    use DbTableAwareTrait;
+    use LoggerAwareTrait;
 
     /**
      * Retrieve an object from the database based on session ID; create a new
@@ -63,7 +66,22 @@ class SessionService extends AbstractDbService implements
      */
     public function getSessionById(string $sid, bool $create = true): ?SessionEntityInterface
     {
-        return $this->getDbTable('Session')->getBySessionId($sid, $create);
+        $session = $this->entityManager
+            ->getRepository(SessionEntityInterface::class)
+            ->findOneBy(['sessionId' => $sid]);
+        if ($create && empty($session)) {
+            $now = new \DateTime();
+            $session = $this->createEntity()
+                ->setSessionId($sid)
+                ->setCreated($now);
+            try {
+                $this->persistEntity($session);
+            } catch (\Exception $e) {
+                $this->logError('Could not save session: ' . $e->getMessage());
+                return null;
+            }
+        }
+        return $session;
     }
 
     /**
@@ -77,7 +95,27 @@ class SessionService extends AbstractDbService implements
      */
     public function readSession(string $sid, int $lifetime): string
     {
-        return $this->getDbTable('Session')->readSession($sid, $lifetime);
+        $s = $this->getSessionById($sid);
+        if (!$s) {
+            throw new SessionExpiredException("Cannot read session $sid");
+        }
+        $lastused = $s->getLastUsed();
+        // enforce lifetime of this session data
+        if (!empty($lastused) && $lastused + $lifetime <= time()) {
+            throw new SessionExpiredException('Session expired!');
+        }
+
+        // if we got this far, session is good -- update last access time, save
+        // changes, and return data.
+        $s->setLastUsed(time());
+        try {
+            $this->persistEntity($s);
+        } catch (\Exception $e) {
+            $this->logError('Could not save session: ' . $e->getMessage());
+            return '';
+        }
+        $data = $s->getData();
+        return $data ?? '';
     }
 
     /**
@@ -90,7 +128,18 @@ class SessionService extends AbstractDbService implements
      */
     public function writeSession(string $sid, string $data): bool
     {
-        $this->getDbTable('Session')->writeSession($sid, $data);
+        $session = $this->getSessionById($sid);
+        try {
+            if (!$session) {
+                throw new \Exception("cannot read id $sid");
+            }
+            $session->setLastUsed(time())
+                ->setData($data);
+            $this->persistEntity($session);
+        } catch (\Exception $e) {
+            $this->logError('Could not save session data: ' . $e->getMessage());
+            return false;
+        }
         return true;
     }
 
@@ -103,7 +152,12 @@ class SessionService extends AbstractDbService implements
      */
     public function destroySession(string $sid): void
     {
-        $this->getDbTable('Session')->destroySession($sid);
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->delete(SessionEntityInterface::class, 's')
+            ->where('s.sessionId = :sid')
+            ->setParameter('sid', $sid);
+        $query = $queryBuilder->getQuery();
+        $query->execute();
     }
 
     /**
@@ -115,7 +169,25 @@ class SessionService extends AbstractDbService implements
      */
     public function garbageCollect(int $maxLifetime): int
     {
-        return $this->getDbTable('Session')->garbageCollect($maxLifetime);
+        $expiration = time() - intval($maxLifetime);
+
+        $entityClass = SessionEntityInterface::class;
+
+        $dql = 'SELECT COUNT(s) FROM ' . $entityClass . ' s WHERE s.lastUsed < :used';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameter('used', $expiration);
+        $count = (int)$query->getSingleScalarResult();
+
+        if ($count > 0) {
+            $deleteQueryBuilder = $this->entityManager->createQueryBuilder();
+            $deleteQueryBuilder->delete($entityClass, 's')
+                ->where('s.lastUsed < :used')
+                ->setParameter('used', $expiration);
+            $deleteQuery = $deleteQueryBuilder->getQuery();
+            $deleteQuery->execute();
+        }
+
+        return $count;
     }
 
     /**
@@ -125,7 +197,7 @@ class SessionService extends AbstractDbService implements
      */
     public function createEntity(): SessionEntityInterface
     {
-        return $this->getDbTable('Session')->createRow();
+        return $this->entityPluginManager->get(SessionEntityInterface::class);
     }
 
     /**
@@ -138,6 +210,18 @@ class SessionService extends AbstractDbService implements
      */
     public function deleteExpired(DateTime $dateLimit, ?int $limit = null): int
     {
-        return $this->getDbTable('Session')->deleteExpired($dateLimit->format('Y-m-d H:i:s'), $limit);
+        $subQueryBuilder = $this->entityManager->createQueryBuilder();
+        $subQueryBuilder->select('s.id')
+            ->from(SessionEntityInterface::class, 's')
+            ->where('s.lastUsed < :used')
+            ->setParameter('used', $dateLimit->getTimestamp());
+        if ($limit) {
+            $subQueryBuilder->setMaxResults($limit);
+        }
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->delete(SessionEntityInterface::class, 's')
+            ->where('s.id IN (:ids)')
+            ->setParameter('ids', $subQueryBuilder->getQuery()->getResult());
+        return $queryBuilder->getQuery()->execute();
     }
 }

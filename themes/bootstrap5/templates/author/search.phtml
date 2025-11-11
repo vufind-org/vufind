@@ -16,5 +16,5 @@
     $this->layout()->searchbox = $this->render('search/searchbox.phtml');
 
     // Set up breadcrumbs:
-    $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('author-home') . '">' . $this->transEsc('Author') . '</a></li> '
-         . '<li class="breadcrumb-item active" aria-current="page">' . $this->transEsc('Author Results for') . ' ' . $this->escapeHtml($this->params->getDisplayQuery()) . '</li>';
+    $this->breadcrumbs()->set($this->translate('Author'), $this->url('author-home'))
+        ->add($this->translate('Author Results for') . ' ' . $this->params->getDisplayQuery(), active:true);

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  OAuth2
@@ -83,7 +83,7 @@ class AccessTokenRepository extends AbstractTokenRepository implements AccessTok
         ClientEntityInterface $clientEntity,
         array $scopes,
         $userIdentifier = null
-    ) {
+    ): AccessTokenEntityInterface {
         $accessToken = $this->getNew();
         $accessToken->setClient($clientEntity);
         foreach ($scopes as $scope) {
@@ -102,7 +102,7 @@ class AccessTokenRepository extends AbstractTokenRepository implements AccessTok
      *
      * @throws InvalidArgumentException
      */
-    public function persistNewAccessToken(AccessTokenEntityInterface $entity)
+    public function persistNewAccessToken(AccessTokenEntityInterface $entity): void
     {
         $this->persistNew($entity);
     }
@@ -114,7 +114,7 @@ class AccessTokenRepository extends AbstractTokenRepository implements AccessTok
      *
      * @return void
      */
-    public function revokeAccessToken($tokenId)
+    public function revokeAccessToken($tokenId): void
     {
         $this->revoke($tokenId);
     }
@@ -126,7 +126,7 @@ class AccessTokenRepository extends AbstractTokenRepository implements AccessTok
      *
      * @return bool Return true if this token has been revoked
      */
-    public function isAccessTokenRevoked($tokenId)
+    public function isAccessTokenRevoked($tokenId): bool
     {
         return $this->isRevoked($tokenId);
     }

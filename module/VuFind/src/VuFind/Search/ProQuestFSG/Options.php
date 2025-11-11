@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_ProQuestFSG
@@ -30,7 +30,7 @@
 
 namespace VuFind\Search\ProQuestFSG;
 
-use function intval;
+use VuFind\Config\ConfigManagerInterface;
 
 /**
  * ProQuest Federated Search Gateway Search Options
@@ -44,60 +44,24 @@ use function intval;
  */
 class Options extends \VuFind\Search\Base\Options
 {
-    use \VuFind\Config\Feature\ExplodeSettingTrait;
-
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(ConfigManagerInterface $configManager)
     {
         $this->searchIni = $this->facetsIni = 'ProQuestFSG';
-        parent::__construct($configLoader);
 
-        // Load the configuration file:
-        $searchSettings = $configLoader->get($this->searchIni);
+        // Override the result limits with values that we can always support:
+        $this->defaultResultLimit = 400;
+        $this->maxResultLimit = 1000;
 
-        // Set up limit preferences
-        if (isset($searchSettings->General->default_limit)) {
-            $this->defaultLimit = $searchSettings->General->default_limit;
-        }
-        if (isset($searchSettings->General->limit_options)) {
-            $this->limitOptions = $this->explodeListSetting($searchSettings->General->limit_options);
-        }
-        if (isset($searchSettings->General->result_limit)) {
-            $this->resultLimit = min(intval($searchSettings->General->result_limit), 1000);
-        } else {
-            $this->resultLimit = 400;
-        }
+        // Request a result limit that we can support:
+        parent::__construct($configManager);
 
         // Search handler setup:
         $this->defaultHandler = 'cql.serverChoice';
-        if (isset($searchSettings->Basic_Searches)) {
-            foreach ($searchSettings->Basic_Searches as $key => $value) {
-                $this->basicHandlers[$key] = $value;
-            }
-        }
-        if (isset($searchSettings->Advanced_Searches)) {
-            foreach ($searchSettings->Advanced_Searches as $key => $value) {
-                $this->advancedHandlers[$key] = $value;
-            }
-        }
-
-        // Load sort preferences:
-        if (isset($searchSettings->Sorting)) {
-            foreach ($searchSettings->Sorting as $key => $value) {
-                $this->sortOptions[$key] = $value;
-            }
-        }
-        if (isset($searchSettings->General->default_sort)) {
-            $this->defaultSort = $searchSettings->General->default_sort;
-        }
-        // Load list view for result (controls AJAX embedding vs. linking)
-        if (isset($searchSettings->List->view)) {
-            $this->listviewOption = $searchSettings->List->view;
-        }
     }
 
     /**

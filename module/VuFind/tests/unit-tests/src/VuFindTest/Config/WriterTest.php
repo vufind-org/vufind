@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -52,9 +52,10 @@ class WriterTest extends \PHPUnit\Framework\TestCase
      */
     public function testReadFile()
     {
-        $test = new Writer($this->getFixtureDir() . 'configs/1.1/sms.ini');
+        $fixture = 'configs/defaultgenerator/config.ini';
+        $test = new Writer($this->getFixtureDir() . $fixture);
         $this->assertEquals(
-            $this->getFixture('configs/1.1/sms.ini'),
+            $this->getFixture($fixture),
             $test->getContent()
         );
     }
@@ -252,5 +253,42 @@ class WriterTest extends \PHPUnit\Framework\TestCase
         $test->clear('b', 'c');     // clear single value
         $test->clear('z', 'z');     // clear value that does not exist
         $this->assertEquals("[a]\n[b]", trim($test->getContent()));
+    }
+
+    /**
+     * Test comment extraction.
+     *
+     * @return void
+     */
+    public function testCommentExtraction(): void
+    {
+        $comments = Writer::extractComments($this->getFixtureDir() . 'configs/comments/config.ini');
+        $this->assertEquals(
+            [
+                'sections' => [
+                    'Section' => [
+                        'before' => "; This is a top comment\n",
+                        'inline' => '',
+                        'settings' => [
+                            'foo' => [
+                                'before' => "; This is a setting comment\n",
+                                'inline' => '',
+                            ],
+                            'bar' => [
+                                'before' => "\n",
+                                'inline' => '; this is an inline comment',
+                            ],
+                        ],
+                    ],
+                    'NextSection' => [
+                        'before' => "\n",
+                        'inline' => '; this is an inline section comment',
+                        'settings' => [],
+                    ],
+                ],
+                'after' => "\n; This is a trailing comment",
+            ],
+            $comments
+        );
     }
 }

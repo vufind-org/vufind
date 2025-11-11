@@ -2,5 +2,5 @@
   <span aria-hidden="true" class="badge <?=$this->class?>" data-bs-toggle="tooltip" title="<?=$this->transEscAttr($this->title)?>">
     <?=$this->escapeHtml($this->count)?>
   </span>
-  <span class="sr-only"><?=$this->transEsc($this->title)?>: <?=$this->escapeHtml($this->count)?> , </span>
+  <span class="visually-hidden"><?=$this->transEsc($this->title)?>: <?=$this->escapeHtml($this->count)?> , </span>
 <?php endif;

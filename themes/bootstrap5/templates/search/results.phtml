@@ -23,7 +23,7 @@
   );
 
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs .= '<li class="breadcrumb-item active" aria-current="page">' . $this->escapeHtml($headTitle) . '</li>';
+  $this->breadcrumbs()->add($headTitle, active: true);
 
   // Set up search controls (avoiding unnecessary rendering):
   if (!$this->slot('search-controls')->isset()) {
@@ -47,11 +47,10 @@
       ]
   );
   $recommendations = $this->results->getRecommendations('side');
-  $multiFacetsSelection = $this->multiFacetsSelection ? 'true' : 'false';
-  $this->headScript()->appendScript('var multiFacetsSelectionEnabled = ' . $multiFacetsSelection . ';');
+  $this->assetManager()->appendScriptString('var multiFacetsSelection = "' . $this->multiFacetsSelection . '";');
 ?>
 
-<h1 class="sr-only"><?=$this->escapeHtml($headTitle)?></h1>
+<h1 class="visually-hidden"><?=$this->escapeHtml($headTitle)?></h1>
 
 <div class="<?=$this->layoutClass('mainbody', (bool)$recommendations)?>">
   <?php if (($recordTotal = $this->results->getResultTotal()) > 0): // only display these at very top if we have results ?>

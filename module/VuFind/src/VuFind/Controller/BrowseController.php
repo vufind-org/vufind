@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -636,11 +636,7 @@ class BrowseController extends AbstractBase implements
         $results = $this->getService(\VuFind\Search\Results\PluginManager::class)->get('Solr');
         $params = $results->getParams();
         $params->addFacet($facet);
-        if ($category != null) {
-            $query = $category . ':' . $query;
-        } else {
-            $query = $facet . ':' . $query;
-        }
+        $query = ($category ?? $facet) . ':' . $query;
         $params->setOverrideQuery($query);
         $params->getOptions()->disableHighlighting();
         $params->getOptions()->spellcheckEnabled(false);

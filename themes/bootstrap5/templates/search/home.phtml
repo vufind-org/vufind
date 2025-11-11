@@ -11,13 +11,13 @@
     $this->searchClassId = $config->Site->defaultSearchBackend ?? 'Solr';
   }
 
-  $this->layout()->breadcrumbs = false;
+  $this->breadcrumbs()->disable();
 ?>
 
 <div class="searchHomeContent">
   <?php $this->slot('search-home-hero')->start() ?>
     <?=$this->render('search/searchbox.phtml')?>
-    <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, '$("#searchForm_lookfor").focus();', 'SET'); ?>
+    <?=$this->assetManager()->outputInlineScriptString('$("#searchForm_lookfor").focus();'); ?>
   <?=$this->slot('search-home-hero')->end() ?>
 </div>
 

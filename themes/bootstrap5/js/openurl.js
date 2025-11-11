@@ -1,5 +1,12 @@
 /*global extractClassParams, VuFind */
 VuFind.register('openurl', function OpenUrl() {
+  /**
+   * Fetch and embed resolver links for a given OpenURL into a target element.
+   * @param {jQuery} $target       The element where the resolver links will be displayed.
+   * @param {string} openUrl       The OpenURL string to be resolved.
+   * @param {string} searchClassId The search class ID for the request.
+   * @private
+   */
   function _loadResolverLinks($target, openUrl, searchClassId) {
     $target.addClass('ajax_availability');
     var url = VuFind.path + '/AJAX/JSON?' + $.param({
@@ -21,6 +28,10 @@ VuFind.register('openurl', function OpenUrl() {
       });
   }
 
+  /**
+   * Embed resolver links into the DOM after a user clicks on an OpenURL control.
+   * @param {HTMLElement|jQuery} el The element that was clicked.
+   */
   function embedOpenUrlLinks(el) {
     var element = $(el);
     // Extract the OpenURL associated with the clicked element:
@@ -42,6 +53,10 @@ VuFind.register('openurl', function OpenUrl() {
 
   // Assign actions to the OpenURL links. This can be called with a container e.g. when
   // combined results fetched with AJAX are loaded.
+  /**
+   * Assign click handlers to OpenURL links within a given container.
+   * @param {object} params An object containing the container element.
+   */
   function updateContainer(params) {
     var container = $(params.container);
     // assign action to the openUrlWindow link class
@@ -69,9 +84,13 @@ VuFind.register('openurl', function OpenUrl() {
     }
   }
 
+  /**
+   * Initialize the openurl module.
+   */
   function init() {
     updateContainer({container: document.body});
     VuFind.listen('results-init', updateContainer);
+    VuFind.listen('record-tab-init', updateContainer);
   }
 
 

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -83,9 +83,8 @@ class AccountCapabilitiesTest extends \PHPUnit\Framework\TestCase
      * @param string $expected   Expected return value
      *
      * @return void
-     *
-     * @dataProvider emailActionSettingsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('emailActionSettingsProvider')]
     public function testGetEmailActionSettings(array $mailConfig, string $expected): void
     {
         $capabilities = $this->getCapabilities(['Mail' => $mailConfig]);
@@ -117,9 +116,8 @@ class AccountCapabilitiesTest extends \PHPUnit\Framework\TestCase
      * @param bool   $expected     The expected result
      *
      * @return void
-     *
-     * @dataProvider emailActionAvailableProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('emailActionAvailableProvider')]
     public function testIsEmailActionAvailable(string $mailSetting, bool $loginEnabled, bool $expected): void
     {
         $config = ['Mail' => ['email_action' => $mailSetting]];

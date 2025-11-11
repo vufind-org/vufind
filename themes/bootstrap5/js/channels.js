@@ -1,5 +1,9 @@
 /*global bootstrap, getUrlRoot, VuFind */
 VuFind.register('channels', function Channels() {
+  /**
+   * Add dropdown link buttons to an element based on a JSON data attribute.
+   * @param {HTMLElement} elem The element containing the data-link-json attribute.
+   */
   function addLinkButtons(elem) {
     var links;
     try {
@@ -13,7 +17,7 @@ VuFind.register('channels', function Channels() {
     }
     var $cont = $(
       '<div class="dropdown">' +
-        '<button class="btn btn-link" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true" aria-label="' + VuFind.translate('toggle_dropdown') + '">' +
+        '<button class="btn btn-link" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true" aria-label="' + VuFind.translate('channel_options_dropdown_toggle', {'%%channel%%': elem.closest('.channel-wrapper').getElementsByTagName('h2')[0].textContent}) + '">' +
           VuFind.icon("ui-dots-menu") +
         '</button>' +
       '</div>'
@@ -35,12 +39,21 @@ VuFind.register('channels', function Channels() {
   }
 
   var currentPopoverRecord = false;
+  /**
+   * Check if a record element matches the current popover record.
+   * @param {jQuery} record The record element to check.
+   * @returns {boolean} Returns whether record matches or not.
+   */
   function isCurrentPopoverRecord(record) {
     return record && currentPopoverRecord
       && record.data('record-id') === currentPopoverRecord.data('record-id')
       && record.data('record-source') === currentPopoverRecord.data('record-source')
       && record.data('channel-id') === currentPopoverRecord.data('channel-id');
   }
+  /**
+   * Toggle the popover for a given record, hide any previous popover.
+   * @param {jQuery|boolean} record The record element to show the popover for.
+   */
   function switchPopover(record) {
     // Hide the old popover:
     if (currentPopoverRecord) {
@@ -60,7 +73,10 @@ VuFind.register('channels', function Channels() {
     }
   }
 
-  // Truncate lines to height with ellipses
+  /**
+   * Truncates text with an ellipsis to prevent overflow in an element.
+   * @param {HTMLElement} el The element to truncate.
+   */
   function clampLines(el) {
     var words = el.innerText.split(" ");
     while (el.scrollHeight > el.offsetHeight) {
@@ -69,6 +85,11 @@ VuFind.register('channels', function Channels() {
     }
   }
 
+  /**
+   * Set up a carousel.
+   * @param {number} i  The index of the channel.
+   * @param {jQuery} op The channel element.
+   */
   function setupChannelSlider(i, op) {
     $(op).find(".slide").removeClass("hidden");
     $(op).slick({
@@ -119,12 +140,14 @@ VuFind.register('channels', function Channels() {
           data: {tab: 'description'}
         })
           .done(function channelPopoverDone(data) {
-            var newContent = '<div class="btn-group btn-group-justified">'
+            var newContent = '<div class="d-flex">'
+              + '<div class="btn-group flex-fill">'
               + '<a href="' + VuFind.path + '/Channels/Record?'
               + 'id=' + encodeURIComponent(record.attr('data-record-id'))
               + '&source=' + encodeURIComponent(record.attr('data-record-source'))
               + '" class="btn btn-default">' + VuFind.translate('channel_expand') + '</a>'
               + ' <a href="' + record.attr('href') + '" class="btn btn-default">' + VuFind.translate('View Record') + '</a>'
+              + '</div>'
               + '</div>'
               + data;
             loadingPopover.dispose();
@@ -160,6 +183,11 @@ VuFind.register('channels', function Channels() {
 
   var bindChannelAddMenu; // circular dependency fix for jshint
 
+  /**
+   * Event handler for adding a new channel via AJAX.
+   * @param {Event} e The click event.
+   * @returns {boolean} Always returns false to prevent default link behavior.
+   */
   function selectAddedChannel(e) {
     $.ajax(e.target.href).done(function addChannelAjaxDone(data) {
       var list = $(e.target).closest('.dropdown-menu');
@@ -192,7 +220,6 @@ VuFind.register('channels', function Channels() {
     });
     return false;
   }
-
   bindChannelAddMenu = function bindChannelAddMenuFunc(iteration, channel) {
     var scope = $(channel).parent(".channel-wrapper");
     $(scope).find('.channel-add-menu .dropdown-menu a').on("click", selectAddedChannel);
@@ -204,6 +231,9 @@ VuFind.register('channels', function Channels() {
     });
   };
 
+  /**
+   * Initializes the channels module.
+   */
   function init () {
     $('.channel').each(setupChannelSlider);
     $('.channel').each(bindChannelAddMenu);

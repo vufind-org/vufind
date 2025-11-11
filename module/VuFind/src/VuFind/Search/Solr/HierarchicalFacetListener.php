@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -122,8 +122,8 @@ class HierarchicalFacetListener
         $this->backend = $backend;
         $this->serviceLocator = $serviceLocator;
 
-        $config = $this->getService(\VuFind\Config\PluginManager::class);
-        $this->facetConfig = $config->get($facetConfig);
+        $this->facetConfig = $this->getService(\VuFind\Config\ConfigManagerInterface::class)
+            ->getConfigObject($facetConfig);
         $this->facetHelper = $this->getService(\VuFind\Search\Solr\HierarchicalFacetHelper::class);
 
         $specialFacets = $this->facetConfig->SpecialFacets;
@@ -179,10 +179,7 @@ class HierarchicalFacetListener
             return $event;
         }
         $context = $command->getContext();
-        if (
-            $context == 'search' || $context == 'retrieve'
-            || $context == 'retrieveBatch' || $context == 'similar'
-        ) {
+        if (in_array($context, ['search', 'retrieve', 'retrieveBatch', 'similar'])) {
             $this->processHierarchicalFacets($event);
         }
         return $event;

@@ -1,14 +1,11 @@
 <?php
   // Set up standard record scripts:
-  $this->headScript()->appendFile('record.js');
-  $this->headScript()->appendFile('check_save_statuses.js');
-  // Activate Syndetics Plus if necessary:
-  if ($this->syndeticsPlus()->isActive()) {
-    $this->headScript()->appendFile($this->syndeticsPlus()->getScript());
-  }
+  $this->assetManager()->appendScriptLink('record.js');
+  $this->assetManager()->appendScriptLink('check_save_statuses.js');
+
   // Add any extra scripts the tabs require:
   foreach ($this->tabsExtraScripts as $script) {
-    $this->headScript()->appendFile($script);
+    $this->assetManager()->appendScriptLink($script);
   }
 
   // Add RDF header link if applicable:
@@ -24,13 +21,13 @@
   $tree = (strtolower($this->activeTab) == 'hierarchytree');
 
   // Set up breadcrumbs:
-  $lastSearch = $this->searchMemory()->getLastSearchLink($this->transEsc('Search'));
-  if (!empty($lastSearch)) {
-      $this->layout()->breadcrumbs = '<li class="breadcrumb-item">' . $lastSearch . '</li> ';
+  $this->breadcrumbs()->reset();
+  if ($url = $this->searchMemory()->getLastSearchUrl()) {
+    $this->breadcrumbs()->add($this->translate('Search'), $url);
   } else {
-      $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('collections-home') . '">' . $this->transEsc('Collections') . '</a></li> ';
+    $this->breadcrumbs()->add($this->translate('Collections'), $this->url('collections-home'));
   }
-  $this->layout()->breadcrumbs .= '<li class="breadcrumb-item active" aria-current="page">' . $this->recordLinker()->getBreadcrumbHtml($this->driver) . '</li>';
+  $this->breadcrumbs()->add(...$this->recordLinker()->getBreadcrumbParams($this->driver), active: true);
 
   // Set up search box:
   $this->layout()->searchbox = $this->context($this)->renderInContext(
@@ -106,4 +103,4 @@
     <?=$this->driver->supportsCoinsOpenURL() ? '<span class="Z3988" aria-hidden="true" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenURL()) . '"></span>' : ''?>
   </div>
 </div>
-<?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, '$(document).ready(recordDocReady);', 'SET'); ?>
+<?=$this->assetManager()->outputInlineScriptString('$(document).ready(recordDocReady);'); ?>

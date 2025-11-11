@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -123,10 +123,10 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
             ->getMock();
         $response->expects($this->any())
             ->method('getBody')
-            ->will($this->returnValue($body));
+            ->willReturn($body);
         $response->expects($this->any())
             ->method('getStatusCode')
-            ->will($this->returnValue($status));
+            ->willReturn($status);
         return $response;
     }
 
@@ -494,13 +494,17 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
             [
                 'firstname' => 'Fake',
                 'lastname' => 'User',
+                'birthdate' => null,
                 'address1' => 'Address 1',
                 'address2' => 'Address 2',
                 'zip' => '12345',
                 'city' => 'FakeCity, FakeState',
                 'country' => 'USA',
                 'phone' => '1234567890',
+                'mobile_phone' => null,
                 'expiration_date' => '12/31/2022 3:55:00 PM',
+                'group' => null,
+                'home_library' => null,
             ],
             $this->driver->getMyProfile($this->defaultPatron)
         );

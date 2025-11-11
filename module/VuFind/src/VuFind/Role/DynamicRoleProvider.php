@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authorization
@@ -29,8 +29,9 @@
 
 namespace VuFind\Role;
 
-use LmcRbacMvc\Role\RoleProviderInterface;
-use Rbac\Role\Role;
+use Laminas\Permissions\Rbac\Role;
+use Laminas\Permissions\Rbac\RoleInterface;
+use Lmc\Rbac\Role\RoleProviderInterface;
 
 /**
  * VuFind dynamic role provider.
@@ -68,9 +69,9 @@ class DynamicRoleProvider implements RoleProviderInterface
      *
      * @param string[] $roleNames Role(s) to look up.
      *
-     * @return \Rbac\Role\RoleInterface[]
+     * @return RoleInterface[]
      */
-    public function getRoles(array $roleNames)
+    public function getRoles(iterable $roleNames): iterable
     {
         return array_map([$this, 'getRole'], $roleNames);
     }
@@ -159,10 +160,11 @@ class DynamicRoleProvider implements RoleProviderInterface
             $mode = 'ALL';
         }
 
-        // Extract permission setting:
+        // Extract permission setting and ignore assertion setting (it's processed in PermissionManagerFactory):
         $permissions = isset($settings['permission'])
             ? (array)$settings['permission'] : [];
         unset($settings['permission']);
+        unset($settings['assertion']);
 
         // Process everything:
         $roles = null;

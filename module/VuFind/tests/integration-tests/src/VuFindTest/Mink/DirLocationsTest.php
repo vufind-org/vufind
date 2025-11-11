@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -45,6 +45,13 @@ class DirLocationsTest extends \VuFindTest\Integration\MinkTestCase
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
+     * Path of DirLocations.ini.
+     *
+     * @var string
+     */
+    protected string $dirLocationsIni;
+
+    /**
      * Test that the ini configs of the local dir stack are processed.
      *
      * @return void
@@ -52,16 +59,63 @@ class DirLocationsTest extends \VuFindTest\Integration\MinkTestCase
     public function testIniConfigs(): void
     {
         $session = $this->getMinkSession();
+        // check default behavior without local searches ini
         $session->visit($this->getVuFindUrl());
         $page = $session->getPage();
-        $this->findCss($page, '#searchForm_type option[value="ParentTest"]');
+        $this->checkSearchType($page, 'ParentTest');
+        // check that the local configuration overrides the parent configuration.
         $this->changeConfigs(
             ['searches' => ['Basic_Searches' => ['ChildTest' => 'ChildTest']]]
         );
         $session->visit($this->getVuFindUrl());
         $page = $session->getPage();
-        $this->unFindCss($page, '#searchForm_type option[value="ParentTest"]');
-        $this->findCss($page, '#searchForm_type option[value="ChildTest"]');
+        $this->checkSearchType($page, 'ParentTest', unFind: true);
+        $this->checkSearchType($page, 'ChildTest');
+    }
+
+    /**
+     * Test "use_parent_dir" parent setting in ini configs.
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testIniConfigs')]
+    public function testParentIniConfigs(): void
+    {
+        $session = $this->getMinkSession();
+        // to check overridden configuration
+        // set up local searches ini without parent config
+        $this->changeConfigs(
+            ['searches' => ['dummy' => ['dummy' => 'dummy']]]
+        );
+        $session->visit($this->getVuFindUrl());
+        $page = $session->getPage();
+        $this->checkSearchType($page, 'ParentTest', unFind: true);
+        // check user_parent_dir configuration
+        $this->changeConfigs(
+            ['searches' => ['Parent_Config' => ['use_parent_dir' => 'true']]]
+        );
+        $session->visit($this->getVuFindUrl());
+        $page = $session->getPage();
+        $this->checkSearchType($page, 'ParentTest');
+    }
+
+    /**
+     * Check if a search type is configured (or if it is not).
+     *
+     * @param DocumentElement $page   Page
+     * @param string          $value  Search type value
+     * @param bool            $unFind If the value is unexpected
+     *
+     * @return void
+     */
+    protected function checkSearchType(DocumentElement $page, string $value, bool $unFind = false): void
+    {
+        $cssSelector = '#searchForm_type option[value="' . $value . '"]';
+        if ($unFind) {
+            $this->unFindCss($page, $cssSelector);
+        } else {
+            $this->findCss($page, $cssSelector);
+        }
     }
 
     /**
@@ -173,24 +227,15 @@ class DirLocationsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Get DirLocations.ini path.
-     *
-     * @return string
-     */
-    protected function getDirLocationsIni(): string
-    {
-        $localDir = $this->pathResolver->getLocalConfigDirStack()[0]['directory'];
-        return $localDir . '/DirLocations.ini';
-    }
-
-    /**
      * Setup DirLocations.ini.
      *
      * @return void
      */
     protected function setupDirLocationsIni(): void
     {
-        $dirLocationsIni = $this->getDirLocationsIni();
+        $localDir = $this->pathResolver->getLocalConfigDirStack()[0]['directory'];
+        $dirLocationsIni = $localDir . '/DirLocations.ini';
+        $this->dirLocationsIni = $dirLocationsIni;
         if (file_exists($dirLocationsIni)) {
             rename($dirLocationsIni, $dirLocationsIni . '.bak');
         }
@@ -221,12 +266,14 @@ class DirLocationsTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function resetDirLocationsIni(): void
     {
-        $dirLocationsIni = $this->getDirLocationsIni();
-        if (file_exists($dirLocationsIni)) {
-            unlink($dirLocationsIni);
-        }
-        if (file_exists($dirLocationsIni . '.bak')) {
-            rename($dirLocationsIni . '.bak', $dirLocationsIni);
+        if (isset($this->dirLocationsIni)) {
+            $dirLocationsIni = $this->dirLocationsIni;
+            if (file_exists($dirLocationsIni)) {
+                unlink($dirLocationsIni);
+            }
+            if (file_exists($dirLocationsIni . '.bak')) {
+                rename($dirLocationsIni . '.bak', $dirLocationsIni);
+            }
         }
     }
 

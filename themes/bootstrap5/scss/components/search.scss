@@ -3,6 +3,28 @@ $thumbnail-width-small:   60px !default;
 $thumbnail-width-medium: 100px !default;
 $thumbnail-width-large:  160px !default;
 
+// Hide browser's own X button in the search field (Safari, Chrome)
+input[type="search"]::-webkit-search-cancel-button,
+input[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
+}
+
+// Search forms
+.navbar-form {
+  .form-control, .form-select {
+    display: block;
+    width: 100%;
+
+    @include media-breakpoint-up(sm) {
+      display: inline-block;
+      width: auto;
+    }
+  }
+  .btn {
+    vertical-align: baseline;
+  }
+}
+
 // record result list ol, ul that contains li.result
 .record-list {
   list-style: none;
@@ -21,34 +43,64 @@ $thumbnail-width-large:  160px !default;
 
   // Loading spinner
   .loading-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    padding: 2rem;
-    display: flex;
-    font-size: 150%;
+    @include loading-overlay();
     align-items: flex-start;
-    justify-content: center;
-    background-color: rgba(0,0,0,0.2);
+  }
+}
 
-    .loading-spinner {
-      padding: 2rem;
-      background-color: rgba(0,0,0,0.6);
-      border-radius: $border-radius-large;
-      color: $gray-lighter;
+.datevis-form {
+  padding: 0 10px;
+
+  .datevis-label {
+    margin-bottom: .3rem;
+    font-weight: bold;
+    text-align: inherit;
+  }
+
+  .datevis-chart {
+    height: 70px;
+  }
+
+  .slider-container {
+    padding-top: 0;
+    padding-bottom: .8rem;
+  }
+
+  .datevis-controls-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: .8rem;
+
+    label {
+      margin-right: .5rem;
+    }
+
+    input {
+      margin-right: 1rem;
+    }
+
+    .datevis-controls-row {
+      display: flex;
+      align-items: center;
+    }
+
+    .datevis-input {
+      width: 100%;
     }
   }
 }
 
 // Hide these on mobile
-@media (max-width: 767px) {
-  #datevispublishDatexWrapper,
+@include media-breakpoint-down(sm) {
   // Bulk action checkboxes:
   #search-cart-form .result .checkbox,
   // Search result and favorites bulk action buttons:
   .bulkActionButtons { display: none; }
+}
+@include media-breakpoint-down(sm) {
+  .view-buttons {
+    display: none;
+  }
 }
 
 .searchHomeContent { @include clearfix(); }
@@ -78,7 +130,7 @@ $thumbnail-width-large:  160px !default;
   }
 }
 
-@media (min-width: 768px) {
+@include media-breakpoint-up(sm) {
   .search-home-facets,
   .home-facet-container { display: flex; }
   .home-facet {
@@ -87,7 +139,11 @@ $thumbnail-width-large:  160px !default;
   .home-facet-list { flex: 0 1 100%; }
 }
 
-header .container.navbar { margin-bottom: 0; }
+header .container.navbar {
+  margin-bottom: 0;
+  // Use same padding as front page that doesn't have a navbar:
+  --bs-navbar-padding-x: calc(var(--bs-gutter-x)*.5);
+}
 
 .search-sort,
 .search-result-limit {
@@ -97,10 +153,10 @@ header .container.navbar { margin-bottom: 0; }
   label {
     flex: none;
     white-space: nowrap;
-    line-height: $input-height-base;
+    line-height: $input-height;
   }
 
-  select.form-control {
+  select.form-select {
     flex: 1 1 0%;
   }
 }
@@ -111,10 +167,20 @@ header .container.navbar { margin-bottom: 0; }
   padding-bottom: 0.5rem;
 }
 
-@media (min-width: 768px) {
+.search-controls form:not(:last-child) {
+  margin-bottom: 0.25rem;
+}
+
+@include media-breakpoint-up(sm) {
   .search-header { display: flex; }
   .search-stats { flex-grow: 1; }
   .search-controls { text-align: right; }
+}
+
+// Hide record versions in embedded accordions/tabs:
+.record-list .panel-group .record-versions,
+.record-list .tab-content .record-versions {
+  display: none;
 }
 
 .versions-tab {
@@ -171,7 +237,7 @@ header .container.navbar { margin-bottom: 0; }
   }
 }
 
-@media (max-width: 767px) {
+@include media-breakpoint-down(sm) {
   .grid { min-height: 250px; }
 }
 .result {
@@ -219,13 +285,13 @@ header .container.navbar { margin-bottom: 0; }
     min-width: inherit;
   }
 
-  @media (max-width: 767px) {
-    a {
-      max-width: 100%;
-      text-decoration: underline;
+  @include media-breakpoint-down(sm) {
+    .result-qrcode {
+      display: none;
     }
   }
-  @media (min-width: 768px) {
+
+  @include media-breakpoint-up(sm) {
     .record-checkbox {
       display: block;
       flex: 0;
@@ -273,7 +339,7 @@ header .container.navbar { margin-bottom: 0; }
       object-fit: contain;
     }
 
-    @media (min-width: 768px) {
+    @include media-breakpoint-up(sm) {
       &.small  { width: $thumbnail-width-small; }
       &.medium { width: $thumbnail-width-medium; }
       &.large  { width: $thumbnail-width-large; }
@@ -300,6 +366,10 @@ header .container.navbar { margin-bottom: 0; }
 .result-body {
   padding: 0;
   padding-bottom: .25rem;
+
+  .author sup {
+    display: none;
+  }
 }
 
 .result-body,
@@ -317,6 +387,10 @@ header .container.navbar { margin-bottom: 0; }
 
 .result-links a {
   line-height: 1.5;
+
+  &.icon-link {
+    display: flex;
+  }
 }
 
 .result-links .alert { margin: 0; }
@@ -337,7 +411,7 @@ header .container.navbar { margin-bottom: 0; }
   margin: 0.5rem 0;
 }
 
-@media (min-width: 768px) {
+@include media-breakpoint-up(sm) {
   .result-body {
     float: left;
     width: 75%;
@@ -348,14 +422,15 @@ header .container.navbar { margin-bottom: 0; }
     padding: 0;
   }
   .savedLists.loaded { display: block; }
-}
-body.rtl {
-  @media (min-width: 768px) {
+
+  body.rtl {
     .result-body,
     .result-links { float: right; }
   }
 }
+
 /* ------ EMBEDDED RESULTS STYLE ------ */
+
 .result.embedded {
   .getFull {
     display: block;
@@ -365,10 +440,12 @@ body.rtl {
   }
   .getFull.expanded {
     @extend .list-group-item;
+
     margin-top: -11px;
-    padding-left: .5rem;
-    border-top-left-radius: $border-radius-base;
-    border-top-right-radius: $border-radius-base;
+    margin-bottom: -1px;
+    padding: 10px 15px 10px 0.5rem;
+    border: 1px solid #ddd;
+
     &::before {
       content: '\25BC';
       position: absolute;
@@ -385,10 +462,10 @@ body.rtl {
   .long-view {
     margin-left: -.5rem;
     padding: .5rem;
-    border: 1px solid $list-group-border;
+    border: 1px solid $list-group-border-color;
     background-color: #fff;
-    border-bottom-left-radius: $border-radius-base;
-    border-bottom-right-radius: $border-radius-base;
+    border-bottom-left-radius: $border-radius;
+    border-bottom-right-radius: $border-radius;
   }
   .long-view .tab-content { padding: 0; }
   .list-tabs { margin-bottom: 0; }
@@ -432,7 +509,7 @@ body.rtl {
 }
 .grid-large-break,
 .grid-small-break { clear: both; }
-@media (min-width: 992px) {
+@include media-breakpoint-up(md) {
   .grid-result{ width: 25%; }
   .grid-small-break { display: none; }
 }
@@ -510,7 +587,7 @@ body.rtl {
   padding: 0;
 }
 
-@media (min-width: 768px) {
+@include media-breakpoint-up(sm) {
   .combined-search-container {
     display: flex;
     padding-left: 1rem;
@@ -554,14 +631,30 @@ body.rtl {
   padding-left: .5rem;
   font-weight: bold;
   color: #000;
+
+  .icon {
+    width: 1rem;
+    text-align: center;
+  }
+
+  @include media-breakpoint-down(sm) {
+    &.top-title__heading {
+      display: none;
+    }
+  }
+  @include media-breakpoint-up(sm) {
+    &.top-title__toggle {
+      display: none;
+    }
+  }
 }
-.top-title .fa {
-  width: 1rem;
-  text-align: center;
-}
-@media (min-width: 768px) {
-  .top-title { padding-top: 0; }
-  .top-title .fa { display: none; }
+@include media-breakpoint-up(sm) {
+  .top-title {
+    padding-top: 0;
+  }
+  .top-title .icon {
+    display: none;
+  }
   .top-facets .collapse {
     display: block;
     height: auto !important;
@@ -594,7 +687,7 @@ body.rtl {
     &.collapsed::after {
       content: '\25BC';
     }
-    @media (min-width: $screen-sm-min) {
+    @include media-breakpoint-up(sm) {
       float: left;
     }
   }
@@ -612,7 +705,7 @@ body.rtl {
     .checkbox label {
       display: inline-block;
       padding: 10px 0px;
-      @media (max-width: $screen-sm-min) {
+      @include media-breakpoint-down(sm) {
         float: right;
         padding: 0px;
       }
@@ -638,7 +731,7 @@ body.rtl {
       display: inline;
       padding-left: 0;
       padding-right: 0;
-      @media (min-width: $screen-sm-min) {
+      @include media-breakpoint-up(sm) {
         padding-right: 20px;
       }
     }
@@ -648,12 +741,20 @@ body.rtl {
     }
   }
 }
+@include media-breakpoint-down(sm) {
+  .active-filters--uncollapsible {
+    display: none;
+  }
+}
+@include media-breakpoint-up(sm) {
+  .active-filters--collapsible {
+    display: none;
+  }
+}
 
-.toolbar-btn,
-.reset-filters-btn,
 .clear-selection {
   border: 0;
-  color: #555;
+  color: $gray-dark;
   text-decoration: none;
   background-color: rgba(0,0,0,.05);
   border-radius: 4px;
@@ -663,24 +764,14 @@ body.rtl {
   }
 }
 
-.toolbar-btn,
 .reset-filters-btn {
-  @extend .icon-link;
+  @extend .toolbar-btn;
   gap: 0.25rem;
   margin-bottom: 4px;
   margin-top: 4px;
-  padding: .5rem 1rem;
-}
-.reset-filters-btn {
-  flex: none;
 }
 
-.toolbar-btn {
-  display: inline-block;
-  vertical-align: middle;
-}
-
-.clear-selection{
+.clear-selection {
   font-weight: 700;
   flex-basis: 100%;
 }
@@ -708,10 +799,6 @@ body.rtl {
     background: $list-group-active-bg;
     font-weight: 600;
     vertical-align: baseline;
-  }
-  .btn::after {
-    content: "\f107";
-    font-family: "FontAwesome";
   }
 
   .dropdown-menu {
@@ -752,10 +839,12 @@ body.rtl {
 table.search-history-table {
   table-layout: auto;
 
-  @media screen and (min-width: 768px) {
-    tbody > tr > td { vertical-align: middle; }
-    .history_time {
-      width: 20%;
+  @include media-breakpoint-up(sm) {
+    @media screen {
+      tbody > tr > td { vertical-align: middle; }
+      .history_time {
+        width: 20%;
+      }
     }
   }
 }
@@ -772,7 +861,7 @@ table.search-history-table {
   .searchForm-query {
     position: relative;
 
-    @media (min-width: 768px) {
+    @include media-breakpoint-up(sm) {
       display: inline-block;
     }
 
@@ -800,6 +889,7 @@ table.search-history-table {
 
     #searchForm-reset {
       width: 2em;
+      height: 2em;
       border: none;
       border-radius: 50%;
       background-color: $gray-lighter;
@@ -823,7 +913,7 @@ table.search-history-table {
 }
 
 /* Break early to prevent table overflow */
-@media (max-width: 991px) {
+@include media-breakpoint-down(md) {
   .template-dir-search.template-name-history {
     .mainbody,
     .sidebar {
@@ -858,9 +948,9 @@ table.search-history-table {
     span {
       border: 0;
       padding: 0;
-      color: $text-color;
+      color: $body-color;
       &:hover {
-        color: $text-color;
+        color: $body-color;
         background-color: transparent;
       }
     }

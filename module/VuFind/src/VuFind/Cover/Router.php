@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -44,7 +44,7 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/configuration:external_content Wiki
  */
-class Router implements \Laminas\Log\LoggerAwareInterface
+class Router implements \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
@@ -125,23 +125,22 @@ class Router implements \Laminas\Log\LoggerAwareInterface
             return false;
         }
 
-        if (!($this->config['coverimagesBrowserCache'] ?? true)) {
-            // Add timestamp hash to avoid browser cache
-            $thumb['hash'] = md5(time());
-        }
-
-        // Array? It's parameters to send to the cover generator:
-        if (is_array($thumb)) {
-            if (!$resolveDynamic) {
-                return null;
-            }
-            $dynamicUrl =  $this->dynamicUrl . '?' . http_build_query($thumb);
-        } else {
+        // If $thumb is not an array, it is a full URL to a thumbnail image.
+        if (!is_array($thumb)) {
             return ['url' => $thumb];
         }
 
-        $settings = is_array($thumb) ? array_merge($thumb, ['size' => $size])
-            : ['size' => $size];
+        if (!($this->config['coverimagesBrowserCache'] ?? true)) {
+            // Add timestamp hash to avoid browser cache
+            $thumb['browser_cache_hash'] = md5(time());
+        }
+
+        // If we got this far, $thumb is an array, meaning it contains parameters to send to the cover generator.
+        if (!$resolveDynamic) {
+            return null;
+        }
+        $dynamicUrl =  $this->dynamicUrl . '?' . http_build_query($thumb);
+        $settings = array_merge($thumb, ['size' => $size]);
         $handlers = $this->coverLoader->getHandlers();
         $ids = $this->coverLoader->getIdentifiersForSettings($settings);
         foreach ($handlers as $handler) {

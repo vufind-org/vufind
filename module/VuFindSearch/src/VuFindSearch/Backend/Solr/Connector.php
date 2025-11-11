@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -60,7 +60,7 @@ use function strlen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class Connector implements \Laminas\Log\LoggerAwareInterface
+class Connector implements \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
     use \VuFindSearch\Backend\Feature\ConnectorCacheTrait;
@@ -130,13 +130,9 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         $this->url = $url;
         $this->map = $map;
         $this->uniqueKey = $uniqueKey;
-        if ($cf instanceof HttpClient) {
-            $this->clientFactory = function () use ($cf) {
-                return clone $cf;
-            };
-        } else {
-            $this->clientFactory = $cf;
-        }
+        $this->clientFactory = $cf instanceof HttpClient
+            ? fn () => clone $cf
+            : $cf;
     }
 
     /// Public API
@@ -217,7 +213,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      * Uses MoreLikeThis Request Component or MoreLikeThis Handler
      *
      * @param string   $id     ID of given record (not currently used, but
-     * retained for backward compatibility / extensibility).
+     * retained for legacy backward compatibility / extensibility).
      * @param ParamBag $params Parameters
      *
      * @return string
@@ -288,7 +284,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         if (count($params) > 0) {
             $urlSuffix .= '?' . implode('&', $params->request());
         }
-        $callback = function ($client) use ($document) {
+        $callback = function ($client) use ($document): void {
             $client->setEncType($document->getContentType());
             $body = $document->getContent();
             $client->setRawBody($body);
@@ -315,7 +311,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
         $paramString = implode('&', $params->request());
         if (strlen($paramString) > self::MAX_GET_URL_LENGTH) {
             $method = Request::METHOD_POST;
-            $callback = function ($client) use ($paramString) {
+            $callback = function ($client) use ($paramString): void {
                 $client->setRawBody($paramString);
                 $client->setEncType(HttpClient::ENC_URLENCODED);
                 $client->setHeaders(['Content-Length' => strlen($paramString)]);

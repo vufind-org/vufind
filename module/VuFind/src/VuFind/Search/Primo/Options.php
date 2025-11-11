@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Primo
@@ -29,7 +29,7 @@
 
 namespace VuFind\Search\Primo;
 
-use function count;
+use VuFind\Config\ConfigManagerInterface;
 
 /**
  * Primo Search Options
@@ -42,8 +42,6 @@ use function count;
  */
 class Options extends \VuFind\Search\Base\Options
 {
-    use \VuFind\Config\Feature\ExplodeSettingTrait;
-
     /**
      * Advanced search operators
      *
@@ -54,89 +52,22 @@ class Options extends \VuFind\Search\Base\Options
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(ConfigManagerInterface $configManager)
     {
         $this->searchIni = $this->facetsIni = 'Primo';
-        parent::__construct($configLoader);
+        $this->advancedFacetSettingsSection = 'Advanced_Facet_Settings';
 
-        // Load facet preferences:
-        $facetSettings = $configLoader->get($this->facetsIni);
-        if (
-            isset($facetSettings->Advanced_Facet_Settings->translated_facets)
-            && count($facetSettings->Advanced_Facet_Settings->translated_facets) > 0
-        ) {
-            $this->setTranslatedFacets(
-                $facetSettings->Advanced_Facet_Settings->translated_facets->toArray()
-            );
-        }
-        if (isset($facetSettings->Advanced_Facet_Settings->special_facets)) {
-            $this->specialAdvancedFacets
-                = $facetSettings->Advanced_Facet_Settings->special_facets;
-        }
+        // Override the default result limit with a value that we can support also with blending enabled in Primo:
+        $this->defaultResultLimit = 3980;
 
-        // Load the search configuration file:
-        $searchSettings = $configLoader->get($this->searchIni);
+        parent::__construct($configManager);
 
-        // Set up limit preferences
-        if (isset($searchSettings->General->default_limit)) {
-            $this->defaultLimit = $searchSettings->General->default_limit;
-        }
-        if (isset($searchSettings->General->limit_options)) {
-            $this->limitOptions = $this->explodeListSetting($searchSettings->General->limit_options);
-        }
+        $this->highlight = !empty($this->searchSettings->General->highlighting);
 
-        // Load search preferences:
-        if (isset($searchSettings->General->default_filters)) {
-            $this->defaultFilters = $searchSettings->General->default_filters
-                ->toArray();
-        }
-        $this->highlight = !empty($searchSettings->General->highlighting);
-
-        // Result limit:
-        if (isset($searchSettings->General->result_limit)) {
-            $this->resultLimit = $searchSettings->General->result_limit;
-        } else {
-            $this->resultLimit = 3980;  // default
-        }
-
-        // Search handler setup:
-        if (isset($searchSettings->Basic_Searches)) {
-            foreach ($searchSettings->Basic_Searches as $key => $value) {
-                $this->basicHandlers[$key] = $value;
-            }
-        }
-        if (isset($searchSettings->Advanced_Searches)) {
-            foreach ($searchSettings->Advanced_Searches as $key => $value) {
-                $this->advancedHandlers[$key] = $value;
-            }
-        }
-
-        // Advanced operator setup:
-        if (isset($searchSettings->Advanced_Operators)) {
-            foreach ($searchSettings->Advanced_Operators as $key => $value) {
-                $this->advancedOperators[$key] = $value;
-            }
-        }
-
-        // Load sort preferences:
-        if (isset($searchSettings->Sorting)) {
-            foreach ($searchSettings->Sorting as $key => $value) {
-                $this->sortOptions[$key] = $value;
-            }
-        }
-        if (isset($searchSettings->General->default_sort)) {
-            $this->defaultSort = $searchSettings->General->default_sort;
-        }
-        if (
-            isset($searchSettings->DefaultSortingByType)
-            && count($searchSettings->DefaultSortingByType) > 0
-        ) {
-            foreach ($searchSettings->DefaultSortingByType as $key => $val) {
-                $this->defaultSortByHandler[$key] = $val;
-            }
-        }
+        // Advanced operators:
+        $this->advancedOperators = $this->searchSettings['Advanced_Operators'] ?? [];
     }
 
     /**

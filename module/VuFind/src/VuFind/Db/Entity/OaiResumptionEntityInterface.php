@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -43,11 +43,11 @@ use DateTime;
 interface OaiResumptionEntityInterface extends EntityInterface
 {
     /**
-     * Id getter
+     * Get identifier (returns null for an uninitialized or non-persisted object).
      *
-     * @return int
+     * @return ?int
      */
-    public function getId(): int;
+    public function getId(): ?int;
 
     /**
      * Resumption parameters setter
@@ -64,6 +64,22 @@ interface OaiResumptionEntityInterface extends EntityInterface
      * @return ?string
      */
     public function getResumptionParameters(): ?string;
+
+    /**
+     * Set token used for identifying.
+     *
+     * @param string $token Generated token.
+     *
+     * @return static
+     */
+    public function setToken(string $token): static;
+
+    /**
+     * Get token used for identifying.
+     *
+     * @return ?string
+     */
+    public function getToken(): ?string;
 
     /**
      * Expiry date setter.

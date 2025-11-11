@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -69,7 +69,7 @@ class AuthorController extends AbstractSearch
         // next/prev links only appear for records which were included in the
         // results for the previous keyword search, and the next/prev links will
         // iterate you through that search).
-        $this->saveToHistory = $this->resultScrollerActive();
+        $this->saveToHistory = $this->getOptionsForClass()->resultScrollerActive();
 
         return parent::resultsAction();
     }
@@ -99,16 +99,5 @@ class AuthorController extends AbstractSearch
         $author = $this->params()->fromQuery('author');
         return !empty($author)
             ? $this->forwardTo('Author', 'Results') : parent::homeAction();
-    }
-
-    /**
-     * Is the result scroller active?
-     *
-     * @return bool
-     */
-    protected function resultScrollerActive()
-    {
-        $config = $this->getService(\VuFind\Config\PluginManager::class)->get('config');
-        return $config->Record->next_prev_navigation ?? false;
     }
 }

@@ -37,7 +37,7 @@
 <?php if (($this->ils()->getHoldsMode() == 'driver' && !empty($holdings['holdings'])) || $this->ils()->getTitleHoldsMode() == 'driver'): ?>
   <?php if ($account->loginEnabled() && $offlineMode != 'ils-offline'): ?>
     <?php if (!$user): ?>
-      <div class="alert alert-info">
+      <div class="alert alert-info hidden-print">
         <a id="hold-login" href="<?=$this->serverUrl($this->url('myresearch-completelogin'))?>" data-lightbox><?=$this->transEsc('hold_login')?></a>
       </div>
     <?php elseif (!$user->getCatUsername()): ?>
@@ -56,7 +56,7 @@
 <?php endif; ?>
 <?php $holdingTitleHold = $this->driver->tryMethod('getRealTimeTitleHold'); ?>
 <?php if (!empty($holdingTitleHold)): ?>
-  <a class="placehold icon-link" data-lightbox title="<?=$this->transEscAttr('request_place_text')?>" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holdingTitleHold))?>">
+  <a class="placehold icon-link hidden-print" data-lightbox title="<?=$this->transEscAttr('request_place_text')?>" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holdingTitleHold))?>">
     <?=$this->icon('place-hold', 'icon-link__icon') ?>
     <span class="icon-link__label"><?=$this->transEsc('title_hold_place')?></span>
   </a>
@@ -96,7 +96,7 @@
   ];
 ?>
 <table class="table table-striped truncate-field holdings-table" data-truncate="<?=$this->htmlSafeJsonEncode($truncateSettings)?>">
-  <caption class="sr-only"><?=$this->transEsc('holdings_details_from', ['%%location%%' => $this->transEsc($holding['location'])]) ?></caption>
+  <caption class="visually-hidden"><?=$this->transEsc('holdings_details_from', ['%%location%%' => $this->transEsc($holding['location'])]) ?></caption>
   <?php $callNos = $this->tab->getUniqueCallNumbers($holding['items'], true); ?>
   <?php if (!empty($callNos)): ?>
   <tr>
@@ -115,7 +115,7 @@
   <?php endif; ?>
   <?php foreach ($holding['textfields'] ?? [] as $textFieldName => $textFields): ?>
     <tr>
-      <?php // Translation for summary is a special case for backwards-compatibility ?>
+      <?php // Translation for summary is a special case for legacy backwards-compatibility ?>
       <th><?=$textFieldName == 'summary' ? $this->transEsc('Volume Holdings') : $this->transEsc(ucfirst($textFieldName))?>:</th>
       <td>
         <?php foreach ($textFields as $current): ?>

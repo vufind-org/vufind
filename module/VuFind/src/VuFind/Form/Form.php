@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Form
@@ -473,6 +473,8 @@ class Form extends \Laminas\Form\Form implements
      * Retrieve input filter used by this form
      *
      * @return InputFilterInterface
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getInputFilter(): InputFilterInterface
     {
@@ -952,7 +954,7 @@ class Form extends \Laminas\Form\Form implements
             'class' => [$el['settings']['class'] ?? null],
         ];
 
-        if ($type !== 'submit') {
+        if (!in_array($type, ['submit', 'radio', 'checkbox', 'select'], true)) {
             $attributes['class'][] = 'form-control';
         }
 
@@ -983,6 +985,7 @@ class Form extends \Laminas\Form\Form implements
                         'value' => $key,
                         'attributes' => [
                             'id' => $this->getElementId($el['name'] . '_' . $key),
+                            'class' => 'form-check-input',
                         ],
                     ];
                 }
@@ -1011,6 +1014,7 @@ class Form extends \Laminas\Form\Form implements
                         'label_attributes' => ['for' => $elemId],
                         'attributes' => [
                             'id' => $elemId,
+                            'class' => 'form-check-input',
                         ],
                         'selected' => $first,
                     ];
@@ -1019,6 +1023,7 @@ class Form extends \Laminas\Form\Form implements
                 $conf['options'] = ['value_options' => $optionElements];
                 break;
             case 'select':
+                $attributes['class'][] = 'form-select';
                 if (isset($el['options'])) {
                     $options = $el['options'];
                     foreach ($options as $key => &$option) {

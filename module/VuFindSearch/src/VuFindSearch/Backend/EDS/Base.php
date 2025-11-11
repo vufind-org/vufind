@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category EBSCOIndustries
  * @package  EBSCO
@@ -30,7 +30,7 @@
 
 namespace VuFindSearch\Backend\EDS;
 
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 
 use function is_array;
 
@@ -257,41 +257,6 @@ abstract class Base implements LoggerAwareInterface
      * @param array  $extraQueryParams    Extra query string parameters
      *
      * @return array    The requested record
-     *
-     * @deprecated Use retrieveEdsItem
-     */
-    public function retrieve(
-        $an,
-        $dbId,
-        $authenticationToken,
-        $sessionToken,
-        $highlightTerms = null,
-        $extraQueryParams = []
-    ) {
-        return $this->retrieveEdsItem(
-            $an,
-            $dbId,
-            $authenticationToken,
-            $sessionToken,
-            $highlightTerms,
-            $extraQueryParams
-        );
-    }
-
-    /**
-     * Retrieves an EDS record specified by its identifiers
-     *
-     * @param string $an                  An of the record to retrieve from the
-     * EdsApi
-     * @param string $dbId                Database identifier of the record to
-     * retrieve from the EdsApi
-     * @param string $authenticationToken Authentication token
-     * @param string $sessionToken        Session token
-     * @param string $highlightTerms      Comma separated list of terms to highlight
-     * in the retrieved record responses
-     * @param array  $extraQueryParams    Extra query string parameters
-     *
-     * @return array    The requested record
      */
     public function retrieveEdsItem(
         $an,
@@ -469,7 +434,7 @@ abstract class Base implements LoggerAwareInterface
                     }
                     $cnt = 0;
                     foreach ($value as $subValue) {
-                        $cnt = $cnt + 1;
+                        $cnt += 1;
                         $finalParameterName = $parameterName;
                         if (SearchRequestModel::isParameterIndexed($key)) {
                             $finalParameterName = $parameterName . '-' . $cnt;

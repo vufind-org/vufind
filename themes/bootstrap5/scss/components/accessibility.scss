@@ -1,13 +1,6 @@
 /* ACCESSIBILITY IMPROVEMENTS */
 
-a {
-  text-decoration: underline;
-
-  &:hover { color: black; }
-}
-
 /* AAA Color Contrasts */
-$badge-bg: #595959 !default;
 $breadcrumb-color: #535353 !default;
 $breadcrumb-active-color: #444 !default;
 $state-danger-text: #8a211e !default;

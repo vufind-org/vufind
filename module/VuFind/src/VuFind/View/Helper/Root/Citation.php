@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -547,15 +547,9 @@ class Citation extends \Laminas\View\Helper\AbstractHelper implements Translator
         if (in_array($str, $suffixes)) {
             return true;
         }
-
         // Is it a roman numeral?  (This check could be smarter, but it's probably
-        // good enough as it is).
-        if (preg_match('/^[MDCLXVI]+$/', $str)) {
-            return true;
-        }
-
-        // If we got this far, it's not a suffix.
-        return false;
+        // good enough as it is). Otherwise, if we got this far, it's not a suffix.
+        return (bool)preg_match('/^[MDCLXVI]+$/', $str);
     }
 
     /**

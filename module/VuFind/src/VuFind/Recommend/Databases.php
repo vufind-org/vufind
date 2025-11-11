@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Recommendations
@@ -29,6 +29,7 @@
 
 namespace VuFind\Recommend;
 
+use Closure;
 use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
 
 use function count;
@@ -49,7 +50,7 @@ use function strlen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
+class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Cache\CacheTrait;
     use \VuFind\Log\LoggerAwareTrait;
@@ -60,13 +61,6 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
      * @var \VuFind\Search\Base\Results
      */
     protected $results;
-
-    /**
-     * Configuration manager
-     *
-     * @var ConfigManager
-     */
-    protected $configManager;
 
     /**
      * Number of results to show
@@ -107,9 +101,26 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
     /**
      * Minimum string length of a query to use as a match point
      *
-     * @var bool
+     * @var int
      */
     protected $useQueryMinLength = 3;
+
+    /**
+     * When using the query string as a match point, the query string and
+     * database names will first be normalized by removing the characters
+     * in this regular expression. If empty, no normalization will occur.
+     *
+     * @var string
+     */
+    protected $useQueryReplacePattern = '/[-\/\.,:]/';
+
+    /**
+     * Maximum Levenshtein distance to match a query with the start
+     * of a database name
+     *
+     * @var int
+     */
+    protected $useQueryMaxDifference = 2;
 
     /**
      * Configuration of whether to use LibGuides as a data source
@@ -129,30 +140,23 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
     /**
      * URL to a list of all available databases, for display in the results list,
      * or false to omit.
+     *
+     * @var bool|string
      */
     protected $linkToAllDatabases = false;
 
     /**
-     * Callable for LibGuides connector
-     *
-     * @var callable
-     */
-    protected $libGuidesGetter;
-
-    /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configManager   Config PluginManager
-     * @param callable                     $libGuidesGetter Getter for LibGuides API connection
-     * @param CacheAdapter                 $cache           Object cache
+     * @param \VuFind\Config\ConfigManagerInterface $configManager   Config Manager
+     * @param Closure                               $libGuidesGetter Getter for LibGuides API connection
+     * @param CacheAdapter                          $cache           Object cache
      */
     public function __construct(
-        \VuFind\Config\PluginManager $configManager,
-        callable $libGuidesGetter,
+        protected \VuFind\Config\ConfigManagerInterface $configManager,
+        protected Closure $libGuidesGetter,
         CacheAdapter $cache
     ) {
-        $this->configManager = $configManager;
-        $this->libGuidesGetter = $libGuidesGetter;
         $this->setCacheStorage($cache);
     }
 
@@ -173,37 +177,44 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
             ? intval($settings[0]) : $this->limit;
         $databasesConfigFile = $settings[1] ?? 'EDS';
 
-        $databasesConfig = $this->configManager->get($databasesConfigFile)->Databases;
-        if (!$databasesConfig) {
+        $databasesConfig = $this->configManager->getConfigArray($databasesConfigFile)['Databases'] ?? [];
+        if (empty($databasesConfig)) {
             throw new \Exception("Databases config file $databasesConfigFile must have section 'Databases'.");
         }
-        $this->configFileDatabases = $databasesConfig->url?->toArray()
+        $this->configFileDatabases = $databasesConfig['url']
             ?? $this->configFileDatabases;
-        array_walk($this->configFileDatabases, function (&$value, $name) {
+        array_walk($this->configFileDatabases, function (&$value, $name): void {
             $value = [
                 'name' => $name,
                 'url' => $value,
             ];
         });
 
-        $this->resultFacet = $databasesConfig->resultFacet?->toArray() ?? $this->resultFacet;
-        $this->resultFacetNameKey = $databasesConfig->resultFacetNameKey
+        $this->resultFacet = $databasesConfig['resultFacet']
+            ?? $this->resultFacet;
+        $this->resultFacetNameKey = $databasesConfig['resultFacetNameKey']
             ?? $this->resultFacetNameKey;
 
-        $this->useQuery = $databasesConfig->useQuery ?? $this->useQuery;
-        $this->useQueryMinLength = $databasesConfig->useQueryMinLength
+        $this->useQuery = $databasesConfig['useQuery']
+            ?? $this->useQuery;
+        $this->useQueryMinLength = $databasesConfig['useQueryMinLength']
             ?? $this->useQueryMinLength;
+        $queryReplaceConfig = $databasesConfig['useQueryReplacePattern'] ?? $this->useQueryReplacePattern;
+        $this->useQueryReplacePattern = $queryReplaceConfig ?: '';
+        $this->useQueryMaxDifference = $databasesConfig['useQueryMaxDifference']
+            ?? $this->useQueryMaxDifference;
 
-        $this->useLibGuides = $databasesConfig->useLibGuides ?? $this->useLibGuides;
+        $this->useLibGuides = $databasesConfig['useLibGuides']
+            ?? $this->useLibGuides;
         if ($this->useLibGuides) {
             // Cache the data related to profiles for up to 10 minutes:
-            $libGuidesApiConfig = $this->configManager->get('LibGuidesAPI');
-            $this->cacheLifetime = intval($libGuidesApiConfig->GetAZ->cache_lifetime ?? 600);
+            $libGuidesApiConfig = $this->configManager->getConfigArray('LibGuidesAPI');
+            $this->cacheLifetime = intval($libGuidesApiConfig['GetAZ']['cache_lifetime'] ?? 600);
 
-            $this->useLibGuidesAlternateNames = $databasesConfig->useLibGuidesAlternateNames
+            $this->useLibGuidesAlternateNames = $databasesConfig['useLibGuidesAlternateNames']
                 ?? $this->useLibGuidesAlternateNames;
 
-            $this->linkToAllDatabases = $databasesConfig->linkToAllDatabases
+            $this->linkToAllDatabases = $databasesConfig['linkToAllDatabases']
                 ?? $this->linkToAllDatabases;
         }
     }
@@ -275,11 +286,16 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
         if ($this->useQuery) {
             $queryObject = $this->results->getParams()->getQuery();
             $query = is_callable([$queryObject, 'getString'])
-                ? strtolower($queryObject->getString())
+                ? $this->normalizeQueryString($queryObject->getString())
                 : '';
             if (strlen($query) >= $this->useQueryMinLength) {
                 foreach ($nameToDatabase as $name => $databaseInfo) {
-                    if (str_contains(strtolower($name), $query)) {
+                    $normalizedName = $this->normalizeQueryString($name);
+                    $nameContainsQuery = str_contains($normalizedName, $query);
+                    $nameResemblesQuery = $this->useQueryMaxDifference &&
+                        (levenshtein(substr($normalizedName, 0, strlen($query)), $query)
+                            <= $this->useQueryMaxDifference);
+                    if ($nameContainsQuery || $nameResemblesQuery) {
                         $databases[$databaseInfo['url']] = $databaseInfo;
                     }
                     if (count($databases) >= $this->limit) {
@@ -307,6 +323,23 @@ class Databases implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
         }
 
         return $databases;
+    }
+
+    /**
+     * Normalize a query string or database name for comparison with each other.
+     * Force to lower case, and remove any characters specified by a regex.
+     *
+     * @param string $str The query string or database name
+     *
+     * @return string The normalized string
+     */
+    protected function normalizeQueryString(string $str): string
+    {
+        $str = strtolower($str);
+        if ($this->useQueryReplacePattern) {
+            $str = preg_replace($this->useQueryReplacePattern, '', $str);
+        }
+        return $str;
     }
 
     /**

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Autocomplete
@@ -30,7 +30,7 @@
 namespace VuFind\Autocomplete;
 
 use Laminas\Stdlib\Parameters;
-use VuFind\Config\PluginManager as ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Options\PluginManager as OptionsManager;
 
 use function is_callable;
@@ -48,41 +48,17 @@ use function is_object;
 class Suggester
 {
     /**
-     * Autocomplete plugin manager.
-     *
-     * @var PluginManager
-     */
-    protected $pluginManager = null;
-
-    /**
-     * Search options plugin manager.
-     *
-     * @var OptionsManager
-     */
-    protected $optionsManager = null;
-
-    /**
-     * Configuration manager.
-     *
-     * @var ConfigManager
-     */
-    protected $configManager = null;
-
-    /**
      * Constructor
      *
-     * @param PluginManager  $pm Autocomplete plugin manager
-     * @param ConfigManager  $cm Config manager
-     * @param OptionsManager $om Options manager
+     * @param PluginManager          $pluginManager  Autocomplete plugin manager
+     * @param ConfigManagerInterface $configManager  Config manager
+     * @param OptionsManager         $optionsManager Options manager
      */
     public function __construct(
-        PluginManager $pm,
-        ConfigManager $cm,
-        OptionsManager $om
+        protected PluginManager $pluginManager,
+        protected ConfigManagerInterface $configManager,
+        protected OptionsManager $optionsManager
     ) {
-        $this->pluginManager = $pm;
-        $this->configManager = $cm;
-        $this->optionsManager = $om;
     }
 
     /**
@@ -124,18 +100,13 @@ class Suggester
 
         // get Autocomplete_Type config
         $options = $this->optionsManager->get($searcher);
-        $config = $this->configManager->get($options->getSearchIni());
-        $types = isset($config->Autocomplete_Types) ?
-            $config->Autocomplete_Types->toArray() : [];
+        $config = $this->configManager->getConfigArray($options->getSearchIni());
+        $types = $config['Autocomplete_Types'] ?? [];
 
         // Figure out which handler to use:
-        if (!empty($type) && isset($types[$type])) {
-            $module = $types[$type];
-        } elseif (isset($config->Autocomplete->default_handler)) {
-            $module = $config->Autocomplete->default_handler;
-        } else {
-            $module = false;
-        }
+        $module = !empty($type) && isset($types[$type])
+            ? $types[$type]
+            : $config['Autocomplete']['default_handler'] ?? false;
 
         // Get suggestions:
         if ($module) {

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_SolrAuthor
@@ -28,6 +28,8 @@
  */
 
 namespace VuFind\Search\SolrCollection;
+
+use VuFind\Config\ConfigManagerInterface;
 
 /**
  * Solr Collection Search Options
@@ -43,20 +45,18 @@ class Options extends \VuFind\Search\Solr\Options
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(ConfigManagerInterface $configManager)
     {
         $this->facetsIni = 'Collection';
-        parent::__construct($configLoader);
+        parent::__construct($configManager);
 
-        // Load sort preferences (or defaults if none in .ini file):
-        $searchSettings = $configLoader->get('Collection');
-        if (isset($searchSettings->Sort)) {
-            $this->sortOptions = [];
-            foreach ($searchSettings->Sort as $key => $value) {
-                $this->sortOptions[$key] = $value;
-            }
+        // Load sort preferences from Collection.ini even though other settings are loaded from searches.ini
+        // (or set defaults if none in .ini file):
+        $searchSettings = $configManager->getConfigArray('Collection');
+        if (null !== ($sortOptions = $searchSettings['Sort'] ?? null)) {
+            $this->sortOptions = (array)$sortOptions;
         } else {
             $this->sortOptions = [
                 'title' => 'sort_title',
@@ -91,10 +91,8 @@ class Options extends \VuFind\Search\Solr\Options
     public function getRecommendationSettings($handler = null)
     {
         // Collection recommendations
-        $searchSettings = $this->configLoader->get('Collection');
-        return isset($searchSettings->Recommend)
-            ? $searchSettings->Recommend->toArray()
-            : ['side' => ['CollectionSideFacets:Facets::Collection:true']];
+        $searchSettings = $this->configManager->getConfigArray('Collection');
+        return $searchSettings['Recommend'] ?? ['side' => ['CollectionSideFacets:Facets::Collection:true']];
     }
 
     /**

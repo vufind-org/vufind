@@ -3,7 +3,7 @@
   <form class="form-inline search-result-limit" action="<?=$this->currentPath()?>" method="get">
     <?=$this->results->getUrlQuery()->asHiddenFields(['limit' => '/.*/', 'page' => '/.*/']);?>
     <label for="limit"><?=$this->transEsc('Results per page')?></label>
-    <select id="limit" name="limit" class="jumpMenu form-control form-select">
+    <select id="limit" name="limit" class="jumpMenu form-select">
       <?php foreach ($limitList as $limitVal => $limitData): ?>
         <option value="<?=$this->escapeHtmlAttr($limitVal)?>"<?=$limitData['selected'] ? ' selected="selected"' : ''?><?=$limitData['default'] ? ' data-default' : ''?>><?=$this->escapeHtml($limitData['desc'])?></option>
       <?php endforeach; ?>

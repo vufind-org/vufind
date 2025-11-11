@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  SMS
@@ -52,12 +52,8 @@ class Mailer extends AbstractBase
      */
     protected $carriers = [
         'virgin' => ['name' => 'Virgin Mobile', 'domain' => 'vmobl.com'],
-        'att' => ['name' => 'AT&T', 'domain' => 'mms.att.net'],
         'verizon' => ['name' => 'Verizon', 'domain' => 'vtext.com'],
-        'nextel' => ['name' => 'Nextel', 'domain' => 'messaging.nextel.com'],
-        'sprint' => ['name' => 'Sprint', 'domain' => 'messaging.sprintpcs.com'],
         'tmobile' => ['name' => 'T Mobile', 'domain' => 'tmomail.net'],
-        'alltel' => ['name' => 'Alltel', 'domain' => 'message.alltel.com'],
         'Cricket' => ['name' => 'Cricket', 'domain' => 'mms.mycricket.com'],
     ];
 

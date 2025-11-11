@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -186,20 +186,53 @@ class ImportLokaliseCommand extends AbstractCommand
     }
 
     /**
-     * Add new strings from $sourceFile to $targetFile.
+     * Evaluate strings and issue any necessary warnings.
      *
-     * @param string $sourceFile New file from Lokalise
-     * @param string $targetFile Existing file in VuFind
+     * @param string          $sourceFile    Filename of source file
+     * @param array           $sourceStrings Strings extracted from source file
+     * @param array           $targetStrings Strings extracted from target file
+     * @param OutputInterface $output        Output object
      *
      * @return void
      */
-    protected function importStrings(string $sourceFile, string $targetFile): void
+    protected function validateStrings(
+        string $sourceFile,
+        array $sourceStrings,
+        array $targetStrings,
+        OutputInterface $output
+    ): void {
+        // If we're importing the default language, we should check for missing strings and issue warnings,
+        // since this may indicate a problem with data lolading from GitHub to Lokalise.
+        if (str_ends_with($sourceFile, 'en.ini')) {
+            $sourceKeys = array_keys(iterator_to_array($this->reader->getTextDomain($sourceStrings, false)));
+            $targetKeys = array_keys(iterator_to_array($this->reader->getTextDomain($targetStrings, false)));
+            $missingKeys = array_diff($targetKeys, $sourceKeys);
+            foreach ($missingKeys as $key) {
+                // The key will be missing if the string is intentionally empty, so ignore that case:
+                if (!in_array("$key = \"\"\n", $targetStrings)) {
+                    $output->writeln("Warning: unexpected missing key in $sourceFile - $key");
+                }
+            }
+        }
+    }
+
+    /**
+     * Add new strings from $sourceFile to $targetFile.
+     *
+     * @param string          $sourceFile New file from Lokalise
+     * @param string          $targetFile Existing file in VuFind
+     * @param OutputInterface $output     Output object
+     *
+     * @return void
+     */
+    protected function importStrings(string $sourceFile, string $targetFile, OutputInterface $output): void
     {
         $sourceStrings = array_map(
             [$this, 'formatLokaliseLine'],
             $this->normalizer->loadFileIntoArray($sourceFile)
         );
         $targetStrings = file_exists($targetFile) ? $this->normalizer->loadFileIntoArray($targetFile) : [];
+        $this->validateStrings($sourceFile, $sourceStrings, $targetStrings, $output);
         $this->writeToDisk(
             $targetFile,
             $this->normalizer->normalizeArray(array_merge($targetStrings, $sourceStrings))
@@ -214,23 +247,23 @@ class ImportLokaliseCommand extends AbstractCommand
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $source = $input->getArgument('source');
         $target = $input->getArgument('target');
 
         if (!is_dir($source)) {
             $output->writeln("{$source} does not exist or is not a directory.");
-            return 1;
+            return self::FAILURE;
         }
         if (!is_dir($target)) {
             $output->writeln("{$target} does not exist or is not a directory.");
-            return 1;
+            return self::FAILURE;
         }
         $sourceFiles = $this->collectSourceFiles($source);
         $targetFiles = $this->matchTargetFiles($source, $target, $sourceFiles);
-        array_map([$this, 'importStrings'], $sourceFiles, $targetFiles);
+        array_map([$this, 'importStrings'], $sourceFiles, $targetFiles, array_fill(0, count($sourceFiles), $output));
         $output->writeln('Import complete.');
-        return 0;
+        return self::SUCCESS;
     }
 }

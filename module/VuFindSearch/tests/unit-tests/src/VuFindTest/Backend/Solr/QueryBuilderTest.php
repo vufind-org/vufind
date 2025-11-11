@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -599,7 +599,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     {
         return [
             'Single value, no extra params' => [
-                null,
+                'globalExtraParams' => null,
                 'expected1' => [
                     'bf' => ['a:filter'],
                     'bq' => null,
@@ -774,9 +774,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      * @param array $expected2         Second set of expected fields
      *
      * @return void
-     *
-     * @dataProvider globalExtraParamsIndividualQueryDataProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('globalExtraParamsIndividualQueryDataProvider')]
     public function testIndividualQueryHandlerWithGlobalExtraParams(
         $globalExtraParams,
         $expected1,
@@ -902,9 +901,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      * @param array $expectedFields    Expected fields
      *
      * @return void
-     *
-     * @dataProvider globalExtraParamsGroupedQueryDataProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('globalExtraParamsGroupedQueryDataProvider')]
     public function testGroupedQueryHandlerWithGlobalExtraParams(
         $globalExtraParams,
         $expectedFields

@@ -21,8 +21,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Config
@@ -35,8 +35,8 @@ namespace VuFind\Config;
 
 use ArrayAccess;
 use Countable;
-use Exception;
 use Iterator;
+use VuFind\Exception\ConfigException;
 
 use function count;
 use function is_array;
@@ -96,11 +96,11 @@ class Config implements ArrayAccess, Countable, Iterator
      * @param mixed  $value Value being set
      *
      * @return void
-     * @throws Exception
+     * @throws ConfigException
      */
     public function __set(string $key, mixed $value): void
     {
-        throw new \Exception("Config is immutable; cannot set $key to $value");
+        throw new ConfigException("Config is immutable; cannot set $key to $value");
     }
 
     /**
@@ -121,11 +121,11 @@ class Config implements ArrayAccess, Countable, Iterator
      * @param string $key Key to unset
      *
      * @return void
-     * @throws Exception
+     * @throws ConfigException
      */
     public function __unset(string $key): void
     {
-        throw new \Exception("Config is immutable; cannot unset $key");
+        throw new ConfigException("Config is immutable; cannot unset $key");
     }
 
     /**
@@ -138,7 +138,7 @@ class Config implements ArrayAccess, Countable, Iterator
         if (empty($this->data)) {
             return '';
         }
-        throw new \Exception('Config cannot be converted to string');
+        throw new ConfigException('Config cannot be converted to string');
     }
 
     /**
@@ -182,7 +182,7 @@ class Config implements ArrayAccess, Countable, Iterator
      * @param mixed $value  New value
      *
      * @return void
-     * @throws Exception
+     * @throws ConfigException
      */
     public function offsetSet(mixed $offset, mixed $value): void
     {
@@ -195,7 +195,7 @@ class Config implements ArrayAccess, Countable, Iterator
      * @param mixed $offset Offset to unset
      *
      * @return void
-     * @throws Exception
+     * @throws ConfigException
      */
     public function offsetUnset(mixed $offset): void
     {

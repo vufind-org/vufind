@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -37,7 +37,7 @@ use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\SearchServiceInterface;
 use VuFindConsole\Command\ScheduledSearch\NotifyCommand;
 use VuFindTest\Container\MockContainer;
-use VuFindTest\Feature\PathResolverTrait;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 use function array_key_exists;
 
@@ -52,7 +52,7 @@ use function array_key_exists;
  */
 class NotifyCommandTest extends \PHPUnit\Framework\TestCase
 {
-    use PathResolverTrait;
+    use ConfigRelatedServicesTrait;
 
     /**
      * Container for building mocks.
@@ -154,7 +154,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testNotificationsWithUnsupportedBackend(): void
     {
-        $resultsCallback = function ($results) {
+        $resultsCallback = function ($results): void {
             $results->expects($this->any())->method('getBackendId')->willReturn('unsupported');
             $results->expects($this->any())->method('getSearchId')->willReturn(1);
         };
@@ -185,10 +185,10 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testNotificationsWithNoSearchResults(): void
     {
-        $optionsCallback = function ($options) {
+        $optionsCallback = function ($options): void {
             $options->expects($this->any())->method('supportsScheduledSearch')->willReturn(true);
         };
-        $resultsCallback = function ($results) {
+        $resultsCallback = function ($results): void {
             $results->expects($this->any())->method('getSearchId')->willReturn(1);
         };
         $command = $this->getCommand(
@@ -218,10 +218,10 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testNotificationsWithNoNewSearchResults(): void
     {
-        $optionsCallback = function ($options) {
+        $optionsCallback = function ($options): void {
             $options->expects($this->any())->method('supportsScheduledSearch')->willReturn(true);
         };
-        $resultsCallback = function ($results) {
+        $resultsCallback = function ($results): void {
             $results->expects($this->any())->method('getSearchId')->willReturn(1);
             $results->expects($this->any())->method('getResults')->willReturn($this->getMockSearchResultsSet());
         };
@@ -253,10 +253,10 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testNotificationsWithNewSearchResults(): void
     {
-        $optionsCallback = function ($options) {
+        $optionsCallback = function ($options): void {
             $options->expects($this->any())->method('supportsScheduledSearch')->willReturn(true);
         };
-        $paramsCallback = function ($params) {
+        $paramsCallback = function ($params): void {
             $params->expects($this->any())->method('getCheckboxFacets')->willReturn([]);
         };
         $date = date('Y-m-d H:i:s');
@@ -267,7 +267,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
                 'FirstIndexed' => $date,
             ]
         );
-        $resultsCallback = function ($results) use ($record) {
+        $resultsCallback = function ($results) use ($record): void {
             $results->expects($this->any())->method('getSearchId')->willReturn(1);
             $results->expects($this->any())->method('getResults')->willReturn($this->getMockSearchResultsSet($record));
         };

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  OAuth2
@@ -29,6 +29,7 @@
 
 namespace VuFind\OAuth2\Repository;
 
+use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Repositories\ClientRepositoryInterface;
 use VuFind\OAuth2\Entity\ClientEntity;
 
@@ -65,9 +66,9 @@ class ClientRepository implements ClientRepositoryInterface
      *
      * @param string $clientIdentifier The client's identifier
      *
-     * @return ClientEntityInterface|null
+     * @return ?ClientEntityInterface
      */
-    public function getClientEntity($clientIdentifier)
+    public function getClientEntity($clientIdentifier): ?ClientEntityInterface
     {
         if (!($config = $this->oauth2Config['Clients'][$clientIdentifier] ?? null)) {
             return null;
@@ -79,27 +80,20 @@ class ClientRepository implements ClientRepositoryInterface
     /**
      * Validate a client's secret.
      *
-     * @param string      $clientIdentifier The client's identifier
-     * @param null|string $clientSecret     The client's secret (if sent)
-     * @param null|string $grantType        The type of grant the client is using (if
-     * sent)
+     * @param string  $clientIdentifier The client's identifier
+     * @param ?string $clientSecret     The client's secret (if sent)
+     * @param ?string $grantType        The type of grant the client is using (if sent)
      *
      * @return bool
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function validateClient($clientIdentifier, $clientSecret, $grantType)
+    public function validateClient($clientIdentifier, $clientSecret, $grantType): bool
     {
         if (!($config = $this->oauth2Config['Clients'][$clientIdentifier] ?? null)) {
             return false;
         }
-
-        if (
-            ($config['isConfidential'] ?? false)
-            && (empty($config['secret'])
-            || !password_verify($clientSecret ?? '', $config['secret']))
-        ) {
-            return false;
-        }
-
-        return true;
+        return !(($config['isConfidential'] ?? false)
+            && (empty($config['secret']) || !password_verify($clientSecret ?? '', $config['secret'])));
     }
 }

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -37,7 +37,6 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Config\Config;
-use VuFind\Config\Locator as ConfigLocator;
 use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
 use VuFind\Crypt\BlockCipher;
@@ -72,17 +71,17 @@ class SwitchDbHashCommand extends Command
      * @param UserCardServiceInterface $userCardService UserCard database service
      * @param Closure                  $cipherFactory   Callback to generate a BlockCipher object (must
      * take two arguments: algorithm and key)
+     * @param PathResolver             $pathResolver    Config file path resolver
      * @param ?string                  $name            The name of the command; passing null means
      * it must be set in configure()
-     * @param ?PathResolver            $pathResolver    Config file path resolver
      */
     public function __construct(
         protected Config $config,
         protected UserServiceInterface $userService,
         protected UserCardServiceInterface $userCardService,
         protected Closure $cipherFactory,
+        protected PathResolver $pathResolver,
         ?string $name = null,
-        protected ?PathResolver $pathResolver = null
     ) {
         parent::__construct($name);
     }
@@ -149,7 +148,7 @@ class SwitchDbHashCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         // Validate command line arguments:
         $newhash = $input->getArgument('newmethod');
@@ -173,13 +172,13 @@ class SwitchDbHashCommand extends Command
         // No key specified AND no key on file = fatal error:
         if ($newkey === null) {
             $output->writeln('Please specify a key as the second parameter.');
-            return 1;
+            return self::FAILURE;
         }
 
         // If no changes were requested, abort early:
         if ($oldkey == $newkey && $oldhash == $newhash) {
             $output->writeln('No changes requested -- no action needed.');
-            return 0;
+            return self::SUCCESS;
         }
 
         // Initialize ciphers first, so we can catch any illegal algorithms before making any changes:
@@ -188,14 +187,12 @@ class SwitchDbHashCommand extends Command
             $newcipher = ($this->cipherFactory)($newhash, $newkey);
         } catch (\Exception $e) {
             $output->writeln($e->getMessage());
-            return 1;
+            return self::FAILURE;
         }
 
         // Next update the config file, so if we are unable to write the file,
         // we don't go ahead and make unwanted changes to the database:
-        $configPath = $this->pathResolver
-            ? $this->pathResolver->getLocalConfigPath('config.ini', null, true)
-            : ConfigLocator::getLocalConfigPath('config.ini', null, true);
+        $configPath = $this->pathResolver->getLocalConfigPath('config.ini', null, true);
         $output->writeln("\tUpdating $configPath...");
         $writer = $this->getConfigWriter($configPath);
         $writer->set('Authentication', 'encrypt_ils_password', true);
@@ -203,7 +200,7 @@ class SwitchDbHashCommand extends Command
         $writer->set('Authentication', 'ils_encryption_key', $newkey);
         if (!$writer->save()) {
             $output->writeln("\tWrite failed!");
-            return 1;
+            return self::FAILURE;
         }
 
         // Now do the database rewrite:
@@ -230,6 +227,6 @@ class SwitchDbHashCommand extends Command
 
         // If we got this far, all went well!
         $output->writeln("\tFinished.");
-        return 0;
+        return self::SUCCESS;
     }
 }

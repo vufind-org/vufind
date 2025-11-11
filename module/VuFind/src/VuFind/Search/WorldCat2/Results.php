@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_WorldCat2
@@ -32,7 +32,6 @@ namespace VuFind\Search\WorldCat2;
 use VuFindSearch\Command\SearchCommand;
 
 use function count;
-use function strlen;
 
 /**
  * WorldCat v2 Search Parameters
@@ -68,10 +67,8 @@ class Results extends \VuFind\Search\Base\Results
      */
     protected function storeErrorResponse(string|array $error): void
     {
-        $this->resultTotal = 0;
-        $this->results = [];
+        parent::storeErrorResponse($error);
         $this->responseFacets = [];
-        $this->errors = (array)$error;
     }
 
     /**
@@ -84,7 +81,7 @@ class Results extends \VuFind\Search\Base\Results
     {
         $query  = $this->getParams()->getQuery();
         $allTerms = $query->getAllTerms();
-        if (!strlen($allTerms)) {
+        if ($allTerms === '') {
             $this->storeErrorResponse('empty_search_disallowed');
             return;
         }

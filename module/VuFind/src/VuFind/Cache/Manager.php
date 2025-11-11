@@ -19,8 +19,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Cache
@@ -36,9 +36,8 @@ namespace VuFind\Cache;
 use Laminas\Cache\Service\StorageAdapterFactory;
 use Laminas\Cache\Storage\Capabilities;
 use Laminas\Cache\Storage\StorageInterface;
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use stdClass;
-use VuFind\Config\Config;
 use VuFind\Log\LoggerAwareTrait;
 
 use function dirname;
@@ -61,6 +60,13 @@ use function strlen;
 class Manager implements LoggerAwareInterface
 {
     use LoggerAwareTrait;
+
+    /**
+     * Uncached config that contains cache settings.
+     *
+     * @var array
+     */
+    protected $config = [];
 
     /**
      * Default configuration settings.
@@ -147,33 +153,20 @@ class Manager implements LoggerAwareInterface
     /**
      * Constructor
      *
-     * @param Config                $config       Main VuFind configuration
-     * @param Config                $searchConfig Search configuration
-     * @param StorageAdapterFactory $factory      Cache storage adapter factory
+     * @param array                 $config  Main VuFind configuration
+     * @param StorageAdapterFactory $factory Cache storage adapter factory
      */
     public function __construct(
-        Config $config,
-        Config $searchConfig,
+        array $config,
         StorageAdapterFactory $factory
     ) {
         $this->factory = $factory;
+        $this->config = $config;
+        $this->defaults = $config['Cache'] ?? [];
 
-        // $config and $config->Cache are VuFind\Config\Config objects
-        // $cache is created immutable, so get the array, it will be modified
-        // downstream.
-        $this->defaults = $config->Cache?->toArray() ?? [];
-
-        // Configure search specs cache based on config settings:
-        $searchCacheType = $searchConfig->Cache->type ?? false;
-        switch ($searchCacheType) {
-            case 'File':
-                // Default
-                break;
-            case false:
-                $this->cacheSpecs['searchspecs']['options']['disabled'] = true;
-                break;
-            default:
-                throw new \Exception("Unsupported cache setting: $searchCacheType");
+        // Configure search specs cache:
+        if ($config['CacheConfigName_searchspecs']['disabled'] ?? true) {
+            $this->cacheSpecs['searchspecs']['options']['disabled'] = true;
         }
     }
 
@@ -217,7 +210,7 @@ class Manager implements LoggerAwareInterface
     public function getCacheDir($allowCliOverride = true)
     {
         if (isset($this->defaults['cache_dir'])) {
-            // cache_dir setting in config.ini is obsolete
+            // Handle legacy configuration: cache_dir setting in config.ini is obsolete
             throw new \Exception(
                 'Obsolete cache_dir setting found in config.ini - please use '
                 . 'Apache environment variable VUFIND_CACHE_DIR in '
@@ -320,6 +313,16 @@ class Manager implements LoggerAwareInterface
     }
 
     /**
+     * Get uncached config.
+     *
+     * @return array
+     */
+    public function getConfig(): array
+    {
+        return $this->config;
+    }
+
+    /**
      * Ensure that a file cache is properly set up
      *
      * @param string $name Cache name
@@ -351,24 +354,16 @@ class Manager implements LoggerAwareInterface
     }
 
     /**
-     * Add a file cache to the manager and ensure that necessary directory exists.
+     * Ensure that a cache directory exists.
      *
-     * @param string $cacheName    Name of new cache to create
      * @param string $dirName      Directory to use for storage
      * @param array  $overrideOpts Options to override default values.
      *
      * @return void
      */
-    protected function createFileCache($cacheName, $dirName, $overrideOpts = [])
+    public function ensureCacheDirectoryExists($dirName, $overrideOpts = [])
     {
         $opts = array_merge($this->defaults, $overrideOpts);
-        if ($opts['disabled'] ?? false) {
-            $this->createNoCache($cacheName);
-            return;
-        } else {
-            // Laminas does not support "disabled = false"; unset to avoid error.
-            unset($opts['disabled']);
-        }
 
         if (!is_dir($dirName)) {
             if (isset($opts['umask'])) {
@@ -398,6 +393,30 @@ class Manager implements LoggerAwareInterface
                 $this->directoryCreationError = true;
             }
         }
+    }
+
+    /**
+     * Add a file cache to the manager and ensure that necessary directory exists.
+     *
+     * @param string $cacheName    Name of new cache to create
+     * @param string $dirName      Directory to use for storage
+     * @param array  $overrideOpts Options to override default values.
+     *
+     * @return void
+     */
+    protected function createFileCache($cacheName, $dirName, $overrideOpts = [])
+    {
+        $opts = array_merge($this->defaults, $overrideOpts);
+        if ($opts['disabled'] ?? false) {
+            $this->createNoCache($cacheName);
+            return;
+        } else {
+            // Laminas does not support "disabled = false"; unset to avoid error.
+            unset($opts['disabled']);
+        }
+
+        $this->ensureCacheDirectoryExists($dirName, $opts);
+
         if (empty($opts)) {
             $opts = ['cache_dir' => $dirName];
         } elseif (is_array($opts)) {
@@ -438,7 +457,7 @@ class Manager implements LoggerAwareInterface
             $eventManager = $laminasCache->getEventManager();
             $eventManager->attach(
                 'getCapabilities.post',
-                function ($event) use ($laminasCache) {
+                function ($event) use ($laminasCache): void {
                     $oldCapacities = $event->getResult();
                     $newCapacities = new Capabilities(
                         $laminasCache,

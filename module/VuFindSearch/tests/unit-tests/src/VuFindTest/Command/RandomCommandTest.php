@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -61,13 +61,13 @@ class RandomCommandTest extends TestCase
             ->disableOriginalConstructor()->getMock();
         $command = new RandomCommand($backendId, $query, 10, $params);
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue($backendId));
+            ->willReturn($backendId);
         $backend->expects($this->once())->method('random')
             ->with(
                 $this->equalTo($query),
                 $this->equalTo(10),
                 $this->equalTo($params)
-            )->will($this->returnValue('result'));
+            )->willReturn('result');
         $this->assertEquals('result', $command->execute($backend)->getResult());
     }
 
@@ -87,14 +87,14 @@ class RandomCommandTest extends TestCase
         $rci = $this->getMockBuilder(\VuFindSearch\Response\RecordCollectionInterface::class)
             ->getMock();
         $rci->expects($this->once())->method('getTotal')
-            ->will($this->returnValue(0));
+            ->willReturn(0);
         $backend->expects($this->once())->method('search')
             ->with(
                 $this->equalTo($query),
                 $this->equalTo(0),
                 $this->equalTo(0),
                 $this->equalTo($params)
-            )->will($this->returnValue($rci));
+            )->willReturn($rci);
         $this->assertEquals($rci, $command->execute($backend)->getResult());
     }
 
@@ -111,14 +111,18 @@ class RandomCommandTest extends TestCase
         $backend = $this->getMockBuilder(\VuFindSearch\Backend\BackendInterface::class)
             ->disableOriginalConstructor()->getMock();
         $command = new RandomCommand($backendId, $query, 10, $params);
-        $rci = $this->getMockBuilder(\VuFindSearch\Response\RecordCollectionInterface::class)
-            ->addMethods(['shuffle'])
-            ->getMockForAbstractClass();
+        $rci = $this->getMockBuilder(\VuFindSearch\Response\AbstractRecordCollection::class)
+            ->onlyMethods([
+                'getTotal', 'getFacets', 'getRecords', 'getErrors', 'getOffset', 'shuffle',
+                'first', 'setSourceIdentifier', 'setSourceIdentifiers', 'getSourceIdentifier',
+                'setResultSetIdentifier', 'add', 'count', 'current', 'key', 'next', 'rewind', 'valid',
+            ])
+            ->getMock();
 
         $rci->expects($this->once())->method('getTotal')
-            ->will($this->returnValue(2));
+            ->willReturn(2);
         $rci->expects($this->once())->method('shuffle')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $this->expectConsecutiveCalls(
             $backend,
             'search',
@@ -158,7 +162,7 @@ class RandomCommandTest extends TestCase
         $rci = $this->getMockBuilder(\VuFindSearch\Response\RecordCollectionInterface::class)
             ->getMock();
         $rci->expects($this->once())->method('getTotal')
-            ->will($this->returnValue(20));
+            ->willReturn(20);
         $inputs = [[$query, '0', '0', $params]];
         $outputs = [$rci];
         for ($i = 1; $i < $limit + 1; $i++) {
@@ -168,7 +172,7 @@ class RandomCommandTest extends TestCase
         $this->expectConsecutiveCalls($backend, 'search', $inputs, $outputs);
         $record = $this->getMockBuilder(\VuFindSearch\Response\RecordInterface::class)
             ->disableOriginalConstructor()->getMock();
-        $rci->expects($this->exactly(9))->method('first')->will($this->returnValue($record));
+        $rci->expects($this->exactly(9))->method('first')->willReturn($record);
         $rci->expects($this->exactly(9))->method('add')->with($this->equalTo($record));
         $this->assertEquals($rci, $command->execute($backend)->getResult());
     }

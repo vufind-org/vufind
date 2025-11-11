@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -30,7 +30,7 @@
 
 namespace VuFindTest\Search\Solr;
 
-use VuFind\Config\PluginManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Solr\Explanation;
 use VuFind\Search\Solr\Options;
 use VuFind\Search\Solr\Params;
@@ -48,7 +48,7 @@ use VuFindSearch\Backend\Exception\BackendException;
  */
 class ExplanationTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Solr 9 example response
@@ -782,7 +782,7 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
      */
     protected function getExplanation($result, $config = null)
     {
-        $mockConfig = $this->createMock(PluginManager::class);
+        $mockConfig = $this->createMock(ConfigManagerInterface::class);
         $paramsObj = new Params(
             new Options($mockConfig),
             $mockConfig
@@ -792,20 +792,20 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['getResult'])
-            ->getMockForAbstractClass();
+            ->onlyMethods(['getResult', 'execute'])
+            ->getMock();
         $commandObj->expects($this->once())->method('getResult')
-            ->will($this->returnValue($result));
+            ->willReturn($result);
         $checkCommand = function ($command) {
             return $command::class === \VuFindSearch\Backend\Solr\Command\RawJsonSearchCommand::class;
         };
         $searchService->expects($this->once())->method('invoke')
             ->with($this->callback($checkCommand))
-            ->will($this->returnValue($commandObj));
+            ->willReturn($commandObj);
         return new Explanation(
             $paramsObj,
             $searchService,
-            $this->getMockConfigPluginManager(
+            $this->getMockConfigManager(
                 [
                     'searches' => $config ?? [
                         'Explain' => [

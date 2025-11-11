@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -44,7 +44,7 @@ use VuFindCode\ISBN;
  */
 class OrbTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
@@ -65,7 +65,7 @@ class OrbTest extends \PHPUnit\Framework\TestCase
             $fixture = $this->getFixture($fixtureFile);
             $mockDownloader->expects($this->once())->method('downloadJson')
                 ->with($this->equalTo("https://fakeuser:fakekey@http://foo/products?eans=$expectedEAN&sort=ean_asc"))
-                ->will($this->returnValue(json_decode($fixture)));
+                ->willReturn(json_decode($fixture));
             $loader->setCachingDownloader($mockDownloader);
         }
         return $loader;

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -74,8 +74,8 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
         // Confirm that all four versions are now visible in the versions display:
         $this->waitForPageLoad($page);
         $this->assertEquals(
-            'Versions - The collected letters of Thomas and Jane Welsh Carlyle :',
-            $this->findCssAndGetText($page, 'ul.breadcrumb li.active')
+            'The collected letters of Thomas and Jane Welsh Carlyle : Versions',
+            $this->findCssAndGetText($page, 'ul.breadcrumb')
         );
         $results = $page->findAll('css', '.result');
         $this->assertCount(4, $results);
@@ -163,8 +163,8 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
         // and that all four versions are now visible in the versions display:
         $this->waitForPageLoad($page);
         $this->assertEquals(
-            'Versions - The collected letters of Thomas and Jane Welsh Carlyle :',
-            $this->findCssAndGetText($page, 'ul.breadcrumb li.active')
+            'The collected letters of Thomas and Jane Welsh Carlyle : Versions',
+            $this->findCssAndGetText($page, 'ul.breadcrumb')
         );
         $results = $page->findAll('css', '.result');
         $this->assertCount(4, $results);

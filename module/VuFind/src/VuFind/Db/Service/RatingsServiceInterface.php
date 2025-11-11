@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -80,6 +80,16 @@ interface RatingsServiceInterface extends DbServiceInterface
     public function deleteByUser(UserEntityInterface|int $userOrId): void;
 
     /**
+     * Deletes ratings by given rating ids and user id.
+     *
+     * @param array $ids    Array of rating ids
+     * @param int   $userId User ID
+     *
+     * @return void
+     */
+    public function deleteByIdsAndUserId(array $ids, int $userId): void;
+
+    /**
      * Get statistics on use of Ratings.
      *
      * @return array
@@ -101,4 +111,21 @@ interface RatingsServiceInterface extends DbServiceInterface
         UserEntityInterface|int $userOrId,
         ?int $rating
     ): int;
+
+    /**
+     * Get a paginated result of all ratings by user id.
+     *
+     * @param int    $userId User Id
+     * @param int    $limit  Limit
+     * @param int    $page   Page
+     * @param string $sort   Sort
+     *
+     * @return \Laminas\Paginator\Paginator
+     */
+    public function getRatingsPaginator(
+        int $userId,
+        int $limit,
+        int $page,
+        string $sort,
+    ): \Laminas\Paginator\Paginator;
 }

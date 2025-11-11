@@ -14,10 +14,18 @@ VuFind.register('lightbox', function Lightbox() {
   var _modal, _modalBody, _clickedButton = null;
   // Boostrap modal
   var _bsModal = null;
-  // Utilities
+
+  /**
+   * Store the currently clicked button element to be used later in form submission.
+   */
   function _storeClickedStatus() {
     _clickedButton = this;
   }
+
+  /**
+   * Update the modal's HTML content and title.
+   * @param {string} content The HTML content to render inside the modal body.
+   */
   function _html(content) {
     _modalBody.html(VuFind.updateCspNonce(content));
     // Set or update title if we have one
@@ -35,6 +43,12 @@ VuFind.register('lightbox', function Lightbox() {
     _bsModal.handleUpdate();
   }
 
+  /**
+   * Add query parameters to a given URL.
+   * @param {string} url    The original URL.
+   * @param {object} params An object of key-value pairs to add as query parameters.
+   * @returns {string} The new URL with added parameters.
+   */
   function _addQueryParameters(url, params) {
     let fragmentSplit = url.split('#');
     let paramsSplit = fragmentSplit[0].split('?');
@@ -47,21 +61,61 @@ VuFind.register('lightbox', function Lightbox() {
     return res;
   }
 
-  // Public: Present an alert
+  /**
+   * Show a simple alert message in the lightbox.
+   * @param {string} message The message to display.
+   * @param {string} [_type] The type of alert (default = 'info').
+   */
   function showAlert(message, _type) {
     var type = _type || 'info';
     _html('<div class="flash-message alert alert-' + type + '">' + message + '</div>'
         + '<button class="btn btn-default" data-bs-dismiss="modal">' + VuFind.translate('close') + '</button>');
     _bsModal.show();
   }
+
+  /**
+   * Display a flash message within the current lightbox content.
+   * @param {string} message The message to display.
+   * @param {string} [_type='info'] The type of alert.
+   */
   function flashMessage(message, _type) {
     var type = _type || 'info';
     _modalBody.find('.flash-message,.modal-loading-overlay,.loading-spinner').remove();
     _modalBody.find('h2:first-of-type')
       .after('<div class="flash-message alert alert-' + type + '">' + message + '</div>');
   }
+
+  /**
+   * Hide the lightbox.
+   */
   function close() {
     _bsModal.hide();
+  }
+
+  /**
+   * Tries to set focus on a node which is not a close trigger
+   * if no other nodes exist then focuses on first close trigger
+   */
+  function setFocusToFirstNode() {
+    var focusableNodes = getFocusableNodes(_modal);
+
+    // no focusable nodes
+    if (focusableNodes.length === 0) return;
+
+    // remove nodes on whose click, the modal closes
+    var nodesWhichAreNotCloseTargets = focusableNodes.filter(function nodeFilter(node) {
+      return !node.hasAttribute("data-lightbox-close") && (
+        !node.hasAttribute("data-bs-dismiss") ||
+        node.getAttribute("data-bs-dismiss") !== "modal"
+      );
+    });
+
+    if (nodesWhichAreNotCloseTargets.length > 0) {
+      nodesWhichAreNotCloseTargets[0].focus();
+    }
+    if (nodesWhichAreNotCloseTargets.length === 0) {
+      focusableNodes[0].focus();
+    }
   }
 
   /**
@@ -80,6 +134,11 @@ VuFind.register('lightbox', function Lightbox() {
   // function declarations to avoid style warnings about circular references
   var _constrainLink;
   var _formSubmit;
+
+  /**
+   * Render new content in the lightbox.
+   * @param {string} content The HTML content to render.
+   */
   function render(content) {
     if (typeof content !== "string") {
       return;
@@ -134,6 +193,8 @@ VuFind.register('lightbox', function Lightbox() {
     });
     // Recaptcha
     recaptchaOnLoad();
+    // Set keyboard focus
+    setFocusToFirstNode();
     // Add any scripts to head to run them
     runScripts.each(function addScript(i2, script) {
       $(document).find('head').append(script);
@@ -142,15 +203,20 @@ VuFind.register('lightbox', function Lightbox() {
   }
 
   var _xhr = false;
-  // Public: Handle AJAX in the Lightbox
+  /**
+   * Perform an AJAX request to load content into the lightbox.
+   * @param {object} obj The AJAX settings object.
+   * @returns {object|boolean|void} The xhr object or false if a request is already in progress.
+   */
   function ajax(obj) {
     if (_xhr !== false) {
       return;
     }
     // Loading
-    _modalBody.find('.modal-loading-overlay,.loading-spinner').remove();
+    _modalBody.find('.loading-overlay,.loading-spinner').remove();
     if (_modalBody.children().length > 0) {
-      _modalBody.prepend('<div class="modal-loading-overlay">' + VuFind.loading() + '</div>');
+
+      _modalBody.prepend(VuFind.loadingOverlay());
     } else {
       _modalBody.prepend(VuFind.loading());
     }
@@ -240,6 +306,10 @@ VuFind.register('lightbox', function Lightbox() {
       });
     return _xhr;
   }
+
+  /**
+   * Reload the current lightbox content.
+   */
   function reload() {
     ajax({ url: _currentUrl || _originalUrl });
   }
@@ -251,6 +321,8 @@ VuFind.register('lightbox', function Lightbox() {
    * data-lightbox-ignore = do not open this link in lightbox
    * data-lightbox-post = post data
    * data-lightbox-title = Lightbox title (overrides any title the page provides)
+   * @param {Event} event The button click event
+   * @returns {boolean|void} Return false to prevent the default link behavior
    */
   _constrainLink = function constrainLink(event) {
     var $link = $(this);
@@ -298,6 +370,8 @@ VuFind.register('lightbox', function Lightbox() {
    * Submit button data options:
    *
    * data-lightbox-ignore = do not handle clicking this button in lightbox
+   * @param {Event} event The form submission event.
+   * @returns {boolean} Return false to prevent default form submission
    */
   _formSubmit = function formSubmit(event) {
     // Gather data
@@ -349,7 +423,7 @@ VuFind.register('lightbox', function Lightbox() {
       method: $(form).attr('method') || 'GET',
       data: data
     }).done(function recaptchaReset() {
-      resetCaptcha($(form));
+      resetCaptcha(form);
     });
 
     VuFind.modal('show');
@@ -357,31 +431,9 @@ VuFind.register('lightbox', function Lightbox() {
   };
 
   /**
-   * Tries to set focus on a node which is not a close trigger
-   * if no other nodes exist then focuses on first close trigger
+   * Retain focus inside the lightbox modal.
+   * @param {KeyboardEvent} event The keyboard event.
    */
-  function setFocusToFirstNode() {
-    var focusableNodes = getFocusableNodes(_modal);
-
-    // no focusable nodes
-    if (focusableNodes.length === 0) return;
-
-    // remove nodes on whose click, the modal closes
-    var nodesWhichAreNotCloseTargets = focusableNodes.filter(function nodeFilter(node) {
-      return !node.hasAttribute("data-lightbox-close") && (
-        !node.hasAttribute("data-bs-dismiss") ||
-        node.getAttribute("data-bs-dismiss") !== "modal"
-      );
-    });
-
-    if (nodesWhichAreNotCloseTargets.length > 0) {
-      nodesWhichAreNotCloseTargets[0].focus();
-    }
-    if (nodesWhichAreNotCloseTargets.length === 0) {
-      focusableNodes[0].focus();
-    }
-  }
-
   function retainFocus(event) {
     var focusableNodes = getFocusableNodes(_modal);
 
@@ -417,23 +469,39 @@ VuFind.register('lightbox', function Lightbox() {
       }
     }
   }
+
+  /**
+   * Handle keyboard events.
+   * @param {KeyboardEvent} event The keyboard event.
+   */
   function onKeydown(event) {
-    if (event.keyCode === 27) { // esc
+    if (event.key === 'Escape') { // esc
       close();
     }
-    if (event.keyCode === 9) { // tab
+    if (event.key === 'Tab') { // tab
       retainFocus(event);
     }
   }
+
+  /**
+   * Bind keyboard focus-trapping events.
+   */
   function bindFocus() {
     document.addEventListener('keydown', onKeydown);
     setFocusToFirstNode();
   }
+
+  /**
+   * Unbind keyboard focus-trapping events.
+   */
   function unbindFocus() {
     document.removeEventListener('keydown', onKeydown);
   }
 
-  // Public: Attach listeners to the page
+  /**
+   * Bind lightbox event handlers to links and forms within a given element.
+   * @param {HTMLElement} [el] The element to search for bindable items (default = document).
+   */
   function bind(el) {
     var target = el || document;
     $(target).find('a[data-lightbox]')
@@ -475,6 +543,9 @@ VuFind.register('lightbox', function Lightbox() {
     });
   }
 
+  /**
+   * Load a lightbox based on a configured URL parameter.
+   */
   function loadConfiguredLightbox() {
     if (VuFind.lightbox.child) {
       // remove lightbox reference
@@ -496,6 +567,10 @@ VuFind.register('lightbox', function Lightbox() {
 
   // Element which to focus after modal is closed
   var _beforeOpenElement = null;
+
+  /**
+   * Reset the lightbox state variables.
+   */
   function reset() {
     _html('');
     _originalUrl = false;
@@ -505,10 +580,17 @@ VuFind.register('lightbox', function Lightbox() {
     _modalParams = {};
   }
 
+  /**
+   * Update the container with new lightbox bindings.
+   * @param {object} params The object that has the container element to bind.
+   */
   function updateContainer(params) {
     bind(params.container);
   }
 
+  /**
+   * Initialize the lightbox module, setting up modal events and bindings.
+   */
   function init() {
     _modal = document.querySelector('#modal');
     if (!_modal) {
@@ -520,16 +602,16 @@ VuFind.register('lightbox', function Lightbox() {
       if (VuFind.lightbox.refreshOnClose) {
         VuFind.refreshPage();
       } else {
-        if (_beforeOpenElement) {
-          _beforeOpenElement.focus();
-          _beforeOpenElement = null;
-        }
         unbindFocus();
         this.setAttribute('aria-hidden', true);
         VuFind.emit('lightbox.closing');
       }
     });
     _modal.addEventListener('hidden.bs.modal', function lightboxHidden() {
+      if (_beforeOpenElement) {
+        _beforeOpenElement.focus();
+        _beforeOpenElement = null;
+      }
       VuFind.lightbox.reset();
       VuFind.emit('lightbox.closed');
     });
@@ -540,10 +622,11 @@ VuFind.register('lightbox', function Lightbox() {
 
     VuFind.modal = function modalShortcut(cmd) {
       if (cmd === 'show') {
-        _beforeOpenElement = document.activeElement;
+        // This can get called multiple times, so only take the active element if we don't already have it:
+        if (!_beforeOpenElement) {
+          _beforeOpenElement = document.activeElement;
+        }
         _bsModal.show();
-        // Set keyboard focus
-        setFocusToFirstNode();
         VuFind.emit('lightbox.show', {container: _modal});
       } else if (cmd === 'hide') {
         _bsModal.hide();
@@ -552,6 +635,7 @@ VuFind.register('lightbox', function Lightbox() {
       }
     };
     VuFind.listen('results-init', updateContainer);
+    VuFind.listen('record-tab-init', updateContainer);
     bind();
     loadConfiguredLightbox();
   }

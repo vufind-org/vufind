@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Recommend;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Recommend\ExpandFacets;
 
 /**
@@ -42,14 +43,14 @@ use VuFind\Recommend\ExpandFacets;
  */
 class ExpandFacetsTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Test getEmptyResults()
      *
      * @return void
      */
-    public function testGetEmptyResults()
+    public function testGetEmptyResults(): void
     {
         $results = $this->getMockResults();
         $ef = $this->getExpandFacets(null, null, $results);
@@ -61,7 +62,7 @@ class ExpandFacetsTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testFacetInit()
+    public function testFacetInit(): void
     {
         $config = [
             'facets' => [
@@ -78,9 +79,9 @@ class ExpandFacetsTest extends \PHPUnit\Framework\TestCase
         $results->expects($this->once())
             ->method('getFacetList')
             ->with($this->equalTo(['format' => 'Format']))
-            ->will($this->returnValue(['foo']));
+            ->willReturn(['foo']);
         $ef = $this->getExpandFacets(
-            $this->getMockConfigPluginManager($config, [], $this->once()),
+            $this->getMockConfigManager($config, [], $this->once()),
             $results
         );
         $this->assertEquals(['foo'], $ef->getExpandedSet());
@@ -89,26 +90,26 @@ class ExpandFacetsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a fully configured module
      *
-     * @param \VuFind\Config\PluginManager $configLoader config loader
-     * @param \VuFind\Search\Solr\Results  $results      populated results object
-     * @param \VuFind\Search\Solr\Results  $emptyResults empty results object
-     * @param string                       $settings     settings
-     * @param \Laminas\Stdlib\Parameters   $request      request
+     * @param ?\VuFind\Config\ConfigManagerInterface $configManager config manager
+     * @param ?\VuFind\Search\Solr\Results           $results       populated results object
+     * @param ?\VuFind\Search\Solr\Results           $emptyResults  empty results object
+     * @param string                                 $settings      settings
+     * @param ?\Laminas\Stdlib\Parameters            $request       request
      *
      * @return ExpandFacets
      */
     protected function getExpandFacets(
-        $configLoader = null,
-        $results = null,
-        $emptyResults = null,
-        $settings = '',
-        $request = null
-    ) {
+        ?\VuFind\Config\ConfigManagerInterface $configManager = null,
+        ?\VuFind\Search\Solr\Results $results = null,
+        ?\VuFind\Search\Solr\Results $emptyResults = null,
+        string $settings = '',
+        ?\Laminas\Stdlib\Parameters $request = null
+    ): ExpandFacets {
         if (null === $results) {
             $results = $this->getMockResults();
         }
         $sf = new ExpandFacets(
-            $configLoader ?? $this->getMockConfigPluginManager([]),
+            $configManager ?? $this->getMockConfigManager(),
             $emptyResults ?? $this->getMockResults()
         );
         $sf->setConfig($settings);
@@ -123,30 +124,31 @@ class ExpandFacetsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock results object.
      *
-     * @param \VuFind\Search\Solr\Params $params Params to include in container.
+     * @param ?\VuFind\Search\Solr\Params $params Params to include in container.
      *
-     * @return \VuFind\Search\Solr\Results
+     * @return \VuFind\Search\Solr\Results&MockObject
      */
-    protected function getMockResults($params = null)
-    {
+    protected function getMockResults(
+        ?\VuFind\Search\Solr\Params $params = null
+    ): \VuFind\Search\Solr\Results&MockObject {
         if (null === $params) {
             $params = $this->getMockParams();
         }
         $results = $this->getMockBuilder(\VuFind\Search\Solr\Results::class)
             ->disableOriginalConstructor()->getMock();
         $results->expects($this->any())->method('getParams')
-            ->will($this->returnValue($params));
+            ->willReturn($params);
         return $results;
     }
 
     /**
      * Get a mock params object.
      *
-     * @param \VuFindSearch\Query\Query $query Query to include in container.
+     * @param ?\VuFindSearch\Query\Query $query Query to include in container.
      *
-     * @return \VuFind\Search\Solr\Params
+     * @return \VuFind\Search\Solr\Params&MockObject
      */
-    protected function getMockParams($query = null)
+    protected function getMockParams(?\VuFindSearch\Query\Query $query = null): \VuFind\Search\Solr\Params&MockObject
     {
         if (null === $query) {
             $query = new \VuFindSearch\Query\Query('foo', 'bar');
@@ -154,7 +156,7 @@ class ExpandFacetsTest extends \PHPUnit\Framework\TestCase
         $params = $this->getMockBuilder(\VuFind\Search\Solr\Params::class)
             ->disableOriginalConstructor()->getMock();
         $params->expects($this->any())->method('getQuery')
-            ->will($this->returnValue($query));
+            ->willReturn($query);
         return $params;
     }
 }

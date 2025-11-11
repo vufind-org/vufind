@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  IdentifierLinker
@@ -52,16 +52,18 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
     /**
      * Constructor
      *
-     * @param Service $searchService Search service
-     * @param array   $config        Configuration settings
-     * @param array   $doiServices   Configured DOI services
-     * @param array   $issnServices  Configured ISSN services
+     * @param Service $searchService       Search service
+     * @param array   $config              Configuration settings
+     * @param array   $doiServices         Configured DOI services
+     * @param array   $issnServices        Configured ISSN services
+     * @param array   $bestIntegratorLinks Configuration for bestIntegratorLinks
      */
     public function __construct(
         protected Service $searchService,
         protected array $config = [],
         protected array $doiServices = [],
-        protected array $issnServices = []
+        protected array $issnServices = [],
+        protected array $bestIntegratorLinks = []
     ) {
     }
 
@@ -96,21 +98,39 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
      * @param string $serviceKey Key being extracted from response
      * @param array  $config     Service-specific configuration settings
      *
-     * @return array{link: string, label: string, data: array, localIcon: ?string, icon: ?string}
+     * @return array{link: string, label: string, data: array, localIcon: ?string, icon: ?string, linkType: ?string}
      */
     protected function processServiceLink(array $data, string $serviceKey, array $config): array
     {
+        $serviceData = $data[$serviceKey];
         $result = [
-            'link' => $data[$serviceKey],
-            'label' => $this->translate($config['linkText']),
+            'link' => $serviceData,
             'data' => $data,
         ];
+
+        // If this link is actually the 'bestIntegratorLink' array, extract the appropriate
+        // text and icon config from it.
+        if ('bestIntegratorLink' == $serviceKey) {
+            $result['link'] = $serviceData['bestLink'] ?? $result['link'];
+
+            $linkType = $serviceData['linkType'] ?? null;
+            $specificConfig = $this->getBestIntegratorLinks()[$linkType] ?? false;
+            if ($specificConfig) {
+                $config = $specificConfig;
+            }
+            if ($this->config['useBrowzineLabel'] ?? false) {
+                $config['linkText'] = $serviceData['recommendedLinkText'] ?? $config['linkText'];
+            }
+        }
+
+        $result['label'] = $this->translate($config['linkText']);
         $localIcons = !empty($this->config['local_icons']);
         if (!$localIcons && !empty($config['icon'])) {
             $result['icon'] = $config['icon'];
         } else {
             $result['localIcon'] = $config['localIcon'];
         }
+        $result['linkType'] = $linkType ?? $serviceKey;
         return $result;
     }
 
@@ -193,5 +213,15 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
     protected function getIssnServices(): array
     {
         return $this->unpackServiceConfig($this->issnServices);
+    }
+
+    /**
+     * Get an array of configuration for 'bestIntegratorLink' values.
+     *
+     * @return array
+     */
+    protected function getBestIntegratorLinks(): array
+    {
+        return $this->unpackServiceConfig($this->bestIntegratorLinks);
     }
 }

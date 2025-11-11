@@ -7,15 +7,16 @@
 
   // Set up breadcrumbs:
   $currPage = isset($list) ? 'List' : 'saved_items';
-  $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="breadcrumb-item active" aria-current="page">' . $this->transEsc($currPage) . '</li>';
+  $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
+    ->add($this->translate($currPage), active: true);
 
   // Load Javascript dependencies into header:
-  $this->headScript()->appendFile('check_item_statuses.js');
+  $this->assetManager()->appendScriptLink('check_item_statuses.js');
 
   // Load Javascript only if list view parameter is NOT full:
   if ($this->params->getOptions()->getListViewOption() != 'full') {
-    $this->headScript()->appendFile('record.js');
-    $this->headScript()->appendFile('embedded_record.js');
+    $this->assetManager()->appendScriptLink('record.js');
+    $this->assetManager()->appendScriptLink('embedded_record.js');
   }
 
   $recordTotal = $this->results->getResultTotal();

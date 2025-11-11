@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -125,9 +125,9 @@ trait DemoDriverTestTrait
      *
      * @param string $bibId Bibliographic record ID to create fake item info for.
      *
-     * @return array
+     * @return string
      */
-    protected function getFakeFines(string $bibId)
+    protected function getFakeFines(string $bibId): string
     {
         $checkoutDate = strtotime('now -30 days');
         $returnDate = strtotime('now -2 days');
@@ -251,13 +251,16 @@ trait DemoDriverTestTrait
                 'getAccountBlocks' => 0,
                 'getDefaultRequestGroup' => 0,
                 'getHoldDefaultRequiredDate' => 0,
+                'getPasswordRecoveryData' => 0,
                 'getRequestBlocks' => 0,
                 'placeHold' => 0,
                 'placeILLRequest' => 0,
                 'placeStorageRetrievalRequest' => 0,
                 'renewMyItems' => 0,
+                'resetPassword' => 0,
                 'updateHolds' => 0,
                 'purgeTransactionHistory' => 0,
+                'registerPayment' => 0,
             ],
             'StaticHoldings' => [
                 $bibId => json_encode([$this->getFakeItem()]),

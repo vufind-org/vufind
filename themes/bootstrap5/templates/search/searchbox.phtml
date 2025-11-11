@@ -38,7 +38,8 @@
     $keyboardLayouts = $this->searchbox()->getKeyboardLayouts();
     $handlers = $this->searchbox()->getHandlers(
         $this->searchClassId,
-        $this->searchIndex ?? null
+        $this->searchIndex ?? null,
+        $hiddenFilters
     );
     $handlerCount = count($handlers);
     $basicSearch = $this->searchbox()->combinedHandlersActive() ? 'combined-searchbox' : $options->getSearchAction();
@@ -54,7 +55,8 @@
         $checkboxFilters = is_array($this->checkboxFilters) ? $this->checkboxFilters : [];
     }
     $filterDetails = $this->searchbox()->getFilterDetails($filterList, $checkboxFilters);
-    $showFilters = $filterDetails && ($results || $options->getRetainFilterSetting());
+    $retainFilters = $this->retainFilters ?? $options->getRetainFilterSetting();
+    $showFilters = $filterDetails && ($results || $retainFilters);
 ?>
 <?php $tabConfig = $this->searchTabs()->getTabConfig($this->searchClassId, $this->lookfor, $this->searchIndex, $this->searchType, $hiddenFilters); ?>
 <?php if ($this->searchType == 'advanced'): ?>
@@ -63,7 +65,7 @@
     <?php if (!empty($tabs)): ?><?=$tabs ?><div class="tab-content clearfix"><?php endif; ?>
       <p class="adv_search_terms"><?=$this->transEsc('Your search terms')?>: "<strong><?=$this->escapeHtml($this->lookfor)?></strong>"</p>
       <p class="adv_search_links">
-        <a href="<?=$this->url($advSearch)?>?edit=<?=$this->escapeHtmlAttr($this->searchId)?>"><?=$this->transEsc('Edit this Advanced Search')?></a> |
+        <a href="<?=$this->url($advSearch, [], ['query' => ['sid' => $this->searchId]])?>"><?=$this->transEsc('Edit this Advanced Search')?></a> |
         <a href="<?=$this->url($advSearch, [], ['query' => $hiddenFilters])?>"><?=$this->transEsc('Start a new Advanced Search')?></a> |
         <a href="<?=$this->url($searchHome, [], ['query' => $hiddenFilters])?>"><?=$this->transEsc('Start a new Basic Search')?></a>
       </p>
@@ -107,6 +109,7 @@
           $searchboxAttributes['class'] .= " autocomplete searcher:{$this->searchClassId}"
             . ($this->searchbox()->autocompleteAutoSubmit($this->searchClassId) ? ' ac-auto-submit' : '');
           $searchboxAttributes['data-autocomplete-formatting-rules'] = $this->searchbox()->autocompleteFormattingRulesJson($this->searchClassId);
+          $searchboxAttributes['data-autocomplete-display-limit'] = $this->searchbox()->autocompleteDisplayLimit($this->searchClassId);
         }
         if (!empty($keyboardLayouts)) {
           $searchboxAttributes['class'] .= ' with-keyboard-selection';
@@ -115,18 +118,25 @@
       <div class="searchForm-query">
         <input<?=$this->htmlAttributes($searchboxAttributes)?>>
         <div id="searchForm_controls">
-          <button id="searchForm-reset" class="searchForm-reset hidden" type="reset" tabindex="-1" aria-label="<?=$this->transEscAttr('searchform_reset_button')?>"><?=$this->icon('ui-reset-search');?></button>
+          <button
+            id="searchForm-reset"
+            class="searchForm-reset hidden"
+            tabindex="-1"
+            type="button"
+            title="<?=$this->transEscAttr('searchform_reset_button')?>"
+            aria-label="<?=$this->transEscAttr('searchform_reset_button')?>"
+          ><?=$this->icon('ui-reset-search');?></button>
           <?php if (!empty($keyboardLayouts)): ?>
             <?php
-            $this->headScript()->appendFile('vendor/js.cookie.js');
-            $this->headScript()->appendFile('vendor/simple-keyboard/index.js');
-            $this->headScript()->appendFile('vendor/simple-keyboard-layouts/index.js');
-            $this->headLink()->appendStylesheet('vendor/simple-keyboard/index.css');
+            $this->assetManager()->appendScriptLink('vendor/js.cookie.js');
+            $this->assetManager()->appendScriptLink('vendor/simple-keyboard/index.js');
+            $this->assetManager()->appendScriptLink('vendor/simple-keyboard-layouts/index.js');
+            $this->assetManager()->appendStyleLink('vendor/simple-keyboard/index.css');
             ?>
             <div class="keyboard-selection dropdown">
               <button class="btn btn-primary dropdown-toggle" type="button" id="keyboard-selection-button" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                <?=$this->icon('keyboard-o') ?>
-                <?=$this->icon('caret-down') ?>
+                <?=$this->icon('keyboard') ?>
+                <?=$this->icon('dropdown-caret') ?>
               </button>
               <ul class="dropdown-menu" aria-labelledby="keyboard-selection-button">
                 <li>
@@ -143,7 +153,7 @@
         </div>
       </div>
       <?php if ($handlerCount > 1): ?>
-        <select id="searchForm_type" class="searchForm_type form-control form-select" name="type" data-native-menu="false" aria-label="<?=$this->transEscAttr('Search type')?>">
+        <select id="searchForm_type" class="searchForm_type form-select" name="type" data-native-menu="false" aria-label="<?=$this->transEscAttr('Search type')?>">
           <?php $currentGroup = $insideGroup = false; ?>
           <?php foreach ($handlers as $handler): ?>
             <?php
@@ -172,7 +182,7 @@
       <button type="submit" class="btn btn-primary"><?=$this->icon('search') ?> <?=$this->transEsc('Find')?></button>
       <?php if ($advSearch): ?>
         <?php
-          $advSearchQuery = $results ? ['edit' => $results->getSearchId()] : $hiddenFilters;
+          $advSearchQuery = $results ? ['sid' => $results->getSearchId()] : $hiddenFilters;
           $advSearchLink = $this->url($advSearch, [], ['query' => $advSearchQuery]);
         ?>
         <a href="<?=$advSearchLink?>" class="advanced-search-link btn btn-link" rel="nofollow"><?=$this->transEsc('Advanced')?></a>
@@ -193,7 +203,7 @@
         <?php endforeach; ?>
       <?php endif; ?>
       <?php if (($hasDefaultsApplied ?? false) || !empty($filterDetails)): ?>
-        <?php if ($options->getRetainFilterSetting()): ?>
+        <?php if ($retainFilters): ?>
           <?php foreach ($filterDetails as $current): ?>
             <input class="applied-filter" id="<?=$this->escapeHtmlAttr($current['id'])?>" type="hidden" name="filter[]" value="<?=$this->escapeHtmlAttr($current['value'])?>">
           <?php endforeach; ?>
@@ -216,7 +226,11 @@
         if (!empty($lastLimit)) {
           echo '<input type="hidden" name="limit" value="' . $this->escapeHtmlAttr($lastLimit) . '">';
         }
-        if (!empty($lastSort) && $lastSort !== $params?->getDefaultSort()) {
+        if (
+          !empty($lastSort)
+          && $lastSort !== $params?->getDefaultSort()
+          && $params?->isValidSort($lastSort, allowHiddenSort: false)
+        ) {
           echo '<input type="hidden" name="sort" value="' . $this->escapeHtmlAttr($lastSort) . '">';
         }
       ?>

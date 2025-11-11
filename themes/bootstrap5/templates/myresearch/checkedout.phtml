@@ -1,11 +1,9 @@
 <?php
-  // Set up page title:
-  $this->headTitle($this->translate('Checked Out Items'));
-
   // Set up breadcrumbs:
-  $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('myresearch-home') . '">' . $this->transEsc('Your Account') . '</a></li> <li class="breadcrumb-item active" aria-current="page">' . $this->transEsc('Checked Out Items') . '</li>';
+  $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
+    ->add($this->translate('Checked Out Items'), active: true);
 
-  $this->headScript()->appendFile('checkouts.js');
+  $this->assetManager()->appendScriptLink('checkouts.js');
 
   // Check if "Renew All" button can be displayed:
   $renewAll = !$this->ilsPaging || !$paginator;
@@ -14,8 +12,9 @@
 <?=$this->component('show-account-menu-button')?>
 
 <div class="<?=$this->layoutClass('mainbody')?>">
-  <h2><?=$this->transEsc('Your Checked Out Items')?></h2>
+  <?=$this->component('page-title', ['title' => $this->translate('Your Checked Out Items'), 'headTitle' => $this->translate('Checked Out Items')]);?>
   <?=$this->flashmessages()?>
+  <?=$this->methodTimedBlocks('Renewals')?>
 
   <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', ['user' => $this->auth()->getUserObject()]); ?>
 
@@ -96,7 +95,7 @@
       <?php endif; ?>
       <?php if (isset($ilsDetails['renewable']) && $ilsDetails['renewable'] && isset($ilsDetails['renew_details'])): ?>
         <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['renew_details']); ?>
-        <input class="pull-left flip" type="hidden" name="renewAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>">
+        <input class="float-start" type="hidden" name="renewAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>">
       <?php endif; ?>
     <?php endforeach; ?>
 

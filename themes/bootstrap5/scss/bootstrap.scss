@@ -1,4 +1,5 @@
 @use "sass:map";
+@use "sass:math";
 
 $fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
 
@@ -33,6 +34,7 @@ $fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
 @import "bootstrap/scss/badge";
 @import "bootstrap/scss/breadcrumb";
 @import "bootstrap/scss/buttons";
+@import "bootstrap/scss/button-group";
 @import "bootstrap/scss/card";
 @import "bootstrap/scss/carousel";
 @import "bootstrap/scss/containers";
@@ -63,17 +65,16 @@ $fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
 // Include custom (non-vendor) mixins
 @import "mixins/mixins";
 
-// Include bootstrap3 compatibility layer
-@import "bs3-compat";
-
 @import "components/accessibility";
-@import "components/variables";
-
+@import "components/admin";
 @import "components/advanced-search";
 @import "components/alphabrowse";
 @import "components/autocomplete";
+@import "components/badges";
+@import "components/buttons";
 @import "components/channels";
 @import "components/cookie-consent/index";
+@import "components/copy-to-clipboard";
 @import "components/devtools";
 @import "components/explain";
 @import "components/form";
@@ -81,11 +82,14 @@ $fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
 @import "components/keyboard";
 @import "components/lightbox";
 @import "components/offcanvas";
+@import "components/pager";
+@import "components/panel";
 @import "components/record";
 @import "components/search";
 @import "components/sidebar";
 @import "components/similar-carousel";
 @import "components/sliders";
+@import "components/tables";
 @import "components/trees";
 
 /**
@@ -96,9 +100,8 @@ $fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
  * = The preferred method for writing code is to put generic and mobile styles first
  *   and surround desktop styling with media min-width queries.
  *
- * = Bootstrap 3 breakpoints: <768px, >=768px, >=992px, >=1200px
- *                                xs,      sm,      md,       lg
- * = Breakpoint of <=530px also used to target phones specifically
+ * = Bootstrap breakpoints: <768px, >=768px, >=992px, >=1200px
+ *                              xs,      sm,      md,       lg
  */
 
 html { font-size: 14px; } // Root font size from Bootstrap, allows consistent use of rem units
@@ -106,10 +109,35 @@ a,
 label,
 select,
 input[type="checkbox"] { cursor: pointer; }
+
+// Set up our own margins for headings
+h1, .h1,
+h2, .h2,
+h3, .h3 {
+  margin-top: $line-height-base * 1rem;
+  margin-bottom: math.div($line-height-base, 2) * 1rem;
+}
+h4, .h4,
+h5, .h5,
+h6, .h6 {
+  margin-top: math.div($line-height-base, 2) * 1rem;
+  margin-bottom: math.div($line-height-base, 2) * 1rem;
+}
+// Reset popover-header margins here (N.B. intentionally not using :not() above to avoid specificity issues)
+h3.popover-header {
+  margin: 0;
+}
+
+// Use select field's native caret
+.form-select {
+  appearance: auto;
+}
+
 .alert.alert-info a { text-decoration: underline; }
+
 .alert-default {
-    border-color: $well-border;
-    background-color: $well-bg;
+    background-color: $alert-default-bg;
+    border-color: $alert-default-border-color;
 }
 
 // Improve contrast
@@ -122,16 +150,10 @@ input[type="checkbox"] { cursor: pointer; }
 }
 .icon-bar { background-color: #888; }
 
-// Icons vs. Underline fix
-.btn {
-  text-decoration: none;
-}
-.btn-link {
-  @extend .icon-link;
-
-  &.pull-left,
-  &.pull-right {
-    display: flex;
+// More/less buttons
+.more-btn, .less-btn {
+  &:not(.facet) {
+    @extend .toolbar-btn;
   }
 }
 
@@ -167,14 +189,15 @@ img { max-width: 100%; }
     padding-left: 5px;
     padding-right: 5px;
     color: $breadcrumb-color;
-    content: "#{$breadcrumb-separator}\00a0";
+    content: "#{$breadcrumb-divider}\00a0";
   }
 }
 .tab-content { padding: 4px; }
 
 h2 { font-size: 20px; }
 h3 { font-size: 16px; }
-@media (min-width: 768px) {
+
+@include media-breakpoint-up(sm) {
   h2 {
     font-size: 23px;
     font-weight: normal;
@@ -183,27 +206,52 @@ h3 { font-size: 16px; }
     font-size: 20px;
     font-weight: normal;
   }
-  .form-control { max-width: 400px; }
-  #modal .form-control { max-width: none; }
+  .form-control, .form-select {
+    max-width: 400px;
+  }
+  #modal {
+    .form-control, .form-select {
+      max-width: none;
+    }
+  }
 }
 
 /* ------ Layout ------ */
+.hidden {
+  display: none !important;
+}
+
 .sticky {
   position: fixed;
   left: 0;
+}
+
+.media-body, .media-left, .media-right {
+  display: table-cell;
+  vertical-align: top;
+}
+.media-body {
+  width: 10000px;
+}
+
+// Ensure that the containers in main content have proper height so that the footer doesn't extend below them
+.main {
+  .container, .container-fluid {
+    @include clearfix();
+  }
 }
 
 footer {
   @extend .container;
   padding: 1rem;
 }
-@media (min-width: 768px) {
-  @media (max-width: 991px) {
-    .container {
-      max-width: initial;
-      width: 100%;
-    }
+@include media-breakpoint-between(sm, md) {
+  .container {
+    max-width: initial;
+    width: 100%;
   }
+}
+@include media-breakpoint-up(sm) {
   .footer-container {
     display: flex;
     width: 100%;
@@ -272,18 +320,12 @@ body.rtl .dropdown-menu {
   }
 }
 
-/* ------ Admin ------ */
-.form-admin-maintenance .form-control {
-  display: inline-block;
-  width: 8rem;
-}
-
-/* ------ Badges - blend the links in ------ */
-.badge a { color: #fff; }
-
 /* ------ Browse ------ */
 // Layout
-@media (min-width: 768px) {
+.browse-container {
+  margin-top: 1rem;
+}
+@include media-breakpoint-up(sm) {
   .browse-container { display: flex; }
   .browse-list {
     flex-basis: 25%;
@@ -291,17 +333,22 @@ body.rtl .dropdown-menu {
   }
   .browse-list:last-child { padding-right: 0; }
 }
+@include media-breakpoint-down(sm) {
+  .browse-list.browse-list__hidden-mobile {
+    display: none;
+  }
+}
 // List item styling
 .browse-item {
   position: relative;
   display: block;
   padding: .5rem 1rem;
-  border: 1px solid $list-group-border;
+  border: 1px solid $list-group-border-color;
   border-bottom: 0;
   word-wrap: break-word;
 }
 .browse-item.active {
-  background-color: $brand-primary;
+  background-color: $primary;
   color: #fff;
 
   .badge {
@@ -310,14 +357,15 @@ body.rtl .dropdown-menu {
   }
 }
 .browse-item:hover { background-color: $nav-link-hover-bg; }
-.browse-item:last-child { border-bottom: 1px solid $list-group-border; }
+.browse-item:last-child { border-bottom: 1px solid $list-group-border-color; }
 
 .browse-item.with-badge {
-  padding-right: 3rem; // Prevent text from overlapping badge
-  .badge {
-    position: absolute;
-    top: .5rem;
-    right: .25rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  text-decoration: none;
+  &>.browse-item-text {
+    text-decoration: underline;
   }
 
   body.rtl & {
@@ -334,6 +382,10 @@ body.rtl .dropdown-menu {
   font-size: 85%;
   text-align: right;
   border-top: 0;
+}
+
+#alphaBrowseForm {
+  margin-top: 1rem;
 }
 
 /* ------ Cart ------ */
@@ -358,16 +410,9 @@ body.rtl .dropdown-menu {
 .cart-controls {
   padding-bottom: 0.5rem;
   border-bottom: 1px solid $border-color;
-
-  .toolbar-btn {
-    @extend .toolbar-btn;
-    @extend .icon-link;
-
-    margin: 0;
-  }
 }
 
-@media (min-width: 992px) {
+@include media-breakpoint-up(md) {
   .cart-controls > .checkbox {
     margin-block: 0;
     padding-inline-end: 1rem;
@@ -419,12 +464,12 @@ body.rtl .dropdown-menu {
       margin-left: 0.5rem;
     }
     &.active {
-      background-color: $brand-primary;
+      background-color: $primary;
       color: #fff;
     }
 
     .icon-link__icon {
-      width: 1rem;
+      flex-grow: 1;
       text-align: center;
     }
 
@@ -440,7 +485,7 @@ body.rtl .dropdown-menu {
     flex: none;
     .badge {
       border-radius: 2px;
-      border: 1px solid; /* color inherited from bootstrap */
+      border: 1px solid; // Use main color for border too
       height: 20px;
 
       &.account-none {
@@ -448,16 +493,16 @@ body.rtl .dropdown-menu {
         background-color: $gray-lighter;
       }
       &.account-info {
-        color: $state-success-text;
-        background-color: $state-success-bg;
+        color: var(--#{$prefix}success);
+        background-color: var(--#{$prefix}success-bg-subtle);
       }
       &.account-warning {
-        color: $state-warning-text;
-        background-color: $state-warning-bg;
+        color: var(--#{$prefix}warning);
+        background-color: var(--#{$prefix}warning-bg-subtle);
       }
       &.account-alert {
-        color: $state-danger-text;
-        background-color: $state-danger-bg;
+        color: var(--#{$prefix}danger);
+        background-color: var(--#{$prefix}danger-bg-subtle);
       }
     }
   }
@@ -469,12 +514,29 @@ body.rtl .dropdown-menu {
   }
 }
 
-ul.list-group {
+.list-group:not(:last-child) {
   list-style: none;
+  margin-bottom: 1rem;
+}
+
+// Fix active tag color in sidebar
+.template-dir-myresearch .sidebar .list-group-item.active a {
+  color: inherit;
 }
 
 .dropdown-menu > li .dropdown-header {
   min-width: 200px;
+}
+
+.preferred-library-selection th {
+  vertical-align: middle;
+}
+
+.form-select-card {
+  margin-bottom: $paragraph-margin-bottom;
+  display: flex;
+  gap: 0.5rem;
+  align-items: baseline;
 }
 
 // Reduce the gap between the text and dropdown button:
@@ -522,19 +584,110 @@ ul.list-group {
     vertical-align: middle;
   }
 }
+
+.toolbar {
+  margin: 0.5rem 0;
+  .checkbox {
+    padding: 0.5rem;
+  }
+}
+
+.usercontent-table {
+  tbody > tr > td {
+    vertical-align: middle;
+    .checkbox-container {
+      padding-top: 0rem;
+      padding-bottom: 0rem;
+      border-bottom: 0px;
+      .checkbox-select-item {
+        float: none;
+      }
+    }
+    @include media-breakpoint-up(md) {
+      &.user-comment {
+        width: 40%;
+      }
+      &.user-tag {
+        width: 15%;
+      }
+    }
+  }
+
+  @include media-breakpoint-down(sm) {
+    .checkbox-col {
+      // Account for border to keep alignment:
+      padding: calc(0.5rem - 1px);
+    }
+  }
+}
+
 .fines-total {
   font-weight: bold;
 }
-
-/* --- PubDateVis --- */
 .list-edit-container { @include clearfix(); }
+
+.fines-info-area {
+  margin-bottom: 1rem;
+
+  .amount {
+    font-weight: bold;
+  }
+  .online-payment-payable-info {
+    display: flex;
+    align-items: baseline;
+    margin-bottom: 0.25rem;
+
+    .online-payment-payable {
+      padding: 0.25rem 0;
+    }
+
+    .online-payment-minimum-payment {
+      @extend .alert-warning;
+      color: var(--bs-alert-color);
+      background-color: var(--bs-alert-bg);
+      border-color: var(--bs-alert-border-color);
+      margin-left: 1rem;
+      padding: 0.25rem;
+    }
+  }
+}
+.online-payment .toolbar {
+  .checkbox {
+    display: inline-flex;
+  }
+  .payment-row {
+    display: inline-flex;
+  }
+}
+.confirm-payment {
+  .terms-of-service__text {
+      margin-bottom: 1rem;
+  }
+  .terms-of-service-logo {
+    width: 5rem;
+    margin-bottom: 1rem;
+  }
+}
+.last-payment-information {
+  @extend .alert;
+
+  background-color: $gray-lighter;
+  display: flex;
+  align-items: center;
+  div {
+    flex: 1 1;
+  }
+}
+.online-payment-status-note {
+  font-weight: bold;
+}
 
 /* ------ PubDateVis ------ */
 #dateVisColorSettings {
-  background-color: #fff; // background of box
-  fill: #eee;             // fillColor
-  outline-color: #c38835; // selection color
-  stroke: $brand-primary; // color
+  background-color: #fff;   // background of box
+  outline-color: #0873c655; // selection color
+  fill: $primary;           // fillColor
+  stroke: $primary;         // color
 }
 
 /* ------ Table wrapping to prevent horizontal overflow ------ */
@@ -549,7 +702,7 @@ ul.list-group {
   td {
     word-wrap: anywhere;
   }
-  td.fullAvailability, td.holdings-table {
+  td.fullAvailability, td.holdings-table, td.date {
     word-wrap: break-word;
   }
 }
@@ -558,53 +711,30 @@ ul.list-group {
     word-wrap: break-word;
   }
 }
-// No wrapping for fines table in wide windows
-@media (min-width: 992px) {
-  .table.fines-table {
-    td, th {
-      word-wrap: normal;
+// No wrapping for fines or staff view table in wide windows
+@include media-breakpoint-up(md) {
+  .table {
+    &.fines-table, &.staff-view {
+      td, th {
+        word-wrap: normal;
+      }
     }
   }
 }
 
 /* ------ Responsive table for small screen size ------ */
-@media screen and (max-width: 768px) {
-  .table-responsive {
-    border: none;
-    thead, tfoot > tr > th {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      margin: -1px;
-      padding: 0;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      border: 0;
+@include media-breakpoint-down(sm) {
+  @media screen {
+    .table-responsive {
+      @include table-responsive;
     }
-    tbody > tr {
-      display: block;
-      margin-bottom: $line-height-computed;
-      border-left: 1px solid $table-border-color;
-      border-right: 1px solid $table-border-color;
-      border-bottom: 4px solid $table-border-color;
-    }
-    td, tbody > tr > th {
-      display: flex;
-      align-items: first baseline;
-      background: #fff;
-      &:before {
-        display: flex;
-        flex-basis: 40%;
-        flex-shrink: 0;
-        font-weight: bold;
-        content: attr(data-label);
-      }
-    }
-    tbody > tr > td:nth-child(even) {
-      background-color: $table-bg-accent;
-    }
-    tfoot > tr > td {
-      border-top: none;
+  }
+}
+/* ------ Responsive table for non-ultrawide screen size ------ */
+@include media-breakpoint-down(xl) {
+  @media screen {
+    .table-responsive.table-responsive__lg {
+      @include table-responsive;
     }
   }
 }
@@ -749,7 +879,7 @@ div.holding-notes {
   flex: 1 1 100%;
   flex-wrap: wrap;
   justify-content: center;
-  margin: 24px 0;
+  margin: $line-height-base * 1rem 0;
 }
 
 /* --- Rating --- */
@@ -760,4 +890,11 @@ div.holding-notes {
 /* --- Confirm --- */
 .confirmDialog form {
   margin-right: 0.5rem;
+}
+
+/* --- Legend --- */
+legend {
+  float: none;
+  border: 0;
+  border-bottom: 1px solid $gray-lighter;
 }

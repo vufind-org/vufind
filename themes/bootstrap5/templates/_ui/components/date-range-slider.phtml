@@ -1,0 +1,35 @@
+<?php
+  /**
+   * Date range slider component
+   *
+   * @param string $inputMaxId The ID of the input element for maximum range value
+   * @param string $inputMinId The ID of the input element for minimum range value
+   * @param ?int   $rangeMin   The minimum allowed year (default = 1400)
+   * @param ?int   $rangeMax   The maximum allowed year (default = next year)
+   * @param string $sliderId   The ID for the slider element
+   * @param ?array $values     An array of [minimum, maximum] values representing the current selection (defaults to
+   *                           [$rangeMin, $rangeMax])
+   */
+  $this->assetManager()->appendScriptLink('vendor/nouislider.min.js');
+  $this->assetManager()->appendStyleLink('vendor/nouislider.min.css');
+  $this->assetManager()->appendScriptLink('date_range_slider.js');
+  $rangeMin ??= VUFIND_DEFAULT_EARLIEST_YEAR;
+  $rangeMax ??= (int)date('Y') + VUFIND_DEFAULT_LATEST_YEAR_OFFSET;
+  $low = ('' !== ($this->values[0] ?? '')) ? (int)$this->values[0] : $rangeMin;
+  $high = ('' !== ($this->values[1] ?? '')) ? (int)$this->values[1] : $rangeMax;
+  $sliderOptions = [
+    'range' => [
+      'min' => min($low, $rangeMin),
+      'max' => max($high, $rangeMax),
+    ],
+    'start' => [$low, $high],
+  ];
+  $sliderAttrs = [
+    'id' => $this->sliderId,
+    'class' => 'range-slider',
+    'data-options' => json_encode($sliderOptions),
+    'data-input-min-id' => $this->inputMinId,
+    'data-input-max-id' => $this->inputMaxId,
+  ];
+?>
+<div class="slider-container" aria-hidden="true"><div<?=$this->htmlAttributes($sliderAttrs)?>></div></div>

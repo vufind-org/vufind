@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -311,7 +311,7 @@ class AbstractRecord extends AbstractBase
         if ($user && null !== ($rating = $this->params()->fromPost('rating'))) {
             if (
                 '' === $rating
-                && !($this->getConfig()->Social->remove_rating ?? true)
+                && !($this->getConfigArray()['Social']['remove_rating'] ?? true)
             ) {
                 throw new BadRequestException('error_inconsistent_parameters');
             }
@@ -347,10 +347,9 @@ class AbstractRecord extends AbstractBase
         $checkRoute = $this->params()->fromPost('checkRoute')
             ?? $this->params()->fromQuery('checkRoute')
             ?? false;
-        $config = $this->getConfig();
-        if ($checkRoute && $config->Collections->collections ?? false) {
-            $routeConfig = isset($config->Collections->route)
-                ? $config->Collections->route->toArray() : [];
+        $config = $this->getConfigArray();
+        if ($checkRoute && ($config['Collections']['collections'] ?? false)) {
+            $routeConfig = $config['Collections']['route'] ?? [];
             $collectionRoutes
                 = array_merge(['record' => 'collection'], $routeConfig);
             $routeName = $this->event->getRouteMatch()->getMatchedRouteName() ?? '';
@@ -453,12 +452,6 @@ class AbstractRecord extends AbstractBase
         $response = $this->permission()->check('feature.Favorites', false);
         if (is_object($response)) {
             return $response;
-        }
-
-        if ($this->formWasSubmitted('newList')) {
-            // Remove submit now from parameters
-            $this->getRequest()->getPost()->set('newList', null)->set('submitButton', null);
-            return $this->forwardTo('MyResearch', 'editList', ['id' => 'NEW']);
         }
 
         // Process form submission:
@@ -919,17 +912,6 @@ class AbstractRecord extends AbstractBase
     }
 
     /**
-     * Is the result scroller active?
-     *
-     * @return bool
-     */
-    protected function resultScrollerActive()
-    {
-        // Disabled by default:
-        return false;
-    }
-
-    /**
      * Display a particular tab.
      *
      * @param string $tab  Name of tab to display
@@ -954,7 +936,7 @@ class AbstractRecord extends AbstractBase
             return $patron;
         }
 
-        $config = $this->getConfig();
+        $config = $this->getConfigArray();
 
         $view = $this->createViewModel();
         $view->tabs = $this->getAllTabs();
@@ -962,17 +944,15 @@ class AbstractRecord extends AbstractBase
         $view->defaultTab = strtolower($this->getDefaultTab());
         $view->backgroundTabs = $this->getBackgroundTabs();
         $view->tabsExtraScripts = $this->getTabsExtraScripts($view->tabs);
-        $view->loadInitialTabWithAjax
-            = isset($config->Site->loadInitialTabWithAjax)
-            ? (bool)$config->Site->loadInitialTabWithAjax : false;
+        $view->loadInitialTabWithAjax = (bool)($config['Site']['loadInitialTabWithAjax'] ?? false);
 
         // Set up next/previous record links (if appropriate)
-        if ($this->resultScrollerActive()) {
+        if ($this->getSearchMemory()->getCurrentSearch()?->getOptions()?->resultScrollerActive()) {
             $driver = $this->loadRecord();
             $view->scrollData = $this->resultScroller()->getScrollData($driver);
         }
 
-        $view->callnumberHandler = $config->Item_Status->callnumber_handler ?? false;
+        $view->callnumberHandler = $config['Item_Status']['callnumber_handler'] ?? false;
 
         $view->setTemplate($ajax ? 'record/ajaxtab' : 'record/view');
         return $view;

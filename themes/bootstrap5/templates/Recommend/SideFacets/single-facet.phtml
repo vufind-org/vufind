@@ -35,14 +35,14 @@
 ?>
 
 <span class="<?=implode(' ', $classList) ?>">
-  <a class="text<?=$hasCheckbox ? ' icon-link' : ''?>" href="<?=$toggleUrl ?>" data-lightbox-ignore data-title="<?=$this->escapeHtmlAttr($this->facet['displayText']) ?>" data-count="<?=$this->facet['count'] ?>"<?php if ($this->facet['isApplied']): ?> title="<?=$this->transEscAttr('applied_filter') ?>"<?php endif;?>>
+  <a class="main-link<?=$hasCheckbox ? ' icon-link' : ''?>" href="<?=$toggleUrl ?>" data-lightbox-ignore data-title="<?=$this->escapeHtmlAttr($this->facet['displayText']) ?>" data-count="<?=$this->facet['count'] ?>"<?php if ($this->facet['isApplied']): ?> title="<?=$this->transEscAttr('applied_filter') ?>"<?php endif;?>>
     <span class="text">
       <?=$displayText ?>
     </span>
     <?php if (!$this->facet['isApplied'] && null !== $this->facet['count']): ?>
       <span class="badge">
         <?php $currentCount = $this->localizedNumber($this->facet['count']); ?>
-        <span class="sr-only"><?=$this->transEsc('result_count', ['%%count%%' => $currentCount]) ?></span>
+        <span class="visually-hidden"><?=$this->transEsc('result_count', ['%%count%%' => $currentCount]) ?></span>
         <span aria-hidden="true"><?=$currentCount ?></span>
       </span>
     <?php endif; ?>
@@ -51,7 +51,7 @@
     <?php $excludeURL = $this->urlBase . $this->url->addFacet($this->group, $this->facet['value'], 'NOT'); ?>
     <a href="<?=$excludeURL ?>" data-lightbox-ignore class="exclude">
       <?=$this->icon('facet-exclude') ?>
-      <span class="sr-only"><?=$this->transEsc('exclude_facet') ?></span>
+      <span class="visually-hidden"><?=$this->transEsc('exclude_facet') ?></span>
     </a>
   <?php endif; ?>
 </span>

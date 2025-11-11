@@ -1,5 +1,5 @@
 <?php
-  $this->headScript()->appendFile($jsLibraryUrl, 'text/javascript', ['defer' => '', 'async' => '']);
+  $this->assetManager()->appendScriptLink($jsLibraryUrl, ['defer' => '', 'async' => '']);
   $js = <<<JS
       function turnstileChallengeEnded(token) {
           document.getElementById('turnstile_token').setAttribute('value', token);
@@ -7,7 +7,7 @@
       }
       JS;
 ?>
-<?=$this->inlineScript()->appendScript($js)?>
+<?=$this->assetManager()->outputInlineScriptString($js)?>
 
 <div
     class="cf-turnstile"

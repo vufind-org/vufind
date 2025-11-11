@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -58,17 +58,6 @@ class PrimoController extends AbstractSearch
     }
 
     /**
-     * Is the result scroller active?
-     *
-     * @return bool
-     */
-    protected function resultScrollerActive()
-    {
-        $config = $this->getService(\VuFind\Config\PluginManager::class)->get('Primo');
-        return $config->Record->next_prev_navigation ?? false;
-    }
-
-    /**
      * Show results of "cited by" search.
      *
      * @return mixed
@@ -94,6 +83,8 @@ class PrimoController extends AbstractSearch
      * Perform a "cited" or "cited by" search
      *
      * @return mixed
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function performCitationSearch()
     {
@@ -105,7 +96,7 @@ class PrimoController extends AbstractSearch
         // Don't save to history -- history page doesn't handle correctly:
         $this->saveToHistory = false;
 
-        $callback = function ($runner, $params, $searchId) {
+        $callback = function ($runner, $params, $searchId): void {
             $options = $params->getOptions();
             $options->disableHighlighting();
             $options->spellcheckEnabled(false);

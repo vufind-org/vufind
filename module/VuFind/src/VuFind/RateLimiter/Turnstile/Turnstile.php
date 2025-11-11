@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RateLimiter
@@ -30,8 +30,8 @@
 namespace VuFind\RateLimiter\Turnstile;
 
 use Laminas\Cache\Storage\StorageInterface;
-use Laminas\Log\LoggerAwareInterface;
 use Laminas\Mvc\MvcEvent;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Log\LoggerAwareTrait;
 use VuFindHttp\HttpServiceAwareInterface;
 use VuFindHttp\HttpServiceAwareTrait;
@@ -157,7 +157,7 @@ class Turnstile implements HttpServiceAwareInterface, LoggerAwareInterface
      *
      * @return void
      */
-    protected function setResult($policyId, $clientIp, $success)
+    public function setResult($policyId, $clientIp, $success)
     {
         $cacheKey = $this->getCacheKey($policyId, $clientIp);
         $this->turnstileCache->setItem($cacheKey, $success);

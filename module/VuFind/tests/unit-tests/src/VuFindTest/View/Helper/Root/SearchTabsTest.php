@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -31,6 +31,7 @@ namespace VuFindTest\View\Helper\Root;
 
 use Laminas\Http\Request;
 use Laminas\View\Helper\Url;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Record\Loader;
 use VuFind\Search\Results\PluginManager as ResultsPluginManager;
 use VuFind\Search\SearchTabsHelper;
@@ -103,9 +104,8 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
      * @param string $expected         Expected results
      *
      * @return void
-     *
-     * @dataProvider getCurrentHiddenFilterParamsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getCurrentHiddenFilterParamsProvider')]
     public function testGetCurrentHiddenFilterParams(
         array $currentFilters,
         int $filtersCalls,
@@ -333,7 +333,7 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
         $solrOptions->expects($this->any())
             ->method('getDefaultLimit')
             ->willReturn(20);
-        $configManager = $this->createMock(\VuFind\Config\PluginManager::class);
+        $configManager = $this->createMock(ConfigManagerInterface::class);
         return new \VuFind\Search\Solr\Params($solrOptions, $configManager);
     }
 }

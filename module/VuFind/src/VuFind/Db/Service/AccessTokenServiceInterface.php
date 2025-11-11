@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -42,6 +42,13 @@ use VuFind\Db\Entity\AccessTokenEntityInterface;
  */
 interface AccessTokenServiceInterface extends DbServiceInterface
 {
+    /**
+     * Create an access_token entity object.
+     *
+     * @return AccessTokenEntityInterface
+     */
+    public function createEntity(): AccessTokenEntityInterface;
+
     /**
      * Retrieve an object from the database based on id and type; create a new
      * row if no existing match is found.
@@ -76,4 +83,13 @@ interface AccessTokenServiceInterface extends DbServiceInterface
      * @return ?string
      */
     public function getNonce(int $userId): ?string;
+
+    /**
+     * Delete an access_token entity object.
+     *
+     * @param AccessTokenEntityInterface $accessToken AccessToken object to delete
+     *
+     * @return void
+     */
+    public function deleteAccessToken(AccessTokenEntityInterface $accessToken): void;
 }

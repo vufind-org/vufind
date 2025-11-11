@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -49,10 +49,9 @@ class InsecureCookieTest extends \PHPUnit\Framework\TestCase
      * @param string|string[] $options       Cookie(s) to check
      * @param array           $expectedRoles Expected roles from provider
      *
-     * @dataProvider getPermissionsProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getPermissionsProvider')]
     public function testGetPermissions(string|array $options, array $expectedRoles)
     {
         $cookieProvider = $this->createMock(CookieManager::class);

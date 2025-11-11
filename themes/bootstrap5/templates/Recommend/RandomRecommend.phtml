@@ -20,7 +20,7 @@
           <?=$this->record($driver)->getTitleHtml()?>
         </a>
         <?php $summAuthors = $driver->getPrimaryAuthors(); ?>
-        <span class="small<?php if (!empty($summAuthors)): ?> pull-right flip<?php endif; ?>">
+        <span class="small<?php if (!empty($summAuthors)): ?> float-end<?php endif; ?>">
           <?php $summDate = $driver->getPublicationDates(); ?>
           <?php if (!empty($summDate)): ?>
             <?=$this->transEsc('Published')?>: (<?=$this->escapeHtml($summDate[0])?>)

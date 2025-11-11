@@ -1,7 +1,7 @@
 <?php
     $this->headTitle('Deminifier');
-    $this->layout()->breadcrumbs = '<li class="breadcrumb-item"><a href="' . $this->url('devtools-home') . '">Development Tools</a>'
-      . '<li class="breadcrumb-item active" aria-current="page">Deminifier</li>';
+    $this->breadcrumbs()->set('Development Tools', $this->url('devtools-home'))
+      ->add('Deminifier', active: true);
 ?>
 
 <h1>Deminifier</h1>

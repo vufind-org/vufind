@@ -7,7 +7,7 @@
       // Logout redirect with inline script to make it lightbox compatible
       $script = "setTimeout(function() { window.location = '{$this->redirectUrl}'; }, 3000);";
     ?>
-    <?=$this->inlineScript(\Laminas\View\Helper\HeadScript::SCRIPT, $script, 'SET'); ?>
+    <?=$this->assetManager()->outputInlineScriptString($script); ?>
   </div>
 <?php else: ?>
   <form id="delete-account" method="post" action="<?=$this->url('myresearch-deleteaccount') ?>" name="deleteAccount">
