@@ -615,11 +615,7 @@ class Folio extends AbstractAPI implements
         }
         $items = [];
         $folioItemSort = $this->config['Holdings']['folio_sort'] ?? '';
-        if (!empty($folioItemSort)) {
-            $querySuffix = ' sortby ' . $folioItemSort;
-        } else {
-            $querySuffix = '';
-        }
+        $querySuffix = !empty($folioItemSort) ? ' sortby ' . $folioItemSort : '';
         if (count($holdingIds) == 1) {
             // /inventory/items-by-holdings-id returns bound-with items too (but it only takes one holdingsRecordId)
             foreach (
@@ -1332,11 +1328,7 @@ class Folio extends AbstractAPI implements
         }
         $holdings = $this->getHoldingsByInstanceIds($instanceIds);
         $holdingIds = array_map(fn ($holding) => $holding->id, $holdings);
-        if (count($holdings) == 0) {
-            $folioItems = [];
-        } else {
-            $folioItems = $this->getItemsByHoldingIds($holdingIds);
-        }
+        $folioItems = count($holdings) == 0 ? [] : $this->getItemsByHoldingIds($holdingIds);
         $results = [];
         foreach ($bibIds as $bibId) {
             $instanceId = $bibIdToInstanceId[$bibId];

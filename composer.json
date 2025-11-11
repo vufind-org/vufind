@@ -128,9 +128,9 @@
         "friendsofphp/php-cs-fixer": "3.89.0",
         "phpmd/phpmd": "2.15.0",
         "phpstan/phpstan": "2.1.31",
-        "phpunit/php-code-coverage": "10.1.16",
-        "phpunit/phpcov": "^9.0",
-        "phpunit/phpunit": "10.5.54",
+        "phpunit/php-code-coverage": "^11",
+        "phpunit/phpcov": "^10",
+        "phpunit/phpunit": "11.5.42",
         "pietercolpaert/hardf": "0.5.0",
         "rector/rector": "2.2.6",
         "squizlabs/php_codesniffer": "4.0.0"

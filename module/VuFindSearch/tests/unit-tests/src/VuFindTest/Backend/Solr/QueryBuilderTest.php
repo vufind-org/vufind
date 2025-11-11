@@ -599,7 +599,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     {
         return [
             'Single value, no extra params' => [
-                null,
+                'globalExtraParams' => null,
                 'expected1' => [
                     'bf' => ['a:filter'],
                     'bq' => null,

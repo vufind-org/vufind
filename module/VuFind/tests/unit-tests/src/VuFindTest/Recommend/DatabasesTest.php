@@ -92,6 +92,52 @@ class DatabasesTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test a query with punctuation.
+     *
+     * @return void
+     */
+    public function testQueryWithPunctuation(): void
+    {
+        $configData = $this->mockConfigData();
+        $module = $this->buildModuleAndProcessResults($configData, 'His-tory.');
+
+        $databases = $module->getResults();
+        $this->assertCount(3, $databases);
+        $this->assertArrayHasKey('http://thepast.com', $databases);
+    }
+
+    /**
+     * Test a database name with punctuation.
+     *
+     * @return void
+     */
+    public function testDatabaseNameWithPunctuation(): void
+    {
+        $configData = $this->mockConfigData();
+        $module = $this->buildModuleAndProcessResults($configData, 'ABC DB');
+
+        $databases = $module->getResults();
+        $this->assertCount(3, $databases);
+        $this->assertArrayHasKey('http://spelling.com', $databases);
+    }
+
+    /**
+     * Test a database name with punctuation but regex disabled.
+     *
+     * @return void
+     */
+    public function testQueryRegexDisabled(): void
+    {
+        $configData = $this->mockConfigData();
+        $configData['Databases']['useQueryReplacePattern'] = false;
+        $module = $this->buildModuleAndProcessResults($configData, 'ABC DB');
+
+        $databases = $module->getResults();
+        $this->assertCount(2, $databases);
+        $this->assertArrayNotHasKey('http://spelling.com', $databases);
+    }
+
+    /**
      * Test setting useLibGuides to true.
      *
      * @return void
@@ -245,6 +291,7 @@ class DatabasesTest extends \PHPUnit\Framework\TestCase
                     'Sociology DB' => 'http://people.com',
                     'Biology DB' => 'http://cells.com',
                     'History DB' => 'http://thepast.com',
+                    'A.B.C. DB' => 'http://spelling.com',
                 ],
             ],
         ];
