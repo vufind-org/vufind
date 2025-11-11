@@ -9,8 +9,15 @@
   foreach ($aliases as $icon) {
     // If this is a right-to-left icon, display it on the same line with the left-to-right version:
     if ($icon === "$lastIcon-rtl") {
-      array_pop($icons); // discard the previous uncombined version of the line before adding the combined version
-      $icons[] = $this->icon($lastIcon) . '/' . $this->icon($icon) . ' ' . $this->escapeHtml($lastIcon) . ' (ltr/rtl)<br>';
+      // There is no current mechanism to force display of left-to-right icons in right-to-left mode, so we'll just
+      // ignore the alternate version in this situation.
+      if (!$this->layout()->rtl) {
+        // If we're in left-to-right mode, we can display LTR and RTL versions on the same line; we need to
+        // discard the previous uncombined version of the line before adding the combined version
+        array_pop($icons);
+        $icons[] = $this->icon($lastIcon) . ' (ltr) ' . $this->escapeHtml($lastIcon)
+          . ' (rtl) ' . $this->icon($icon) . '<br>';
+      }
     } else {
       $icons[] = $this->icon($icon) . ' ' . $this->escapeHtml($icon) . '<br>';
     }
