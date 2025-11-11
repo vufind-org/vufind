@@ -232,6 +232,9 @@ class MultiBackend extends \VuFind\ILS\Driver\MultiBackend implements Translator
         foreach ($config as $key => $value) {
             if ('handler' === $key && 'PaytrailPaymentAPI' === $value) {
                 $value = 'Paytrail';
+            } elseif ('productCodeMappings' === $key && is_array($value)) {
+                // If productCodeMappings is an array, it should be mapped to driverProductCodeMappings:
+                $key = 'driverProductCodeMappings';
             }
             $result[$map[$key] ?? $key] = $value;
         }
