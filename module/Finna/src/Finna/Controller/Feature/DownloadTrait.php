@@ -29,6 +29,7 @@
 
 namespace Finna\Controller\Feature;
 
+use GuzzleHttp\Psr7\Response;
 use Laminas\Http\Headers;
 use VuFind\Http\CachingDownloader;
 
@@ -58,10 +59,10 @@ trait DownloadTrait
             return $downloader->download(
                 $url,
                 [],
-                function (\Laminas\Http\Response $response) {
+                function (Response $response) {
                     $contentType = '';
-                    if ($header = $response->getHeaders()->get('Content-Type')) {
-                        $contentType = $header->getFieldValue();
+                    if ($header = $response->getHeader('Content-Type')) {
+                        $contentType = reset($header);
                     }
                     return [
                         'contentType' => $contentType,
