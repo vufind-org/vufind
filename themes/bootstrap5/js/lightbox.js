@@ -602,16 +602,16 @@ VuFind.register('lightbox', function Lightbox() {
       if (VuFind.lightbox.refreshOnClose) {
         VuFind.refreshPage();
       } else {
-        if (_beforeOpenElement) {
-          _beforeOpenElement.focus();
-          _beforeOpenElement = null;
-        }
         unbindFocus();
         this.setAttribute('aria-hidden', true);
         VuFind.emit('lightbox.closing');
       }
     });
     _modal.addEventListener('hidden.bs.modal', function lightboxHidden() {
+      if (_beforeOpenElement) {
+        _beforeOpenElement.focus();
+        _beforeOpenElement = null;
+      }
       VuFind.lightbox.reset();
       VuFind.emit('lightbox.closed');
     });
