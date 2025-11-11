@@ -153,12 +153,9 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
 
                 // Get the marc field for copyright (997)
                 $nodes = $xmldoc2->GetElementsbyTagName('Fld997');
-                if ($nodes->length) {
-                    $review[$i]['Copyright']
-                        = html_entity_decode($xmldoc2->saveXML($nodes->item(0)));
-                } else {
-                    $review[$i]['Copyright'] = null;
-                }
+                $review[$i]['Copyright'] = $nodes->length
+                    ? html_entity_decode($xmldoc2->saveXML($nodes->item(0)))
+                    : null;
 
                 if ($review[$i]['Copyright']) {  //stop duplicate copyrights
                     $location = strripos(
