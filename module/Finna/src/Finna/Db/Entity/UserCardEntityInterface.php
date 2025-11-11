@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2024.
+ * Copyright (C) The National Library of Finland 2024-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -55,4 +55,20 @@ interface UserCardEntityInterface extends \VuFind\Db\Entity\UserCardEntityInterf
      * @return int
      */
     public function getFinnaDueDateReminder(): int;
+
+    /**
+     * Get barcode (RUNTIME ONLY!)
+     *
+     * @return ?string
+     */
+    public function getBarcode(): ?string;
+
+    /**
+     * Set barcode (RUNTIME ONLY!)
+     *
+     * @param ?string $barcode Barcode
+     *
+     * @return static
+     */
+    public function setBarcode(?string $barcode): static;
 }

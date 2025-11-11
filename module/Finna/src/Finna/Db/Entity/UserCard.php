@@ -55,6 +55,15 @@ class UserCard extends \VuFind\Db\Entity\UserCard implements UserCardEntityInter
     protected int $finnaDueDateReminder = 0;
 
     /**
+     * Barcode from profile
+     *
+     * @var ?string
+     *
+     * @todo Hacky, get rid of this?
+     */
+    protected ?string $barcode = null;
+
+    /**
      * Due date reminder setting setter
      *
      * @param int $remind New due date reminder setting.
@@ -75,5 +84,28 @@ class UserCard extends \VuFind\Db\Entity\UserCard implements UserCardEntityInter
     public function getFinnaDueDateReminder(): int
     {
         return $this->finnaDueDateReminder;
+    }
+
+    /**
+     * Get barcode (RUNTIME ONLY!)
+     *
+     * @return ?string
+     */
+    public function getBarcode(): ?string
+    {
+        return $this->barcode;
+    }
+
+    /**
+     * Set barcode (RUNTIME ONLY!)
+     *
+     * @param ?string $barcode Barcode
+     *
+     * @return static
+     */
+    public function setBarcode(?string $barcode): static
+    {
+        $this->barcode = $barcode;
+        return $this;
     }
 }

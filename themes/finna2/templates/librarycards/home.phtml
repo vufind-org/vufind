@@ -37,7 +37,7 @@
           </thead>
           <tbody>
             <?php foreach ($this->libraryCards as $record): ?>
-              <?php $username = $record['cat_username']; ?>
+              <?php $username = $record->getCatUsername(); ?>
               <?php $target = ''; ?>
               <?php if ($this->multipleTargets): ?>
                 <?php if (strstr($username, '.')): ?>
@@ -46,14 +46,14 @@
               <?php endif; ?>
               <tr>
                 <td data-label="<?=$this->transEsc('Library Card Name')?>" class="card-name">
-                  <?php $libraryCardName = $record['card_name'] == "$target.$username" ? $this->escapeHtml($username) : $this->escapeHtml($record['card_name']) ?>
+                  <?php $libraryCardName = $record->getCardName() == "$target.$username" ? $this->escapeHtml($username) : $this->escapeHtml($record->getCardName()) ?>
                   <?php if ($libraryCardName): ?>
                     <span><?=$libraryCardName?></span>
                   <?php else: ?>
                     <span>
                       <?=$this->transEsc('Library Card name missing')?>
                       <?php if ($this->auth()->getManager()->allowsUserIlsLogin()): ?>
-                        <a href="<?=$this->url('editLibraryCard') . $this->escapeHtmlAttr($record['id']) ?>" title="<?=$this->transEscAttr('Edit Library Card')?>"> <?=$this->transEsc('Add name')?></a>
+                        <a href="<?=$this->url('editLibraryCard') . $this->escapeHtmlAttr($record->getId()) ?>" title="<?=$this->transEscAttr('Edit Library Card')?>"> <?=$this->transEsc('Add name')?></a>
                       <?php endif; ?>
                     </span>
                   <?php endif; ?>
@@ -62,12 +62,12 @@
                   <td data-label="<?=$this->transEsc('login_target')?>"><span><?=$target ? $this->transEsc("source_$target", null, $target) : '&nbsp;' ?></span></td>
                 <?php endif; ?>
                 <td data-label="<?=$this->transEsc('Username')?>">
-                  <?php $barcode = $record['barcode'] ?? $username;?>
+                  <?php $barcode = $record->getBarcode() ?? $username;?>
                   <?php if ($barcode !== $username): ?>
                     <p><?=$this->escapeHtml($username)?></p>
                   <?php endif; ?>
-                  <a href="<?=$this->url('librarycards-displaybarcode', ['id' => $record['id']])?>" title="<?=$this->transEscAttr('show_barcode_title')?>">
-                    <?php if (strcasecmp($record['cat_username'], $user->getCatUsername()) === 0 && ($barcodeSvg = $this->barcode()->createCode39SVG($barcode, 1.3, 50))): ?>
+                  <a href="<?=$this->url('librarycards-displaybarcode', ['id' => $record->getId()])?>" title="<?=$this->transEscAttr('show_barcode_title')?>">
+                    <?php if (strcasecmp($record->getCatUsername(), $user->getCatUsername()) === 0 && ($barcodeSvg = $this->barcode()->createCode39SVG($barcode, 1.3, 50))): ?>
                       <div class="librarycard-barcode">
                         <?=$barcodeSvg?>
                       </div>
@@ -77,8 +77,8 @@
                 </td>
                 <td data-label="<?=$this->transEsc('Actions')?>" class="library-card-actions">
                   <div>
-                    <?php if ($this->ils()->checkFunction('changePassword', (array)$record)): ?>
-                      <a class="icon-link change-library-card-password" href="<?=$this->url('newLibraryCardPassword') ?>?id=<?=$this->escapeHtmlAttr($record['id']) ?>" data-lightbox title="<?=$this->transEscAttr('Change Password')?>">
+                    <?php if ($this->ils()->checkFunction('changePassword', ['patron' => $record])): ?>
+                      <a class="icon-link change-library-card-password" href="<?=$this->url('newLibraryCardPassword') ?>?id=<?=$this->escapeHtmlAttr($record->getId()) ?>" data-lightbox title="<?=$this->transEscAttr('Change Password')?>">
                         <?=$this->icon('library-card-password', 'icon-link__icon') ?>
                         <span class="icon-link__label">
                           <?=$this->transEsc('Change Password')?>
@@ -86,7 +86,7 @@
                       </a>
                     <?php endif; ?>
                     <?php if ($this->auth()->getManager()->allowsUserIlsLogin()): ?>
-                      <a class="icon-link edit-library-card" href="<?=$this->url('editLibraryCard') . $this->escapeHtmlAttr($record['id']) ?>" title="<?=$this->transEscAttr('Edit Library Card')?>">
+                      <a class="icon-link edit-library-card" href="<?=$this->url('editLibraryCard') . $this->escapeHtmlAttr($record->getId()) ?>" title="<?=$this->transEscAttr('Edit Library Card')?>">
                         <?=$this->icon('library-card-edit', 'icon-link__icon') ?>
                         <span class="icon-link__label">
                           <?=$this->transEsc('Update Card Details')?>
@@ -97,10 +97,10 @@
                       $this->component(
                           'confirm-button',
                           [
-                            'buttonLink' => $this->url('librarycards-deletecard', [], ['query' => ['cardID' => $record['id']]]),
+                            'buttonLink' => $this->url('librarycards-deletecard', [], ['query' => ['cardID' => $record->getId()]]),
                             'buttonLabelHtml' => $this->icon('library-card-disconnect') . ' ' . $this->translate('Disconnect Library Card'),
                             'buttonClass' => 'btn-unstyled',
-                            'confirmLink' => $this->url('librarycards-deletecard', [], ['query' => ['cardID' => $record['id'], 'confirm' => 1]]),
+                            'confirmLink' => $this->url('librarycards-deletecard', [], ['query' => ['cardID' => $record->getId(), 'confirm' => 1]]),
                             'header' => 'confirm_delete_library_card_brief',
                             'clearAccountCache' => true,
                             'align' => 'right',

@@ -85,14 +85,13 @@ class LibraryCardsController extends \VuFind\Controller\LibraryCardsController
                 $cards = [];
                 $patron = $this->getILSAuthenticator()->storedCatalogLogin();
                 foreach ($view->libraryCards as $card) {
-                    $card = $card->toArray();
                     if (
                         $patron
-                        && $patron['cat_username'] === $card['cat_username']
+                        && $patron['cat_username'] === $card->getCatUsername()
                     ) {
                         $profile = $this->getILS()->getMyProfile($patron);
                         if (!empty($profile['barcode'])) {
-                            $card['barcode'] = $profile['barcode'];
+                            $card->setBarcode($profile['barcode']);
                         }
                         array_unshift($cards, $card);
                         continue;
