@@ -34,6 +34,7 @@ use RuntimeException;
 use VuFindSearch\Backend\AbstractHandlerMap;
 use VuFindSearch\ParamBag;
 
+use function in_array;
 use function sprintf;
 
 /**
@@ -236,7 +237,7 @@ class HandlerMap extends AbstractHandlerMap
      */
     public function setParameters($handler, $type, array $parameters)
     {
-        if ($type != 'invariants' && $type != 'appends' && $type != 'defaults') {
+        if (!in_array($type, ['invariants', 'appends', 'defaults'])) {
             throw new InvalidArgumentException(
                 sprintf('Invalid parameter key: %s', $type)
             );

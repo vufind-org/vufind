@@ -405,7 +405,7 @@ class CookieConsent extends \Laminas\View\Helper\AbstractHelper implements Trans
         $placeholderReplace =  array_values($placeholders);
         array_walk_recursive(
             $consentDialogConfig,
-            function (&$value) use ($placeholderSearch, $placeholderReplace) {
+            function (&$value) use ($placeholderSearch, $placeholderReplace): void {
                 if (is_string($value)) {
                     $value = str_replace(
                         $placeholderSearch,

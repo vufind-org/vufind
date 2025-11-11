@@ -134,9 +134,8 @@ class PropertyStringTest extends \PHPUnit\Framework\TestCase
      * @param array  $expectedAttrs Expected attributes
      *
      * @return void
-     *
-     * @dataProvider fromHtmlProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('fromHtmlProvider')]
     public function testFromHtml(
         string $html,
         array $attrs,

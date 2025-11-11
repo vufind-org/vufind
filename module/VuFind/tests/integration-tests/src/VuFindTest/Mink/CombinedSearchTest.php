@@ -190,9 +190,8 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool $rightAjax Should right column load via AJAX?
      *
      * @return void
-     *
-     * @dataProvider ajaxCombinationsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('ajaxCombinationsProvider')]
     public function testCombinedSearchResultsAuthorLinks(bool $leftAjax, bool $rightAjax): void
     {
         $config = $this->getCombinedIniOverrides();
@@ -295,9 +294,8 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $linkMode Linking mode to activate
      *
      * @return void
-     *
-     * @dataProvider jumpMenuProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('jumpMenuProvider')]
     public function testJumpMenu(string $linkMode): void
     {
         $config = $this->getCombinedIniOverrides();
@@ -338,9 +336,8 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool $rightAjax Should right column load via AJAX?
      *
      * @return void
-     *
-     * @dataProvider ajaxCombinationsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('ajaxCombinationsProvider')]
     public function testCombinedSearchResultsMixedAjaxDOIs(bool $leftAjax, bool $rightAjax): void
     {
         $config = $this->getCombinedIniOverrides();

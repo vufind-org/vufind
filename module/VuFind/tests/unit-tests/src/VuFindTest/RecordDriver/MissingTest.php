@@ -82,9 +82,8 @@ class MissingTest extends \PHPUnit\Framework\TestCase
      * @param string $expectedTitle Expected title returned by driver
      *
      * @return void
-     *
-     * @dataProvider titleProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('titleProvider')]
     public function testDetermineMissingTitleWithoutDetails(string $resourceTitle, string $expectedTitle): void
     {
         $resource = $this->createMock(ResourceEntityInterface::class);

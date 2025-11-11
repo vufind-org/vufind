@@ -120,10 +120,9 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that we can save a favorite from accordion mode.
      *
-     * @depends testFavoritesInTabMode
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testFavoritesInTabMode')]
     public function testFavoritesInAccordionMode()
     {
         // Change the theme:

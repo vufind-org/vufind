@@ -195,11 +195,7 @@ class ServerParam implements
             return [$string];
         }
 
-        if ($delimiter === ' ') {
-            $pattern = ' +';
-        } else {
-            $pattern = preg_quote($delimiter, '/');
-        }
+        $pattern = $delimiter === ' ' ? ' +' : preg_quote($delimiter, '/');
 
         if ($escape === '') {
             $pattern = '(?<!' . preg_quote($escape, '/') . ')' . $pattern;

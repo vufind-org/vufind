@@ -1139,7 +1139,7 @@ class MyResearchController extends AbstractBase
 
             // Set up listener for recommendations:
             $rManager = $this->getService(\VuFind\Recommend\PluginManager::class);
-            $setupCallback = function ($runner, $params, $searchId) use ($rManager) {
+            $setupCallback = function ($runner, $params, $searchId) use ($rManager): void {
                 $listener = new RecommendListener($rManager, $searchId);
                 $listener->setConfig(
                     $params->getOptions()->getRecommendationSettings()
@@ -1997,7 +1997,7 @@ class MyResearchController extends AbstractBase
         if ($hash = ($this->params()->fromQuery('hash'))) {
             $emailAuthenticator = $this->getService(EmailAuthenticator::class);
             try {
-                $sessionStorage['recoveryData'] = $emailAuthenticator->authenticate($hash, true);
+                $sessionStorage['recoveryData'] = $emailAuthenticator->authenticate($hash);
                 // Redirect to clear the query parameters before proceeding.
                 return $this->redirect()->toRoute('myresearch-resetpassword');
             } catch (AuthException $e) {

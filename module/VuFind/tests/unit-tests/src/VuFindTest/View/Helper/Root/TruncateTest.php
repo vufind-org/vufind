@@ -73,9 +73,8 @@ class TruncateTest extends \PHPUnit\Framework\TestCase
      * @param string|PropertyString $expected Expected result
      *
      * @return void
-     *
-     * @dataProvider truncateProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('truncateProvider')]
     public function testTruncate($input, int $len, ?string $append, $expected): void
     {
         $truncate = new Truncate();

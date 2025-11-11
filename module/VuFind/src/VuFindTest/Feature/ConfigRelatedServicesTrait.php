@@ -226,7 +226,7 @@ trait ConfigRelatedServicesTrait
         $manager->expects($this->any())
             ->method('getConfig')
             ->with($this->isType('string'))
-            ->will($this->throwException($exception));
+            ->willThrowException($exception);
         return $manager;
     }
 
@@ -292,7 +292,7 @@ trait ConfigRelatedServicesTrait
         $manager->expects($this->any())
             ->method('get')
             ->with($this->isType('string'))
-            ->will($this->throwException($exception));
+            ->willThrowException($exception);
         return $manager;
     }
 }

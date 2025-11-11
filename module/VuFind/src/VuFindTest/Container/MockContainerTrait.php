@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Container;
 
+use PHPUnit\Framework\MockObject\MockBuilder;
 use PHPUnit\Framework\TestCase;
 
 use function in_array;
@@ -68,20 +69,12 @@ trait MockContainerTrait
     ];
 
     /**
-     * Test case (for building mock objects)
-     *
-     * @var TestCase
-     */
-    protected $test;
-
-    /**
      * Constructor
      *
-     * @param TestCase $test Test using the container
+     * @param TestCase $test Test using the container (for building mock objects)
      */
-    public function __construct(TestCase $test)
+    public function __construct(protected TestCase $test)
     {
-        $this->test = $test;
     }
 
     /**
@@ -94,8 +87,7 @@ trait MockContainerTrait
      */
     public function createMock($id, $methods = [])
     {
-        $builder = $this->test->getMockBuilder($id)
-            ->disableOriginalConstructor();
+        $builder = (new MockBuilder($this->test, $id))->disableOriginalConstructor();
         if ($methods) {
             $builder->onlyMethods($methods);
         }

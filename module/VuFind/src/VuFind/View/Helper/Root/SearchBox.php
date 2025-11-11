@@ -547,7 +547,7 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log\
                         $indent = false;
                     } else {
                         $finalLabel = $j == 1 ? $label : $searchDesc;
-                        $indent = $j == 1 ? false : true;
+                        $indent = $j != 1;
                     }
                     $handlers[] = [
                         'value' => $type . ':' . $target . '|' . $searchVal,

@@ -232,10 +232,9 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
      * @param array $timedBlocks    timedBlocks as defined in Demo.ini
      * @param bool  $expectedResult The expected result
      *
-     * @dataProvider isMethodBlockedProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('isMethodBlockedProvider')]
     public function testIsMethodBlocked(array $timedBlocks, array $expectedResult): void
     {
         $this->setTimedBlocks($timedBlocks);

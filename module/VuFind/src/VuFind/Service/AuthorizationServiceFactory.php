@@ -73,7 +73,7 @@ class AuthorizationServiceFactory extends LmcRbacAuthorizationServiceFactory
         $authorizationService = parent::__invoke($container, $requestedName, $options);
         $permissions = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('permissions');
         $assertionPluginManager = $container->get(AssertionPluginManager::class);
-        foreach ($permissions as $key => $settings) {
+        foreach ($permissions as $settings) {
             $sectionPermissions = (array)($settings['permission'] ?? []);
             $assertions = (array)($settings['assertion'] ?? []);
             if ($sectionPermissions && $assertions) {

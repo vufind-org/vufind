@@ -63,7 +63,7 @@ class OptimizeCommand extends CommitCommand
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         // Optimize is the same as commit (parent class) but with an extra step:
         $result = parent::execute($input, $output);

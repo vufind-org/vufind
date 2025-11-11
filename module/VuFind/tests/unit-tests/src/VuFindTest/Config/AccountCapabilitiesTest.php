@@ -83,9 +83,8 @@ class AccountCapabilitiesTest extends \PHPUnit\Framework\TestCase
      * @param string $expected   Expected return value
      *
      * @return void
-     *
-     * @dataProvider emailActionSettingsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('emailActionSettingsProvider')]
     public function testGetEmailActionSettings(array $mailConfig, string $expected): void
     {
         $capabilities = $this->getCapabilities(['Mail' => $mailConfig]);
@@ -117,9 +116,8 @@ class AccountCapabilitiesTest extends \PHPUnit\Framework\TestCase
      * @param bool   $expected     The expected result
      *
      * @return void
-     *
-     * @dataProvider emailActionAvailableProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('emailActionAvailableProvider')]
     public function testIsEmailActionAvailable(string $mailSetting, bool $loginEnabled, bool $expected): void
     {
         $config = ['Mail' => ['email_action' => $mailSetting]];

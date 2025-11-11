@@ -85,7 +85,7 @@ class DynamicRouteCommand extends AbstractRouteCommand
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $route = $input->getArgument('route');
         $controller = $input->getArgument('controller');
@@ -105,6 +105,6 @@ class DynamicRouteCommand extends AbstractRouteCommand
 
         // Write updated configuration
         $this->generatorTools->writeModuleConfig($configPath, $config);
-        return 0;
+        return self::SUCCESS;
     }
 }

@@ -258,7 +258,7 @@ class Generator
         ) use (
             &$sitemapFiles,
             &$sitemapIndexes
-        ) {
+        ): void {
             $index = ($sitemapIndexes[$name] ?? 0) + 1;
             $sitemapIndexes[$name] = $index;
             $pageName = empty($name) ? $index : "$name-$index";

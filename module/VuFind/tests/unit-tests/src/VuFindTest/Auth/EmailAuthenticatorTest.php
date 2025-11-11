@@ -130,7 +130,7 @@ class EmailAuthenticatorTest extends \PHPUnit\Framework\TestCase
         $authHashService = $this->createMock(AuthHashServiceInterface::class);
         $row = $this->createMock(AuthHashEntityInterface::class);
         $row->expects($this->once())->method('setSessionId')->with('foo-session')->willReturn($row);
-        $assertData = function ($data) {
+        $assertData = function ($data): void {
             $this->assertIsInt($data['timestamp']);
             $this->assertEquals(['foo-data'], $data['data']);
             $this->assertEquals('me@example.com', $data['email']);

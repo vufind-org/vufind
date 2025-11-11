@@ -282,9 +282,8 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
      * @param bool   $output Expected output of test
      *
      * @return void
-     *
-     * @dataProvider isInvertedNameProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('isInvertedNameProvider')]
     public function testIsInvertedName(string $input, bool $output): void
     {
         $this->assertEquals($output, VuFind::isInvertedName($input));
@@ -297,9 +296,8 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
      * @param string $output Expected output of test
      *
      * @return void
-     *
-     * @dataProvider nameProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('nameProvider')]
     public function testInvertName(string $input, string $output): void
     {
         $this->assertEquals($output, VuFind::invertName($input));
@@ -356,9 +354,8 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
      * @param string $expected Expected output of test
      *
      * @return void
-     *
-     * @dataProvider titleSortLowerProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('titleSortLowerProvider')]
     public function testTitleSortLower($input, $expected): void
     {
         $this->assertEquals($expected, VuFind::titleSortLower($input));

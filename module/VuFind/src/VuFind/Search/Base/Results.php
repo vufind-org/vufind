@@ -430,11 +430,9 @@ abstract class Results
         $pageLimit = $params->getLimit();
         $resultLimit = $this->getOptions()->getVisibleSearchResultLimit();
 
-        if ($resultLimit > -1 && $resultLimit < ($page * $pageLimit)) {
-            $record = $resultLimit;
-        } else {
-            $record = $page * $pageLimit;
-        }
+        $record = $resultLimit > -1 && $resultLimit < $page * $pageLimit
+            ? $resultLimit
+            : $page * $pageLimit;
         // If the end of the current page runs past the last record, use total
         // results; otherwise use the last record on this page:
         return ($record > $total) ? $total : $record;

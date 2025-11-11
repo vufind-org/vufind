@@ -106,10 +106,9 @@ class MethodTimedBlocksTest extends \PHPUnit\Framework\TestCase
      * @param string $service     Service display name
      * @param bool   $blocked     Is the method blocked
      *
-     * @dataProvider methodTimedBlocksProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('methodTimedBlocksProvider')]
     public function testMethodTimedBlocks(array $timedBlocks, string $expected, string $service = '', $blocked = true)
     {
         $helper = new MethodTimedBlocks();

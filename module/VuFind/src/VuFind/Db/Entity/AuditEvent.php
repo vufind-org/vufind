@@ -24,7 +24,7 @@
  * @package  Database
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org   Main Site
  */
 
 namespace VuFind\Db\Entity;
@@ -44,7 +44,7 @@ use function is_string;
  * @package  Database
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org   Main Site
  */
 #[ORM\Table(name: 'audit_event')]
 #[ORM\Index(name: 'audit_event_user_id_idx', columns: ['user_id'])]

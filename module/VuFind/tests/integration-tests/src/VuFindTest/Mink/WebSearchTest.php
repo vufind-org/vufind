@@ -67,9 +67,8 @@ class WebSearchTest extends \VuFindTest\Integration\MinkTestCase
      * @param string[] $expectedSubjectFacets  Expected subject facet values
      *
      * @return void
-     *
-     * @dataProvider webSearchProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('webSearchProvider')]
     public function testWebSearch(
         string $query,
         int $expectedCount,
