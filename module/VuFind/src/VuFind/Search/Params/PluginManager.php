@@ -47,6 +47,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         'blender' => \VuFind\Search\Blender\Params::class,
+        'blender2' => \VuFind\Search\Blender2\Params::class,
         'browzine' => \VuFind\Search\BrowZine\Params::class,
         'combined' => \VuFind\Search\Combined\Params::class,
         'eds' => \VuFind\Search\EDS\Params::class,
@@ -82,6 +83,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $factories = [
         \VuFind\Search\Blender\Params::class
             => \VuFind\Search\Blender\ParamsFactory::class,
+        \VuFind\Search\Blender2\Params::class
+            => \VuFind\Search\Blender2\ParamsFactory::class,
         \VuFind\Search\BrowZine\Params::class => ParamsFactory::class,
         \VuFind\Search\Combined\Params::class => ParamsFactory::class,
         \VuFind\Search\EDS\Params::class => ParamsFactory::class,
