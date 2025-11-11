@@ -144,9 +144,8 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool $filtered Should we apply the active filters?
      *
      * @return void
-     *
-     * @dataProvider filteredAutocompleteProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('filteredAutocompleteProvider')]
     public function testFilteredAutocomplete(bool $filtered): void
     {
         // Turn on autocomplete filtering:

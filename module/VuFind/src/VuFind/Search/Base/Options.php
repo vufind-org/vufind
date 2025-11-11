@@ -1069,7 +1069,7 @@ abstract class Options implements TranslatorAwareInterface
         return $this->autocompleteApplyActiveFilters;
     }
 
-    /*
+    /**
      * Get max number of displayed suggestions
      *
      * @return array
