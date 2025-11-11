@@ -16,6 +16,7 @@ return RectorConfig::configure()
         __DIR__ . '/../public',
     ])
     ->withSets([
+        PHPUnitSetList::PHPUNIT_110,
         PHPUnitSetList::ANNOTATIONS_TO_ATTRIBUTES,
     ])
     ->withTypeCoverageLevel(0)
