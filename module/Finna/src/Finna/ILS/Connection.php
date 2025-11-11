@@ -499,4 +499,36 @@ class Connection extends \VuFind\ILS\Connection
         }
         return false;
     }
+
+    /**
+     * Return details on fees payable online.
+     *
+     * @param array  $patron          Patron
+     * @param array  $fines           Patron's fines
+     * @param ?array $selectedFineIds Selected fines
+     *
+     * @throws ILSException
+     * @return array Associative array of payment details
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function getOnlinePaymentDetails(array $patron, array $fines, ?array $selectedFineIds): array
+    {
+        // @phpstan-ignore-next-line
+        $result = parent::getOnlinePaymentDetails($patron, $fines, $selectedFineIds);
+        if ($result['payable'] ?? false) {
+            // Check that payment is not disabled:
+            if (!($this->config->online_payment ?? true)) {
+                $result['payable'] = false;
+                $result['reason'] = $this->translate(
+                    'service_blocked',
+                    [
+                        '%%service%%'
+                            => $this->translate('service_description_payment', [], 'default_service_description'),
+                    ]
+                );
+            }
+        }
+        return $result;
+    }
 }

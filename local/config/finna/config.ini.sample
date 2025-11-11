@@ -321,6 +321,9 @@ loan_history_download_batch_limit = 1000
 ; Whether to display the item barcode for each loan. Default is false.
 display_checked_out_item_barcode = true
 
+; Online payment availability. Default is true.
+online_payment = true
+
 ; This section controls features related to user accounts
 [Account]
 ; Allow the user to set a home library through the Profile screen, which will
