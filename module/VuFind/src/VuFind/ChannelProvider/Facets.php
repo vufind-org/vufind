@@ -153,7 +153,7 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
                 continue;
             }
             $currentValueCount = 0;
-            foreach ($data[$field] as $value) {
+            foreach (array_unique($data[$field]) as $value) {
                 $current = [
                     'value' => $value,
                     'displayText' => $value,
