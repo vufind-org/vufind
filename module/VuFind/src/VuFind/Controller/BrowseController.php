@@ -282,24 +282,25 @@ class BrowseController extends AbstractBase implements
                 ];
             }
             // Don't make a second filter if it would be the same facet
+            $filterField = urlencode('filter[]');
             $view->paramTitle
                 = ($this->params()->fromQuery('query_field') != $this->getCategory())
-                ? 'filter[]=' . $this->params()->fromQuery('query_field') . ':'
+                ? $filterField . '=' . $this->params()->fromQuery('query_field') . ':'
                     . urlencode($this->params()->fromQuery('query')) . '&'
                 : '';
             switch ($this->getCurrentAction()) {
                 case 'LCC':
-                    $view->paramTitle .= 'filter[]=callnumber-subject:';
+                    $view->paramTitle .= $filterField . '=callnumber-subject:';
                     break;
                 case 'Dewey':
-                    $view->paramTitle .= 'filter[]=dewey-ones:';
+                    $view->paramTitle .= $filterField . '=dewey-ones:';
                     break;
                 default:
-                    $view->paramTitle .= 'filter[]=' . $this->getCategory() . ':';
+                    $view->paramTitle .= $filterField . '=' . $this->getCategory() . ':';
             }
             $view->paramTitle = str_replace(
                 '+AND+',
-                '&filter[]=',
+                '&' . $filterField . '=',
                 $view->paramTitle
             );
             $view->resultList = $resultList;
