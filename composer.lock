@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "deec244f2006453d09eae6bc653a1d0c",
+    "content-hash": "25d6e51a031988ad5fcb9c19c17b28e7",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -13391,16 +13391,16 @@
         },
         {
             "name": "phpunit/phpunit",
-            "version": "11.5.42",
+            "version": "11.5.43",
             "source": {
                 "type": "git",
                 "url": "https://github.com/sebastianbergmann/phpunit.git",
-                "reference": "1c6cb5dfe412af3d0dfd414cfd110e3b9cfdbc3c"
+                "reference": "c6b89b6cf4324a8b4cb86e1f5dfdd6c9e0371924"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/1c6cb5dfe412af3d0dfd414cfd110e3b9cfdbc3c",
-                "reference": "1c6cb5dfe412af3d0dfd414cfd110e3b9cfdbc3c",
+                "url": "https://api.github.com/repos/sebastianbergmann/phpunit/zipball/c6b89b6cf4324a8b4cb86e1f5dfdd6c9e0371924",
+                "reference": "c6b89b6cf4324a8b4cb86e1f5dfdd6c9e0371924",
                 "shasum": ""
             },
             "require": {
@@ -13472,7 +13472,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/phpunit/issues",
                 "security": "https://github.com/sebastianbergmann/phpunit/security/policy",
-                "source": "https://github.com/sebastianbergmann/phpunit/tree/11.5.42"
+                "source": "https://github.com/sebastianbergmann/phpunit/tree/11.5.43"
             },
             "funding": [
                 {
@@ -13496,7 +13496,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-09-28T12:09:13+00:00"
+            "time": "2025-10-30T08:39:39+00:00"
         },
         {
             "name": "phrity/net-stream",
@@ -14322,16 +14322,16 @@
         },
         {
             "name": "rector/rector",
-            "version": "2.2.6",
+            "version": "2.2.7",
             "source": {
                 "type": "git",
                 "url": "https://github.com/rectorphp/rector.git",
-                "reference": "5c5bbc956b9a056a26cb593379253104b7ed9c2d"
+                "reference": "022038537838bc8a4e526af86c2d6e38eaeff7ef"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/rectorphp/rector/zipball/5c5bbc956b9a056a26cb593379253104b7ed9c2d",
-                "reference": "5c5bbc956b9a056a26cb593379253104b7ed9c2d",
+                "url": "https://api.github.com/repos/rectorphp/rector/zipball/022038537838bc8a4e526af86c2d6e38eaeff7ef",
+                "reference": "022038537838bc8a4e526af86c2d6e38eaeff7ef",
                 "shasum": ""
             },
             "require": {
@@ -14370,7 +14370,7 @@
             ],
             "support": {
                 "issues": "https://github.com/rectorphp/rector/issues",
-                "source": "https://github.com/rectorphp/rector/tree/2.2.6"
+                "source": "https://github.com/rectorphp/rector/tree/2.2.7"
             },
             "funding": [
                 {
@@ -14378,7 +14378,7 @@
                     "type": "github"
                 }
             ],
-            "time": "2025-10-27T11:35:56+00:00"
+            "time": "2025-10-29T15:46:12+00:00"
         },
         {
             "name": "sebastian/cli-parser",

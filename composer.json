@@ -130,9 +130,9 @@
         "phpstan/phpstan": "2.1.32",
         "phpunit/php-code-coverage": "^11",
         "phpunit/phpcov": "^10",
-        "phpunit/phpunit": "11.5.42",
+        "phpunit/phpunit": "11.5.43",
         "pietercolpaert/hardf": "0.5.0",
-        "rector/rector": "2.2.6",
+        "rector/rector": "2.2.7",
         "squizlabs/php_codesniffer": "4.0.1"
     },
     "suggest": {
