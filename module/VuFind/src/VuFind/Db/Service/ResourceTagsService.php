@@ -73,11 +73,9 @@ class ResourceTagsService extends AbstractDbService implements
         $newOrder = [];
         foreach ($order as $next) {
             if (in_array($next, $legalSorts)) {
-                if ('posted asc' === $next || 'posted desc' === $next) {
-                    $newOrder[] = $next;
-                } else {
-                    $newOrder[] = $next . 'Sort ASC';
-                }
+                $newOrder[] = 'posted asc' === $next || 'posted desc' === $next
+                    ? $next
+                    : $next . 'Sort ASC';
             }
         }
         return $newOrder;

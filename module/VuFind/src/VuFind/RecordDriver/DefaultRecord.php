@@ -976,11 +976,9 @@ class DefaultRecord extends AbstractBase
         // Set up parameters based on the format of the record:
         $format = $this->getOpenUrlFormat();
         $method = "get{$format}OpenUrlParams";
-        if (method_exists($this, $method)) {
-            $params = $this->$method();
-        } else {
-            $params = $this->getUnknownFormatOpenUrlParams($format);
-        }
+        $params = method_exists($this, $method)
+            ? $this->$method()
+            : $this->getUnknownFormatOpenUrlParams($format);
 
         // Assemble the URL:
         $query = [];

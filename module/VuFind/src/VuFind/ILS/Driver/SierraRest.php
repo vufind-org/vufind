@@ -3971,8 +3971,8 @@ WHERE
             return false;
         }
         $code = $sierraFine['chargeType']['code'] ?? 0;
-        if (!in_array($code, $this->onlinePayableFineTypes)) {
-            return false;
+        if (in_array($code, $this->onlinePayableFineTypes)) {
+            return true;
         }
         $desc = $fine['description'] ?? '';
         foreach ((array)($this->config['OnlinePayment']['manualFineDescriptions'] ?? []) as $pattern) {

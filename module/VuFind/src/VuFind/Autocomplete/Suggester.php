@@ -104,11 +104,9 @@ class Suggester
         $types = $config['Autocomplete_Types'] ?? [];
 
         // Figure out which handler to use:
-        if (!empty($type) && isset($types[$type])) {
-            $module = $types[$type];
-        } else {
-            $module = $config['Autocomplete']['default_handler'] ?? false;
-        }
+        $module = !empty($type) && isset($types[$type])
+            ? $types[$type]
+            : $config['Autocomplete']['default_handler'] ?? false;
 
         // Get suggestions:
         if ($module) {

@@ -482,11 +482,9 @@ class Server
 
         // Check for sets:
         $fields = $record->getRawData();
-        if (null !== $this->setField && !empty($fields[$this->setField])) {
-            $sets = (array)$fields[$this->setField];
-        } else {
-            $sets = [];
-        }
+        $sets = null !== $this->setField && !empty($fields[$this->setField])
+            ? (array)$fields[$this->setField]
+            : [];
         if (!empty($set)) {
             $sets = array_unique(array_merge($sets, [$set]));
         }

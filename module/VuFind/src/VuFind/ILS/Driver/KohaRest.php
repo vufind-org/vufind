@@ -380,7 +380,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected function getCacheKey($suffix = null)
     {
-        return 'KohaRest' . '-' . md5($this->config['Catalog']['host'] . $suffix);
+        return 'KohaRest-' . md5($this->config['Catalog']['host'] . $suffix);
     }
 
     /**
@@ -1810,11 +1810,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         );
 
         if (200 !== $result['code']) {
-            if (400 === $result['code']) {
-                $message = 'password_error_invalid';
-            } else {
-                $message = 'An error has occurred';
-            }
+            $message = 400 === $result['code'] ? 'password_error_invalid' : 'An error has occurred';
             return [
                 'success' => false, 'status' => $message,
             ];
