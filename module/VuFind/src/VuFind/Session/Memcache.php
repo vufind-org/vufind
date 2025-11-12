@@ -106,8 +106,7 @@ class Memcache extends AbstractBase
                 throw $connectionException;
             }
         } else {
-            $this->connection
-                ->setOption(\Memcached::OPT_CONNECT_TIMEOUT, $timeout);
+            $this->connection->setOption(\Memcached::OPT_CONNECT_TIMEOUT, $timeout);
             if (!$this->connection->addServer($host, $port)) {
                 throw $connectionException;
             }
