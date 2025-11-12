@@ -9,7 +9,7 @@ Vagrant.configure("2") do |config|
 
   # Every Vagrant development environment requires a box. You can search for
   # boxes at https://app.vagrantup.com/boxes/search
-  config.vm.box = "ubuntu/jammy64"
+  config.vm.box = "hashicorp-education/ubuntu-24-04"
 
   # Provider-specific configuration so you can fine-tune various
   # backing providers for Vagrant. These expose provider-specific options.
@@ -22,11 +22,6 @@ Vagrant.configure("2") do |config|
     # Customize the amount of resources on the VM:
     vb.cpus = 2
     vb.memory = "2048"
-  end
-
-  # With Docker provider we need to use a Docker-friendly box.
-  config.vm.provider "docker" do |d, override|
-    override.vm.box = "tknerr/baseimage-ubuntu-22.04"
   end
 
   # Network configuration to forward ports.
