@@ -183,6 +183,7 @@ VuFind.register("channels", function Channels() {
     // AJAX load more records
     const url = new URL(decodeURIComponent(btn.dataset.href), location.origin);
     btn.textContent = VuFind.translate("loading_ellipsis");
+    btn.setAttribute("aria-label", VuFind.translate("loading"));
     disableLoadMoreBtn(btn);
 
     fetch(url.toString() + "&layout=lightbox")
@@ -210,14 +211,16 @@ VuFind.register("channels", function Channels() {
         // Hide button
         if (records.length < Number(targetChannel.dataset.batchSize)) {
           hideLoadMoreBtn(btn);
+        } else {
+          btn.textContent = VuFind.translate("channel_more_items");
+          btn.setAttribute("aria-label", VuFind.translate("channel_more_items_extended"));
+          enableLoadMoreBtn(btn);
         }
       });
 
     // Set button to next, next page
     url.searchParams.set("page", Number(url.searchParams.get("page")) + 1);
     btn.setAttribute("data-href", url.toString());
-    btn.textContent = VuFind.translate("channel_more_items");
-    enableLoadMoreBtn(btn);
   }
 
   /**
