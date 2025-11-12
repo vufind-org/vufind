@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "25d6e51a031988ad5fcb9c19c17b28e7",
+    "content-hash": "4204393385164fbd21e71a2436182e78",
     "packages": [
         {
             "name": "ahand/mobileesp",
@@ -3786,16 +3786,16 @@
         },
         {
             "name": "laminas/laminas-form",
-            "version": "3.22.0",
+            "version": "3.23.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-form.git",
-                "reference": "8cf60032cbb80a912b2e8d232cffe7683950a437"
+                "reference": "d901cff436516c38c89bdc5eb03b8f4172100214"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-form/zipball/8cf60032cbb80a912b2e8d232cffe7683950a437",
-                "reference": "8cf60032cbb80a912b2e8d232cffe7683950a437",
+                "url": "https://api.github.com/repos/laminas/laminas-form/zipball/d901cff436516c38c89bdc5eb03b8f4172100214",
+                "reference": "d901cff436516c38c89bdc5eb03b8f4172100214",
                 "shasum": ""
             },
             "require": {
@@ -3823,16 +3823,16 @@
                 "doctrine/annotations": "^1.14.3 || ^2.0.2",
                 "ext-gd": "*",
                 "ext-intl": "*",
-                "laminas/laminas-captcha": "^2.18",
+                "laminas/laminas-captcha": "^2.19",
                 "laminas/laminas-coding-standard": "^3.1.0",
-                "laminas/laminas-eventmanager": "^3.14.0",
+                "laminas/laminas-eventmanager": "^3.15.0",
                 "laminas/laminas-i18n": "^2.31.0",
-                "laminas/laminas-modulemanager": "^2.17.0",
+                "laminas/laminas-modulemanager": "^2.19.0",
                 "laminas/laminas-recaptcha": "^3.8",
                 "laminas/laminas-session": "^2.25.1",
                 "laminas/laminas-text": "^2.12.1",
                 "laminas/laminas-view": "^2.43",
-                "phpunit/phpunit": "^11.5.42",
+                "phpunit/phpunit": "^11.5.43",
                 "psalm/plugin-phpunit": "^0.19.5",
                 "vimeo/psalm": "^6.13.1"
             },
@@ -3881,7 +3881,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2025-10-15T12:31:24+00:00"
+            "time": "2025-11-07T22:41:15+00:00"
         },
         {
             "name": "laminas/laminas-http",
@@ -4608,16 +4608,16 @@
         },
         {
             "name": "laminas/laminas-paginator",
-            "version": "2.21.0",
+            "version": "2.22.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/laminas/laminas-paginator.git",
-                "reference": "ca588058a2da116f37e4990a6495eee63486b832"
+                "reference": "46e62444f467b000a9a0e3959551a29b3223d7e8"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/laminas/laminas-paginator/zipball/ca588058a2da116f37e4990a6495eee63486b832",
-                "reference": "ca588058a2da116f37e4990a6495eee63486b832",
+                "url": "https://api.github.com/repos/laminas/laminas-paginator/zipball/46e62444f467b000a9a0e3959551a29b3223d7e8",
+                "reference": "46e62444f467b000a9a0e3959551a29b3223d7e8",
                 "shasum": ""
             },
             "require": {
@@ -4683,7 +4683,7 @@
                     "type": "community_bridge"
                 }
             ],
-            "time": "2025-10-16T12:10:40+00:00"
+            "time": "2025-11-06T17:36:56+00:00"
         },
         {
             "name": "laminas/laminas-permissions-rbac",
@@ -9537,16 +9537,16 @@
         },
         {
             "name": "stripe/stripe-php",
-            "version": "v18.0.0",
+            "version": "v18.2.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/stripe/stripe-php.git",
-                "reference": "70d6c286f0eca002b60ccd62afa7140c43c14bbb"
+                "reference": "0acd7bdac84ad0f940d5da30c417170ce59b4fbc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/stripe/stripe-php/zipball/70d6c286f0eca002b60ccd62afa7140c43c14bbb",
-                "reference": "70d6c286f0eca002b60ccd62afa7140c43c14bbb",
+                "url": "https://api.github.com/repos/stripe/stripe-php/zipball/0acd7bdac84ad0f940d5da30c417170ce59b4fbc",
+                "reference": "0acd7bdac84ad0f940d5da30c417170ce59b4fbc",
                 "shasum": ""
             },
             "require": {
@@ -9590,22 +9590,22 @@
             ],
             "support": {
                 "issues": "https://github.com/stripe/stripe-php/issues",
-                "source": "https://github.com/stripe/stripe-php/tree/v18.0.0"
+                "source": "https://github.com/stripe/stripe-php/tree/v18.2.0"
             },
-            "time": "2025-09-30T22:56:22+00:00"
+            "time": "2025-11-05T22:59:39+00:00"
         },
         {
             "name": "swagger-api/swagger-ui",
-            "version": "v5.29.5",
+            "version": "v5.30.2",
             "source": {
                 "type": "git",
                 "url": "https://github.com/swagger-api/swagger-ui.git",
-                "reference": "04b9ad7b37f02bce0e1cb8c521e40b68585ccf9f"
+                "reference": "30d8f985caeca5bb9400cf21403686ec5a82c1cc"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/swagger-api/swagger-ui/zipball/04b9ad7b37f02bce0e1cb8c521e40b68585ccf9f",
-                "reference": "04b9ad7b37f02bce0e1cb8c521e40b68585ccf9f",
+                "url": "https://api.github.com/repos/swagger-api/swagger-ui/zipball/30d8f985caeca5bb9400cf21403686ec5a82c1cc",
+                "reference": "30d8f985caeca5bb9400cf21403686ec5a82c1cc",
                 "shasum": ""
             },
             "type": "library",
@@ -9651,9 +9651,9 @@
             ],
             "support": {
                 "issues": "https://github.com/swagger-api/swagger-ui/issues",
-                "source": "https://github.com/swagger-api/swagger-ui/tree/v5.29.5"
+                "source": "https://github.com/swagger-api/swagger-ui/tree/v5.30.2"
             },
-            "time": "2025-10-17T13:13:13+00:00"
+            "time": "2025-11-04T09:41:42+00:00"
         },
         {
             "name": "symfony/console",
