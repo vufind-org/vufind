@@ -130,7 +130,7 @@
       <?php
         $pageHref = $channelRoot .
           '&channelProvider=' . urlencode($channel['providerId']) .
-          '&page=1&limit=' . urlencode($channel['config']['batchSize']);
+          '&page=2&limit=' . urlencode($channel['config']['batchSize']);
         if (isset($channel['token'])) {
           $pageHref .= '&channelToken=' . urlencode($channel['token']);
         }
