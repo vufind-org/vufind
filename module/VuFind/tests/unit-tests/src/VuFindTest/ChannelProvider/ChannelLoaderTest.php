@@ -34,6 +34,7 @@ use VuFind\Cache\Manager as CacheManager;
 use VuFind\ChannelProvider\AbstractChannelProvider;
 use VuFind\ChannelProvider\ChannelLoader;
 use VuFind\ChannelProvider\PluginManager;
+use VuFind\Http\PhpEnvironment\Request as HttpRequest;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\RecordDriver\DefaultRecord;
 use VuFind\Search\Base\Results;
@@ -231,7 +232,8 @@ class ChannelLoaderTest extends \PHPUnit\Framework\TestCase
             $this->createMock(CacheManager::class),
             $this->getMockPluginManager(),
             $this->createMock(SearchRunner::class),
-            $recordLoader ?? $this->getMockRecordLoader()
+            $recordLoader ?? $this->getMockRecordLoader(),
+            $this->createMock(HttpRequest::class)
         );
     }
 }
