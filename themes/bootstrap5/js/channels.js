@@ -314,7 +314,7 @@ VuFind.register("channels", function Channels() {
       ? record.closest(".channel").getAttribute("id")
       : _channelID;
 
-    // Load more options if we're past the end of what's available
+    // Load more options if we're past the end of what's available (e.g. due to user hitting "Next")
     if (record.classList.contains("hidden-batch-item")) {
       loadMoreItems({ target: document.querySelector(`#${channelID} .channel-load-more-btn`) });
     }
