@@ -31,6 +31,7 @@ namespace VuFindTest\ChannelProvider;
 
 use Laminas\Mvc\Controller\Plugin\Url;
 use VuFind\ChannelProvider\Facets;
+use VuFind\Http\PhpEnvironment\Request;
 use VuFind\Search\Results\PluginManager;
 use VuFindTest\Feature\SearchObjectsTrait;
 use VuFindTest\RecordDriver\TestHarness;
@@ -58,7 +59,8 @@ class FacetsTest extends \PHPUnit\Framework\TestCase
         $resultsManager = $this->createMock(PluginManager::class);
         $resultsManager->method('get')->willReturn($this->getMockResults());
         $urlHelper = $this->createMock(Url::class);
-        $facets = new Facets($resultsManager, $urlHelper, ['maxFieldsToSuggest' => 0]);
+        $request = $this->createMock(Request::class);
+        $facets = new Facets($resultsManager, $urlHelper, $request, ['maxFieldsToSuggest' => 0]);
         $this->assertEquals(
             [
                 [
