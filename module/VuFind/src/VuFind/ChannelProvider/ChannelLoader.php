@@ -29,15 +29,16 @@
 
 namespace VuFind\ChannelProvider;
 
-use VuFind\Http\PhpEnvironment\Request as HttpRequest;
 use VuFind\Cache\Manager as CacheManager;
 use VuFind\ChannelProvider\PluginManager as ChannelManager;
+use VuFind\Http\PhpEnvironment\Request as HttpRequest;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Search\Base\Results;
 use VuFind\Search\SearchRunner;
 
 use function count;
 use function in_array;
+use function intval;
 
 /**
  * Channel loader

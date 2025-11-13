@@ -31,7 +31,6 @@ namespace VuFindTest\ChannelProvider;
 
 use Laminas\Mvc\Controller\Plugin\Url;
 use VuFind\ChannelProvider\Facets;
-use VuFind\Http\PhpEnvironment\Request;
 use VuFind\Search\Results\PluginManager;
 use VuFindTest\Feature\SearchObjectsTrait;
 use VuFindTest\RecordDriver\TestHarness;

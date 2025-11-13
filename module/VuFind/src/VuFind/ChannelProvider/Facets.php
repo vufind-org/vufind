@@ -38,6 +38,7 @@ use VuFind\Search\Base\Results;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 
 use function count;
+use function intval;
 
 /**
  * Facet-driven channel provider.
