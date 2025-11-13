@@ -118,8 +118,12 @@ VuFind.register("channels", function Channels() {
    * @returns {void}
    */
   function enableLoadMoreBtn(loadMoreBtn) {
+    // disable
     loadMoreBtn.classList.remove("disabled");
     loadMoreBtn.removeAttribute("aria-disabled");
+    // change content
+    btn.textContent = VuFind.translate("channel_more_items");
+    btn.setAttribute("aria-label", VuFind.translate("channel_more_items_extended"));
   }
 
   /**
@@ -128,8 +132,12 @@ VuFind.register("channels", function Channels() {
    * @returns {void}
    */
   function disableLoadMoreBtn(loadMoreBtn) {
+    // disable
     loadMoreBtn.classList.add("disabled");
     loadMoreBtn.setAttribute("aria-disabled", 1);
+    // change content
+    btn.textContent = VuFind.translate("loading_ellipsis");
+    btn.setAttribute("aria-label", VuFind.translate("loading"));
   }
 
   /**
@@ -138,11 +146,11 @@ VuFind.register("channels", function Channels() {
    * @returns {void}
    */
   function hideLoadMoreBtn(loadMoreBtn) {
-    // visually hide
-    loadMoreBtn.classList.add("visually-hidden");
     // screen-reader disable
     loadMoreBtn.classList.add("disabled");
     loadMoreBtn.setAttribute("aria-disabled", 1);
+    // visually hide
+    loadMoreBtn.classList.add("visually-hidden");
   }
 
   /**
@@ -154,6 +162,9 @@ VuFind.register("channels", function Channels() {
     if (btn.classList.contains("disabled")) {
       return false;
     }
+
+    // Disable and relabel button
+    disableLoadMoreBtn(btn);
 
     // Reveal hidden items
     const targetChannel = btn.closest(".channel");
@@ -177,15 +188,12 @@ VuFind.register("channels", function Channels() {
     // How many more records do we need?
     const neededCount = pageSize - hiddenItems.length;
     if (neededCount <= 0) {
+      enableLoadMoreBtn(btn);
       return; // skip loading more records
     }
 
     // AJAX load more records
     const url = new URL(decodeURIComponent(btn.dataset.href), location.origin);
-    btn.textContent = VuFind.translate("loading_ellipsis");
-    btn.setAttribute("aria-label", VuFind.translate("loading"));
-    disableLoadMoreBtn(btn);
-
     fetch(url.toString() + "&layout=lightbox")
       .then((res) => res.text())
       .then(function loadMoreItemsParseHTML(resHTML) {
@@ -212,8 +220,6 @@ VuFind.register("channels", function Channels() {
         if (records.length < Number(targetChannel.dataset.batchSize)) {
           hideLoadMoreBtn(btn);
         } else {
-          btn.textContent = VuFind.translate("channel_more_items");
-          btn.setAttribute("aria-label", VuFind.translate("channel_more_items_extended"));
           enableLoadMoreBtn(btn);
         }
       });
