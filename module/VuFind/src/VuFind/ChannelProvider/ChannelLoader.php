@@ -29,6 +29,7 @@
 
 namespace VuFind\ChannelProvider;
 
+use VuFind\Http\PhpEnvironment\Request as HttpRequest;
 use VuFind\Cache\Manager as CacheManager;
 use VuFind\ChannelProvider\PluginManager as ChannelManager;
 use VuFind\Record\Loader as RecordLoader;
@@ -59,6 +60,7 @@ class ChannelLoader
      * @param ChannelManager $channelManager Channel manager
      * @param SearchRunner   $searchRunner   Search runner
      * @param RecordLoader   $recordLoader   Record loader
+     * @param HttpRequest    $request        HTTP request
      * @param string         $locale         Current locale (used for caching)
      */
     public function __construct(
@@ -67,6 +69,7 @@ class ChannelLoader
         protected ChannelManager $channelManager,
         protected SearchRunner $searchRunner,
         protected RecordLoader $recordLoader,
+        protected HttpRequest $request,
         protected string $locale = ''
     ) {
     }
@@ -133,7 +136,7 @@ class ChannelLoader
         // Perform search and configure providers:
         $callback = function ($runner, $params) use ($providers): void {
             foreach ($providers as $provider) {
-                $provider->configureSearchParams($params);
+                $provider->configureSearchParams($params, $this->request);
             }
         };
         return $this->searchRunner->run($searchRequest, $source, $callback);
@@ -240,17 +243,19 @@ class ChannelLoader
             $cache = null;
         }
 
+        // Only use the cache for the first page of results:
+        $page = intval($this->request->getQuery('page', 1));
+        $useCache = ($cacheKey && $page === 1);
+
         // Fetch channel data from cache, or populate cache if necessary:
-        if (!($channels = $cacheKey ? $cache->getItem($cacheKey) : false)) {
+        if (!($channels = $useCache ? $cache->getItem($cacheKey) : false)) {
             $searchParams = [];
             if (isset($this->config['General']['default_home_search'])) {
-                $searchParams['lookfor']
-                    = $this->config['General']['default_home_search'];
+                $searchParams['lookfor'] = $this->config['General']['default_home_search'];
             }
-            $results = $this
-                ->performChannelSearch($searchParams, $providers, $source);
+            $results = $this->performChannelSearch($searchParams, $providers, $source);
             $channels = $this->getChannelsFromResults($providers, $results, $token);
-            if ($cacheKey) {
+            if ($useCache) {
                 $cache->setItem($cacheKey, $channels);
             }
         }

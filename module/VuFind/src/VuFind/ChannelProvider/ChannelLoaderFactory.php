@@ -75,6 +75,7 @@ class ChannelLoaderFactory implements FactoryInterface
             $container->get(\VuFind\ChannelProvider\PluginManager::class),
             $container->get(\VuFind\Search\SearchRunner::class),
             $container->get(\VuFind\Record\Loader::class),
+            $container->get('Request'),
             $container->get(LocaleSettings::class)->getUserLocale()
         );
     }

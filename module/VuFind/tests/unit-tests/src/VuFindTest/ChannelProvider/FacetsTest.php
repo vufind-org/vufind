@@ -59,8 +59,7 @@ class FacetsTest extends \PHPUnit\Framework\TestCase
         $resultsManager = $this->createMock(PluginManager::class);
         $resultsManager->method('get')->willReturn($this->getMockResults());
         $urlHelper = $this->createMock(Url::class);
-        $request = $this->createMock(Request::class);
-        $facets = new Facets($resultsManager, $urlHelper, $request, ['maxFieldsToSuggest' => 0]);
+        $facets = new Facets($resultsManager, $urlHelper, ['maxFieldsToSuggest' => 0]);
         $this->assertEquals(
             [
                 [
