@@ -160,6 +160,13 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitStatement('$(".channel-add-menu:first .channel-add-link").length === 6');
         $this->assertCount(8, $page->findAll('css', $this->channelSelector));
         $this->assertCount(6, $channel->findAll('css', '.channel-add-link'));
+        // Click last add button (and assert that it's the one we expect it to be)
+        $lastChannel = $this->findCss($page, 'div.channel', index: 7);
+        $this->assertEquals('Similar Items: Movie Quotes Thru The Ages', $lastChannel->find('css', 'h2')->getText());
+        $this->clickCss($lastChannel, '.channel-add-more-btn');
+        // Post count
+        $this->waitStatement('$("div.channel").length === 10');
+        $this->assertCount(10, $page->findAll('css', $this->channelSelector));
     }
 
     /**
