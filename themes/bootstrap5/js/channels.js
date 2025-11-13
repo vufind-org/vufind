@@ -113,20 +113,6 @@ VuFind.register("channels", function Channels() {
   }
 
   /**
-   * Helper function to enable the Load more items button
-   * @param {HTMLButtonElement} loadMoreBtn The button
-   * @returns {void}
-   */
-  function enableLoadMoreBtn(loadMoreBtn) {
-    // disable
-    loadMoreBtn.classList.remove("disabled");
-    loadMoreBtn.removeAttribute("aria-disabled");
-    // change content
-    btn.textContent = VuFind.translate("channel_more_items");
-    btn.setAttribute("aria-label", VuFind.translate("channel_more_items_extended"));
-  }
-
-  /**
    * Helper function to disable the Load more items button
    * @param {HTMLButtonElement} loadMoreBtn The button
    * @returns {void}
@@ -136,8 +122,33 @@ VuFind.register("channels", function Channels() {
     loadMoreBtn.classList.add("disabled");
     loadMoreBtn.setAttribute("aria-disabled", 1);
     // change content
-    btn.textContent = VuFind.translate("loading_ellipsis");
-    btn.setAttribute("aria-label", VuFind.translate("loading"));
+    loadMoreBtn.textContent = VuFind.translate("loading_ellipsis");
+    // store label for later
+    if (!loadMoreBtn.getAttribute("data-enabled-label")) {
+      loadMoreBtn.setAttribute("data-enabled-label", loadMoreBtn.getAttribute("aria-label"));
+    }
+    loadMoreBtn.setAttribute("aria-label", VuFind.translate("loading"));
+  }
+
+  /**
+   * Helper function to enable the Load more items button
+   * @param {HTMLButtonElement} loadMoreBtn The button
+   * @returns {void}
+   */
+  function enableLoadMoreBtn(loadMoreBtn) {
+    // disable
+    loadMoreBtn.classList.remove("disabled");
+    loadMoreBtn.removeAttribute("aria-disabled");
+    // change content
+    loadMoreBtn.textContent = VuFind.translate("channel_more_items");
+    // restore label
+    if (loadMoreBtn.getAttribute("data-enabled-label")) {
+      loadMoreBtn.setAttribute("aria-label", loadMoreBtn.getAttribute("data-enabled-label"));
+    } else {
+      // if not stored, use generic
+      loadMoreBtn.setAttribute("aria-label", VuFind.translate("channel_more_items"));
+    }
+    loadMoreBtn.removeAttribute("data-enabled-label");
   }
 
   /**
