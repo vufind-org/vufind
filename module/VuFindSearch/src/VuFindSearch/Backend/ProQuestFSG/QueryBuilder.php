@@ -152,11 +152,41 @@ class QueryBuilder
     {
         // Clean and validate input:
         $index = $query->getHandler();
+        $queryString = $query->getString();
         if (empty($index)) {
             // No handler?  Just accept query string as-is; no modifications needed.
-            return $query->getString();
+            return $queryString;
         }
-        $lookfor = str_replace('"', '', $query->getString());
-        return "({$index} = \"{$lookfor}\")";
+
+        // Check for phrases. ProQuest's API does not interpret quoted strings as phrases.
+        // We need to use the operator 'adj' instead of the normal '='.
+        $segments = explode('"', $queryString);
+        $isPhrase = false;
+        $queryStringParts = [];
+        $joiner = ' AND ';
+        foreach ($segments as $segment) {
+            $segment = trim($segment);
+            if ($segment) {
+                $operator = $isPhrase ? 'adj' : '=';
+
+                // Remove implied 'AND'
+                if (!$isPhrase && str_contains(strtoupper($segment), 'AND')) {
+                    $segment = trim(preg_replace('/\s*AND\s*/i', ' ', $segment));
+                }
+
+                // Convert 'OR' to operator
+                if (!$isPhrase && str_contains(strtoupper($segment), 'OR')) {
+                    $segment = trim(preg_replace('/\s*OR\s*/i', ' ', $segment));
+                    $operator = 'any';
+                    $joiner = ' OR ';
+                }
+
+                $queryStringParts[] = "({$index} " . $operator . " \"{$segment}\")";
+            }
+            $isPhrase = !$isPhrase;
+        }
+
+        $queryString = implode($joiner, $queryStringParts);
+        return $queryString;
     }
 }
