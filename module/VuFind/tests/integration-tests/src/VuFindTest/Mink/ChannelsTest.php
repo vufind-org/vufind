@@ -430,9 +430,13 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         // Let's get more than 48 items on the page to ensure that we call back to the server for more results:
         $this->assertCount(6, $channel->findAll('css', 'li.channel-item:not(.hidden-batch-item)'));
         for ($i = 0; $i < 8; $i++) {
-            $this->clickCss($channel, '.channel-load-more-btn');
+            $button = $this->findCss($channel, '.channel-load-more-btn');
+            $button->click();
+            $this->waitForPageLoad($page);
+            // Confirm that the button's labels remain appropriate after clicks:
+            $this->assertEquals('Load more items', $button->getText());
+            $this->assertEquals('Load more items into Format: Book Chapter', $button->getAttribute('aria-label'));
         }
-        $this->waitForPageLoad($page);
         // Make sure that we not only have the expected number of items but also that they all have different
         // IDs. (This prevents regression of a bug where the same page of results got loaded multiple times).
         $allItems = $channel->findAll('css', 'li.channel-item:not(.hidden-batch-item)');
