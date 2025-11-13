@@ -319,6 +319,9 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         $this->changeConfigs(
             [
                 'channels' => [
+                    'General' => [
+                        'cache_home_channels' => false,
+                    ],
                     'source.Solr' => [
                         'home' => [$channel],
                     ],
@@ -346,6 +349,9 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         $this->changeConfigs(
             [
                 'channels' => [
+                    'General' => [
+                        'cache_home_channels' => false,
+                    ],
                     'source.Solr' => [
                         'home' => ['newsearchitems'],
                     ],
@@ -371,6 +377,9 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         $this->changeConfigs(
             [
                 'channels' => [
+                    'General' => [
+                        'cache_home_channels' => false,
+                    ],
                     'source.Solr' => [
                         'home' => ['random'],
                     ],
@@ -386,5 +395,49 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.channel-load-more-btn');
         $this->clickCss($page, '.channel-load-more-btn');
         $this->assertCount(24, $page->findAll('css', 'li.channel-item:not(.hidden-batch-item)'));
+    }
+
+    /**
+     * Test deep pagination of Facets channel
+     *
+     * @return void
+     */
+    public function testDeepPaginationOfFacetsChannel(): void
+    {
+        $this->changeConfigs(
+            [
+                'channels' => [
+                    'General' => [
+                        'cache_home_channels' => false,
+                    ],
+                    'source.Solr' => [
+                        'home' => ['facets:provider.facets.home'],
+                    ],
+                    'provider.facets.home' => [
+                        'maxFieldsToSuggest' => 2,
+                        'maxValuesToSuggestPerField' => 1,
+                    ],
+                ],
+                'searches' => [
+                    // Filter to specific records to ensure predictable results:
+                    'RawHiddenFilters' => ['building:geo.mrc'],
+                ],
+            ],
+        );
+        $page = $this->getChannelsHomePage();
+        $channel = $this->findCss($page, 'div.channel', index: 1);
+        $this->assertEquals('Format: Book Chapter', $this->findCssAndGetText($channel, 'h2.channel-title'));
+        // Let's get more than 48 items on the page to ensure that we call back to the server for more results:
+        $this->assertCount(6, $channel->findAll('css', 'li.channel-item:not(.hidden-batch-item)'));
+        for ($i = 0; $i < 8; $i++) {
+            $this->clickCss($channel, '.channel-load-more-btn');
+        }
+        $this->waitForPageLoad($page);
+        // Make sure that we not only have the expected number of items but also that they all have different
+        // IDs. (This prevents regression of a bug where the same page of results got loaded multiple times).
+        $allItems = $channel->findAll('css', 'li.channel-item:not(.hidden-batch-item)');
+        $allIds = array_unique(array_map(fn ($item) => $item->getAttribute('data-record-id'), $allItems));
+        $this->assertCount(54, $allItems);
+        $this->assertCount(54, $allIds);
     }
 }
