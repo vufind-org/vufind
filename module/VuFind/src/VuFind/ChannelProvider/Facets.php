@@ -173,8 +173,7 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
                 ];
                 $tokenOnly = $fieldCount >= $this->maxFieldsToSuggest
                     || $currentValueCount >= $this->maxValuesToSuggestPerField;
-                $channel = $this
-                    ->buildChannelFromFacet($results, $field, $current, $tokenOnly);
+                $channel = $this->buildChannelFromFacet($results, $field, $current, $tokenOnly);
                 if ($tokenOnly || count($channel['contents']) > 0) {
                     $channels[] = $channel;
                     $currentValueCount++;
