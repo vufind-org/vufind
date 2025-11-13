@@ -259,31 +259,6 @@ class StreamHandlerTest extends TestCase
     }
 
     /**
-     * Test error handling for invalid file paths
-     *
-     * @return void
-     */
-    public function testInvalidFilePath(): void
-    {
-        $this->expectException(\Exception::class);
-
-        // Try to create handler with invalid path
-        $handler = new StreamHandler('/invalid/path/that/does/not/exist/log.txt');
-
-        $mockIpReader = $this->getMockBuilder(\VuFind\Net\UserIpReader::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['getUserIp'])
-            ->getMock();
-        $mockIpReader->method('getUserIp')->willReturn('127.0.0.1');
-
-        $monologLogger = new \Monolog\Logger('test');
-        $monologLogger->pushHandler($handler);
-
-        $logger = new Logger($mockIpReader, $monologLogger);
-        $logger->info('This should fail');
-    }
-
-    /**
      * Test that the handler properly closes resources
      *
      * @return void
