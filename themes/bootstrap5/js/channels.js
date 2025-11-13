@@ -169,7 +169,7 @@ VuFind.register("channels", function Channels() {
     });
 
     // Out of records
-    if (hiddenItems.length < Number(targetChannel.dataset.rowSize)) {
+    if (hiddenItems.length > 0 && hiddenItems.length < Number(targetChannel.dataset.rowSize)) {
       hideLoadMoreBtn(btn);
       return;
     }
