@@ -441,6 +441,10 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
             $button->click();
             $this->waitForPageLoad($page);
             // Confirm that the button's labels remain appropriate after clicks:
+            $dataHref = $button->getAttribute('data-href');
+            $selector = 'button[data-href="' . $dataHref . '"]';
+            $js = "false === document.querySelector('$selector').textContent.startsWith('Loading')";
+            $this->waitStatement($js);
             $this->assertEquals('Load more items', $button->getText());
             $this->assertEquals('Load more items into Format: Book Chapter', $button->getAttribute('aria-label'));
         }
