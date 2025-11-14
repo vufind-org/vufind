@@ -79,7 +79,7 @@ class BlenderBackendFactory implements FactoryInterface
      *
      * @var string
      */
-    protected $mappingsConfig = 'BlenderMappings.yaml';
+    protected $mappingsConfig = 'BlenderMappings';
 
     /**
      * Create service
@@ -108,7 +108,8 @@ class BlenderBackendFactory implements FactoryInterface
         foreach (array_keys($backendConfig) as $backendId) {
             $backends[$backendId] = $backendManager->get($backendId);
         }
-        $blenderMappings = $yamlReader->get($this->mappingsConfig);
+        $this->mappingsConfig = $blenderConfig->Blending->mappings ?? $this->mappingsConfig;
+        $blenderMappings = $yamlReader->get($this->mappingsConfig . '.yaml');
         $backend = new Backend(
             $backends,
             $blenderConfig,
