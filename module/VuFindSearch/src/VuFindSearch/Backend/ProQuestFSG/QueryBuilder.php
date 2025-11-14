@@ -154,8 +154,8 @@ class QueryBuilder
         $index = $query->getHandler();
         $queryString = $query->getString();
         if (empty($index)) {
-            // No handler?  Just accept query string as-is; no modifications needed.
-            return $queryString;
+            // No handler? Should never get here. Use the default?
+            $index = 'cql.serverChoice';
         }
 
         // Check for phrases. ProQuest's API does not interpret quoted strings as phrases.
