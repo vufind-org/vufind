@@ -22,9 +22,6 @@
   <?php
     $groupId = $channel['groupId'] ?? $channel['providerId'];
     $channelID = 'channel-' . md5(serialize($channel));
-    $channelRoot = $this->url('channels-home') . '?' .
-      (empty($queryParams) ? '' : $queryParams . '&') .
-      'layout=lightbox';
     $providerData = $this->htmlAttributes([
       'data-batch-size' => $channel['config']['batchSize'],
       'data-page-size' => $channel['config']['pageSize'],
@@ -44,12 +41,17 @@
             <span aria-hidden="true"><?=$this->icon('dropdown-caret') ?></span>
           </button>
           <ul class="dropdown-menu">
+            <?php
+              $addChannelRoot = current(explode('?', $this->serverUrl(true)))
+                . '?' . (empty($queryParams) ? '' : $queryParams . '&')
+                . 'layout=lightbox';
+            ?>
             <?php foreach ($this->relatedTokens[$groupId] as $related): ?>
               <?php
                 $linkAttrs = $this->htmlAttributes([
                   'class' => 'channel-add-link dropdown-item',
                   'data-token' => $related['token'],
-                  'href' => $channelRoot .
+                  'href' => $addChannelRoot .
                     '&channelProvider=' . urlencode($related['providerId']) .
                     '&channelToken=' . urlencode($related['token']),
                 ]);
@@ -130,10 +132,13 @@
 
     <div class="channel-bottom-menu">
       <?php
+        $loadMoreRoot = $this->url('channels-home') . '?' .
+          (empty($queryParams) ? '' : $queryParams . '&') .
+          'layout=lightbox';
         $btnAttrs = [
           'aria-label' => $this->translate('channel_more_items_extended', ['%%channel%%' => $channel['title']]),
           'class' => 'channel-load-more-btn btn btn-default',
-          'data-href' => $channelRoot .
+          'data-href' => $loadMoreRoot .
             '&channelProvider=' . urlencode($channel['providerId']) .
             '&page=2&limit=' . urlencode($channel['config']['batchSize']),
         ];
