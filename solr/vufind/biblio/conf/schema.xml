@@ -194,7 +194,7 @@
     <field name="topic_browse" type="string" indexed="true" stored="false" multiValued="true"/>
     <field name="author_browse" type="string" indexed="true" stored="false" multiValued="true"/>
     <field name="genre" type="text" indexed="true" stored="true" multiValued="true"/>
-    <field name="genre_facet" type="textFacet" indexed="true" stored="true" useDocValuesAsStored="false" multiValued="true"/>
+    <field name="genre_facet" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="geographic" type="text" indexed="true" stored="true" multiValued="true"/>
     <field name="geographic_facet" type="textFacet" indexed="true" stored="true" multiValued="true"/>
     <field name="era" type="text" indexed="true" stored="true" multiValued="true"/>
