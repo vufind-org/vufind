@@ -23,7 +23,7 @@
     $groupId = $channel['groupId'] ?? $channel['providerId'];
     $channelID = 'channel-' . md5(serialize($channel));
     $channelRoot = $this->url('channels-home') . '?' .
-      (empty($queryParams) ? '' : $this->escapeHtmlAttr($queryParams . '&')) .
+      (empty($queryParams) ? '' : $queryParams . '&') .
       'layout=lightbox';
     $providerData = $this->htmlAttributes([
       'data-batch-size' => $channel['config']['batchSize'],
@@ -49,7 +49,9 @@
                 $linkAttrs = $this->htmlAttributes([
                   'class' => 'channel-add-link dropdown-item',
                   'data-token' => $related['token'],
-                  'href' => $channelRoot . 'channelProvider=' . urlencode($related['providerId']) . '&channelToken=' . urlencode($related['token']),
+                  'href' => $channelRoot .
+                    '&channelProvider=' . urlencode($related['providerId']) .
+                    '&channelToken=' . urlencode($related['token']),
                 ]);
               ?>
               <li><a <?=$linkAttrs ?>><?=$this->escapeHtml($this->truncate($related['title'], 100)) ?></a></li>
@@ -128,21 +130,24 @@
 
     <div class="channel-bottom-menu">
       <?php
-        $pageHref = $channelRoot .
-          '&channelProvider=' . urlencode($channel['providerId']) .
-          '&page=2&limit=' . urlencode($channel['config']['batchSize']);
+        $btnAttrs = [
+          'aria-label' => $this->translate('channel_more_items_extended', ['%%channel%%' => $channel['title']]),
+          'class' => 'channel-load-more-btn btn btn-default',
+          'data-href' => $channelRoot .
+            '&channelProvider=' . urlencode($channel['providerId']) .
+            '&page=2&limit=' . urlencode($channel['config']['batchSize']),
+        ];
         if (isset($channel['token'])) {
-          $pageHref .= '&channelToken=' . urlencode($channel['token']);
+          $btnAttrs['data-href'] .= '&channelToken=' . urlencode($channel['token']);
         }
-        $isDiabled = count($channel['contents']) < $channel['config']['rowSize'];
+
+        // if we don't have enough items to fill a row, hide button
+        if (count($channel['contents']) < $channel['config']['rowSize']) {
+          $btnAttrs['class'] .= ' visually-hidden disabled';
+          $btnAttrs['aria-disabled'] = 'true';
+        }
       ?>
-      <button
-        class="channel-load-more-btn btn btn-default<?=$isDiabled ? ' visually-hidden disabled" aria-disabled="true' : '' ?>"
-        data-href="<?=$pageHref ?>"
-        aria-label="<?=$this->transEscAttr('channel_more_items_extended', ['%%channel%%' => $channel['title']]) ?>"
-      >
-        <?=$this->transEsc('channel_more_items') ?>
-      </button>
+      <button <?=$this->htmlAttributes($btnAttrs) ?>><?=$this->transEsc('channel_more_items') ?></button>
     </div>
   </div>
 <?php endforeach; ?>
