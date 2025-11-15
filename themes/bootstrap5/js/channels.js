@@ -1,258 +1,431 @@
-/*global bootstrap, getUrlRoot, VuFind */
-VuFind.register('channels', function Channels() {
+/*global getUrlRoot, VuFind */
+VuFind.register("channels", function Channels() {
   /**
-   * Add dropdown link buttons to an element based on a JSON data attribute.
-   * @param {HTMLElement} elem The element containing the data-link-json attribute.
+   * Retrieve a specific item's element from within a channel.
+   * @param {string} channelID Channel to search
+   * @param {string} source Record source
+   * @param {string} id Record ID
+   * @returns {HTMLElement|null} Channel item matching the record source and ID
    */
-  function addLinkButtons(elem) {
-    var links;
-    try {
-      links = JSON.parse(elem.dataset.linkJson);
-    } catch (e) {
-      console.error("Error parsing " + elem.dataset.linkJson);
-      return;
-    }
-    if (links.length === 0) {
-      return;
-    }
-    var $cont = $(
-      '<div class="dropdown">' +
-        '<button class="btn btn-link" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="true" aria-label="' + VuFind.translate('channel_options_dropdown_toggle', {'%%channel%%': elem.closest('.channel-wrapper').getElementsByTagName('h2')[0].textContent}) + '">' +
-          VuFind.icon("ui-dots-menu") +
-        '</button>' +
-      '</div>'
-    );
-    var $list = $('<ul class="dropdown-menu"></ul>');
-    for (var i = 0; i < links.length; i++) {
-      var li = $('<li/>');
-      li.append(
-        $('<a/> ', {
-          'href': links[i].url,
-          'class': 'dropdown-item ' + links[i].label,
-          'html': '<i class="fa ' + links[i].icon + '"></i> ' + VuFind.translate(links[i].label)
-        })
-      );
-      $list.append(li);
-    }
-    $cont.append($list);
-    $(elem).siblings('.channel-title').append($cont);
-  }
-
-  var currentPopoverRecord = false;
-  /**
-   * Check if a record element matches the current popover record.
-   * @param {jQuery} record The record element to check.
-   * @returns {boolean} Returns whether record matches or not.
-   */
-  function isCurrentPopoverRecord(record) {
-    return record && currentPopoverRecord
-      && record.data('record-id') === currentPopoverRecord.data('record-id')
-      && record.data('record-source') === currentPopoverRecord.data('record-source')
-      && record.data('channel-id') === currentPopoverRecord.data('channel-id');
-  }
-  /**
-   * Toggle the popover for a given record, hide any previous popover.
-   * @param {jQuery|boolean} record The record element to show the popover for.
-   */
-  function switchPopover(record) {
-    // Hide the old popover:
-    if (currentPopoverRecord) {
-      bootstrap.Popover.getInstance(currentPopoverRecord).hide();
-    }
-    // Special case: if the new popover is the same as the old one, reset the
-    // current popover status so that the next click will open it again (toggle)
-    if (isCurrentPopoverRecord(record)) {
-      currentPopoverRecord = false;
-    } else {
-      // Default case: set the currentPopover to the new incoming value:
-      currentPopoverRecord = record;
-    }
-    // currentPopover has now been updated; show it if appropriate:
-    if (currentPopoverRecord) {
-      bootstrap.Popover.getInstance(currentPopoverRecord).show();
-    }
-  }
-
-  /**
-   * Truncates text with an ellipsis to prevent overflow in an element.
-   * @param {HTMLElement} el The element to truncate.
-   */
-  function clampLines(el) {
-    var words = el.innerText.split(" ");
-    while (el.scrollHeight > el.offsetHeight) {
-      words.pop();
-      el.innerText = words.join(" ") + VuFind.translate("eol_ellipsis");
-    }
-  }
-
-  /**
-   * Set up a carousel.
-   * @param {number} i  The index of the channel.
-   * @param {jQuery} op The channel element.
-   */
-  function setupChannelSlider(i, op) {
-    $(op).find(".slide").removeClass("hidden");
-    $(op).slick({
-      slidesToShow: 6,
-      slidesToScroll: 6,
-      infinite: false,
-      rtl: $(document.body).hasClass("rtl"),
-      responsive: [
-        {
-          breakpoint: 768,
-          settings: {
-            slidesToShow: 3,
-            slidesToScroll: 3
-          }
-        },
-        {
-          breakpoint: 480,
-          settings: {
-            slidesToShow: 1,
-            slidesToScroll: 1
-          }
-        }
-      ]
-    });
-    $(op).on('swipe', function channelDrag() {
-      switchPopover(false);
-    });
-
-    $(op).find('.channel-record').off("click").on("click", function channelRecord(event) {
-      var record = $(event.delegateTarget);
-      if (!record.data('popover-loaded')) {
-        record.data('popover-loaded', true);
-        switchPopover(false);
-        let loadingPopover = new bootstrap.Popover(
-          record,
-          {
-            content: VuFind.translate('loading_ellipsis'),
-            html: true,
-            placement: 'bottom',
-            trigger: 'manual',
-            container: '#' + record.closest('.channel').attr('id')
-          }
-        );
-        loadingPopover.show();
-        $.ajax({
-          url: VuFind.path + getUrlRoot(record.attr('href')) + '/AjaxTab',
-          type: 'POST',
-          data: {tab: 'description'}
-        })
-          .done(function channelPopoverDone(data) {
-            var newContent = '<div class="d-flex">'
-              + '<div class="btn-group flex-fill">'
-              + '<a href="' + VuFind.path + '/Channels/Record?'
-              + 'id=' + encodeURIComponent(record.attr('data-record-id'))
-              + '&source=' + encodeURIComponent(record.attr('data-record-source'))
-              + '" class="btn btn-default">' + VuFind.translate('channel_expand') + '</a>'
-              + ' <a href="' + record.attr('href') + '" class="btn btn-default">' + VuFind.translate('View Record') + '</a>'
-              + '</div>'
-              + '</div>'
-              + data;
-            loadingPopover.dispose();
-            new bootstrap.Popover(
-              record,
-              {
-                content: newContent,
-                html: true,
-                placement: 'bottom',
-                trigger: 'manual',
-                sanitize: false,
-                container: '#' + record.closest('.channel').attr('id')
-              }
-            );
-            switchPopover(record);
-          });
-      } else {
-        switchPopover(record);
+  function findChannelItem(channelID, source, id) {
+    const channel = document.getElementById(channelID);
+    // avoid bad selectors with sources or ids
+    for (const item of channel.querySelectorAll(".channel-item")) {
+      if (item.dataset.recordId === id && item.dataset.recordSource === source) {
+        return item;
       }
-      return false;
-    });
-
-    // Channel add buttons
-    addLinkButtons(op);
-    $('.channel-add-menu[data-group="' + op.dataset.group + '"].hidden')
-      .clone()
-      .removeClass('hidden')
-      .prependTo($(op).parent(".channel-wrapper"));
-
-    // Fix title overflow
-    op.querySelectorAll(".channel-record-title").forEach(clampLines);
+    }
+    return null;
   }
 
-  var bindChannelAddMenu; // circular dependency fix for jshint
+  /**
+   * Truncate lines to a number of lines. Truncated text will end in ellipses.
+   *
+   * Works by removing words and saving the string every time the element shrinks.
+   * This results in a list of strings by number of lines (one-indexed).
+   * We then select the appropriate string for our target (or the last if less).
+   * @param {HTMLElement} el Target element
+   * @param {number} targetLines Maximum number of lines
+   */
+  function clampLines(el, targetLines = 3) {
+    const strings = [el.textContent];
+
+    let currHeight = el.offsetHeight;
+    const words = el.textContent.split(" ");
+    for (let len = words.length; len--;) {
+      el.textContent = `${words.slice(0, len).join(" ")}${VuFind.translate("eol_ellipsis")}`;
+      if (currHeight > el.offsetHeight) {
+        currHeight = el.offsetHeight;
+        strings.unshift(el.textContent);
+      }
+    }
+
+    el.textContent = strings[Math.min(strings.length, targetLines) - 1];
+  }
 
   /**
-   * Event handler for adding a new channel via AJAX.
-   * @param {Event} e The click event.
-   * @returns {boolean} Always returns false to prevent default link behavior.
+   * @param {HTMLElement} link .channel-add-link
+   * @returns {void}
    */
-  function selectAddedChannel(e) {
-    $.ajax(e.target.href).done(function addChannelAjaxDone(data) {
-      var list = $(e.target).closest('.dropdown-menu');
-      var $testEls = $('<div>' + data + '</div>').find('.channel-wrapper');
-      var $dest = $(e.target).closest('.channel-wrapper');
-      // Remove dropdown link
-      $('[data-token="' + e.target.dataset.token + '"]').parent().remove();
-      // Insert new channels
-      $testEls.each(function addRetrievedNonEmptyChannels(i, element) {
-        var $testEl = $(element);
-        // Make sure the channel has content
-        if ($testEl.find('.channel-record').length === 0) {
-          $dest.after(
-            '<div class="channel-wrapper">'
-            + '<div class="channel-title no-results">'
-            + '<h2>' + $testEl.find('h2').html() + '</h2>'
-            + VuFind.translate('nohit_heading')
-            + '</div></div>'
-          );
-        } else {
-          $dest.after($testEl);
-          $testEl.find('.channel').each(setupChannelSlider);
-          $testEl.find('.channel').each(bindChannelAddMenu);
-        }
+  function addChannel(link) {
+    let callerChannelEl = link.closest(".channel");
+    // Remove from dropdowns
+    const group = link.closest(".channel-add-menu").dataset.group;
+    const token = link.dataset.token;
+    const relatedMenus = Array.from(document.querySelectorAll(`.channel-add-menu[data-group="${group}"]`));
+    for (const menu of relatedMenus) {
+      // Remove add links for this channel
+      const usedMenuItem = menu.querySelector(`[data-token="${token}"]`);
+      if (usedMenuItem) {
+        usedMenuItem.remove();
+      }
+      // Remove empty menus
+      if (menu.querySelector(".channel-add-link") === null) {
+        menu.remove();
+      }
+    }
 
-        if (list.children().length === 0) {
-          $('.channel-add-menu[data-group="' + list.closest('.channel-add-menu').data('group') + '"]').remove();
+    // Get and parse results
+    fetch(link.getAttribute("href"))
+      .then(function addChannelResponse(res) {
+        return res.text();
+      })
+      .then(function addChannelParseHTML(resHTML) {
+        const parser = new DOMParser();
+        const resDOM = parser.parseFromString(resHTML, "text/html");
+
+        // Add channels to DOM
+        for (const channelEl of resDOM.querySelectorAll(".channel")) {
+          // Make sure the channel has content
+          if (channelEl.querySelectorAll(".channel-item").length > 0) {
+            // Add related channels menu
+            const relatedMenu = document.querySelector(`.channel-add-menu[data-group="${group}"]`);
+            if (relatedMenu) {
+              channelEl.querySelector(".channel-title").after(relatedMenu.cloneNode(true));
+            }
+            // Add channel
+            callerChannelEl.after(channelEl);
+            // Clamp new titles
+            for (const titleEl of channelEl.querySelectorAll(".channel-item-title")) {
+              clampLines(titleEl);
+            }
+            continue;
+          }
+
+          // Empty result
+          const title = channelEl.querySelector("h2");
+          const emptyWrapper = parser.parseFromString(
+            `<div class="channel">
+              <div class="channel-title">
+                <h2>${title.innerHTML}</h2>
+              </div>
+              <div class="channel-content">
+                ${VuFind.translate('nohit_heading')}
+              </div>
+            </div>`,
+            "text/html"
+          );
+
+          callerChannelEl.after(emptyWrapper.firstChild);
+          callerChannelEl = emptyWrapper.firstChild;
         }
       });
-    });
-    return false;
   }
-  bindChannelAddMenu = function bindChannelAddMenuFunc(iteration, channel) {
-    var scope = $(channel).parent(".channel-wrapper");
-    $(scope).find('.channel-add-menu .dropdown-menu a').on("click", selectAddedChannel);
-    $(scope).find('.channel-add-menu .add-btn').on("click", function addChannels(e) {
-      var links = $(e.target).closest('.channel-add-menu').find('.dropdown-menu a');
-      for (var i = 0; i < links.length && i < 2; i++) {
-        links[i].click();
-      }
-    });
-  };
 
   /**
-   * Initializes the channels module.
+   * Helper function to disable the Load more items button
+   * @param {HTMLButtonElement} loadMoreBtn The button
+   * @returns {void}
    */
-  function init () {
-    $('.channel').each(setupChannelSlider);
-    $('.channel').each(bindChannelAddMenu);
-    document.addEventListener('hidden.bs.popover', (e) => {
-      if (isCurrentPopoverRecord($(e.target))) {
-        switchPopover(false);
+  function disableLoadMoreBtn(loadMoreBtn) {
+    // disable
+    loadMoreBtn.classList.add("disabled");
+    loadMoreBtn.setAttribute("aria-disabled", 1);
+    // change content
+    loadMoreBtn.textContent = VuFind.translate("loading_ellipsis");
+    // store label for later
+    if (!loadMoreBtn.getAttribute("data-enabled-label")) {
+      loadMoreBtn.setAttribute("data-enabled-label", loadMoreBtn.getAttribute("aria-label"));
+    }
+    loadMoreBtn.setAttribute("aria-label", VuFind.translate("loading"));
+  }
+
+  /**
+   * Helper function to enable the Load more items button
+   * @param {HTMLButtonElement} loadMoreBtn The button
+   * @returns {void}
+   */
+  function enableLoadMoreBtn(loadMoreBtn) {
+    // disable
+    loadMoreBtn.classList.remove("disabled");
+    loadMoreBtn.removeAttribute("aria-disabled");
+    // change content
+    loadMoreBtn.textContent = VuFind.translate("channel_more_items");
+    // restore label
+    if (loadMoreBtn.getAttribute("data-enabled-label")) {
+      loadMoreBtn.setAttribute("aria-label", loadMoreBtn.getAttribute("data-enabled-label"));
+    } else {
+      // if not stored, use generic
+      loadMoreBtn.setAttribute("aria-label", VuFind.translate("channel_more_items"));
+    }
+    loadMoreBtn.removeAttribute("data-enabled-label");
+  }
+
+  /**
+   * Helper function to visually hide and disable the more items button
+   * @param {HTMLButtonElement} loadMoreBtn The button
+   * @returns {void}
+   */
+  function hideLoadMoreBtn(loadMoreBtn) {
+    // screen-reader disable
+    loadMoreBtn.classList.add("disabled");
+    loadMoreBtn.setAttribute("aria-disabled", 1);
+    // visually hide
+    loadMoreBtn.classList.add("visually-hidden");
+  }
+
+  /**
+   * @param {Event} event Click event from .channel-load-more-btn
+   * @returns {void}
+   */
+  function loadMoreItems(event) {
+    const btn = event.target;
+    if (btn.classList.contains("disabled")) {
+      return false;
+    }
+
+    // Disable and relabel button
+    disableLoadMoreBtn(btn);
+
+    // Reveal hidden items
+    const targetChannel = btn.closest(".channel");
+    const pageSize = Number(targetChannel.dataset.pageSize);
+    const hiddenItems = targetChannel.querySelectorAll(".hidden-batch-item");
+
+    // Reveal hidden items (limit to pageSize)
+    hiddenItems.forEach((item, index) => {
+      if (index < pageSize) {
+        item.classList.remove("hidden-batch-item");
+        clampLines(item.querySelector(".channel-item-title"));
       }
     });
-    document.addEventListener('mouseup', function onMouseUp(e) {
-      // Close any current popover if clicked outside of a popover and a record that triggers one:
-      const popover = document.querySelector('.channel-wrapper .channel .popover');
-      if (popover && !popover.contains(e.target)) {
-        const intersectingRecords = Array.from(document.querySelectorAll('.channel-wrapper .channel .channel-record')).filter(r => r.contains(e.target));
-        if (intersectingRecords.length === 0) {
-          switchPopover(false);
+
+    // Out of records
+    if (hiddenItems.length > 0 && hiddenItems.length < Number(targetChannel.dataset.rowSize)) {
+      hideLoadMoreBtn(btn);
+      return;
+    }
+
+    // How many more records do we need?
+    const neededCount = pageSize - hiddenItems.length;
+    if (neededCount <= 0) {
+      enableLoadMoreBtn(btn);
+      return; // skip loading more records
+    }
+
+    // AJAX load more records
+    const url = new URL(decodeURIComponent(btn.dataset.href), location.origin);
+    fetch(url.toString() + "&layout=lightbox")
+      .then((res) => res.text())
+      .then(function loadMoreItemsParseHTML(resHTML) {
+        const parser = new DOMParser();
+        const resDom = parser.parseFromString(resHTML, "text/html");
+
+        const firstChannel = resDom.querySelector(".channel");
+        const records = firstChannel
+          ? firstChannel.querySelectorAll(".channel-item")
+          : [];
+
+        const targetList = targetChannel.querySelector(".channel-list");
+        for (let i = 0; i < records.length; i++) {
+          const record = records[i];
+          record.classList.remove("hidden");
+          if (i >= neededCount) {
+            record.classList.add("hidden-batch-item");
+          }
+          targetList.append(record);
+          clampLines(record.querySelector(".channel-item-title"));
+        }
+
+        // Hide button
+        if (records.length < Number(targetChannel.dataset.batchSize)) {
+          hideLoadMoreBtn(btn);
+        } else {
+          enableLoadMoreBtn(btn);
+        }
+      });
+
+    // Set button to next, next page
+    url.searchParams.set("page", Number(url.searchParams.get("page")) + 1);
+    btn.setAttribute("data-href", url.toString());
+  }
+
+  /**
+   * @param {HTMLElement} record Channel item to preview
+   * @param {string} channelID record's channel id (hard to get from quicklook)
+   * @param {string} htmlContent HTML content to display (record metadata)
+   * @returns {string} HTML of quick look controls
+   */
+  function formatQuickLook(record, channelID, htmlContent) {
+    const template = document.getElementById("template-channels-quick-look");
+    const content = template.content.cloneNode(true).children[0];
+
+    // set title
+    const titleLink = record.querySelector(".channel-item-title");
+    const qlTitleEl = content.querySelector(".ql-title");
+    if (titleLink.title) {
+      qlTitleEl.textContent = titleLink.title;
+      qlTitleEl.setAttribute("title", titleLink.title);
+    } else {
+      qlTitleEl.textContent = titleLink.textContent;
+      qlTitleEl.removeAttribute("title");
+    }
+
+    // update View Record link
+    content
+      .querySelector(".ql-view-record-btn")
+      .setAttribute("href", titleLink.getAttribute("href"));
+
+    // Set data for prev and next buttons
+    const id = record.dataset.recordId;
+    const source = record.dataset.recordSource;
+    content.setAttribute("data-channel-id", channelID);
+    content.setAttribute("data-record-id", id);
+    content.setAttribute("data-record-source", source);
+
+    // Set URL for Explore related channels button
+    const expandParams = new URLSearchParams({ id, source }); // escape
+    content
+      .querySelector(".ql-expand-btn")
+      .setAttribute("href", `${VuFind.path}/Channels/Record?${expandParams}`);
+
+    const prevBtn = content.querySelector(".ql-prev-item-btn");
+    if (record.previousElementSibling) {
+      prevBtn.classList.remove("disabled");
+      prevBtn.removeAttribute("disabled");
+    } else {
+      prevBtn.classList.add("disabled");
+      prevBtn.setAttribute("disabled", "");
+    }
+
+    const nextBtn = content.querySelector(".ql-next-item-btn");
+    if (record.nextElementSibling) {
+      nextBtn.classList.remove("disabled");
+      nextBtn.removeAttribute("disabled");
+    } else {
+      nextBtn.classList.add("disabled");
+      nextBtn.setAttribute("disabled", "");
+    }
+
+    const parser = new DOMParser();
+    const contentDoc = parser.parseFromString(htmlContent, "text/html");
+    content.append(contentDoc.body.firstChild);
+
+    return content.outerHTML;
+  }
+
+  /**
+   * @param {HTMLElement} record Channel item to preview
+   * @param {string | null} _channelID record's channel id (hard to get from quicklook)
+   * @returns {void}
+   */
+  function quickLook(record, _channelID = null) {
+    const channelID = _channelID === null
+      ? record.closest(".channel").getAttribute("id")
+      : _channelID;
+
+    // Load more options if we're past the end of what's available (e.g. due to user hitting "Next")
+    if (record.classList.contains("hidden-batch-item")) {
+      loadMoreItems({ target: document.querySelector(`#${channelID} .channel-load-more-btn`) });
+    }
+
+    const titleLink = record.querySelector(".channel-item-title");
+    const href = titleLink.getAttribute("href");
+
+    VuFind.lightbox.render(VuFind.loading());
+
+    const formData = new FormData();
+    formData.append("tab", "description");
+
+    fetch(VuFind.path + getUrlRoot(href) + "/AjaxTab", {
+      method: "POST",
+      body: formData,
+    })
+      .then((res) => res.text())
+      .then(function quickLookFetchDone(htmlContent) {
+        VuFind.lightbox.render(formatQuickLook(record, channelID, htmlContent));
+      });
+  }
+
+  /**
+   * Setup the channels module and events
+   */
+  function init() {
+    // Initial manipulations
+    for (const channelEl of document.querySelectorAll(".channel")) {
+      // Disable the load more button is there are less items than the batchSize
+      const allItems = channelEl.querySelectorAll(".channel-item");
+      if (allItems.length < Number(channelEl.dataset.rowSize)) {
+        hideLoadMoreBtn(channelEl.querySelector(".channel-load-more-btn"));
+      }
+
+      // Clamp titles to 3 lines
+      for (const title of channelEl.querySelectorAll(".channel-item-title")) {
+        clampLines(title);
+      }
+    }
+
+    // Global button listener
+    document.addEventListener("click", function channelsClickHandler(event) {
+      // More channels dropdown links
+      if (event.target.closest(".channel-add-link")) {
+        addChannel(event.target.closest(".channel-add-link"));
+        event.preventDefault();
+        return false;
+      }
+
+      // More channels button (first two dropdown links)
+      if (event.target.closest(".channel-add-more-btn")) {
+        const addLinks = Array.from(
+          event.target
+            .closest(".channel-add-menu")
+            .querySelectorAll(".channel-add-link")
+        );
+        for (let i = 0; i < Math.min(2, addLinks.length); i++) {
+          addChannel(addLinks[i]);
+        }
+        event.preventDefault();
+        return false;
+      }
+
+      // Show More buttons
+      if (event.target.closest(".channel-load-more-btn")) {
+        loadMoreItems(event);
+        event.preventDefault();
+        return false;
+      }
+
+      // Quick Look buttons
+      if (event.target.closest(".channel-quick-look-btn")) {
+        quickLook(
+          event.target.closest(".channel-item"),
+          event.target.closest(".channel-list").getAttribute("id")
+        );
+        event.preventDefault();
+        return false;
+      }
+
+      // Prev Item buttons (in quick look)
+      if (event.target.closest(".ql-prev-item-btn")) {
+        const group = event.target.closest(".channels-quick-look");
+        const record = findChannelItem(
+          group.dataset.channelId,
+          group.dataset.recordSource,
+          group.dataset.recordId
+        );
+        if (record.previousElementSibling) {
+          quickLook(record.previousElementSibling, group.dataset.channelId);
+          event.preventDefault();
+          return false;
+        }
+      }
+
+      // Next Item buttons (in quick look)
+      if (event.target.closest(".ql-next-item-btn")) {
+        const group = event.target.closest(".channels-quick-look");
+        const record = findChannelItem(
+          group.dataset.channelId,
+          group.dataset.recordSource,
+          group.dataset.recordId
+        );
+        if (record.nextElementSibling) {
+          quickLook(record.nextElementSibling, group.dataset.channelId);
+          event.preventDefault();
+          return false;
         }
       }
     });
   }
 
-  return { init: init };
+  return { init };
 });
