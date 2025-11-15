@@ -289,12 +289,7 @@ class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
                     break;
             }
 
-            if ($row['due_year']) {
-                $due_date = $row['due_year'] . '-' . $row['due_month'] . '-' .
-                            $row['due_day'];
-            } else {
-                $due_date = '';
-            }
+            $due_date = $row['due_year'] ? $row['due_year'] . '-' . $row['due_month'] . '-' . $row['due_day'] : '';
             $holding[] = [
                 'id' => $id,
                 'availability' => $available,

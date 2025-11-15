@@ -290,19 +290,8 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
 
         $ils = $this->getMockBuilder(Connection::class)
             ->disableOriginalConstructor()
-            ->addMethods(['getAccountBlocks', 'getMyProfile', 'patronLogin'])
-            ->onlyMethods(['checkCapability'])
+            ->onlyMethods(['checkCapability', '__call'])
             ->getMock();
-
-        $ils->expects($this->once())
-            ->method('patronLogin')
-            ->with('user', 'pass')
-            ->willReturn($patron);
-
-        $ils->expects($this->once())
-            ->method('getMyProfile')
-            ->with($patron)
-            ->willReturn($profile);
 
         if (null === $blocks) {
             $ils->expects($this->once())
@@ -314,12 +303,30 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
                 ->method('checkCapability')
                 ->with('getAccountBlocks', compact('patron'), false)
                 ->willReturn(true);
-
-            $ils->expects($this->once())
-                ->method('getAccountBlocks')
-                ->with($patron)
-                ->willReturn($blocks ? ['Simulated block'] : []);
         }
+
+        $ils->expects($this->any())->method('__call')->willReturnCallback(
+            function ($method, $args) use ($patron, $profile, $blocks) {
+                switch ($method) {
+                    case 'patronLogin':
+                        $this->assertEquals('user', $args[0]);
+                        $this->assertEquals('pass', $args[1]);
+                        return $patron;
+
+                    case 'getMyProfile':
+                        $this->assertEquals($patron, $args[0]);
+                        return $profile;
+
+                    case 'getAccountBlocks':
+                        $this->assertEquals($patron, $args[0]);
+                        if ($blocks !== null) {
+                            return $blocks ? ['Simulated block'] : [];
+                        }
+                        break;
+                }
+                return null;
+            }
+        );
 
         return $ils;
     }
@@ -333,15 +340,19 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
     {
         $ils = $this->getMockBuilder(Connection::class)
             ->disableOriginalConstructor()
-            ->addMethods(['getAccountBlocks', 'getMyProfile', 'patronLogin'])
-            ->onlyMethods(['checkCapability'])
+            ->onlyMethods(['checkCapability', '__call'])
             ->getMock();
 
         $exception = new \VuFind\Exception\ILS('Simulated failure');
-
-        $ils->expects($this->once())
-            ->method('patronLogin')
-            ->willThrowException($exception);
+        $ils->expects($this->once())->method('__call')
+            ->willReturnCallback(
+                function ($method) use ($exception) {
+                    if ($method === 'patronLogin') {
+                        throw $exception;
+                    }
+                    return null;
+                }
+            );
 
         return $ils;
     }

@@ -352,11 +352,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getConfig($function, $params = [])
     {
-        if (isset($this->config[$function])) {
-            $functionConfig = $this->config[$function];
-        } else {
-            $functionConfig = false;
-        }
+        $functionConfig = $this->config[$function] ?? false;
         return $functionConfig;
     }
 
@@ -694,11 +690,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         foreach ($response->PatronItemsOutGetRows as $trResponse) {
             // any more renewals available?
-            if (($trResponse->RenewalLimit - $trResponse->RenewalCount) > 0) {
-                $renewable = true;
-            } else {
-                $renewable = false;
-            }
+            $renewable = $trResponse->RenewalLimit - $trResponse->RenewalCount > 0;
             $transactions[] = [
                 'duedate' => $this->formatJSONTime($trResponse->DueDate),
                 'id'      => $trResponse->BibID,
@@ -886,11 +878,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         $penultimate_page = $pages - 1;
 
-        if ($penultimate_page > 0) {
-            $page_offset = $penultimate_page;
-        } else {
-            $page_offset = $pages;
-        }
+        $page_offset = $penultimate_page > 0 ? $penultimate_page : $pages;
 
         $checkouts = [];
         while ($page_offset <= $pages) {

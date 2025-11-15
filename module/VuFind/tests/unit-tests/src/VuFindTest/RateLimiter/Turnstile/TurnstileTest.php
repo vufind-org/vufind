@@ -92,7 +92,7 @@ class TurnstileTest extends \PHPUnit\Framework\TestCase
                 $turnstile->setHttpService($this->buildHttpService(
                     ['success' => $result]
                 ));
-                $validationResult = $turnstile->validateToken('some_token', $policyId, $clientIp);
+                $validationResult = $turnstile->validateToken('some_token');
                 $this->assertEquals($result, $validationResult);
             }
 

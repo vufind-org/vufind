@@ -29,8 +29,6 @@
 
 namespace VuFind\Content\Summaries;
 
-use VuFind\String\PropertyString;
-
 /**
  * Syndetics Summaries content loader.
  *
@@ -109,20 +107,14 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
                     throw new \Exception('Invalid XML');
                 }
 
-                // If we have syndetics plus, we don't actually want the content
-                // we'll just stick in the relevant div
-                if ($this->usePlus) {
-                    $summaries[] = PropertyString::fromHtml($sourceInfo['div'])->setHtmlTrusted(true);
-                } else {
-                    // Get the marc field for summaries. (520)
-                    $nodes = $xmldoc2->GetElementsbyTagName('Fld520');
-                    foreach ($nodes as $node) {
-                        $summaries[] = preg_replace(
-                            '/<a>|<a [^>]*>|<\/a>/',
-                            '',
-                            html_entity_decode($node->nodeValue)
-                        );
-                    }
+                // Get the marc field for summaries. (520)
+                $nodes = $xmldoc2->GetElementsbyTagName('Fld520');
+                foreach ($nodes as $node) {
+                    $summaries[] = preg_replace(
+                        '/<a>|<a [^>]*>|<\/a>/',
+                        '',
+                        html_entity_decode($node->nodeValue)
+                    );
                 }
             }
         }

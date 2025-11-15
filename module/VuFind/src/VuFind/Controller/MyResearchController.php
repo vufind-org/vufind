@@ -1997,7 +1997,7 @@ class MyResearchController extends AbstractBase
         if ($hash = ($this->params()->fromQuery('hash'))) {
             $emailAuthenticator = $this->getService(EmailAuthenticator::class);
             try {
-                $sessionStorage['recoveryData'] = $emailAuthenticator->authenticate($hash, true);
+                $sessionStorage['recoveryData'] = $emailAuthenticator->authenticate($hash);
                 // Redirect to clear the query parameters before proceeding.
                 return $this->redirect()->toRoute('myresearch-resetpassword');
             } catch (AuthException $e) {
