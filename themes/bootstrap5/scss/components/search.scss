@@ -249,6 +249,24 @@ header .container.navbar {
     display: none;
   }
 
+  .record-checkbox {
+    padding: .4rem;
+    height: fit-content;
+
+    input[type="checkbox"] {
+      margin: 0;
+    }
+  }
+
+  .record-checkbox-placeholder {
+    padding: .4rem;
+    width: 1.5em;
+  }
+
+  .record-number {
+    padding-top: .2rem;
+  }
+
   .title,
   .result-author,
   .fulltext {

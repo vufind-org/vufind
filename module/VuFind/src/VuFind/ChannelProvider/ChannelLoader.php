@@ -31,12 +31,14 @@ namespace VuFind\ChannelProvider;
 
 use VuFind\Cache\Manager as CacheManager;
 use VuFind\ChannelProvider\PluginManager as ChannelManager;
-use VuFind\Config\Config;
+use VuFind\Http\PhpEnvironment\Request as HttpRequest;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Search\Base\Results;
 use VuFind\Search\SearchRunner;
 
+use function count;
 use function in_array;
+use function intval;
 
 /**
  * Channel loader
@@ -49,24 +51,74 @@ use function in_array;
  */
 class ChannelLoader
 {
+    use BatchTrait;
+
     /**
      * Constructor
      *
-     * @param Config         $config         Channels configuration
+     * @param array          $config         Channels configuration
      * @param CacheManager   $cacheManager   Cache manager
      * @param ChannelManager $channelManager Channel manager
      * @param SearchRunner   $searchRunner   Search runner
      * @param RecordLoader   $recordLoader   Record loader
+     * @param HttpRequest    $request        HTTP request
      * @param string         $locale         Current locale (used for caching)
      */
     public function __construct(
-        protected Config $config,
+        protected array $config,
         protected CacheManager $cacheManager,
         protected ChannelManager $channelManager,
         protected SearchRunner $searchRunner,
         protected RecordLoader $recordLoader,
+        protected HttpRequest $request,
         protected string $locale = ''
     ) {
+    }
+
+    /**
+     * Add configuration values needed by the templates to the view context
+     *
+     * @param array $context String-keyed map of values for the View
+     *
+     * @return array
+     */
+    protected function addConfigToContext($context)
+    {
+        $channels = [];
+        $relatedTokens = [];
+        for ($i = 0; $i < count($context['channels'] ?? []); $i++) {
+            $current = $context['channels'][$i];
+            if (isset($current['contents'])) {
+                [, $configSection] = explode(':', $context['channels'][$i]['providerId'] . ':');
+                $config = $this->config[$configSection] ?? [];
+
+                // Calculate batch size
+                $itemsPerRow = $config['itemsPerRow'] ?? 6;
+                $rowsPerPage = $config['rowsPerPage'] ?? 1;
+                $pageSize = $itemsPerRow * $rowsPerPage;
+                $batchSize = self::calcBatchSize($itemsPerRow, $rowsPerPage);
+
+                // Pass to view
+                $current['config'] = [
+                    'batchSize' => $batchSize,
+                    'pageSize' => $pageSize,
+                    'rowSize' => $itemsPerRow,
+                ];
+                $channels[] = $current;
+            } elseif (isset($current['token'])) {
+                // Add token to related tokens map
+                $group = $current['groupId'] ?? $current['providerId'];
+                if (!isset($relatedTokens[$group])) {
+                    $relatedTokens[$group] = [];
+                }
+                $relatedTokens[$group][] = $current;
+            }
+        }
+
+        $context['channels'] = $channels;
+        $context['relatedTokens'] = $relatedTokens;
+
+        return $context;
     }
 
     /**
@@ -85,7 +137,7 @@ class ChannelLoader
         // Perform search and configure providers:
         $callback = function ($runner, $params) use ($providers): void {
             foreach ($providers as $provider) {
-                $provider->configureSearchParams($params);
+                $provider->configureSearchParams($params, $this->request);
             }
         };
         return $this->searchRunner->run($searchRequest, $source, $callback);
@@ -127,8 +179,7 @@ class ChannelLoader
      */
     protected function getChannelProviders($source, $configSection, $activeId = null)
     {
-        $providerIds = isset($this->config->{"source.$source"}->$configSection)
-            ? $this->config->{"source.$source"}->$configSection->toArray() : [];
+        $providerIds = $this->config["source.$source"][$configSection] ?? [];
         $finalIds = (!empty($activeId) && in_array($activeId, $providerIds))
             ? [$activeId] : $providerIds;
         return array_map([$this, 'getChannelProvider'], $finalIds);
@@ -152,8 +203,7 @@ class ChannelLoader
         if (empty($configSection)) {
             $configSection = "provider.$serviceName";
         }
-        $options = isset($this->config->{$configSection})
-            ? $this->config->{$configSection}->toArray() : [];
+        $options = $this->config[$configSection] ?? [];
 
         // Load the service, and configure appropriately:
         $provider = $this->channelManager->get($serviceName);
@@ -178,13 +228,13 @@ class ChannelLoader
         $activeSource = null
     ) {
         // Load appropriate channel objects:
-        $defaultSource = $this->config->General->default_home_source
+        $defaultSource = $this->config['General']['default_home_source']
             ?? DEFAULT_SEARCH_BACKEND;
         $source = $activeSource ?? $defaultSource;
         $providers = $this->getChannelProviders($source, 'home', $activeChannel);
 
         // Set up the cache, if appropriate:
-        if ($this->config->General->cache_home_channels ?? false) {
+        if ($this->config['General']['cache_home_channels'] ?? false) {
             $providerIds = array_map('get_class', $providers);
             $parts = [implode(',', $providerIds), $source, $token, $this->locale];
             $cacheKey = md5(implode('-', $parts));
@@ -194,23 +244,25 @@ class ChannelLoader
             $cache = null;
         }
 
+        // Only use the cache for the first page of results:
+        $page = intval($this->request->getQuery('page', 1));
+        $useCache = ($cacheKey && $page === 1);
+
         // Fetch channel data from cache, or populate cache if necessary:
-        if (!($channels = $cacheKey ? $cache->getItem($cacheKey) : false)) {
+        if (!($channels = $useCache ? $cache->getItem($cacheKey) : false)) {
             $searchParams = [];
-            if (isset($this->config->General->default_home_search)) {
-                $searchParams['lookfor']
-                    = $this->config->General->default_home_search;
+            if (isset($this->config['General']['default_home_search'])) {
+                $searchParams['lookfor'] = $this->config['General']['default_home_search'];
             }
-            $results = $this
-                ->performChannelSearch($searchParams, $providers, $source);
+            $results = $this->performChannelSearch($searchParams, $providers, $source);
             $channels = $this->getChannelsFromResults($providers, $results, $token);
-            if ($cacheKey) {
+            if ($useCache) {
                 $cache->setItem($cacheKey, $channels);
             }
         }
 
         // Return context array:
-        return compact('token', 'channels');
+        return $this->addConfigToContext(compact('token', 'channels'));
     }
 
     /**
@@ -253,7 +305,7 @@ class ChannelLoader
         }
 
         // Return context array:
-        return compact('driver', 'channels', 'token');
+        return $this->addConfigToContext(compact('driver', 'channels', 'token'));
     }
 
     /**
@@ -283,6 +335,6 @@ class ChannelLoader
         $channels = $this->getChannelsFromResults($providers, $results, $token);
 
         // Return context array:
-        return compact('results', 'lookfor', 'channels', 'token');
+        return $this->addConfigToContext(compact('results', 'lookfor', 'channels', 'token'));
     }
 }

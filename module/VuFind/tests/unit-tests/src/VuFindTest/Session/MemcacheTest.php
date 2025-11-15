@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Session;
 
+use VuFind\Config\Config;
 use VuFind\Session\Memcache;
 
 /**
@@ -47,155 +48,7 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
      *
      * @return void
      */
-    public function testRead()
-    {
-        if (!class_exists(\Memcache::class)) {
-            $this->markTestSkipped();
-        }
-        // TODO: remove this check after raising minimum PHP version to 8;
-        // for some reason, this test does not work under PHP 7 with PHPUnit 9.6.
-        if (PHP_MAJOR_VERSION < 8) {
-            $this->markTestSkipped('Not supported in PHP 7');
-        }
-        $memcache = $this->getMockBuilder(\Memcache::class)
-            ->onlyMethods(['connect', 'get'])
-            ->getMock();
-        $memcache->expects($this->once())->method('connect')
-            ->willReturn(true);
-        $memcache->expects($this->once())->method('get')
-            ->with($this->equalTo('vufind_sessions/foo'))
-            ->willReturn('bar');
-        $handler = $this->getHandler(null, $memcache);
-        $this->assertEquals('bar', $handler->read('foo'));
-    }
-
-    /**
-     * Test reading a session from the database with Memcached.
-     *
-     * @return void
-     */
-    public function testReadWithMemcached()
-    {
-        if (!class_exists(\Memcached::class)) {
-            $this->markTestSkipped();
-        }
-        $memcache = $this->getMockBuilder(\Memcached::class)
-            ->onlyMethods(['setOption', 'addServer', 'get'])
-            ->getMock();
-        $memcache->expects($this->once())->method('setOption')
-            ->with(
-                $this->equalTo(\Memcached::OPT_CONNECT_TIMEOUT),
-                $this->equalTo(1)
-            );
-        $memcache->expects($this->once())->method('addServer')
-            ->with($this->equalTo('localhost'), $this->equalTo(11211))
-            ->willReturn(true);
-        $memcache->expects($this->once())->method('get')
-            ->with($this->equalTo('vufind_sessions/foo'))
-            ->willReturn('bar');
-        $config = new \VuFind\Config\Config(['memcache_client' => 'Memcached']);
-        $handler = $this->getHandler($config, $memcache);
-        $this->assertEquals('bar', $handler->read('foo'));
-    }
-
-    /**
-     * Test writing a session with default configs.
-     *
-     * @return void
-     */
-    public function testWriteWithDefaults()
-    {
-        if (!class_exists(\Memcache::class)) {
-            $this->markTestSkipped();
-        }
-        $memcache = $this->getMockBuilder(\Memcache::class)
-            ->onlyMethods(['connect', 'set'])
-            ->getMock();
-        $memcache->expects($this->once())->method('connect')
-            ->with(
-                $this->equalTo('localhost'),
-                $this->equalTo(11211),
-                $this->equalTo(1)
-            )->willReturn(true);
-        $memcache->expects($this->once())->method('set')
-            ->with(
-                $this->equalTo('vufind_sessions/foo'),
-                $this->equalTo('stuff'),
-                $this->equalTo(0),
-                $this->equalTo(3600)
-            )->willReturn(true);
-        $handler = $this->getHandler(null, $memcache);
-        $this->assertTrue($handler->write('foo', 'stuff'));
-    }
-
-    /**
-     * Test writing a session with non-default configs.
-     *
-     * @return void
-     */
-    public function testWriteWithNonDefaults()
-    {
-        if (!class_exists(\Memcache::class)) {
-            $this->markTestSkipped();
-        }
-        $memcache = $this->getMockBuilder(\Memcache::class)
-            ->onlyMethods(['connect', 'set'])
-            ->getMock();
-        $memcache->expects($this->once())->method('connect')
-            ->with(
-                $this->equalTo('myhost'),
-                $this->equalTo(1234),
-                $this->equalTo(2)
-            )->willReturn(true);
-        $memcache->expects($this->once())->method('set')
-            ->with(
-                $this->equalTo('vufind_sessions/foo'),
-                $this->equalTo('stuff'),
-                $this->equalTo(0),
-                $this->equalTo(1000)
-            )->willReturn(true);
-        $config = new \VuFind\Config\Config(
-            [
-                'lifetime' => 1000,
-                'memcache_host' => 'myhost',
-                'memcache_port' => 1234,
-                'memcache_connection_timeout' => 2,
-            ]
-        );
-        $handler = $this->getHandler($config, $memcache);
-        $this->assertTrue($handler->write('foo', 'stuff'));
-    }
-
-    /**
-     * Test destroying a session.
-     *
-     * @return void
-     */
-    public function testDestroy()
-    {
-        if (!class_exists(\Memcache::class)) {
-            $this->markTestSkipped();
-        }
-        $memcache = $this->getMockBuilder(\Memcache::class)
-            ->onlyMethods(['connect', 'delete'])
-            ->getMock();
-        $memcache->expects($this->once())->method('connect')
-            ->willReturn(true);
-        $memcache->expects($this->once())->method('delete')
-            ->with($this->equalTo('vufind_sessions/foo'))
-            ->willReturn(true);
-        $handler = $this->getHandler(null, $memcache);
-        $this->setUpDestroyExpectations('foo');
-
-        $this->assertTrue($handler->destroy('foo'));
-    }
-
-    /**
-     * Test reading a session from the database (Memcached version).
-     *
-     * @return void
-     */
-    public function testReadMemcached()
+    public function testRead(): void
     {
         if (!class_exists(\Memcached::class)) {
             $this->markTestSkipped();
@@ -213,11 +66,9 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
         $memcache->expects($this->once())->method('get')
             ->with($this->equalTo('vufind_sessions/foo'))
             ->willReturn('bar');
-        $config = new \VuFind\Config\Config(
-            [
-                'memcache_client' => 'Memcached',
-            ]
-        );
+        $config = [
+            'memcache_client' => \Memcached::class,
+        ];
         $handler = $this->getHandler($config, $memcache);
         $this->assertEquals('bar', $handler->read('foo'));
     }
@@ -227,7 +78,7 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
      *
      * @return void
      */
-    public function testWriteWithDefaultsMemcached()
+    public function testWriteWithDefaults(): void
     {
         if (!class_exists(\Memcached::class)) {
             $this->markTestSkipped();
@@ -251,11 +102,9 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
                 $this->equalTo('stuff'),
                 $this->equalTo(3600)
             )->willReturn(true);
-        $config = new \VuFind\Config\Config(
-            [
-                'memcache_client' => 'Memcached',
-            ]
-        );
+        $config = [
+            'memcache_client' => \Memcached::class,
+        ];
         $handler = $this->getHandler($config, $memcache);
         $this->assertTrue($handler->write('foo', 'stuff'));
     }
@@ -265,7 +114,7 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
      *
      * @return void
      */
-    public function testWriteWithNonDefaultsMemcached()
+    public function testWriteWithNonDefaults(): void
     {
         if (!class_exists(\Memcached::class)) {
             $this->markTestSkipped();
@@ -289,15 +138,13 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
                 $this->equalTo('stuff'),
                 $this->equalTo(1000)
             )->willReturn(true);
-        $config = new \VuFind\Config\Config(
-            [
-                'lifetime' => 1000,
-                'memcache_host' => 'myhost',
-                'memcache_port' => 1234,
-                'memcache_connection_timeout' => 2,
-                'memcache_client' => 'Memcached',
-            ]
-        );
+        $config = [
+            'lifetime' => 1000,
+            'memcache_host' => 'myhost',
+            'memcache_port' => 1234,
+            'memcache_connection_timeout' => 2,
+            'memcache_client' => \Memcached::class,
+        ];
         $handler = $this->getHandler($config, $memcache);
         $this->assertTrue($handler->write('foo', 'stuff'));
     }
@@ -307,7 +154,7 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
      *
      * @return void
      */
-    public function testDestroyMemcached()
+    public function testDestroy(): void
     {
         if (!class_exists(\Memcached::class)) {
             $this->markTestSkipped();
@@ -325,11 +172,9 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
         $memcache->expects($this->once())->method('delete')
             ->with($this->equalTo('vufind_sessions/foo'))
             ->willReturn(true);
-        $config = new \VuFind\Config\Config(
-            [
-                'memcache_client' => 'Memcached',
-            ]
-        );
+        $config = [
+            'memcache_client' => \Memcached::class,
+        ];
         $handler = $this->getHandler($config, $memcache);
         $this->setUpDestroyExpectations('foo');
 
@@ -339,14 +184,14 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
     /**
      * Get the session handler to test.
      *
-     * @param \VuFind\Config\Config $config Optional configuration
-     * @param \Memcache             $client Optional client object
+     * @param array       $config Optional configuration
+     * @param ?\Memcached $client Optional client object
      *
-     * @return Database
+     * @return Memcache
      */
-    protected function getHandler($config = null, $client = null)
+    protected function getHandler(array $config = [], ?\Memcached $client = null): Memcache
     {
-        $handler = new Memcache($config, $client);
+        $handler = new Memcache(new Config($config), $client);
         $this->injectMockDatabaseDependencies($handler);
         return $handler;
     }

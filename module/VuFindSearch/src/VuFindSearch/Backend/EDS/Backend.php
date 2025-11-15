@@ -526,7 +526,7 @@ class Backend extends AbstractBackend
      * Obtain the authentication to use with the EDS API from cache if it exists. If
      * not, then generate a new one.
      *
-     * @param bool $isInvalid whether or not the the current token is invalid
+     * @param bool $isInvalid whether or not the current token is invalid
      *
      * @return string
      */
@@ -577,7 +577,7 @@ class Backend extends AbstractBackend
      * Obtain the autocomplete authentication to use with the EDS API from cache
      * if it exists. If not, then generate a new set.
      *
-     * @param bool $isInvalid whether or not the the current autocomplete data
+     * @param bool $isInvalid whether or not the current autocomplete data
      * is invalid and should be regenerated
      *
      * @return array autocomplete data

@@ -75,7 +75,7 @@ class ContentController extends AbstractBase
         if (false !== ($p = strrpos($page, '/'))) {
             $subPath = substr($page, 0, $p + 1);
             $pathPrefix .= $subPath;
-            // Ensure the the path prefix does not contain extra slashes:
+            // Ensure the path prefix does not contain extra slashes:
             if (str_ends_with($pathPrefix, '//')) {
                 return $this->notFoundAction();
             }

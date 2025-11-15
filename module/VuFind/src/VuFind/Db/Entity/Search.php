@@ -321,11 +321,9 @@ class Search implements SearchEntityInterface
                 $this->searchObject = stream_get_contents($this->searchObject);
             }
             $unserialized = @unserialize($this->searchObject);
-            if ($unserialized && is_object($unserialized)) {
-                $this->deserializedSearchObject = $unserialized;
-            } else {
-                $this->deserializedSearchObject = null;
-            }
+            $this->deserializedSearchObject = $unserialized && is_object($unserialized)
+                ? $unserialized
+                : null;
         }
     }
 

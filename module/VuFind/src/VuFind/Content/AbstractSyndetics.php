@@ -43,38 +43,12 @@ use DOMDocument;
 abstract class AbstractSyndetics extends AbstractBase
 {
     /**
-     * Use SSL URLs?
-     *
-     * @var bool
-     */
-    protected $useSSL;
-
-    /**
-     * Use Syndetics plus?
-     *
-     * @var bool
-     */
-    protected $usePlus;
-
-    /**
-     * HTTP timeout for API calls (in seconds)
-     *
-     * @var int
-     */
-    protected $timeout;
-
-    /**
      * Constructor
      *
-     * @param bool $useSSL  Use SSL URLs?
-     * @param bool $usePlus Use Syndetics Plus?
-     * @param int  $timeout HTTP timeout for API calls (in seconds)
+     * @param int $timeout HTTP timeout for API calls (in seconds)
      */
-    public function __construct($useSSL = false, $usePlus = false, $timeout = 10)
+    public function __construct(protected int $timeout = 10)
     {
-        $this->useSSL = $useSSL;
-        $this->usePlus = $usePlus;
-        $this->timeout = $timeout;
     }
 
     /**
@@ -104,9 +78,7 @@ abstract class AbstractSyndetics extends AbstractBase
      */
     protected function getIsbnUrl($isbn, $id, $file = 'index.xml', $type = 'rw12,h7')
     {
-        $baseUrl = $this->useSSL
-            ? 'https://secure.syndetics.com' : 'http://syndetics.com';
-        $url = $baseUrl . '/index.aspx?isbn=' . $isbn
+        $url = 'https://secure.syndetics.com/index.aspx?isbn=' . $isbn
             . '/' . $file . '&client=' . $id . '&type=' . $type;
         $this->debug('Syndetics request: ' . $url);
         return $url;
