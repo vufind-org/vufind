@@ -43,6 +43,13 @@ use DateTime;
 interface UserListEntityInterface extends EntityInterface
 {
     /**
+     * Constant for default type of user list.
+     *
+     * @var string
+     */
+    public const TYPE_DEFAULT = 'default';
+
+    /**
      * Get identifier (returns null for an uninitialized or non-persisted object).
      *
      * @return ?int
@@ -80,6 +87,22 @@ interface UserListEntityInterface extends EntityInterface
      * @return ?string
      */
     public function getDescription(): ?string;
+
+    /**
+     * Get list type
+     *
+     * @return string
+     */
+    public function getType(): string;
+
+    /**
+     * Set list type
+     *
+     * @param string $type Type of the user list
+     *
+     * @return static
+     */
+    public function setType(string $type): static;
 
     /**
      * Set created date.

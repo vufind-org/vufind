@@ -99,9 +99,8 @@ class WorldCat2SimilarTest extends \PHPUnit\Framework\TestCase
      * @param ?int   $termLimit     Term limit setting (null = default)
      *
      * @return void
-     *
-     * @dataProvider getResultsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getResultsProvider')]
     public function testGetResults(string $expectedTerms, ?int $termLimit): void
     {
         $driver1 = $this->getMockRecordDriver('1');

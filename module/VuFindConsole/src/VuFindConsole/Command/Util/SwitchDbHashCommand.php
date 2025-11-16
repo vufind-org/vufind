@@ -148,7 +148,7 @@ class SwitchDbHashCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         // Validate command line arguments:
         $newhash = $input->getArgument('newmethod');
@@ -172,13 +172,13 @@ class SwitchDbHashCommand extends Command
         // No key specified AND no key on file = fatal error:
         if ($newkey === null) {
             $output->writeln('Please specify a key as the second parameter.');
-            return 1;
+            return self::FAILURE;
         }
 
         // If no changes were requested, abort early:
         if ($oldkey == $newkey && $oldhash == $newhash) {
             $output->writeln('No changes requested -- no action needed.');
-            return 0;
+            return self::SUCCESS;
         }
 
         // Initialize ciphers first, so we can catch any illegal algorithms before making any changes:
@@ -187,7 +187,7 @@ class SwitchDbHashCommand extends Command
             $newcipher = ($this->cipherFactory)($newhash, $newkey);
         } catch (\Exception $e) {
             $output->writeln($e->getMessage());
-            return 1;
+            return self::FAILURE;
         }
 
         // Next update the config file, so if we are unable to write the file,
@@ -200,7 +200,7 @@ class SwitchDbHashCommand extends Command
         $writer->set('Authentication', 'ils_encryption_key', $newkey);
         if (!$writer->save()) {
             $output->writeln("\tWrite failed!");
-            return 1;
+            return self::FAILURE;
         }
 
         // Now do the database rewrite:
@@ -227,6 +227,6 @@ class SwitchDbHashCommand extends Command
 
         // If we got this far, all went well!
         $output->writeln("\tFinished.");
-        return 0;
+        return self::SUCCESS;
     }
 }

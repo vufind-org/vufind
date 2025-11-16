@@ -51,6 +51,7 @@ use function count;
 class ListItems extends AbstractChannelProvider
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
+    use BatchTrait;
 
     /**
      * IDs of lists to display
@@ -124,6 +125,8 @@ class ListItems extends AbstractChannelProvider
         $this->displayPublicLists = isset($options['displayPublicLists'])
             ? (bool)$options['displayPublicLists'] : true;
         $this->initialListsToDisplay = $options['initialListsToDisplay'] ?? 2;
+
+        $this->setBatchSizeFromOptions($options);
     }
 
     /**
@@ -275,7 +278,7 @@ class ListItems extends AbstractChannelProvider
         $retVal['contents'] = $this->summarizeRecordDrivers($results->getResults());
         $retVal['links'][] = [
             'label' => 'channel_search',
-            'icon' => 'fa-list',
+            'icon' => 'search',
             'url' => $this->url->fromRoute('userList', ['id' => $list->getId()]),
         ];
         return $retVal;

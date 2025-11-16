@@ -30,8 +30,9 @@
 .facet-load-indicator,
 .facet-load-failed,
 .sidebar .datevis-form {
-  padding: .5rem;
-  line-height: 1.5rem;
+  // Reduce border and .text padding from the padding for good alignment:
+  padding: 0.5rem calc(0.5rem - 2px);
+  line-height: 1.5;
   background-color: transparent;
 }
 .facet,
@@ -40,18 +41,16 @@
   display: flex;
   align-items: center;
 
-  .text {
+  .main-link, .text {
     display: flex;
     gap: 0.25rem;
     align-items: center;
     flex-grow: 1;
+    overflow: hidden;
   }
-
-  .badge {
-    flex-shrink: 0;
-    max-height: 19px;
-    line-height: 1.2;
-    vertical-align: baseline;
+  .text {
+    // Allow for slight overflow of a checkbox icon:
+    padding-inline-start: 1px;
   }
 
   .exclude {
@@ -100,9 +99,6 @@
   color: #fff;
   background-color: #000;
 }
-.facet .text {
-  overflow: hidden;
-}
 
 .multi-facet-selection {
   .facet {
@@ -136,13 +132,19 @@
   white-space: nowrap;
 }
 .top-facet-inner {
-  display: inline-block;
-  padding: .25rem;
+  display: flex;
+  gap: 0.25rem;
+  padding: 0.25rem;
   border: 1px solid $list-group-border-color;
+
+  .badge {
+    align-self: center;
+  }
 }
 
 .checkbox-filters {
-  padding-bottom: 0.5rem;
+  // Account for other facets having a border for good alignment:
+  padding: 0 1px 0.5rem 1px;
   // For blocking overlay:
   position: relative;
 }
@@ -219,6 +221,10 @@ body.rtl .full-facet-list .active .fa.fa-times { float: left; }
 
 .facet-range-form {
   width: 100%;
+
+  input[type="submit"] {
+    margin-top: 0.25rem;
+  }
 }
 .date-fields {
   display: flex;
@@ -259,7 +265,8 @@ h3.facet-title {
 .sidebar .multi-filters-selection {
   position: sticky;
   top: 0;
-  padding: 1em;
+  // Note: The horizontal padding is critical for proper alignment with other checkboxes.
+  padding: 0.75rem 0.5rem;
   z-index: 40;
   border-bottom: 1px solid $list-group-border-color;
   box-shadow: 0 5px 5px -4px #000;

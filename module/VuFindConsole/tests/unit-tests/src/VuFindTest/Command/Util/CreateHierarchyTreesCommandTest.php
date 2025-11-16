@@ -105,7 +105,7 @@ class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $loader->expects($this->once())->method('load')
             ->with($this->equalTo('recordid'), $this->equalTo('foo'))
-            ->will($this->returnValue($record ?? $this->getMockRecord()));
+            ->willReturn($record ?? $this->getMockRecord());
         return $loader;
     }
 
@@ -133,7 +133,7 @@ class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
         ];
         $results->expects($this->once())->method('getFullFieldFacets')
             ->with($this->equalTo(['hierarchy_top_id']))
-            ->will($this->returnValue($output));
+            ->willReturn($output);
         return $results;
     }
 
@@ -151,7 +151,7 @@ class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $manager->expects($this->once())->method('get')
             ->with($this->equalTo('foo'))
-            ->will($this->returnValue($results ?? $this->getMockResults()));
+            ->willReturn($results ?? $this->getMockResults());
         return $manager;
     }
 
@@ -185,7 +185,7 @@ class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo('recordid'), $this->equalTo(['refresh' => true]));
         $driver = $this->getMockHierarchyDriver();
         $driver->expects($this->any())->method('getTreeSource')
-            ->will($this->returnValue($tree));
+            ->willReturn($tree);
         $loader = $this->getMockRecordLoader($this->getMockRecord($driver));
         $command = $this->getCommand($loader);
         $commandTester = new CommandTester($command);

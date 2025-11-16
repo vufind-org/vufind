@@ -54,7 +54,7 @@ use function is_callable;
  */
 class Alma extends AbstractBase implements
     \VuFindHttp\HttpServiceAwareInterface,
-    \Laminas\Log\LoggerAwareInterface,
+    \Psr\Log\LoggerAwareInterface,
     TranslatorAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
@@ -581,7 +581,7 @@ class Alma extends AbstractBase implements
     protected function getFulfillmentUnitByLocation($locationCode, $fulfillmentUnits)
     {
         foreach ($fulfillmentUnits as $key => $val) {
-            if (array_search($locationCode, $val) !== false) {
+            if (in_array($locationCode, $val)) {
                 return $key;
             }
         }
@@ -1246,9 +1246,7 @@ class Alma extends AbstractBase implements
                 //$loan['volume'] = ;
                 $loan['publication_year'] = (string)$itemLoan->publication_year;
                 $loan['renewable']
-                    = (strtolower((string)$itemLoan->renewable) == 'true')
-                    ? true
-                    : false;
+                    = strtolower((string)$itemLoan->renewable) == 'true';
                 //$loan['message'] = ;
                 $loan['title'] = (string)$itemLoan->title;
                 $loan['item_id'] = (string)$itemLoan->loan_id;

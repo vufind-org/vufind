@@ -74,7 +74,7 @@ class LintMarcCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $filename = $input->getArgument('filename');
         $collection = new MarcCollectionFile($filename);
@@ -89,6 +89,6 @@ class LintMarcCommand extends Command
                 $output->writeln('Warnings: ' . implode("\n", $warnings));
             }
         }
-        return 0;
+        return self::SUCCESS;
     }
 }

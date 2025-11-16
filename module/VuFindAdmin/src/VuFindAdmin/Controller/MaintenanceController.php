@@ -31,8 +31,8 @@ namespace VuFindAdmin\Controller;
 
 use DateTime;
 use Laminas\Cache\Psr\SimpleCache\SimpleCacheDecorator;
-use Laminas\Log\LoggerInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use Psr\Log\LoggerInterface;
 use VuFind\Cache\Manager as CacheManager;
 use VuFind\Db\Service\Feature\DeleteExpiredInterface;
 use VuFind\Db\Service\SearchServiceInterface;
@@ -255,11 +255,9 @@ class MaintenanceController extends AbstractAdmin
                 throw new \Exception("Unsupported service: $serviceName");
             }
             $count = $service->deleteExpired(new DateTime("now - $daysOld days"));
-            if ($count == 0) {
-                $msg = $failString;
-            } else {
-                $msg = str_replace('%%count%%', $count, $successString);
-            }
+            $msg = $count == 0
+                ? $failString
+                : str_replace('%%count%%', $count, $successString);
             $this->flashMessenger()->addSuccessMessage($msg);
         }
         return $this->forwardTo('AdminMaintenance', 'Home');
@@ -294,7 +292,7 @@ class MaintenanceController extends AbstractAdmin
         $cache = new SimpleCacheDecorator($this->cacheManager->getCache('browscap'));
         $client = $this->guzzleService->createClient();
 
-        $bc = new \BrowscapPHP\BrowscapUpdater($cache, new \Laminas\Log\PsrLoggerAdapter($this->logger), $client);
+        $bc = new \BrowscapPHP\BrowscapUpdater($cache, $this->logger, $client);
         try {
             $bc->checkUpdate();
         } catch (\BrowscapPHP\Exception\NoNewVersionException $e) {

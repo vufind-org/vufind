@@ -29,7 +29,7 @@
 
 namespace VuFindSearch\Backend;
 
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use Ramsey\Uuid\Uuid;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 use VuFindSearch\Response\RecordCollectionInterface;

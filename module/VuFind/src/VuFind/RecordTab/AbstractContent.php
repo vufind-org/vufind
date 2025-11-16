@@ -90,7 +90,7 @@ abstract class AbstractContent extends AbstractBase
         $check = $this->hideIfEmpty
             ? $this->getContent()
             : $this->getRecordDriver()->tryMethod('getCleanISBN');
-        return !(null === $this->loader || empty($check));
+        return null !== $this->loader && !empty($check);
     }
 
     /**

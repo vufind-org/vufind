@@ -139,9 +139,6 @@ class Request extends \Laminas\Http\PhpEnvironment\Request
             return false;
         }
         // Check for null in string:
-        if (str_contains($param, "\x00")) {
-            return false;
-        }
-        return true;
+        return !str_contains($param, "\x00");
     }
 }

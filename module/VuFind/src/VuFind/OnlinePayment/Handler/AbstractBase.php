@@ -24,7 +24,7 @@
  * @package  OnlinePayment
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  * @link     http://docs.paytrail.com/ Paytrail API documentation
  */
 
@@ -33,7 +33,7 @@ declare(strict_types=1);
 namespace VuFind\OnlinePayment\Handler;
 
 use Laminas\Http\PhpEnvironment\Response;
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\PaymentEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\AuditEventServiceInterface;
@@ -54,7 +54,7 @@ use function is_object;
  * @package  OnlinePayment
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  * @link     http://docs.paytrail.com/ Paytrail API documentation
  */
 abstract class AbstractBase implements

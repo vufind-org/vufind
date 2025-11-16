@@ -76,13 +76,14 @@ class TitleHolds
     /**
      * Public method for getting title level holds
      *
-     * @param string $id A Bib ID
+     * @param string $id            A Bib ID
+     * @param array  $linkOverrides Optional id and source to override standard record driver
      *
      * @return string|bool URL to place hold, or false if hold option unavailable
      *
      * @todo Indicate login failure or ILS connection failure somehow?
      */
-    public function getHold($id)
+    public function getHold($id, array $linkOverrides = [])
     {
         // Get Holdings Data
         $mode = $this->catalog->getTitleHoldsMode();
@@ -94,7 +95,7 @@ class TitleHolds
                 if (!$patron) {
                     return false;
                 }
-                return $this->driverHold($id, $patron);
+                return $this->driverHold($id, $patron, $linkOverrides);
             } catch (ILSException $e) {
                 return false;
             }
@@ -105,7 +106,7 @@ class TitleHolds
                 $patron = false;
             }
             $mode = $this->checkOverrideMode($id, $mode);
-            return $this->generateHold($id, $mode, $patron);
+            return $this->generateHold($id, $mode, $patron, $linkOverrides);
         }
     }
 
@@ -165,12 +166,13 @@ class TitleHolds
     /**
      * Protected method for driver defined title holds
      *
-     * @param string $id     A Bib ID
-     * @param array  $patron An Array of patron data
+     * @param string $id            A Bib ID
+     * @param array  $patron        An Array of patron data
+     * @param array  $linkOverrides Optional id and source to override standard record driver
      *
      * @return mixed A url on success, boolean false on failure
      */
-    protected function driverHold($id, $patron)
+    protected function driverHold($id, $patron, array $linkOverrides = [])
     {
         // Get Hold Details
         $checkHolds = $this->catalog->checkFunction(
@@ -185,7 +187,7 @@ class TitleHolds
                 (is_array($result) && $result['valid'])
                 || (is_bool($result) && $result)
             ) {
-                return $this->getHoldDetails($data, $checkHolds['HMACKeys']);
+                return $this->getHoldDetails($data, $checkHolds['HMACKeys'], $linkOverrides);
             }
         }
         return false;
@@ -194,14 +196,16 @@ class TitleHolds
     /**
      * Protected method for vufind (i.e. User) defined holds
      *
-     * @param string $id     A Bib ID
-     * @param string $type   The holds mode to be applied from:
-     * (disabled, always, availability, driver)
-     * @param array  $patron Patron
+     * @param string $id            A Bib ID
+     * @param string $type          The holds mode to be applied from:
+     *                              (disabled, always, availability,
+     *                              driver)
+     * @param array  $patron        Patron
+     * @param array  $linkOverrides Optional id and source to override standard record driver
      *
      * @return mixed A url on success, boolean false on failure
      */
-    protected function generateHold($id, $type, $patron)
+    protected function generateHold($id, $type, $patron, array $linkOverrides = [])
     {
         $any_available = false;
         $addlink = false;
@@ -210,7 +214,6 @@ class TitleHolds
             'id' => $id,
             'level' => 'title',
         ];
-
         // Are holds allows?
         $checkHolds = $this->catalog->checkFunction(
             'Holds',
@@ -239,7 +242,7 @@ class TitleHolds
                     return $this->catalog->getHoldLink($id, $data);
                 } else {
                     // Return non-opac link
-                    return $this->getHoldDetails($data, $checkHolds['HMACKeys']);
+                    return $this->getHoldDetails($data, $checkHolds['HMACKeys'], $linkOverrides);
                 }
             }
         }
@@ -251,12 +254,13 @@ class TitleHolds
      *
      * Supplies the form details required to place a hold
      *
-     * @param array $data     An array of item data
-     * @param array $HMACKeys An array of keys to hash
+     * @param array $data          An array of item data
+     * @param array $HMACKeys      An array of keys to hash
+     * @param array $linkOverrides Optional id and source to override standard record driver
      *
      * @return array          Details for generating URL
      */
-    protected function getHoldDetails($data, $HMACKeys)
+    protected function getHoldDetails($data, $HMACKeys, array $linkOverrides)
     {
         // Generate HMAC
         $HMACkey = $this->hmac->generate($HMACKeys, $data);
@@ -276,7 +280,10 @@ class TitleHolds
 
         // Build Params
         return [
-            'action' => 'Hold', 'record' => $data['id'], 'query' => $queryString,
+            'action' => 'Hold',
+            'record' => $linkOverrides['id'] ?? $data['id'],
+            'source' => $linkOverrides['source'] ?? DEFAULT_SEARCH_BACKEND,
+            'query' => $queryString,
             'anchor' => '#tabnav',
         ];
     }

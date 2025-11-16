@@ -78,8 +78,8 @@ class FeedbackServiceTest extends \PHPUnit\Framework\TestCase
             . 'ORDER BY f.status';
         $query = $this->getMockBuilder(\Doctrine\ORM\AbstractQuery::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['getResult'])
-            ->getMockForAbstractClass();
+            ->onlyMethods(['getResult', 'getSQL', '_doExecute'])
+            ->getMock();
         $entityManager->expects($this->once())->method('createQuery')
             ->with($this->equalTo($queryStmt))
             ->willReturn($query);
@@ -102,8 +102,8 @@ class FeedbackServiceTest extends \PHPUnit\Framework\TestCase
 
         $query = $this->getMockBuilder(\Doctrine\ORM\AbstractQuery::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['execute', 'setParameters'])
-            ->getMockForAbstractClass();
+            ->onlyMethods(['execute', 'setParameters', 'getSQL', '_doExecute'])
+            ->getMock();
         $entityManager->expects($this->once())->method('createQuery')
             ->with($this->equalTo($queryStmt))
             ->willReturn($query);

@@ -45,14 +45,44 @@ use VuFind\Config\ConfigManagerInterface;
 class Options extends \VuFind\Search\Solr\Options
 {
     /**
+     * Configuration file to read search settings from
+     *
+     * Note that any change to this must be made before calling the constructor of this class.
+     *
+     * @var string
+     */
+    protected $searchIni = 'Blender';
+
+    /**
+     * Configuration file to read facet settings from
+     *
+     * Note that any change to this must be made before calling the constructor of this class.
+     *
+     * @var string
+     */
+    protected $facetsIni = 'Blender';
+
+    /**
+     * The route name for the search results action.
+     *
+     * @var string
+     */
+    protected $searchAction = 'blender-results';
+
+    /**
+     * The route name for the advanced search action.
+     *
+     * @var string
+     */
+    protected $advancedSearchAction = 'blender-advanced';
+
+    /**
      * Constructor
      *
      * @param ConfigManagerInterface $configManager Config manager
      */
     public function __construct(ConfigManagerInterface $configManager)
     {
-        $this->facetsIni = $this->searchIni = 'Blender';
-
         // Override the default result limit with a value that we can always support:
         $this->defaultResultLimit = 400;
 
@@ -69,7 +99,7 @@ class Options extends \VuFind\Search\Solr\Options
      */
     public function getSearchAction()
     {
-        return 'blender-results';
+        return $this->searchAction;
     }
 
     /**
@@ -80,7 +110,7 @@ class Options extends \VuFind\Search\Solr\Options
      */
     public function getAdvancedSearchAction()
     {
-        return $this->advancedHandlers ? 'blender-advanced' : false;
+        return $this->advancedHandlers ? $this->advancedSearchAction : false;
     }
 
     /**

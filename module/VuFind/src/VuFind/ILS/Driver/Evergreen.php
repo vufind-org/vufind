@@ -49,7 +49,7 @@ use function count;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterface
+class Evergreen extends AbstractBase implements \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
@@ -289,12 +289,7 @@ class Evergreen extends AbstractBase implements \Laminas\Log\LoggerAwareInterfac
                     break;
             }
 
-            if ($row['due_year']) {
-                $due_date = $row['due_year'] . '-' . $row['due_month'] . '-' .
-                            $row['due_day'];
-            } else {
-                $due_date = '';
-            }
+            $due_date = $row['due_year'] ? $row['due_year'] . '-' . $row['due_month'] . '-' . $row['due_day'] : '';
             $holding[] = [
                 'id' => $id,
                 'availability' => $available,

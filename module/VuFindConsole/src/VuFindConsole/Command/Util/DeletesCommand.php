@@ -124,7 +124,7 @@ class DeletesCommand extends AbstractSolrCommand
     ): array {
         $ids = [];
         // MARC file mode:
-        $messageCallback = function (string $msg, int $level) use ($output) {
+        $messageCallback = function (string $msg, int $level) use ($output): void {
             if ($output->isVerbose() || $level !== E_NOTICE) {
                 $output->writeln(
                     '<comment>' . OutputFormatter::escape($msg) . '</comment>'
@@ -158,7 +158,7 @@ class DeletesCommand extends AbstractSolrCommand
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $filename = $input->getArgument('filename');
         $mode = $input->getArgument('format');
@@ -168,7 +168,7 @@ class DeletesCommand extends AbstractSolrCommand
         // File doesn't exist?
         if (!file_exists($filename)) {
             $output->writeln("Cannot find file: {$filename}");
-            return 1;
+            return self::FAILURE;
         }
 
         $output->writeln(
@@ -203,6 +203,6 @@ class DeletesCommand extends AbstractSolrCommand
             $output->writeln('Nothing to delete.');
         }
 
-        return 0;
+        return self::SUCCESS;
     }
 }

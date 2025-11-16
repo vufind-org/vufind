@@ -113,10 +113,9 @@ class ExtendedIniNormalizerTest extends \PHPUnit\Framework\TestCase
      *
      * @param string $value Value to test
      *
-     * @dataProvider escapingProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('escapingProvider')]
     public function testEscaping(string $value): void
     {
         $reader = new ExtendedIniReader();

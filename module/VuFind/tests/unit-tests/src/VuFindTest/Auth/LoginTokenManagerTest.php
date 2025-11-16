@@ -98,7 +98,7 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
             ->willReturn($this->getMockUser());
         $tokenTable = $this->getMockLoginTokenService();
         $tokenTable->expects($this->once())->method('matchToken')
-            ->will($this->throwException(new LoginTokenException('Token does not match', 0)));
+            ->willThrowException(new LoginTokenException('Token does not match', 0));
         $tokenTable->expects($this->once())->method('getByUser')
             ->willReturn([$mockToken]);
         $loginToken = $this->getLoginToken($cookieManager, $tokenTable, $userService, true);

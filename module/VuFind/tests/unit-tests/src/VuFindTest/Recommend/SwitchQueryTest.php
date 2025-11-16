@@ -217,13 +217,13 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
         $queryBuilder = $this->getMockBuilder(\VuFindSearch\Backend\Solr\QueryBuilder::class)
             ->disableOriginalConstructor()->getMock();
         $queryBuilder->expects($this->any())->method('getLuceneHelper')
-            ->will($this->returnValue($helper));
+            ->willReturn($helper);
         $backend = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
             ->disableOriginalConstructor()->getMock();
         $backend->expects($this->any())->method('getIdentifier')
-            ->will($this->returnValue('Solr'));
+            ->willReturn('Solr');
         $backend->expects($this->any())->method('getQueryBuilder')
-            ->will($this->returnValue($queryBuilder));
+            ->willReturn($queryBuilder);
         $container = new \VuFindTest\Container\MockContainer($this);
         $container->set('Solr', $backend);
         return new BackendManager($container);
@@ -243,7 +243,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
         $results = $this->getMockBuilder(\VuFind\Search\Solr\Results::class)
             ->disableOriginalConstructor()->getMock();
         $results->expects($this->any())->method('getParams')
-            ->will($this->returnValue($params));
+            ->willReturn($params);
         return $results;
     }
 
@@ -260,9 +260,9 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
         $params = $this->getMockBuilder(\VuFind\Search\Solr\Params::class)
             ->disableOriginalConstructor()->getMock();
         $params->expects($this->any())->method('getDisplayQuery')
-            ->will($this->returnValue($query));
+            ->willReturn($query);
         $params->expects($this->any())->method('getSearchType')
-            ->will($this->returnValue($type));
+            ->willReturn($type);
         return $params;
     }
 }

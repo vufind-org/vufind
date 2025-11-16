@@ -50,7 +50,7 @@ use function is_array;
  */
 class XCNCIP2 extends AbstractBase implements
     \VuFindHttp\HttpServiceAwareInterface,
-    \Laminas\Log\LoggerAwareInterface,
+    \Psr\Log\LoggerAwareInterface,
     \VuFind\I18n\Translator\TranslatorAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
@@ -592,7 +592,7 @@ class XCNCIP2 extends AbstractBase implements
      */
     protected function getCacheKey($suffix = null)
     {
-        return 'XCNCIP2' . '-' . md5($this->url . $suffix);
+        return 'XCNCIP2-' . md5($this->url . $suffix);
     }
 
     /**

@@ -31,7 +31,7 @@
 namespace VuFind\Db\Service;
 
 use DateTime;
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\ChangeTracker;
 use VuFind\Db\Entity\ChangeTrackerEntityInterface;
 use VuFind\Log\LoggerAwareTrait;
@@ -67,9 +67,7 @@ class ChangeTrackerService extends AbstractDbService implements ChangeTrackerSer
         $parameters = ['core' => $indexName, 'id' => $id];
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
-        $queryResult = $query->getResult();
-        $result = current($queryResult);
-        return $result ? $result : null;
+        return $query->getOneOrNullResult();
     }
 
     /**
@@ -89,8 +87,7 @@ class ChangeTrackerService extends AbstractDbService implements ChangeTrackerSer
         $parameters = ['core' => $indexName, 'from' => $from, 'until' => $until];
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
-        $result = $query->getResult();
-        return current($result)['deletedcount'];
+        return $query->getSingleScalarResult();
     }
 
     /**

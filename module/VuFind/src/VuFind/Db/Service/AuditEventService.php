@@ -69,9 +69,9 @@ class AuditEventService extends AbstractDbService implements
      * @param ?string             $requestUri          Request URI (if applicable)
      */
     public function __construct(
-        protected EntityManager $entityManager,
-        protected EntityPluginManager $entityPluginManager,
-        protected PersistenceManager $persistenceManager,
+        EntityManager $entityManager,
+        EntityPluginManager $entityPluginManager,
+        PersistenceManager $persistenceManager,
         protected array $enabledEventTypes,
         protected ?string $sessionId,
         protected ?string $clientIp,
@@ -79,6 +79,7 @@ class AuditEventService extends AbstractDbService implements
         protected ?string $serverName,
         protected ?string $requestUri
     ) {
+        parent::__construct($entityManager, $entityPluginManager, $persistenceManager);
     }
 
     /**
@@ -126,7 +127,10 @@ class AuditEventService extends AbstractDbService implements
             ->setServerName($this->serverName)
             ->setMessage($message)
             ->setData(json_encode($data));
+        // Persist and forget about this entity (this ensures that the user could be deleted without it causing issues
+        // with tracked event entities):
         $this->persistEntity($event);
+        $this->detachEntity($event);
     }
 
     /**
@@ -325,7 +329,7 @@ class AuditEventService extends AbstractDbService implements
     {
         array_walk_recursive(
             $details,
-            function (&$value, $key) {
+            function (&$value, $key): void {
                 if ('csrf' === $key || str_contains($key, 'password')) {
                     $value = '***';
                 }

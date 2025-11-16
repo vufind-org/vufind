@@ -140,8 +140,8 @@ class Feedback implements FeedbackEntityInterface
     public function __construct()
     {
         // Set the default value as a DateTime object
-        $this->created = new Datetime();
-        $this->updated = new Datetime();
+        $this->created = new DateTime();
+        $this->updated = new DateTime();
     }
 
     /**

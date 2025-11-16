@@ -113,7 +113,7 @@ class ChoiceAuthTest extends \PHPUnit\Framework\TestCase
         $db->expects($this->once())
             ->method('authenticate')
             ->with($this->equalTo($request))
-            ->will($this->throwException($exception));
+            ->willThrowException($exception);
         $ca = $this->getChoiceAuth($pm);
         try {
             $ca->authenticate($request);

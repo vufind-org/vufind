@@ -52,13 +52,7 @@ use function is_object;
 class SimilarItems extends AbstractChannelProvider implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
-
-    /**
-     * Number of results to include in each channel.
-     *
-     * @var int
-     */
-    protected $channelSize;
+    use BatchTrait;
 
     /**
      * Maximum number of records to examine for similar results.
@@ -117,8 +111,8 @@ class SimilarItems extends AbstractChannelProvider implements TranslatorAwareInt
      */
     public function setOptions(array $options)
     {
-        $this->channelSize = $options['channelSize'] ?? 20;
         $this->maxRecordsToExamine = $options['maxRecordsToExamine'] ?? 2;
+        $this->setBatchSizeFromOptions($options);
     }
 
     /**
@@ -210,32 +204,38 @@ class SimilarItems extends AbstractChannelProvider implements TranslatorAwareInt
             'providerId' => $this->providerId,
             'links' => [],
         ];
+
         if ($tokenOnly) {
             $retVal['token'] = $driver->getUniqueID();
-        } else {
-            $params = new \VuFindSearch\ParamBag(['rows' => $this->channelSize]);
-            $command = new SimilarCommand(
-                $driver->getSourceIdentifier(),
-                $driver->getUniqueID(),
-                $params
-            );
-            $similar = $this->searchService->invoke($command)->getResult();
-            $retVal['contents'] = $this->summarizeRecordDrivers($similar);
-            $route = $this->recordRouter->getRouteDetails($driver);
-            $retVal['links'][] = [
-                'label' => 'View Record',
-                'icon' => 'fa-file-text-o',
-                'url' => $this->url
-                    ->fromRoute($route['route'], $route['params']),
-            ];
-            $retVal['links'][] = [
-                'label' => 'channel_expand',
-                'icon' => 'fa-search-plus',
-                'url' => $this->url->fromRoute('channels-record')
-                    . '?id=' . urlencode($driver->getUniqueID())
-                    . '&source=' . urlencode($driver->getSourceIdentifier()),
-            ];
+            return $retVal;
         }
+
+        $retVal['limit'] = $this->batchSize;
+        $params = new \VuFindSearch\ParamBag(['rows' => $this->batchSize]);
+        $command = new SimilarCommand(
+            $driver->getSourceIdentifier(),
+            $driver->getUniqueID(),
+            $params
+        );
+        $similar = $this->searchService->invoke($command)->getResult();
+        $retVal['contents'] = $this->summarizeRecordDrivers($similar);
+
+        $route = $this->recordRouter->getRouteDetails($driver);
+        $retVal['links'][] = [
+            'label' => 'View Record',
+            'icon' => 'format-default',
+            'url' => $this->url
+                ->fromRoute($route['route'], $route['params']),
+        ];
+
+        $retVal['links'][] = [
+            'label' => 'channel_expand',
+            'icon' => 'ui-add',
+            'url' => $this->url->fromRoute('channels-record')
+                . '?id=' . urlencode($driver->getUniqueID())
+                . '&source=' . urlencode($driver->getSourceIdentifier()),
+        ];
+
         return $retVal;
     }
 }

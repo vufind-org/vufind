@@ -80,9 +80,8 @@ class RelaisAvailabilityTest extends \PHPUnit\Framework\TestCase
      * @param array  $expected Expected handler response
      *
      * @return void
-     *
-     * @dataProvider searchResponseProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('searchResponseProvider')]
     public function testSearchResponse(string $response, array $expected): void
     {
         $params = $this->createMock(\Laminas\Mvc\Controller\Plugin\Params::class);
