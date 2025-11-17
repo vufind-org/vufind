@@ -2072,7 +2072,7 @@ class Folio extends AbstractAPI implements
         );
         $requestPreferencesResponse = json_decode($response->getBody());
         $requestPreferences = $requestPreferencesResponse->requestPreferences[0] ?? null;
-        $allowHoldShelf = $requestPreferences->holdShelf ?? false;
+        $allowHoldShelf = $requestPreferences->holdShelf ?? true;
         $allowDelivery = ($requestPreferences->delivery ?? false) && ($this->config['Holds']['allowDelivery'] ?? true);
         $locationsLabels = $this->config['Holds']['locationsLabelByRequestGroup'] ?? [];
         if ($allowHoldShelf && $allowDelivery) {
