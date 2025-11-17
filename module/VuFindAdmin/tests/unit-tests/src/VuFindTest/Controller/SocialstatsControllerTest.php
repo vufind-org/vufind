@@ -84,8 +84,8 @@ class SocialstatsControllerTest extends \PHPUnit\Framework\TestCase
         $tagService->expects($this->once())->method('getStatistics')
             ->willReturn($mockTagStats);
         $container->set(TagsService::class, $tagService);
-        $viewRenderer = $this->getMockBuilder(\Laminas\View\Renderer\RendererInterface::class)
-            ->onlyMethods(['getEngine', 'setResolver', 'render'])->addMethods(['plugin'])->getMock();
+        $viewRenderer = $this->getMockBuilder(\Laminas\View\Renderer\PhpRenderer::class)
+            ->onlyMethods(['getEngine', 'setResolver', 'render', 'plugin'])->getMock();
         $viewRenderer->expects($this->once())->method('plugin')->withAnyParameters()
             ->willReturn(function (/*$input*/) {
                 return 'url';

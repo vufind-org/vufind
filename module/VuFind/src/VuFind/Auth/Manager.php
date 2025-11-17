@@ -823,7 +823,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
             $user,
             data: [
                 'email' => $email,
-                'pending' => $user->getPendingEmail() ? true : false,
+                'pending' => (bool)$user->getPendingEmail(),
             ]
         );
     }

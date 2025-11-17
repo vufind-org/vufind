@@ -115,7 +115,7 @@ class LuceneSyntaxHelper
         $lookahead = self::$insideQuotes;
         $boolReg = '/((\s+(AND|OR|NOT)\s+)|^NOT\s+)' . $lookahead . '/';
         $checkString = $this->capitalizeCaseInsensitiveBooleans($searchString);
-        return preg_match($boolReg, $checkString) ? true : false;
+        return (bool)preg_match($boolReg, $checkString);
     }
 
     /**
@@ -131,7 +131,7 @@ class LuceneSyntaxHelper
         if (!$this->caseSensitiveRanges) {
             $rangeReg .= 'i';
         }
-        return preg_match($rangeReg, $searchString) ? true : false;
+        return (bool)preg_match($rangeReg, $searchString);
     }
 
     /**
@@ -174,13 +174,8 @@ class LuceneSyntaxHelper
         ) {
             return true;
         }
-
         // Check for boosts:
-        if (preg_match('/[\^][0-9]+/', $searchString)) {
-            return true;
-        }
-
-        return false;
+        return (bool)preg_match('/[\^][0-9]+/', $searchString);
     }
 
     /**

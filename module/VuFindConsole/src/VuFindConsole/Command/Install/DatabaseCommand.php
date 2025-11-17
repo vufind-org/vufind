@@ -141,7 +141,7 @@ class DatabaseCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $sqlOnly = $input->getOption('sql-only') ? true : false;
+        $sqlOnly = (bool)$input->getOption('sql-only');
         $driver = $input->getOption('driver');
         $dbHost = $input->getOption('dbHost');
         $vufindHost = $input->getOption('vufindHost');

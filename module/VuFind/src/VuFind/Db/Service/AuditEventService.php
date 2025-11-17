@@ -127,7 +127,10 @@ class AuditEventService extends AbstractDbService implements
             ->setServerName($this->serverName)
             ->setMessage($message)
             ->setData(json_encode($data));
+        // Persist and forget about this entity (this ensures that the user could be deleted without it causing issues
+        // with tracked event entities):
         $this->persistEntity($event);
+        $this->detachEntity($event);
     }
 
     /**

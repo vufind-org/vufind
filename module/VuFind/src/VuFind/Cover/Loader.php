@@ -593,11 +593,7 @@ class Loader extends \VuFind\ImageLoader
         if (!($imageGD = @imagecreatefromstring($imageData))) {
             return false;
         }
-        if (!@imagejpeg($imageGD, $jpeg)) {
-            return false;
-        }
-
-        return true;
+        return @imagejpeg($imageGD, $jpeg);
     }
 
     /**

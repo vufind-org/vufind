@@ -158,7 +158,7 @@ class Results extends \VuFind\Search\Base\Results
     }
 
     /**
-     * Get the scores of the results
+     * Get an array of the record ID mapped to its score, or to null if it has no score.
      *
      * @return array
      */
@@ -167,9 +167,7 @@ class Results extends \VuFind\Search\Base\Results
         $scoreMap = [];
         foreach ($this->results as $record) {
             $data = $record->getRawData();
-            if ($data['score'] ?? false) {
-                $scoreMap[$record->getUniqueId()] = $data['score'];
-            }
+            $scoreMap[$record->getUniqueId()] = $data['score'] ?? null;
         }
         return $scoreMap;
     }

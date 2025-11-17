@@ -29,6 +29,7 @@
 
 namespace VuFind\ChannelProvider;
 
+use VuFind\Http\PhpEnvironment\Request as HttpRequest;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Params;
 use VuFind\Search\Base\Results;
@@ -47,11 +48,12 @@ interface ChannelProviderInterface
     /**
      * Hook to configure search parameters before executing search.
      *
-     * @param Params $params Search parameters to adjust
+     * @param Params      $params  Search parameters to adjust
+     * @param HttpRequest $request Current HTTP request
      *
      * @return void
      */
-    public function configureSearchParams(Params $params);
+    public function configureSearchParams(Params $params, HttpRequest $request): void;
 
     /**
      * Return channel information derived from a record driver object.

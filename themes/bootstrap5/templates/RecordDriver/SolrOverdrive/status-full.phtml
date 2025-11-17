@@ -31,7 +31,7 @@ foreach ($ids as $id) {
             . $this->transEsc('od_code_login_for_avail') . '</p>';
         $availabilityStatus = \VuFind\ILS\Logic\AvailabilityStatusInterface::STATUS_UNKNOWN;
     } else {
-        $current['full_status'] .= '<div class="availability"><p>';
+        $current['full_status'] .= '<div class="availability">';
         $copiesAvailable = (int)($avail->copiesAvailable ?? 0);
         if ($copiesAvailable > 0) {
             $current['full_status'] .= '<span class="text-success">';
@@ -51,6 +51,7 @@ foreach ($ids as $id) {
         if ($numHolds = ($avail->numberOfHolds ?? 0) > 0) {
             $current['full_status'] .= '; ' . $this->transEsc('od_waiting', ['holds' => $numHolds], null, true);
         }
+        $current['full_status'] .= '</div>';
     }
     $current['availability_message'] = $availabilityStatus ? $this->render(
         'ajax/status.phtml',

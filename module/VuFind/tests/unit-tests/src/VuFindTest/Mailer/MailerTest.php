@@ -407,17 +407,21 @@ class MailerTest extends \PHPUnit\Framework\TestCase
      */
     public function testSendLink()
     {
-        $viewCallback = function ($in): bool {
-            return $in['msgUrl'] == 'http://foo'
-                && $in['to'] == 'to@example.com;to2@example.com'
-                && $in['from'] == 'from@example.com'
-                && $in['message'] == 'message';
-        };
-        $view = $this->getMockBuilder(\Laminas\View\Renderer\PhpRenderer::class)
-            ->addMethods(['partial'])->getMock();
-        $view->expects($this->once())->method('partial')
-            ->with($this->equalTo('Email/share-link.phtml'), $this->callback($viewCallback))
-            ->willReturn('body');
+        $view = $this->createMock(\Laminas\View\Renderer\PhpRenderer::class);
+        $view->method('__call')
+            ->willReturnCallback(
+                function ($method, $args) {
+                    if ($method === 'partial') {
+                        $this->assertSame('Email/share-link.phtml', $args[0]);
+                        $this->assertSame('http://foo', $args[1]['msgUrl']);
+                        $this->assertSame('to@example.com;to2@example.com', $args[1]['to']);
+                        $this->assertSame('from@example.com', $args[1]['from']);
+                        $this->assertSame('message', $args[1]['message']);
+                        return 'body';
+                    }
+                    return null;
+                }
+            );
 
         $callback = function ($message): bool {
             $to = $message->getTo();
@@ -452,17 +456,23 @@ class MailerTest extends \PHPUnit\Framework\TestCase
         $driver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
         $driver->expects($this->once())->method('getBreadcrumb')->willReturn('breadcrumb');
 
-        $viewCallback = function ($in) use ($driver): bool {
-            return $in['driver'] == $driver
-                && $in['to'] == 'to@example.com'
-                && $in['from'] == 'from@example.com'
-                && $in['message'] == 'message';
-        };
-        $view = $this->getMockBuilder(\Laminas\View\Renderer\PhpRenderer::class)
-            ->addMethods(['partial'])->getMock();
-        $view->expects($this->once())->method('partial')
-            ->with($this->equalTo('Email/record.phtml'), $this->callback($viewCallback))
-            ->willReturn('body');
+        $view = $this->createMock(\Laminas\View\Renderer\PhpRenderer::class);
+        $view->expects($this->once())->method('__call')
+            ->willReturnCallback(
+                function ($method, $args) use ($driver) {
+                    if ($method === 'partial') {
+                        $this->assertSame('Email/record.phtml', $args[0]);
+                        $in = $args[1];
+                        $this->assertSame($driver, $in['driver']);
+                        $this->assertSame('to@example.com', $in['to']);
+                        $this->assertSame('from@example.com', $in['from']);
+                        $this->assertSame('message', $in['message']);
+
+                        return 'body';
+                    }
+                    return null;
+                }
+            );
 
         $callback = function ($message): bool {
             return 'to@example.com' == $message->getTo()[0]->toString()

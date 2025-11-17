@@ -34,6 +34,7 @@ use Doctrine\ORM\Events;
 use DoctrineModule\Service\AbstractFactory;
 use DoctrineORMModule\Options\EntityManager as DoctrineORMModuleEntityManager;
 use Psr\Container\ContainerInterface;
+use VuFind\Db\Mapping\ClassMetadataMappingsInterface;
 
 use function assert;
 
@@ -73,28 +74,20 @@ class EntityManagerFactory extends AbstractFactory
         assert($options instanceof DoctrineORMModuleEntityManager);
         $connection = $container->get($options->getConnection());
         $config = $container->get($options->getConfiguration());
+        $entityPluginManager = $container->get(\VuFind\Db\Entity\PluginManager::class);
 
-        // Do not use the standard entity resolver and configuration since
-        // the mappings already exist in the plugin manager.
-        $pm = $container->get(\VuFind\Db\Entity\PluginManager::class);
+        $entityManager = new EntityManager($connection, $config, $connection->getEventManager());
 
-        $evm  = $connection->getEventManager();
-        $rtel = new \Doctrine\ORM\Tools\ResolveTargetEntityListener();
-
-        foreach ($pm->getAliases() as $interface => $class) {
-            // Adds a target-entity class
-            $rtel->addResolveTargetEntity($interface, $class, []);
+        // Add entity mappings to class metadata factory:
+        $metadataFactory = $entityManager->getMetadataFactory();
+        if ($metadataFactory instanceof ClassMetadataMappingsInterface) {
+            $metadataFactory->setAliases($entityPluginManager->getAliases());
         }
-
-        // Add the ResolveTargetEntityListener
-        $evm->addEventSubscriber($rtel);
-
-        $entityManager = new EntityManager($connection, $config, $evm);
 
         // Add LoadClassMetadataListener:
         $entityManager->getEventManager()->addEventListener(
             Events::loadClassMetadata,
-            new LoadClassMetadataListener($entityManager, $pm->getAliases())
+            new LoadClassMetadataListener($entityManager, $entityPluginManager->getAliases())
         );
 
         return $entityManager;

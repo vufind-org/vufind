@@ -482,11 +482,9 @@ class Server
 
         // Check for sets:
         $fields = $record->getRawData();
-        if (null !== $this->setField && !empty($fields[$this->setField])) {
-            $sets = (array)$fields[$this->setField];
-        } else {
-            $sets = [];
-        }
+        $sets = null !== $this->setField && !empty($fields[$this->setField])
+            ? (array)$fields[$this->setField]
+            : [];
         if (!empty($set)) {
             $sets = array_unique(array_merge($sets, [$set]));
         }
@@ -1186,10 +1184,7 @@ class Server
         if ($from_time > $until_time) {
             throw new \Exception('noRecordsMatch:from vs. until');
         }
-        if ($from_time < $this->normalizeDate($this->earliestDatestamp)) {
-            return true;
-        }
-        return false;
+        return $from_time < $this->normalizeDate($this->earliestDatestamp);
     }
 
     /**
@@ -1344,7 +1339,7 @@ class Server
     protected function showError($code, $message)
     {
         // Certain errors should not echo parameters:
-        $echoParams = !($code == 'badVerb' || $code == 'badArgument');
+        $echoParams = $code != 'badVerb' && $code != 'badArgument';
         $response = $this->createResponse($echoParams);
 
         $xml = $response->addChild('error', htmlspecialchars($message));

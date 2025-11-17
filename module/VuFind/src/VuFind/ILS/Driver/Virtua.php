@@ -444,11 +444,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             }
 
             // Call number
-            if ($row['ITEM_CALL_NUM'] != null) {
-                $call_num = $row['ITEM_CALL_NUM'];
-            } else {
-                $call_num = $row['BIB_CALL_NUM'];
-            }
+            $call_num = $row['ITEM_CALL_NUM'] ?? $row['BIB_CALL_NUM'];
 
             $temp = [
                 'id'            => $id,
@@ -557,11 +553,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
 
         // Set a flag for super users, better then
         //  the full function call inside the loop
-        if (in_array($patron_type, $type_list['Super User'])) {
-            $super_user = true;
-        } else {
-            $super_user = false;
-        }
+        $super_user = in_array($patron_type, $type_list['Super User']);
         // External Users cannot place a request
         if (in_array($patron_type, $type_list['Externals'])) {
             return $holdings;
@@ -1443,11 +1435,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     {
         // Change this value for debugging
         // eg. strtotime('25-12-2009') = Christmas
-        if ($fake_time) {
-            $time = strtotime($fake_time);
-        } else {
-            $time = strtotime('now');
-        }
+        $time = $fake_time ? strtotime($fake_time) : strtotime('now');
         $today = date('d-m-Y', $time);
         $time_format = 'H:i:s';
 
@@ -1765,24 +1753,24 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
 
         // Have to use raw post data because of the way
         //   virtua expects the barcodes to come across.
-        $post_data  = 'function=' . 'RENEWAL';
-        $post_data .= '&search=' . 'PATRON';
+        $post_data  = 'function=RENEWAL';
+        $post_data .= '&search=PATRON';
         $post_data .= '&sessionid=' . "$session_id";
-        $post_data .= '&skin=' . 'homepage';
+        $post_data .= '&skin=homepage';
         $post_data .= '&lng=' . $this->getConfiguredLanguage();
-        $post_data .= '&inst=' . 'consortium';
+        $post_data .= '&inst=consortium';
         $post_data .= '&conf=' . urlencode('.&#047;chameleon.conf');
-        $post_data .= '&u1=' . '12';
-        $post_data .= '&SourceScreen=' . 'PATRONACTIVITY';
-        $post_data .= '&pos=' . '1';
+        $post_data .= '&u1=12';
+        $post_data .= '&SourceScreen=PATRONACTIVITY';
+        $post_data .= '&pos=1';
         $post_data .= '&patronid=' . $patron['cat_username'];
         $post_data .= '&patronhost='
             . urlencode($this->config['Catalog']['patron_host']);
         $post_data .= '&host='
             . urlencode($this->config['Catalog']['host_string']);
         $post_data .= '&itembarcode=' . implode('&itembarcode=', $item_list);
-        $post_data .= '&submit=' . 'Renew';
-        $post_data .= '&reset=' . 'Clear';
+        $post_data .= '&submit=Renew';
+        $post_data .= '&reset=Clear';
 
         $result = $this->httpRequest($virtua_url, null, $post_data);
 
