@@ -1356,8 +1356,8 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
                 $startTime = $start ? new \DateTime($start) : null;
                 $endTime = $end ? new \DateTime($end) : null;
                 if ($startTime && $endTime) {
-                    $now = new \DateTime();
                     if ($endTime <= $startTime) {
+                        $now = new \DateTime();
                         if ($now < $endTime) {
                             $startTime->modify('-1 day');
                         } else {
