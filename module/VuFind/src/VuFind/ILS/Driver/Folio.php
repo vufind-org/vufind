@@ -2071,9 +2071,9 @@ class Folio extends AbstractAPI implements
             '/request-preference-storage/request-preference?query=userId==' . $patron['id']
         );
         $requestPreferencesResponse = json_decode($response->getBody());
-        $requestPreferences = $requestPreferencesResponse->requestPreferences[0];
-        $allowHoldShelf = $requestPreferences->holdShelf;
-        $allowDelivery = $requestPreferences->delivery && ($this->config['Holds']['allowDelivery'] ?? true);
+        $requestPreferences = $requestPreferencesResponse->requestPreferences[0] ?? null;
+        $allowHoldShelf = $requestPreferences->holdShelf ?? true;
+        $allowDelivery = ($requestPreferences->delivery ?? false) && ($this->config['Holds']['allowDelivery'] ?? true);
         $locationsLabels = $this->config['Holds']['locationsLabelByRequestGroup'] ?? [];
         if ($allowHoldShelf && $allowDelivery) {
             return [
