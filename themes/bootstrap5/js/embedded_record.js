@@ -58,13 +58,9 @@ VuFind.register('embedded', function embedded() {
     var id = $result.find('.hiddenId')[0].value;
     var source = $result.find('.hiddenSource')[0].value;
     if ($tab.parent().hasClass('noajax')) {
-      if ($tab.is('a')) {
-        // tab case:
-        window.location.href = $tab.attr('href');
-      } else {
-        // accordion case:
-        window.location.href = $tab.find('a').attr('data-href');
-      }
+      window.location.href = $tab.is('a')
+        ? $tab.attr('href') // tab case
+        : $tab.find('a').attr('data-href'); // accordion case
       return false;
     }
     var urlroot;
