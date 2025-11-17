@@ -1,5 +1,10 @@
 import fs from "node:fs";
 
+if (!fs.globSync) {
+	console.log("Please use Node v22 or higher for access to fs.globSync.");
+	process.exit(1);
+}
+
 const jsAppendsRe = new RegExp("appendScriptLink\\('([^']+?)'", "g");
 const jsTranslateRe = new RegExp(
 	"VuFind\\.translate\\(['\"]([^,\\)]+?)['\"](,|\\))",
