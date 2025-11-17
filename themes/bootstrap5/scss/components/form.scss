@@ -104,8 +104,9 @@ form {
   display: flex;
   align-items: center;
   gap: 0.5em;
-  padding-inline: 0;
-  padding-block: 0.5em;
+  width: fit-content;
+  margin-inline-start: -0.6em;
+  padding: 0.6em;
   line-height: normal;
 
   &:hover,
@@ -126,7 +127,7 @@ form {
   line-height: normal;
   cursor: default;
 
-  &:has(.) {
+  &:has(.checkbox-select-item) {
     padding-inline-start: 0;
     cursor: pointer;
 

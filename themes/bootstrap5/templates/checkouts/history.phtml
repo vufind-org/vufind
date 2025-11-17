@@ -45,16 +45,16 @@
           <?php if ($purgeSelectedAllowed): ?>
             <?=
               $this->component(
-                  'confirm-button',
-                  [
-                      'buttonId' => 'purgeSelected',
-                      'buttonName' => 'purgeSelected',
-                      'buttonLabel' => 'loan_history_purge_selected',
-                      'header' => 'loan_history_confirm_purge_selected',
-                      'confirmId' => 'confirm_purge_selected_yes',
-                      'confirmTitle' => 'loan_history_confirm_purge_selected',
-                      'cancelClass' => 'confirm_purge_no',
-                  ]
+                'confirm-button',
+                [
+                  'buttonId' => 'purgeSelected',
+                  'buttonName' => 'purgeSelected',
+                  'buttonLabel' => 'loan_history_purge_selected',
+                  'header' => 'loan_history_confirm_purge_selected',
+                  'confirmId' => 'confirm_purge_selected_yes',
+                  'confirmTitle' => 'loan_history_confirm_purge_selected',
+                  'cancelClass' => 'confirm_purge_no',
+                ]
               )
             ?>
           <?php endif; ?>
@@ -62,23 +62,23 @@
           <?php if ($purgeAllAllowed): ?>
             <?=
               $this->component(
-                  'confirm-button',
-                  [
-                      'buttonId' => 'purgeAll',
-                      'buttonName' => 'purgeAll',
-                      'buttonLabel' => 'loan_history_purge_all',
-                      'header' => 'loan_history_confirm_purge_all',
-                      'confirmId' => 'confirm_purge_all_yes',
-                      'confirmTitle' => 'loan_history_confirm_purge_all',
-                      'cancelClass' => 'confirm_purge_no',
-                  ]
+                'confirm-button',
+                [
+                  'buttonId' => 'purgeAll',
+                  'buttonName' => 'purgeAll',
+                  'buttonLabel' => 'loan_history_purge_all',
+                  'header' => 'loan_history_confirm_purge_all',
+                  'confirmId' => 'confirm_purge_all_yes',
+                  'confirmTitle' => 'loan_history_confirm_purge_all',
+                  'cancelClass' => 'confirm_purge_no',
+                ]
               )
             ?>
           <?php endif; ?>
         </div>
         <?php if ($purgeSelectedAllowed): ?>
           <div class="checkbox">
-            <label>
+            <label class="select-all-label">
               <input type="checkbox" name="selectAll" class="checkbox-select-all">
               <?=$this->transEsc('select_all_on_page')?>
             </label>
@@ -91,21 +91,15 @@
       <?php foreach ($this->transactions as $i => $resource): ?>
         <?php $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
         <li id="record<?=$this->escapeHtmlAttr($resource->getUniqueId())?>" class="result">
-          <?php if ($this->purgeSelectedAllowed): ?>
-            <div class="checkbox record-checkbox">
+          <label class="checkbox-select">
+            <?php if ($this->purgeSelectedAllowed): ?>
               <?php if (isset($ilsDetails['row_id'])): ?>
                 <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['row_id']); ?>
-                <label>
-                  <input class="checkbox-select-item" type="checkbox" name="purgeSelectedIDs[]" value="<?=$this->escapeHtmlAttr($ilsDetails['row_id'])?>" id="checkbox_<?=$safeId?>" aria-label="<?=$this->transEscAttr('select_item_purge')?>">
-                </label>
-              <?php else: ?>
-                <label> </label>
+                <input class="checkbox-select-item" type="checkbox" name="purgeSelectedIDs[]" value="<?=$this->escapeHtmlAttr($ilsDetails['row_id'])?>" id="checkbox_<?=$safeId?>" aria-label="<?=$this->transEscAttr('select_item_purge')?>">
               <?php endif; ?>
-            </div>
-          <?php endif; ?>
-          <div class="record-number">
-            <?=$this->escapeHtml($startRecord + $i) ?>
-          </div>
+            <?php endif; ?>
+            <div class="checkbox-select-number"><?=$this->escapeHtml($startRecord + $i) ?></div>
+          </label>
           <?php
             $coverDetails = $this->record($resource)->getCoverDetails('checkedout', 'small', $this->recordLinker()->getUrl($resource));
             $cover = $coverDetails['html'];
