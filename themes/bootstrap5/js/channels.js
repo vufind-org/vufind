@@ -120,7 +120,7 @@ VuFind.register("channels", function Channels() {
   function disableLoadMoreBtn(loadMoreBtn) {
     // disable
     loadMoreBtn.classList.add("disabled");
-    loadMoreBtn.setAttribute("aria-disabled", 1);
+    loadMoreBtn.setAttribute("aria-disabled", "true");
     // change content
     loadMoreBtn.textContent = VuFind.translate("loading_ellipsis");
     // store label for later
@@ -159,7 +159,7 @@ VuFind.register("channels", function Channels() {
   function hideLoadMoreBtn(loadMoreBtn) {
     // screen-reader disable
     loadMoreBtn.classList.add("disabled");
-    loadMoreBtn.setAttribute("aria-disabled", 1);
+    loadMoreBtn.setAttribute("aria-disabled", "true");
     // visually hide
     loadMoreBtn.classList.add("visually-hidden");
   }
