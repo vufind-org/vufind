@@ -25,7 +25,8 @@ form {
 
     input[type=checkbox],
     input[type=radio] {
-        height: 1em;
+        width: 1rem;
+        height: 1rem;
     }
 
     .form-group.checkbox,
@@ -92,4 +93,53 @@ form {
     margin-bottom: 0;
     cursor: pointer;
   }
+}
+
+.bulk-action-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+.select-all-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  padding-inline: 0;
+  padding-block: 0.5em;
+  line-height: normal;
+
+  &:hover,
+  &:focus {
+    background-color: $gray-lighter;
+  }
+
+  [type="checkbox"] {
+    margin: 0;
+  }
+}
+.checkbox-select {
+  display: flex;
+  align-items: center;
+  gap: 1ch;
+  font-size: 1rem;
+  line-height: normal;
+
+  &:hover,
+  &:focus {
+    background-color: $gray-lighter;
+
+    .checkbox-select-number {
+      color: black;
+    }
+  }
+}
+.checkbox-select-item {
+  width: 1em;
+  height: 1em;
+}
+.checkbox-select-number {
+  min-width: 2ch;
+  text-align: end;
+  font-weight: bold;
+  color: $gray;
 }

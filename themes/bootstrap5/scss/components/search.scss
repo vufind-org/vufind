@@ -213,8 +213,18 @@ header .container.navbar {
   padding-inline-end: 1rem;
   margin-top: .25rem;
 }
-.bulkActionButtons label { display: inline-block; }
-.bulkActionButtons label input { margin-top: 2px; }
+.bulkActionButtons label {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  padding-inline: 0;
+  padding-block: 0.5em;
+  line-height: normal;
+
+  [type="checkbox"] {
+    margin: 0;
+  }
+}
 
 .action-toolbar,
 .selection-controls-bar {
@@ -242,6 +252,7 @@ header .container.navbar {
 }
 .result {
   display: flex;
+  align-items: start;
   padding-top: 1rem;
 
   .record-checkbox,
@@ -355,7 +366,7 @@ header .container.navbar {
 }
 .recordcover {
   white-space: normal;
-  line-height: 1.15;
+  line-height: normal;
 }
 
 .result-body {
@@ -771,16 +782,6 @@ header .container.navbar {
   flex-basis: 100%;
 }
 
-.selection-controls-bar {
-  .clear-selection, label {
-    padding: .25rem .4rem .15rem .4rem;
-  }
-
-  input[type="checkbox"] {
-    margin-inline-end: .4rem;
-  }
-}
-
 .active-filters .filters a.filter-value:hover,
 .active-filters .filters a.filter-value:focus {
   color: #fff;
@@ -879,7 +880,7 @@ table.search-history-table {
       height: 100%;
       display: flex;
       align-items: center;
-      gap: 0.2rem;
+      gap: 1ch;
     }
 
     #searchForm-reset {
