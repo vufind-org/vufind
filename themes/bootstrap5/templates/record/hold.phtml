@@ -15,7 +15,7 @@
   <p class="helptext"><?=$this->helpTextHtml?></p>
 <?php endif; ?>
 
-<form class="form-record-hold" method="post" name="placeHold" data-clear-account-cache="holds">
+<form class="form-record-hold" method="post" name="placeHold" data-clear-account-cache="holds" data-lightbox-onclose="VuFind.refreshPage">
   <?=$this->flashmessages()?>
   <label class="form-label"><?=$this->transEsc('Title')?></label>
   <p class="form-control-static"><?=$this->escapeHtml($this->driver->getBreadcrumb() . $enumchron) ?></p>
