@@ -34,13 +34,8 @@
         <?php if ($this->feeSpecificOrganizations): ?>
           <?php
             $feeOrg = $fee->getOrganization();
-            $lineBusinessId = $feeOrg ? ($this->organizationBusinessIdMappings[$feeOrg] ?? '') : '';
-            if ($feeOrg && $lineBusinessId) {
-                $recipientEsc = $this->transEsc("Payment::organisation_{$sourceIls}_{$feeOrg}", [], $feeOrg)
-                    . $this->escapeHtml(" ($lineBusinessId)");
-            } else {
-                $recipientEsc = $this->sourceNameEsc . ($businessId ? $this->transEsc(" ($businessId)") : '');
-            }
+            $sourceIls = $this->paymentEntity->getSourceIls();
+            $recipientEsc = $this->transEsc("Payment::organisation_{$sourceIls}_{$feeOrg}", [], $feeOrg);
           ?>
           <td class="recipient"><?=$recipientEsc?></td>
         <?php endif; ?>

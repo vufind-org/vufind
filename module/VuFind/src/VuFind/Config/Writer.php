@@ -393,11 +393,9 @@ class Writer
                 $section = substr($trimmed, 1, $closeBracket - 1);
                 if ('' !== $section) {
                     // Grab comments at the end of the line, if any:
-                    if (($semicolon = strpos($trimmed, ';')) !== false) {
-                        $inline = trim(substr($trimmed, $semicolon));
-                    } else {
-                        $inline = '';
-                    }
+                    $inline = str_contains($trimmed, ';')
+                        ? trim(substr($trimmed, strpos($trimmed, ';')))
+                        : '';
                     $retVal['sections'][$section] = [
                         'before' => $comments,
                         'inline' => $inline,
@@ -410,11 +408,9 @@ class Writer
                 $set = trim(str_replace('[]', '', $set));
                 if ('' !== $section && '' !== $set) {
                     // Grab comments at the end of the line, if any:
-                    if (($semicolon = strpos($trimmed, ';')) !== false) {
-                        $inline = trim(substr($trimmed, $semicolon));
-                    } else {
-                        $inline = '';
-                    }
+                    $inline = str_contains($trimmed, ';')
+                        ? trim(substr($trimmed, strpos($trimmed, ';')))
+                        : '';
                     // Currently, this data structure doesn't support arrays very
                     // well, since it can't distinguish which line of the array
                     // corresponds with which comments. For now, we just append all

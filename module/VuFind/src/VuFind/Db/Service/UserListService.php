@@ -36,7 +36,6 @@ use Psr\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\ResourceTagsEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Entity\UserList;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Entity\UserResourceEntityInterface;
 use VuFind\Exception\RecordMissing as RecordMissingException;
@@ -114,7 +113,7 @@ class UserListService extends AbstractDbService implements
     public function getPublicLists(
         array $includeFilter = [],
         array $excludeFilter = [],
-        string|array $types = [UserList::TYPE_DEFAULT]
+        string|array $types = [UserListEntityInterface::TYPE_DEFAULT]
     ): array {
         $dql = 'SELECT ul FROM ' . UserListEntityInterface::class . ' ul '
             . 'WHERE ul.public = :public ';
@@ -148,7 +147,7 @@ class UserListService extends AbstractDbService implements
      */
     public function getUserListsAndCountsByUser(
         UserEntityInterface|int $userOrId,
-        string|array $types = [UserList::TYPE_DEFAULT]
+        string|array $types = [UserListEntityInterface::TYPE_DEFAULT]
     ): array {
         $parameters = [
             'user' => $this->getDoctrineReference(UserEntityInterface::class, $userOrId),
@@ -188,7 +187,7 @@ class UserListService extends AbstractDbService implements
         bool $publicOnly = true,
         bool $andTags = true,
         bool $caseSensitiveTags = false,
-        string|array $types = [UserList::TYPE_DEFAULT]
+        string|array $types = [UserListEntityInterface::TYPE_DEFAULT]
     ): array {
         $tag = $tag ? (array)$tag : null;
         $listId = $listId ? (array)$listId : null;
@@ -247,7 +246,7 @@ class UserListService extends AbstractDbService implements
      */
     public function getUserListsByUser(
         UserEntityInterface|int $userOrId,
-        string|array $types = [UserList::TYPE_DEFAULT]
+        string|array $types = [UserListEntityInterface::TYPE_DEFAULT]
     ): array {
         $dql = 'SELECT ul '
             . 'FROM ' . UserListEntityInterface::class . ' ul '
@@ -275,7 +274,7 @@ class UserListService extends AbstractDbService implements
      */
     protected function getUserListsById(
         array $ids,
-        string|array $types = [UserList::TYPE_DEFAULT]
+        string|array $types = [UserListEntityInterface::TYPE_DEFAULT]
     ): array {
         $dql = 'SELECT ul FROM ' . UserListEntityInterface::class . ' ul '
             . 'WHERE ul.id IN (:ids)';
@@ -303,7 +302,7 @@ class UserListService extends AbstractDbService implements
         string $recordId,
         string $source = DEFAULT_SEARCH_BACKEND,
         UserEntityInterface|int|null $userOrId = null,
-        string|array $types = [UserList::TYPE_DEFAULT]
+        string|array $types = [UserListEntityInterface::TYPE_DEFAULT]
     ): array {
         $dql = 'SELECT ul FROM ' . UserListEntityInterface::class . ' ul '
             . 'JOIN ' . UserResourceEntityInterface::class . ' ur WITH ur.list = ul.id '

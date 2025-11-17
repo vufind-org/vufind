@@ -48,13 +48,7 @@ use function count;
 abstract class AbstractILSChannelProvider extends AbstractChannelProvider implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
-
-    /**
-     * Number of results to include in each channel.
-     *
-     * @var int
-     */
-    protected $channelSize;
+    use BatchTrait;
 
     /**
      * Channel title (will be run through translator).
@@ -110,8 +104,8 @@ abstract class AbstractILSChannelProvider extends AbstractChannelProvider implem
      */
     public function setOptions(array $options)
     {
-        $this->channelSize = $options['channelSize'] ?? 20;
         $this->maxAge = $options['maxAge'] ?? 30;
+        $this->setBatchSizeFromOptions($options);
     }
 
     /**

@@ -113,11 +113,9 @@ class Export
                     break;
                 case 'config':
                 case 'encodedConfig':
-                    if (null !== ($configValue = $this->mainConfig[$parts[1]][$parts[2]] ?? null)) {
-                        $value = $configValue;
-                    } else {
-                        $value = $parts[3];
-                    }
+                    $value = null !== ($configValue = $this->mainConfig[$parts[1]][$parts[2]] ?? null)
+                        ? $configValue
+                        : $parts[3];
                     if ($parts[0] == 'encodedConfig') {
                         $value = urlencode($value);
                     }

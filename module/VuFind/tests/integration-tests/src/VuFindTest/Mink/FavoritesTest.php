@@ -779,7 +779,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $session->visit($this->getVuFindUrl() . '/Channels');
         $page = $session->getPage();
         $this->assertEquals('Test List', $this->findCss($page, '.channel-title')->getText());
-        $this->assertEquals('Dewey browse test', $this->findCss($page, '.channel-record-title')->getText());
+        $this->assertEquals('Dewey browse test', $this->findCss($page, '.channel-item-title')->getText());
     }
 
     /**
@@ -886,10 +886,10 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->getMinkSession()->visit($this->getVuFindUrl() . '/Channels');
         $this->waitForPageLoad($page);
         if ($matchExpected) {
-            $this->assertEquals('Test List', $this->findCssAndGetText($page, '.channel-title h2'));
-            $this->assertCount(1, $page->findAll('css', '.channel-record'));
+            $this->assertEquals('Test List', $this->findCssAndGetText($page, 'h2.channel-title'));
+            $this->assertCount(1, $page->findAll('css', 'li.channel-item'));
         } else {
-            $this->unfindCss($page, '.channel-title h2');
+            $this->unfindCss($page, 'h2.channel-title');
         }
     }
 

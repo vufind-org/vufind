@@ -144,7 +144,7 @@ class MultiILS extends ILS
             'resetPassword',
             ['cat_username' => "$target.123"]
         );
-        return $recoveryConfig ? true : false;
+        return (bool)$recoveryConfig;
     }
 
     /**

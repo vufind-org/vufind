@@ -120,7 +120,7 @@ class ImportCsvCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $testMode = $input->getOption('test-only') ? true : false;
+        $testMode = (bool)$input->getOption('test-only');
         $index = $input->getOption('index');
         $csv = $input->getArgument('CSV_file');
         $ini = $input->getArgument('ini_file');

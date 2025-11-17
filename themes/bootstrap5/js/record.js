@@ -1,4 +1,4 @@
-/*global deparam, getUrlRoot, recaptchaOnLoad, resetCaptcha, syn_get_widget, userIsLoggedIn, VuFind, setupJumpMenus */
+/*global deparam, getUrlRoot, recaptchaOnLoad, resetCaptcha, userIsLoggedIn, VuFind, setupJumpMenus */
 /*exported ajaxTagUpdate, recordDocReady, refreshTagListCallback, addRecordRating */
 
 /**
@@ -326,9 +326,6 @@ ajaxLoadTab = function ajaxLoadTabReal(newTab, tabId, _setHash, tabUrl) {
         VuFind.setInnerHtml(newTab, VuFind.updateCspNonce(data));
       }
       VuFind.emit('record-tab-init', {container: newTab});
-      if (typeof syn_get_widget === 'function') {
-        syn_get_widget();
-      }
       if (typeof setHash == 'undefined' || setHash) {
         addTabToURL(tabId);
       } else {

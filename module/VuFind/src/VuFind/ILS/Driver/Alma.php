@@ -1246,9 +1246,7 @@ class Alma extends AbstractBase implements
                 //$loan['volume'] = ;
                 $loan['publication_year'] = (string)$itemLoan->publication_year;
                 $loan['renewable']
-                    = (strtolower((string)$itemLoan->renewable) == 'true')
-                    ? true
-                    : false;
+                    = strtolower((string)$itemLoan->renewable) == 'true';
                 //$loan['message'] = ;
                 $loan['title'] = (string)$itemLoan->title;
                 $loan['item_id'] = (string)$itemLoan->loan_id;
