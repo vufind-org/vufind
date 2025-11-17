@@ -30,10 +30,7 @@
     <input type="hidden" value="<?=$this->escapeHtmlAttr($this->overrideId) ?>" class="hiddenOverrideId">
   <?php endif; ?>
   <?php if ($recordNumber): ?>
-    <label class="record-number">
-      <?=$this->record($this->driver)->getCheckbox()?>
-      <?=$this->escapeHtml($recordNumber) ?>
-    </label>
+    <?=$this->record($this->driver)->getCheckbox(null, null, $recordNumber)?>
   <?php endif; ?>
   <div class="media">
     <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>

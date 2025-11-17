@@ -121,15 +121,20 @@ form {
   display: flex;
   align-items: center;
   gap: 1ch;
+  padding-inline-start: 1.5rem;
   font-size: 1rem;
   line-height: normal;
+  cursor: default;
 
-  &:hover,
-  &:focus {
-    background-color: $gray-lighter;
+  &:has(.) {
+    padding-inline-start: 0;
+    cursor: pointer;
 
-    .checkbox-select-number {
-      color: black;
+    &:hover,
+    &:focus {
+      .checkbox-select-number {
+        color: black;
+      }
     }
   }
 }

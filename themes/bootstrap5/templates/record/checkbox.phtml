@@ -1,7 +1,7 @@
 <input type="hidden" name="idsAll[]" value="<?=$this->escapeHtmlAttr($this->id) ?>"<?php if (isset($this->formAttr)): ?> form="<?=$this->formAttr ?>"<?php endif; ?>>
-<label class="item-select" aria-label="<?=$this->transEscAttr('result_checkbox_label', ['%%number%%' => $this->number]) ?>">
-  <input class="checkbox-select-item item-select_checkbox" type="checkbox" name="ids[]" value="<?=$this->escapeHtmlAttr($this->id) ?>"<?php if (isset($this->formAttr)): ?> form="<?=$this->formAttr ?>"<?php endif; ?>>
+<label class="checkbox-select" aria-label="<?=$this->transEscAttr('result_checkbox_label', ['%%number%%' => $this->number]) ?>">
+  <input class="checkbox-select-item" type="checkbox" name="ids[]" value="<?=$this->escapeHtmlAttr($this->id) ?>"<?php if (isset($this->formAttr)): ?> form="<?=$this->formAttr ?>"<?php endif; ?>>
   <?php if (strlen($this->number ?? '') > 0): ?>
-    <div class="item-select_number"><?=$this->number ?></div>
+    <div class="checkbox-select-number"><?=$this->number ?></div>
   <?php endif; ?>
 </label>
