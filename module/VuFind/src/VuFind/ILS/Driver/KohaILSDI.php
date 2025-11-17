@@ -959,11 +959,9 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
 
             $duedate_formatted = $this->displayDate($duedate);
 
-            if ($rowItem['HLDBRNCH'] == null && $rowItem['HOMEBRANCH'] == null) {
-                $loc = 'Unknown';
-            } else {
-                $loc = $rowItem['LOCATION'];
-            }
+            $loc = $rowItem['HLDBRNCH'] == null && $rowItem['HOMEBRANCH'] == null
+                ? 'Unknown'
+                : $rowItem['LOCATION'];
 
             if ($this->showHomebranch) {
                 $branch = $rowItem['HOMEBRANCH'] ?? $rowItem['HLDBRNCH'] ?? '';
@@ -1914,11 +1912,11 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      */
     public function patronLogin($username, $password)
     {
-        $request = 'LookupPatron' . '&id=' . urlencode($username)
+        $request = 'LookupPatron&id=' . urlencode($username)
             . '&id_type=userid';
 
         if ($this->validatePasswords) {
-            $request = 'AuthenticatePatron' . '&username='
+            $request = 'AuthenticatePatron&username='
                 . urlencode($username) . '&password=' . $password;
         }
 

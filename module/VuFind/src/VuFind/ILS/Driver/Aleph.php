@@ -689,11 +689,7 @@ class Aleph extends AbstractBase implements
             $params['patron'] = $this->defaultPatronId;
         }
         $xml = $this->doRestDLFRequest(['record', $resource, 'items'], $params);
-        if (!empty($xml->{'items'})) {
-            $items = $xml->{'items'}->{'item'};
-        } else {
-            $items = [];
-        }
+        $items = !empty($xml->{'items'}) ? $xml->{'items'}->{'item'} : [];
         foreach ($items as $item) {
             $item_status         = (string)$item->{'z30-item-status-code'}; // $isc
             // $ipsc:
@@ -774,7 +770,7 @@ class Aleph extends AbstractBase implements
                 'addLink'           => $addLink,
                 'holdtype'          => 'hold',
                 /* below are optional attributes*/
-                'collection'        => (string)$collection,
+                'collection'        => $collection,
                 'collection_desc'   => (string)$collection_desc['desc'],
                 'callnumber_second' => (string)$z30->{'z30-call-no-2'},
                 'sub_lib_desc'      => (string)$item_status['sub_lib_desc'],
@@ -1000,11 +996,7 @@ class Aleph extends AbstractBase implements
             if (preg_match($this->queuePositionRegex, $status, $matches)) {
                 $position = $matches['position'];
             }
-            if ($holddate == '00000000') {
-                $holddate = null;
-            } else {
-                $holddate = $this->parseDate($holddate);
-            }
+            $holddate = $holddate == '00000000' ? null : $this->parseDate($holddate);
             $delete = ($delete[0] == 'Y');
             // Secondary, Aleph-specific identifier that may be useful for
             // local customizations
@@ -1159,11 +1151,7 @@ class Aleph extends AbstractBase implements
      */
     public function getMyProfile($user)
     {
-        if ($this->xserver_enabled) {
-            $profile = $this->getMyProfileX($user);
-        } else {
-            $profile = $this->getMyProfileDLF($user);
-        }
+        $profile = $this->xserver_enabled ? $this->getMyProfileX($user) : $this->getMyProfileDLF($user);
         $profile['cat_username'] ??= $user['id'];
         return $profile;
     }
@@ -1321,7 +1309,7 @@ class Aleph extends AbstractBase implements
             id: (string)$id,
             cat_username: (string)$user,
             cat_password: $password,
-            firstname: (string)$firstName,
+            firstname: $firstName,
             lastname: (string)$lastName,
             email: (string)$email_addr,
         );

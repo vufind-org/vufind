@@ -128,11 +128,7 @@ class ParamBag implements \Countable
      */
     public function set($name, $value)
     {
-        if (is_array($value)) {
-            $this->params[$name] = $value;
-        } else {
-            $this->params[$name] = [$value];
-        }
+        $this->params[$name] = is_array($value) ? $value : [$value];
     }
 
     /**

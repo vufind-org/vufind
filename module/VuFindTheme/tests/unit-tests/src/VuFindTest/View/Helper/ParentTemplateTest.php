@@ -83,7 +83,7 @@ class ParentTemplateTest extends \PHPUnit\Framework\TestCase
 
         $stackMock->expects($this->any())
             ->method('getPaths')
-            ->will($this->returnValue($return));
+            ->willReturn($return);
 
         // Make helper
         return new ParentTemplate($stackMock);

@@ -190,10 +190,9 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @param string $key Key to change
      *
-     * @dataProvider readOnlyConfigProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('readOnlyConfigProvider')]
     public function testReadOnlyConfig($key): void
     {
         $this->expectException(ConfigException::class);
@@ -577,9 +576,8 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
      * @param array  $expectedConfig Expected config
      *
      * @return void
-     *
-     * @dataProvider localDirStackTestProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('localDirStackTestProvider')]
     public function testConfigsInLocalDirStack(
         $configPath,
         $expectedConfig

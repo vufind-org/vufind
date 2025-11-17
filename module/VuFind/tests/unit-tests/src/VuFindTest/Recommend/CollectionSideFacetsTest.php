@@ -52,7 +52,7 @@ class CollectionSideFacetsTest extends \PHPUnit\Framework\TestCase
     public function testKeywordFilter()
     {
         $results = $this->getSolrResults($this->getMockParams());
-        $results->getParams()->expects($this->once())->method('getDisplayQuery')->will($this->returnValue('foo'));
+        $results->getParams()->expects($this->once())->method('getDisplayQuery')->willReturn('foo');
         $csf = $this->getSideFacets($results, '::facets:true');
         $this->assertEquals('foo', $csf->getKeywordFilter());
         $this->assertTrue($csf->keywordFilterEnabled());
@@ -95,7 +95,7 @@ class CollectionSideFacetsTest extends \PHPUnit\Framework\TestCase
         $params = $this->getMockBuilder(\VuFind\Search\Solr\Params::class)
             ->disableOriginalConstructor()->getMock();
         $params->expects($this->any())->method('getQuery')
-            ->will($this->returnValue($query));
+            ->willReturn($query);
         return $params;
     }
 }

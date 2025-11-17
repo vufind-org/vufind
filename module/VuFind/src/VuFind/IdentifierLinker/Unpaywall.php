@@ -109,11 +109,13 @@ class Unpaywall implements
                 $response[$key][] = [
                     'link' => $data['best_oa_location']['url_for_pdf'],
                     'label' => $this->translate('PDF Full Text'),
+                    'linkType' => 'fullTextPdf',
                 ];
             } elseif (!empty($data['best_oa_location']['url'])) {
                 $response[$key][] = [
                     'link' => $data['best_oa_location']['url'],
                     'label' => $this->translate('online_resources'),
+                    'linkType' => 'fullText',
                 ];
             }
         }

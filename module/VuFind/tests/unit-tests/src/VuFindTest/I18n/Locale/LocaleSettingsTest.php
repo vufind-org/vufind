@@ -199,10 +199,9 @@ class LocaleSettingsTest extends \PHPUnit\Framework\TestCase
      * @param string  $language          Default language
      * @param ?string $fallbackLanguages Fallback languages or null for no setting
      *
-     * @dataProvider fallbackLocalConfigsProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('fallbackLocalConfigsProvider')]
     public function testFallbackLocaleConfigs(array $expected, string $language, ?string $fallbackLanguages): void
     {
         $config = [

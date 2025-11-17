@@ -71,6 +71,13 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     use SharedListenersTrait;
 
     /**
+     * Configuration key for HTTP settings in the index configuration array.
+     *
+     * @var string
+     */
+    public const HTTP_CONFIG_KEY = '_http_';
+
+    /**
      * Logger.
      *
      * @var \Psr\Log\LoggerInterface
@@ -231,10 +238,14 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     protected function getMergedIndexConfig(): array
     {
         if (null === $this->mergedIndexConfig) {
-            $this->mergedIndexConfig = [];
+            $this->mergedIndexConfig = [
+                static::HTTP_CONFIG_KEY => [],
+            ];
             foreach ($this->getPrioritizedConfigsForIndexSettings() as $configName) {
                 $config = $this->configManager->getConfigArray($configName);
                 $this->mergedIndexConfig += $config['Index'] ?? [];
+                // Include settings from IndexHttp section in _http:
+                $this->mergedIndexConfig[static::HTTP_CONFIG_KEY] += $config['IndexHttp'] ?? [];
             }
         }
         return $this->mergedIndexConfig;
@@ -250,6 +261,8 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     {
         $configList = $this->getPrioritizedConfigsForIndexSettings();
         $configArray = $this->configManager->getConfigArray($configList[0]);
+        // Include settings from IndexHttp section:
+        $configArray['Index'][static::HTTP_CONFIG_KEY] = $configArray['IndexHttp'] ?? [];
         return $configArray['Index'] ?? [];
     }
 
@@ -528,7 +541,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
      */
     protected function getHttpOptions(string $url): array
     {
-        return [];
+        return $this->getIndexConfig(static::HTTP_CONFIG_KEY, []);
     }
 
     /**

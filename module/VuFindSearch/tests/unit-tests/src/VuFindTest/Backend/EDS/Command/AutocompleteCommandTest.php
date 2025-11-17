@@ -55,12 +55,12 @@ class AutocompleteCommandTest extends TestCase
             ->getMockBuilder(\VuFindSearch\Backend\EDS\Backend::class)
             ->disableOriginalConstructor()->getMock();
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue($backendId));
+            ->willReturn($backendId);
         $backend->expects($this->once())->method('autocomplete')
             ->with(
                 $this->equalTo('foo'),
                 $this->equalTo('bar')
-            )->will($this->returnValue('result'));  // not a realistic value!
+            )->willReturn('result');  // not a realistic value!
         $command = new AutocompleteCommand($backendId, 'foo', 'bar');
         $this->assertEquals('result', $command->execute($backend)->getResult());
     }

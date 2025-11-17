@@ -109,10 +109,9 @@ class UtilsTest extends \PHPUnit\Framework\TestCase
      * @param bool    $rangeEnd Is this the end of a range?
      * @param ?string $expected Expected result
      *
-     * @dataProvider sanitizeDateProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('sanitizeDateProvider')]
     public function testSanitizeDate($date, $rangeEnd, $expected)
     {
         $this->assertEquals($expected, Utils::sanitizeDate($date, $rangeEnd));

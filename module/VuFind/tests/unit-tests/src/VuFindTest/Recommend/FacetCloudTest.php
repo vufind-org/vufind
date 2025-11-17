@@ -53,7 +53,7 @@ class FacetCloudTest extends \PHPUnit\Framework\TestCase
     {
         $results = $this->getMockResults();
         $results->getParams()->expects($this->once())->method('getFacetSettings')
-            ->will($this->returnValue(['limit' => 50]));
+            ->willReturn(['limit' => 50]);
         $fc = $this->getFacetCloud($results);
         $this->assertEquals(49, $fc->getFacetLimit());
     }
@@ -98,7 +98,7 @@ class FacetCloudTest extends \PHPUnit\Framework\TestCase
         $results = $this->getMockBuilder(\VuFind\Search\Solr\Results::class)
             ->disableOriginalConstructor()->getMock();
         $results->expects($this->any())->method('getParams')
-            ->will($this->returnValue($params));
+            ->willReturn($params);
         return $results;
     }
 
@@ -117,7 +117,7 @@ class FacetCloudTest extends \PHPUnit\Framework\TestCase
         $params = $this->getMockBuilder(\VuFind\Search\Solr\Params::class)
             ->disableOriginalConstructor()->getMock();
         $params->expects($this->any())->method('getQuery')
-            ->will($this->returnValue($query));
+            ->willReturn($query);
         return $params;
     }
 }

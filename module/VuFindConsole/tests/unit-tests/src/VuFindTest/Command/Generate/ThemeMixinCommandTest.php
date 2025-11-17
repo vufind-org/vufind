@@ -55,7 +55,7 @@ class ThemeMixinCommandTest extends \PHPUnit\Framework\TestCase
         $generator->expects($this->once())
             ->method('generate')
             ->with($this->equalTo('custom'))
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $command = new ThemeMixinCommand($generator);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
@@ -79,10 +79,10 @@ class ThemeMixinCommandTest extends \PHPUnit\Framework\TestCase
         $generator->expects($this->once())
             ->method('generate')
             ->with($this->equalTo('foo'))
-            ->will($this->returnValue(false));
+            ->willReturn(false);
         $generator->expects($this->once())
             ->method('getLastError')
-            ->will($this->returnValue('fake error'));
+            ->willReturn('fake error');
         $command = new ThemeMixinCommand($generator);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['name' => 'foo']);

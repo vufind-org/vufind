@@ -79,9 +79,8 @@ class ResourcePopulatorTest extends \PHPUnit\Framework\TestCase
      * @param int   $expectedYear Expected parsed year
      *
      * @return void
-     *
-     * @dataProvider createAndPersistResourceForRecordIdProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('createAndPersistResourceForRecordIdProvider')]
     public function testCreateAndPersistResourceForRecordId(array $pubDates, int $expectedYear): void
     {
         $id = 'fake-id';

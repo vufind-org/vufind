@@ -187,10 +187,9 @@ class InstallControllerTest extends \PHPUnit\Framework\TestCase
      * @param array  $json     JSON data
      * @param string $expected Expected version number
      *
-     * @dataProvider getMinimalPhpVersionProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getMinimalPhpVersionProvider')]
     public function testGetMinimalPhpVersion($json, $expected)
     {
         $controller = $this->mockControllerWithComposerJson($json);

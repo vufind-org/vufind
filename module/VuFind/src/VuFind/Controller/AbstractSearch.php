@@ -195,15 +195,9 @@ class AbstractSearch extends AbstractBase
         // Enable recommendations unless explicitly told to disable them:
         $all = ['top', 'side', 'noresults', 'bottom'];
         $noRecommend = $this->params()->fromQuery('noRecommend', false);
-        if (
-            $noRecommend === 1 || $noRecommend === '1'
-            || $noRecommend === 'true' || $noRecommend === true
-        ) {
+        if (in_array($noRecommend, [1, '1', 'true', true], true)) {
             return [];
-        } elseif (
-            $noRecommend === 0 || $noRecommend === '0'
-            || $noRecommend === 'false' || $noRecommend === false
-        ) {
+        } elseif (in_array($noRecommend, [0, '0', 'false', false], true)) {
             return $all;
         }
         return array_diff(
@@ -230,7 +224,7 @@ class AbstractSearch extends AbstractBase
         $override = $this->params()->fromQuery('recommendOverride');
 
         // Retrieve recommend settings from params object:
-        return function ($runner, $params, $searchId) use ($rManager, $activeRecs, $override) {
+        return function ($runner, $params, $searchId) use ($rManager, $activeRecs, $override): void {
             $listener = new RecommendListener($rManager, $searchId);
             $config = [];
             $rawConfig = $params->getOptions()

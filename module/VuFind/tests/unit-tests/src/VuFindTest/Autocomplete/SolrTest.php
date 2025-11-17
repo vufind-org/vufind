@@ -85,9 +85,8 @@ class SolrTest extends \PHPUnit\Framework\TestCase
      * @param ?int     $expectedLimit   Limit expected to be parsed from the config
      *
      * @return void
-     *
-     * @dataProvider setConfigProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('setConfigProvider')]
     public function testSetConfig(string $config, array $expectedFilters, ?int $expectedLimit)
     {
         $solr = new Solr($this->getMockResultsPluginManager(allowDefaultFallback: true));

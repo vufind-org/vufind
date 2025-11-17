@@ -271,7 +271,7 @@ class Wikipedia implements TranslatorAwareInterface
         // Loop through every match (link) we found
         if (is_array($new_matches)) {
             foreach ($new_matches as $nm) {
-                foreach ((array)$nm as $n) {
+                foreach ($nm as $n) {
                     // If it's a file link get rid of it
                     if (
                         str_starts_with(strtolower($n), '[[file:')

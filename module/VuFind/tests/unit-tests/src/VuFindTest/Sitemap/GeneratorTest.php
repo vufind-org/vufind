@@ -202,9 +202,8 @@ class GeneratorTest extends \PHPUnit\Framework\TestCase
      * @param callable $expectationMethod Name of method to set up expectations for mock index object
      *
      * @return void
-     *
-     * @dataProvider buildIndexProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('buildIndexProvider')]
     public function testBuildIndex(array $config, string $expectationMethod): void
     {
         if (!empty($config)) {

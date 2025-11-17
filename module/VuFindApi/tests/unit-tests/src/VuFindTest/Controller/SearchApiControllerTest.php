@@ -267,9 +267,9 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
      * @param array $requestParams Users request as params array
      * @param array $expected      Expected results
      *
-     * @return       void
-     * @dataProvider getTestApiKeysData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestApiKeysData')]
     public function testApiKeysRecord(array $config, array $requestParams, array $expected): void
     {
         $controller = $this->createController($config, $requestParams);
@@ -285,9 +285,9 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
      * @param array $requestParams Users request as params array
      * @param array $expected      Expected results
      *
-     * @return       void
-     * @dataProvider getTestApiKeysData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestApiKeysData')]
     public function testApiKeysSearch(array $config, array $requestParams, array $expected): void
     {
         $controller = $this->createController($config, $requestParams);

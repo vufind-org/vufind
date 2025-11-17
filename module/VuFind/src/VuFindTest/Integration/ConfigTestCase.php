@@ -154,10 +154,10 @@ abstract class ConfigTestCase extends \PHPUnit\Framework\TestCase
     public function tearDown(): void
     {
         // restore backup of local config dir
-        if (is_dir($this->localDirPath)) {
+        if (isset($this->localDirPath) && is_dir($this->localDirPath)) {
             self::rmDir($this->localDirPath);
         }
-        if (is_dir($this->localDirBackupPath)) {
+        if (isset($this->localDirBackupPath) && is_dir($this->localDirBackupPath)) {
             rename($this->localDirBackupPath, $this->localDirPath);
         }
     }

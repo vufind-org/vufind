@@ -432,11 +432,9 @@ class Oracle
             // For building the sql
             $columns[]      = $column;
             // Dates are special
-            if (count($tmp) > 0 && null !== $datum) {
-                $values[] = "TO_DATE(:$column, '" . implode(':', $tmp) . "')";
-            } else {
-                $values[] = ":$column";
-            }
+            $values[] = count($tmp) > 0 && null !== $datum
+                ? "TO_DATE(:$column, '" . implode(':', $tmp) . "')"
+                : ":$column";
         }
 
         $sql  = "INSERT INTO $table (" . implode(', ', $columns) . ') VALUES (' .

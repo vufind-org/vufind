@@ -217,10 +217,9 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
      * @param string $expectedExceptionClass Expected exception class
      * @param string $expectedExceptionMsg   Expected exception message
      *
-     * @dataProvider getTestCreateWithPasswordPolicyData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestCreateWithPasswordPolicyData')]
     public function testCreateWithPasswordPolicy(
         array $authConfig,
         string $password,
@@ -412,10 +411,9 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
      * @param string $expectedExceptionClass Expected exception class
      * @param string $expectedExceptionMsg   Expected exception message
      *
-     * @dataProvider getTestCreateWithUsernamePolicyData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestCreateWithUsernamePolicyData')]
     public function testCreateWithUsernamePolicy(
         array $authConfig,
         string $username,

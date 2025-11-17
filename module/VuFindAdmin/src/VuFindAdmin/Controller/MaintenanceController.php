@@ -255,11 +255,9 @@ class MaintenanceController extends AbstractAdmin
                 throw new \Exception("Unsupported service: $serviceName");
             }
             $count = $service->deleteExpired(new DateTime("now - $daysOld days"));
-            if ($count == 0) {
-                $msg = $failString;
-            } else {
-                $msg = str_replace('%%count%%', $count, $successString);
-            }
+            $msg = $count == 0
+                ? $failString
+                : str_replace('%%count%%', $count, $successString);
             $this->flashMessenger()->addSuccessMessage($msg);
         }
         return $this->forwardTo('AdminMaintenance', 'Home');

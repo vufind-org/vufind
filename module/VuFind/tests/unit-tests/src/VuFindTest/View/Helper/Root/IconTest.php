@@ -108,7 +108,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()->getMock();
         $mock->expects($this->once())->method('__invoke')
             ->with($this->equalTo($expected))
-            ->will($this->returnValue(basename($expected)));
+            ->willReturn(basename($expected));
         return $mock;
     }
 
@@ -266,10 +266,9 @@ class IconTest extends \PHPUnit\Framework\TestCase
      * @param string       $icon            Icon alias
      * @param string|array $attrs           Classes or attributes
      *
-     * @dataProvider unicodeIconProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('unicodeIconProvider')]
     public function testUnicodeIcons(
         string $expectedClasses,
         string $expectedAttrs,

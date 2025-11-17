@@ -1491,7 +1491,7 @@ class PAIA extends DAIA
             && $this->paiaCheckScope(self::SCOPE_WRITE_ITEMS))
             ? $result['item_id'] : '';
 
-        // edition (0..1) URI of a the document (no particular copy)
+        // edition (0..1) URI of the document (no particular copy)
         // hook for retrieving alternative ItemId in case PAIA does not
         // the needed id
         $result['id'] = (isset($doc['edition'])
@@ -1576,7 +1576,7 @@ class PAIA extends DAIA
             }
 
             // status: provided (the document is ready to be used by the patron)
-            $result['available'] = $doc['status'] == 4 ? true : false;
+            $result['available'] = $doc['status'] == 4;
 
             $results[] = $result;
         }
@@ -1996,14 +1996,9 @@ class PAIA extends DAIA
     public function checkRequestIsValid($id, $data, $patron)
     {
         // TODO: make this more configurable
-        if (
-            isset($patron['status']) && $patron['status'] == 0
+        return isset($patron['status']) && $patron['status'] == 0
             && isset($patron['expires']) && $patron['expires'] > date('Y-m-d')
-            && in_array(self::SCOPE_WRITE_ITEMS, $this->getScope())
-        ) {
-            return true;
-        }
-        return false;
+            && in_array(self::SCOPE_WRITE_ITEMS, $this->getScope());
     }
 
     /**

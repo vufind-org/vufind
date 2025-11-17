@@ -55,7 +55,7 @@ class GetLuceneHelperCommandTest extends TestCase
             ->getMockBuilder(\VuFindSearch\Backend\BrowZine\Backend::class)
             ->disableOriginalConstructor()->getMock();
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue('foo'));
+            ->willReturn('foo');
         $this->assertFalse($command->execute($backend)->getResult());
     }
 
@@ -73,7 +73,7 @@ class GetLuceneHelperCommandTest extends TestCase
             ->getMockBuilder(\VuFindSearch\Backend\BrowZine\Backend::class)
             ->disableOriginalConstructor()->getMock();
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue('bar'));
+            ->willReturn('bar');
         $command->execute($backend);
     }
 
@@ -91,14 +91,14 @@ class GetLuceneHelperCommandTest extends TestCase
             ->getMockBuilder(\VuFindSearch\Backend\Solr\QueryBuilder::class)
             ->disableOriginalConstructor()->getMock();
         $qb->expects($this->once())->method('GetLuceneHelper')
-            ->will($this->returnValue($helper));
+            ->willReturn($helper);
         $backend = $this
             ->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
             ->disableOriginalConstructor()->getMock();
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue('bar'));
+            ->willReturn('bar');
         $backend->expects($this->once())->method('getQueryBuilder')
-            ->will($this->returnValue($qb));
+            ->willReturn($qb);
         $command = new GetLuceneHelperCommand('bar');
         $this->assertEquals($helper, $command->execute($backend)->getResult());
     }
