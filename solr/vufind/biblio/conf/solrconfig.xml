@@ -506,7 +506,7 @@
       <int name="minQueryLength">4</int>
       <int name="maxQueryLength">40</int>
       <float name="maxQueryFrequency">0.01</float>
-      <float name="thresholdTokenFrequency">.01</float>
+      <float name="thresholdTokenFrequency">0.0</float>
     </lst>
   </searchComponent>
   <queryConverter name="queryConverter" class="org.apache.solr.spelling.SpellingQueryConverter"/>

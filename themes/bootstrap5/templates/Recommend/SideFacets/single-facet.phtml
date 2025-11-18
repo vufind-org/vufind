@@ -1,5 +1,5 @@
 <?php
-  $toggleUrl = $this->facet['isApplied']
+  $toggleUrl = ($this->facet['isApplied'] || $this->facet['isExcluded'])
     ? $this->urlBase . $this->url->removeFacet($this->group, $this->facet['value'], $this->facet['operator'])
     : $this->urlBase . $this->url->addFacet($this->group, $this->facet['value'], $this->facet['operator']);
 
@@ -9,17 +9,25 @@
   if ($this->facet['isApplied']) {
     $classList[] = 'active';
   }
+  if ($this->facet['isExcluded']) {
+    $classList[] = 'excluded';
+  }
   if ($this->facet['operator'] == 'OR') {
     $classList[] = 'facetOR';
   }
   if ($this->facet['operator'] == 'AND') {
     $classList[] = 'facetAND';
   }
-  $displayText = '-';
+  $displayText = '';
+  if ($this->facet['isExcluded']) {
+    $displayText = '<span class="visually-hidden">' . $this->transEsc('excluded') . '</span> ';
+  }
   if ('' !== (string)($this->facet['displayText'] ?? '')) {
-    $displayText = $this->escapeHtml($this->facet['displayText']);
+    $displayText .= $this->escapeHtml($this->facet['displayText']);
   } elseif ('' !== (string)($this->facet['value'] ?? '')) {
-    $displayText = $this->escapeHtml($this->facet['value']);
+    $displayText .= $this->escapeHtml($this->facet['value']);
+  } else {
+    $displayText .= '-';
   }
   $displayText = '<span class="facet-value' . ($hasCheckbox ? ' icon-link__label' : '') . '">' . $displayText . '</span>';
 
@@ -39,7 +47,7 @@
     <span class="text">
       <?=$displayText ?>
     </span>
-    <?php if (!$this->facet['isApplied'] && null !== $this->facet['count']): ?>
+    <?php if (!$this->facet['isApplied'] && !$this->facet['isExcluded'] && null !== $this->facet['count']): ?>
       <span class="badge">
         <?php $currentCount = $this->localizedNumber($this->facet['count']); ?>
         <span class="visually-hidden"><?=$this->transEsc('result_count', ['%%count%%' => $currentCount]) ?></span>
@@ -47,9 +55,9 @@
       </span>
     <?php endif; ?>
   </a>
-  <?php if ($this->exclude && !$this->facet['isApplied']): ?>
+  <?php if ($this->exclude && !$this->facet['isApplied'] && !$this->facet['isExcluded']): ?>
     <?php $excludeURL = $this->urlBase . $this->url->addFacet($this->group, $this->facet['value'], 'NOT'); ?>
-    <a href="<?=$excludeURL ?>" data-lightbox-ignore class="exclude">
+    <a href="<?=$excludeURL ?>" data-lightbox-ignore class="exclude" title="<?=$this->transEscAttr('exclude_facet') ?>">
       <?=$this->icon('facet-exclude') ?>
       <span class="visually-hidden"><?=$this->transEsc('exclude_facet') ?></span>
     </a>
