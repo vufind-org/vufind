@@ -1,19 +1,8 @@
 import fs from "node:fs";
 
-if (!fs.globSync) {
-	console.log("Please use Node v22 or higher for access to fs.globSync.");
-	process.exit(1);
-}
-
-const jsAppendsRe = new RegExp("appendScriptLink\\('([^']+?)'", "g");
-const jsTranslateRe = new RegExp(
-	"VuFind\\.translate\\(['\"]([^,\\)]+?)['\"](,|\\))",
-	"g",
-);
-const phpTranslationsRe = new RegExp(
-	"\\$this->jsTranslations\\(\\)->addStrings\\(\\s*\\[([^\\]]+?)\\]",
-	"gm",
-);
+const jsAppendsRe = /appendScriptLink\('([^']+?)'/g;
+const jsTranslateRe = /VuFind\.translate\(['\"]([^,\)]+?)['\"](,|\))/g;
+const phpTranslationsRe = /\$this->jsTranslations\(\)->addStrings\(\s*\[([^\]]+?)\]/gm;
 
 function getJsAppends(templateContents) {
 	const matches = templateContents.matchAll(jsAppendsRe);
@@ -63,7 +52,12 @@ function getJsTranslations(contents) {
 try {
 	let globalPhpStrings = null;
 	let templateList = [];
-	for (const path of fs.globSync("./**/*.phtml")) {
+	for (const entry of fs.readdirSync(".", { recursive: true, withFileTypes: true })) {
+		if (entry.isDirectory() || !entry.name.endsWith("phtml")) {
+			continue;
+		}
+
+		const path = `${entry.path}/${entry.name}`;
 		const templateContents = fs.readFileSync(path, "utf8");
 
 		const phpStrings = getPhpTranslations(templateContents);
