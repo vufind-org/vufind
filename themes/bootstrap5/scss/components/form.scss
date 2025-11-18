@@ -138,14 +138,6 @@ form {
       }
     }
   }
-
-  @media (max-width: 767px) {
-    padding-inline-start: 0;
-
-    .checkbox-select-item {
-      display: none;
-    }
-  }
 }
 .checkbox-select-item {
   width: 1em;
@@ -156,4 +148,16 @@ form {
   text-align: end;
   font-weight: bold;
   color: $gray;
+}
+
+/* hide checkboxes on mobile search */
+
+@media (max-width: 767px) {
+  .template-dir-search.template-name-results .checkbox-select {
+    padding-inline-start: 0;
+
+    .checkbox-select-item {
+      display: none;
+    }
+  }
 }
