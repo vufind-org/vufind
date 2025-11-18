@@ -15,23 +15,27 @@
 
   <?php if (!empty($this->transactions)): ?>
     <nav class="search-header hidden-print">
-      <?php if ($this->paginator): ?>
-        <div class="search-stats">
-          <?php
-            $abs = $this->paginator->getAbsoluteItemNumber($this->paginator->getItemCountPerPage());
-            $startRecord = $this->paginator->getAbsoluteItemNumber(1);
-            $end = min($abs, $this->paginator->getTotalItemCount());
-            $transParams = [
-              '%%start%%' => $this->localizedNumber($startRecord),
-              '%%end%%' => $this->localizedNumber($end),
-              '%%total%%' => $this->localizedNumber($this->paginator->getTotalItemCount()),
-            ];
-          ?>
-          <?=$this->translate('showing_items_of_html', $transParams); ?>
-        </div>
-      <?php else: ?>
-        <?php $startRecord = 1; ?>
-      <?php endif; ?>
+      <?php
+        if ($this->paginator) {
+          $abs = $this->paginator->getAbsoluteItemNumber($this->paginator->getItemCountPerPage());
+          $startRecord = $this->paginator->getAbsoluteItemNumber(1);
+          $end = min($abs, $this->paginator->getTotalItemCount());
+          $total = $this->paginator->getTotalItemCount();
+        } else {
+          $startRecord = 1;
+          $end = $total = count($this->transactions);
+        }
+      ?>
+      <div class="search-stats">
+        <?php
+          $transParams = [
+            '%%start%%' => $this->localizedNumber($startRecord),
+            '%%end%%' => $this->localizedNumber($end),
+            '%%total%%' => $this->localizedNumber($total),
+          ];
+        ?>
+        <?=$this->translate('showing_items_of_html', $transParams); ?>
+      </div>
       <?php if ($this->sortList): ?>
         <?=$this->context($this)->renderInContext('myresearch/controls/sort.phtml', ['sortList' => $this->sortList]); ?>
       <?php endif; ?>
