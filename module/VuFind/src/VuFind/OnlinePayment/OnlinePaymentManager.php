@@ -570,13 +570,10 @@ class OnlinePaymentManager implements LoggerAwareInterface
             return [];
         }
 
-        // Check that mandatory settings exist
-        $mandatory = ['currency', 'handler'];
-        foreach ($mandatory as $current) {
-            if (empty($paymentConfig[$current])) {
-                $this->logError("Mandatory setting '$current' missing from ILS driver for $sourceIls");
-                return [];
-            }
+        // Check that mandatory handler setting exists
+        if (empty($paymentConfig['handler'])) {
+            $this->logError("Mandatory setting 'handler' missing from ILS driver for $sourceIls");
+            return [];
         }
 
         return $paymentConfig;
