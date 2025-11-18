@@ -27,6 +27,9 @@ $(function setupRequests() {
     $('#submitType').attr('name', 'updateSelected');
   });
 
+  /**
+   * Adjust action button state based on checkbox status; to be called when checkboxes change.
+   */
   function checkCheckboxes() {
     var checked = $('form[name="updateForm"] .checkbox-select-item:checked');
     if (checked.length > 0) {
