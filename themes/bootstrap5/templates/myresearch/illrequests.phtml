@@ -25,28 +25,28 @@
         <input type="hidden" id="cancelConfirm" name="confirm" value="0">
         <?=
           $this->component(
-            'confirm-button',
-            [
-              'buttonId' => 'cancelSelected',
-              'buttonName' => 'cancelSelected',
-              'buttonLabel' => 'ill_request_cancel_selected',
-              'header' => 'confirm_ill_request_cancel_selected_text',
-              'confirmId' => 'confirm_cancel_selected_yes',
-              'cancelClass' => 'confirm_cancel_no',
-            ]
+              'confirm-button',
+              [
+                'buttonId' => 'cancelSelected',
+                'buttonName' => 'cancelSelected',
+                'buttonLabel' => 'ill_request_cancel_selected',
+                'header' => 'confirm_ill_request_cancel_selected_text',
+                'confirmId' => 'confirm_cancel_selected_yes',
+                'cancelClass' => 'confirm_cancel_no',
+              ]
           )
         ?>
         <?=
           $this->component(
-            'confirm-button',
-            [
-              'buttonId' => 'cancelAll',
-              'buttonName' => 'cancelAll',
-              'buttonLabel' => 'ill_request_cancel_all',
-              'header' => 'confirm_ill_request_cancel_all_text',
-              'confirmId' => 'confirm_cancel_all_yes',
-              'cancelClass' => 'confirm_cancel_no',
-            ]
+              'confirm-button',
+              [
+                'buttonId' => 'cancelAll',
+                'buttonName' => 'cancelAll',
+                'buttonLabel' => 'ill_request_cancel_all',
+                'header' => 'confirm_ill_request_cancel_all_text',
+                'confirmId' => 'confirm_cancel_all_yes',
+                'cancelClass' => 'confirm_cancel_no',
+              ]
           )
         ?>
     <?php endif; ?>
