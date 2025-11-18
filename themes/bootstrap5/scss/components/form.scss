@@ -138,6 +138,14 @@ form {
       }
     }
   }
+
+  @media (max-width: 767px) {
+    padding-inline-start: 0;
+
+    .checkbox-select-item {
+      display: none;
+    }
+  }
 }
 .checkbox-select-item {
   width: 1em;
