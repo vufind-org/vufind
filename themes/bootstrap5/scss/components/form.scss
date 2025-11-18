@@ -97,17 +97,33 @@ form {
 
 .bulk-action-toolbar {
   display: flex;
-  align-items: center;
-  gap: 1rem;
+
+  @include media-breakpoint-down(sm) {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  @include media-breakpoint-up(sm) {
+    align-items: center;
+    gap: 1rem;
+  }
 }
 .select-all-label {
   display: flex;
   align-items: center;
   gap: 0.5em;
   width: fit-content;
-  margin-inline-start: -0.6em;
   padding: 0.6em;
   line-height: normal;
+
+  @include media-breakpoint-down(sm) {
+    border: 1px solid $btn-default-border;
+    border-radius: $border-radius;
+  }
+
+  @include media-breakpoint-up(sm) {
+    margin-inline-start: -0.6em;
+  }
 
   &:hover,
   &:focus {
