@@ -92,6 +92,7 @@ class ImageLoader implements \Psr\Log\LoggerAwareInterface
         'jpeg' => 'image/jpeg', 'jpg' => 'image/jpeg',
         'png' => 'image/png',
         'tiff' => 'image/tiff', 'tif' => 'image/tiff',
+        'webp' => 'image/webp'
     ];
 
     /**
