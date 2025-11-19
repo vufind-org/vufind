@@ -1,12 +1,15 @@
-<div class="<?=$this->escapeHtmlAttr(trim('search-grid ' . ($this->resultsClass ?? '')))?>"<?=isset($this->resultsAttrs) ? ' ' . $this->resultsAttrs : ''?>>
+<?php
+  $showCheckboxes = $this->searchSettings($this->results->getParams())->checkboxesEnabled();
+?>
+<ol class="<?=$this->escapeHtmlAttr(trim('search-grid-list ' . ($this->resultsClass ?? '')))?>"<?=isset($this->resultsAttrs) ? ' ' . $this->resultsAttrs : ''?>>
   <?php $it = 0; ?>
   <?php foreach ($this->results->getResults() as $current): ?>
-    <?=$this->record($current)->getSearchResult('grid', $this->results)?>
     <?php $it++; ?>
-    <?php if ($it % 4 === 0): ?>
-      <br class="grid-large-break">
-    <?php elseif ($it % 2 === 0): ?>
-      <br class="grid-small-break">
-    <?php endif; ?>
+    <li class="search-grid-item">
+      <?php if ($showCheckboxes): ?>
+        <?=$this->record($current)->getCheckbox('', 'search-cart-form', $it) ?>
+      <?php endif; ?>
+      <?=$this->record($current)->getSearchResult('grid', $this->results)?>
+    </li>
   <?php endforeach; ?>
-</div>
+</ol>
