@@ -45,9 +45,8 @@ VuFind.register("channels", function Channels() {
 
   /**
    * Add an aria-polite message to a channel
-   * @param  {HTMLElement} channel Target channel
-   * @param  {Array<Node>} newChildren Elements and strings to populate message
-   * @return void
+   * @param {HTMLElement} channel Target channel
+   * @param {Array<Node>} newChildren Elements and strings to populate message
    */
   function ariaAnnounce(channel, newChildren) {
     const messageEl = channel.querySelector(".gallery-polite-alert");
@@ -56,9 +55,8 @@ VuFind.register("channels", function Channels() {
 
   /**
    * Format an aria-polite message from a new channel
-   * @param  {HTMLElement} channel Target channel
-   * @param  {HTMLElement} newChannel New channel
-   * @return void
+   * @param {HTMLElement} channel Target channel
+   * @param {HTMLElement} newChannel New channel
    */
   function ariaAnnounceNewChannel(channel, newChannel) {
     // Make link
@@ -76,9 +74,8 @@ VuFind.register("channels", function Channels() {
 
   /**
    * Format an aria-polite message from a new channel
-   * @param  {HTMLElement} firstNewItem First new item
-   * @param  {number} count Number of added items
-   * @return void
+   * @param {HTMLElement} firstNewItem First new item
+   * @param {number} count Number of added items
    */
   function ariaAnnounceNewItems(firstNewItem, count) {
     const channel = firstNewItem.closest(".channel");
