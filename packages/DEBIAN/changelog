@@ -1,3 +1,9 @@
+vufind 11.0.0 distribution; urgency=low
+
+  * VuFind 11.0.0 release (see https://vufind.org/wiki/changelog for details)
+
+ -- maintainer VuFind Project Management Committee <info@vufind.org>  Mo 24 Nov 2025 14:00:00 UTC
+
 vufind 10.2.1 distribution; urgency=low
 
   * VuFind 10.2.1 release (see https://vufind.org/wiki/changelog for details)
