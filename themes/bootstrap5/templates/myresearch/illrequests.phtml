@@ -63,7 +63,7 @@
               <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $resource->getUniqueId()); ?>
               <input type="checkbox" name="cancelSelectedIDS[]" class="checkbox-select-item" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>" id="checkbox_<?=$safeId?>">
             <?php endif; ?>
-            <div class="checkbox-select-number"><?=$this->escapeHtml($iteration) ?></div>
+            <span class="checkbox-select-number"><?=$this->escapeHtml($iteration) ?></span>
           </label>
           <?php
             $coverDetails = $this->record($resource)->getCoverDetails('illrequests', 'small', $this->recordLinker()->getUrl($resource));

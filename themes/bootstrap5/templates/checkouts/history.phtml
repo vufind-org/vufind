@@ -102,7 +102,7 @@
                 <input class="checkbox-select-item" type="checkbox" name="purgeSelectedIDs[]" value="<?=$this->escapeHtmlAttr($ilsDetails['row_id'])?>" id="checkbox_<?=$safeId?>" aria-label="<?=$this->transEscAttr('select_item_purge')?>">
               <?php endif; ?>
             <?php endif; ?>
-            <div class="checkbox-select-number"><?=$this->escapeHtml($startRecord + $i) ?></div>
+            <span class="checkbox-select-number"><?=$this->escapeHtml($startRecord + $i) ?></span>
           </label>
           <?php
             $coverDetails = $this->record($resource)->getCoverDetails('checkedout', 'small', $this->recordLinker()->getUrl($resource));
