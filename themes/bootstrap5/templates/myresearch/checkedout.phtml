@@ -111,7 +111,7 @@
               <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['renew_details']); ?>
               <input class="checkbox-select-item" type="checkbox" name="renewSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" id="checkbox_<?=$safeId?>" aria-label="<?=$this->transEscAttr('select_item_checked_out_renew')?>">
             <?php endif; ?>
-            <div class="checkbox-select-number"><?=$this->escapeHtml($startRecord + $i) ?></div>
+            <span class="checkbox-select-number"><?=$this->escapeHtml($startRecord + $i) ?></span>
           </label>
           <?php
             $coverDetails = $this->record($resource)->getCoverDetails('checkedout', 'small', $this->recordLinker()->getUrl($resource));

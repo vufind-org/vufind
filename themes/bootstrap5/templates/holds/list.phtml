@@ -84,7 +84,7 @@
               <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['cancel_details'] ?? $ilsDetails['updateDetails']); ?>
               <input type="checkbox" name="selectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details'] ?? $ilsDetails['updateDetails']) ?>" id="checkbox_<?=$safeId?>" class="checkbox-select-item" aria-label="<?=$this->transEscAttr('select_item_hold_cancel')?>">
             <?php endif; ?>
-            <div class="checkbox-select-number"><?=$this->escapeHtml($iteration) ?></div>
+            <span class="checkbox-select-number"><?=$this->escapeHtml($iteration) ?></span>
           </label>
 
           <?php
