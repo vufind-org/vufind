@@ -15,20 +15,27 @@
 
   <?php if (!empty($this->transactions)): ?>
     <nav class="search-header hidden-print">
-      <?php if ($this->paginator): ?>
-        <div class="search-stats">
-          <?php
-            $abs = $this->paginator->getAbsoluteItemNumber($this->paginator->getItemCountPerPage());
-            $end = min($abs, $this->paginator->getTotalItemCount());
-            $transParams = [
-              '%%start%%' => $this->localizedNumber($this->paginator->getAbsoluteItemNumber(1)),
-              '%%end%%' => $this->localizedNumber($end),
-              '%%total%%' => $this->localizedNumber($this->paginator->getTotalItemCount()),
-            ];
-          ?>
-          <?=$this->translate('showing_items_of_html', $transParams); ?>
-        </div>
-      <?php endif; ?>
+      <?php
+        if ($this->paginator) {
+          $abs = $this->paginator->getAbsoluteItemNumber($this->paginator->getItemCountPerPage());
+          $startRecord = $this->paginator->getAbsoluteItemNumber(1);
+          $end = min($abs, $this->paginator->getTotalItemCount());
+          $total = $this->paginator->getTotalItemCount();
+        } else {
+          $startRecord = 1;
+          $end = $total = count($this->transactions);
+        }
+      ?>
+      <div class="search-stats">
+        <?php
+          $transParams = [
+            '%%start%%' => $this->localizedNumber($startRecord),
+            '%%end%%' => $this->localizedNumber($end),
+            '%%total%%' => $this->localizedNumber($total),
+          ];
+        ?>
+        <?=$this->translate('showing_items_of_html', $transParams); ?>
+      </div>
       <?php if ($this->sortList): ?>
         <?=$this->context($this)->renderInContext('myresearch/controls/sort.phtml', ['sortList' => $this->sortList]); ?>
       <?php endif; ?>
@@ -44,13 +51,13 @@
               $this->component(
                   'confirm-button',
                   [
-                      'buttonId' => 'purgeSelected',
-                      'buttonName' => 'purgeSelected',
-                      'buttonLabel' => 'loan_history_purge_selected',
-                      'header' => 'loan_history_confirm_purge_selected',
-                      'confirmId' => 'confirm_purge_selected_yes',
-                      'confirmTitle' => 'loan_history_confirm_purge_selected',
-                      'cancelClass' => 'confirm_purge_no',
+                    'buttonId' => 'purgeSelected',
+                    'buttonName' => 'purgeSelected',
+                    'buttonLabel' => 'loan_history_purge_selected',
+                    'header' => 'loan_history_confirm_purge_selected',
+                    'confirmId' => 'confirm_purge_selected_yes',
+                    'confirmTitle' => 'loan_history_confirm_purge_selected',
+                    'cancelClass' => 'confirm_purge_no',
                   ]
               )
             ?>
@@ -61,13 +68,13 @@
               $this->component(
                   'confirm-button',
                   [
-                      'buttonId' => 'purgeAll',
-                      'buttonName' => 'purgeAll',
-                      'buttonLabel' => 'loan_history_purge_all',
-                      'header' => 'loan_history_confirm_purge_all',
-                      'confirmId' => 'confirm_purge_all_yes',
-                      'confirmTitle' => 'loan_history_confirm_purge_all',
-                      'cancelClass' => 'confirm_purge_no',
+                    'buttonId' => 'purgeAll',
+                    'buttonName' => 'purgeAll',
+                    'buttonLabel' => 'loan_history_purge_all',
+                    'header' => 'loan_history_confirm_purge_all',
+                    'confirmId' => 'confirm_purge_all_yes',
+                    'confirmTitle' => 'loan_history_confirm_purge_all',
+                    'cancelClass' => 'confirm_purge_no',
                   ]
               )
             ?>
@@ -75,7 +82,7 @@
         </div>
         <?php if ($purgeSelectedAllowed): ?>
           <div class="checkbox">
-            <label>
+            <label class="select-all-label">
               <input type="checkbox" name="selectAll" class="checkbox-select-all">
               <?=$this->transEsc('select_all_on_page')?>
             </label>
@@ -85,22 +92,18 @@
     <?php endif; ?>
 
     <ul class="record-list">
-      <?php $i = 0; ?>
-      <?php foreach ($this->transactions as $resource): ?>
+      <?php foreach ($this->transactions as $i => $resource): ?>
         <?php $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
         <li id="record<?=$this->escapeHtmlAttr($resource->getUniqueId())?>" class="result">
-          <?php if ($this->purgeSelectedAllowed): ?>
-            <div class="checkbox">
+          <label class="checkbox-select">
+            <?php if ($this->purgeSelectedAllowed): ?>
               <?php if (isset($ilsDetails['row_id'])): ?>
                 <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['row_id']); ?>
-                <label>
-                  <input class="checkbox-select-item" type="checkbox" name="purgeSelectedIDs[]" value="<?=$this->escapeHtmlAttr($ilsDetails['row_id'])?>" id="checkbox_<?=$safeId?>" aria-label="<?=$this->transEscAttr('select_item_purge')?>">
-                </label>
-              <?php else: ?>
-                <label> </label>
+                <input class="checkbox-select-item" type="checkbox" name="purgeSelectedIDs[]" value="<?=$this->escapeHtmlAttr($ilsDetails['row_id'])?>" id="checkbox_<?=$safeId?>" aria-label="<?=$this->transEscAttr('select_item_purge')?>">
               <?php endif; ?>
-            </div>
-          <?php endif; ?>
+            <?php endif; ?>
+            <div class="checkbox-select-number"><?=$this->escapeHtml($startRecord + $i) ?></div>
+          </label>
           <?php
             $coverDetails = $this->record($resource)->getCoverDetails('checkedout', 'small', $this->recordLinker()->getUrl($resource));
             $cover = $coverDetails['html'];

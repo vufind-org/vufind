@@ -25,7 +25,8 @@ form {
 
     input[type=checkbox],
     input[type=radio] {
-        height: 1em;
+        width: 1rem;
+        height: 1rem;
     }
 
     .form-group.checkbox,
@@ -91,5 +92,88 @@ form {
     min-height: 20px;
     margin-bottom: 0;
     cursor: pointer;
+  }
+}
+
+.bulk-action-toolbar {
+  display: flex;
+
+  @include media-breakpoint-down(sm) {
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  @include media-breakpoint-up(sm) {
+    align-items: center;
+    gap: 1rem;
+  }
+}
+.select-all-label {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  width: fit-content;
+  padding: 0.6em;
+  line-height: normal;
+
+  @include media-breakpoint-down(sm) {
+    border: 1px solid $btn-default-border;
+    border-radius: $border-radius;
+  }
+
+  @include media-breakpoint-up(sm) {
+    margin-inline-start: -0.6em;
+  }
+
+  &:hover,
+  &:focus {
+    background-color: $gray-lighter;
+  }
+
+  [type="checkbox"] {
+    margin: 0;
+  }
+}
+.checkbox-select {
+  display: flex;
+  align-items: center;
+  gap: 1ch;
+  padding-inline-start: 1.5rem;
+  font-size: 1rem;
+  line-height: normal;
+  cursor: default;
+
+  &:has(.checkbox-select-item) {
+    padding-inline-start: 0;
+    cursor: pointer;
+
+    &:hover,
+    &:focus {
+      .checkbox-select-number {
+        color: black;
+      }
+    }
+  }
+}
+.checkbox-select-item {
+  width: 1em;
+  height: 1em;
+}
+.checkbox-select-number {
+  min-width: 2ch;
+  text-align: end;
+  font-weight: bold;
+  color: $gray;
+}
+
+/* hide checkboxes on mobile search */
+
+@media (max-width: 767px) {
+  .template-dir-search.template-name-results .checkbox-select {
+    padding-inline-start: 0;
+
+    .checkbox-select-item {
+      display: none;
+    }
   }
 }

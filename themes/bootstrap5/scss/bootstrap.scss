@@ -433,6 +433,7 @@ body.rtl .dropdown-menu {
 }
 
 /* ------ MyResearch ------ */
+form .toolbar { margin-block: 0.5em; } // bulk toolbar spacing
 .form-login .btn-link ~ .btn-link { padding-left: 0; } // Login link spacing
 .myresearch-menu {
   ul {
@@ -582,13 +583,6 @@ body.rtl .dropdown-menu {
   margin-bottom: 0.5rem;
   tbody > tr > td {
     vertical-align: middle;
-  }
-}
-
-.toolbar {
-  margin: 0.5rem 0;
-  .checkbox {
-    padding: 0.5rem;
   }
 }
 

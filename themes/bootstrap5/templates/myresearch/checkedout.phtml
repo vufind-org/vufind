@@ -23,16 +23,19 @@
       <?php if ($paginator): ?>
         <div class="search-stats">
           <?php
+            $startRecord = $paginator->getAbsoluteItemNumber(1);
             $abs = $paginator->getAbsoluteItemNumber($paginator->getItemCountPerPage());
             $end = min($abs, $paginator->getTotalItemCount());
             $transParams = [
-              '%%start%%' => $this->localizedNumber($paginator->getAbsoluteItemNumber(1)),
+              '%%start%%' => $this->localizedNumber($startRecord),
               '%%end%%' => $this->localizedNumber($end),
               '%%total%%' => $this->localizedNumber($paginator->getTotalItemCount()),
             ];
           ?>
           <?=$this->translate('showing_items_of_html', $transParams); ?>
         </div>
+      <?php else: ?>
+        <?php $startRecord = 1; ?>
       <?php endif; ?>
       <?php if ($this->sortList): ?>
         <?=$this->context($this)->renderInContext('myresearch/controls/sort.phtml', ['sortList' => $this->sortList]); ?>
@@ -42,43 +45,41 @@
     <form name="renewals" method="post" id="renewals" data-clear-account-cache="checkedOut" data-disable-on-submit>
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>" name="csrf">
       <input type="hidden" id="submitType" name="renewSelected" value="1">
-      <div class="toolbar">
-        <div class="checkbox">
-          <label>
-            <input type="checkbox" name="selectAll" class="checkbox-select-all">
-            <?=$this->transEsc('select_all_on_page')?>
-          </label>
+      <div class="bulk-action-toolbar">
+        <label class="select-all-label">
+          <input type="checkbox" name="selectAll" class="checkbox-select-all">
+          <?=$this->transEsc('select_all_on_page')?>
+        </label>
+        <?=
+          $this->component(
+              'confirm-button',
+              [
+                  'buttonId' => 'renewSelected',
+                  'buttonName' => 'renewSelected',
+                  'buttonLabel' => 'renew_selected',
+                  'header' => 'confirm_renew_selected_text',
+                  'confirmId' => 'confirm_renew_selected_yes',
+                  'cancelClass' => 'confirm_renew_no',
+                  'ignoreLightbox' => true,
+              ]
+          )
+        ?>
+        <?php if ($renewAll): ?>
           <?=
             $this->component(
                 'confirm-button',
                 [
-                    'buttonId' => 'renewSelected',
-                    'buttonName' => 'renewSelected',
-                    'buttonLabel' => 'renew_selected',
-                    'header' => 'confirm_renew_selected_text',
-                    'confirmId' => 'confirm_renew_selected_yes',
+                    'buttonId' => 'renewAll',
+                    'buttonName' => 'renewAll',
+                    'buttonLabel' => 'renew_all',
+                    'header' => 'confirm_renew_all_text',
+                    'confirmId' => 'confirm_renew_all_yes',
                     'cancelClass' => 'confirm_renew_no',
                     'ignoreLightbox' => true,
                 ]
             )
           ?>
-          <?php if ($renewAll): ?>
-            <?=
-              $this->component(
-                  'confirm-button',
-                  [
-                      'buttonId' => 'renewAll',
-                      'buttonName' => 'renewAll',
-                      'buttonLabel' => 'renew_all',
-                      'header' => 'confirm_renew_all_text',
-                      'confirmId' => 'confirm_renew_all_yes',
-                      'cancelClass' => 'confirm_renew_no',
-                      'ignoreLightbox' => true,
-                  ]
-              )
-            ?>
-          <?php endif; ?>
-        </div>
+        <?php endif; ?>
       </div>
     <?php endif; ?>
 
@@ -100,25 +101,18 @@
     <?php endforeach; ?>
 
     <ul class="record-list">
-      <?php $i = 0; ?>
-      <?php foreach ($this->transactions as $resource): ?>
+      <?php foreach ($this->transactions as $i => $resource): ?>
         <?php $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
         <li id="record<?=$this->escapeHtmlAttr($resource->getUniqueId())?>" class="result">
-          <?php if ($this->renewForm): ?>
-            <div class="checkbox">
-              <?php if (isset($ilsDetails['renewable']) && $ilsDetails['renewable'] && isset($ilsDetails['renew_details'])): ?>
-                <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['renew_details']); ?>
-                <label>
-                  <input class="checkbox-select-item" type="checkbox" name="renewSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" id="checkbox_<?=$safeId?>" aria-label="<?=$this->transEscAttr('select_item_checked_out_renew')?>">
-                </label>
-                <input type="hidden" name="selectAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>">
-                <input type="hidden" name="renewAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>">
-              <?php else: ?>
-                <label> </label>
-              <?php endif; ?>
-            </div>
-          <?php endif; ?>
-
+          <label class="checkbox-select">
+            <?php if (isset($ilsDetails['renewable']) && $ilsDetails['renewable'] && isset($ilsDetails['renew_details'])): ?>
+              <input type="hidden" name="selectAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>">
+              <input type="hidden" name="renewAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>">
+              <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $ilsDetails['renew_details']); ?>
+              <input class="checkbox-select-item" type="checkbox" name="renewSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['renew_details'])?>" id="checkbox_<?=$safeId?>" aria-label="<?=$this->transEscAttr('select_item_checked_out_renew')?>">
+            <?php endif; ?>
+            <div class="checkbox-select-number"><?=$this->escapeHtml($startRecord + $i) ?></div>
+          </label>
           <?php
             $coverDetails = $this->record($resource)->getCoverDetails('checkedout', 'small', $this->recordLinker()->getUrl($resource));
             $cover = $coverDetails['html'];

@@ -27,12 +27,12 @@
           $this->component(
               'confirm-button',
               [
-                  'buttonId' => 'cancelSelected',
-                  'buttonName' => 'cancelSelected',
-                  'buttonLabel' => 'ill_request_cancel_selected',
-                  'header' => 'confirm_ill_request_cancel_selected_text',
-                  'confirmId' => 'confirm_cancel_selected_yes',
-                  'cancelClass' => 'confirm_cancel_no',
+                'buttonId' => 'cancelSelected',
+                'buttonName' => 'cancelSelected',
+                'buttonLabel' => 'ill_request_cancel_selected',
+                'header' => 'confirm_ill_request_cancel_selected_text',
+                'confirmId' => 'confirm_cancel_selected_yes',
+                'cancelClass' => 'confirm_cancel_no',
               ]
           )
         ?>
@@ -40,12 +40,12 @@
           $this->component(
               'confirm-button',
               [
-                  'buttonId' => 'cancelAll',
-                  'buttonName' => 'cancelAll',
-                  'buttonLabel' => 'ill_request_cancel_all',
-                  'header' => 'confirm_ill_request_cancel_all_text',
-                  'confirmId' => 'confirm_cancel_all_yes',
-                  'cancelClass' => 'confirm_cancel_no',
+                'buttonId' => 'cancelAll',
+                'buttonName' => 'cancelAll',
+                'buttonLabel' => 'ill_request_cancel_all',
+                'header' => 'confirm_ill_request_cancel_all_text',
+                'confirmId' => 'confirm_cancel_all_yes',
+                'cancelClass' => 'confirm_cancel_no',
               ]
           )
         ?>
@@ -57,16 +57,14 @@
         <?php $iteration++; ?>
         <?php $ilsDetails = $resource->getExtraDetail('ils_details'); ?>
         <li id="record<?=$this->escapeHtmlAttr($resource->getUniqueId()) ?>" class="result">
-          <?php if ($this->cancelForm && isset($ilsDetails['cancel_details'])): ?>
-            <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $resource->getUniqueId()); ?>
-            <div class="checkbox">
+          <label class="checkbox-select">
+            <?php if ($this->cancelForm && isset($ilsDetails['cancel_details'])): ?>
               <input type="hidden" name="cancelAllIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>">
-              <label>
-                <input type="checkbox" name="cancelSelectedIDS[]" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>" id="checkbox_<?=$safeId?>">
-              </label>
-            </div>
-          <?php endif; ?>
-
+              <?php $safeId = preg_replace('/[^a-zA-Z0-9]/', '', $resource->getUniqueId()); ?>
+              <input type="checkbox" name="cancelSelectedIDS[]" class="checkbox-select-item" value="<?=$this->escapeHtmlAttr($ilsDetails['cancel_details']) ?>" id="checkbox_<?=$safeId?>">
+            <?php endif; ?>
+            <div class="checkbox-select-number"><?=$this->escapeHtml($iteration) ?></div>
+          </label>
           <?php
             $coverDetails = $this->record($resource)->getCoverDetails('illrequests', 'small', $this->recordLinker()->getUrl($resource));
             $cover = $coverDetails['html'];
