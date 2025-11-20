@@ -36,12 +36,6 @@
       <?php if ($this->accountCapabilities()->isRatingRemovalAllowed()): ?>
         <input type="hidden" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>" name="csrf">
         <div class="toolbar table-checkbox-toolbar">
-          <label>
-            <div class="checkbox">
-              <input type="checkbox" name="selectAll" class="checkbox-select-all">
-              <?=$this->transEsc('select_all_on_page')?>
-            </div>
-          </label>
           <?=
             $this->component(
                 'confirm-button',
@@ -56,6 +50,12 @@
                 ]
             )
           ?>
+          <div class="select-all-container">
+            <label class="select-all-label">
+              <input type="checkbox" name="selectAll" class="checkbox-select-all">
+              <?=$this->transEsc('select_all_on_page')?>
+            </label>
+          </div>
         </div>
       <?php endif; ?>
       <table class="usercontent-table table-striped table table-responsive">
