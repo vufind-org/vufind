@@ -43,17 +43,18 @@ VuFind.register("listItemSelection", function ListItemSelection() {
   }
 
   /**
-   * Build a CSS selector for the provided class inside the provided form.
+   * Find all elements matching the provided class name inside the provided form.
    * @param {HTMLElement} form      The form element.
    * @param {string}      className The class name to select from the form.
-   * @returns {string} A CSS selector.
+   * @returns {Array<HTMLElement>} Matching elements.
    */
-  function getClassSelectorInsideForm(form, className) {
+  function queryClassInForm(form, className) {
     // If the form has an ID, we can select for contents and external elements with a form attribute.
     // If the form has no ID, we can only select for contents using its name.
-    return form.id.length === 0
+    const selector = form.id.length === 0
       ? `form[name="${form.name}"] .${className}`
       : `#${form.id} .${className}, .${className}[form="${form.id}"]`;
+    return document.querySelectorAll(selector);
   }
 
   /**
@@ -62,7 +63,7 @@ VuFind.register("listItemSelection", function ListItemSelection() {
    * @returns {NodeList} A list of item checkboxes.
    */
   function getItemCheckboxes(form) {
-    return document.querySelectorAll(getClassSelectorInsideForm(form, 'checkbox-select-item'));
+    return queryClassInForm(form, 'checkbox-select-item');
   }
 
   /**
@@ -117,7 +118,9 @@ VuFind.register("listItemSelection", function ListItemSelection() {
         }
       };
       form.querySelectorAll('input[name="ids[]"]:checked').forEach(addToSelected);
-      document.querySelectorAll('input[form="' + form.id + '"][name="ids[]"]:checked').forEach(addToSelected);
+      if (form.id.length > 0) {
+        document.querySelectorAll('input[form="' + form.id + '"][name="ids[]"]:checked').forEach(addToSelected);
+      }
     }
     return selected;
   }
@@ -129,7 +132,8 @@ VuFind.register("listItemSelection", function ListItemSelection() {
    */
   function _allOnPageAreSelected(form) {
     return form.querySelectorAll('.checkbox-select-item:not(:checked)').length === 0
-      && document.querySelectorAll('.checkbox-select-item[form="' + form.id + '"]:not(:checked)').length === 0;
+      && (form.id.length === 0
+      || document.querySelectorAll('.checkbox-select-item[form="' + form.id + '"]:not(:checked)').length === 0);
   }
 
   /**
@@ -191,11 +195,11 @@ VuFind.register("listItemSelection", function ListItemSelection() {
         'checkedDefault': checkedDefault,
       });
     }
-    document.querySelectorAll(getClassSelectorInsideForm(form, 'checkbox-select-all'))
+    queryClassInForm(form, 'checkbox-select-all')
       .forEach((checkbox) => _check(checkbox, _allOnPageAreSelected(form)));
-    document.querySelectorAll(getClassSelectorInsideForm(form, 'checkbox-select-all-global'))
+    queryClassInForm(form, 'checkbox-select-all-global')
       .forEach((checkbox) => _check(checkbox, _allGlobalAreSelected(form)));
-    document.querySelectorAll(getClassSelectorInsideForm(form, 'clear-selection'))
+    queryClassInForm(form, 'clear-selection')
       .forEach((button) => _updateSelectionCount(button, getAllSelected(form).length));
   }
 
