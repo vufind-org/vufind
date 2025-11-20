@@ -45,11 +45,7 @@
     <form name="renewals" method="post" id="renewals" data-clear-account-cache="checkedOut" data-disable-on-submit>
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>" name="csrf">
       <input type="hidden" id="submitType" name="renewSelected" value="1">
-      <div class="bulk-action-toolbar">
-        <label class="select-all-label">
-          <input type="checkbox" name="selectAll" class="checkbox-select-all">
-          <?=$this->transEsc('select_all_on_page')?>
-        </label>
+      <div class="toolbar account-action-toolbar">
         <?=
           $this->component(
               'confirm-button',
@@ -80,6 +76,12 @@
             )
           ?>
         <?php endif; ?>
+      </div>
+      <div class="select-all-container">
+        <label class="select-all-label">
+          <input type="checkbox" name="selectAll" class="checkbox-select-all">
+          <?=$this->transEsc('select_all_on_page')?>
+        </label>
       </div>
     <?php endif; ?>
 

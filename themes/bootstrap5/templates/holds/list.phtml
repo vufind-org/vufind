@@ -23,11 +23,7 @@
       <form name="updateForm" class="inline" method="post" action="<?=$this->escapeHtmlAttr($this->url('holds-list'))?>" id="update_holds" data-clear-account-cache="holds" data-lightbox>
         <input type="hidden" id="submitType" name="cancelSelected" value="1">
         <input type="hidden" id="cancelConfirm" name="confirm" value="0">
-        <div class="bulk-action-toolbar">
-          <label class="select-all-label">
-            <input type="checkbox" name="selectAll" class="checkbox-select-all">
-            <?=$this->transEsc('select_all_on_page')?>
-          </label>
+        <div class="toolbar account-action-toolbar">
           <?php if ($this->updateForm): ?>
             <div class="btn-group">
               <input id="update_selected" name="updateSelected" type="submit" value="<?=$this->transEscAttr('hold_edit_selected') ?>" class="btn btn-default hidden">
@@ -64,7 +60,13 @@
               )
             ?>
           <?php endif; ?>
-       </div>
+        </div>
+        <div class="select-all-container">
+          <label class="select-all-label">
+            <input type="checkbox" name="selectAll" class="checkbox-select-all">
+            <?=$this->transEsc('select_all_on_page')?>
+          </label>
+        </div>
       <?php endif; ?>
 
     <ul class="record-list">

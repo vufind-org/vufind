@@ -95,6 +95,16 @@ form {
   }
 }
 
+.account-action-toolbar {
+  .btn-group {
+    margin-block-end: 0.5em;
+  }
+}
+
+.table-checkbox-toolbar {
+  margin-left: 0.5em;
+}
+
 .bulk-action-toolbar {
   display: flex;
   margin-block: 1rem;
@@ -108,6 +118,9 @@ form {
     align-items: center;
     gap: 1rem;
   }
+}
+.select-all-container {
+  margin-top: 0;
 }
 .select-all-label {
   display: flex;
@@ -167,10 +180,11 @@ form {
   color: $gray;
 }
 
-/* hide checkboxes on mobile search */
+/* hide checkboxes on mobile search/favorites */
 
 @media (max-width: 767px) {
-  .template-dir-search.template-name-results .checkbox-select {
+  .template-dir-search.template-name-results .checkbox-select,
+  .template-dir-myresearch.template-name-mylist .checkbox-select {
     padding-inline-start: 0;
 
     .checkbox-select-item {
