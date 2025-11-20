@@ -1071,6 +1071,7 @@ class EDS extends DefaultRecord
             case 'academic journal':
             case 'periodical':
             case 'report':
+            case 'news':
                 // Add "article" format for better OpenURL generation
                 $formats[] = $pubType;
                 $formats[] = 'Article';
