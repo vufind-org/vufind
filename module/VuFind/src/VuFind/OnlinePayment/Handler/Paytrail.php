@@ -193,7 +193,7 @@ class Paytrail extends AbstractBase
                 ->setVatPercentage((float)($this->getServiceFeeTaxRate() ?? 0) / 100.0);
             $items[] = $item;
         }
-        $paymentRequest->setItems($items);
+        $paymentRequest->setItems($items ?: null);
 
         try {
             $paymentResponse = $this->initClient()->createPayment($paymentRequest);
