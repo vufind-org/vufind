@@ -3,8 +3,10 @@
   <ul class="cart-list">
   <?php foreach ($records as $i => $record): ?>
     <li class="cart-item">
-      <?=$this->record($record)->getCheckbox('cart')?>
-      <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($record))?>" data-lightbox-ignore><?=$this->escapeHtml($record->getBreadcrumb())?></a>
+      <label>
+        <?=$this->record($record)->getCheckbox('cart')?>
+        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($record))?>" data-lightbox-ignore><?=$this->escapeHtml($record->getBreadcrumb())?></a>
+      </label>
     </li>
   <?php endforeach; ?>
   </ul>

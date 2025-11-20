@@ -1,7 +1,15 @@
+<?php
+ // If we have a number, use it as a label; if not, assume that higher-level code will provide labeling.
+ $useLabel = !empty($this->number);
+?>
 <input type="hidden" name="idsAll[]" value="<?=$this->escapeHtmlAttr($this->id) ?>"<?php if (isset($this->formAttr)): ?> form="<?=$this->formAttr ?>"<?php endif; ?>>
-<label class="checkbox-select" aria-label="<?=$this->transEscAttr('result_checkbox_label', ['%%number%%' => $this->number]) ?>">
+<?php if ($this->useLabel): ?>
+  <label class="checkbox-select" aria-label="<?=$this->transEscAttr('result_checkbox_label', ['%%number%%' => $this->number]) ?>">
+<?php else: ?>
+  <span class="checkbox-select">
+<?php endif; ?>
   <input class="checkbox-select-item" type="checkbox" name="ids[]" value="<?=$this->escapeHtmlAttr($this->id) ?>"<?php if (isset($this->formAttr)): ?> form="<?=$this->formAttr ?>"<?php endif; ?>>
   <?php if (strlen($this->number ?? '') > 0): ?>
     <span class="checkbox-select-number"><?=$this->number ?></span>
   <?php endif; ?>
-</label>
+<?=$useLabel ? '</label>' : '</span>'?>

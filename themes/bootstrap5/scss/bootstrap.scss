@@ -424,6 +424,9 @@ body.rtl .dropdown-menu {
   gap: 1ch;
   margin-block: 0.5rem;
   line-height: normal;
+  .checkbox-select {
+    display: inline;
+  }
 }
 
 /* ------ Devtools ------ */
