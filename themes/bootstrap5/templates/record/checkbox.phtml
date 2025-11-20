@@ -11,6 +11,6 @@
 <?php endif; ?>
   <input class="checkbox-select-item" type="checkbox" name="ids[]" value="<?=$this->escapeHtmlAttr($this->id) ?>"<?php if (isset($this->formAttr)): ?> form="<?=$this->formAttr ?>"<?php endif; ?>>
   <?php if ($hasNumber): ?>
-    <span class="checkbox-select-number"><?=$this->number ?></span>
+    <span class="checkbox-select-number"><?=$this->escapeHtml($this->number) ?></span>
   <?php endif; ?>
 <?=$hasNumber ? '</label>' : '</span>'?>
