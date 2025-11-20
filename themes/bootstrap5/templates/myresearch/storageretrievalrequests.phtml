@@ -23,32 +23,40 @@
       <form name="updateForm" class="inline" method="post" id="cancelStorageRetrievalRequest" data-clear-account-cache="storageRetrievalRequests">
         <input type="hidden" id="submitType" name="cancelSelected" value="1">
         <input type="hidden" id="cancelConfirm" name="confirm" value="0">
-        <?=
-          $this->component(
-              'confirm-button',
-              [
-                'buttonId' => 'cancelSelected',
-                'buttonName' => 'cancelSelected',
-                'buttonLabel' => 'storage_retrieval_request_cancel_selected',
-                'header' => 'confirm_storage_retrieval_request_cancel_selected_text',
-                'confirmId' => 'confirm_cancel_selected_yes',
-                'cancelClass' => 'confirm_cancel_no',
-              ]
-          )
-        ?>
-        <?=
-          $this->component(
-              'confirm-button',
-              [
-                'buttonId' => 'cancelAll',
-                'buttonName' => 'cancelAll',
-                'buttonLabel' => 'storage_retrieval_request_cancel_all',
-                'header' => 'confirm_storage_retrieval_request_cancel_all_text',
-                'confirmId' => 'confirm_cancel_all_yes',
-                'cancelClass' => 'confirm_cancel_no',
-              ]
-          )
-        ?>
+        <div class="toolbar account-action-toolbar">
+          <?=
+            $this->component(
+                'confirm-button',
+                [
+                  'buttonId' => 'cancelSelected',
+                  'buttonName' => 'cancelSelected',
+                  'buttonLabel' => 'storage_retrieval_request_cancel_selected',
+                  'header' => 'confirm_storage_retrieval_request_cancel_selected_text',
+                  'confirmId' => 'confirm_cancel_selected_yes',
+                  'cancelClass' => 'confirm_cancel_no',
+                ]
+            )
+          ?>
+          <?=
+            $this->component(
+                'confirm-button',
+                [
+                  'buttonId' => 'cancelAll',
+                  'buttonName' => 'cancelAll',
+                  'buttonLabel' => 'storage_retrieval_request_cancel_all',
+                  'header' => 'confirm_storage_retrieval_request_cancel_all_text',
+                  'confirmId' => 'confirm_cancel_all_yes',
+                  'cancelClass' => 'confirm_cancel_no',
+                ]
+            )
+          ?>
+        </div>
+        <div class="select-all-container">
+          <label class="select-all-label">
+            <input type="checkbox" name="selectAll" class="checkbox-select-all">
+            <?=$this->transEsc('select_all_on_page')?>
+          </label>
+        </div>
     <?php endif; ?>
 
     <ul class="record-list">

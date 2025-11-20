@@ -434,6 +434,7 @@ body.rtl .dropdown-menu {
 
 /* ------ MyResearch ------ */
 form .toolbar { margin-block: 0.5em; } // bulk toolbar spacing
+form .toolbar.account-action-toolbar { margin-block-end: 0; }
 .form-login .btn-link ~ .btn-link { padding-left: 0; } // Login link spacing
 .myresearch-menu {
   ul {
