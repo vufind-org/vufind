@@ -107,7 +107,6 @@ form {
 
 .bulk-action-toolbar {
   display: flex;
-  margin-block: 1rem;
 
   @include media-breakpoint-down(sm) {
     flex-direction: column;
