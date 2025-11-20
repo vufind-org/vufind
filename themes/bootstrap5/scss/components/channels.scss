@@ -1,0 +1,146 @@
+.channel-search {
+  margin-block: 1rem;
+}
+
+.channel {
+  margin-block: 1rem;
+  padding: 1rem;
+  background-color: #eee;
+  border-radius: $border-radius;
+  container-type: inline-size;
+
+  .btn {
+    background-color: white;
+  }
+
+  @container (width < 768px) {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+  }
+}
+
+.channel-header {
+  display: flex;
+
+  @media (max-width: 639px) {
+    flex-direction: column;
+    gap: 0.5rem;
+
+    .channel-options .dropdown-toggle {
+      width: 100%;
+    }
+  }
+
+  @media (min-width: 640px) {
+    align-items: center;
+    gap: 1rem;
+  }
+}
+
+.channel-title {
+  width: 100%;
+  margin: 0;
+  padding-block: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  @media (min-width: 640px) {
+    flex: 1 1 0%;
+  }
+}
+
+.channel-add-menu .dropdown-menu {
+  max-height: 256px; /* 8 items, 32px tall each */
+  overflow-y: auto;
+}
+
+.tab-pane {
+  container-type: inline-size;
+}
+.channel-list {
+  position: relative;
+  grid-area: channel;
+  display: grid;
+  grid-template-columns: repeat(var(--row-size, 6), 1fr);
+  gap: 1rem;
+  width: 100%;
+  margin-block: 1rem;
+  padding: 0;
+  border-radius: $border-radius;
+
+  @container (width < 768px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  @container (width < 480px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.channel-item {
+  display: inline-block;
+  text-align: center;
+  background-color: white;
+}
+.hidden-batch-item {
+  display: none;
+}
+
+.channel-item-thumb {
+  position: relative;
+  display: grid;
+  min-height: 140px;
+  place-items: center;
+}
+
+.channel-item-img {
+  max-width: 100%;
+  max-height: 100%;
+}
+
+.channel-item-title {
+  display: block;
+  margin: 0;
+  padding: 0.5rem;
+  line-height: 1.15;
+  overflow: hidden;
+  word-break: break-word;
+  text-wrap: balance;
+  hyphens: auto;
+  text-overflow: ellipsis;
+}
+
+.channel-quick-look-btn {
+  position: absolute;
+  inset-inline: 0;
+  z-index: 10;
+  display: none;
+  padding: 0.25em;
+  color: white;
+  background-color: black;
+  border: 1px solid black;
+
+  &:hover,
+  &:focus {
+    color: black;
+    background-color: white;
+  }
+}
+.channel-item:is(:hover, :focus) .channel-quick-look-btn {
+  display: block;
+}
+
+.ql-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ql-view-record-btn {
+  display: block;
+  margin-block: 1rem;
+}
+.ql-btn-group {
+  width: 100%;
+  margin-block-end: 1rem;
+}

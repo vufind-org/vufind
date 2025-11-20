@@ -17,11 +17,11 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Db_Interface
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
@@ -29,15 +29,126 @@
 
 namespace VuFind\Db\Entity;
 
+use DateTime;
+
 /**
  * Entity model interface for user_list table
  *
  * @category VuFind
- * @package  Db_Interface
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 interface UserListEntityInterface extends EntityInterface
 {
+    /**
+     * Constant for default type of user list.
+     *
+     * @var string
+     */
+    public const TYPE_DEFAULT = 'default';
+
+    /**
+     * Get identifier (returns null for an uninitialized or non-persisted object).
+     *
+     * @return ?int
+     */
+    public function getId(): ?int;
+
+    /**
+     * Set title.
+     *
+     * @param string $title Title
+     *
+     * @return static
+     */
+    public function setTitle(string $title): static;
+
+    /**
+     * Get title.
+     *
+     * @return string
+     */
+    public function getTitle(): string;
+
+    /**
+     * Set description.
+     *
+     * @param ?string $description Description
+     *
+     * @return static
+     */
+    public function setDescription(?string $description): static;
+
+    /**
+     * Get description.
+     *
+     * @return ?string
+     */
+    public function getDescription(): ?string;
+
+    /**
+     * Get list type
+     *
+     * @return string
+     */
+    public function getType(): string;
+
+    /**
+     * Set list type
+     *
+     * @param string $type Type of the user list
+     *
+     * @return static
+     */
+    public function setType(string $type): static;
+
+    /**
+     * Set created date.
+     *
+     * @param DateTime $dateTime Created date
+     *
+     * @return static
+     */
+    public function setCreated(DateTime $dateTime): static;
+
+    /**
+     * Get created date.
+     *
+     * @return DateTime
+     */
+    public function getCreated(): DateTime;
+
+    /**
+     * Set whether the list is public.
+     *
+     * @param bool $public Is the list public?
+     *
+     * @return static
+     */
+    public function setPublic(bool $public): static;
+
+    /**
+     * Is this a public list?
+     *
+     * @return bool
+     */
+    public function isPublic(): bool;
+
+    /**
+     * Set user.
+     *
+     * @param UserEntityInterface $user User owning the list.
+     *
+     * @return static
+     */
+    public function setUser(UserEntityInterface $user): static;
+
+    /**
+     * Get user.
+     *
+     * @return UserEntityInterface
+     */
+    public function getUser(): UserEntityInterface;
 }

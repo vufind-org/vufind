@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -46,7 +46,7 @@ use VuFind\Session\Settings;
  */
 class GetResolverLinksTest extends \VuFindTest\Unit\AjaxHandlerTestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Set up configuration for a test.
@@ -58,8 +58,8 @@ class GetResolverLinksTest extends \VuFindTest\Unit\AjaxHandlerTestCase
     protected function setupConfig($config = [])
     {
         $this->container->set(
-            \VuFind\Config\PluginManager::class,
-            $this->getMockConfigPluginManager(compact('config'))
+            \VuFind\Config\ConfigManagerInterface::class,
+            $this->getMockConfigManager(compact('config'))
         );
     }
 
@@ -88,16 +88,16 @@ class GetResolverLinksTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         $mockPlugin = $this->container->createMock(DriverInterface::class);
         $mockPlugin->expects($this->once())
             ->method('fetchLinks')->with($this->equalTo('foo'))
-            ->will($this->returnValue('bar'));
+            ->willReturn('bar');
         $mockPlugin->expects($this->once())
             ->method('parseLinks')->with($this->equalTo('bar'))
-            ->will($this->returnValue($fixtureData));
+            ->willReturn($fixtureData);
         $mockPlugin->expects($this->once())
             ->method('supportsMoreOptionsLink')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
         $rm = $this->container->createMock(PluginManager::class, ['get']);
         $rm->expects($this->once())->method('get')->with($this->equalTo('generic'))
-            ->will($this->returnValue($mockPlugin));
+            ->willReturn($mockPlugin);
         $this->container->set(PluginManager::class, $rm);
 
         // Set up view helper and renderer:
@@ -135,7 +135,7 @@ class GetResolverLinksTest extends \VuFindTest\Unit\AjaxHandlerTestCase
             ->with(
                 $this->equalTo('ajax/resolverLinks.phtml'),
                 $this->equalTo($expectedViewParams)
-            )->will($this->returnValue('html'));
+            )->willReturn('html');
         $this->container->set('ViewRenderer', $view);
 
         // Set up configuration:

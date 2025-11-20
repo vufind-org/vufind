@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -42,14 +42,14 @@ use VuFind\Recommend\RecommendLinks;
  */
 class RecommendLinksTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Test configuration data.
      *
      * @var array
      */
-    protected $sampleLinks = [
+    protected array $sampleLinks = [
         'foo' => 'http://foo',
         'bar' => 'http://bar',
     ];
@@ -57,14 +57,14 @@ class RecommendLinksTest extends \PHPUnit\Framework\TestCase
     /**
      * Run a test scenario
      *
-     * @param \VuFind\Config\PluginManager $cm     Configuration manager
-     * @param string                       $config Recommendation config
+     * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
+     * @param string                                $config        Recommendation config
      *
      * @return void
      */
-    protected function runTestProcedure($cm, $config)
+    protected function runTestProcedure(\VuFind\Config\ConfigManagerInterface $configManager, string $config): void
     {
-        $rec = new RecommendLinks($cm);
+        $rec = new RecommendLinks($configManager);
         $rec->setConfig($config);
         $rec->init(
             $this->createMock(\VuFind\Search\Solr\Params::class),
@@ -81,9 +81,9 @@ class RecommendLinksTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testRecommendLinksWithDefaultConfiguration()
+    public function testRecommendLinksWithDefaultConfiguration(): void
     {
-        $cm = $this->getMockConfigPluginManager(
+        $cm = $this->getMockConfigManager(
             ['searches' => ['RecommendLinks' => $this->sampleLinks]]
         );
         $this->runTestProcedure($cm, '');
@@ -94,9 +94,9 @@ class RecommendLinksTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testRecommendLinksWithCustomConfiguration()
+    public function testRecommendLinksWithCustomConfiguration(): void
     {
-        $cm = $this->getMockConfigPluginManager(
+        $cm = $this->getMockConfigManager(
             ['foo' => ['bar' => $this->sampleLinks]]
         );
         $this->runTestProcedure($cm, 'bar:foo');

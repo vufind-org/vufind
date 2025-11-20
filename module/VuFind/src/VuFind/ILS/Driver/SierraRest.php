@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2016-2024.
+ * Copyright (C) The National Library of Finland 2016-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -29,10 +29,11 @@
 
 namespace VuFind\ILS\Driver;
 
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
+use VuFind\ILS\Logic\OnlinePaymentTrait;
 use VuFindHttp\HttpServiceAwareInterface;
 
 use function call_user_func_array;
@@ -69,6 +70,9 @@ class SierraRest extends AbstractBase implements
     use \VuFind\I18n\HasSorterTrait;
     use \VuFind\Service\Feature\RetryTrait;
     use \VuFind\Config\Feature\ExplodeSettingTrait;
+    use OnlinePaymentTrait {
+        fineIsPayable as fineIsPayableBase;
+    }
 
     /**
      * Fixed field number for location in holdings records
@@ -255,6 +259,27 @@ class SierraRest extends AbstractBase implements
     protected $fineTypeMappings = [];
 
     /**
+     * Sierra's types of fines that can be paid online
+     *
+     * @var array
+     */
+    protected $onlinePayableFineTypes = [2, 4, 5, 6];
+
+    /**
+     * Mappings from fine types to tax percents (1/100ths of a percent)
+     *
+     * @var array
+     */
+    protected $feeTypeToTaxRateMappings = [];
+
+    /**
+     * Product code mappings for fines
+     *
+     * @var array
+     */
+    protected $productCodeMappings = [];
+
+    /**
      * Status codes indicating that a hold is available for pickup
      *
      * @var array
@@ -277,6 +302,10 @@ class SierraRest extends AbstractBase implements
      *   - last pickup date for holds
      * v5.1 (technically still v5 but added in a later revision):
      *   - summary holdings information (especially for serials)
+     * v6:
+     *   - patron authentication with global patron data access using a method other than "native"
+     * v6.4 (technically still v6 but added in a later revision):
+     *   - return date included in new entries of checkout history (no change in API request needed)
      *
      * Note that API version 3 is deprecated in Sierra 5.1 and will be removed later
      * on (reported March 2020).
@@ -482,6 +511,22 @@ class SierraRest extends AbstractBase implements
         }
         $this->patronBlockMappings = $this->config['PatronBlockMappings'] ?? [];
         $this->fineTypeMappings = (array)($this->config['FineTypeMappings'] ?? []);
+        if ($types = $this->config['OnlinePayment']['fineTypes'] ?? '') {
+            $this->onlinePayableFineTypes = $this->explodeSetting(',', $types);
+        }
+        if ($mappings = $this->config['OnlinePayment']['driverProductCodeMappings'] ?? []) {
+            foreach ($mappings as $mapping) {
+                $parts = explode('=', $mapping, 2);
+                if (!isset($parts[1])) {
+                    continue;
+                }
+                $this->productCodeMappings[] = [
+                    'productCode' => $parts[0],
+                    'regexp' => $parts[1],
+                ];
+            }
+        }
+        $this->feeTypeToTaxRateMappings = $this->config['OnlinePayment']['feeTypeToTaxRateMappings'] ?? [];
 
         if (isset($this->config['Catalog']['api_version'])) {
             $this->apiVersion = $this->config['Catalog']['api_version'];
@@ -573,7 +618,7 @@ class SierraRest extends AbstractBase implements
      * record.
      *
      * @param string $id      The record id to retrieve the holdings for
-     * @param array  $patron  Patron data
+     * @param ?array $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
      * @return mixed     On success, an associative array with the following keys:
@@ -582,7 +627,7 @@ class SierraRest extends AbstractBase implements
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null, array $options = [])
+    public function getHolding($id, ?array $patron = null, array $options = [])
     {
         return $this->getItemStatusesForBib($id, true, $patron);
     }
@@ -675,25 +720,16 @@ class SierraRest extends AbstractBase implements
                 return null;
             }
         }
-
-        $firstname = '';
-        $lastname = '';
-        if (!empty($patron['names'])) {
-            $name = $patron['names'][0];
-            $parts = explode(', ', $name, 2);
-            $lastname = $parts[0];
-            $firstname = $parts[1] ?? '';
-        }
-        return [
-            'id' => $patron['id'],
-            'firstname' => $firstname,
-            'lastname' => $lastname,
-            'cat_username' => $username,
-            'cat_password' => $password,
-            'email' => !empty($patron['emails']) ? $patron['emails'][0] : '',
-            'major' => null,
-            'college' => null,
-        ];
+        $name = $patron['names'][0] ?? '';
+        [$lastname, $firstname] = $this->getLastAndFirstName($name);
+        return $this->createPatronArray(
+            id: $patron['id'],
+            firstname: $firstname,
+            lastname: $lastname,
+            cat_username: $username,
+            cat_password: $password,
+            email: $patron['emails'][0] ?? null
+        );
     }
 
     /**
@@ -746,16 +782,11 @@ class SierraRest extends AbstractBase implements
         if (empty($result)) {
             return [];
         }
-        $firstname = '';
-        $lastname = '';
         $address = '';
         $zip = '';
         $city = '';
-        if (!empty($result['names'])) {
-            $nameParts = explode(', ', $result['names'][0], 2);
-            $lastname = $nameParts[0];
-            $firstname = $nameParts[1] ?? '';
-        }
+        [$lastname, $firstname] = $this->getLastAndFirstName($result['names'][0] ?? '');
+
         if (!empty($result['addresses'][0]['lines'][1])) {
             $address = $result['addresses'][0]['lines'][0];
             $postalParts = explode(' ', $result['addresses'][0]['lines'][1], 2);
@@ -766,23 +797,23 @@ class SierraRest extends AbstractBase implements
                 $city = $postalParts[0];
             }
         }
-        $expirationDate = !empty($result['expirationDate'])
+        return $this->createProfileArray(
+            firstname: $firstname,
+            lastname: $lastname,
+            phone: $result['phones'][0]['number'] ?? null,
+            address1: $address,
+            zip: $zip,
+            city: $city,
+            birthdate: $result['birthDate'] ?? '',
+            expiration_date: !empty($result['expirationDate'])
                 ? $this->dateConverter->convertToDisplayDate(
                     'Y-m-d',
                     $result['expirationDate']
-                ) : null;
-        return [
-            'firstname' => $firstname,
-            'lastname' => $lastname,
-            'phone' => !empty($result['phones'][0]['number'])
-                ? $result['phones'][0]['number'] : '',
-            'email' => !empty($result['emails']) ? $result['emails'][0] : '',
-            'address1' => $address,
-            'zip' => $zip,
-            'city' => $city,
-            'birthdate' => $result['birthDate'] ?? '',
-            'expiration_date' => $expirationDate,
-        ];
+                ) : null,
+            nonDefaultFields: [
+                'email' => $result['emails'][0] ?? null,
+            ]
+        );
     }
 
     /**
@@ -984,6 +1015,9 @@ class SierraRest extends AbstractBase implements
         $items = $this->getItemsWithBibsForTransactions($result['entries'], $patron);
         $transactions = [];
         foreach ($result['entries'] as $entry) {
+            $returnDate = ($date = $entry['returnDate'] ?? null)
+                ? $this->dateConverter->convertToDisplayDate('Y-m-d', $date)
+                : false;
             $transaction = [
                 'id' => '',
                 'row_id' => $this->extractId($entry['id']),
@@ -992,6 +1026,7 @@ class SierraRest extends AbstractBase implements
                     'Y-m-d',
                     $entry['outDate']
                 ),
+                'returnDate' => $returnDate,
             ];
             $item = $items[$transaction['item_id']] ?? null;
             $transaction['volume'] = $item ? $this->extractVolume($item) : '';
@@ -1217,9 +1252,6 @@ class SierraRest extends AbstractBase implements
         if ($this->config['InnReach']['enabled'] ?? false) {
             foreach ($holds as $n => $hold) {
                 if (!empty($hold['item_id']) && strstr($hold['item_id'], $this->config['InnReach']['identifier'])) {
-                    $id = $hold['id'];
-                    $volume = $hold['volume'];
-
                     $innReach = $this->getInnReachHoldTitleInfoFromId($hold['reqnum'], $hold['id']);
                     if (!empty($innReach)) {
                         $holds[$n]['id'] = $innReach['id'];
@@ -1370,7 +1402,7 @@ class SierraRest extends AbstractBase implements
     /**
      * Get Pick Up Locations
      *
-     * This is responsible for gettting a list of valid library locations for
+     * This is responsible for getting a list of valid library locations for
      * holds / recall retrieval
      *
      * @param array $patron      Patron information returned by the patronLogin
@@ -1576,6 +1608,7 @@ class SierraRest extends AbstractBase implements
             [$this->apiBase, 'patrons', $patron['id'], 'fines'],
             [
                 'limit' => 10000,
+                'fields' => 'default,invoiceNumber',
             ],
             'GET',
             $patron
@@ -1623,11 +1656,11 @@ class SierraRest extends AbstractBase implements
                 }
             }
 
-            $fines[] = [
-                'amount' => $amount * 100,
+            $fine = [
+                'amount' => (int)round($amount * 100),
                 'fine' => $this->fineTypeMappings[$type] ?? $type,
                 'description' => $entry['description'] ?? '',
-                'balance' => $balance * 100,
+                'balance' => (int)round($balance * 100),
                 'createdate' => $this->dateConverter->convertToDisplayDate(
                     'Y-m-d',
                     $entry['assessedDate']
@@ -1635,9 +1668,282 @@ class SierraRest extends AbstractBase implements
                 'checkout' => '',
                 'id' => $this->formatBibId($bibId),
                 'title' => $title,
+                'fineId' => $this->extractId($entry['id']),
+                'organization' => substr($entry['location']['code'] ?? '', 0, 1),
+                'productCode' => $this->getFineProductCode($entry),
+                '__invoice_number' => $entry['invoiceNumber'], // Internal invoice number required for payment
             ];
+            $fine['payableOnline'] = $this->fineIsPayable($fine, $entry);
+            $fine['taxPercent'] = $this->getFineTaxRate($fine, $entry);
+            $fines[] = $fine;
         }
         return $fines;
+    }
+
+    /**
+     * Register a payment.
+     *
+     * This is called after a successful online payment.
+     *
+     * @param array   $patron                  Patron
+     * @param int     $amount                  Amount to be registered as paid
+     * @param string  $localPaymentIdentifier  Local payment identifier
+     * @param ?string $remotePaymentIdentifier Remote payment identifier
+     * @param int     $paymentId               Internal payment id
+     * @param ?array  $fineIds                 Fine IDs to mark paid or null for bulk payment
+     *
+     * @throws ILSException
+     * @return array Associative array with keys success (bool, always) and reason (string, on error)
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function registerPayment(
+        array $patron,
+        int $amount,
+        string $localPaymentIdentifier,
+        ?string $remotePaymentIdentifier,
+        int $paymentId,
+        ?array $fineIds = null
+    ): array {
+        if (empty($fineIds)) {
+            $this->logError('Bulk payment not supported');
+            throw new ILSException('Bulk payment not supported');
+        }
+
+        $fines = $this->getMyFines($patron);
+        if (!$fines) {
+            $this->logError('No fines to pay found');
+            return [
+                'success' => false,
+                'reason' => 'Payment::error_fines_changed',
+            ];
+        }
+
+        $amountRemaining = $amount;
+        $payments = [];
+        foreach ($fines as $fine) {
+            if (
+                in_array($fine['fineId'], $fineIds)
+                && $fine['payableOnline'] && $fine['balance'] > 0
+            ) {
+                $pay = (int)round(min($fine['balance'], $amountRemaining));
+                $payments[] = [
+                    'amount' => $pay,
+                    'paymentType' => 1,
+                    'invoiceNumber' => (string)$fine['__invoice_number'],
+                ];
+                $amountRemaining -= $pay;
+            }
+        }
+        if (!$payments) {
+            $this->logError('Fine IDs do not match any of the payable fines');
+            return [
+                'success' => false,
+                'reason' => 'Payment::error_fines_changed',
+            ];
+        }
+
+        $request = [
+            'payments' => $payments,
+        ];
+        if ($this->statGroup) {
+            $request['statgroup'] = $this->statGroup;
+        }
+
+        $result = $this->makeRequest(
+            [
+                'v6', 'patrons', $patron['id'], 'fines', 'payment',
+            ],
+            json_encode($request),
+            'PUT',
+            $patron,
+            true
+        );
+
+        if (!in_array($result['statusCode'], ['200', '204'])) {
+            $this->logError(
+                "Payment request failed with status code {$result['statusCode']}: "
+                . (var_export($result['response'] ?? '', true))
+            );
+            return [
+                'success' => false,
+                'reason' => 'Payment::error_payment_request_failed',
+            ];
+        }
+        // Sierra doesn't support storing any remaining amount, so we'll just have to
+        // live with the assumption that any fine amount didn't somehow get smaller
+        // during payment. That would be unlikely in any case.
+
+        // Clear patron's block cache
+        $patronId = $patron['id'];
+        $cacheId = "blocks|$patronId";
+        $this->removeCachedData($cacheId);
+
+        return [
+            'success' => true,
+        ];
+    }
+
+    /**
+     * Get password recovery data for a user
+     *
+     * @param array $params Required params such as cat_username and email
+     *
+     * @return array Associative array of the results
+     */
+    public function getPasswordRecoveryData($params)
+    {
+        // We need a username and an email address to find the account:
+        if (empty($params['cat_username'])) {
+            return [
+                'success' => false,
+                'error' => 'Username cannot be blank',
+            ];
+        }
+        if (empty($params['email'])) {
+            return [
+                'success' => false,
+                'error' => 'no_email_address',
+            ];
+        }
+
+        $request = [
+            'queries' => [
+                [
+                    'target' => [
+                        'record' => [
+                            'type' => 'patron',
+                        ],
+                        'field' => [
+                            'tag' => 'b',
+                        ],
+                    ],
+                    'expr' => [
+                        'op' => 'equals',
+                        'operands' => [
+                            str_replace(' ', '', $params['cat_username']),
+                        ],
+                    ],
+                ],
+                'and',
+                [
+                    'target' => [
+                        'record' => [
+                            'type' => 'patron',
+                        ],
+                        'field' => [
+                            'tag' => 'z',
+                        ],
+                    ],
+                    'expr' => [
+                        'op' => 'equals',
+                        'operands' => [
+                            trim($params['email']),
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        $result = $this->makeRequest(
+            [
+                [
+                    'type' => 'encoded',
+                    'value' => 'v6/patrons/query?offset=0&limit=1',
+                ],
+            ],
+            json_encode($request),
+            'POST'
+        );
+
+        if (
+            $result['total'] === 1
+            && $link = $result['entries'][0]['link'] ?? null
+        ) {
+            $patronId = $this->extractId($link);
+
+            // Check that there's an existing PIN in varFields:
+            $result = $this->makeRequest(
+                [$this->apiBase, 'patrons', $patronId],
+                [
+                    'fields' => 'varFields',
+                ],
+                'GET'
+            );
+            $pinExists = false;
+            foreach ($result['varFields'] ?? [] as $field) {
+                if ('=' === $field['fieldTag']) {
+                    $pinExists = true;
+                    break;
+                }
+            }
+            if (!$pinExists) {
+                return [
+                    'success' => false,
+                    'error' => 'authentication_error_account_locked',
+                ];
+            }
+            return [
+                'success' => true,
+                'data' => [
+                    'username' => $params['cat_username'],
+                    'email' => $params['email'],
+                    'details' => [
+                        'id' => $patronId,
+                    ],
+                ],
+            ];
+        }
+        return [
+            'success' => false,
+            'error' => 'recovery_user_not_found',
+        ];
+    }
+
+    /**
+     * Reset a user's password using password recovery data.
+     *
+     * @param array $details Driver-specific account recovery details.
+     * @param array $params  User-entered form parameters.
+     *
+     * @throws ILSException
+     * @return array Status
+     */
+    public function resetPassword(array $details, array $params)
+    {
+        if (empty($details['id']) || empty($params['password'])) {
+            return [
+                'success' => false,
+                'error' => 'error_inconsistent_parameters',
+            ];
+        }
+        $request = [
+            'pin' => $params['password'],
+        ];
+        $result = $this->makeRequest(
+            [
+                'v6', 'patrons', $details['id'],
+            ],
+            json_encode($request),
+            'PUT',
+            false,
+            true
+        );
+
+        if (!in_array($result['statusCode'], ['200', '204'])) {
+            $this->logError(
+                "Patron update request failed with status code {$result['statusCode']}: "
+                . (var_export($result['response'] ?? '', true))
+            );
+            return [
+                'success' => false,
+                'error' => 'An error has occurred',
+            ];
+        }
+
+        return [
+            'success' => true,
+        ];
     }
 
     /**
@@ -1652,7 +1958,8 @@ class SierraRest extends AbstractBase implements
      * 'newPassword' New password
      *
      * @return array An array of data on the request including
-     * whether or not it was successful and a system message (if available)
+     * whether it was successful or not and a system message (if available)
+     * @throws ILSException
      */
     public function changePassword($details)
     {
@@ -1667,14 +1974,7 @@ class SierraRest extends AbstractBase implements
                 'success' => false, 'status' => 'authentication_error_invalid',
             ];
         }
-
-        $newPIN = preg_replace('/[^\d]/', '', trim($details['newPassword']));
-        if (strlen($newPIN) != 4) {
-            return [
-                'success' => false, 'status' => 'password_error_invalid',
-            ];
-        }
-
+        $newPIN = trim($details['newPassword']);
         $request = ['pin' => $newPIN];
 
         $result = $this->makeRequest(
@@ -1728,6 +2028,17 @@ class SierraRest extends AbstractBase implements
                 'purge_selected'  => $this->config['TransactionHistory']['purgeSelected'] ?? true,
             ];
         }
+        if ('getPasswordRecoveryData' === $function || 'resetPassword' === $function) {
+            $config = $this->config['PasswordRecovery'] ?? [];
+            return ($config['enabled'] ?? false) ? $config : false;
+        }
+        if ('OnlinePayment' === $function) {
+            $result = $this->config['OnlinePayment'] ?? [];
+            $result['exactBalanceRequired'] = false;
+            $result['selectFines'] = true;
+            return $result;
+        }
+
         return $this->config[$function] ?? false;
     }
 
@@ -1784,7 +2095,9 @@ class SierraRest extends AbstractBase implements
     {
         foreach ($item['varFields'] ?? [] as $varField) {
             if ($varField['fieldTag'] == 'v') {
-                return trim($varField['subfields'][0]['content'] ?? '');
+                // Depending on Sierra version/configuration, the content may be in a couple
+                // of different places. This logic checks both possibilities.
+                return trim($varField['subfields'][0]['content'] ?? $varField['content'] ?? '');
             }
         }
         return '';
@@ -2012,6 +2325,13 @@ class SierraRest extends AbstractBase implements
     {
         $url = $this->config['Catalog']['host'];
         foreach ($hierarchy as $value) {
+            if (is_array($value)) {
+                if ('encoded' === $value['type']) {
+                    $url .= '/' . $value['value'];
+                    continue;
+                }
+                $value = $value['value'];
+            }
             $url .= '/' . urlencode($value);
         }
         return $url;
@@ -3635,5 +3955,69 @@ WHERE
             $titleInfo['author'] = 'Unknown Author';
         }
         return $titleInfo;
+    }
+
+    /**
+     * Check if a fine is payable.
+     *
+     * @param array $fine       Fine
+     * @param array $sierraFine Sierra fine entry
+     *
+     * @return bool
+     */
+    protected function fineIsPayable(array $fine, array $sierraFine): bool
+    {
+        if (!$this->fineIsPayableBase($fine)) {
+            return false;
+        }
+        $code = $sierraFine['chargeType']['code'] ?? 0;
+        if (in_array($code, $this->onlinePayableFineTypes)) {
+            return true;
+        }
+        $desc = $fine['description'] ?? '';
+        foreach ((array)($this->config['OnlinePayment']['manualFineDescriptions'] ?? []) as $pattern) {
+            if (preg_match($pattern, $desc)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Get a product code for a fine
+     *
+     * @param array $fine Fine
+     *
+     * @return ?string
+     */
+    protected function getFineProductCode(array $fine): ?string
+    {
+        $location = $fine['location']['code'] ?? '';
+        $type = $fine['chargeType']['code'] ?? 0;
+        $desc = $fine['description'] ?? '';
+
+        $key = "$location--$type--$desc";
+        foreach ($this->productCodeMappings as $mapping) {
+            if (preg_match($mapping['regexp'], $key)) {
+                return $mapping['productCode'];
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get tax rate for a fine.
+     *
+     * @param array $fine       Fine
+     * @param array $sierraFine Sierra fine entry
+     *
+     * @return int 1/100ths of a percent
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function getFineTaxRate(array $fine, array $sierraFine): int
+    {
+        $code = $sierraFine['chargeType']['code'] ?? 0;
+        return $this->feeTypeToTaxRateMappings[$code] ?? 0;
     }
 }

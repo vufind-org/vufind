@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Translator
@@ -29,10 +29,11 @@
 
 namespace VuFind\I18n\Translator;
 
-use Laminas\I18n\Translator\TranslatorInterface;
+use Laminas\Mvc\I18n\Translator;
+use VuFind\Config\PathResolver;
 use VuFind\I18n\Locale\LocaleSettings;
 
-use function strlen;
+use function get_class;
 
 /**
  * Logic for initializing a language within a translator used by VuFind.
@@ -46,18 +47,46 @@ use function strlen;
 trait LanguageInitializerTrait
 {
     /**
+     * Path resolver.
+     *
+     * @var ?PathResolver
+     */
+    protected ?PathResolver $pathResolver = null;
+
+    /**
+     * Set path resolver.
+     *
+     * @param PathResolver $pathResolver Path resolver
+     *
+     * @return void
+     */
+    public function setPathResolver(PathResolver $pathResolver): void
+    {
+        $this->pathResolver = $pathResolver;
+    }
+
+    /**
      * Look up all text domains.
      *
      * @return array
      */
-    protected function getTextDomains()
+    protected function getTextDomains(): array
     {
         $base = APPLICATION_PATH;
-        $local = LOCAL_OVERRIDE_DIR;
         $languagePathParts = ["$base/languages"];
-        if (strlen($local) > 0) {
-            $languagePathParts[] = "$local/languages";
+        $localConfigDirStack = [];
+        if ($this->pathResolver === null) {
+            error_log(
+                'No PathResolver was set for the LanguageInitializerTrait used by class '
+                . get_class($this) . '.'
+            );
+        } else {
+            $localConfigDirStack = $this->pathResolver->getLocalConfigDirStack();
         }
+        $languagePathParts = array_merge($languagePathParts, array_map(
+            fn ($localConfigDir) => $localConfigDir['directory'] . '/languages',
+            $localConfigDirStack
+        ));
         $languagePathParts[] = "$base/themes/*/languages";
 
         $domains = [];
@@ -72,14 +101,14 @@ trait LanguageInitializerTrait
     /**
      * Configure a translator to support the requested language.
      *
-     * @param TranslatorInterface $translator Translator
-     * @param LocaleSettings      $settings   Locale settings
-     * @param string              $language   Language to set up
+     * @param Translator     $translator Translator
+     * @param LocaleSettings $settings   Locale settings
+     * @param string         $language   Language to set up
      *
      * @return void
      */
     protected function addLanguageToTranslator(
-        TranslatorInterface $translator,
+        Translator $translator,
         LocaleSettings $settings,
         string $language
     ): void {

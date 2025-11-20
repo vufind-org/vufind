@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -31,7 +31,7 @@
 
 namespace VuFindTest\ILS\Driver;
 
-use Laminas\Config\Exception\RuntimeException;
+use RuntimeException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Driver\MultiBackend;
 
@@ -57,7 +57,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     public function testMissingILSConfiguration()
     {
         $driver = new MultiBackend(
-            $this->getMockFailingConfigPluginManager(new RuntimeException()),
+            $this->getMockFailingConfigManager(new RuntimeException()),
             $this->getMockILSAuthenticator(),
             $this->getMockSM()
         );
@@ -81,7 +81,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
         $this->assertEquals(
             'VuFind\ILS\Driver\MultiBackend: '
             . "Could not find local id in 'bad'",
-            $objs['writer']->events[1]['message']
+            $objs['writer']->getRecords()[1]['message']
         );
     }
 
@@ -330,7 +330,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
         $dummy->expects($this->once())
             ->method('supportsMethod')
             ->with('getHolding')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
 
         $result = $this->callMethod(
             $driver,
@@ -356,15 +356,13 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
                     $this->equalTo('654321')
                 )
             )
-            ->will(
-                $this->returnCallback(
-                    function ($param) {
-                        if ($param == '123456') {
-                            return ['id' => '123456', 'status' => 'in'];
-                        }
-                        return [];
+            ->willReturnCallback(
+                function ($param) {
+                    if ($param == '123456') {
+                        return ['id' => '123456', 'status' => 'in'];
                     }
-                )
+                    return [];
+                }
             );
 
         $ils2 = $this->getMockILS('Demo', ['init', 'getHolding']);
@@ -374,15 +372,13 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
                 $this->equalTo('123456'),
                 $this->equalTo(['cat_username' => 'test.patron'])
             )
-            ->will(
-                $this->returnValue(
+            ->willReturn(
+                [
                     [
-                        [
-                            'id' => '123456',
-                            'status' => 'in',
-                        ],
-                    ]
-                )
+                        'id' => '123456',
+                        'status' => 'in',
+                    ],
+                ]
             );
 
         $driver = $this->getMultiDriverForDrivers(['d1' => $ils1, 'd2' => $ils2]);
@@ -416,7 +412,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
         $ILS->expects($this->once())
             ->method('getPurchaseHistory')
             ->with('123456')
-            ->will($this->returnValue($driverReturn));
+            ->willReturn($driverReturn);
 
         $sm = $this->getMockSM($this->once(), 'Voyager', $ILS);
         $driver = $this->initDriver(['driverManager' => $sm]);
@@ -494,20 +490,18 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
                     $this->equalTo('654321')
                 )
             )
-            ->will(
-                $this->returnCallback(
-                    function ($param) {
-                        $r_arr = ['id' => $param];
-                        if ($param == '123456') {
-                            $r_arr['status'] = 'in';
-                        } elseif ($param == '654321') {
-                            $r_arr['status'] = 'out';
-                        } else {
-                            $r_arr['status'] = 'out';
-                        }
-                        return [$r_arr];
+            ->willReturnCallback(
+                function ($param) {
+                    $r_arr = ['id' => $param];
+                    if ($param == '123456') {
+                        $r_arr['status'] = 'in';
+                    } elseif ($param == '654321') {
+                        $r_arr['status'] = 'out';
+                    } else {
+                        $r_arr['status'] = 'out';
                     }
-                )
+                    return [$r_arr];
+                }
             );
 
         $sm = $this->getMockSM($this->once(), 'Voyager', $ILS);
@@ -538,27 +532,25 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
             ->with(
                 $this->equalTo(['123456', '098765'])
             )
-            ->will(
-                $this->returnValue(
+            ->willReturn(
+                [
                     [
                         [
-                            [
-                                'id' => '123456',
-                                'status' => 'in',
-                            ],
-                            [
-                                'id' => '123456',
-                                'status' => 'out',
-                            ],
+                            'id' => '123456',
+                            'status' => 'in',
                         ],
                         [
-                            [
-                                'id' => '098765',
-                                'status' => 'out',
-                            ],
+                            'id' => '123456',
+                            'status' => 'out',
                         ],
-                    ]
-                )
+                    ],
+                    [
+                        [
+                            'id' => '098765',
+                            'status' => 'out',
+                        ],
+                    ],
+                ]
             );
 
         $ils2 = $this->getMockILS('Unicorn', ['init', 'setConfig', 'getStatuses']);
@@ -567,23 +559,21 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
             ->with(
                 $this->equalTo(['654321', '567890'])
             )
-            ->will(
-                $this->returnValue(
+            ->willReturn(
+                [
                     [
                         [
-                            [
-                                'id' => '654321',
-                                'status' => 'out',
-                            ],
+                            'id' => '654321',
+                            'status' => 'out',
                         ],
+                    ],
+                    [
                         [
-                            [
-                                'id' => '567890',
-                                'status' => 'in',
-                            ],
+                            'id' => '567890',
+                            'status' => 'in',
                         ],
-                    ]
-                )
+                    ],
+                ]
             );
 
         $exception = new \VuFind\Exception\ILS('Simulated exception');
@@ -593,8 +583,8 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
             ->with(
                 $this->equalTo(['654321', '567890'])
             )
-            ->will(
-                $this->throwException($exception)
+            ->willThrowException(
+                $exception
             );
 
         $sm = $this->getMockBuilder(\VuFind\ILS\Driver\PluginManager::class)
@@ -603,12 +593,10 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
             ->method('get')
             ->with(
                 $this->logicalOr('Voyager', 'Unicorn')
-            )->will(
-                $this->returnCallback(
-                    function ($driver) use ($ils1, $ils2) {
-                        return 'Voyager' === $driver ? $ils1 : $ils2;
-                    }
-                )
+            )->willReturnCallback(
+                function ($driver) use ($ils1, $ils2) {
+                    return 'Voyager' === $driver ? $ils1 : $ils2;
+                }
             );
 
         $driver = $this->initDriver(['driverManager' => $sm]);
@@ -645,12 +633,10 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
             ->method('get')
             ->with(
                 $this->logicalOr('Voyager', 'Demo')
-            )->will(
-                $this->returnCallback(
-                    function ($driver) use ($ils1, $ils3) {
-                        return 'Voyager' === $driver ? $ils1 : $ils3;
-                    }
-                )
+            )->willReturnCallback(
+                function ($driver) use ($ils1, $ils3) {
+                    return 'Voyager' === $driver ? $ils1 : $ils3;
+                }
             );
 
         $driver = $this->initDriver(['driverManager' => $sm]);
@@ -728,7 +714,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
         $ILS->expects($this->atLeastOnce())
             ->method('getMyTransactions')
             ->with($patronPrefixless)
-            ->will($this->returnValue(true));
+            ->willReturn(true);
 
         $returnVal = $driver->getMyTransactions($patron);
         $this->assertTrue($returnVal);
@@ -744,7 +730,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
         $ILS->expects($this->atLeastOnce())
             ->method('getMyTransactions')
             ->with($patron)
-            ->will($this->returnValue(true));
+            ->willReturn(true);
 
         $sm = $this->getMockSM($this->once(), 'Unicorn', $ILS);
         $driver = $this->initDriver(['driverManager' => $sm]);
@@ -785,7 +771,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
         $ILS->expects($this->once())
             ->method('getNewItems')
             ->with($this->equalTo('1'), $this->equalTo('10'), $this->equalTo('5'), $this->equalTo('0'))
-            ->will($this->returnValue($return));
+            ->willReturn($return);
 
         $sm = $this->getMockSM($this->once(), 'Voyager', $ILS);
         $driver = $this->initDriver(['driverManager' => $sm]);
@@ -949,7 +935,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
         $ILS->expects($this->once())
             ->method('findReserves')
             ->with($this->equalTo('course'), $this->equalTo('inst'), $this->equalTo('dept'))
-            ->will($this->returnValue($reservesReturn));
+            ->willReturn($reservesReturn);
 
         $sm = $this->getMockSM($this->once(), 'Voyager', $ILS);
         $driver = $this->initDriver(['driverManager' => $sm]);
@@ -1009,7 +995,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
         $ILS->expects($this->once())
             ->method('patronLogin')
             ->with('username', 'password')
-            ->will($this->returnValue($patronReturn));
+            ->willReturn($patronReturn);
 
         // Prep MultiBackend with values it will need
         $drivers = [$instance => 'Voyager'];
@@ -1342,17 +1328,13 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
         $ils1->expects($this->once())
             ->method('checkRequestIsValid')
             ->with('bibid', ['id' => 'itemid'], $this->getPatron('username'))
-            ->will(
-                $this->returnValue(true)
-            );
+            ->willReturn(true);
 
         $ils2 = $this->getMockILS('Demo', ['init', 'checkRequestIsValid']);
         $ils2->expects($this->once())
             ->method('checkRequestIsValid')
             ->with('bibid', ['id' => 'itemid'], $this->getPatron('username'))
-            ->will(
-                $this->returnValue(true)
-            );
+            ->willReturn(true);
 
         $driver = $this->getMultiDriverForDrivers(['d1' => $ils1, 'd2' => $ils2]);
 
@@ -1408,9 +1390,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
         $demo->expects($this->once())
             ->method('checkRequestIsValid')
             ->with('d1.bibid', ['id' => 'd1.itemid'], $this->getPatron('username'))
-            ->will(
-                $this->returnValue(true)
-            );
+            ->willReturn(true);
 
         $driver = $this->getMultiDriverForDrivers(['d2' => $demo]);
         $result = $driver->checkRequestIsValid(
@@ -2491,13 +2471,13 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
         call_user_func_array(
             [$voyager->expects($times1)->method($function), 'with'],
             $params
-        )->will($this->returnValue($return1));
+        )->willReturn($return1);
 
         $voyager2 = $this->getMockILS('Voyager2', ['init', $function]);
         call_user_func_array(
             [$voyager2->expects($times2)->method($function), 'with'],
             $params
-        )->will($this->returnValue($return2));
+        )->willReturn($return2);
 
         $dummyILS = new MultiDriverTest\DummyILS();
 
@@ -2549,8 +2529,8 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
     protected function getDriver($constructorArgs = [])
     {
         $driver = new MultiBackend(
-            $constructorArgs['configLoader']
-                ?? $this->getMockConfigPluginManager([], ['config' => 'values']),
+            $constructorArgs['configManager']
+                ?? $this->getMockConfigManager([], ['config' => 'values']),
             $constructorArgs['ilsAuth'] ?? $this->getMockILSAuthenticator(),
             $constructorArgs['driverManager'] ?? $this->getMockSM()
         );
@@ -2574,25 +2554,25 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
         if ($userSource) {
             $mockAuth->expects($this->any())
                 ->method('storedCatalogLogin')
-                ->will(
-                    $this->returnValue($this->getPatron('username', $userSource))
+                ->willReturn(
+                    $this->getPatron('username', $userSource)
                 );
             $mockAuth->expects($this->any())
                 ->method('getStoredCatalogCredentials')
-                ->will(
-                    $this->returnValue($this->getPatron('username', $userSource))
+                ->willReturn(
+                    $this->getPatron('username', $userSource)
                 );
         } elseif (null === $userSource) {
             $e = new ILSException('Simulated exception from ILSAuthenticator');
             $mockAuth->expects($this->any())
                 ->method('storedCatalogLogin')
-                ->will(
-                    $this->throwException($e)
+                ->willThrowException(
+                    $e
                 );
             $mockAuth->expects($this->any())
                 ->method('getStoredCatalogCredentials')
-                ->will(
-                    $this->throwException($e)
+                ->willThrowException(
+                    $e
                 );
         }
         return $mockAuth;

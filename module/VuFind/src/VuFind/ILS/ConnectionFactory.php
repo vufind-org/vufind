@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -63,21 +63,29 @@ class ConnectionFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
-        $configManager = $container->get(\VuFind\Config\PluginManager::class);
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
+        $config = $configManager->getConfigObject('config');
         $request = $container->get('Request');
         $catalog = new $requestedName(
-            $configManager->get('config')->Catalog,
+            $config->Catalog,
             $container->get(\VuFind\ILS\Driver\PluginManager::class),
-            $container->get(\VuFind\Config\PluginManager::class),
+            $configManager,
             $request instanceof \Laminas\Http\Request ? $request : null
         );
-        return $catalog->setHoldConfig(
+        $catalog->setHoldConfig(
             $container->get(\VuFind\ILS\HoldSettings::class)
         );
+        $catalog->setCacheStorage($container->get(\VuFind\Cache\Manager::class)->getCache('object'));
+        $manager = $container->get(\Laminas\Session\SessionManager::class);
+        $catalog->setSessionCache(new \Laminas\Session\Container('ILS', $manager));
+        if ($cacheLifeTime = $config->Catalog?->cacheLifeTime?->toArray()) {
+            $catalog->setCacheLifeTime($cacheLifeTime);
+        }
+        return $catalog;
     }
 }

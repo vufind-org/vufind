@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -34,6 +34,8 @@
 namespace VuFindSearch\Backend\Solr;
 
 use VuFindSearch\ParamBag;
+
+use function sprintf;
 
 /**
  * SOLR SimilarBuilder.
@@ -81,14 +83,13 @@ class SimilarBuilder implements SimilarBuilderInterface
     /**
      * Constructor.
      *
-     * @param \Laminas\Config\Config $searchConfig Search config
-     * @param string                 $uniqueKey    Solr field used to store unique
-     * identifier
+     * @param ?\VuFind\Config\Config $searchConfig Search config
+     * @param string                 $uniqueKey    Solr field used to store unique identifier
      *
      * @return void
      */
     public function __construct(
-        \Laminas\Config\Config $searchConfig = null,
+        ?\VuFind\Config\Config $searchConfig = null,
         $uniqueKey = 'id'
     ) {
         $this->uniqueKey = $uniqueKey;

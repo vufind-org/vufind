@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Content
@@ -44,7 +44,7 @@ use function is_object;
  */
 abstract class AbstractBase implements
     \VuFindHttp\HttpServiceAwareInterface,
-    \Laminas\Log\LoggerAwareInterface
+    \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
     use \VuFindHttp\HttpServiceAwareTrait;
@@ -85,7 +85,8 @@ abstract class AbstractBase implements
      * @param string $key     API key
      * @param ISBN   $isbnObj ISBN object
      *
-     * @return array
+     * @return array|string For array of strings returned, they all are escaped in the template and presented as list.
+     * If string is returned it is considered as raw HTML and is NOT escaped.
      */
     abstract public function loadByIsbn($key, ISBN $isbnObj);
 }

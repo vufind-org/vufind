@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -86,7 +86,7 @@ class RecordFormatterTest extends \PHPUnit\Framework\TestCase
         $mockRecordLinker
             = $container->get(\VuFind\View\Helper\Root\RecordLinker::class);
         $mockRecordLinker->expects($this->any())->method('getUrl')
-            ->will($this->returnValue('http://record'));
+            ->willReturn('http://record');
         $hm->setService('recordLinker', $mockRecordLinker);
         return $hm;
     }

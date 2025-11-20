@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -55,6 +55,13 @@ class RecordCollection extends AbstractRecordCollection
      * @var array
      */
     protected $facetFields = null;
+
+    /**
+     * If the results only provide a restricted view.
+     *
+     * @var bool
+     */
+    protected bool $restrictedView = false;
 
     /**
      * Constructor.
@@ -147,5 +154,27 @@ class RecordCollection extends AbstractRecordCollection
             return $page * $resultsPerPage;
         }
         return 0;
+    }
+
+    /**
+     * Set if the results only provide a restricted view.
+     *
+     * @param bool $restrictedView If restricted view
+     *
+     * @return void
+     */
+    public function setRestrictedView(bool $restrictedView): void
+    {
+        $this->restrictedView = $restrictedView;
+    }
+
+    /**
+     * Check if the results only provide a restricted view.
+     *
+     * @return bool
+     */
+    public function isRestrictedView()
+    {
+        return $this->restrictedView;
     }
 }

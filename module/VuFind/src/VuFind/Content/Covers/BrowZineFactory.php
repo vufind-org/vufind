@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Content
@@ -64,11 +64,14 @@ class BrowZineFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        return new $requestedName($container->get(\VuFindSearch\Service::class));
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('BrowZine');
+        $defaultIgnoreList = ['https://assets.thirdiron.com/default-journal-cover.png'];
+        $ignoreList = $config['Covers']['ignored_images'] ?? $defaultIgnoreList;
+        return new $requestedName($container->get(\VuFindSearch\Service::class), $ignoreList);
     }
 }

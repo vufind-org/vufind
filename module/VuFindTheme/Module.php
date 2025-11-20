@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Theme
@@ -43,22 +43,6 @@ use Laminas\ServiceManager\Factory\InvokableFactory;
  */
 class Module
 {
-    /**
-     * Get autoloader configuration
-     *
-     * @return void
-     */
-    public function getAutoloaderConfig()
-    {
-        return [
-            'Laminas\Loader\StandardAutoloader' => [
-                'namespaces' => [
-                    __NAMESPACE__ => __DIR__ . '/src/' . __NAMESPACE__,
-                ],
-            ],
-        ];
-    }
-
     /**
      * Return generic configuration
      *
@@ -103,8 +87,8 @@ class Module
                 ParentInjectTemplateListener::class => InjectTemplateListener::class,
             ],
             'factories' => [
-                InjectTemplateListener::class =>
-                    InjectTemplateListenerFactory::class,
+                AssetPipeline::class => AssetPipelineFactory::class,
+                InjectTemplateListener::class => InjectTemplateListenerFactory::class,
                 MixinGenerator::class => ThemeInfoInjectorFactory::class,
                 Mobile::class => InvokableFactory::class,
                 ResourceContainer::class => InvokableFactory::class,
@@ -124,34 +108,18 @@ class Module
     {
         return [
             'factories' => [
-                View\Helper\FootScript::class =>
-                    View\Helper\PipelineInjectorFactory::class,
+                View\Helper\AssetManager::class => View\Helper\AssetManagerFactory::class,
                 View\Helper\ImageLink::class => View\Helper\ImageLinkFactory::class,
-                View\Helper\HeadLink::class =>
-                    View\Helper\PipelineInjectorFactory::class,
-                View\Helper\HeadScript::class =>
-                    View\Helper\PipelineInjectorFactory::class,
-                View\Helper\ParentTemplate::class =>
-                    View\Helper\ParentTemplateFactory::class,
-                View\Helper\InlineScript::class =>
-                    View\Helper\PipelineInjectorFactory::class,
-                View\Helper\Slot::class =>
-                    View\Helper\PipelineInjectorFactory::class,
-                View\Helper\TemplatePath::class =>
-                    View\Helper\TemplatePathFactory::class,
-                View\Helper\SetupThemeResources::class =>
-                    View\Helper\SetupThemeResourcesFactory::class,
+                View\Helper\ParentTemplate::class => View\Helper\ParentTemplateFactory::class,
+                View\Helper\Slot::class => InvokableFactory::class,
+                View\Helper\TemplatePath::class => View\Helper\TemplatePathFactory::class,
+                View\Helper\SetupThemeResources::class => View\Helper\SetupThemeResourcesFactory::class,
             ],
             'aliases' => [
-                'footScript' => View\Helper\FootScript::class,
+                'assetManager' => View\Helper\AssetManager::class,
                 // Legacy alias for compatibility with pre-8.0 templates:
                 'headThemeResources' => View\Helper\SetupThemeResources::class,
                 'imageLink' => View\Helper\ImageLink::class,
-                \Laminas\View\Helper\HeadLink::class => View\Helper\HeadLink::class,
-                \Laminas\View\Helper\HeadScript::class =>
-                    View\Helper\HeadScript::class,
-                \Laminas\View\Helper\InlineScript::class =>
-                    View\Helper\InlineScript::class,
                 'parentTemplate' => View\Helper\ParentTemplate::class,
                 'slot' => View\Helper\Slot::class,
                 'templatePath' => View\Helper\TemplatePath::class,

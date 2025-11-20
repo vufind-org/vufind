@@ -1,12 +1,11 @@
 [
     {
-        "comment": "Initial token check"
-    },
-    {
         "expectedMethod": "GET",
         "expectedPath": "\/instance-storage\/instances",
         "expectedParams": {
-            "query": "(id==\"record1\")"
+            "query": "id == (\"record1\")",
+            "offset": 0,
+            "limit": 1000
         },
         "body": {
             "instances": [
@@ -75,6 +74,27 @@
                 "id": "mod-circulation-23.5.7"
             }
         ],
+        "bodyType": "json",
+        "status": 200
+    },
+    {
+        "expectedMethod": "GET",
+        "expectedPath": "\/circulation\/requests\/allowed-service-points?instanceId=record1&requesterId=user1&operation=create",
+        "expectedParams": [],
+        "body": {
+            "Page": [
+                {
+                    "id": "servicepoint1",
+                    "name": "Main Service Desk"
+                }
+            ],
+            "Recall": [
+                {
+                    "id": "servicepoint1",
+                    "name": "Main Service Desk"
+                }
+            ]
+        },
         "bodyType": "json",
         "status": 200
     },

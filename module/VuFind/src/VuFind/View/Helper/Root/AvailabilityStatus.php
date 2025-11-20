@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -71,6 +71,34 @@ class AvailabilityStatus extends \Laminas\View\Helper\AbstractHelper
     protected string $classUnknown = 'text-muted';
 
     /**
+     * Icon for available items.
+     *
+     * @var string
+     */
+    protected string $iconAvailable = 'status-available';
+
+    /**
+     * Icon for unavailable items.
+     *
+     * @var string
+     */
+    protected string $iconUnavailable = 'status-unavailable';
+
+    /**
+     * Icon for items where status is uncertain.
+     *
+     * @var string
+     */
+    protected string $iconUncertain = 'status-uncertain';
+
+    /**
+     * Icon for items where status is unknown.
+     *
+     * @var string
+     */
+    protected string $iconUnknown = 'status-unknown';
+
+    /**
      * Message cache
      *
      * @var array
@@ -96,6 +124,27 @@ class AvailabilityStatus extends \Laminas\View\Helper\AbstractHelper
             return $this->classUnknown;
         }
         return $this->classUncertain;
+    }
+
+    /**
+     * Get icon name for availability status.
+     *
+     * @param AvailabilityStatusInterface $availabilityStatus Availability Status
+     *
+     * @return string
+     */
+    public function getIcon(AvailabilityStatusInterface $availabilityStatus): string
+    {
+        if ($availabilityStatus->is(\VuFind\ILS\Logic\AvailabilityStatusInterface::STATUS_UNAVAILABLE)) {
+            return $this->iconUnavailable;
+        }
+        if ($availabilityStatus->is(\VuFind\ILS\Logic\AvailabilityStatusInterface::STATUS_AVAILABLE)) {
+            return $this->iconAvailable;
+        }
+        if ($availabilityStatus->is(\VuFind\ILS\Logic\AvailabilityStatusInterface::STATUS_UNKNOWN)) {
+            return $this->iconUnknown;
+        }
+        return $this->iconUncertain;
     }
 
     /**

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  VuFind\Auth
@@ -33,10 +33,11 @@ declare(strict_types=1);
 namespace VuFind\Auth;
 
 use BrowscapPHP\BrowscapInterface;
-use Laminas\Config\Config;
-use Laminas\Log\LoggerAwareInterface;
 use Laminas\Session\SessionManager;
 use Laminas\View\Renderer\RendererInterface;
+use Psr\Log\LoggerAwareInterface;
+use VuFind\Config\Config;
+use VuFind\Config\Feature\EmailSettingsTrait;
 use VuFind\Cookie\CookieManager;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\LoginTokenServiceInterface;
@@ -60,6 +61,7 @@ use VuFind\Mailer\Mailer;
  */
 class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterface
 {
+    use EmailSettingsTrait;
     use LoggerAwareTrait;
     use TranslatorAwareTrait;
 
@@ -139,14 +141,14 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
             try {
                 if (
                     ($token = $this->loginTokenService->matchToken($cookie))
-                    && ($user = $this->userService->getUserById($token->user_id))
+                    && ($user = $token->getUser())
                 ) {
                     // Queue token update to be done after everything else is
                     // successfully processed:
                     $this->tokenToUpdate = compact('user', 'token', 'sessionId');
                     $this->debug(
-                        "Token login successful for user {$token->user_id}"
-                        . ", token {$token->token} series {$token->series}"
+                        "Token login successful for user {$user->getId()}"
+                        . ", token {$token->getToken()} series {$token->getSeries()}"
                     );
                 } else {
                     $this->cookieManager->clear($this->getCookieName());
@@ -217,9 +219,9 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
             $this->createOrRotateToken(
                 $this->tokenToUpdate['user'],
                 $this->tokenToUpdate['sessionId'],
-                $token->series,
-                $token->expires,
-                $token->id
+                $token->getSeries(),
+                $token->getExpires(),
+                $token->getId()
             );
             $this->tokenToUpdate = null;
         }
@@ -241,7 +243,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
         }
         $handler = $this->sessionManager->getSaveHandler();
         foreach ($this->loginTokenService->getBySeries($series) as $token) {
-            $handler->destroy($token->last_session_id);
+            $handler->destroy($token->getLastSessionId());
         }
         $this->loginTokenService->deleteBySeries($series);
     }
@@ -259,7 +261,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
         $userTokens = $this->loginTokenService->getByUser($userId, false);
         $handler = $this->sessionManager->getSaveHandler();
         foreach ($userTokens as $t) {
-            $handler->destroy($t->last_session_id);
+            $handler->destroy($t->getLastSessionId());
         }
         $this->loginTokenService->deleteByUser($userId);
     }
@@ -377,7 +379,7 @@ class LoginTokenManager implements LoggerAwareInterface, TranslatorAwareInterfac
             try {
                 $this->mailer->send(
                     $toAddr,
-                    $this->config->Mail->default_from ?? $this->config->Site->email,
+                    $this->getEmailSenderAddress($this->config),
                     $this->translate($subject, ['%%title%%' => $title]),
                     $message
                 );

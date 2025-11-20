@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -77,7 +77,17 @@ final class DatabaseTest extends \PHPUnit\Framework\TestCase
             return;
         }
         $this->auth = new Database();
-        $this->auth->setDbTableManager($this->getLiveTableManager());
+        $this->auth->setDbServiceManager($this->getLiveDbServiceManager());
+    }
+
+    /**
+     * Standard teardown method.
+     *
+     * @return void
+     */
+    public function tearDown(): void
+    {
+        $this->tearDownLiveDatabaseContainer();
     }
 
     /**
@@ -294,8 +304,8 @@ final class DatabaseTest extends \PHPUnit\Framework\TestCase
     public function testLogin()
     {
         $user = $this->auth->authenticate($this->getLoginRequest());
-        $this->assertEquals('testuser', $user->username);
-        $this->assertEquals('user@test.com', $user->email);
+        $this->assertEquals('testuser', $user->getUsername());
+        $this->assertEquals('user@test.com', $user->getEmail());
     }
 
     /**

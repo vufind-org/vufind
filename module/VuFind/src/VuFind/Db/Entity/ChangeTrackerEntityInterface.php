@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -47,25 +47,25 @@ interface ChangeTrackerEntityInterface extends EntityInterface
      *
      * @param string $id Id
      *
-     * @return ChangeTrackerEntityInterface
+     * @return static
      */
-    public function setId(string $id): ChangeTrackerEntityInterface;
+    public function setId(string $id): static;
 
     /**
-     * Getter for identifier.
+     * Get identifier (returns null for an uninitialized or non-persisted object).
      *
-     * @return string
+     * @return ?string
      */
-    public function getId(): string;
+    public function getId(): ?string;
 
     /**
      * Setter for index name (formerly core).
      *
      * @param string $name Index name
      *
-     * @return ChangeTrackerEntityInterface
+     * @return static
      */
-    public function setIndexName(string $name): ChangeTrackerEntityInterface;
+    public function setIndexName(string $name): static;
 
     /**
      * Getter for index name (formerly core).
@@ -79,9 +79,9 @@ interface ChangeTrackerEntityInterface extends EntityInterface
      *
      * @param ?DateTime $dateTime Time first added to index.
      *
-     * @return ChangeTrackerEntityInterface
+     * @return static
      */
-    public function setFirstIndexed(?DateTime $dateTime): ChangeTrackerEntityInterface;
+    public function setFirstIndexed(?DateTime $dateTime): static;
 
     /**
      * FirstIndexed getter.
@@ -95,9 +95,9 @@ interface ChangeTrackerEntityInterface extends EntityInterface
      *
      * @param ?DateTime $dateTime Last time changed in index.
      *
-     * @return ChangeTrackerEntityInterface
+     * @return static
      */
-    public function setLastIndexed(?DateTime $dateTime): ChangeTrackerEntityInterface;
+    public function setLastIndexed(?DateTime $dateTime): static;
 
     /**
      * LastIndexed getter.
@@ -111,9 +111,9 @@ interface ChangeTrackerEntityInterface extends EntityInterface
      *
      * @param ?DateTime $dateTime Last time original record was edited
      *
-     * @return ChangeTrackerEntityInterface
+     * @return static
      */
-    public function setLastRecordChange(?DateTime $dateTime): ChangeTrackerEntityInterface;
+    public function setLastRecordChange(?DateTime $dateTime): static;
 
     /**
      * LastRecordChange getter.
@@ -127,9 +127,9 @@ interface ChangeTrackerEntityInterface extends EntityInterface
      *
      * @param ?DateTime $dateTime Time record was removed from index
      *
-     * @return ChangeTrackerEntityInterface
+     * @return static
      */
-    public function setDeleted(?DateTime $dateTime): ChangeTrackerEntityInterface;
+    public function setDeleted(?DateTime $dateTime): static;
 
     /**
      * Deleted getter.

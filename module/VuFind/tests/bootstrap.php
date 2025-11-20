@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -35,20 +35,6 @@ chdir(APPLICATION_PATH);
 // Composer autoloading
 if (file_exists('vendor/autoload.php')) {
     include 'vendor/autoload.php';
-    $loader = new Composer\Autoload\ClassLoader();
-    $loader->addClassMap(['minSO' => __DIR__ . '/../src/VuFind/Search/minSO.php']);
-    $loader->add('VuFindTest', __DIR__ . '/unit-tests/src');
-    $loader->add('VuFindTest', __DIR__ . '/../src');
-    // Dynamically discover all module src directories:
-    $modules = opendir(__DIR__ . '/../..');
-    while ($mod = readdir($modules)) {
-        $mod = trim($mod, '.'); // ignore . and ..
-        $dir = empty($mod) ? false : realpath(__DIR__ . "/../../{$mod}/src");
-        if (!empty($dir) && is_dir($dir . '/' . $mod)) {
-            $loader->add($mod, $dir);
-        }
-    }
-    $loader->register();
 }
 
 // Make sure local config dir exists:

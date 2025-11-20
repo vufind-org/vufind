@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -127,6 +127,11 @@ class ParamBagTest extends TestCase
         $this->assertEquals(['bar'], $bag->get('foo'));
         $bag->add('foo', ['bar', 'baz', 'bar', 'baz']);
         $this->assertEquals(['bar', 'baz'], $bag->get('foo'));
+        // Associative arrays are not deduplicated:
+        $bag->add('fooz', ['bar' => 'baz']);
+        $bag->add('fooz', ['bar' => 'baz']);
+        $bag->add('fooz', ['bar' => 'haz']);
+        $this->assertEquals(['bar' => ['baz', 'baz', 'haz']], $bag->get('fooz'));
     }
 
     /**

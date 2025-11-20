@@ -1,0 +1,17 @@
+<?php foreach ($this->driver->getSummary() as $summary): ?>
+  <?=$this->escapeOrCleanHtml($summary, 'summary', true) ?><br>
+<?php endforeach; ?>
+<?php $isbn = $this->driver->getCleanISBN(); ?>
+<?php foreach ($this->summaries($isbn) as $provider => $content): ?>
+  <?=
+    implode(
+        '<br>',
+        array_map(
+            function ($summary) {
+                return $this->escapeOrCleanHtml($summary, 'summary', true);
+            },
+            $content
+        )
+    )
+  ?>
+<?php endforeach; ?>

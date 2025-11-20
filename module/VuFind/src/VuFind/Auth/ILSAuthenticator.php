@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -29,10 +29,16 @@
 
 namespace VuFind\Auth;
 
-use Laminas\Config\Config;
-use Laminas\Crypt\BlockCipher;
-use Laminas\Crypt\Symmetric\Openssl;
+use Closure;
+use VuFind\Config\Config;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\AuditEventServiceInterface;
+use VuFind\Db\Service\DbServiceAwareInterface;
+use VuFind\Db\Service\DbServiceAwareTrait;
+use VuFind\Db\Service\UserCardServiceInterface;
+use VuFind\Db\Service\UserServiceInterface;
+use VuFind\Db\Type\AuditEventSubtype;
+use VuFind\Db\Type\AuditEventType;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Connection as ILSConnection;
 
@@ -45,14 +51,9 @@ use VuFind\ILS\Connection as ILSConnection;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class ILSAuthenticator
+class ILSAuthenticator implements DbServiceAwareInterface
 {
-    /**
-     * Callback for retrieving the authentication manager
-     *
-     * @var callable
-     */
-    protected $authManagerCallback;
+    use DbServiceAwareTrait;
 
     /**
      * Authentication manager
@@ -83,20 +84,28 @@ class ILSAuthenticator
     protected $encryptionKey = null;
 
     /**
+     * Audit event service (optional)
+     *
+     * @var ?AuditEventServiceInterface
+     */
+    protected ?AuditEventServiceInterface $auditEventService = null;
+
+    /**
      * Constructor
      *
-     * @param callable            $authCB             Auth manager callback
-     * @param ILSConnection       $catalog            ILS connection
-     * @param ?EmailAuthenticator $emailAuthenticator Email authenticator
-     * @param ?Config             $config             Configuration from config.ini
+     * @param Closure             $authManagerCallback Auth manager callback
+     * @param Closure             $cipherFactory       BlockCipher object factory (takes algorithm as argument)
+     * @param ILSConnection       $catalog             ILS connection
+     * @param ?EmailAuthenticator $emailAuthenticator  Email authenticator
+     * @param ?Config             $config              Configuration from config.ini
      */
     public function __construct(
-        callable $authCB,
+        protected Closure $authManagerCallback,
+        protected Closure $cipherFactory,
         protected ILSConnection $catalog,
         protected ?EmailAuthenticator $emailAuthenticator = null,
         protected ?Config $config = null
     ) {
-        $this->authManagerCallback = $authCB;
     }
 
     /**
@@ -140,6 +149,18 @@ class ILSAuthenticator
     }
 
     /**
+     * Set audit event service.
+     *
+     * @param AuditEventServiceInterface $auditEventService Audit event service
+     *
+     * @return void
+     */
+    public function setAuditEventService(AuditEventServiceInterface $auditEventService): void
+    {
+        $this->auditEventService = $auditEventService;
+    }
+
+    /**
      * This is a central function for encrypting and decrypting so that
      * logic is all in one location
      *
@@ -157,7 +178,7 @@ class ILSAuthenticator
             return null;
         }
 
-        $configAuth = $this->config->Authentication ?? new \Laminas\Config\Config([]);
+        $configAuth = $this->config->Authentication ?? new Config([]);
 
         // Load encryption key from configuration if not already present:
         if ($this->encryptionKey === null) {
@@ -175,7 +196,7 @@ class ILSAuthenticator
 
         // Check if OpenSSL error is caused by blowfish support
         try {
-            $cipher = new BlockCipher(new Openssl(['algorithm' => $algo]));
+            $cipher = ($this->cipherFactory)($algo);
             if ($algo == 'blowfish') {
                 trigger_error(
                     'Deprecated encryption algorithm (blowfish) detected',
@@ -216,6 +237,64 @@ class ILSAuthenticator
             return $decrypted;
         }
         return $user->getRawCatPassword();
+    }
+
+    /**
+     * Set ILS login credentials for a user without saving them.
+     *
+     * @param UserEntityInterface $user     User to update
+     * @param string              $username Username to save
+     * @param ?string             $password Password to save (null for none)
+     *
+     * @return void
+     */
+    public function setUserCatalogCredentials(UserEntityInterface $user, string $username, ?string $password): void
+    {
+        $user->setCatUsername($username);
+        if ($this->passwordEncryptionEnabled()) {
+            $user->setRawCatPassword(null);
+            $user->setCatPassEnc($this->encrypt($password));
+        } else {
+            $user->setRawCatPassword($password);
+            $user->setCatPassEnc(null);
+        }
+    }
+
+    /**
+     * Save ILS login credentials.
+     *
+     * @param UserEntityInterface $user     User to update
+     * @param string              $username Username to save
+     * @param ?string             $password Password to save
+     *
+     * @return void
+     * @throws \VuFind\Exception\PasswordSecurity
+     */
+    public function saveUserCatalogCredentials(UserEntityInterface $user, string $username, ?string $password): void
+    {
+        $this->setUserCatalogCredentials($user, $username, $password);
+        $this->getDbService(UserServiceInterface::class)->persistEntity($user);
+
+        // Update library card entry after saving the user so that we always have a
+        // user id:
+        $this->getDbService(UserCardServiceInterface::class)->synchronizeUserLibraryCardData($user);
+    }
+
+    /**
+     * Change and persist the user's home library.
+     *
+     * @param UserEntityInterface $user        User to update
+     * @param ?string             $homeLibrary New home library value (or null to clear)
+     *
+     * @return void
+     */
+    public function updateUserHomeLibrary(UserEntityInterface $user, ?string $homeLibrary): void
+    {
+        // Update the home library and make sure library cards are kept in sync:
+        $user->setHomeLibrary($homeLibrary);
+        $this->getDbService(UserCardServiceInterface::class)->synchronizeUserLibraryCardData($user);
+        $this->getDbService(UserServiceInterface::class)->persistEntity($user);
+        $this->getAuthManager()->updateSession($user);
     }
 
     /**
@@ -266,7 +345,7 @@ class ILSAuthenticator
                 // Problem logging in -- clear user credentials so they can be
                 // prompted again; perhaps their password has changed in the
                 // system!
-                $user->clearCredentials();
+                $user->setCatUsername(null)->setRawCatPassword(null)->setCatPassEnc(null);
             } else {
                 // cache for future use
                 $this->ilsAccount[$username] = $patron;
@@ -280,17 +359,28 @@ class ILSAuthenticator
     /**
      * Attempt to log in the user to the ILS, and save credentials if it works.
      *
-     * @param string $username Catalog username
-     * @param string $password Catalog password
+     * @param string               $username     Catalog username
+     * @param string               $password     Catalog password
+     * @param ?UserEntityInterface $loggedInUser Logged-in user (optional, for auditing purposes)
      *
      * Returns associative array of patron data on success, false on failure.
      *
      * @return array|bool
      * @throws ILSException
      */
-    public function newCatalogLogin($username, $password)
+    public function newCatalogLogin(string $username, string $password, ?UserEntityInterface $loggedInUser = null)
     {
         $result = $this->catalog->patronLogin($username, $password);
+
+        if ($this->auditEventService) {
+            $this->auditEventService->addEvent(
+                AuditEventType::User,
+                $result ? AuditEventSubtype::ILSLogin : AuditEventSubtype::ILSLoginFailure,
+                $loggedInUser,
+                data: compact('username')
+            );
+        }
+
         if ($result) {
             $this->updateUser($username, $password, $result);
             return $result;
@@ -301,15 +391,21 @@ class ILSAuthenticator
     /**
      * Send email authentication link
      *
-     * @param string $email       Email address
-     * @param string $route       Route for the login link
-     * @param array  $routeParams Route parameters
-     * @param array  $urlParams   URL parameters
+     * @param string               $email        Email address
+     * @param string               $route        Route for the login link
+     * @param array                $routeParams  Route parameters
+     * @param array                $urlParams    URL parameters
+     * @param ?UserEntityInterface $loggedInUser Logged-in user (optional, for auditing purposes)
      *
      * @return void
      */
-    public function sendEmailLoginLink($email, $route, $routeParams = [], $urlParams = [])
-    {
+    public function sendEmailLoginLink(
+        string $email,
+        string $route,
+        array $routeParams = [],
+        array $urlParams = [],
+        ?UserEntityInterface $loggedInUser = null
+    ): void {
         if (null === $this->emailAuthenticator) {
             throw new \Exception('Email authenticator not set');
         }
@@ -323,6 +419,18 @@ class ILSAuthenticator
                 $route,
                 $routeParams
             );
+
+            if ($this->auditEventService) {
+                $this->auditEventService->addEvent(
+                    AuditEventType::User,
+                    AuditEventSubtype::SendEmailLoginLink,
+                    $loggedInUser,
+                    data: [
+                        'username' => $email,
+                        'email' => $userData['email'],
+                    ]
+                );
+            }
         }
     }
 
@@ -364,7 +472,7 @@ class ILSAuthenticator
     {
         $user = $this->getAuthManager()->getUserObject();
         if ($user) {
-            $user->saveCredentials($catUsername, $catPassword);
+            $this->saveUserCatalogCredentials($user, $catUsername, $catPassword);
             $this->getAuthManager()->updateSession($user);
             // cache for future use
             $this->ilsAccount[$catUsername] = $patron;

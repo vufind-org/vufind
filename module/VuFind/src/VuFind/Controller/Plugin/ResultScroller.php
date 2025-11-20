@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -31,8 +31,10 @@
 
 namespace VuFind\Controller\Plugin;
 
+use Exception;
 use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 use Laminas\Session\Container as SessionContainer;
+use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\RecordDriver\AbstractBase as BaseRecord;
 use VuFind\Search\Base\Results;
 use VuFind\Search\Memory as SearchMemory;
@@ -304,7 +306,7 @@ class ResultScroller extends AbstractPlugin
         // decrease the page in the session because
         // we're now sliding into the previous page
         // (-- doesn't work on ArrayObjects)
-        $this->data->page = $this->data->page - 1;
+        $this->data->page -= 1;
 
         // shift pages to the right
         $tmp = $this->data->currIds;
@@ -348,7 +350,7 @@ class ResultScroller extends AbstractPlugin
         // increase the page in the session because
         // we're now sliding into the next page
         // (++ doesn't work on ArrayObjects)
-        $this->data->page = $this->data->page + 1;
+        $this->data->page += 1;
 
         // shift pages to the left
         $tmp = $this->data->currIds;
@@ -378,7 +380,7 @@ class ResultScroller extends AbstractPlugin
 
     /**
      * Return a modified results array for the case where we need to retrieve data
-     * from the the first page of results
+     * from the first page of results
      *
      * @param array   $retVal     Return values (in progress)
      * @param Results $lastSearch Representation of last search
@@ -415,7 +417,7 @@ class ResultScroller extends AbstractPlugin
 
     /**
      * Return a modified results array for the case where we need to retrieve data
-     * from the the last page of results
+     * from the last page of results
      *
      * @param array   $retVal     Return values (in progress)
      * @param Results $lastSearch Representation of last search
@@ -659,15 +661,17 @@ class ResultScroller extends AbstractPlugin
      */
     protected function restoreSearch(int $searchId): ?Results
     {
-        $searchTable = $this->getController()->getTable('Search');
-        $row = $searchTable->getOwnedRowById(
+        $searchService = $this->getController()->getDbService(SearchServiceInterface::class);
+        $row = $searchService->getSearchByIdAndOwner(
             $searchId,
             $this->session->getManager()->getId(),
             null
         );
         if (!empty($row)) {
-            $minSO = $row->getSearchObject();
-            $search = $minSO->deminify($this->resultsManager);
+            $search = $row->getSearchObject()?->deminify($this->resultsManager);
+            if (!$search) {
+                throw new Exception("Problem getting search object from search {$row->getId()}.");
+            }
             // The saved search does not remember its original limit or sort;
             // we should reapply them from the session data:
             $search->getParams()->setLimit(

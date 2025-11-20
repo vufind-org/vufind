@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -192,10 +192,9 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test switching between cards on the profile page.
      *
-     * @depends testAddCards
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddCards')]
     public function testSwitchingCards(): void
     {
         $this->setUpLibraryCardConfigs();
@@ -234,10 +233,9 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that library cards are disabled by default.
      *
-     * @depends testAddCards
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddCards')]
     public function testCardsDisabledByDefault(): void
     {
         $this->setUpLibraryCardConfigs(false);
@@ -255,10 +253,9 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test adding a card that duplicates an existing username.
      *
-     * @depends testAddCards
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddCards')]
     public function testAddingDuplicateCardUsername(): void
     {
         $this->setUpLibraryCardConfigs();
@@ -284,10 +281,9 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test editing a card.
      *
-     * @depends testAddCards
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddCards')]
     public function testEditingCard(): void
     {
         $this->setUpLibraryCardConfigs();
@@ -312,10 +308,9 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test deleting a card.
      *
-     * @depends testEditingCard
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testEditingCard')]
     public function testDeletingCard(): void
     {
         $this->setUpLibraryCardConfigs();
@@ -336,7 +331,7 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
         $button = $this->findCss($page, 'tr:nth-child(3)')->findLink('Delete');
         $button->click();
         $this->waitForPageLoad($page);
-        $this->clickCss($page, '.mainbody .open .dropdown-menu li:nth-child(1) a');
+        $this->clickCss($page, $this->firstOpenDropdownMenuItemSelector);
         $this->waitForPageLoad($page);
 
         // Check for success message

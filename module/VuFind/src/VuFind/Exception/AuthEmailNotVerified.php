@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Exceptions
@@ -28,6 +28,9 @@
  */
 
 namespace VuFind\Exception;
+
+use Throwable;
+use VuFind\Db\Entity\UserEntityInterface;
 
 /**
  * Unverified email address exception.
@@ -41,9 +44,29 @@ namespace VuFind\Exception;
 class AuthEmailNotVerified extends \VuFind\Exception\Auth
 {
     /**
-     * User object with unverified email.
+     * Constructor
      *
-     * @var \VuFind\Db\Row\User
+     * @param UserEntityInterface $user     User object with unverified email.
+     * @param string              $message  The exception message
+     * @param int                 $code     The exception code
+     * @param ?Throwable          $previous The previous exception used for exception chaining
      */
-    public $user;
+    public function __construct(
+        protected UserEntityInterface $user,
+        string $message = '',
+        int $code = 0,
+        ?Throwable $previous = null
+    ) {
+        parent::__construct($message, $code, $previous);
+    }
+
+    /**
+     * Get the User object with an unverified email.
+     *
+     * @return UserEntityInterface
+     */
+    public function getUser(): UserEntityInterface
+    {
+        return $this->user;
+    }
 }

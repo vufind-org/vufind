@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authorization
@@ -29,7 +29,7 @@
 
 namespace VuFind\Role\PermissionProvider;
 
-use LmcRbacMvc\Service\AuthorizationService;
+use Lmc\Rbac\Mvc\Service\AuthorizationService;
 
 use function count;
 
@@ -45,7 +45,7 @@ use function count;
  */
 class User implements
     PermissionProviderInterface,
-    \Laminas\Log\LoggerAwareInterface
+    \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
@@ -81,6 +81,9 @@ class User implements
         if (!($user = $this->auth->getIdentity())) {
             return [];
         }
+        if (!($user instanceof \VuFind\Db\Entity\UserEntityInterface)) {
+            throw new \Exception('Unexpected user object provided!');
+        }
 
         // which user attribute has to match which pattern to get permissions?
         foreach ((array)$options as $option) {
@@ -95,9 +98,13 @@ class User implements
                 if (! preg_match('/^\/.*\/$/', $pattern)) {
                     $pattern = '/' . $pattern . '/';
                 }
-
-                if (preg_match($pattern, $user[$attribute])) {
-                    return ['loggedin'];
+                $methodMap = ['cat_id' => 'getCatId', 'cat_username' => 'getCatUsername'];
+                $method = $methodMap[$attribute] ?? 'get' . ucfirst($attribute);
+                if (method_exists($user, $method)) {
+                    $userValue = $user->$method();
+                    if (preg_match($pattern, $userValue)) {
+                        return ['loggedin'];
+                    }
                 }
             }
         }

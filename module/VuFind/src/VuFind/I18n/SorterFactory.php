@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  I18n
@@ -66,20 +66,18 @@ class SorterFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
         $localeSettings = $container->get(LocaleSettings::class);
         $collator = new \Collator($localeSettings->getUserLocale());
-        $config = $container
-            ->get(\VuFind\Config\PluginManager::class)
-            ->get('config')->Sorting;
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         $collator->setStrength(\Collator::SECONDARY);
         return new $requestedName(
             $collator,
-            (bool)($config->use_locale_sorting ?? false)
+            (bool)($config['Sorting']['use_locale_sorting'] ?? false)
         );
     }
 }

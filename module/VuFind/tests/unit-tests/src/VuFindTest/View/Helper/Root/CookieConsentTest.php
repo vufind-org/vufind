@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -30,7 +30,6 @@
 namespace VuFindTest\View\Helper\Root;
 
 use Laminas\View\Helper\EscapeHtmlAttr;
-use Laminas\View\Helper\Layout;
 use Laminas\View\Helper\ServerUrl;
 use Laminas\View\Renderer\PhpRenderer;
 use Symfony\Component\Yaml\Yaml;
@@ -188,7 +187,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
         $url = $this->getMockBuilder(Url::class)->getMock();
         $url->expects($this->any())
             ->method('__invoke')
-            ->will($this->returnValue('http://localhost/first/vufind'));
+            ->willReturn('http://localhost/first/vufind');
         $serverUrl = new ServerUrl();
         $serverUrl->setHost('localhost');
 
@@ -213,7 +212,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
         };
 
         $plugins = [
-            'escapeHtmlAttr' => new EscapeHtmlAttr(),
+            'escapeHtmlAttr' => new EscapeHtmlAttr(new \VuFind\Escaper\Escaper()),
             'layout' => $layout,
             'serverUrl' => $serverUrl,
             'url' => $url,

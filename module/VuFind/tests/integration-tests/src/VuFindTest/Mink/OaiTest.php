@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -55,7 +55,7 @@ class OaiTest extends \VuFindTest\Integration\MinkTestCase
         'OAI' => [
             'identifier' => 'vufind.org',
             'repository_name' => 'test repo',
-            'page_size' => 10,
+            'page_size' => 15,
         ],
     ];
 
@@ -78,9 +78,9 @@ class OaiTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $path URL path to OAI-PMH server.
      *
      * @return void
-     *
-     * @dataProvider serverProvider
      */
+    #[\VuFindTest\Attribute\HtmlValidation(false)]
+    #[\PHPUnit\Framework\Attributes\DataProvider('serverProvider')]
     public function testDisabledByDefault(string $path): void
     {
         $session = $this->getMinkSession();
@@ -98,13 +98,12 @@ class OaiTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $path URL path to OAI-PMH server.
      *
      * @return void
-     *
-     * @dataProvider serverProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('serverProvider')]
     public function testVerbRequired(string $path): void
     {
         $this->changeConfigs(['config' => $this->defaultOaiConfig]);
-        $rawXml = $this->httpGet($this->getVuFindUrl() . $path)->getBody();
+        $rawXml = $this->httpGet($this->getVuFindUrl() . $path)->getBody()->getContents();
         $xml = simplexml_load_string($rawXml);
         $this->assertEquals('Missing Verb Argument', $xml->error);
     }
@@ -115,13 +114,12 @@ class OaiTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $path URL path to OAI-PMH server.
      *
      * @return void
-     *
-     * @dataProvider serverProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('serverProvider')]
     public function testIdentifyResponseRepositoryName(string $path): void
     {
         $this->changeConfigs(['config' => $this->defaultOaiConfig]);
-        $rawXml = $this->httpGet($this->getVuFindUrl() . $path . '?verb=Identify')->getBody();
+        $rawXml = $this->httpGet($this->getVuFindUrl() . $path . '?verb=Identify')->getBody()->getContents();
         $xml = simplexml_load_string($rawXml);
         // Authority endpoint overrides default name:
         $expectedName = $path === '/OAI/AuthServer'
@@ -138,14 +136,16 @@ class OaiTest extends \VuFindTest\Integration\MinkTestCase
     {
         $this->changeConfigs(['config' => $this->defaultOaiConfig]);
 
-        // Get the first page of results. We expect 20 total results because we only turned on change
-        // tracking in the demo setup for one 20-record file; if more change tracking is added in
-        // future, this test will need to be adjusted.
+        // Get the first page of results. We expect 22 total results because we only turned on change
+        // tracking in the demo setup for one 20-record file, plus we've created 2 fake deleted records
+        // as part of our standard setup procedure; if more change tracking is added in future, this
+        // test will need to be adjusted.
         $rawXml = $this
             ->httpGet($this->getVuFindUrl() . '/OAI/Server?verb=ListRecords&metadataPrefix=oai_dc')
-            ->getBody();
+            ->getBody()
+            ->getContents();
         $xml = simplexml_load_string($rawXml);
-        $resultSetSize = 20;
+        $resultSetSize = 22;
         $pageSize = $this->defaultOaiConfig['OAI']['page_size'];
         $resumptionAttributes = $xml->ListRecords->resumptionToken->attributes();
         $this->assertCount($pageSize, $xml->ListRecords->record);
@@ -155,11 +155,16 @@ class OaiTest extends \VuFindTest\Integration\MinkTestCase
         $firstPageFirstId = (string)$xml->ListRecords->record[0]->header->identifier;
         $this->assertStringStartsWith('oai:vufind.org:', $firstPageFirstId);
 
+        // Assert that only the first two records are marked deleted:
+        $this->assertEquals('deleted', (string)$xml->ListRecords->record[0]->header->attributes());
+        $this->assertEquals('deleted', (string)$xml->ListRecords->record[1]->header->attributes());
+        $this->assertEquals('', (string)$xml->ListRecords->record[2]->header->attributes());
+
         // Now get the second page of results, using the resumption token from the first. Make sure
         // the results are different than before by comparing first record IDs.
         $rawXml2 = $this->httpGet(
             $this->getVuFindUrl() . '/OAI/Server?verb=ListRecords&resumptionToken=' . urlencode($resumptionToken)
-        )->getBody();
+        )->getBody()->getContents();
         $xml2 = simplexml_load_string($rawXml2);
         $resumptionAttributes2 = $xml2->ListRecords->resumptionToken->attributes();
         $this->assertEquals($resultSetSize - $pageSize, count($xml2->ListRecords->record));

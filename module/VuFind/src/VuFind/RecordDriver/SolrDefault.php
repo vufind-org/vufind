@@ -19,8 +19,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -132,11 +132,11 @@ class SolrDefault extends DefaultRecord implements
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $mainConfig     VuFind main configuration (omit
+     * @param \VuFind\Config\Config $mainConfig     VuFind main configuration (omit
      * for built-in defaults)
-     * @param \Laminas\Config\Config $recordConfig   Record-specific configuration
+     * @param \VuFind\Config\Config $recordConfig   Record-specific configuration
      * file (omit to use $mainConfig as $recordConfig)
-     * @param \Laminas\Config\Config $searchSettings Search-specific configuration
+     * @param \VuFind\Config\Config $searchSettings Search-specific configuration
      * file
      */
     public function __construct(
@@ -234,11 +234,13 @@ class SolrDefault extends DefaultRecord implements
         if ($this->snippet) {
             // First check for preferred fields:
             foreach ($this->preferredSnippetFields as $current) {
-                if (isset($this->highlightDetails[$current][0])) {
-                    return [
-                        'snippet' => $this->highlightDetails[$current][0],
-                        'caption' => $this->getSnippetCaption($current),
-                    ];
+                foreach ($this->highlightDetails[$current] ?? [] as $hl) {
+                    if (!empty($hl)) {
+                        return [
+                            'snippet' => $hl,
+                            'caption' => $this->getSnippetCaption($current),
+                        ];
+                    }
                 }
             }
 
@@ -249,10 +251,14 @@ class SolrDefault extends DefaultRecord implements
             ) {
                 foreach ($this->highlightDetails as $key => $value) {
                     if ($value && !in_array($key, $this->forbiddenSnippetFields)) {
-                        return [
-                            'snippet' => $value[0],
-                            'caption' => $this->getSnippetCaption($key),
-                        ];
+                        foreach ($value as $hl) {
+                            if (!empty($hl)) {
+                                return [
+                                    'snippet' => $hl,
+                                    'caption' => $this->getSnippetCaption($key),
+                                ];
+                            }
+                        }
                     }
                 }
             }

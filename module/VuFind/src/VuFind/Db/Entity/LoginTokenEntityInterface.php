@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -43,20 +43,20 @@ use DateTime;
 interface LoginTokenEntityInterface extends EntityInterface
 {
     /**
-     * Getter for ID.
+     * Get identifier (returns null for an uninitialized or non-persisted object).
      *
-     * @return int
+     * @return ?int
      */
-    public function getId(): int;
+    public function getId(): ?int;
 
     /**
      * Setter for User.
      *
      * @param UserEntityInterface $user User to set
      *
-     * @return LoginTokenEntityInterface
+     * @return static
      */
-    public function setUser(UserEntityInterface $user): LoginTokenEntityInterface;
+    public function setUser(UserEntityInterface $user): static;
 
     /**
      * User getter (only null if entity has not been populated yet).
@@ -70,9 +70,9 @@ interface LoginTokenEntityInterface extends EntityInterface
      *
      * @param string $token Token
      *
-     * @return LoginTokenEntityInterface
+     * @return static
      */
-    public function setToken(string $token): LoginTokenEntityInterface;
+    public function setToken(string $token): static;
 
     /**
      * Get token string.
@@ -86,9 +86,9 @@ interface LoginTokenEntityInterface extends EntityInterface
      *
      * @param string $series Series
      *
-     * @return LoginTokenEntityInterface
+     * @return static
      */
-    public function setSeries(string $series): LoginTokenEntityInterface;
+    public function setSeries(string $series): static;
 
     /**
      * Get series string.
@@ -102,9 +102,9 @@ interface LoginTokenEntityInterface extends EntityInterface
      *
      * @param DateTime $dateTime Last login date/time
      *
-     * @return LoginTokenEntityInterface
+     * @return static
      */
-    public function setLastLogin(DateTime $dateTime): LoginTokenEntityInterface;
+    public function setLastLogin(DateTime $dateTime): static;
 
     /**
      * Get last login date/time.
@@ -118,9 +118,9 @@ interface LoginTokenEntityInterface extends EntityInterface
      *
      * @param ?string $browser Browser details (or null for none)
      *
-     * @return LoginTokenEntityInterface
+     * @return static
      */
-    public function setBrowser(?string $browser): LoginTokenEntityInterface;
+    public function setBrowser(?string $browser): static;
 
     /**
      * Get browser details (or null for none).
@@ -134,9 +134,9 @@ interface LoginTokenEntityInterface extends EntityInterface
      *
      * @param ?string $platform Platform details (or null for none)
      *
-     * @return LoginTokenEntityInterface
+     * @return static
      */
-    public function setPlatform(?string $platform): LoginTokenEntityInterface;
+    public function setPlatform(?string $platform): static;
 
     /**
      * Get platform details (or null for none).
@@ -150,9 +150,9 @@ interface LoginTokenEntityInterface extends EntityInterface
      *
      * @param int $expires Expiration timestamp
      *
-     * @return LoginTokenEntityInterface
+     * @return static
      */
-    public function setExpires(int $expires): LoginTokenEntityInterface;
+    public function setExpires(int $expires): static;
 
     /**
      * Get expiration timestamp.
@@ -166,9 +166,9 @@ interface LoginTokenEntityInterface extends EntityInterface
      *
      * @param ?string $sid Last session ID (or null for none)
      *
-     * @return LoginTokenEntityInterface
+     * @return static
      */
-    public function setLastSessionId(?string $sid): LoginTokenEntityInterface;
+    public function setLastSessionId(?string $sid): static;
 
     /**
      * Get last session ID (or null for none).

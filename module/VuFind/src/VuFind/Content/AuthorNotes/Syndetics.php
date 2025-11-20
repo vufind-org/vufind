@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Content
@@ -107,24 +107,18 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
                     throw new \Exception('Invalid XML');
                 }
 
-                // If we have syndetics plus, we don't actually want the content
-                // we'll just stick in the relevant div
-                if ($this->usePlus) {
-                    $anotes[$i]['Content'] = $sourceInfo['div'];
-                } else {
-                    // Get the marc field for author notes (980)
-                    $nodes = $xmldoc2->GetElementsbyTagName('Fld980');
-                    if (!$nodes->length) {
-                        // Skip fields with missing text
-                        continue;
-                    }
-                    // Decode the content and strip unwanted <a> tags:
-                    $anotes[$i]['Content'] = preg_replace(
-                        '/<a>|<a [^>]*>|<\/a>/',
-                        '',
-                        html_entity_decode($xmldoc2->saveXML($nodes->item(0)))
-                    );
+                // Get the marc field for author notes (980)
+                $nodes = $xmldoc2->GetElementsbyTagName('Fld980');
+                if (!$nodes->length) {
+                    // Skip fields with missing text
+                    continue;
                 }
+                // Decode the content and strip unwanted <a> tags:
+                $anotes[$i]['Content'] = preg_replace(
+                    '/<a>|<a [^>]*>|<\/a>/',
+                    '',
+                    html_entity_decode($xmldoc2->saveXML($nodes->item(0)))
+                );
 
                 // change the xml to actual title:
                 $anotes[$i]['Source'] = $sourceInfo['title'];

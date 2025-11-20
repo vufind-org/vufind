@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -56,7 +56,7 @@ class RawJsonSearchCommandTest extends TestCase
             ->getMockBuilder(\VuFindSearch\Backend\BrowZine\Backend::class)
             ->disableOriginalConstructor()->getMock();
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue('foo'));
+            ->willReturn('foo');
         $this->expectExceptionMessage('foo does not support rawJsonSearch()');
         $command->execute($backend);
     }
@@ -73,10 +73,10 @@ class RawJsonSearchCommandTest extends TestCase
             ->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
             ->disableOriginalConstructor()->getMock();
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue('Solr'));
+            ->willReturn('Solr');
         $backend->expects($this->once())->method('rawJsonSearch')
             ->with($this->equalTo($query), $this->equalTo(0), $this->equalTo(100))
-            ->will($this->returnValue('[1, 2, 3]'));
+            ->willReturn('[1, 2, 3]');
         $command = new RawJsonSearchCommand('Solr', $query, 0, 100);
         $this->assertEquals([1, 2, 3], $command->execute($backend)->getResult());
     }

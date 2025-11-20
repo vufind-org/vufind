@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  AJAX
@@ -31,10 +31,9 @@ namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
 use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Service\TagService;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Record\Loader;
-use VuFind\Tags;
+use VuFind\Tags\TagsService;
 
 use function strlen;
 
@@ -54,15 +53,13 @@ class TagRecord extends AbstractBase implements TranslatorAwareInterface
     /**
      * Constructor
      *
-     * @param Loader               $loader     Record loader
-     * @param TagService           $tagService Tag database service
-     * @param Tags                 $tagParser  Tag parser
-     * @param ?UserEntityInterface $user       Logged in user (or null)
+     * @param Loader               $loader      Record loader
+     * @param TagsService          $tagsService Tags service
+     * @param ?UserEntityInterface $user        Logged in user (or null)
      */
     public function __construct(
         protected Loader $loader,
-        protected TagService $tagService,
-        protected Tags $tagParser,
+        protected TagsService $tagsService,
         protected ?UserEntityInterface $user
     ) {
     }
@@ -90,13 +87,12 @@ class TagRecord extends AbstractBase implements TranslatorAwareInterface
         if (strlen($tag) > 0) { // don't add empty tags
             $driver = $this->loader->load($id, $source);
             $serviceMethod = ('false' === $params->fromPost('remove', 'false'))
-                ? 'addTagsToRecord'
-                : 'deleteTagsFromRecord';
-            $this->tagService->$serviceMethod(
-                $driver->getUniqueID(),
-                $driver->getSourceIdentifier(),
+                ? 'linkTagsToRecord'
+                : 'unlinkTagsFromRecord';
+            $this->tagsService->$serviceMethod(
+                $driver,
                 $this->user,
-                $this->tagParser->parse($tag)
+                $this->tagsService->parse($tag)
             );
         }
 

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Recommendations
@@ -77,6 +77,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'libguidesazresultsdeferred' => LibGuidesAZResultsDeferred::class,
         'libraryh3lp' => Libraryh3lp::class,
         'mapselection' => MapSelection::class,
+        'proquestfsgresults' => ProQuestFSGResults::class,
+        'proquestfsgresultsdeferred' => ProQuestFSGResultsDeferred::class,
         'sidefacets' => SideFacets::class,
         'sidefacetsdeferred' => SideFacetsDeferred::class,
         'openlibrarysubjects' => OpenLibrarySubjects::class,
@@ -141,6 +143,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         MapSelection::class => MapSelectionFactory::class,
         OpenLibrarySubjects::class => InvokableFactory::class,
         OpenLibrarySubjectsDeferred::class => InvokableFactory::class,
+        ProQuestFSGResults::class => AbstractSearchObjectFactory::class,
+        ProQuestFSGResultsDeferred::class => InvokableFactory::class,
         PubDateVisAjax::class => InvokableFactory::class,
         RandomRecommend::class => RandomRecommendFactory::class,
         RecommendLinks::class => InjectConfigManagerFactory::class,

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Recommendations
@@ -30,7 +30,7 @@
 namespace VuFind\Recommend;
 
 use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\Connection\LibGuides;
 
 use function intval;
@@ -69,7 +69,7 @@ class LibGuidesProfile implements
     /**
      * List of strategies enabled to find a matching LibGuides profile
      *
-     * @var int
+     * @var array
      */
     protected $strategies = [];
 
@@ -119,14 +119,14 @@ class LibGuidesProfile implements
         // Cache the data related to profiles for up to 10 minutes:
         $this->cacheLifetime = intval($config->GetAccounts->cache_lifetime ?? 600);
 
-        if ($profile = $config->Profile) {
-            $strategies = $profile->get('strategies', []);
+        if ($profile = $config->Profile->toArray()) {
+            $strategies = $profile['strategies'] ?? [];
             $this->strategies = is_string($strategies) ? [$strategies] : $strategies;
 
-            $this->callNumberToAlias = $profile->call_numbers ? $profile->call_numbers->toArray() : [];
-            $this->aliasToAccountId = $profile->profile_aliases ? $profile->profile_aliases->toArray() : [];
-            $this->callNumberField = $profile->get('call_number_field', 'callnumber-first');
-            $this->callNumberLength = $profile->get('call_number_length', 3);
+            $this->callNumberToAlias = $profile['call_numbers'] ?? [];
+            $this->aliasToAccountId = $profile['profile_aliases'] ?? [];
+            $this->callNumberField = $profile['call_number_field'] ?? 'callnumber-first';
+            $this->callNumberLength = $profile['call_number_length'] ?? 3;
         }
     }
 
@@ -179,7 +179,7 @@ class LibGuidesProfile implements
     /**
      * Get terms related to the query.
      *
-     * @return array
+     * @return mixed
      */
     public function getResults()
     {
@@ -211,7 +211,7 @@ class LibGuidesProfile implements
      *
      * @param \VuFind\Search\Base\Results $results Search results object
      *
-     * @return array LibGuides account
+     * @return mixed LibGuides account object or false
      */
     protected function findBestMatchByCallNumber($results)
     {
@@ -269,7 +269,7 @@ class LibGuidesProfile implements
      *
      * @param \VuFind\Search\Base\Results $results Search results object
      *
-     * @return array LibGuides account
+     * @return mixed LibGuides account object or false
      */
     protected function findBestMatchBySubject($results)
     {

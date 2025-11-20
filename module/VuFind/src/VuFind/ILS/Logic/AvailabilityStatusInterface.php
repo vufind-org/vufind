@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Logic
@@ -94,11 +94,34 @@ interface AvailabilityStatusInterface
     public function isVisibleInHoldings(): bool;
 
     /**
+     * Set visibility status.
+     *
+     * @param bool $visibilityInHoldingsTab Visibility toggle
+     *
+     * @return AvailabilityStatus
+     */
+    public function setVisibilityInHoldings(bool $visibilityInHoldingsTab): AvailabilityStatus;
+
+    /**
      * Get status description.
      *
      * @return string
      */
     public function getStatusDescription(): string;
+
+    /**
+     * Get extra status information.
+     *
+     * @return array
+     */
+    public function getExtraStatusInformation(): array;
+
+    /**
+     * Get status description tokens. Used when status description is being translated.
+     *
+     * @return array
+     */
+    public function getStatusDescriptionTokens(): array;
 
     /**
      * Get schema.org availability URI.
@@ -122,4 +145,11 @@ interface AvailabilityStatusInterface
      * @return int
      */
     public function compareTo(AvailabilityStatusInterface $other): int;
+
+    /**
+     * Get status priority.
+     *
+     * @return int
+     */
+    public function getPriority(): int;
 }

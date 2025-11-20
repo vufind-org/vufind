@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -58,7 +58,7 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
                 $this->equalTo('search-results'),
                 $this->equalTo([]),
                 $this->equalTo(['query' => $expectedQuery])
-            )->will($this->returnValue('foo'));
+            )->willReturn('foo');
         return $mock;
     }
 
@@ -91,7 +91,7 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $helper = $this->getHelper($url);
-        $item = ['heading' => 'xyzzy', 'count' => 2];
+        $item = ['heading' => 'xyzzy', 'sort_key' => 'xyzzy', 'count' => 2];
         $this->assertEquals('foo', $helper->getUrl('title', $item));
     }
 
@@ -112,7 +112,7 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $helper = $this->getHelper($url);
-        $item = ['heading' => 'xyzzy', 'count' => 1];
+        $item = ['heading' => 'xyzzy', 'sort_key' => 'xyzzy', 'count' => 1];
         $this->assertEquals('foo', $helper->getUrl('title', $item));
     }
 
@@ -131,7 +131,7 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $helper = $this->getHelper($url);
-        $item = ['heading' => '"xyzzy"', 'count' => 100];
+        $item = ['heading' => '"xyzzy"', 'sort_key' => '"xyzzy"', 'count' => 100];
         $this->assertEquals('foo', $helper->getUrl('title', $item));
     }
 
@@ -150,7 +150,7 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $helper = $this->getHelper($url, ['bypass_default_filters' => false]);
-        $item = ['heading' => 'xyzzy', 'count' => 100];
+        $item = ['heading' => 'xyzzy', 'sort_key' => 'xyzzy', 'count' => 100];
         $this->assertEquals('foo', $helper->getUrl('title', $item));
     }
 }

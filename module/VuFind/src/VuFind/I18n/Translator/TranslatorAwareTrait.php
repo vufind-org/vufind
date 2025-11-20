@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Translator
@@ -29,7 +29,7 @@
 
 namespace VuFind\I18n\Translator;
 
-use Laminas\I18n\Translator\TranslatorInterface;
+use Laminas\Translator\TranslatorInterface;
 
 use function count;
 use function is_array;
@@ -50,7 +50,7 @@ trait TranslatorAwareTrait
     /**
      * Translator
      *
-     * @var \Laminas\I18n\Translator\TranslatorInterface
+     * @var TranslatorInterface
      */
     protected $translator = null;
 
@@ -70,7 +70,7 @@ trait TranslatorAwareTrait
     /**
      * Get translator object.
      *
-     * @return \Laminas\I18n\Translator\TranslatorInterface
+     * @return TranslatorInterface
      */
     public function getTranslator()
     {
@@ -312,14 +312,14 @@ trait TranslatorAwareTrait
      */
     protected function sanitizeTranslationKey(string $key): string
     {
-        // The characters ()!? are not allowed in keys in the Lokalise translation
+        // The characters ()!?| are not allowed in keys in the Lokalise translation
         // platform, so they should not be allowed in our code. We'll replace them
         // with underscore-prefixed, urlencode-inspired codes so that translations
         // can still be provided if the input cannot be changed (e.g. if it comes
         // from a third-party system).
         return str_replace(
-            ['(', ')', '!', '?'],
-            ['_28', '_29', '_21', '_3F'],
+            ['&', '(', ')', '!', ';', '?', '|'],
+            ['_26', '_28', '_29', '_21', '_3B', '_3F', '_7C'],
             $key
         );
     }

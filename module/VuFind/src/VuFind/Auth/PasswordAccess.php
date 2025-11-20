@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -30,7 +30,7 @@
 
 namespace VuFind\Auth;
 
-use VuFind\Db\Row\User;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
 
 use function in_array;
@@ -52,7 +52,7 @@ class PasswordAccess extends AbstractBase
      * exception if the configuration is invalid.
      *
      * @throws AuthException
-     * @return \Laminas\Config\Config
+     * @return \VuFind\Config\Config
      */
     public function getConfig()
     {
@@ -72,18 +72,18 @@ class PasswordAccess extends AbstractBase
      * account credentials.
      *
      * @throws AuthException
-     * @return User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     public function authenticate($request)
     {
         $config = $this->getConfig()->toArray();
         $req_password = trim($request->getPost()->get('password', ''));
-
-        if (!in_array($req_password, $config['PasswordAccess']['access_user'])) {
+        $accessConfig = $config['PasswordAccess']['access_user'] ?? [];
+        if (!in_array($req_password, $accessConfig)) {
             throw new AuthException('authentication_error_invalid');
         }
 
-        $userMap = array_flip($config['PasswordAccess']['access_user']);
-        return $this->getUserTable()->getByUsername($userMap[$req_password]);
+        $userMap = array_flip($accessConfig);
+        return $this->getOrCreateUserByUsername($userMap[$req_password]);
     }
 }

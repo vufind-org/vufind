@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -32,8 +32,10 @@ namespace VuFind\Controller;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container;
 use VuFind\Controller\Feature\ListItemSelectionTrait;
+use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
+use VuFind\Favorites\FavoritesService;
 
 use function count;
 use function is_array;
@@ -54,44 +56,20 @@ class CartController extends AbstractBase
     use ListItemSelectionTrait;
 
     /**
-     * Session container
-     *
-     * @var \Laminas\Session\Container
-     */
-    protected $session;
-
-    /**
-     * Configuration loader
-     *
-     * @var \VuFind\Config\PluginManager
-     */
-    protected $configLoader;
-
-    /**
-     * Export support class
-     *
-     * @var \VuFind\Export
-     */
-    protected $export;
-
-    /**
      * Constructor
      *
-     * @param ServiceLocatorInterface      $sm           Service manager
-     * @param Container                    $container    Session container
-     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
-     * @param \VuFind\Export               $export       Export support class
+     * @param ServiceLocatorInterface               $sm            Service manager
+     * @param Container                             $session       Session container
+     * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
+     * @param \VuFind\Export                        $export        Export support class
      */
     public function __construct(
         ServiceLocatorInterface $sm,
-        Container $container,
-        \VuFind\Config\PluginManager $configLoader,
-        \VuFind\Export $export
+        protected Container $session,
+        protected \VuFind\Config\ConfigManagerInterface $configManager,
+        protected \VuFind\Export $export
     ) {
         parent::__construct($sm);
-        $this->session = $container;
-        $this->configLoader = $configLoader;
-        $this->export = $export;
     }
 
     /**
@@ -101,7 +79,7 @@ class CartController extends AbstractBase
      */
     protected function getCart()
     {
-        return $this->serviceLocator->get(\VuFind\Cart::class);
+        return $this->getService(\VuFind\Cart::class);
     }
 
     /**
@@ -140,7 +118,7 @@ class CartController extends AbstractBase
         // have an external site in the referer, we should ignore that!
         $referer = $this->getRequest()->getServer()->get('HTTP_REFERER');
         $bulk = $this->url()->fromRoute('cart-searchresultsbulk');
-        if ($this->isLocalUrl($referer) && !str_ends_with($referer, $bulk)) {
+        if (!empty($referer) && $this->isLocalUrl($referer) && !str_ends_with($referer, $bulk)) {
             $this->session->url = $referer;
         }
 
@@ -282,10 +260,13 @@ class CartController extends AbstractBase
             $submitDisabled = true;
         }
 
+        $emailActionSettings = $this->getService(\VuFind\Config\AccountCapabilities::class)->getEmailActionSetting();
+        if ($emailActionSettings === 'disabled') {
+            throw new ForbiddenException('Email action disabled');
+        }
         // Force login if necessary:
-        $config = $this->getConfig();
         if (
-            (!isset($config->Mail->require_login) || $config->Mail->require_login)
+            $emailActionSettings !== 'enabled'
             && !$this->getUser()
         ) {
             return $this->forceLogin(
@@ -314,7 +295,7 @@ class CartController extends AbstractBase
             // Attempt to send the email and show an appropriate flash message:
             try {
                 // If we got this far, we're ready to send the email:
-                $mailer = $this->serviceLocator->get(\VuFind\Mailer\Mailer::class);
+                $mailer = $this->getService(\VuFind\Mailer\Mailer::class);
                 $mailer->setMaxRecipients($view->maxRecipients);
                 $cc = $this->params()->fromPost('ccself') && $view->from != $view->to
                     ? $view->from : null;
@@ -396,7 +377,7 @@ class CartController extends AbstractBase
                 return $redirect;
             }
         } elseif ($this->formWasSubmitted()) {
-            $url = $export->getBulkUrl($this->getViewRenderer(), $format, $ids);
+            $url = $export->getBulkUrl($format, $ids);
             if ($export->needsRedirect($format)) {
                 return $this->redirect()->toUrl($url);
             }
@@ -528,11 +509,24 @@ class CartController extends AbstractBase
                 ['cartIds' => $ids, 'cartAction' => 'Save']
             );
         }
-
+        $viewModel = $this->createViewModel(
+            [
+                'records' => $this->getRecordLoader()->loadBatch($ids),
+                'lists' => $this->getDbService(UserListServiceInterface::class)->getUserListsByUser($user),
+            ]
+        );
+        if ($submitDisabled ?? false) {
+            return $viewModel;
+        }
+        if ($this->formWasSubmitted('newList')) {
+            // Remove submit now from parameters
+            $this->getRequest()->getPost()->set('newList', null)->set('submitButton', null);
+            return $this->forwardTo('MyResearch', 'editlist', ['id' => 'NEW']);
+        }
         // Process submission if necessary:
-        if (!($submitDisabled ?? false) && $this->formWasSubmitted()) {
-            $results = $this->favorites()
-                ->saveBulk($this->getRequest()->getPost()->toArray(), $user);
+        if ($this->formWasSubmitted()) {
+            $results = $this->getService(FavoritesService::class)
+                ->saveRecordsToFavorites($this->getRequest()->getPost()->toArray(), $user);
             $listUrl = $this->url()->fromRoute(
                 'userList',
                 ['id' => $results['listId']]
@@ -548,11 +542,6 @@ class CartController extends AbstractBase
         }
 
         // Pass record and list information to view:
-        return $this->createViewModel(
-            [
-                'records' => $this->getRecordLoader()->loadBatch($ids),
-                'lists' => $user->getLists(),
-            ]
-        );
+        return $viewModel;
     }
 }

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,8 +29,8 @@
 
 namespace VuFindTest\View\Helper\Root;
 
-use Laminas\Config\Config;
 use Laminas\View\Helper\HeadMeta;
+use VuFind\Config\Config;
 use VuFind\MetadataVocabulary\PluginManager;
 use VuFind\MetadataVocabulary\PRISM;
 use VuFind\View\Helper\Root\Metadata;
@@ -68,12 +68,18 @@ class MetadataTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMetaHelper()
     {
-        $mock = $this->getMockBuilder(HeadMeta::class)
-            ->disableOriginalConstructor()
-            ->addMethods(['appendName'])    // mocking __call
-            ->getMock();
-        $mock->expects($this->once())->method('appendName')
-            ->with($this->equalTo('prism.title'), $this->equalTo('Fake Title'));
+        $mock = $this->createMock(HeadMeta::class);
+        $mock->expects($this->once())->method('__call')
+            ->willReturnCallback(
+                function ($method, $args) use ($mock) {
+                    if ($method === 'appendName') {
+                        $this->assertEquals('prism.title', $args[0]);
+                        $this->assertEquals('Fake Title', $args[1]);
+                        return $mock;
+                    }
+                    return null;
+                }
+            );
         return $mock;
     }
 
@@ -90,7 +96,7 @@ class MetadataTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $mock->expects($this->once())->method('get')
             ->with($this->equalTo('PRISM'))
-            ->will($this->returnValue(new PRISM()));
+            ->willReturn(new PRISM());
         return $mock;
     }
 

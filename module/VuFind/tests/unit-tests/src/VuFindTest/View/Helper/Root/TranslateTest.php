@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -457,10 +457,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
     public function testLocaleWithTranslator(): void
     {
         $translate = new Translate();
-        $translator = $this->createMock(\Laminas\I18n\Translator\Translator::class);
-        $translator->expects($this->once())->method('getLocale')
-            ->will($this->returnValue('foo'));
-        $translate->setTranslator($translator);
+        $translate->setTranslator($this->getMockTranslator([], 'foo'));
         $this->assertEquals('foo', $translate->getTranslatorLocale());
     }
 
@@ -472,7 +469,7 @@ class TranslateTest extends \PHPUnit\Framework\TestCase
     public function testGetTranslator(): void
     {
         $translate = new Translate();
-        $translator = $this->createMock(\Laminas\I18n\Translator\TranslatorInterface::class);
+        $translator = $this->createMock(\Laminas\Translator\TranslatorInterface::class);
         $translate->setTranslator($translator);
         $this->assertEquals($translator, $translate->getTranslator());
     }

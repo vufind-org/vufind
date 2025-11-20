@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Service
@@ -31,18 +31,17 @@ namespace VuFind\RateLimiter;
 
 use Closure;
 use Laminas\Cache\Psr\CacheItemPool\CacheItemPoolDecorator;
-use Laminas\Cache\Storage\Capabilities;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-use stdClass;
 use Symfony\Component\RateLimiter\LimiterInterface;
 use Symfony\Component\RateLimiter\RateLimiterFactory;
 use Symfony\Component\RateLimiter\Storage\CacheStorage;
 use Symfony\Component\RateLimiter\Storage\StorageInterface;
 use VuFind\RateLimiter\Storage\CredisStorage;
+use VuFind\Service\GetServiceTrait;
 
 /**
  * Rate limiter manager factory.
@@ -55,12 +54,7 @@ use VuFind\RateLimiter\Storage\CredisStorage;
  */
 class RateLimiterManagerFactory implements FactoryInterface
 {
-    /**
-     * Service locator
-     *
-     * @var ContainerInterface
-     */
-    protected $serviceLocator;
+    use GetServiceTrait;
 
     /**
      * Create an object
@@ -79,10 +73,10 @@ class RateLimiterManagerFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
 
         $this->serviceLocator = $container;
@@ -93,22 +87,33 @@ class RateLimiterManagerFactory implements FactoryInterface
         $authManager = $container->get(\VuFind\Auth\Manager::class);
         $request = $container->get('Request');
 
-        return new $requestedName(
+        $rateLimiterManager = new $requestedName(
             $config,
             $request->getServer('REMOTE_ADDR'),
             $authManager->getUserObject()?->getId(),
             Closure::fromCallable([$this, 'getRateLimiter']),
             $container->get(\VuFind\Net\IpAddressUtils::class)
         );
+
+        if (
+            ($config['Turnstile']['enabled'] ?? false)
+            && (strtolower($config['Storage']['adapter']) != 'redis')
+        ) {
+            $turnstile = $container->get(\VuFind\RateLimiter\Turnstile\Turnstile::class);
+            $rateLimiterManager->setTurnstile($turnstile);
+        }
+
+        return $rateLimiterManager;
     }
 
     /**
      * Get rate limiter
      *
-     * @param array   $config   Rate limiter configuration
-     * @param string  $policyId Policy ID
-     * @param string  $clientIp Client's IP address
-     * @param ?string $userId   User ID or null if not logged in
+     * @param array   $config        Rate limiter configuration
+     * @param string  $policyId      Policy ID
+     * @param string  $clientIp      Client's IP address
+     * @param ?string $userId        User ID or null if not logged in
+     * @param string  $configSection Section of $config to get the rate limiter settings
      *
      * @return LimiterInterface
      */
@@ -116,32 +121,45 @@ class RateLimiterManagerFactory implements FactoryInterface
         array $config,
         string $policyId,
         string $clientIp,
-        ?string $userId
+        ?string $userId,
+        string $configSection = 'rateLimiterSettings'
     ): LimiterInterface {
         $policy = $config['Policies'][$policyId] ?? [];
-        $rateLimiterConfig = $policy['rateLimiterSettings'] ?? [];
-        $rateLimiterConfig['id'] = $policyId;
-        if (null !== $userId && !($policy['preferIPAddress'] ?? false)) {
-            $clientId = "u:$userId";
-        } else {
-            $clientId = "ip:$clientIp";
+
+        // Truncate IP if configured, to share a quota among related IPs.
+        $ipv4Octets = $policy['groupByIpv4Octets'] ?? null;
+        $ipv6Hextets = $policy['groupByIpv6Hextets'] ?? null;
+        if ($ipv4Octets || $ipv6Hextets) {
+            $ipUtils = $this->serviceLocator->get(\VuFind\Net\IpAddressUtils::class);
+            $clientIp = $ipUtils->truncate($clientIp, $ipv4Octets, $ipv6Hextets);
         }
-        $factory = new RateLimiterFactory($rateLimiterConfig, $this->createCache($config));
+
+        $rateLimiterConfig = $policy[$configSection] ?? [];
+        if ('reject_all' === ($rateLimiterConfig['policy'] ?? null)) {
+            return new RejectAll();
+        }
+        $rateLimiterConfig['id'] = $policyId;
+        $clientId = null !== $userId && !($policy['preferIPAddress'] ?? false)
+            ? "u:$userId"
+            : "ip:$clientIp";
+        $factory = new RateLimiterFactory($rateLimiterConfig, $this->createCache($config, $configSection));
         return $factory->create($clientId);
     }
 
     /**
      * Create cache for the rate limiter
      *
-     * @param array $config Rate limiter configuration
+     * @param array  $config          Rate limiter configuration
+     * @param string $namespaceSuffix Qualifier for the namespace
      *
      * @return ?StorageInterface
      */
-    protected function createCache(array $config): StorageInterface
+    protected function createCache(array $config, string $namespaceSuffix): StorageInterface
     {
         $storageConfig = $config['Storage'] ?? [];
         $adapter = $storageConfig['adapter'] ?? 'memcached';
         $storageConfig['options']['namespace'] ??= 'RateLimiter';
+        $storageConfig['options']['namespace'] .= '-' . $namespaceSuffix;
 
         // Handle Redis cache separately:
         $adapterLc = strtolower($adapter);
@@ -149,40 +167,8 @@ class RateLimiterManagerFactory implements FactoryInterface
             return $this->createRedisCache($storageConfig);
         }
 
-        if ('vufind' === $adapterLc) {
-            // Use cache manager for "VuFind" cache (only for testing purposes):
-            $cacheManager = $this->serviceLocator->get(\VuFind\Cache\Manager::class);
-            $laminasCache = $cacheManager->getCache('object', $storageConfig['options']['namespace']);
-            // Fake the capabilities to include static TTL support:
-            $eventManager = $laminasCache->getEventManager();
-            $eventManager->attach(
-                'getCapabilities.post',
-                function ($event) use ($laminasCache) {
-                    $oldCapacities = $event->getResult();
-                    $newCapacities = new Capabilities(
-                        $laminasCache,
-                        new stdClass(),
-                        ['staticTtl' => true],
-                        $oldCapacities
-                    );
-                    $event->setResult($newCapacities);
-                }
-            );
-        } else {
-            if ('memcached' === $adapterLc) {
-                $storageConfig['options']['servers'] ??= 'localhost:11211';
-            }
-
-            // Laminas cache:
-            $settings = [
-                'adapter' => $adapter,
-                'options' => $storageConfig['options'],
-            ];
-            $laminasCache = $this->serviceLocator
-                ->get(\Laminas\Cache\Service\StorageAdapterFactory::class)
-                ->createFromArrayConfiguration($settings);
-        }
-
+        $cacheManager = $this->getService(\VuFind\Cache\Manager::class);
+        $laminasCache = $cacheManager->createInMemoryCache($storageConfig);
         return new CacheStorage(new CacheItemPoolDecorator($laminasCache));
     }
 

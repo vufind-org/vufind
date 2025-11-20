@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Logic
@@ -50,13 +50,24 @@ class AvailabilityStatus implements AvailabilityStatusInterface
     protected int $availability;
 
     /**
+     * Item visibility in holdings tab
+     *
+     * @var bool
+     */
+    protected bool $visibilityInHoldingsTab = true;
+
+    /**
      * Constructor
      *
-     * @param int|bool $availability Availability
-     * @param string   $status       Status Description
+     * @param int|bool $availability           Availability
+     * @param string   $status                 Status Description
+     * @param array    $extraStatusInformation Extra Status Information
      */
-    public function __construct(int|bool $availability, protected string $status = '')
-    {
+    public function __construct(
+        int|bool $availability,
+        protected string $status = '',
+        protected array $extraStatusInformation = []
+    ) {
         $this->availability = (int)$availability;
     }
 
@@ -89,8 +100,20 @@ class AvailabilityStatus implements AvailabilityStatusInterface
      */
     public function isVisibleInHoldings(): bool
     {
-        // Can be overridden if the status should not be visible in the holdings tab,
-        return true;
+        return $this->visibilityInHoldingsTab;
+    }
+
+    /**
+     * Set visibility in holdings tab.
+     *
+     * @param bool $visibilityInHoldingsTab Visibility toggle
+     *
+     * @return AvailabilityStatus
+     */
+    public function setVisibilityInHoldings(bool $visibilityInHoldingsTab): AvailabilityStatus
+    {
+        $this->visibilityInHoldingsTab = $visibilityInHoldingsTab;
+        return $this;
     }
 
     /**
@@ -113,6 +136,30 @@ class AvailabilityStatus implements AvailabilityStatusInterface
             default:
                 return 'Uncertain';
         }
+    }
+
+    /**
+     * Get extra status information.
+     *
+     * @return array
+     */
+    public function getExtraStatusInformation(): array
+    {
+        return $this->extraStatusInformation;
+    }
+
+    /**
+     * Get status description tokens. Used when status description is being translated.
+     *
+     * @return array
+     */
+    public function getStatusDescriptionTokens(): array
+    {
+        $tokens = [];
+        foreach ($this->getExtraStatusInformation() as $key => $value) {
+            $tokens['%%' . $key . '%%'] = $value;
+        }
+        return $tokens;
     }
 
     /**
@@ -143,9 +190,9 @@ class AvailabilityStatus implements AvailabilityStatusInterface
     {
         switch ($this->availability) {
             case AvailabilityStatusInterface::STATUS_UNAVAILABLE:
-                return 'false';
+                return 'unavailable';
             case AvailabilityStatusInterface::STATUS_AVAILABLE:
-                return 'true';
+                return 'available';
             case AvailabilityStatusInterface::STATUS_UNKNOWN:
                 return 'unknown';
             default:
@@ -158,7 +205,7 @@ class AvailabilityStatus implements AvailabilityStatusInterface
      *
      * @param AvailabilityStatusInterface $other Other Availability Status
      *
-     * @return int
+     * @return int -1 if $other has lower priority, 0 if same, 1 if higher
      */
     public function compareTo(AvailabilityStatusInterface $other): int
     {
@@ -170,7 +217,7 @@ class AvailabilityStatus implements AvailabilityStatusInterface
      *
      * @return int
      */
-    protected function getPriority(): int
+    public function getPriority(): int
     {
         switch ($this->availability) {
             case AvailabilityStatusInterface::STATUS_UNKNOWN:

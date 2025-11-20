@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Andrew Nagy 2008.
+ * Copyright (C) Villanova University 2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -17,12 +17,13 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  SRU
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
+ * @author   Maccabee Levine <msl321@lehigh.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -34,6 +35,7 @@ use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\Backend\Exception\HttpErrorException;
 
 use function is_array;
+use function sprintf;
 
 /**
  * SRU Search Interface
@@ -41,12 +43,14 @@ use function is_array;
  * @category VuFind
  * @package  SRU
  * @author   Andrew S. Nagy <vufind-tech@lists.sourceforge.net>
+ * @author   Maccabee Levine <msl321@lehigh.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Connector implements \Laminas\Log\LoggerAwareInterface
+class Connector implements \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
+    use \VuFindSearch\Backend\Feature\ConnectorCacheTrait;
 
     /**
      * Whether to Serialize to a PHP Array or not.
@@ -172,7 +176,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             $options['maximumRecords'] = $limit;
         }
         if (null !== $sortBy) {
-            $options['sortKeys'] = $sortBy;
+            $options['query'] .= " sortBy {$sortBy}";
         }
 
         return $this->call('GET', $options, $process);
@@ -194,15 +198,35 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     }
 
     /**
+     * Check for SRU Diagnostics error in a response.
+     * See https://www.loc.gov/standards/sru/diagnostics/diagnosticsList.html
+     *
+     * @param string $resultBody The response body to check.
+     *
+     * @throws BackendException
+     * @return void
+     */
+    public function checkForSRUDiagnosticsError($resultBody)
+    {
+        if (str_contains($resultBody, 'info:srw/diagnostic')) {
+            $xmlDoc = simplexml_load_string($resultBody);
+            throw new BackendException(
+                "Diagnostic error {$xmlDoc?->diagnostic?->uri} from SRU backend: {$xmlDoc?->diagnostic?->message}"
+            );
+        }
+    }
+
+    /**
      * Submit REST Request
      *
      * @param string $method  HTTP Method to use: GET or POST
+     * @param string $path    URL path following $this->host
      * @param array  $params  An array of parameters for the request
      * @param bool   $process Should we convert the MARCXML?
      *
      * @return string|SimpleXMLElement The response from the XServer
      */
-    protected function call($method = 'GET', $params = null, $process = true)
+    protected function call($method = 'GET', $path = '', $params = null, $process = true)
     {
         $queryString = '';
         if ($params) {
@@ -221,17 +245,36 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             $queryString = implode('&', $query);
         }
 
-        $url = $this->host . '?' . $queryString;
+        $url = $this->host . $path . '?' . $queryString;
         $this->debug('Connect: ' . $url);
 
         // Send Request
         $this->client->resetParameters();
         $this->client->setUri($url);
-        $result = $this->client->setMethod($method)->send();
-        $this->checkForHttpError($result);
+
+        // Check cache:
+        $cacheKey = null;
+        $resultBody = null;
+        if ($this->cache) {
+            $cacheKey = $this->getCacheKey($this->client);
+            $resultBody = $this->getCachedData($cacheKey);
+        }
+
+        if (!$resultBody) {
+            $result = $this->client->setMethod($method)->send();
+            $this->checkForHttpError($result);
+            $resultBody = $result->getBody();
+            $this->checkForSRUDiagnosticsError($resultBody);
+            if ($cacheKey) {
+                $this->putCachedData($cacheKey, $resultBody);
+            }
+        }
 
         // Return processed or unprocessed response, as appropriate:
-        return $process ? $this->process($result->getBody()) : $result->getBody();
+        if ($process) {
+            $resultBody = $this->process($resultBody);
+        }
+        return $resultBody;
     }
 
     /**
@@ -245,7 +288,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
     protected function process($response)
     {
         // Send back either the raw XML or a SimpleXML object, as requested:
-        $result = XSLTProcessor::process('sru-convert.xsl', $response);
+        $result = XSLTProcessor::process('sru-convert-simple.xsl', $response);
         if (!$result) {
             throw new BackendException(
                 sprintf('Error processing SRU response: %20s', $response)

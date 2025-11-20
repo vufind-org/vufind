@@ -59,6 +59,11 @@ Clients:
     # Note that a secret can only be used with confidential clients since public
     # ones have no way of using it securely.
     secret: ""
+    # By default a client can request all scopes. This setting can be used to limit
+    # the allowed scopes to a subset of all available ones.
+    #allowedScopes:
+    #  - openid
+    #  - email
 
 # Scope configuration. Keys are scope identifiers. Each identifier should include a
 # description (translation key) to be displayed to the user. The ils field should be

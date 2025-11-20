@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -74,6 +74,20 @@ class EPFTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test getIssns for a record.
+     *
+     * @return void
+     */
+    public function testGetIssns(): void
+    {
+        $issns = $this->getDriverWithIdentifierData()->getISSNs();
+        $this->assertEquals(
+            ['19494998', '19495005'],
+            $issns
+        );
+    }
+
+    /**
      * Get a record driver with fake identifier data.
      *
      * @return EPF
@@ -84,6 +98,26 @@ class EPFTest extends \PHPUnit\Framework\TestCase
             [
                 'Header' => [
                     'PublicationId' => '1234-5678',
+                ],
+                'RecordInfo' => [
+                    'BibRecord' => [
+                        'BibEntity' => [
+                            'Identifiers' => [
+                                [
+                                    'Type' => 'issn-print',
+                                    'Value' => '19494998',
+                                ],
+                                [
+                                    'Type' => 'issn-online',
+                                    'Value' => '19495005',
+                                ],
+                                [
+                                    'Type' => 'ejsid',
+                                    'Value' => '723124',
+                                ],
+                            ],
+                        ],
+                    ],
                 ],
                 'FullTextHoldings' => [
                     [

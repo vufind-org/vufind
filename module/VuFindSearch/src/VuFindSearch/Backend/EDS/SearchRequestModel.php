@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category EBSCOIndustries
  * @package  EBSCO
@@ -29,6 +29,10 @@
 
 namespace VuFindSearch\Backend\EDS;
 
+use Psr\Log\LoggerAwareInterface;
+use VuFind\Config\Config;
+
+use function array_key_exists;
 use function count;
 use function intval;
 use function strlen;
@@ -42,8 +46,10 @@ use function strlen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class SearchRequestModel
+class SearchRequestModel implements LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * What to search for, formatted as [{boolean operator},][{field code}:]{term}
      *
@@ -65,6 +71,13 @@ class SearchRequestModel
      * @var array
      */
     protected $facetFilters = [];
+
+    /**
+     * Array mapping a facet field to the AND/OR operator to use with it
+     *
+     * @var array
+     */
+    protected $facetOperators = [];
 
     /**
      * Sort option to apply
@@ -131,15 +144,24 @@ class SearchRequestModel
     protected $actions = [];
 
     /**
+     * Validation config
+     *
+     * @var array
+     */
+    protected $validationConfig;
+
+    /**
      * Constructor
      *
      * Sets up the EDS API Search Request model
      *
-     * @param array $parameters parameters to populate request
+     * @param array $parameters       parameters to populate request
+     * @param array $validationConfig Validation config
      */
-    public function __construct($parameters = [])
+    public function __construct(array $parameters = [], array $validationConfig = [])
     {
         $this->setParameters($parameters);
+        $this->setValidationConfig($validationConfig);
     }
 
     /**
@@ -181,7 +203,6 @@ class SearchRequestModel
         foreach ($parameters as $key => $values) {
             switch ($key) {
                 case 'filters':
-                    $cnt = 1;
                     foreach ($values as $filter) {
                         if (str_starts_with($filter, 'LIMIT|')) {
                             $this->addLimiter(substr($filter, 6));
@@ -192,8 +213,7 @@ class SearchRequestModel
                         } elseif (str_starts_with($filter, 'PublicationDate')) {
                             $this->addLimiter($this->formatDateLimiter($filter));
                         } else {
-                            $this->addFilter("$cnt,$filter");
-                            $cnt++;
+                            $this->addFilter($filter);
                         }
                     }
                     break;
@@ -203,6 +223,46 @@ class SearchRequestModel
                     }
             }
         }
+    }
+
+    /**
+     * Set validation config
+     *
+     * @param array $validationConfig Validation config
+     *
+     * @return void
+     */
+    public function setValidationConfig(array $validationConfig)
+    {
+        $this->validationConfig = $validationConfig;
+    }
+
+    /**
+     * Checks whether the search model is valid for the EDS API.
+     *
+     * @return bool Returns false if any model parameters are invalid.
+     */
+    public function isValid()
+    {
+        if (!($this->validationConfig['ContentProvider'] ?? false)) {
+            return true;
+        }
+        $contentProviderValues = $this->facetFilters['ContentProvider'] ?? [];
+
+        // There are no EBSCO subscription databases that contain a pipe character.
+        // Note that individual customer-specific databases may do so; those should
+        // not enable ContentProvider validation.
+        $invalidContentProviderCharacters = '|';
+
+        foreach ($contentProviderValues as $value) {
+            foreach (str_split($invalidContentProviderCharacters) as $invalidCharacter) {
+                if (str_contains($value, $invalidCharacter)) {
+                    $this->debug("Invalid database code '$value'; should skip EDS query.");
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     /**
@@ -238,11 +298,22 @@ class SearchRequestModel
         }
 
         if (isset($this->facetFilters) && 0 < count($this->facetFilters)) {
-            $formatFilter = function ($raw) {
-                [$field, $value] = explode(':', $raw, 2);
-                return $field . ':' . static::escapeSpecialCharacters($value);
-            };
-            $qs['facetfilter'] = array_map($formatFilter, $this->facetFilters);
+            $filterId = 1;
+            $qs['facetfilter'] = [];
+            foreach ($this->facetFilters as $field => $values) {
+                $values = array_map(fn ($value) => static::escapeSpecialCharacters($value), $values);
+                $operator = $this->facetOperators[$field];
+                if ('OR' == $operator) {
+                    $valuesString = implode(',', array_map(fn ($value) => "{$field}:{$value}", $values));
+                    $qs['facetfilter'][] = "{$filterId},{$valuesString}";
+                    $filterId++;
+                } else {
+                    foreach ($values as $value) {
+                        $qs['facetfilter'][] = "{$filterId},{$field}:{$value}";
+                        $filterId++;
+                    }
+                }
+            }
         }
 
         if (isset($this->limiters) && 0 < count($this->limiters)) {
@@ -316,26 +387,41 @@ class SearchRequestModel
 
         if (isset($this->facetFilters) && 0 < count($this->facetFilters)) {
             $json->SearchCriteria->FacetFilters = [];
-            foreach ($this->facetFilters as $currentFilter) {
-                [$id, $filter] = explode(',', $currentFilter, 2);
-                [$field, $value] = explode(':', $filter, 2);
-                $filterObj = new \stdClass();
-                $filterObj->FilterId = $id;
-                $valueObj = new \stdClass();
-                $valueObj->Id = $field;
-                $valueObj->Value = $value;
-                $filterObj->FacetValues = [$valueObj];
-                $json->SearchCriteria->FacetFilters[] = $filterObj;
+            $id = 1;
+            foreach ($this->facetFilters as $field => $values) {
+                if ('OR' == $this->facetOperators[$field]) {
+                    $filterObj = new \stdClass();
+                    $filterObj->FilterId = $id++;
+                    $filterObj->FacetValues = [];
+                    foreach ($values as $value) {
+                        $valueObj = new \stdClass();
+                        $valueObj->Id = $field;
+                        $valueObj->Value = $value;
+                        $filterObj->FacetValues[] = $valueObj;
+                    }
+                    $json->SearchCriteria->FacetFilters[] = $filterObj;
+                } else {
+                    foreach ($values as $value) {
+                        $filterObj = new \stdClass();
+                        $filterObj->FilterId = $id++;
+                        $valueObj = new \stdClass();
+                        $valueObj->Id = $field;
+                        $valueObj->Value = $value;
+                        $filterObj->FacetValues = [$valueObj];
+                        $json->SearchCriteria->FacetFilters[] = $filterObj;
+                    }
+                }
             }
         }
 
         if (isset($this->limiters) && 0 < count($this->limiters)) {
             $json->SearchCriteria->Limiters = [];
-            foreach ($this->limiters as $limiter) {
-                [$id, $values] = explode(':', $limiter, 2);
+            foreach ($this->limiters as $field => $values) {
+                // All EDS limiter values are combined as 'OR'.
+                // There is no alternate 'AND' syntax as with filters.
                 $limiterObj = new \stdClass();
-                $limiterObj->Id = $id;
-                $limiterObj->Values = explode(',', $values);
+                $limiterObj->Id = $field;
+                $limiterObj->Values = $values;
                 $json->SearchCriteria->Limiters[] = $limiterObj;
             }
         }
@@ -436,7 +522,11 @@ class SearchRequestModel
      */
     public function addLimiter($limiter)
     {
-        $this->limiters[] = $limiter;
+        [$field, $value] = explode(':', $limiter);
+        if (!array_key_exists($field, $this->limiters)) {
+            $this->limiters[$field] = [];
+        }
+        $this->limiters[$field][] = $value;
     }
 
     /**
@@ -460,7 +550,23 @@ class SearchRequestModel
      */
     public function addfilter($facetFilter)
     {
-        $this->facetFilters[] = $facetFilter;
+        $filterComponents = explode(':', $facetFilter, 3);
+        if (count($filterComponents) < 3) {
+            [$field, $value] = $filterComponents;
+            // Default to AND, since it's already the default in EDS.ini.
+            $operator = 'AND';
+        } else {
+            [$field, $operator, $value] = $filterComponents;
+        }
+        if (str_starts_with($field, '~')) {
+            $field = substr($field, 1);
+            $operator = 'OR';
+        }
+        if (!array_key_exists($field, $this->facetFilters)) {
+            $this->facetFilters[$field] = [];
+        }
+        $this->facetFilters[$field][] = $value;
+        $this->facetOperators[$field] = $operator;
     }
 
     /**

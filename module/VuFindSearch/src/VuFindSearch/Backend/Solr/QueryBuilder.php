@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -157,7 +157,6 @@ class QueryBuilder implements QueryBuilderInterface
         $highlight = !empty($this->fieldsToHighlight);
 
         if ($handler = $this->getSearchHandler($finalQuery->getHandler(), $string)) {
-            $string = $handler->preprocessQueryString($string);
             if (
                 !$handler->hasExtendedDismax()
                 && $this->getLuceneHelper()->containsAdvancedLuceneSyntax($string)
@@ -511,12 +510,12 @@ class QueryBuilder implements QueryBuilderInterface
     /**
      * Return search string based on input and handler.
      *
-     * @param string        $string  Input search string
-     * @param SearchHandler $handler Search handler
+     * @param string         $string  Input search string
+     * @param ?SearchHandler $handler Search handler
      *
      * @return string
      */
-    protected function createSearchString($string, SearchHandler $handler = null)
+    protected function createSearchString($string, ?SearchHandler $handler = null)
     {
         $advanced = $this->getLuceneHelper()->containsAdvancedLuceneSyntax($string);
 
@@ -577,9 +576,13 @@ class QueryBuilder implements QueryBuilderInterface
      */
     protected function getNormalizedQueryString($query)
     {
+        $queryString = $query->getString();
+        if ($handler = $this->getSearchHandler($query->getHandler(), $queryString)) {
+            $queryString = $handler->preprocessQueryString($queryString);
+        }
         return $this->fixTrailingQuestionMarks(
             $this->getLuceneHelper()->normalizeSearchString(
-                $query->getString()
+                $queryString
             )
         );
     }

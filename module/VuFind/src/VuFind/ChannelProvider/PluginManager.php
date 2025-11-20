@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Channels
@@ -50,6 +50,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'facets' => Facets::class,
         'listitems' => ListItems::class,
         'newilsitems' => NewILSItems::class,
+        'newsearchitems' => NewSearchItems::class,
         'random' => Random::class,
         'recentlyreturned' => RecentlyReturned::class,
         'similaritems' => SimilarItems::class,
@@ -66,6 +67,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Facets::class => FacetsFactory::class,
         ListItems::class => ListItemsFactory::class,
         NewILSItems::class => AbstractILSChannelProviderFactory::class,
+        NewSearchItems::class => NewSearchItemsFactory::class,
         Random::class => RandomFactory::class,
         RecentlyReturned::class => AbstractILSChannelProviderFactory::class,
         SimilarItems::class => SimilarItemsFactory::class,

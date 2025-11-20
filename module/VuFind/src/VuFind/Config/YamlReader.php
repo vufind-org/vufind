@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Config
@@ -59,20 +59,6 @@ class YamlReader
     protected $cacheName = 'yaml';
 
     /**
-     * Cache manager
-     *
-     * @var \VuFind\Cache\Manager
-     */
-    protected $cacheManager;
-
-    /**
-     * Config file path resolver
-     *
-     * @var PathResolver
-     */
-    protected $pathResolver;
-
-    /**
      * Cache of loaded files.
      *
      * @var array
@@ -82,16 +68,13 @@ class YamlReader
     /**
      * Constructor
      *
-     * @param \VuFind\Cache\Manager $cacheManager Cache manager (optional)
-     * @param PathResolver          $pathResolver Config file path resolver
-     * (optional; defaults to \VuFind\Config\Locator)
+     * @param PathResolver           $pathResolver Config file path resolver
+     * @param ?\VuFind\Cache\Manager $cacheManager Cache manager (optional)
      */
     public function __construct(
-        \VuFind\Cache\Manager $cacheManager = null,
-        PathResolver $pathResolver = null
+        protected PathResolver $pathResolver,
+        protected ?\VuFind\Cache\Manager $cacheManager = null,
     ) {
-        $this->cacheManager = $cacheManager;
-        $this->pathResolver = $pathResolver;
     }
 
     /**
@@ -111,18 +94,10 @@ class YamlReader
         // to pass $forceReload down another level to load an updated file if
         // something has changed -- it's enough to force a cache recheck).
         if ($forceReload || !isset($this->files[$filename])) {
-            if ($this->pathResolver) {
-                $localConfigPath = $useLocalConfig
-                    ? $this->pathResolver->getLocalConfigPath($filename)
-                    : null;
-            } else {
-                $localConfigPath = $useLocalConfig
-                    ? Locator::getLocalConfigPath($filename)
-                    : null;
-            }
-            $baseConfigPath = $this->pathResolver
-                ? $this->pathResolver->getBaseConfigPath($filename)
-                : Locator::getBaseConfigPath($filename);
+            $localConfigPath = $useLocalConfig
+                ? $this->pathResolver->getLocalConfigPath($filename)
+                : null;
+            $baseConfigPath = $this->pathResolver->getBaseConfigPath($filename);
             $this->files[$filename] = $this->getFromPaths(
                 $baseConfigPath,
                 $localConfigPath
@@ -147,11 +122,19 @@ class YamlReader
         $cache = (null !== $this->cacheManager)
             ? $this->cacheManager->getCache($this->cacheName) : false;
 
+        $cacheConfig = (null !== $this->cacheManager) ? $this->cacheManager->getConfig() : [];
+        $cacheOptions = array_merge(
+            $cacheConfig['ConfigCache'] ?? [],
+            $cacheConfig['CacheConfigName_' . $this->cacheName] ?? [],
+        );
+        $reloadOnFileChange = $cacheOptions['reloadOnFileChange'] ?? true;
+
         // Generate cache key:
-        $cacheKey = $defaultFile . '-'
-            . (file_exists($defaultFile) ? filemtime($defaultFile) : 0);
+        $cacheKey = $defaultFile .
+            (($reloadOnFileChange && file_exists($defaultFile)) ? '-' . filemtime($defaultFile) : '');
         if (!empty($customFile)) {
-            $cacheKey .= '-local-' . filemtime($customFile);
+            $cacheKey .= '-local-'
+                . (($reloadOnFileChange && file_exists($customFile)) ? '-' . filemtime($customFile) : '');
         }
         $cacheKey = md5($cacheKey);
 

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -28,6 +28,8 @@
  */
 
 namespace VuFind\Db\Entity;
+
+use DateTime;
 
 /**
  * Entity model interface for access tokens.
@@ -41,22 +43,84 @@ namespace VuFind\Db\Entity;
 interface AccessTokenEntityInterface extends EntityInterface
 {
     /**
-     * Set user ID.
+     * Set access token identifier.
+     *
+     * @param string $id Access Token Identifier
+     *
+     * @return static
+     */
+    public function setId(string $id): static;
+
+    /**
+     * Get identifier (returns null for an uninitialized or non-persisted object).
+     *
+     * @return ?string
+     */
+    public function getId(): ?string;
+
+    /**
+     * Get type of access token.
+     *
+     * @return ?string
+     */
+    public function getType(): ?string;
+
+    /**
+     * Set type of access token.
+     *
+     * @param ?string $type Access Token Type
+     *
+     * @return static
+     */
+    public function setType(?string $type): static;
+
+    /**
+     * Set user.
      *
      * @param ?UserEntityInterface $user User owning token
      *
-     * @return AccessTokenEntityInterface
+     * @return static
      */
-    public function setUser(?UserEntityInterface $user): AccessTokenEntityInterface;
+    public function setUser(?UserEntityInterface $user): static;
+
+    /**
+     * Get user.
+     *
+     * @return ?UserEntityInterface
+     */
+    public function getUser(): ?UserEntityInterface;
+
+    /**
+     * Get created date.
+     *
+     * @return DateTime
+     */
+    public function getCreated(): DateTime;
+
+    /**
+     * Set created date.
+     *
+     * @param DateTime $dateTime Created date
+     *
+     * @return static
+     */
+    public function setCreated(DateTime $dateTime): static;
+
+    /**
+     * Get data.
+     *
+     * @return ?string
+     */
+    public function getData(): ?string;
 
     /**
      * Set data.
      *
-     * @param string $data Data
+     * @param ?string $data Data
      *
-     * @return AccessTokenEntityInterface
+     * @return static
      */
-    public function setData(string $data): AccessTokenEntityInterface;
+    public function setData(?string $data): static;
 
     /**
      * Is the access token revoked?
@@ -70,7 +134,7 @@ interface AccessTokenEntityInterface extends EntityInterface
      *
      * @param bool $revoked Revoked
      *
-     * @return AccessTokenEntityInterface
+     * @return static
      */
-    public function setRevoked(bool $revoked): AccessTokenEntityInterface;
+    public function setRevoked(bool $revoked): static;
 }

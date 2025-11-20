@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -122,7 +122,7 @@ class Holds extends AbstractRequestBase
         if (!empty($all)) {
             $details = $params->fromPost('cancelAllIDS');
         } elseif (!empty($selected)) {
-            // Include cancelSelectedIDS for backwards-compatibility:
+            // Include cancelSelectedIDS for backwards-compatibility with legacy code:
             $details = $params->fromPost('selectedIDS')
                 ?? $params->fromPost('cancelSelectedIDS');
         } else {
@@ -182,20 +182,14 @@ class Holds extends AbstractRequestBase
                     }
                 }
                 if ($failed) {
-                    $msg = $this->getController()
-                        ->translate(
-                            'hold_cancel_fail_items',
-                            ['%%count%%' => $failed]
-                        );
-                    $flashMsg->addErrorMessage($msg);
+                    $flashMsg->addErrorMessage(
+                        ['msg' => 'hold_cancel_fail_items', 'tokens' => ['%%count%%' => $failed]]
+                    );
                 }
                 if ($cancelResults['count'] > 0) {
-                    $msg = $this->getController()
-                        ->translate(
-                            'hold_cancel_success_items',
-                            ['%%count%%' => $cancelResults['count']]
-                        );
-                    $flashMsg->addSuccessMessage($msg);
+                    $flashMsg->addSuccessMessage(
+                        ['msg' => 'hold_cancel_success_items', 'tokens' => ['%%count%%' => $cancelResults['count']]]
+                    );
                 }
                 return $cancelResults;
             }

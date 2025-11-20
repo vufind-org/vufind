@@ -17,11 +17,11 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Db_Interface
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
@@ -35,7 +35,7 @@ use DateTime;
  * Interface for representing a session row.
  *
  * @category VuFind
- * @package  Db_Interface
+ * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
@@ -43,38 +43,38 @@ use DateTime;
 interface SessionEntityInterface extends EntityInterface
 {
     /**
-     * Id getter
+     * Get identifier (returns null for an uninitialized or non-persisted object).
      *
-     * @return int
+     * @return ?int
      */
-    public function getId(): int;
+    public function getId(): ?int;
 
     /**
      * Session Id setter
      *
      * @param ?string $sid Session Id.
      *
-     * @return SessionEntityInterface
+     * @return static
      */
-    public function setSessionId(?string $sid): SessionEntityInterface;
+    public function setSessionId(?string $sid): static;
 
     /**
      * Created setter.
      *
      * @param DateTime $dateTime Created date
      *
-     * @return SessionEntityInterface
+     * @return static
      */
-    public function setCreated(DateTime $dateTime): SessionEntityInterface;
+    public function setCreated(DateTime $dateTime): static;
 
     /**
      * Set time the session is last used.
      *
      * @param int $lastUsed Time last used
      *
-     * @return SessionEntityInterface
+     * @return static
      */
-    public function setLastUsed(int $lastUsed): SessionEntityInterface;
+    public function setLastUsed(int $lastUsed): static;
 
     /**
      * Get time when the session was last used.
@@ -88,9 +88,9 @@ interface SessionEntityInterface extends EntityInterface
      *
      * @param ?string $data Session data.
      *
-     * @return SessionEntityInterface
+     * @return static
      */
-    public function setData(?string $data): SessionEntityInterface;
+    public function setData(?string $data): static;
 
     /**
      * Get session data.

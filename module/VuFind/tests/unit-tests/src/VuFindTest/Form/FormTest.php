@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -33,6 +33,7 @@ namespace VuFindTest\Form;
 use Symfony\Component\Yaml\Yaml;
 use VuFind\Config\YamlReader;
 use VuFind\Form\Form;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 use function get_class;
 
@@ -49,6 +50,7 @@ use function get_class;
 class FormTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
+    use ConfigRelatedServicesTrait;
 
     protected $mockTestFormYamlReader = null;
 
@@ -60,7 +62,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
     public function testDefaultsWithoutConfiguration()
     {
         $form = new Form(
-            new YamlReader(),
+            new YamlReader($this->getPathResolver()),
             $this->createMock(\Laminas\View\HelperPluginManager::class),
             $this->createMock(\VuFind\Form\Handler\PluginManager::class)
         );
@@ -102,7 +104,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
             'email_subject' => 'subject',
         ];
         $form = new Form(
-            new YamlReader(),
+            new YamlReader($this->getPathResolver()),
             $this->createMock(\Laminas\View\HelperPluginManager::class),
             $this->createMock(\VuFind\Form\Handler\PluginManager::class),
             ['Feedback' => $defaults]
@@ -125,7 +127,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
         $this->expectExceptionMessage('Form \'foo\' not found');
 
         $form = new Form(
-            new YamlReader(),
+            new YamlReader($this->getPathResolver()),
             $this->createMock(\Laminas\View\HelperPluginManager::class),
             $this->createMock(\VuFind\Form\Handler\PluginManager::class)
         );
@@ -140,7 +142,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
     public function testDefaultsWithFormSet()
     {
         $form = new Form(
-            new YamlReader(),
+            new YamlReader($this->getPathResolver()),
             $this->createMock(\Laminas\View\HelperPluginManager::class),
             $this->createMock(\VuFind\Form\Handler\PluginManager::class)
         );
@@ -269,7 +271,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
     public function testSenderFieldMerging()
     {
         $form = new Form(
-            new YamlReader(),
+            new YamlReader($this->getPathResolver()),
             $this->createMock(\Laminas\View\HelperPluginManager::class),
             $this->createMock(\VuFind\Form\Handler\PluginManager::class)
         );
@@ -413,7 +415,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                 ->getMock();
             $mock->expects($this->any())->method('get')
                 ->with($this->equalTo('FeedbackForms.yaml'))
-                ->will($this->returnValue($config));
+                ->willReturn($config);
             $this->mockTestFormYamlReader = $mock;
         }
         return $this->mockTestFormYamlReader;
@@ -822,9 +824,8 @@ class FormTest extends \PHPUnit\Framework\TestCase
      * @param string $expectedSubject String to be expected.
      *
      * @return void
-     *
-     * @dataProvider getEmailSubjectsData
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getEmailSubjectsData')]
     public function testEmailSubjects(
         string $formToTest,
         string $expectedSubject
@@ -842,6 +843,40 @@ class FormTest extends \PHPUnit\Framework\TestCase
             $expectedSubject,
             $form->getEmailSubject($form->getData())
         );
+    }
+
+    /**
+     * Function to get form action route test data
+     *
+     * @return array
+     */
+    public static function getFormActionRouteData(): array
+    {
+        return [
+            'with no route set' => [
+                'TestWithNoFormActionRouteSet',
+                'feedback-form',
+            ],
+            'with route set' => [
+                'TestWithFormActionRouteSet',
+                'test-action',
+            ],
+        ];
+    }
+
+    /**
+     * Test formActionRoute setting
+     *
+     * @param string $id       Form id
+     * @param string $expected Expected value
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getFormActionRouteData')]
+    public function testFormActionRoute(string $id, string $expected): void
+    {
+        $form = $this->getMockTestForm($id);
+        $this->assertEquals($expected, $form->getFormActionRoute());
     }
 
     /**

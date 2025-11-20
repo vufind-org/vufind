@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -33,6 +33,7 @@ namespace VuFindTest\Mink;
 
 use Laminas\Http\Request;
 use VuFindHttp\HttpService;
+use VuFindTest\Feature\CacheManagementTrait;
 
 /**
  * Rate Limiter test class.
@@ -45,6 +46,8 @@ use VuFindHttp\HttpService;
  */
 class RateLimiterTest extends \VuFindTest\Integration\MinkTestCase
 {
+    use CacheManagementTrait;
+
     /**
      * Standard setup method.
      *
@@ -54,25 +57,8 @@ class RateLimiterTest extends \VuFindTest\Integration\MinkTestCase
     {
         parent::setUp();
 
-        $this->changeConfigs(
-            [
-                'permissions' => [
-                    'enable-admin-cache-api' => [
-                        'permission' => 'access.api.admin.cache',
-                        'require' => 'ANY',
-                        'role' => 'guest',
-                    ],
-                ],
-            ]
-        );
-
-        // Clear object cache to ensure clean state:
-        $http = new HttpService();
-        $client = $http->createClient($this->getVuFindUrl('/api/v1/admin/cache?id=object'), Request::METHOD_DELETE);
-        $response = $client->send();
-        if (200 !== $response->getStatusCode()) {
-            throw new \Exception('Could not clear object cache: ' . $response->getBody());
-        }
+        $this->changeConfigs($this->getCacheClearPermissionConfig());
+        $this->clearObjectCache();
     }
 
     /**
@@ -119,9 +105,8 @@ class RateLimiterTest extends \VuFindTest\Integration\MinkTestCase
      * @param array  $query   Request URL query params
      *
      * @return void
-     *
-     * @dataProvider rateLimiterDataProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('rateLimiterDataProvider')]
     public function testRateLimiter(bool $crawler, bool $headers, ?int $limit, string $path, array $query): void
     {
         $this->changeYamlConfigs(

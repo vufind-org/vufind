@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -63,9 +63,8 @@ class AlphabrowseTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $expectedFirstTitle Expected first title in result list
      *
      * @return void
-     *
-     * @dataProvider titleSearchNormalizationProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('titleSearchNormalizationProvider')]
     public function testTitleSearchNormalization($query, $expectedFirstTitle): void
     {
         $session = $this->getMinkSession();
@@ -82,6 +81,25 @@ class AlphabrowseTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test that we can jump to a record with an ID containing slashes
+     *
+     * @return void
+     */
+    public function testJumpToRecordWithIdContainingSlashes(): void
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Alphabrowse/Home');
+        $page = $session->getPage();
+        $this->findCssAndSetValue($page, '#alphaBrowseForm_source', 'author');
+        $this->findCssAndSetValue($page, '#alphaBrowseForm_from', 'will b. broke');
+        $this->clickCss($page, '#alphaBrowseForm .btn-primary');
+        $this->waitForPageLoad($page);
+        $this->clickCss($page, 'td.author a');
+        $this->waitForPageLoad($page);
+        $this->assertStringContainsString('Record/dollar$ign%2Fslashcombo', $session->getCurrentUrl());
+    }
+
+    /**
      * Test that extra attributes are escaped correctly.
      *
      * @return void
@@ -93,5 +111,19 @@ class AlphabrowseTest extends \VuFindTest\Integration\MinkTestCase
         $page = $session->getPage();
         $text = $this->findCssAndGetText($page, 'table.alphabrowse td.lcc ~ td');
         $this->assertStringContainsString('<HTML> The Basics', $text);
+    }
+
+    /**
+     * Test that topic separators are applied correctly.
+     *
+     * @return void
+     */
+    public function testTopicSeparators(): void
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Alphabrowse/Home?source=topic&from=peat+bogs');
+        $page = $session->getPage();
+        $text = $this->findCssAndGetText($page, 'table.alphabrowse td.topic b');
+        $this->assertStringContainsString('Peat bogs > Ireland', $text);
     }
 }

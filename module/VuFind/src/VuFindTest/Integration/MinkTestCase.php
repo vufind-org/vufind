@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -41,6 +41,8 @@ use function call_user_func;
 use function floatval;
 use function in_array;
 use function intval;
+use function is_callable;
+use function is_string;
 use function strlen;
 
 /**
@@ -55,7 +57,7 @@ use function strlen;
 abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\LiveDetectionTrait;
-    use \VuFindTest\Feature\PathResolverTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
     use \VuFindTest\Feature\RemoteCoverageTrait;
 
     public const DEFAULT_TIMEOUT = 5000;
@@ -89,13 +91,95 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     protected $pathResolver;
 
     /**
+     * Selector for an open button group dropdown menu
+     *
+     * First for Bootstrap 3, second for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $btnGroupDropdownMenuSelector = '.btn-group.open .dropdown-menu, .btn-group .dropdown-menu.show';
+
+    /**
+     * Selector for first item in a dropdown menu
+     *
+     * First for Bootstrap 3, second for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $firstOpenDropdownMenuItemSelector
+        = '.mainbody .open .dropdown-menu li:nth-child(2) a, .mainbody .dropdown-menu.show li:nth-child(2) a';
+
+    /**
+     * Selector for popover content
+     *
+     * First for Bootstrap 3, second for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $popoverContentSelector = '.popover-body, .popover-content';
+
+    /**
+     * Selector for an open modal dialog
+     *
+     * First for Bootstrap 3, second for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $openModalSelector = '#modal.in, #modal.show';
+
+    /**
+     * Selector for a button link in an open modal dialog
+     *
+     * First for Bootstrap 3, second for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $openModalButtonLinkSelector = '#modal.in a.btn, #modal.show a.btn';
+
+    /**
+     * Selector for a username field in open modal dialog
+     *
+     * First for Bootstrap 3, second for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $openModalUsernameFieldSelector = '#modal.in [name="username"], #modal.show [name="username"]';
+
+    /**
+     * Selector for next page link
+     *
+     * First for Bootstrap 3, second for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $pageNextSelector = 'a.page-next, .page-next a';
+
+    /**
+     * Selector for previous page link
+     *
+     * First for Bootstrap 3, second for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $pagePrevSelector = 'a.page-prev, .page-prev a';
+
+    /**
+     * Selector for active record tab
+     *
+     * First for Bootstrap 3, second for Bootstrap 5
+     *
+     * @var string
+     */
+    protected $activeRecordTabSelector = 'li.record-tab.active, li.record-tab a.active';
+
+    /**
      * Get name of the current test
      *
      * @return string
      */
     protected function getTestName(): string
     {
-        return $this::class . '::' . $this->name();
+        return $this::class . '::' . $this->nameWithDataSet();
     }
 
     /**
@@ -142,34 +226,57 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Support method for changeConfig; act on a single file.
      *
-     * @param string $configName Configuration to modify.
+     * @param string $configName Configuration to modify. Use 'Source:Target" to copy from Source.ini to Target.ini.
      * @param array  $settings   Settings to change.
      * @param bool   $replace    Should we replace the existing config entirely
      * (as opposed to extending it with new settings)?
      *
      * @return void
      */
-    protected function changeConfigFile($configName, $settings, $replace = false)
+    protected function changeConfigFile(string $configName, array $settings, bool $replace = false): void
     {
-        $file = $configName . '.ini';
-        $local = $this->pathResolver->getLocalConfigPath($file, null, true);
-        if (!in_array($configName, $this->modifiedConfigs)) {
-            if (file_exists($local)) {
+        $parts = explode(':', $configName);
+        if (isset($parts[1])) {
+            $sourceConfig = $parts[0];
+            $destConfig = $parts[1];
+        } else {
+            $sourceConfig = $destConfig = $configName;
+        }
+        $sourceFile = $sourceConfig . '.ini';
+        $destFile = $destConfig . '.ini';
+        $localFile = $this->pathResolver->getLocalConfigPath($destFile, null, true);
+        if (!in_array($destConfig, $this->modifiedConfigs)) {
+            if (file_exists($localFile)) {
                 // File exists? Make a backup!
-                copy($local, $local . '.bak');
+                copy($localFile, $localFile . '.bak');
             } else {
                 // File doesn't exist? Make a baseline version.
-                copy($this->pathResolver->getBaseConfigPath($file), $local);
+                copy($this->pathResolver->getBaseConfigPath($sourceFile), $localFile);
             }
 
-            $this->modifiedConfigs[] = $configName;
+            $this->modifiedConfigs[] = $destConfig;
         }
+        $this->writeConfigFile($localFile, $settings, $replace);
+    }
+
+    /**
+     * Write settings to a file.
+     *
+     * @param string $path     Path of file to modify.
+     * @param array  $settings Settings to change.
+     * @param bool   $replace  Should we replace the existing config entirely
+     * (as opposed to extending it with new settings)?
+     *
+     * @return void
+     */
+    protected function writeConfigFile(string $path, array $settings, bool $replace = false): void
+    {
         // If we're replacing the existing file, wipe it out now:
         if ($replace) {
-            file_put_contents($local, '');
+            file_put_contents($path, '');
         }
 
-        $writer = new ConfigWriter($local);
+        $writer = new ConfigWriter($path);
         foreach ($settings as $section => $contents) {
             foreach ($contents as $key => $value) {
                 $writer->set($section, $key, $value);
@@ -208,6 +315,39 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $config = $replace ? [] : Yaml::parseFile($local);
         $config = array_replace_recursive($config, $settings);
         file_put_contents($local, Yaml::dump($config));
+    }
+
+    /**
+     * Get configuration from an ini file
+     *
+     * Note: This is just a simple ini file reader and does not handle inheritance
+     *
+     * @param string $configName Configuration name (without file suffix)
+     *
+     * @return array
+     */
+    protected function getConfig($configName = 'config'): array
+    {
+        $file = $configName . '.ini';
+        $configPath = $this->pathResolver->getLocalConfigPath($file, null, true);
+        if (!file_exists($configPath)) {
+            $configPath = $this->pathResolver->getBaseConfigPath($file);
+            if (!file_exists($configPath)) {
+                throw new \Exception("Configuration file $file does not exist");
+            }
+        }
+        return parse_ini_file($configPath, true);
+    }
+
+    /**
+     * Get current theme name
+     *
+     * @return string
+     */
+    protected function getCurrentTheme(): string
+    {
+        $config = $this->getConfig();
+        return $config['Site']['theme'] ?? '';
     }
 
     /**
@@ -546,6 +686,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * @param int     $timeout     Wait timeout for CSS selection (in ms)
      * @param int     $retries     Retry count for set loop
      * @param bool    $verifyValue Whether to verify that the value was written
+     * @param bool    $reFocus     Whether to focus the element when done setting the value
      *
      * @return mixed
      */
@@ -555,7 +696,8 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         $value,
         $timeout = null,
         $retries = 6,
-        $verifyValue = true
+        $verifyValue = true,
+        $reFocus = false
     ) {
         $timeout ??= $this->getDefaultTimeout();
 
@@ -565,14 +707,17 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             try {
                 $field = $this->findCss($page, $selector, $timeout, 0);
                 $field->setValue($value);
-                if (!$verifyValue) {
+                // Did it work? If so, we're done and can leave....
+                if (
+                    !$verifyValue
+                    || $field->getValue() === $value
+                ) {
+                    if ($reFocus) {
+                        $field->focus();
+                    }
                     return;
                 }
 
-                // Did it work? If so, we're done and can leave....
-                if ($field->getValue() === $value) {
-                    return;
-                }
                 $this->logWarning(
                     'RETRY setValue after failure in ' . $this->getTestName()
                     . " (try $i)."
@@ -656,12 +801,12 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Return value of a method of an element selected via CSS; retry if it fails due to DOM change.
      *
-     * @param Element  $page     Page element
-     * @param string   $selector CSS selector
-     * @param callable $method   Method to call
-     * @param int      $timeout  Wait timeout for CSS selection (in ms)
-     * @param int      $index    Index of the element (0-based)
-     * @param int      $retries  Retry count for set loop
+     * @param Element         $page     Page element
+     * @param string          $selector CSS selector
+     * @param string|callable $method   Node's method to call (string) or callable that gets the node as parameter
+     * @param int             $timeout  Wait timeout for CSS selection (in ms)
+     * @param int             $index    Index of the element (0-based)
+     * @param int             $retries  Retry count for set loop
      *
      * @return string
      */
@@ -678,7 +823,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         for ($i = 1; $i <= $retries; $i++) {
             try {
                 $element = $this->findCss($page, $selector, $timeout, $index);
-                return call_user_func([$element, $method]);
+                return is_string($method) ? call_user_func([$element, $method]) : $method($element);
             } catch (\Exception $e) {
                 $this->logWarning(
                     'RETRY findCssAndGetText after exception in ' . $this->getTestName()
@@ -689,7 +834,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             $this->snooze();
         }
 
-        throw new \Exception('Failed to get text after ' . $retries . ' attempts.');
+        throw new \Exception("Failed to call $method on '$selector' after $retries attempts.");
     }
 
     /**
@@ -727,13 +872,51 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Check that a field content is valid (does not have the :invalid pseudo class).
+     *
+     * @param Element $page     Page element (not currently used)
+     * @param string  $selector CSS selector
+     *
+     * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function checkFieldIsValid(Element $page, string $selector): void
+    {
+        $session = $this->getMinkSession();
+        $session->wait(
+            $this->getDefaultTimeout(),
+            "document.querySelector('$selector:invalid') === null"
+        );
+    }
+
+    /**
+     * Check that a field content is invalid (has the :invalid pseudo class).
+     *
+     * @param Element $page     Page element (not currently used)
+     * @param string  $selector CSS selector
+     *
+     * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    protected function checkFieldIsInvalid(Element $page, string $selector): void
+    {
+        $session = $this->getMinkSession();
+        $session->wait(
+            $this->getDefaultTimeout(),
+            "document.querySelector('$selector:invalid') !== null"
+        );
+    }
+
+    /**
      * Wait for a callback to return the expected value
      *
      * @param mixed    $expected    Expected value
      * @param callable $callback    Callback used to get the results
      * @param callable $compareFunc Callback used to compare the results
      * @param callable $assertion   Assertion to make
-     * @param int      $timeout     Wait timeout (in ms)
+     * @param ?int     $timeout     Wait timeout (in ms)
      *
      * @return void
      */
@@ -742,7 +925,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         callable $callback,
         callable $compareFunc,
         callable $assertion,
-        int $timeout = null
+        ?int $timeout = null
     ) {
         $timeout ??= $this->getDefaultTimeout();
         $result = null;
@@ -773,14 +956,14 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      *
      * @param mixed    $expected Expected value
      * @param callable $callback Callback
-     * @param int      $timeout  Wait timeout (in ms)
+     * @param ?int     $timeout  Wait timeout (in ms)
      *
      * @return void
      */
     protected function assertEqualsWithTimeout(
         $expected,
         callable $callback,
-        int $timeout = null
+        ?int $timeout = null
     ) {
         $this->assertWithTimeout(
             $expected,
@@ -798,14 +981,14 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      *
      * @param string   $expected Expected value
      * @param callable $callback Callback
-     * @param int      $timeout  Wait timeout (in ms)
+     * @param ?int     $timeout  Wait timeout (in ms)
      *
      * @return void
      */
     protected function assertStringContainsStringWithTimeout(
         string $expected,
         callable $callback,
-        int $timeout = null
+        ?int $timeout = null
     ) {
         $this->assertWithTimeout(
             $expected,
@@ -856,7 +1039,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
         if ($handler) {
             $this->findCssAndSetValue($page, '#searchForm_type', $handler);
         }
-        $this->clickCss($page, '.btn.btn-primary');
+        $this->clickCss($page, '.btn.btn-primary[type=submit]');
         $this->waitForPageLoad($page);
     }
 
@@ -864,13 +1047,13 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * Wait for page load (full page or any element) to complete
      *
      * @param Element $page    Page element
-     * @param int     $timeout Wait timeout (in ms)
+     * @param ?int    $timeout Wait timeout (in ms)
      *
      * @return void
      */
     protected function waitForPageLoad(
         Element $page,
-        int $timeout = null
+        ?int $timeout = null
     ) {
         $timeout ??= $this->getDefaultTimeout();
         $session = $this->getMinkSession();
@@ -930,7 +1113,13 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             $button = $this->findCss($page, '#modal .modal-content > button.close');
         }
         $button->click();
-        $this->waitForLightboxHidden();
+        // Try twice just in case we missed the first click:
+        try {
+            $this->waitForLightboxHidden();
+        } catch (\Exception $e) {
+            $button->click();
+            $this->waitForLightboxHidden();
+        }
     }
 
     /**
@@ -958,7 +1147,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     {
         $this->assertEquals(
             $title,
-            $page->find('css', '#lightbox-title')->getText()
+            $this->findCss($page, '#lightbox-title')->getText()
         );
     }
 
@@ -1042,6 +1231,14 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             return;
         }
 
+        $page ??= $this->session->getPage();
+        // Don't validate Whoops error pages:
+        if (str_contains($page->getOuterHtml(), '<div class="Whoops container')) {
+            return;
+        }
+
+        $this->waitForPageLoad($page);
+
         $http = new \VuFindHttp\HttpService();
         $client = $http->createClient(
             $nuAddress,
@@ -1053,8 +1250,6 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
                 'out' => 'json',
             ]
         );
-        $page ??= $this->session->getPage();
-        $this->waitForPageLoad($page);
         $client->setFileUpload(
             $this->session->getCurrentUrl(),
             'file',
@@ -1237,6 +1432,10 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
 
         $this->stopMinkSession();
         $this->restoreConfigs();
+
+        if (($this->hasLiveDatabaseTrait ?? false) && is_callable([$this, 'tearDownLiveDatabaseContainer'])) {
+            $this->tearDownLiveDatabaseContainer();
+        }
 
         if (null !== $htmlValidationException) {
             throw $htmlValidationException;

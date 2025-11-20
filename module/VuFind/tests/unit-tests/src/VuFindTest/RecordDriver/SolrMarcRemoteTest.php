@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -30,8 +30,8 @@
 namespace VuFindTest\RecordDriver;
 
 use Exception;
-use Laminas\Config\Config;
 use Laminas\Http\Response;
+use VuFind\Config\Config;
 use VuFind\RecordDriver\SolrMarcRemote;
 use VuFindHttp\HttpServiceInterface;
 
@@ -113,7 +113,7 @@ class SolrMarcRemoteTest extends \PHPUnit\Framework\TestCase
         $service = $this->getMockBuilder(HttpServiceInterface::class)->getMock();
         $service->expects($this->once())->method('get')
             ->with($this->equalTo('http://foo/1'))
-            ->will($this->returnValue($response));
+            ->willReturn($response);
         return $service;
     }
 }

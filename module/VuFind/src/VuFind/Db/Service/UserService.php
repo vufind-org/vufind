@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -29,14 +29,14 @@
 
 namespace VuFind\Db\Service;
 
-use Laminas\Log\LoggerAwareInterface;
+use DateTime;
+use Doctrine\ORM\EntityManager;
 use Laminas\Session\Container as SessionContainer;
 use VuFind\Auth\UserSessionPersistenceInterface;
+use VuFind\Db\Entity\PluginManager as EntityPluginManager;
+use VuFind\Db\Entity\User;
 use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Row\User as UserRow;
-use VuFind\Db\Table\DbTableAwareInterface;
-use VuFind\Db\Table\DbTableAwareTrait;
-use VuFind\Log\LoggerAwareTrait;
+use VuFind\Db\PersistenceManager;
 
 /**
  * Database service for user.
@@ -48,55 +48,189 @@ use VuFind\Log\LoggerAwareTrait;
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
 class UserService extends AbstractDbService implements
-    DbTableAwareInterface,
-    LoggerAwareInterface,
     UserServiceInterface,
     UserSessionPersistenceInterface
 {
-    use DbTableAwareTrait;
-    use LoggerAwareTrait;
-
     /**
      * Constructor
      *
-     * @param SessionContainer $userSessionContainer Session container for user data
+     * @param EntityManager       $entityManager        Doctrine ORM entity manager
+     * @param EntityPluginManager $entityPluginManager  VuFind entity plugin manager
+     * @param PersistenceManager  $persistenceManager   Entity persistence manager
+     * @param SessionContainer    $userSessionContainer Session container for user data
      */
-    public function __construct(protected SessionContainer $userSessionContainer)
+    public function __construct(
+        EntityManager $entityManager,
+        EntityPluginManager $entityPluginManager,
+        PersistenceManager $persistenceManager,
+        protected SessionContainer $userSessionContainer
+    ) {
+        parent::__construct($entityManager, $entityPluginManager, $persistenceManager);
+    }
+
+    /**
+     * Create an access_token entity object.
+     *
+     * @return UserEntityInterface
+     */
+    public function createEntity(): UserEntityInterface
     {
+        return $this->entityPluginManager->get(UserEntityInterface::class);
+    }
+
+    /**
+     * Create an entity for the specified username.
+     *
+     * @param string $username Username
+     *
+     * @return UserEntityInterface
+     */
+    public function createEntityForUsername(string $username): UserEntityInterface
+    {
+        $user = $this->createEntity()
+            ->setUsername($username)
+            ->setCreated(new DateTime())
+            ->setHasUserProvidedEmail(false);
+        return $user;
+    }
+
+    /**
+     * Delete a user entity.
+     *
+     * @param UserEntityInterface|int $userOrId User entity object or ID to delete
+     *
+     * @return void
+     */
+    public function deleteUser(UserEntityInterface|int $userOrId): void
+    {
+        if ($user = $this->getDoctrineReference(UserEntityInterface::class, $userOrId)) {
+            $this->deleteEntity($user);
+        }
     }
 
     /**
      * Retrieve a user object from the database based on ID.
      *
-     * @param int $id ID.
+     * @param int $id ID value.
      *
      * @return ?UserEntityInterface
      */
     public function getUserById(int $id): ?UserEntityInterface
     {
-        return $this->getDbTable('User')->getById($id);
+        return $this->entityManager->find(UserEntityInterface::class, $id);
     }
 
     /**
      * Retrieve a user object from the database based on the given field.
-     * Field name must be id, username or cat_id.
+     * Field name must be id, username, email, verify_hash or cat_id.
      *
      * @param string          $fieldName  Field name
-     * @param int|null|string $fieldValue Field value
+     * @param int|string|null $fieldValue Field value
      *
      * @return ?UserEntityInterface
      */
-    public function getUserByField(string $fieldName, int|null|string $fieldValue): ?UserEntityInterface
+    public function getUserByField(string $fieldName, int|string|null $fieldValue): ?UserEntityInterface
     {
-        switch ($fieldName) {
-            case 'id':
-                return $this->getDbTable('User')->getById($fieldValue);
-            case 'username':
-                return $this->getDbTable('User')->getByUsername($fieldValue, false);
-            case 'cat_id':
-                return $this->getDbTable('User')->getByCatalogId($fieldValue);
+        // Null ID lookups cannot possibly retrieve a value:
+        if ($fieldName === 'id' && $fieldValue === null) {
+            return null;
         }
-        throw new \InvalidArgumentException('Field name must be id, username or cat_id');
+        // Map expected incoming values (actual database columns) to legal values (Doctrine properties)
+        $legalFieldMap = [
+            'id' => 'id',
+            'username' => 'username',
+            'email' => 'email',
+            'cat_id' => 'catId',
+            'verify_hash' => 'verifyHash',
+        ];
+        // For now, only username lookups are case-insensitive:
+        $caseInsensitive = $fieldName === 'username';
+        if (isset($legalFieldMap[$fieldName])) {
+            $where = $caseInsensitive
+                ? 'LOWER(U.' . $legalFieldMap[$fieldName] . ') = LOWER(:fieldValue)'
+                : 'U.' . $legalFieldMap[$fieldName] . ' = :fieldValue';
+            $dql = 'SELECT U FROM ' . UserEntityInterface::class . ' U '
+                . 'WHERE ' . $where;
+            $parameters = compact('fieldValue');
+            $query = $this->entityManager->createQuery($dql);
+            $query->setParameters($parameters);
+            return $query->getOneOrNullResult();
+        }
+        throw new \InvalidArgumentException('Field name must be id, username, email or cat_id');
+    }
+
+    /**
+     * Retrieve a user object by catalog ID. Returns null if no match is found.
+     *
+     * @param string $catId Catalog ID
+     *
+     * @return ?UserEntityInterface
+     */
+    public function getUserByCatId(string $catId): ?UserEntityInterface
+    {
+        return $this->getUserByField('cat_id', $catId);
+    }
+
+    /**
+     * Retrieve a user object by email address. Returns null if no match is found.
+     *
+     * @param string $email Email address
+     *
+     * @return ?UserEntityInterface
+     */
+    public function getUserByEmail(string $email): ?UserEntityInterface
+    {
+        return $this->getUserByField('email', $email);
+    }
+
+    /**
+     * Retrieve a user object by username. Returns null if no match is found.
+     *
+     * @param string $username Username
+     *
+     * @return ?UserEntityInterface
+     */
+    public function getUserByUsername(string $username): ?UserEntityInterface
+    {
+        return $this->getUserByField('username', $username);
+    }
+
+    /**
+     * Retrieve a user object by verify hash. Returns null if no match is found.
+     *
+     * @param string $hash Verify hash
+     *
+     * @return ?UserEntityInterface
+     */
+    public function getUserByVerifyHash(string $hash): ?UserEntityInterface
+    {
+        return $this->getUserByField('verify_hash', $hash);
+    }
+
+    /**
+     * Update the user's email address, if appropriate. Note that this does NOT
+     * automatically save the row; it assumes a subsequent call will be made to
+     * persist the data.
+     *
+     * @param UserEntityInterface $user         User entity to update
+     * @param string              $email        New email address
+     * @param bool                $userProvided Was this email provided by the user (true) or
+     * an automated lookup (false)?
+     *
+     * @return void
+     */
+    public function updateUserEmail(
+        UserEntityInterface $user,
+        string $email,
+        bool $userProvided = false
+    ): void {
+        // Only change the email if it is a non-empty value and was user provided
+        // (the user is always right) or the previous email was NOT user provided
+        // (a value may have changed in an upstream system).
+        if (!empty($email) && ($userProvided || !$user->hasUserProvidedEmail())) {
+            $user->setEmail($email);
+            $user->setHasUserProvidedEmail($userProvided);
+        }
     }
 
     /**
@@ -109,11 +243,7 @@ class UserService extends AbstractDbService implements
      */
     public function addUserDataToSession(UserEntityInterface $user): void
     {
-        if ($user instanceof UserRow) {
-            $this->userSessionContainer->userDetails = $user->toArray();
-        } else {
-            throw new \Exception($user::class . ' not supported by addUserDataToSession()');
-        }
+        $this->userSessionContainer->userDetails = $user->toArray();
     }
 
     /**
@@ -171,12 +301,33 @@ class UserService extends AbstractDbService implements
     }
 
     /**
-     * Create a new user entity.
+     * Get all rows with catalog usernames.
      *
-     * @return UserEntityInterface
+     * @return UserEntityInterface[]
      */
-    public function createEntity(): UserEntityInterface
+    public function getAllUsersWithCatUsernames(): array
     {
-        return $this->getDbTable('User')->createRow();
+        $dql = 'SELECT u '
+                . 'FROM ' . UserEntityInterface::class . ' u '
+                . 'WHERE u.catUsername IS NOT NULL';
+        $query = $this->entityManager->createQuery($dql);
+        $result = $query->getResult();
+        return $result;
+    }
+
+    /**
+     * Get user rows with insecure catalog passwords.
+     *
+     * @return UserEntityInterface[]
+     */
+    public function getInsecureRows(): array
+    {
+        $dql = 'SELECT u '
+                . 'FROM ' . UserEntityInterface::class . ' u '
+                . "WHERE u.password != '' "
+                . 'AND u.catPassword IS NOT NULL';
+        $query = $this->entityManager->createQuery($dql);
+        $result = $query->getResult();
+        return $result;
     }
 }

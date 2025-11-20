@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -202,7 +202,7 @@ class MergeMarcCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $dir = rtrim($input->getArgument('directory'), '/');
 
@@ -210,7 +210,7 @@ class MergeMarcCommand extends Command
             $fileList = $this->findXmlFiles($dir);
         } catch (\Exception $e) {
             $output->writeln($e->getMessage());
-            return 1;
+            return self::FAILURE;
         }
 
         $output->writeln(
@@ -222,6 +222,6 @@ class MergeMarcCommand extends Command
             $this->outputRecordsFromFile($filePath, $output);
         }
         $output->writeln('</marc:collection>');
-        return 0;
+        return self::SUCCESS;
     }
 }

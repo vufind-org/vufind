@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -30,8 +30,9 @@
 namespace VuFindConsole\Command\Util;
 
 use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use VuFindTheme\ScssCompiler;
 
 /**
  * Console command: build CSS from SCSS.
@@ -44,26 +45,23 @@ use VuFindTheme\ScssCompiler;
  */
 #[AsCommand(
     name: 'util/scssBuilder',
-    description: 'SCSS compiler'
+    description: 'SCSS compiler (no longer supported)'
 )]
-class ScssBuilderCommand extends AbstractCssBuilderCommand
+class ScssBuilderCommand extends Command
 {
     /**
-     * Name of precompiler format
+     * Run the command.
      *
-     * @var string
-     */
-    protected $format = 'SCSS';
-
-    /**
-     * Build the LESS compiler.
-     *
+     * @param InputInterface  $input  Input object
      * @param OutputInterface $output Output object
      *
-     * @return ScssCompiler
+     * @return int 0 for success
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function getCompiler(OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        return new ScssCompiler($output);
+        $output->writeln('<error>This utility is no longer supported. Please use `npm run build:css` instead.</error>');
+        return self::FAILURE;
     }
 }

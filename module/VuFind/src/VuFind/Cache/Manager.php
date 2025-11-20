@@ -19,8 +19,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Cache
@@ -34,8 +34,11 @@
 namespace VuFind\Cache;
 
 use Laminas\Cache\Service\StorageAdapterFactory;
+use Laminas\Cache\Storage\Capabilities;
 use Laminas\Cache\Storage\StorageInterface;
-use Laminas\Config\Config;
+use Psr\Log\LoggerAwareInterface;
+use stdClass;
+use VuFind\Log\LoggerAwareTrait;
 
 use function dirname;
 use function is_array;
@@ -54,8 +57,17 @@ use function strlen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Manager
+class Manager implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
+    /**
+     * Uncached config that contains cache settings.
+     *
+     * @var array
+     */
+    protected $config = [];
+
     /**
      * Default configuration settings.
      *
@@ -141,33 +153,20 @@ class Manager
     /**
      * Constructor
      *
-     * @param Config                $config       Main VuFind configuration
-     * @param Config                $searchConfig Search configuration
-     * @param StorageAdapterFactory $factory      Cache storage adapter factory
+     * @param array                 $config  Main VuFind configuration
+     * @param StorageAdapterFactory $factory Cache storage adapter factory
      */
     public function __construct(
-        Config $config,
-        Config $searchConfig,
+        array $config,
         StorageAdapterFactory $factory
     ) {
         $this->factory = $factory;
+        $this->config = $config;
+        $this->defaults = $config['Cache'] ?? [];
 
-        // $config and $config->Cache are Laminas\Config\Config objects
-        // $cache is created immutable, so get the array, it will be modified
-        // downstream.
-        $this->defaults = $config->Cache?->toArray() ?? [];
-
-        // Configure search specs cache based on config settings:
-        $searchCacheType = $searchConfig->Cache->type ?? false;
-        switch ($searchCacheType) {
-            case 'File':
-                // Default
-                break;
-            case false:
-                $this->cacheSpecs['searchspecs']['options']['disabled'] = true;
-                break;
-            default:
-                throw new \Exception("Unsupported cache setting: $searchCacheType");
+        // Configure search specs cache:
+        if ($config['CacheConfigName_searchspecs']['disabled'] ?? true) {
+            $this->cacheSpecs['searchspecs']['options']['disabled'] = true;
         }
     }
 
@@ -211,7 +210,7 @@ class Manager
     public function getCacheDir($allowCliOverride = true)
     {
         if (isset($this->defaults['cache_dir'])) {
-            // cache_dir setting in config.ini is obsolete
+            // Handle legacy configuration: cache_dir setting in config.ini is obsolete
             throw new \Exception(
                 'Obsolete cache_dir setting found in config.ini - please use '
                 . 'Apache environment variable VUFIND_CACHE_DIR in '
@@ -314,6 +313,16 @@ class Manager
     }
 
     /**
+     * Get uncached config.
+     *
+     * @return array
+     */
+    public function getConfig(): array
+    {
+        return $this->config;
+    }
+
+    /**
      * Ensure that a file cache is properly set up
      *
      * @param string $name Cache name
@@ -345,24 +354,16 @@ class Manager
     }
 
     /**
-     * Add a file cache to the manager and ensure that necessary directory exists.
+     * Ensure that a cache directory exists.
      *
-     * @param string $cacheName    Name of new cache to create
      * @param string $dirName      Directory to use for storage
      * @param array  $overrideOpts Options to override default values.
      *
      * @return void
      */
-    protected function createFileCache($cacheName, $dirName, $overrideOpts = [])
+    public function ensureCacheDirectoryExists($dirName, $overrideOpts = [])
     {
         $opts = array_merge($this->defaults, $overrideOpts);
-        if ($opts['disabled'] ?? false) {
-            $this->createNoCache($cacheName);
-            return;
-        } else {
-            // Laminas does not support "disabled = false"; unset to avoid error.
-            unset($opts['disabled']);
-        }
 
         if (!is_dir($dirName)) {
             if (isset($opts['umask'])) {
@@ -392,6 +393,30 @@ class Manager
                 $this->directoryCreationError = true;
             }
         }
+    }
+
+    /**
+     * Add a file cache to the manager and ensure that necessary directory exists.
+     *
+     * @param string $cacheName    Name of new cache to create
+     * @param string $dirName      Directory to use for storage
+     * @param array  $overrideOpts Options to override default values.
+     *
+     * @return void
+     */
+    protected function createFileCache($cacheName, $dirName, $overrideOpts = [])
+    {
+        $opts = array_merge($this->defaults, $overrideOpts);
+        if ($opts['disabled'] ?? false) {
+            $this->createNoCache($cacheName);
+            return;
+        } else {
+            // Laminas does not support "disabled = false"; unset to avoid error.
+            unset($opts['disabled']);
+        }
+
+        $this->ensureCacheDirectoryExists($dirName, $opts);
+
         if (empty($opts)) {
             $opts = ['cache_dir' => $dirName];
         } elseif (is_array($opts)) {
@@ -409,5 +434,52 @@ class Manager
                 ['name' => 'serializer'],
             ],
         ];
+    }
+
+    /**
+     * Create an in-memory cache
+     *
+     * @param array $storageConfig See Storage in RateLimiter.yaml
+     *
+     * @return StorageInterface
+     */
+    public function createInMemoryCache(array $storageConfig): StorageInterface
+    {
+        $adapter = $storageConfig['adapter'] ?? 'memcached';
+
+        // The 'vufind' adapter uses a standard file-based cache to simulate an in-memory cache.
+        // This is intended for TESTING PURPOSES ONLY, since it allows us to test related functionality
+        // without setting up a real in-memory data store. It should not be used for any other purpose.
+        if ('vufind' === strtolower($adapter)) {
+            $this->logWarning('Using standard cache instead of in-memory cache -- for testing only!');
+            $laminasCache = $this->getCache('object', $storageConfig['options']['namespace']);
+            // Fake the capabilities to include static TTL support:
+            $eventManager = $laminasCache->getEventManager();
+            $eventManager->attach(
+                'getCapabilities.post',
+                function ($event) use ($laminasCache): void {
+                    $oldCapacities = $event->getResult();
+                    $newCapacities = new Capabilities(
+                        $laminasCache,
+                        new stdClass(),
+                        ['staticTtl' => true],
+                        $oldCapacities
+                    );
+                    $event->setResult($newCapacities);
+                }
+            );
+            if ($ttl = ($storageConfig['options']['ttl'] ?? null)) {
+                $laminasCache->getOptions()->setTtl($ttl);
+            }
+            return $laminasCache;
+        }
+
+        $options = $storageConfig['options'];
+        if ('memcached' === strtolower($adapter)) {
+            $options['servers'] ??= 'localhost:11211';
+        }
+        $settings = compact('adapter', 'options');
+        $laminasCache = $this->factory->createFromArrayConfiguration($settings);
+        return $laminasCache;
     }
 }

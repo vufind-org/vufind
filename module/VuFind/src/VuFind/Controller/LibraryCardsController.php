@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -31,6 +31,10 @@
 
 namespace VuFind\Controller;
 
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\UserCardServiceInterface;
+use VuFind\Db\Type\AuditEventSubtype;
+use VuFind\Db\Type\AuditEventType;
 use VuFind\Exception\ILS as ILSException;
 
 /**
@@ -58,10 +62,11 @@ class LibraryCardsController extends AbstractBase
 
         // Connect to the ILS for login drivers:
         $catalog = $this->getILS();
+        $cardService = $this->getDbService(UserCardServiceInterface::class);
 
         return $this->createViewModel(
             [
-                'libraryCards' => $user->getLibraryCards(),
+                'libraryCards' => $cardService->getLibraryCards($user),
                 'multipleTargets' => $catalog->checkCapability('getLoginDrivers'),
                 'allowConnectingCards' => $this->getAuthManager()
                     ->supportsConnectingLibraryCard(),
@@ -97,7 +102,8 @@ class LibraryCardsController extends AbstractBase
         }
 
         $id = $this->params()->fromRoute('id', $this->params()->fromQuery('id'));
-        $card = $user->getLibraryCard($id == 'NEW' ? null : $id);
+        $cardService = $this->getDbService(UserCardServiceInterface::class);
+        $card = $cardService->getOrCreateLibraryCard($user, $id == 'NEW' ? null : $id);
 
         $target = null;
         $username = $card->getCatUsername();
@@ -149,7 +155,16 @@ class LibraryCardsController extends AbstractBase
             $this->params()->fromQuery('confirm')
         );
         if ($confirm) {
-            $user->deleteLibraryCard($cardID);
+            $this->getDbService(UserCardServiceInterface::class)->deleteLibraryCard($user, $cardID);
+
+            $this->getAuditEventService()->addEvent(
+                AuditEventType::User,
+                AuditEventSubtype::DeleteCard,
+                $user,
+                data: [
+                    'card_id' => $cardID,
+                ]
+            );
 
             // Success Message
             $this->flashMessenger()->addMessage('Library Card Deleted', 'success');
@@ -197,7 +212,8 @@ class LibraryCardsController extends AbstractBase
         if (null === $cardID) {
             return $this->redirect()->toRoute('myresearch-home');
         }
-        $user->activateLibraryCard($cardID);
+        $cardService = $this->getDbService(UserCardServiceInterface::class);
+        $cardService->activateLibraryCard($user, $cardID);
 
         // Connect to the ILS and check that the credentials are correct:
         try {
@@ -229,7 +245,7 @@ class LibraryCardsController extends AbstractBase
      */
     public function connectCardLoginAction()
     {
-        if (!($user = $this->getUser())) {
+        if (!$this->getUser()) {
             return $this->forceLogin();
         }
         $url = $this->getServerUrl('librarycards-connectcard');
@@ -264,7 +280,7 @@ class LibraryCardsController extends AbstractBase
     /**
      * Process the "edit library card" submission.
      *
-     * @param \VuFind\Db\Row\User $user Logged in user
+     * @param UserEntityInterface $user Logged in user
      *
      * @return object|bool        Response object if redirect is
      * needed, false if form needs to be redisplayed.
@@ -289,7 +305,8 @@ class LibraryCardsController extends AbstractBase
 
         // Check the credentials if the username is changed or a new password is
         // entered:
-        $card = $user->getLibraryCard($id == 'NEW' ? null : $id);
+        $cardService = $this->getDbService(UserCardServiceInterface::class);
+        $card = $cardService->getOrCreateLibraryCard($user, $id == 'NEW' ? null : $id);
         if ($card->getCatUsername() !== $username || trim($password)) {
             // Connect to the ILS and check that the credentials are correct:
             $loginMethod = $this->getILSLoginMethod($target);
@@ -309,9 +326,29 @@ class LibraryCardsController extends AbstractBase
                 $this->flashMessenger()->addErrorMessage('ils_connection_failed');
                 return false;
             }
-            if ('password' === $loginMethod && !$patron) {
-                $this->flashMessenger()
-                    ->addMessage('authentication_error_invalid', 'error');
+            if ($patron) {
+                $this->getAuditEventService()->addEvent(
+                    AuditEventType::User,
+                    AuditEventSubtype::EditCard,
+                    $user,
+                    data: [
+                        'username' => $username,
+                        'card_id' => $id,
+                    ]
+                );
+            } else {
+                if ('password' === $loginMethod) {
+                    $this->flashMessenger()->addErrorMessage('authentication_error_invalid');
+                }
+                $this->getAuditEventService()->addEvent(
+                    AuditEventType::User,
+                    AuditEventSubtype::ILSLoginFailure,
+                    $user,
+                    data: [
+                        'username' => $username,
+                        'card_id' => $id,
+                    ]
+                );
                 return false;
             }
             if ('email' === $loginMethod) {
@@ -319,13 +356,22 @@ class LibraryCardsController extends AbstractBase
                     $info = $patron;
                     $info['cardID'] = $id;
                     $info['cardName'] = $cardName;
-                    $emailAuthenticator = $this->serviceLocator
-                        ->get(\VuFind\Auth\EmailAuthenticator::class);
+                    $emailAuthenticator = $this->getService(\VuFind\Auth\EmailAuthenticator::class);
                     $emailAuthenticator->sendAuthenticationLink(
                         $info['email'],
                         $info,
                         ['auth_method' => 'Email'],
                         'editLibraryCard'
+                    );
+                    $this->getAuditEventService()->addEvent(
+                        AuditEventType::User,
+                        AuditEventSubtype::SendCardAuthEmail,
+                        $user,
+                        data: [
+                            'username' => $username,
+                            'card_id' => $id,
+                            'email' => $info['email'],
+                        ]
                     );
                 }
                 // Don't reveal the result
@@ -335,14 +381,15 @@ class LibraryCardsController extends AbstractBase
         }
 
         try {
-            $user->saveLibraryCard(
+            $cardService->persistLibraryCardData(
+                $user,
                 $id == 'NEW' ? null : $id,
                 $cardName,
                 $username,
                 $password
             );
         } catch (\VuFind\Exception\LibraryCard $e) {
-            $this->flashMessenger()->addMessage($e->getMessage(), 'error');
+            $this->flashMessenger()->addErrorMessage($e->getMessage());
             return false;
         }
 
@@ -352,22 +399,33 @@ class LibraryCardsController extends AbstractBase
     /**
      * Process library card addition via an email link
      *
-     * @param User   $user User object
-     * @param string $hash Hash
+     * @param UserEntityInterface $user User object
+     * @param string              $hash Hash
      *
      * @return \Laminas\Http\Response Response object
      */
     protected function processEmailLink($user, $hash)
     {
-        $emailAuthenticator = $this->serviceLocator
-            ->get(\VuFind\Auth\EmailAuthenticator::class);
+        $emailAuthenticator = $this->getService(\VuFind\Auth\EmailAuthenticator::class);
         try {
             $info = $emailAuthenticator->authenticate($hash);
-            $user->saveLibraryCard(
+            $cardService = $this->getDbService(UserCardServiceInterface::class);
+            $cardService->persistLibraryCardData(
+                $user,
                 'NEW' === $info['cardID'] ? null : $info['cardID'],
                 $info['cardName'],
                 $info['cat_username'],
                 ' '
+            );
+            $this->getAuditEventService()->addEvent(
+                AuditEventType::User,
+                AuditEventSubtype::ConnectCardByEmail,
+                $user,
+                data: [
+                    'username' => $info['cat_username'],
+                    'card_id' => $info['cardID'],
+                    'email' => $info['email'],
+                ]
             );
         } catch (\VuFind\Exception\Auth | \VuFind\Exception\LibraryCard $e) {
             $this->flashMessenger()->addErrorMessage($e->getMessage());

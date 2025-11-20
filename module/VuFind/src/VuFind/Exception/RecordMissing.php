@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Exceptions
@@ -38,20 +38,8 @@ namespace VuFind\Exception;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class RecordMissing extends \Exception implements
-    HttpStatusInterface,
-    SeverityLevelInterface
+class RecordMissing extends NotFound implements SeverityLevelInterface
 {
-    /**
-     * Get HTTP status associated with this exception.
-     *
-     * @return int
-     */
-    public function getHttpStatus()
-    {
-        return 404;
-    }
-
     /**
      * Get the logging severity level for this exception.
      *
@@ -59,6 +47,6 @@ class RecordMissing extends \Exception implements
      */
     public function getSeverityLevel()
     {
-        return \Laminas\Log\Logger::DEBUG;
+        return \Psr\Log\LogLevel::DEBUG;
     }
 }

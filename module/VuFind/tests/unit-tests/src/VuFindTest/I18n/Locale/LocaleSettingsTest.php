@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -31,7 +31,7 @@
 
 namespace VuFindTest\I18n\Locale;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\I18n\Locale\LocaleSettings;
 
 /**
@@ -199,10 +199,9 @@ class LocaleSettingsTest extends \PHPUnit\Framework\TestCase
      * @param string  $language          Default language
      * @param ?string $fallbackLanguages Fallback languages or null for no setting
      *
-     * @dataProvider fallbackLocalConfigsProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('fallbackLocalConfigsProvider')]
     public function testFallbackLocaleConfigs(array $expected, string $language, ?string $fallbackLanguages): void
     {
         $config = [

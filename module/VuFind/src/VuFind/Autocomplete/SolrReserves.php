@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Autocomplete
@@ -53,5 +53,38 @@ class SolrReserves extends Solr
         parent::__construct($results);
         $this->defaultDisplayField = 'course';
         $this->searchClassId = 'SolrReserves';
+    }
+
+    /**
+     * Try to turn an array of record drivers into an array of suggestions.
+     * Excluding `no_*_listed` matches since those are the translation values
+     * when there is no data in that field.
+     *
+     * @param array  $searchResults An array of record drivers
+     * @param string $query         User search query
+     * @param bool   $exact         Ignore non-exact matches?
+     *
+     * @return array
+     */
+    protected function getSuggestionsFromSearch($searchResults, $query, $exact)
+    {
+        $results = [];
+        foreach ($searchResults as $object) {
+            $current = $object->getRawData();
+            foreach ($this->displayField as $field) {
+                if (isset($current[$field]) && !preg_match('/no_.*_listed/', $current[$field])) {
+                    $bestMatch = $this->pickBestMatch(
+                        $current[$field],
+                        $query,
+                        $exact
+                    );
+                    if ($bestMatch) {
+                        $results[] = $bestMatch;
+                        break;
+                    }
+                }
+            }
+        }
+        return $results;
     }
 }

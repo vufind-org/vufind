@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -63,7 +63,7 @@ class PluginManagerTest extends \PHPUnit\Framework\TestCase
     public function testExpectedInterface()
     {
         $this->expectException(\Laminas\ServiceManager\Exception\InvalidServiceException::class);
-        $this->expectExceptionMessage('Plugin ArrayObject does not belong to VuFind\\Auth\\AbstractBase');
+        $this->expectExceptionMessage('Plugin ArrayObject does not belong to VuFind\\Auth\\AuthInterface');
 
         $pm = new PluginManager(new \VuFindTest\Container\MockContainer($this));
         $pm->validate(new \ArrayObject());

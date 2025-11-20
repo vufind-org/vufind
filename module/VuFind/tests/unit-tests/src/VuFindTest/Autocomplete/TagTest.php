@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -31,7 +31,7 @@ namespace VuFindTest\Autocomplete;
 
 use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Autocomplete\Tag;
-use VuFind\Db\Service\TagServiceInterface;
+use VuFind\Tags\TagsService;
 
 /**
  * Tag autocomplete test class.
@@ -52,23 +52,23 @@ class TagTest extends \PHPUnit\Framework\TestCase
     public function testSuggestions(): void
     {
         // Real object to test:
-        $tag = new Tag($this->getTagServiceMock());
+        $tag = new Tag($this->getTagsServiceMock());
         $this->assertEquals(['bar1', 'bar2'], $tag->getSuggestions('foo'));
     }
 
     /**
      * Get tagService mock.
      *
-     * @return MockObject&TagServiceInterface
+     * @return MockObject&TagsService
      */
-    public function getTagServiceMock(): MockObject&TagServiceInterface
+    public function getTagsServiceMock(): MockObject&TagsService
     {
-        $tagService = $this->createMock(TagServiceInterface::class);
+        $tagService = $this->createMock(TagsService::class);
         $tags = [
             ['tag' => 'bar1'],
             ['tag' => 'bar2'],
         ];
-        $tagService->expects($this->once())->method('matchText')
+        $tagService->expects($this->once())->method('getNonListTagsFuzzilyMatchingString')
             ->with($this->equalTo('foo'))
             ->willReturn($tags);
         return $tagService;

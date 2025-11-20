@@ -2,7 +2,7 @@
 
 /**
  * VuFind Action Feature Trait - Bulk action helper methods
- * Depends on access to the config loader and export support class.
+ * Depends on access to the config manager and export support class.
  *
  * PHP version 8
  *
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Feature
@@ -46,26 +46,26 @@ trait BulkActionTrait
     /**
      * Config
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $bulkActionConfig;
 
     /**
      * Export Config
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $bulkActionExportConfig;
 
     /**
      * Get Config.
      *
-     * @return \Laminas\Config\Config
+     * @return \VuFind\Config\Config
      */
     protected function getBulkActionConfig()
     {
         if ($this->bulkActionConfig === null) {
-            $this->bulkActionConfig = $this->configLoader->get('config');
+            $this->bulkActionConfig = $this->configManager->getConfigObject('config');
         }
         return $this->bulkActionConfig;
     }
@@ -73,12 +73,12 @@ trait BulkActionTrait
     /**
      * Get Export Config.
      *
-     * @return \Laminas\Config\Config
+     * @return \VuFind\Config\Config
      */
     protected function getBulkActionExportConfig()
     {
         if ($this->bulkActionExportConfig === null) {
-            $this->bulkActionExportConfig = $this->configLoader->get('export');
+            $this->bulkActionExportConfig = $this->configManager->getConfigObject('export');
         }
         return $this->bulkActionExportConfig;
     }

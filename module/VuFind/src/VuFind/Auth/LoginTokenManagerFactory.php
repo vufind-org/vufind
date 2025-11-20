@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -31,7 +31,6 @@ namespace VuFind\Auth;
 
 use BrowscapPHP\Browscap;
 use Laminas\Cache\Psr\SimpleCache\SimpleCacheDecorator;
-use Laminas\Log\PsrLoggerAdapter;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
@@ -74,16 +73,16 @@ class LoginTokenManagerFactory implements \Laminas\ServiceManager\Factory\Factor
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
         $this->container = $container;
 
         $dbServiceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         return new $requestedName(
-            $container->get(\VuFind\Config\PluginManager::class)->get('config'),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config'),
             $dbServiceManager->get(UserServiceInterface::class),
             $dbServiceManager->get(LoginTokenServiceInterface::class),
             $container->get(\VuFind\Cookie\CookieManager::class),
@@ -102,7 +101,7 @@ class LoginTokenManagerFactory implements \Laminas\ServiceManager\Factory\Factor
     public function getBrowscap(): Browscap
     {
         $cache = new SimpleCacheDecorator($this->container->get(\VuFind\Cache\Manager::class)->getCache('browscap'));
-        $logger = new PsrLoggerAdapter($this->container->get(\VuFind\Log\Logger::class));
+        $logger = $this->container->get(\VuFind\Log\Logger::class);
         return new Browscap($cache, $logger);
     }
 }

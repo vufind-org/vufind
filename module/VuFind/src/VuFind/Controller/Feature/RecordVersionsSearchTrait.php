@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -56,7 +56,7 @@ trait RecordVersionsSearchTrait
         $this->saveToHistory = false;
 
         $id = null;
-        $callback = function ($runner, $params, $searchId) use (&$id) {
+        $callback = function ($runner, $params, $searchId) use (&$id): void {
             $query = $params->getQuery();
             if ($query instanceof WorkKeysQuery) {
                 $id = $query->getId();
@@ -73,7 +73,7 @@ trait RecordVersionsSearchTrait
 
         $view = $this->getSearchResultsView($callback);
         if (null !== $id) {
-            $loader = $this->serviceLocator->get(\VuFind\Record\Loader::class);
+            $loader = $this->getService(\VuFind\Record\Loader::class);
             $view->driver = $loader->load($id, $this->searchClassId);
         }
         return $view;

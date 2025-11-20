@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -52,9 +52,17 @@ class HelpController extends AbstractBase
      */
     public function homeAction()
     {
+        $topic = $this->params()->fromRoute('topic');
+        // The 'Home' check is for backward compatibility in case the legacy
+        // Help/Home route is eventually removed from the configuration. Old
+        // URLs were of the form /Help/Home?topic=x; new URLs are /Help/x.
+        if (empty($topic) || $topic === 'Home') {
+            $topic = $this->params()->fromQuery('topic');
+        }
+
         $this->layout()->setTemplate('layout/help');
         return $this->createViewModel(
-            ['topic' => $this->params()->fromQuery('topic')]
+            ['topic' => $topic]
         );
     }
 }

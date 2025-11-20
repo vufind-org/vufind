@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -67,9 +67,8 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
      * @param bool $skipBackups Should we test with backups disabled?
      *
      * @return void
-     *
-     * @dataProvider skipBackupsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('skipBackupsProvider')]
     public function testInteractiveInstallation(bool $skipBackups): void
     {
         $expectedBaseDir = realpath(__DIR__ . '/../../../../../../../../');
@@ -105,7 +104,7 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
                 [
                     $this->isInstanceOf(InputInterface::class),
                     $this->isInstanceOf(OutputInterface::class),
-                    'What base path should be used in VuFind\'s URL? [/vufind] ',
+                    'What base path should be used in VuFind®\'s URL? [/vufind] ',
                 ],
                 [
                     $this->isInstanceOf(InputInterface::class),
@@ -124,7 +123,7 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
         ];
         $command->expects($this->exactly(2))->method('buildDirs')
             ->with($this->equalTo($expectedDirs))
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $expectedEnvBat = "@set VUFIND_HOME=$expectedBaseDir\n"
             . "@set VUFIND_LOCAL_DIR=$localFixtures\n"
             . "@set SOLR_PORT=8080\n";
@@ -146,9 +145,9 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute($skipBackups ? ['--skip-backups' => true] : []);
         $expectedOutput = <<<TEXT
-            VuFind has been found in $expectedBaseDir.
+            VuFind® has been found in $expectedBaseDir.
 
-            VuFind supports use of a custom module for storing local code changes.
+            VuFind® supports use of a custom module for storing local code changes.
             If you do not plan to customize the code, you can skip this step.
             If you decide to use a custom module, the name you choose will be used for
             the module's directory name and its PHP namespace.
@@ -156,9 +155,9 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
 
             You now need to load this configuration into Apache.
             Once the configuration is linked, restart Apache. You should now be able
-            to access VuFind at http://localhost/bar
+            to access VuFind® at http://localhost/bar
 
-            For proper use of command line tools, you should also ensure that your
+            For proper use of command line tools, you should ensure that your
 
             VUFIND_HOME and VUFIND_LOCAL_DIR environment variables are set to
             $expectedBaseDir and $localFixtures respectively.
@@ -192,7 +191,7 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
         $command->expects($this->exactly(5))->method('backUpFile')->willReturn(true);
         $command->expects($this->once())->method('buildDirs')
             ->with($this->equalTo($expectedDirs))
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $expectedEnvBat = "@set VUFIND_HOME=$expectedBaseDir\n"
             . "@set VUFIND_LOCAL_DIR=$localFixtures\n"
             . "@set SOLR_PORT=8983\n";
@@ -216,14 +215,14 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
             ['--non-interactive' => true, '--overridedir' => $localFixtures]
         );
         $expectedOutput = <<<EXPECTED
-            VuFind has been found in $expectedBaseDir.
+            VuFind® has been found in $expectedBaseDir.
             Apache configuration written to $localFixtures/httpd-vufind.conf.
 
             You now need to load this configuration into Apache.
             Once the configuration is linked, restart Apache. You should now be able
-            to access VuFind at http://localhost/vufind
+            to access VuFind® at http://localhost/vufind
 
-            For proper use of command line tools, you should also ensure that your
+            For proper use of command line tools, you should ensure that your
 
             VUFIND_HOME and VUFIND_LOCAL_DIR environment variables are set to
             $expectedBaseDir and $localFixtures respectively.
@@ -251,7 +250,7 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
             ['--solr-port' => 'bad']
         );
         $expectedOutput = <<<EXPECTED
-            VuFind has been found in $expectedBaseDir.
+            VuFind® has been found in $expectedBaseDir.
             Solr port must be a number.
             EXPECTED;
         $this->assertEquals(

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -30,8 +30,7 @@
 
 namespace VuFind\Auth;
 
-use Laminas\Config\Config;
-use Laminas\Log\PsrLoggerAdapter;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
 
 use function constant;
@@ -46,6 +45,9 @@ use function constant;
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
+ *
+ * @deprecated This integration cannot be maintained due to the abandonment of the apereo/phpCAS library.
+ * Use OpenIDConnect instead if possible.
  */
 class CAS extends AbstractBase
 {
@@ -128,7 +130,7 @@ class CAS extends AbstractBase
      * account credentials.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     public function authenticate($request)
     {
@@ -148,7 +150,8 @@ class CAS extends AbstractBase
         }
 
         // If we made it this far, we should log in the user!
-        $user = $this->getUserTable()->getByUsername($username);
+        $userService = $this->getUserService();
+        $user = $this->getOrCreateUserByUsername($username);
 
         // Has the user configured attributes to use for populating the user table?
         $attribsToCheck = [
@@ -160,32 +163,17 @@ class CAS extends AbstractBase
             if (isset($cas->$attribute)) {
                 $value = $casauth->getAttribute($cas->$attribute);
                 if ($attribute == 'email') {
-                    $user->updateEmail($value);
+                    $userService->updateUserEmail($user, $value);
                 } elseif ($attribute != 'cat_password') {
-                    $user->$attribute = $value ?? '';
+                    $this->setUserValueByField($user, $attribute, $value ?? '');
                 } else {
                     $catPassword = $value;
                 }
             }
         }
 
-        // Save credentials if applicable. Note that we want to allow empty
-        // passwords (see https://github.com/vufind-org/vufind/pull/532), but
-        // we also want to be careful not to replace a non-blank password with a
-        // blank one in case the auth mechanism fails to provide a password on
-        // an occasion after the user has manually stored one. (For discussion,
-        // see https://github.com/vufind-org/vufind/pull/612). Note that in the
-        // (unlikely) scenario that a password can actually change from non-blank
-        // to blank, additional work may need to be done here.
-        if (!empty($user->cat_username)) {
-            $user->saveCredentials(
-                $user->cat_username,
-                empty($catPassword) ? $this->ilsAuthenticator->getCatPasswordForUser($user) : $catPassword
-            );
-        }
-
-        // Save and return the user object:
-        $user->save();
+        // Save and return user data:
+        $this->saveUserAndCredentials($user, $catPassword, $this->ilsAuthenticator);
         return $user;
     }
 
@@ -196,16 +184,12 @@ class CAS extends AbstractBase
      * @param string $target Full URL where external authentication method should
      * send user after login (some drivers may override this).
      *
-     * @return bool|string
+     * @return ?string
      */
-    public function getSessionInitiator($target)
+    public function getSessionInitiator(string $target): ?string
     {
         $config = $this->getConfig();
-        if (isset($config->CAS->target)) {
-            $casTarget = $config->CAS->target;
-        } else {
-            $casTarget = $target;
-        }
+        $casTarget = $config->CAS->target ?? $target;
         $append = (str_contains($casTarget, '?')) ? '&' : '?';
         $sessionInitiator = $config->CAS->login
             . '?service=' . urlencode($casTarget)
@@ -235,21 +219,17 @@ class CAS extends AbstractBase
     }
 
     /**
-     * Perform cleanup at logout time.
+     * Get URL users should be redirected to for logout in external services if necessary.
      *
-     * @param string $url URL to redirect user to after logging out.
+     * @param string $url Internal URL to redirect user to after logging out.
      *
-     * @return string     Redirect URL (usually same as $url, but modified in
-     * some authentication modules).
+     * @return string Redirect URL (usually same as $url, but modified in some authentication modules).
      */
-    public function logout($url)
+    public function getLogoutRedirectUrl(string $url): string
     {
         // If single log-out is enabled, use a special URL:
         $config = $this->getConfig();
-        if (
-            isset($config->CAS->logout)
-            && !empty($config->CAS->logout)
-        ) {
+        if (!empty($config->CAS->logout)) {
             $url = $config->CAS->logout . '?service=' . urlencode($url);
         }
 
@@ -320,6 +300,9 @@ class CAS extends AbstractBase
      */
     protected function setupCAS()
     {
+        if (!class_exists(\phpCAS::class)) {
+            throw new \Exception('php-cas module not found; install apereo/phpcas to use CAS');
+        }
         $casauth = new \phpCAS();
 
         // Check to see if phpCAS has already been setup. If it has, than skip as
@@ -327,7 +310,7 @@ class CAS extends AbstractBase
         if (!$this->phpCASSetup) {
             $cas = $this->getConfig()->CAS;
 
-            $casauth->setLogger(new PsrLoggerAdapter($this->logger));
+            $casauth->setLogger($this->logger);
 
             if ($cas->debug ?? false) {
                 $casauth->setVerbose(true);

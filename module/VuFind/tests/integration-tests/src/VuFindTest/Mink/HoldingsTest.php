@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -48,7 +48,7 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for test methods
      *
-     * @return array
+     * @return array[]
      */
     public static function itemStatusAndHoldingsProvider(): array
     {
@@ -59,6 +59,8 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
             [AvailabilityStatusInterface::STATUS_UNAVAILABLE, 'Checked Out', 'Checked Out', 'danger'],
             [AvailabilityStatusInterface::STATUS_UNCERTAIN, 'Check with Staff', 'Check with Staff', 'warning'],
             [null, 'Live Status Unavailable', 'Live Status Unavailable', 'muted'],
+            [false, 'HoldingStatus::transit_to', 'In transit to pick up location 1', 'danger'],
+            [false, 'HoldingStatus::transit_to_date', 'In transit to pick up location 1, sent on 01.01.2001', 'danger'],
         ];
         $msgSet = array_map(
             function ($a) {
@@ -82,32 +84,55 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
             $set
         );
 
-        return [...$msgSet, ...$groupSet, ...$allSet];
+        $totalSet = [...$msgSet, ...$groupSet, ...$allSet];
+        $totalSet[] = array_merge($set[0], ['msg', false, true]);
+        $totalSet[] = array_merge($set[1], ['group', true, false]);
+        $totalSet[] = array_merge($set[2], ['all', false, false]);
+
+        return $totalSet;
+    }
+
+    /**
+     * Supplemental data provider for testItemStatusFull().
+     *
+     * @return array[]
+     */
+    public static function itemStatusAndHoldingsCustomTemplateProvider(): array
+    {
+        return ['custom template test' => [true, 'On Shelf', 'On Shelf', 'success', 'msg', true, true, true]];
     }
 
     /**
      * Test basic item status display in search results
      *
-     * @param mixed  $availability      Item availability status
-     * @param string $status            Status display string
-     * @param string $expected          Expected availability display status
-     * @param string $expectedType      Expected status type (e.g. 'success')
-     * @param string $multipleLocations Configuration setting for multiple locations
-     *
-     * @dataProvider itemStatusAndHoldingsProvider
+     * @param mixed  $availability       Item availability status
+     * @param string $status             Status display string
+     * @param string $expected           Expected availability display status
+     * @param string $expectedType       Expected status type (e.g. 'success')
+     * @param string $multipleLocations  Configuration setting for multiple locations
+     * @param bool   $loadBatchWise      If status should be loaded batch wise
+     * @param bool   $loadObservableOnly If status of only observable records should be loaded
      *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('itemStatusAndHoldingsProvider')]
     public function testItemStatus(
         $availability,
         string $status,
         string $expected,
         string $expectedType,
-        string $multipleLocations
+        string $multipleLocations,
+        bool $loadBatchWise = true,
+        bool $loadObservableOnly = true,
     ): void {
         $this->changeConfigs(
             [
-                'config' => $this->getConfigIniOverrides(false, $multipleLocations),
+                'config' => $this->getConfigIniOverrides(
+                    false,
+                    $multipleLocations,
+                    $loadBatchWise,
+                    $loadObservableOnly
+                ),
                 'Demo' => $this->getDemoIniOverrides($availability, $status, true),
             ]
         );
@@ -158,7 +183,10 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
                     );
                     $this->assertEquals(
                         'Main Library',
-                        $this->findCssAndGetText($page, '.result-body .callnumAndLocation .groupLocation .text-success')
+                        $this->findCssAndGetText(
+                            $page,
+                            '.result-body .callnumAndLocation .groupLocation .text-' . $expectedType
+                        )
                     );
                 }
             } else {
@@ -170,8 +198,8 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
         } else {
             // No extra items to care for:
             if ('group' === $multipleLocations) {
-                // Unknown status displays as warning:
-                $type = null === $availability ? 'warning' : 'danger';
+                // Unknown status displays as muted:
+                $type = null === $availability ? 'muted' : 'danger';
                 $selector = ".result-body .callnumAndLocation .groupLocation .text-$type";
             } else {
                 $selector = '.result-body .callnumAndLocation .location';
@@ -183,26 +211,42 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test full item status display in search results
      *
-     * @param mixed  $availability      Item availability status
-     * @param string $status            Status display string
-     * @param string $expected          Expected availability display status
-     * @param string $expectedType      Expected status type (e.g. 'success')
-     * @param string $multipleLocations Configuration setting for multiple locations
-     *
-     * @dataProvider itemStatusAndHoldingsProvider
+     * @param mixed  $availability       Item availability status
+     * @param string $status             Status display string
+     * @param string $expected           Expected availability display status
+     * @param string $expectedType       Expected status type (e.g. 'success')
+     * @param string $multipleLocations  Configuration setting for multiple locations
+     * @param bool   $loadBatchWise      If status should be loaded batch wise
+     * @param bool   $loadObservableOnly If status of only observable records should be loaded
+     * @param string $customTemplate     Include extra steps to test custom template?
      *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('itemStatusAndHoldingsProvider')]
+    #[\PHPUnit\Framework\Attributes\DataProvider('itemStatusAndHoldingsCustomTemplateProvider')]
     public function testItemStatusFull(
         $availability,
         string $status,
         string $expected,
         string $expectedType,
-        string $multipleLocations
+        string $multipleLocations,
+        bool $loadBatchWise = true,
+        bool $loadObservableOnly = true,
+        bool $customTemplate = false
     ): void {
+        $config = $this->getConfigIniOverrides(
+            true,
+            $multipleLocations,
+            $loadBatchWise,
+            $loadObservableOnly
+        );
+        // If testing with the custom template, switch to the minktest theme:
+        if ($customTemplate) {
+            $config['Site']['theme'] = 'minktest';
+        }
         $this->changeConfigs(
             [
-                'config' => $this->getConfigIniOverrides(true, $multipleLocations),
+                'config' => $config,
                 'Demo' => $this->getDemoIniOverrides($availability, $status, true),
             ]
         );
@@ -221,6 +265,11 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
         } else {
             // No extra items to care for:
             $this->assertEquals('Main Library', $this->findCssAndGetText($page, '.result-body .fullLocation'));
+        }
+        // If testing with the custom template, be sure its custom script executed as expected:
+        if ($customTemplate) {
+            $this->findCss($page, '.js-status-test');
+            $this->unFindCss($page, '.js-status-test.hidden');
         }
     }
 
@@ -254,10 +303,9 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $expectedType      Expected status type (e.g. 'success')
      * @param string $multipleLocations Configuration setting for multiple locations
      *
-     * @dataProvider itemStatusAndHoldingsProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('itemStatusAndHoldingsProvider')]
     public function testHoldings(
         $availability,
         string $status,
@@ -277,22 +325,83 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Data provider for testCallNoDisplay().
+     *
+     * @return array[]
+     */
+    public static function callNoDisplayProvider(): array
+    {
+        return [
+            'first' => ['first', 'Test1 A1234'],
+            'all' => ['all', 'Test1 A1234, Test2 B1234'],
+            'msg' => ['msg', 'Multiple Call Numbers'],
+        ];
+    }
+
+    /**
+     * Test call number display
+     *
+     * @param string $mode           Call number mode to configure
+     * @param string $expectedCallNo Expected call number output
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('callNoDisplayProvider')]
+    public function testCallNoDisplay(string $mode, string $expectedCallNo): void
+    {
+        $items = [
+            ['callnumber' => 'A1234', 'callnumber_prefix' => 'Test1'],
+            ['callnumber' => 'B1234', 'callnumber_prefix' => 'Test2'],
+        ];
+        $demoSettings = [
+            'Records' => [
+                'services' => [],
+            ],
+            'Failure_Probabilities' => [
+                'getStatuses' => 0,
+            ],
+            'StaticHoldings' => ['testsample1' => json_encode($items)],
+        ];
+
+        $this->changeConfigs(
+            [
+                'config' => $this->getConfigIniOverrides(false, 'msg', multipleCallNos: $mode),
+                'Demo' => $demoSettings,
+            ]
+        );
+
+        $page = $this->goToSearchResults();
+        $this->assertEquals($expectedCallNo, $this->findCssAndGetText($page, '.callnumAndLocation .callnumber'));
+    }
+
+    /**
      * Get config.ini override settings for testing ILS functions.
      *
-     * @param bool   $fullStatus        Whether to show full item status in results
-     * @param string $multipleLocations Setting to use for multiple locations
+     * @param bool   $fullStatus         Whether to show full item status in results
+     * @param string $multipleLocations  Setting to use for multiple locations
+     * @param bool   $loadBatchWise      If status should be loaded batch wise
+     * @param bool   $loadObservableOnly If status of only observable records should be loaded
+     * @param string $multipleCallNos    Setting to use for multiple call numbers
      *
      * @return array
      */
-    protected function getConfigIniOverrides(bool $fullStatus, string $multipleLocations): array
-    {
+    protected function getConfigIniOverrides(
+        bool $fullStatus,
+        string $multipleLocations,
+        bool $loadBatchWise = true,
+        bool $loadObservableOnly = true,
+        string $multipleCallNos = 'first'
+    ): array {
         return [
             'Catalog' => [
                 'driver' => 'Demo',
             ],
             'Item_Status' => [
                 'show_full_status' => $fullStatus,
+                'multiple_call_nos' => $multipleCallNos,
                 'multiple_locations' => $multipleLocations,
+                'load_batch_wise' => $loadBatchWise,
+                'load_observable_only' => $loadObservableOnly,
             ],
         ];
     }
@@ -344,6 +453,10 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
             $item['availability'] = false;
         } else {
             $item['availability'] = $availability;
+        }
+        if (str_contains($statusMsg, 'transit_to')) {
+            $item['use_status_class'] = true;
+            $item['extraStatusInformation'] = ['location' => 'pick up location 1', 'date' => '01.01.2001'];
         }
         $item['status'] = $statusMsg;
         $item['location'] = 'main';

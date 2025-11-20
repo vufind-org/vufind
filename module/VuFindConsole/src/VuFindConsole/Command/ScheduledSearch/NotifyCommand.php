@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -29,16 +29,19 @@
 
 namespace VuFindConsole\Command\ScheduledSearch;
 
-use Laminas\Config\Config;
+use DateTime;
+use Exception;
 use Laminas\View\Renderer\PhpRenderer;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use VuFind\Crypt\HMAC;
+use VuFind\Config\Config;
+use VuFind\Config\Feature\EmailSettingsTrait;
+use VuFind\Crypt\SecretCalculator;
+use VuFind\Db\Entity\SearchEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Table\Search as SearchTable;
-use VuFind\Db\Table\User as UserTable;
+use VuFind\Db\Service\SearchServiceInterface;
 use VuFind\I18n\Locale\LocaleSettings;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\Mailer\Mailer;
@@ -46,6 +49,7 @@ use VuFind\Search\Results\PluginManager as ResultsManager;
 
 use function count;
 use function in_array;
+use function sprintf;
 
 /**
  * Console command: notify users of scheduled searches.
@@ -62,6 +66,7 @@ use function in_array;
 )]
 class NotifyCommand extends Command implements TranslatorAwareInterface
 {
+    use EmailSettingsTrait;
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\I18n\Translator\LanguageInitializerTrait;
 
@@ -80,46 +85,11 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
     protected $iso8601 = 'Y-m-d\TH:i:s\Z';
 
     /**
-     * HMAC generator
-     *
-     * @var HMAC
-     */
-    protected $hmac;
-
-    /**
-     * View renderer
-     *
-     * @var PhpRenderer
-     */
-    protected $renderer;
-
-    /**
      * URL helper
      *
      * @var \Laminas\View\Helper\Url
      */
     protected $urlHelper;
-
-    /**
-     * Search results plugin manager
-     *
-     * @var ResultsManager
-     */
-    protected $resultsManager;
-
-    /**
-     * Configured schedule options
-     *
-     * @var array
-     */
-    protected $scheduleOptions;
-
-    /**
-     * Top-level VuFind configuration
-     *
-     * @var Config
-     */
-    protected $mainConfig;
 
     /**
      * Number of results to retrieve when performing searches
@@ -129,70 +99,38 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
     protected $limit = 50;
 
     /**
-     * Mail service
+     * Sort order to use when performing searches
      *
-     * @var Mailer
+     * @var string
      */
-    protected $mailer;
-
-    /**
-     * Search table
-     *
-     * @var SearchTable
-     */
-    protected $searchTable;
-
-    /**
-     * User table
-     *
-     * @var UserTable
-     */
-    protected $userTable;
-
-    /**
-     * Locale settings object
-     *
-     * @var LocaleSettings
-     */
-    protected $localeSettings;
+    protected $sort = 'first_indexed desc';
 
     /**
      * Constructor
      *
-     * @param HMAC           $hmac            HMAC generator
-     * @param PhpRenderer    $renderer        View renderer
-     * @param ResultsManager $resultsManager  Search results plugin manager
-     * @param array          $scheduleOptions Configured schedule options
-     * @param Config         $mainConfig      Top-level VuFind configuration
-     * @param Mailer         $mailer          Mail service
-     * @param SearchTable    $searchTable     Search table
-     * @param UserTable      $userTable       User table
-     * @param LocaleSettings $localeSettings  Locale settings object
-     * @param string|null    $name            The name of the command; passing
+     * @param SecretCalculator       $secretCalculator Secret calculator
+     * @param PhpRenderer            $renderer         View renderer
+     * @param ResultsManager         $resultsManager   Search results plugin manager
+     * @param array                  $scheduleOptions  Configured schedule options
+     * @param Config                 $mainConfig       Top-level VuFind configuration
+     * @param Mailer                 $mailer           Mail service
+     * @param SearchServiceInterface $searchService    Search table
+     * @param LocaleSettings         $localeSettings   Locale settings object
+     * @param string|null            $name             The name of the command; passing
      * null means it must be set in configure()
      */
     public function __construct(
-        HMAC $hmac,
-        PhpRenderer $renderer,
-        ResultsManager $resultsManager,
-        array $scheduleOptions,
-        Config $mainConfig,
-        Mailer $mailer,
-        SearchTable $searchTable,
-        UserTable $userTable,
-        LocaleSettings $localeSettings,
+        protected SecretCalculator $secretCalculator,
+        protected PhpRenderer $renderer,
+        protected ResultsManager $resultsManager,
+        protected array $scheduleOptions,
+        protected Config $mainConfig,
+        protected Mailer $mailer,
+        protected SearchServiceInterface $searchService,
+        protected LocaleSettings $localeSettings,
         $name = null
     ) {
-        $this->hmac = $hmac;
-        $this->renderer = $renderer;
         $this->urlHelper = $renderer->plugin('url');
-        $this->resultsManager = $resultsManager;
-        $this->scheduleOptions = $scheduleOptions;
-        $this->mainConfig = $mainConfig;
-        $this->mailer = $mailer;
-        $this->searchTable = $searchTable;
-        $this->userTable = $userTable;
-        $this->localeSettings = $localeSettings;
         parent::__construct($name);
     }
 
@@ -254,14 +192,14 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->output = $output;
         $this->processViewAlerts();
         // Disconnect mailer to prevent exceptions from an attempt to gracefully
         // close the connection on teardown
         $this->mailer->resetConnection();
-        return 0;
+        return self::SUCCESS;
     }
 
     /**
@@ -269,22 +207,21 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
      *
      * @param \DateTime             $todayTime The time the notification job started.
      * @param \DateTime             $lastTime  Last time notification was sent.
-     * @param \VuFind\Db\Row\Search $s         Search row to validate.
+     * @param SearchEntityInterface $s         Search row to validate.
      *
      * @return bool
      */
     protected function validateSchedule($todayTime, $lastTime, $s)
     {
-        $schedule = $s->notification_frequency;
+        $schedule = $s->getNotificationFrequency();
         if (!isset($this->scheduleOptions[$schedule])) {
-            $this->err('Search ' . $s->id . ": unknown schedule: $schedule");
+            $this->err('Search ' . $s->getId() . ": unknown schedule: $schedule");
             return false;
         }
         $diff = $todayTime->diff($lastTime);
         if ($diff->days < $schedule) {
             $this->msg(
-                '  Bypassing search ' . $s->id
-                . ': previous execution too recent ('
+                '  Bypassing search ' . $s->getId() . ': previous execution too recent ('
                 . $this->scheduleOptions[$schedule] . ', '
                 . $lastTime->format($this->iso8601) . ')'
             );
@@ -294,35 +231,24 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
     }
 
     /**
-     * Load and validate a user object associated with the search; return false
+     * Load and validate a user object associated with the search; return null
      * if there is a problem.
      *
-     * @param \VuFind\Db\Row\Search $s Current search row.
+     * @param SearchEntityInterface $s Current search row.
      *
-     * @return UserEntityInterface|bool
+     * @return ?UserEntityInterface
      */
     protected function getUserForSearch($s)
     {
-        // Use a static variable to hold the last accessed user (to spare duplicate
-        // database lookups, since we're loading rows in user order).
-        static $user = false;
-
-        if ($user === false || $s->user_id != $user->getId()) {
-            if (!$user = $this->userTable->getById($s->user_id)) {
-                $user = false;  // make sure static variable is cleared
-                $this->warn(
-                    'Search ' . $s->id . ': user ' . $s->user_id
-                    . ' does not exist '
-                );
-                return false;
-            }
+        if (!$user = $s->getUser()) {
+            $this->warn('Search ' . $s->getId() . ': is missing user data.');
+            return null;
         }
         if (!$user->getEmail()) {
             $this->warn(
-                'User ' . $user->getUsername()
-                . ' does not have an email address, bypassing alert ' . $s->id
+                'User ' . $user->getUsername() . ' does not have an email address, bypassing alert ' . $s->getId()
             );
-            return false;
+            return null;
         }
         return $user;
     }
@@ -356,13 +282,17 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
      * Load and validate the results object associated with the search; return false
      * if there is a problem.
      *
-     * @param \VuFind\Db\Row\Search $s Current search row.
+     * @param SearchEntityInterface $s Current search row.
      *
      * @return \VuFind\Search\Base\Results|bool
      */
     protected function getObjectForSearch($s)
     {
         $minSO = $s->getSearchObject();
+        if (!$minSO) {
+            $this->err("Problem getting search object from search {$s->getId()}.");
+            return false;
+        }
         $searchObject = $minSO->deminify($this->resultsManager);
         if (!$searchObject->getOptions()->supportsScheduledSearch()) {
             $this->err(
@@ -388,7 +318,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
         // Prepare query
         $params = $searchObject->getParams();
         $params->setLimit($this->limit);
-        $params->setSort('first_indexed desc', true);
+        $params->setSort($this->sort, true);
         $searchId = $searchObject->getSearchId();
         try {
             $records = $searchObject->getResults();
@@ -432,7 +362,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
     /**
      * Build the email message.
      *
-     * @param \VuFind\Db\Row\Search       $s            Search table row
+     * @param SearchEntityInterface       $s            Search table row
      * @param UserEntityInterface         $user         User owning search row
      * @param \VuFind\Search\Base\Results $searchObject Search results object
      * @param array                       $newRecords   New results in search
@@ -441,14 +371,14 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
      */
     protected function buildEmail($s, $user, $searchObject, $newRecords)
     {
-        $viewBaseUrl = $searchUrl = $s->notification_base_url;
+        $viewBaseUrl = $searchUrl = $s->getNotificationBaseUrl();
         $searchUrl .= ($this->urlHelper)(
             $searchObject->getOptions()->getSearchAction()
         ) . $searchObject->getUrlQuery()->getParams(false);
-        $secret = $s->getUnsubscribeSecret($this->hmac, $user);
-        $unsubscribeUrl = $s->notification_base_url
+        $secret = $this->secretCalculator->getSearchUnsubscribeSecret($s);
+        $unsubscribeUrl = $s->getNotificationBaseUrl()
             . ($this->urlHelper)('myresearch-unsubscribe')
-            . "?id={$s->id}&key=$secret";
+            . "?id={$s->getId()}&key=$secret";
         $userInstitution = $this->mainConfig->Site->institution;
         $params = $searchObject->getParams();
         // Filter function to only pass along selected checkboxes:
@@ -489,7 +419,7 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
     {
         $subject = $this->mainConfig->Site->title
             . ': ' . $this->translate('Scheduled Alert Results');
-        $from = $this->mainConfig->Site->email;
+        $from = $this->getEmailSenderAddress($this->mainConfig);
         $to = $user->getEmail();
         try {
             $this->mailer->send($to, $from, $subject, $message);
@@ -522,10 +452,10 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
     protected function processViewAlerts()
     {
         $todayTime = new \DateTime();
-        $scheduled = $this->searchTable->getScheduledSearches();
+        $scheduled = $this->searchService->getScheduledSearches();
         $this->msg(sprintf('Processing %d searches', count($scheduled)));
         foreach ($scheduled as $s) {
-            $lastTime = new \DateTime($s->last_notification_sent);
+            $lastTime = $s->getLastNotificationSent();
             if (
                 !$this->validateSchedule($todayTime, $lastTime, $s)
                 || !($user = $this->getUserForSearch($s))
@@ -544,9 +474,11 @@ class NotifyCommand extends Command implements TranslatorAwareInterface
                 // the database table.
                 continue;
             }
-            $searchTime = date('Y-m-d H:i:s');
-            if ($s->setLastExecuted($searchTime) === 0) {
-                $this->err("Error updating last_executed date for search {$s->id}");
+            try {
+                $s->setLastNotificationSent(new DateTime());
+                $this->searchService->persistEntity($s);
+            } catch (Exception) {
+                $this->err("Error updating last_executed date for search {$s->getId()}");
             }
         }
         $this->msg('Done processing searches');

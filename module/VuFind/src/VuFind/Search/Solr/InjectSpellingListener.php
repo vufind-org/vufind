@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -31,7 +31,7 @@ namespace VuFind\Search\Solr;
 
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
-use Laminas\Log\LoggerInterface;
+use Psr\Log\LoggerInterface;
 use VuFind\Log\LoggerAwareTrait;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
@@ -78,14 +78,14 @@ class InjectSpellingListener
      *
      * @param BackendInterface $backend      Backend
      * @param array            $dictionaries Spelling dictionaries to use.
-     * @param LoggerInterface  $logger       Logger
+     * @param ?LoggerInterface $logger       Logger
      *
      * @return void
      */
     public function __construct(
         BackendInterface $backend,
         array $dictionaries,
-        LoggerInterface $logger = null
+        ?LoggerInterface $logger = null
     ) {
         $this->backend = $backend;
         $this->dictionaries = $dictionaries;

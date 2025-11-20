@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,7 +29,7 @@
 
 namespace VuFindTest\Record;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\Record\Router;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
@@ -178,7 +178,7 @@ class RouterTest extends \PHPUnit\Framework\TestCase
         $driver->expects($this->once())
             ->method('tryMethod')
             ->with($this->equalTo('isCollection'))
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $router = $this->getRouter(['Collections' => ['collections' => true]]);
         $this->assertEquals(
             [
@@ -245,9 +245,9 @@ class RouterTest extends \PHPUnit\Framework\TestCase
     {
         $driver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
         $driver->expects($this->any())->method('getUniqueId')
-            ->will($this->returnValue($id));
+            ->willReturn($id);
         $driver->expects($this->any())->method('getSourceIdentifier')
-            ->will($this->returnValue($source));
+            ->willReturn($source);
         return $driver;
     }
 

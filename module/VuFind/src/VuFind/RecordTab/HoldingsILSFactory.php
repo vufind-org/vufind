@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -64,7 +64,7 @@ class HoldingsILSFactory implements \Laminas\ServiceManager\Factory\FactoryInter
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
@@ -72,13 +72,12 @@ class HoldingsILSFactory implements \Laminas\ServiceManager\Factory\FactoryInter
         // If VuFind is configured to suppress the holdings tab when the
         // ILS driver specifies no holdings, we need to pass in a connection
         // object:
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         $catalog = $container->get(\VuFind\ILS\Connection::class);
         return new $requestedName(
             $catalog,
-            (string)($config->Site->holdingsTemplate ?? 'standard'),
-            (string)($config->Site->hideHoldingsTabWhenEmpty ?? false)
+            (string)($config['Site']['holdingsTemplate'] ?? 'standard'),
+            (string)($config['Site']['hideHoldingsTabWhenEmpty'] ?? false)
         );
     }
 }

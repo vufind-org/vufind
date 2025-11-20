@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -109,7 +109,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         // completely failing.
         for ($clickRetry = 0; $clickRetry <= 4; $clickRetry++) {
             $this->clickCss($page, $updateCartId);
-            $content = $page->find('css', '.popover-content');
+            $content = $page->find('css', $this->popoverContentSelector);
             if (is_object($content)) {
                 $this->assertEquals(
                     'No items were selected. '
@@ -139,7 +139,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         // completely failing.
         for ($clickRetry = 0; $clickRetry <= 4; $clickRetry++) {
             $this->clickCss($page, $updateCartId);
-            $content = $page->find('css', '.popover-content');
+            $content = $page->find('css', $this->popoverContentSelector);
             if (is_object($content)) {
                 $this->assertEquals(
                     '0 item(s) added to your Book Bag 2 item(s) are either '
@@ -588,10 +588,9 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that the save control works.
      *
-     * @depends testCartEmail
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testCartEmail')]
     public function testCartSave()
     {
         $page = $this->setUpGenericCartTest();
@@ -766,7 +765,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
      * Assert visibility
      *
      * @param array  $combo    Current Site configuration
-     * @param bool[] $elements Array of element visibilty states indexed by name
+     * @param bool[] $elements Array of element visibility states indexed by name
      * @param string $name     Name of element to check
      * @param string $exp      Expected visibility
      *

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,9 +29,10 @@
 
 namespace VuFindTest\Auth;
 
-use Laminas\Config\Config;
 use Laminas\Http\Request;
+use VuFind\Auth\ILSAuthenticator;
 use VuFind\Auth\SIP2;
+use VuFind\Config\Config;
 
 /**
  * SIP2 authentication test class.
@@ -47,35 +48,29 @@ class SIP2Test extends \PHPUnit\Framework\TestCase
     /**
      * Get an authentication object.
      *
-     * @param ?Config $config Configuration to use (null for default)
+     * @param ?array $config Configuration to use (null for default)
      *
      * @return SIP2
      */
-    public function getAuthObject(?Config $config = null): SIP2
+    public function getAuthObject(?array $config = null): SIP2
     {
-        if (null === $config) {
-            $config = $this->getAuthConfig();
-        }
-        $obj = new SIP2();
-        $obj->setConfig($config);
+        $obj = new SIP2($this->createMock(ILSAuthenticator::class));
+        $obj->setConfig(new Config($config ?? $this->getAuthConfig()));
         return $obj;
     }
 
     /**
      * Get a working configuration for the LDAP object
      *
-     * @return Config
+     * @return array
      */
-    public function getAuthConfig(): Config
+    public function getAuthConfig(): array
     {
-        $config = new Config(
-            [
-                'host' => 'my.fake.host',
-                'port' => '6002',
-            ],
-            true
-        );
-        return new Config(['MultiAuth' => $config], true);
+        $config = [
+            'host' => 'my.fake.host',
+            'port' => '6002',
+        ];
+        return ['MultiAuth' => $config];
     }
 
     /**

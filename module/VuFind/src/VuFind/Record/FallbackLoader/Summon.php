@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Record
@@ -29,7 +29,7 @@
 
 namespace VuFind\Record\FallbackLoader;
 
-use SerialsSolutions\Summon\Laminas as Connector;
+use VuFindSearch\Backend\Summon\GuzzleConnector as Connector;
 use VuFindSearch\Command\RetrieveCommand;
 use VuFindSearch\ParamBag;
 
@@ -62,7 +62,7 @@ class Summon extends AbstractFallbackLoader
      */
     protected function fetchSingleRecord($id)
     {
-        $resource = $this->table->findResource($id, 'Summon');
+        $resource = $this->resourceService->getResourceByRecordId($id, 'Summon');
         if ($resource && ($extra = json_decode($resource->getExtraMetadata(), true))) {
             $bookmark = $extra['bookmark'] ?? '';
             if (strlen($bookmark) > 0) {

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -52,18 +52,6 @@ class SummonController extends AbstractSearch
     {
         $this->searchClassId = 'Summon';
         parent::__construct($sm);
-    }
-
-    /**
-     * Is the result scroller active?
-     *
-     * @return bool
-     */
-    protected function resultScrollerActive()
-    {
-        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
-            ->get('Summon');
-        return $config->Record->next_prev_navigation ?? false;
     }
 
     /**
@@ -108,8 +96,8 @@ class SummonController extends AbstractSearch
         $view = parent::advancedAction();
 
         // Set up facet information:
-        $facets = $this->serviceLocator
-            ->get(\VuFind\Search\FacetCache\PluginManager::class)->get('Summon')
+        $facets = $this->getService(\VuFind\Search\FacetCache\PluginManager::class)
+            ->get('Summon')
             ->getList('Advanced');
         $view->facetList = $this->processAdvancedFacets($facets, $view->saved);
         $specialFacets = $this->parseSpecialFacetsSetting(

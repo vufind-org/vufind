@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Channels
@@ -30,6 +30,7 @@
 namespace VuFind\ChannelProvider;
 
 use Laminas\Mvc\Controller\Plugin\Url;
+use VuFind\Http\PhpEnvironment\Request as HttpRequest;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\RecordDriver\AbstractBase as RecordDriver;
 use VuFind\Search\Base\Params;
@@ -37,6 +38,7 @@ use VuFind\Search\Base\Results;
 use VuFind\Search\Results\PluginManager as ResultsManager;
 
 use function count;
+use function intval;
 
 /**
  * Facet-driven channel provider.
@@ -50,6 +52,7 @@ use function count;
 class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
+    use BatchTrait;
 
     /**
      * Facet fields to use (field name => description).
@@ -73,31 +76,33 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
     protected $maxValuesToSuggestPerField;
 
     /**
-     * Search results manager.
+     * Page of results to retrieve
      *
-     * @var ResultsManager
+     * @var int
      */
-    protected $resultsManager;
+    protected $page = 1;
 
     /**
-     * URL helper
+     * Page size for retrieved results
      *
-     * @var Url
+     * @var int
      */
-    protected $url;
+    protected $limit;
 
     /**
      * Constructor
      *
-     * @param ResultsManager $rm      Results manager
-     * @param Url            $url     URL helper
-     * @param array          $options Settings (optional)
+     * @param ResultsManager $resultsManager Results manager
+     * @param Url            $url            URL helper
+     * @param array          $options        Settings (optional)
      */
-    public function __construct(ResultsManager $rm, Url $url, array $options = [])
-    {
-        $this->resultsManager = $rm;
-        $this->url = $url;
+    public function __construct(
+        protected ResultsManager $resultsManager,
+        protected Url $url,
+        array $options = []
+    ) {
         $this->setOptions($options);
+        $this->limit = $this->batchSize;
     }
 
     /**
@@ -109,24 +114,32 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
      */
     public function setOptions(array $options)
     {
-        $this->fields = $options['fields']
-            ?? ['topic_facet' => 'Topic', 'author_facet' => 'Author'];
+        $this->fields = $options['fields'] ?? ['topic_facet' => 'Topic', 'author_facet' => 'Author'];
         $this->maxFieldsToSuggest = $options['maxFieldsToSuggest'] ?? 2;
-        $this->maxValuesToSuggestPerField
-            = $options['maxValuesToSuggestPerField'] ?? 2;
+        $this->maxValuesToSuggestPerField = $options['maxValuesToSuggestPerField'] ?? 2;
+        $this->setBatchSizeFromOptions($options);
     }
 
     /**
      * Hook to configure search parameters before executing search.
      *
-     * @param Params $params Search parameters to adjust
+     * @param Params      $params  Search parameters to adjust
+     * @param HttpRequest $request Current HTTP request
      *
      * @return void
      */
-    public function configureSearchParams(Params $params)
+    public function configureSearchParams(Params $params, HttpRequest $request): void
     {
         foreach ($this->fields as $field => $desc) {
             $params->addFacet($field, $desc);
+        }
+
+        // Add pagination params
+        $this->page = intval($request->getQuery('page', 1));
+        $this->limit = intval($request->getQuery('limit', $this->batchSize));
+        $params->setPage($this->page);
+        if ($this->limit) {
+            $params->setLimit(min($this->limit, $this->maxBatchSize));
         }
     }
 
@@ -153,15 +166,14 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
                 continue;
             }
             $currentValueCount = 0;
-            foreach ($data[$field] as $value) {
+            foreach (array_unique($data[$field]) as $value) {
                 $current = [
                     'value' => $value,
                     'displayText' => $value,
                 ];
                 $tokenOnly = $fieldCount >= $this->maxFieldsToSuggest
                     || $currentValueCount >= $this->maxValuesToSuggestPerField;
-                $channel = $this
-                    ->buildChannelFromFacet($results, $field, $current, $tokenOnly);
+                $channel = $this->buildChannelFromFacet($results, $field, $current, $tokenOnly);
                 if ($tokenOnly || count($channel['contents']) > 0) {
                     $channels[] = $channel;
                     $currentValueCount++;
@@ -271,21 +283,29 @@ class Facets extends AbstractChannelProvider implements TranslatorAwareInterface
         $query = $newResults->getUrlQuery()->getParams(false);
         $retVal['links'][] = [
             'label' => 'channel_search',
-            'icon' => 'fa-list',
+            'icon' => 'search',
             'url' => $this->url->fromRoute($params->getOptions()->getSearchAction())
                 . $query,
         ];
         $retVal['links'][] = [
             'label' => 'channel_expand',
-            'icon' => 'fa-search-plus',
+            'icon' => 'ui-add',
             'url' => $this->url->fromRoute('channels-search')
                 . $query . '&source=' . urlencode($params->getSearchClassId()),
         ];
 
+        // Add pagination
+        $pagedParams = $newResults->getParams();
+        $pagedParams->setPage($this->page);
+        if ($this->limit) {
+            $pagedParams->setLimit(min($this->limit, $this->maxBatchSize));
+        }
+        $newResults->setParams($pagedParams);
+
         // Run the search and convert the results into a channel:
         $newResults->performAndProcessSearch();
-        $retVal['contents']
-            = $this->summarizeRecordDrivers($newResults->getResults());
+        $retVal['contents'] = $this->summarizeRecordDrivers($newResults->getResults());
+        $retVal['resultTotal'] = $newResults->getResultTotal();
         return $retVal;
     }
 

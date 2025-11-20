@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -109,18 +109,6 @@ class CartTest extends \PHPUnit\Framework\TestCase
             $cookies = $this->getMockCookieManager($cookies);
         }
         return new \VuFind\Cart($this->loader, $cookies, $maxSize, $active);
-    }
-
-    /**
-     * Test cookie domain setting.
-     *
-     * @return void
-     */
-    public function testCookieDomain()
-    {
-        $manager = $this->getMockCookieManager([], '/', '.example.com');
-        $cart = $this->getCart(100, true, $manager);
-        $this->assertEquals('.example.com', $cart->getCookieDomain());
     }
 
     /**
@@ -252,7 +240,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
         $this->loader->expects($this->once())
             ->method('loadBatch')
             ->with($this->equalTo(['Solr|a']))
-            ->will($this->returnValue('success'));
+            ->willReturn('success');
         $cart = $this->getCart();
         $cart->addItem('Solr|a');
         $this->assertEquals('success', $cart->getRecordDetails());

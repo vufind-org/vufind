@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Config
@@ -30,7 +30,6 @@
 
 namespace VuFind\Config;
 
-use Laminas\Config\Config;
 use VuFind\Auth\Manager as AuthManager;
 
 use function in_array;
@@ -88,6 +87,49 @@ class AccountCapabilities
         return isset($this->config->Social->comments)
             && $this->config->Social->comments === 'disabled'
             ? 'disabled' : 'enabled';
+    }
+
+    /**
+     * Get rating setting.
+     *
+     * @return string
+     */
+    public function getRatingSetting(): string
+    {
+        return empty($this->config->Social->rating)
+            || $this->config->Social->rating === 'disabled'
+            ? 'disabled' : 'enabled';
+    }
+
+    /**
+     * Get page size for comments, ratings and tags in user account.
+     *
+     * @return int
+     */
+    public function getUserContentPageSize(): int
+    {
+        return $this->config->Social->user_content_page_size ?? 50;
+    }
+
+    /**
+     * Get enabled tabs for user content as an array with controller names
+     * as keys and tab titles as values.
+     *
+     * @return array
+     */
+    public function getUserContentTabs(): array
+    {
+        $tabs = [];
+        if ('enabled' === $this->getCommentSetting()) {
+            $tabs['comments'] = 'Comments';
+        }
+        if ('enabled' === $this->getRatingSetting()) {
+            $tabs['ratings'] = 'Ratings';
+        }
+        if ('enabled' === $this->getTagSetting()) {
+            $tabs['tag'] = 'Tags';
+        }
+        return $tabs;
     }
 
     /**
@@ -175,6 +217,29 @@ class AccountCapabilities
         return isset($this->config->Mail->sms)
             && $this->config->Mail->sms === 'disabled'
             ? 'disabled' : 'enabled';
+    }
+
+    /**
+     * Get email action setting ('enabled', 'require_login' or 'disabled').
+     *
+     * @return string
+     */
+    public function getEmailActionSetting(): string
+    {
+        return $this->config?->Mail?->email_action ??
+            (($this->config?->Mail?->require_login ?? true) ? 'require_login' : 'enabled');
+    }
+
+    /**
+     * Check if emailing of records and searches is available.
+     *
+     * @return bool
+     */
+    public function isEmailActionAvailable(): bool
+    {
+        $emailActionSettings = $this->getEmailActionSetting();
+        return $emailActionSettings === 'enabled'
+            || $emailActionSettings === 'require_login' && $this->getAuth()->loginEnabled();
     }
 
     /**

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Channels
@@ -64,17 +64,18 @@ class ChannelLoaderFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if ($options !== null) {
             throw new \Exception('Unexpected options sent to factory!');
         }
         return new $requestedName(
-            $container->get(\VuFind\Config\PluginManager::class)->get('channels'),
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('channels'),
             $container->get(\VuFind\Cache\Manager::class),
             $container->get(\VuFind\ChannelProvider\PluginManager::class),
             $container->get(\VuFind\Search\SearchRunner::class),
             $container->get(\VuFind\Record\Loader::class),
+            $container->get('Request'),
             $container->get(LocaleSettings::class)->getUserLocale()
         );
     }

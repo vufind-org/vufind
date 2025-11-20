@@ -17,19 +17,20 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\HtmlAttributes;
+use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
 /**
  * View helper for injecting schema.org metadata
@@ -38,7 +39,7 @@ use Laminas\View\Helper\HtmlAttributes;
  * @package  View_Helpers
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class SchemaOrg extends \Laminas\View\Helper\AbstractHelper
 {
@@ -48,8 +49,10 @@ class SchemaOrg extends \Laminas\View\Helper\AbstractHelper
      * @param HtmlAttributes $htmlAttributes HtmlAttributes view helper
      * @param bool           $enabled        Is schema.org metadata enabled?
      */
-    public function __construct(protected HtmlAttributes $htmlAttributes, protected bool $enabled = true)
-    {
+    public function __construct(
+        protected HtmlAttributes $htmlAttributes,
+        protected bool $enabled = true
+    ) {
     }
 
     /**
@@ -105,5 +108,29 @@ class SchemaOrg extends \Laminas\View\Helper\AbstractHelper
     public function getMeta(string $property, string $content, array $attributes = []): string
     {
         return $this->getTag('meta', compact('property', 'content') + $attributes);
+    }
+
+    /**
+     * Get all record types for the given record.
+     *
+     * @param RecordDriver $driver Record Driver
+     *
+     * @return array
+     */
+    public function getRecordTypesArray(RecordDriver $driver): array
+    {
+        return $driver->tryMethod('getSchemaOrgFormatsArray') ?? [];
+    }
+
+    /**
+     * Get all record types for the given record.
+     *
+     * @param RecordDriver $driver Record Driver
+     *
+     * @return string
+     */
+    public function getRecordTypes(RecordDriver $driver): string
+    {
+        return implode(' ', $this->getRecordTypesArray($driver));
     }
 }

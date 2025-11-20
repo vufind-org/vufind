@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -29,13 +29,15 @@
 
 namespace VuFind\Db\Service;
 
+use Doctrine\ORM\Tools\Pagination\Paginator as DoctrinePaginator;
+use DoctrineORMModule\Paginator\Adapter\DoctrinePaginator as DoctrinePaginatorAdapter;
+use Laminas\Paginator\Paginator;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\CommentsEntityInterface;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Table\DbTableAwareInterface;
-use VuFind\Db\Table\DbTableAwareTrait;
+use VuFind\Log\LoggerAwareTrait;
 
-use function is_array;
 use function is_int;
 
 /**
@@ -50,10 +52,10 @@ use function is_int;
 class CommentsService extends AbstractDbService implements
     CommentsServiceInterface,
     DbServiceAwareInterface,
-    DbTableAwareInterface
+    LoggerAwareInterface
 {
     use DbServiceAwareTrait;
-    use DbTableAwareTrait;
+    use LoggerAwareTrait;
 
     /**
      * Create a comments entity object.
@@ -62,75 +64,109 @@ class CommentsService extends AbstractDbService implements
      */
     public function createEntity(): CommentsEntityInterface
     {
-        return $this->getDbTable('comments')->createRow();
+        return $this->entityPluginManager->get(CommentsEntityInterface::class);
     }
 
     /**
      * Add a comment to the current resource. Returns comment ID on success, null on failure.
      *
-     * @param string                      $comment  The comment to save.
-     * @param int|UserEntityInterface     $user     User object or identifier
-     * @param int|ResourceEntityInterface $resource Resource object or identifier
+     * @param string                      $comment      The comment to save.
+     * @param UserEntityInterface|int     $userOrId     User object or identifier
+     * @param ResourceEntityInterface|int $resourceOrId Resource object or identifier
      *
      * @return ?int
      */
     public function addComment(
         string $comment,
-        int|UserEntityInterface $user,
-        int|ResourceEntityInterface $resource
+        UserEntityInterface|int $userOrId,
+        ResourceEntityInterface|int $resourceOrId
     ): ?int {
-        $userVal = is_int($user)
-            ? $this->getDbService(UserServiceInterface::class)->getUserById($user)
-            : $user;
-        $resourceVal = is_int($resource)
-            ? $this->getDbService(ResourceServiceInterface::class)->getResourceById($resource)
-            : $resource;
-        return $resourceVal->addComment($comment, $userVal);
+        $data = $this->createEntity()
+            ->setUser($this->getDoctrineReference(UserEntityInterface::class, $userOrId))
+            ->setComment($comment)
+            ->setCreated(new \DateTime())
+            ->setResource($this->getDoctrineReference(ResourceEntityInterface::class, $resourceOrId));
+
+        try {
+            $this->persistEntity($data);
+        } catch (\Exception $e) {
+            $this->logError('Could not save comment: ' . $e->getMessage());
+            return null;
+        }
+
+        return $data->getId();
     }
 
     /**
-     * Get comments associated with the specified resource.
+     * Get comments associated with the specified record.
      *
      * @param string $id     Record ID to look up
      * @param string $source Source of record to look up
      *
      * @return CommentsEntityInterface[]
      */
-    public function getForResource(string $id, string $source = DEFAULT_SEARCH_BACKEND): array
+    public function getRecordComments(string $id, string $source = DEFAULT_SEARCH_BACKEND): array
     {
-        $comments = $this->getDbTable('comments')->getForResource($id, $source);
-        return is_array($comments) ? $comments : iterator_to_array($comments);
+        $resourceService = $this->getDbService(ResourceServiceInterface::class);
+        $resource = $resourceService->getResourceByRecordId($id, $source);
+        if (!$resource) {
+            return [];
+        }
+        $dql = 'SELECT c '
+            . 'FROM ' . CommentsEntityInterface::class . ' c '
+            . 'LEFT JOIN c.user u '
+            . 'WHERE c.resource = :resource '
+            . 'ORDER BY c.created ASC';
+
+        $parameters = compact('resource');
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $result = $query->getResult();
+        return $result;
     }
 
     /**
      * Delete a comment if the owner is logged in.  Returns true on success.
      *
-     * @param int                     $id   ID of row to delete
-     * @param int|UserEntityInterface $user User object or identifier
+     * @param int                     $id       ID of row to delete
+     * @param UserEntityInterface|int $userOrId User object or identifier
      *
      * @return bool
      */
-    public function deleteIfOwnedByUser(int $id, int|UserEntityInterface $user): bool
+    public function deleteIfOwnedByUser(int $id, UserEntityInterface|int $userOrId): bool
     {
-        if (is_int($user)) {
-            $user = $this->getDbService(UserServiceInterface::class)->getUserById($user);
+        if (null === $userOrId) {
+            return false;
         }
-        return $this->getDbTable('comments')->deleteIfOwnedByUser($id, $user);
+
+        $userId = is_int($userOrId) ? $userOrId : $userOrId->getId();
+        $comment = $this->getCommentById($id);
+        if ($userId !== $comment->getUser()->getId()) {
+            return false;
+        }
+
+        $del = 'DELETE FROM ' . CommentsEntityInterface::class . ' c '
+        . 'WHERE c.id = :id AND c.user = :user';
+        $query = $this->entityManager->createQuery($del);
+        $query->setParameters(['id' => $id, 'user' => $userId]);
+        $query->execute();
+        return true;
     }
 
     /**
      * Deletes all comments by a user.
      *
-     * @param int|UserEntityInterface $user User object or identifier
+     * @param UserEntityInterface|int $userOrId User object or identifier
      *
      * @return void
      */
-    public function deleteByUser(int|UserEntityInterface $user): void
+    public function deleteByUser(UserEntityInterface|int $userOrId): void
     {
-        if (is_int($user)) {
-            $user = $this->getDbService(UserServiceInterface::class)->getUserById($user);
-        }
-        $this->getDbTable('comments')->deleteByUser($user);
+        $dql = 'DELETE FROM ' . CommentsEntityInterface::class . ' c '
+            . 'WHERE c.user = :user';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters(['user' => is_int($userOrId) ? $userOrId : $userOrId->getId()]);
+        $query->execute();
     }
 
     /**
@@ -140,7 +176,12 @@ class CommentsService extends AbstractDbService implements
      */
     public function getStatistics(): array
     {
-        return $this->getDbTable('comments')->getStatistics();
+        $dql = 'SELECT COUNT(DISTINCT(c.user)) AS users, '
+            . 'COUNT(DISTINCT(c.resource)) AS resources, '
+            . 'COUNT(c.id) AS total '
+            . 'FROM ' . CommentsEntityInterface::class . ' c';
+        $query = $this->entityManager->createQuery($dql);
+        return $query->getSingleResult();
     }
 
     /**
@@ -152,6 +193,90 @@ class CommentsService extends AbstractDbService implements
      */
     public function getCommentById(int $id): ?CommentsEntityInterface
     {
-        return $this->getDbTable('comments')->select(['id' => $id])->current();
+        return $this->entityManager->find(CommentsEntityInterface::class, $id);
+    }
+
+    /**
+     * Change all matching comments to use the new resource ID instead of the old one (called when an ID changes).
+     *
+     * @param int $old Original resource ID
+     * @param int $new New resource ID
+     *
+     * @return void
+     */
+    public function changeResourceId(int $old, int $new): void
+    {
+        $dql = 'UPDATE ' . CommentsEntityInterface::class . ' e '
+            . 'SET e.resource = :new WHERE e.resource = :old';
+        $parameters = compact('new', 'old');
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $query->execute();
+    }
+
+    /**
+     * Get a paginated result of all comments made by the user.
+     *
+     * @param int    $userId User ID
+     * @param int    $limit  Limit
+     * @param int    $page   Page
+     * @param string $sort   Sort
+     *
+     * @return Paginator
+     */
+    public function getCommentsPaginator(
+        int $userId,
+        int $limit,
+        int $page,
+        string $sort
+    ): Paginator {
+        $dql = 'SELECT c.id, c.comment, c.created AS created, '
+            . 'u.id AS user_id, u.username AS username, '
+            . 'r.id AS resource_id, r.recordId AS record_id, r.source AS source, r.title AS title '
+            . 'FROM ' . CommentsEntityInterface::class . ' c '
+            . 'LEFT JOIN c.user u '
+            . 'LEFT JOIN c.resource r '
+            . 'WHERE c.user = :userId';
+
+        $parameters = ['userId' => $userId];
+
+        $sortOrder = $sort ? $sort : 'created DESC';
+
+        $dql .= ' ORDER BY ' . $sortOrder;
+
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $query->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit);
+
+        $doctrinePaginator = new DoctrinePaginator($query);
+        $doctrinePaginator->setUseOutputWalkers(false);
+
+        $paginator = new Paginator(new DoctrinePaginatorAdapter($doctrinePaginator));
+        $paginator->setItemCountPerPage($limit);
+        $paginator->setCurrentPageNumber($page);
+
+        return $paginator;
+    }
+
+    /**
+     * Delete comments by given user and comment ids.
+     *
+     * @param array $ids    Array of comment ids
+     * @param int   $userId User ID
+     *
+     * @return void
+     */
+    public function deleteByIdsAndUserId(array $ids, int $userId): void
+    {
+        $dql = 'DELETE FROM ' . CommentsEntityInterface::class . ' c '
+            . 'WHERE c.user = :user AND c.id IN (:ids)';
+
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters([
+            'user' => $userId,
+            'ids'  => $ids,
+        ]);
+        $query->execute();
     }
 }

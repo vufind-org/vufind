@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  EBSCO
@@ -32,7 +32,8 @@
 
 namespace VuFind\Search\EPF;
 
-use function count;
+use VuFind\Config\ConfigManagerInterface;
+use VuFind\Search\EDS\AbstractEDSOptions;
 
 /**
  * EPF API Options
@@ -45,34 +46,19 @@ use function count;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Options extends \VuFind\Search\Base\Options
+class Options extends AbstractEDSOptions
 {
-    /**
-     * Default view option
-     *
-     * @var ?string
-     */
-    protected $defaultView = null;
-
-    /**
-     * Search configuration
-     *
-     * @var \Laminas\Config\Config
-     */
-    protected $searchSettings;
-
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader Configuration loader
+     * @param ConfigManagerInterface $configManager Config manager
      */
     public function __construct(
-        \VuFind\Config\PluginManager $configLoader
+        ConfigManagerInterface $configManager
     ) {
         $this->searchIni = $this->facetsIni = 'EPF';
-        $this->searchSettings = $configLoader->get($this->searchIni);
 
-        parent::__construct($configLoader);
+        parent::__construct($configManager);
 
         $this->setOptionsFromConfig();
     }
@@ -85,27 +71,6 @@ class Options extends \VuFind\Search\Base\Options
     public function getSearchAction()
     {
         return 'epf-search';
-    }
-
-    /**
-     * Return the view associated with this configuration
-     *
-     * @return string
-     */
-    public function getView()
-    {
-        return $this->defaultView;
-    }
-
-    /**
-     * Return the view associated with this configuration
-     *
-     * @return string
-     */
-    public function getEpfView()
-    {
-        $viewArr = explode('|', $this->defaultView);
-        return (1 < count($viewArr)) ? $viewArr[1] : $this->defaultView;
     }
 
     /**
@@ -127,9 +92,6 @@ class Options extends \VuFind\Search\Base\Options
     protected function setOptionsFromConfig()
     {
         // View preferences
-        if (isset($this->searchSettings->General->default_view)) {
-            $this->defaultView
-                = 'list|' . $this->searchSettings->General->default_view;
-        }
+        $this->initViewOptions($this->searchSettings);
     }
 }

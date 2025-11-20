@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,7 +29,7 @@
 
 namespace VuFindTest\ILS\Driver;
 
-use Laminas\Config\Exception\RuntimeException;
+use RuntimeException;
 use VuFind\ILS\Driver\ComposedDriver;
 use VuFind\ILS\Logic\AvailabilityStatusInterface;
 
@@ -58,7 +58,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
 
         $driver = $this->getDriver(
             [
-                'configLoader' => $this->getMockFailingConfigPluginManager(new RuntimeException()),
+                'configManager' => $this->getMockFailingConfigManager(new RuntimeException()),
             ]
         );
         $driver->setConfig(['Drivers' => ['d1' => 'DAIA']]);
@@ -1703,7 +1703,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
     protected function getDriver($constructorArgs = [])
     {
         $driver = new ComposedDriver(
-            $constructorArgs['configLoader'] ?? $this->getMockConfigPluginManager([], ['config' => 'values']),
+            $constructorArgs['configManager'] ?? $this->getMockConfigManager([], ['config' => 'values']),
             $constructorArgs['driverManager'] ?? $this->getMockSM()
         );
         return $driver;
@@ -1731,7 +1731,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
             call_user_func_array(
                 [$driver->expects($driverConfig['times'])->method($function), 'with'],
                 $params
-            )->will($this->returnValue($driverConfig['return']));
+            )->willReturn($driverConfig['return']);
             $drivers[$diverName] = $driver;
         }
         $composedDriver = $this->getMultiDriverForDrivers(

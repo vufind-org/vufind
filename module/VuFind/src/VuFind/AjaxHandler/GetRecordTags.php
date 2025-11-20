@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  AJAX
@@ -32,7 +32,7 @@ namespace VuFind\AjaxHandler;
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\View\Renderer\RendererInterface;
 use VuFind\Db\Entity\UserEntityInterface;
-use VuFind\Db\Service\TagServiceInterface;
+use VuFind\Tags\TagsService;
 
 /**
  * AJAX handler to get all tags for a record as HTML.
@@ -48,12 +48,12 @@ class GetRecordTags extends AbstractBase
     /**
      * Constructor
      *
-     * @param TagServiceInterface  $tagService Tags database service
-     * @param ?UserEntityInterface $user       Logged in user (or null)
-     * @param RendererInterface    $renderer   View renderer
+     * @param TagsService          $tagsService Tags service
+     * @param ?UserEntityInterface $user        Logged in user (or null)
+     * @param RendererInterface    $renderer    View renderer
      */
     public function __construct(
-        protected TagServiceInterface $tagService,
+        protected TagsService $tagsService,
         protected ?UserEntityInterface $user,
         protected RendererInterface $renderer
     ) {
@@ -71,9 +71,11 @@ class GetRecordTags extends AbstractBase
         $is_me_id = $this->user?->getId();
 
         // Retrieve from database:
-        $tags = $this->tagService->getForResource(
-            $params->fromQuery('id'),
-            $params->fromQuery('source', DEFAULT_SEARCH_BACKEND),
+        $id = $params->fromQuery('id');
+        $source = $params->fromQuery('source', DEFAULT_SEARCH_BACKEND);
+        $tags = $this->tagsService->getRecordTags(
+            $id,
+            $source,
             0,
             null,
             null,
@@ -91,7 +93,7 @@ class GetRecordTags extends AbstractBase
             ];
         }
 
-        $viewParams = ['tagList' => $tagList, 'loggedin' => (bool)$this->user];
+        $viewParams = ['tagList' => $tagList, 'loggedin' => (bool)$this->user, 'driver' => "$source|$id"];
         $html = $this->renderer->render('record/taglist', $viewParams);
         return $this->formatResponse(compact('html'));
     }

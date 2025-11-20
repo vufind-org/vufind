@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Connection
@@ -30,7 +30,7 @@
 namespace VuFind\Connection;
 
 use Exception;
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 
 /**
  * External VuFind API connection class.
@@ -42,10 +42,9 @@ use Laminas\Log\LoggerAwareInterface;
  * @link     https://vufind.org
  */
 class ExternalVuFind implements
-    \VuFindHttp\HttpServiceAwareInterface,
     LoggerAwareInterface
 {
-    use \VuFindHttp\HttpServiceAwareTrait;
+    use \VuFind\Http\CachingDownloaderAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
@@ -54,6 +53,18 @@ class ExternalVuFind implements
      * @var string
      */
     protected $baseUrl = null;
+
+    /**
+     * Constructor
+     *
+     * @param \VuFind\Http\CachingDownloader $cachingDownloader The caching downloader
+     */
+    public function __construct(\VuFind\Http\CachingDownloader $cachingDownloader)
+    {
+        $this->cacheOptionsSection = 'ExternalVuFind_Defaults';
+        $this->cacheOptionsFile = 'ExternalVuFind';
+        $this->setCachingDownloader($cachingDownloader);
+    }
 
     /**
      * Set the API base URL.
@@ -97,7 +108,7 @@ class ExternalVuFind implements
         }
 
         try {
-            $response = $this->httpService->get($this->baseUrl . '/search', $params);
+            $arr = $this->cachingDownloader->downloadJson($this->baseUrl . '/search', $params, true);
         } catch (Exception $ex) {
             $this->logError(
                 'Exception during request: ' .
@@ -106,16 +117,6 @@ class ExternalVuFind implements
             return [];
         }
 
-        if ($response->isServerError()) {
-            $this->logError(
-                'ExternalVuFind API HTTP Error: ' .
-                $response->getStatusCode()
-            );
-            return [];
-        }
-
-        $responseData = trim($response->getBody());
-        $arr = json_decode($responseData, true);
-        return $arr ?? [];
+        return $arr;
     }
 }

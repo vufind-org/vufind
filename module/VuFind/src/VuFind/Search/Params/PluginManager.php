@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -59,6 +59,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'mixedlist' => \VuFind\Search\MixedList\Params::class,
         'pazpar2' => \VuFind\Search\Pazpar2\Params::class,
         'primo' => \VuFind\Search\Primo\Params::class,
+        'proquestfsg' => \VuFind\Search\ProQuestFSG\Params::class,
         'search2' => \VuFind\Search\Search2\Params::class,
         'solr' => \VuFind\Search\Solr\Params::class,
         'solrauth' => \VuFind\Search\SolrAuth\Params::class,
@@ -70,6 +71,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'summon' => \VuFind\Search\Summon\Params::class,
         'tags' => \VuFind\Search\Tags\Params::class,
         'worldcat' => \VuFind\Search\WorldCat\Params::class,
+        'worldcat2' => \VuFind\Search\WorldCat2\Params::class,
     ];
 
     /**
@@ -92,6 +94,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         \VuFind\Search\MixedList\Params::class => ParamsFactory::class,
         \VuFind\Search\Pazpar2\Params::class => ParamsFactory::class,
         \VuFind\Search\Primo\Params::class => ParamsFactory::class,
+        \VuFind\Search\ProQuestFSG\Params::class => ParamsFactory::class,
         \VuFind\Search\Search2\Params::class =>
             \VuFind\Search\Solr\ParamsFactory::class,
         \VuFind\Search\Solr\Params::class =>
@@ -105,6 +108,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         \VuFind\Search\Summon\Params::class => ParamsFactory::class,
         \VuFind\Search\Tags\Params::class => ParamsFactory::class,
         \VuFind\Search\WorldCat\Params::class => ParamsFactory::class,
+        \VuFind\Search\WorldCat2\Params::class => ParamsFactory::class,
     ];
 
     /**

@@ -1,8 +1,5 @@
 [
   {
-    "comment": "Initial token check"
-  },
-  {
     "comment": "User with 3 holds, items are currently in_transit",
     "expectedPath": "/request-storage/requests",
     "expectedParams": {

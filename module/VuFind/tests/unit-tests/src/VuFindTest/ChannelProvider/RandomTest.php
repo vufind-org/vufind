@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -53,8 +53,7 @@ class RandomTest extends \PHPUnit\Framework\TestCase
     public function testGetFromRecord(): void
     {
         [$random, $expectedResult] = $this->setUpTestInputsAndExpectations();
-        $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\AbstractBase::class)
-            ->getMock();
+        $recordDriver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
         $recordDriver->expects($this->once())->method('getSourceIdentifier')
             ->willReturn('Solr');
         $this->assertSame($expectedResult, $random->getFromRecord($recordDriver));
@@ -67,9 +66,7 @@ class RandomTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetFromSearch(): void
     {
-        $results = $this->getMockBuilder(\VuFind\Search\Base\Results::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $results = $this->createMock(\VuFind\Search\Base\Results::class);
         [$random, $expectedResult, $params] = $this->setUpTestInputsAndExpectations();
         $results->expects($this->once())->method('getParams')
             ->willReturn($params);
@@ -86,33 +83,27 @@ class RandomTest extends \PHPUnit\Framework\TestCase
         $query = new Query('bar');
         $paramBag = new ParamBag(['far' => 'rar']);
         $params = $this->getConfiguredParamsMock($query, $paramBag);
-        $search = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $paramManager = $this->getMockBuilder(\VuFind\Search\Params\PluginManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $search = $this->createMock(\VuFindSearch\Service::class);
+        $paramManager = $this->createMock(\VuFind\Search\Params\PluginManager::class);
         $options = ['mode' => 'notRetain'];
         $random =  new Random($search, $paramManager, $options);
         $paramManager->expects($this->once())->method('get')
             ->with($this->equalTo('Solr'))
             ->willReturn($params);
-        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $rci = $this->getMockBuilder(\VuFindSearch\Response\RecordCollectionInterface::class)
-            ->disableOriginalConstructor()->getMock();
+        $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
+        $rci = $this->createMock(\VuFindSearch\Response\RecordCollectionInterface::class);
         $commandObj->expects($this->once())->method('getResult')
             ->willReturn($rci);
         $recordDriver = $this->getDriver();
         $rci->expects($this->once())->method('getRecords')
             ->willReturn([$recordDriver]);
         $search->expects($this->once())->method('invoke')
-            ->with($this->callback($this->getCommandChecker([$query, 20, $paramBag])))
+            ->with($this->callback($this->getCommandChecker([$query, 24, $paramBag])))
             ->willReturn($commandObj);
         $expectedResult = [[
             'title' => 'random_recommendation_title',
             'providerId' => 'foo_ProviderID',
+            'limit' => 24,
             'contents' => [[
                 'title' => 'foo_Title',
                 'source' => 'foo_Identifier',
@@ -138,9 +129,7 @@ class RandomTest extends \PHPUnit\Framework\TestCase
      */
     protected function getConfiguredCoverRouterMock($recordDriver)
     {
-        $coverRouter = $this->getMockBuilder(\VuFind\Cover\Router::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $coverRouter = $this->createMock(\VuFind\Cover\Router::class);
         $coverRouter->expects($this->once())->method('getUrl')
             ->with($this->equalTo($recordDriver), $this->equalTo('medium'))
             ->willReturn('foo_Thumbnail');
@@ -157,9 +146,7 @@ class RandomTest extends \PHPUnit\Framework\TestCase
      */
     protected function getConfiguredRecordRouterMock($recordDriver)
     {
-        $recordRouter = $this->getMockBuilder(\VuFind\Record\Router::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $recordRouter = $this->createMock(\VuFind\Record\Router::class);
         $recordRouter->expects($this->once())->method('getTabRouteDetails')
             ->with($this->equalTo($recordDriver))
             ->willReturn('foo_Route');
@@ -181,9 +168,10 @@ class RandomTest extends \PHPUnit\Framework\TestCase
         $target = 'Solr'
     ) {
         return function ($command) use ($class, $args, $target) {
-            return $command::class === $class
-                && $command->getArguments() == $args
-                && $command->getTargetIdentifier() === $target;
+            $this->assertSame($class, $command::class);
+            $this->assertEquals($args, $command->getArguments());
+            $this->assertSame($target, $command->getTargetIdentifier());
+            return true;
         };
     }
 
@@ -199,17 +187,11 @@ class RandomTest extends \PHPUnit\Framework\TestCase
      */
     protected function getConfiguredParamsMock($query, $paramBag)
     {
-        $params = $this->getMockBuilder(\VuFind\Search\Base\Params::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['getQuery', 'getSearchClassId'])
-            ->addMethods(['getBackendParameters'])
-            ->getMock();
-        $params->expects($this->once())->method('getQuery')
-            ->willReturn($query);
-        $params->expects($this->once())->method('getBackendParameters')
-            ->willReturn($paramBag);
-        $params->expects($this->atMost(2))->method('getSearchClassId')
-            ->willReturn('Solr');
+        // Use Solr instead of Base to ensure we can mock getBackendParameters:
+        $params = $this->createMock(\VuFind\Search\Solr\Params::class);
+        $params->expects($this->once())->method('getQuery')->willReturn($query);
+        $params->expects($this->once())->method('getBackendParameters')->willReturn($paramBag);
+        $params->expects($this->atMost(2))->method('getSearchClassId')->willReturn('Solr');
         return $params;
     }
 

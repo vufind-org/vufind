@@ -1,0 +1,17 @@
+<?php
+  $attributes = $this->multiFacetsSelection === 'always' ? ' style="display: none;"' : '';
+?>
+<div class="multi-filters-selection">
+  <p class="multi-filters-text"><?=$this->transEsc('select_filters_instructions')?></p>
+  <div<?= $attributes ?>>
+    <form autocomplete="off">
+      <label>
+        <input class="js-user-selection-multi-filters" type="checkbox">
+        <?= $this->transEsc('Select multiple filters') ?>
+      </label>
+    </form>
+  </div>
+  <div class="apply-filters">
+    <button class="js-apply-multi-facets-selection btn btn-primary" type="submit"><?= $this->transEsc('Apply filters') ?></button>
+  </div>
+</div>

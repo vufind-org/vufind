@@ -1,0 +1,130 @@
+<?php if ($this->holdings()->holdingIsVisible($holding)): ?>
+  <?php
+    $check = $holding['check'] ?? false;
+    $checkStorageRetrievalRequest = $holding['checkStorageRetrievalRequest'] ?? false;
+    $checkILLRequest = $holding['checkILLRequest'] ?? false;
+    $availabilityStatus = $holding['availability'];
+  ?>
+  <tr class="holding-row"<?=$this->schemaOrg()->getAttributes(['vocab' => 'http://schema.org/', 'typeof' => 'Offer'])?>>
+    <td colspan="2" class="holding-<?=$availabilityStatus->isAvailable() ? 'available' : 'unavailable' ?>">
+      <div class="holding-details">
+        <span class="holding-field copy-number">
+          <?=$this->transEsc('Copy')?> <?=$this->escapeHtml($holding['number'])?>
+        </span>
+        <span class="holding-field enumchron">
+          <?php if ($holding['enumchron'] ?? false): ?>
+            (<?=$this->escapeHtml($holding['enumchron'])?>)
+          <?php endif; ?>
+        </span>
+        <span class="holding-field barcode">
+          <?=$this->escapeHtml($holding['barcode'])?>
+        </span>
+        <span class="holding-field availability">
+          <?php if ($holding['reserve'] == 'Y'): ?>
+            <?=$this->schemaOrg()->getLink('http://schema.org/InStoreOnly', 'availability')?>
+            <?=$this->transEsc('On Reserve - Ask at Circulation Desk')?><br>
+          <?php endif; ?>
+
+          <?php
+            $statusClass = $this->availabilityStatus()->getClass($availabilityStatus);
+            $statusDescription = $availabilityStatus->getStatusDescription();
+            $statusDescriptionTokens = $availabilityStatus->getStatusDescriptionTokens();
+            $schemaAvailabilityUri = $availabilityStatus->getSchemaAvailabilityUri();
+          ?>
+          <span class="<?=$this->escapeHtmlAttr($statusClass)?>">
+            <?=$this->transEsc($statusDescription, $statusDescriptionTokens)?>
+            <?php if ($schemaAvailabilityUri): ?>
+              <?=$this->schemaOrg()->getLink($schemaAvailabilityUri, 'availability')?>
+            <?php endif; ?>
+          </span>
+          <?php if (!$availabilityStatus->isAvailable()): ?>
+            <?php if ($holding['returnDate'] ?? false): ?>
+              <span class="small return-date"><?=$this->escapeHtml($holding['returnDate'])?></span>
+            <?php endif; ?>
+            <?php if ($holding['duedate'] ?? false): ?>
+              <span class="small due-date"><?=$this->transEsc('Due')?>: <?=$this->escapeHtml($holding['duedate'])?></span>
+            <?php endif; ?>
+            <?php if (($holding['requests_placed'] ?? 0) > 0): ?>
+              <span class="request-count"><?=$this->transEsc('Requests')?>: <?=$this->escapeHtml($holding['requests_placed'])?></span>
+            <?php endif; ?>
+          <?php endif; ?>
+        </span>
+        <span class="holding-field storage-retrieval">
+          <?php if ($holding['storageRetrievalRequestLink'] ?? false): ?>
+            <a class="<?=$checkStorageRetrievalRequest ? 'checkStorageRetrievalRequest request-check ' : ''?> placeStorageRetrievalRequest icon-link" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holding['storageRetrievalRequestLink']))?>">
+              <?=$this->icon('place-storage-retrieval', 'icon-link__icon') ?>
+              <span class="icon-link__label"><?=$this->transEsc($checkStorageRetrievalRequest ? 'storage_retrieval_request_check_text' : 'storage_retrieval_request_place_text')?></span>
+            </a>
+          <?php endif; ?>
+        </span>
+        <span class="holding-field ill-request">
+          <?php if ($holding['ILLRequestLink'] ?? false): ?>
+            <a class="<?=$checkILLRequest ? 'checkILLRequest request-check ' : ''?>placeILLRequest icon-link" data-lightbox href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holding['ILLRequestLink']))?>">
+              <?=$this->icon('place-ill-request', 'icon-link__icon') ?>
+              <span class="icon-link__label"><?=$this->transEsc($checkILLRequest ? 'ill_request_check_text' : 'ill_request_place_text')?></span>
+            </a>
+          <?php endif; ?>
+        </span>
+        <?php if ($availabilityStatus->isAvailable()): ?>
+          <span class="holding-field place-hold">
+            <?php if ($holding['link'] ?? false): ?>
+              <a class="<?=$check ? 'checkRequest request-check ' : ''?>placehold icon-link" <?php if (!empty($holding['linkLightbox'])): ?>data-lightbox <?php endif; ?>href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holding['link']))?>">
+                <?=$this->icon('place-hold', 'icon-link__icon') ?>
+                <span class="icon-link__label"><?=$this->transEsc($check ? 'Check Hold' : 'Place a Hold')?></span>
+              </a>
+            <?php endif; ?>
+          </span>
+        <?php else: ?>
+          <span class="holding-field recall">
+            <?php if ($holding['link'] ?? false): ?>
+              <a class="<?=$check ? 'checkRequest request-check' : ''?> placehold icon-link" <?php if (!empty($holding['linkLightbox'])): ?>data-lightbox <?php endif; ?>href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($holding['link']))?>">
+                <?=$this->icon('place-recall', 'icon-link__icon') ?>
+                <span class="icon-link__label"><?=$this->transEsc($check ? 'Check Recall' : 'Recall This')?></span>
+              </a>
+            <?php endif; ?>
+            <?=$this->relais()->renderButtonIfActive($this->driver ?? null)?>
+          </span>
+        <?php endif; ?>
+      </div>
+
+      <?php if (isset($holding['item_notes'])): ?>
+        <div class="holding-notes">
+          <div class="item-notes">
+            <b><?=$this->transEsc('Item Notes')?>:</b>
+            <ul>
+              <?php foreach ($holding['item_notes'] as $item_note): ?>
+                <li><?=$this->escapeHtml($item_note) ?></li>
+              <?php endforeach; ?>
+            </ul>
+          </div>
+        </div>
+      <?php endif; ?>
+      <?php if (!empty($holding['bound_with_records'])): ?>
+        <?=
+          $this->render(
+              'RecordTab/holdingsils/boundwith.phtml',
+              [
+                'boundWithRecords' => $holding['bound_with_records'],
+                'callNumber' => $holding['callnumber'],
+                'callNumberCount' => count($callNos),
+                'driver' => $driver,
+              ]
+          );
+        ?>
+      <?php endif; ?>
+      <?php /* Embed item structured data: library, barcode, call number */ ?>
+      <?php if ($holding['location'] ?? false): ?>
+        <?=$this->schemaOrg()->getMeta('seller', $holding['location'])?>
+      <?php endif; ?>
+      <?php if ($holding['barcode'] ?? false): ?>
+        <?=$this->schemaOrg()->getMeta('serialNumber', $holding['barcode'])?>
+      <?php endif; ?>
+      <?php if ($holding['callnumber'] ?? false): ?>
+        <?=$this->schemaOrg()->getMeta('sku', $holding['callnumber'])?>
+      <?php endif; ?>
+      <?php /* Declare that the item is to be borrowed, not for sale */ ?>
+      <?=$this->schemaOrg()->getLink('http://purl.org/goodrelations/v1#LeaseOut', 'businessFunction')?>
+      <?=$this->schemaOrg()->getLink('#record', 'itemOffered')?>
+    </td>
+  </tr>
+<?php endif; ?>

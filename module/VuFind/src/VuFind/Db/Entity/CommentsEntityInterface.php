@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -43,66 +43,73 @@ use DateTime;
 interface CommentsEntityInterface extends EntityInterface
 {
     /**
-     * Id getter
+     * Get identifier (returns null for an uninitialized or non-persisted object).
      *
-     * @return int
+     * @return ?int
      */
-    public function getId(): int;
+    public function getId(): ?int;
 
     /**
-     * Comment setter
-     *
-     * @param string $comment Comment
-     *
-     * @return Comments
-     */
-    public function setComment(string $comment): CommentsEntityInterface;
-
-    /**
-     * Comment getter
+     * Get comment.
      *
      * @return string
      */
     public function getComment(): string;
 
     /**
-     * Created setter.
+     * Set comment.
      *
-     * @param DateTime $dateTime Created date
+     * @param string $comment Comment
      *
-     * @return Comments
+     * @return static
      */
-    public function setCreated(DateTime $dateTime): CommentsEntityInterface;
+    public function setComment(string $comment): static;
 
     /**
-     * Created getter
+     * Get created date.
      *
      * @return DateTime
      */
     public function getCreated(): DateTime;
 
     /**
-     * User setter.
+     * Set created date.
      *
-     * @param ?UserEntityInterface $user User that created comment
+     * @param DateTime $dateTime Created date
      *
-     * @return Comments
+     * @return static
      */
-    public function setUser(?UserEntityInterface $user): CommentsEntityInterface;
+    public function setCreated(DateTime $dateTime): static;
 
     /**
-     * User getter
+     * Get user.
      *
      * @return ?UserEntityInterface
      */
     public function getUser(): ?UserEntityInterface;
 
     /**
-     * Resource setter.
+     * Set user.
      *
-     * @param ResourceEntityInterface $resource Resource id.
+     * @param ?UserEntityInterface $user User that created comment
      *
-     * @return Comments
+     * @return static
      */
-    public function setResource(ResourceEntityInterface $resource): CommentsEntityInterface;
+    public function setUser(?UserEntityInterface $user): static;
+
+    /**
+     * Get resource.
+     *
+     * @return ResourceEntityInterface
+     */
+    public function getResource(): ResourceEntityInterface;
+
+    /**
+     * Set resource.
+     *
+     * @param ResourceEntityInterface $resource Resource
+     *
+     * @return static
+     */
+    public function setResource(ResourceEntityInterface $resource): static;
 }

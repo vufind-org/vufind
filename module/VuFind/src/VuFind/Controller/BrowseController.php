@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -29,9 +29,10 @@
 
 namespace VuFind\Controller;
 
-use Laminas\Config\Config;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFind\Config\Config;
 use VuFind\Exception\Forbidden as ForbiddenException;
+use VuFind\Tags\TagsService;
 
 use function array_slice;
 use function in_array;
@@ -55,7 +56,7 @@ class BrowseController extends AbstractBase implements
     /**
      * VuFind configuration
      *
-     * @var \Laminas\Config\Config
+     * @var Config
      */
     protected $config;
 
@@ -281,24 +282,25 @@ class BrowseController extends AbstractBase implements
                 ];
             }
             // Don't make a second filter if it would be the same facet
+            $filterField = urlencode('filter[]');
             $view->paramTitle
                 = ($this->params()->fromQuery('query_field') != $this->getCategory())
-                ? 'filter[]=' . $this->params()->fromQuery('query_field') . ':'
+                ? $filterField . '=' . $this->params()->fromQuery('query_field') . ':'
                     . urlencode($this->params()->fromQuery('query')) . '&'
                 : '';
             switch ($this->getCurrentAction()) {
                 case 'LCC':
-                    $view->paramTitle .= 'filter[]=callnumber-subject:';
+                    $view->paramTitle .= $filterField . '=callnumber-subject:';
                     break;
                 case 'Dewey':
-                    $view->paramTitle .= 'filter[]=dewey-ones:';
+                    $view->paramTitle .= $filterField . '=dewey-ones:';
                     break;
                 default:
-                    $view->paramTitle .= 'filter[]=' . $this->getCategory() . ':';
+                    $view->paramTitle .= $filterField . '=' . $this->getCategory() . ':';
             }
             $view->paramTitle = str_replace(
                 '+AND+',
-                '&filter[]=',
+                '&' . $filterField . '=',
                 $view->paramTitle
             );
             $view->resultList = $resultList;
@@ -330,7 +332,7 @@ class BrowseController extends AbstractBase implements
 
         if ($this->params()->fromQuery('findby')) {
             $params = $this->getRequest()->getQuery()->toArray();
-            $tagService = $this->getDbService(\VuFind\Db\Service\TagServiceInterface::class);
+            $tagsService = $this->getService(TagsService::class);
             // Special case -- display alphabet selection if necessary:
             if ($params['findby'] == 'alphabetical') {
                 $legalLetters = $this->getAlphabetList();
@@ -340,7 +342,7 @@ class BrowseController extends AbstractBase implements
                     // Note -- this does not need to be escaped because
                     // $params['query'] has already been validated against
                     // the getAlphabetList() method below!
-                    $tags = $tagService->matchText($params['query']);
+                    $tags = $tagsService->getNonListTagsFuzzilyMatchingString($params['query']);
                     $tagList = [];
                     foreach ($tags as $tag) {
                         if ($tag['cnt'] > 0) {
@@ -359,15 +361,9 @@ class BrowseController extends AbstractBase implements
                 }
             } else {
                 // Default case: always display tag list for non-alphabetical modes:
-                $callback = function ($select) {
-                    // Discard user list tags
-                    $select->where->isNotNull('resource_tags.resource_id');
-                };
-
-                $tagList = $this->getTable('Tags')->getTagList(
+                $tagList = $tagsService->getTagBrowseList(
                     $params['findby'],
-                    $this->config->Browse->result_limit,
-                    $callback
+                    (int)($this->config->Browse->result_limit ?? 100)
                 );
                 $resultList = [];
                 foreach ($tagList as $i => $tag) {
@@ -638,15 +634,10 @@ class BrowseController extends AbstractBase implements
         $sort = 'count',
         $query = '[* TO *]'
     ) {
-        $results = $this->serviceLocator
-            ->get(\VuFind\Search\Results\PluginManager::class)->get('Solr');
+        $results = $this->getService(\VuFind\Search\Results\PluginManager::class)->get('Solr');
         $params = $results->getParams();
         $params->addFacet($facet);
-        if ($category != null) {
-            $query = $category . ':' . $query;
-        } else {
-            $query = $facet . ':' . $query;
-        }
+        $query = ($category ?? $facet) . ':' . $query;
         $params->setOverrideQuery($query);
         $params->getOptions()->disableHighlighting();
         $params->getOptions()->spellcheckEnabled(false);

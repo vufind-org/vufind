@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -33,7 +33,7 @@ use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use VuFind\Db\Table\Record;
+use VuFind\Db\Service\RecordServiceInterface;
 
 /**
  * Console command: clean up record cache.
@@ -51,22 +51,14 @@ use VuFind\Db\Table\Record;
 class CleanUpRecordCacheCommand extends Command
 {
     /**
-     * Record table object
-     *
-     * @var Record
-     */
-    protected $recordTable;
-
-    /**
      * Constructor
      *
-     * @param Record      $table Record table object
-     * @param string|null $name  The name of the command; passing null means it
+     * @param RecordServiceInterface $recordService Record database service
+     * @param ?string                $name          The name of the command; passing null means it
      * must be set in configure()
      */
-    public function __construct(Record $table, $name = null)
+    public function __construct(protected RecordServiceInterface $recordService, ?string $name = null)
     {
-        $this->recordTable = $table;
         parent::__construct($name);
     }
 
@@ -92,10 +84,10 @@ class CleanUpRecordCacheCommand extends Command
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $count = $this->recordTable->cleanup();
+        $count = $this->recordService->cleanup();
         $output->writeln("$count records deleted.");
-        return 0;
+        return self::SUCCESS;
     }
 }

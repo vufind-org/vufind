@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Form
@@ -66,10 +66,10 @@ class DatabaseFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
 
         $dbServiceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
@@ -78,6 +78,7 @@ class DatabaseFactory implements FactoryInterface
         $baseUrl = $serverUrl($router->assemble([], ['name' => 'home']));
         return new $requestedName(
             $dbServiceManager->get(\VuFind\Db\Service\FeedbackServiceInterface::class),
+            $dbServiceManager->get(\VuFind\Db\Service\UserService::class),
             $baseUrl
         );
     }

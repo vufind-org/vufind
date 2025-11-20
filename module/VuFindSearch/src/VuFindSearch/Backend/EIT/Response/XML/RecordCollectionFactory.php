@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -33,10 +33,10 @@ namespace VuFindSearch\Backend\EIT\Response\XML;
 use VuFindSearch\Exception\InvalidArgumentException;
 use VuFindSearch\Response\RecordCollectionFactoryInterface;
 
-use function call_user_func;
 use function gettype;
 use function is_array;
 use function is_callable;
+use function sprintf;
 
 /**
  * Simple XML-based factory for record collection.
@@ -101,7 +101,7 @@ class RecordCollectionFactory implements RecordCollectionFactoryInterface
         }
         $collection = new $this->collectionClass($response);
         foreach ($response['docs'] as $doc) {
-            $collection->add(call_user_func($this->recordFactory, $doc), false);
+            $collection->add(($this->recordFactory)($doc), false);
         }
         return $collection;
     }

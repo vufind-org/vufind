@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -30,7 +30,9 @@
 namespace VuFindTest\Recommend;
 
 use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
+use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Recommend\Databases;
+use VuFind\Search\EDS\Results;
 
 /**
  * Databases Test Class
@@ -48,7 +50,7 @@ class DatabasesTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testEmptyConfig()
+    public function testEmptyConfig(): void
     {
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage("must have section 'Databases'");
@@ -62,7 +64,7 @@ class DatabasesTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testNormal()
+    public function testNormal(): void
     {
         $configData = $this->mockConfigData();
         $module = $this->buildModuleAndProcessResults($configData);
@@ -78,7 +80,7 @@ class DatabasesTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDontUseQuery()
+    public function testDontUseQuery(): void
     {
         $configData = $this->mockConfigData();
         $configData['Databases']['useQuery'] = false;
@@ -90,11 +92,57 @@ class DatabasesTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test a query with punctuation.
+     *
+     * @return void
+     */
+    public function testQueryWithPunctuation(): void
+    {
+        $configData = $this->mockConfigData();
+        $module = $this->buildModuleAndProcessResults($configData, 'His-tory.');
+
+        $databases = $module->getResults();
+        $this->assertCount(3, $databases);
+        $this->assertArrayHasKey('http://thepast.com', $databases);
+    }
+
+    /**
+     * Test a database name with punctuation.
+     *
+     * @return void
+     */
+    public function testDatabaseNameWithPunctuation(): void
+    {
+        $configData = $this->mockConfigData();
+        $module = $this->buildModuleAndProcessResults($configData, 'ABC DB');
+
+        $databases = $module->getResults();
+        $this->assertCount(3, $databases);
+        $this->assertArrayHasKey('http://spelling.com', $databases);
+    }
+
+    /**
+     * Test a database name with punctuation but regex disabled.
+     *
+     * @return void
+     */
+    public function testQueryRegexDisabled(): void
+    {
+        $configData = $this->mockConfigData();
+        $configData['Databases']['useQueryReplacePattern'] = false;
+        $module = $this->buildModuleAndProcessResults($configData, 'ABC DB');
+
+        $databases = $module->getResults();
+        $this->assertCount(2, $databases);
+        $this->assertArrayNotHasKey('http://spelling.com', $databases);
+    }
+
+    /**
      * Test setting useLibGuides to true.
      *
      * @return void
      */
-    public function testUseLibGuides()
+    public function testUseLibGuides(): void
     {
         $configData = $this->mockConfigData();
         $configData['Databases']['useLibGuides'] = true;
@@ -110,7 +158,7 @@ class DatabasesTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testUseLibGuidesWithAlternateName()
+    public function testUseLibGuidesWithAlternateName(): void
     {
         $configData = $this->mockConfigData();
         $configData['Databases']['useLibGuides'] = true;
@@ -127,7 +175,7 @@ class DatabasesTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testUseLibGuidesWithAlternateNameDisabled()
+    public function testUseLibGuidesWithAlternateNameDisabled(): void
     {
         $configData = $this->mockConfigData();
         $configData['Databases']['useLibGuides'] = true;
@@ -145,18 +193,18 @@ class DatabasesTest extends \PHPUnit\Framework\TestCase
      * @param $configData  array  A Databases config section
      * @param $queryString string Query string
      *
-     * @return object
+     * @return MockObject&Databases
      */
-    protected function buildModuleAndProcessResults($configData, $queryString = 'History')
-    {
-        $configManager = $this->createMock(\VuFind\Config\PluginManager::class);
-        $configManager->expects($this->any())->method('get')
-            ->will($this->returnValue(new \Laminas\Config\Config($configData)));
+    protected function buildModuleAndProcessResults(
+        array $configData,
+        string $queryString = 'History'
+    ): MockObject&Databases {
+        $configManager = $this->createMock(\VuFind\Config\ConfigManagerInterface::class);
+        $configManager->expects($this->any())->method('getConfigArray')
+            ->willReturn($configData);
 
         $libGuidesGetter = function () {
-            $libGuides = $this->getMockBuilder(\VuFind\Connection\LibGuides::class)
-                ->disableOriginalConstructor()
-                ->getMock();
+            $libGuides = $this->createMock(\VuFind\Connection\LibGuides::class);
             $libGuidesData = $this->mockLibGuidesData();
             $libGuides->method('getAZ')->willReturn($libGuidesData);
             return $libGuides;
@@ -184,22 +232,16 @@ class DatabasesTest extends \PHPUnit\Framework\TestCase
      * @param $facetList   array Result facets
      * @param $queryString string Query string
      *
-     * @return object
+     * @return MockObject&Results
      */
-    protected function mockResults($facetList, $queryString)
+    protected function mockResults(array $facetList, string $queryString): MockObject&Results
     {
-        $results = $this->getMockBuilder(\VuFind\Search\EDS\Results::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $results = $this->createMock(Results::class);
         $results->method('getFacetList')->willReturn($facetList);
 
-        $params = $this->getMockBuilder(\VuFind\Search\Base\Params::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $params = $this->createMock(\VuFind\Search\Base\Params::class);
         $results->method('getParams')->willReturn($params);
-        $query = $this->getMockBuilder(\VuFindSearch\Query\Query::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $query = $this->createMock(\VuFindSearch\Query\Query::class);
         $params->method('getQuery')->willReturn($query);
         $query->method('getString')->willReturn($queryString);
 
@@ -211,7 +253,7 @@ class DatabasesTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function mockFacetList()
+    protected function mockFacetList(): array
     {
         return [
             'ContentProvider' => [
@@ -235,7 +277,7 @@ class DatabasesTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function mockConfigData()
+    protected function mockConfigData(): array
     {
         return [
             'Databases' => [
@@ -249,6 +291,7 @@ class DatabasesTest extends \PHPUnit\Framework\TestCase
                     'Sociology DB' => 'http://people.com',
                     'Biology DB' => 'http://cells.com',
                     'History DB' => 'http://thepast.com',
+                    'A.B.C. DB' => 'http://spelling.com',
                 ],
             ],
         ];
@@ -259,7 +302,7 @@ class DatabasesTest extends \PHPUnit\Framework\TestCase
      *
      * @return array
      */
-    protected function mockLibGuidesData()
+    protected function mockLibGuidesData(): array
     {
         return [
             'db_4' => (object)[

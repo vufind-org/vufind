@@ -19,8 +19,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  EBSCO
@@ -35,6 +35,9 @@ namespace VuFind\Search\EDS;
 
 use VuFindSearch\ParamBag;
 
+use function count;
+use function in_array;
+
 /**
  * Common EDS & EPF API Params
  *
@@ -48,6 +51,14 @@ use VuFindSearch\ParamBag;
  */
 class AbstractEDSParams extends \VuFind\Search\Base\Params
 {
+    /**
+     * Fields that the EDS API will always filter multiple values using OR, not AND.
+     *
+     * @var array
+     */
+    protected $forcedOrFields = [
+    ];
+
     /**
      * Set up filters based on VuFind settings.
      *
@@ -64,8 +75,10 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
             // Loop through all filters and add appropriate values to request:
             foreach ($filterList as $filterArray) {
                 foreach ($filterArray as $filt) {
-                    // Standard case:
-                    $fq = "{$filt['field']}:{$filt['value']}";
+                    $fq = $filt['field']
+                        . ($this->filterRequiresFacetOperator($filt['field']) ?
+                            ":{$this->getFacetOperator($filt['field'], $filt['operator'])}" : '')
+                        . ":{$filt['value']}";
                     $params->add('filters', $fq);
                 }
             }
@@ -73,12 +86,30 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
         if (!empty($hiddenFilterList)) {
             foreach ($hiddenFilterList as $field => $hiddenFilters) {
                 foreach ($hiddenFilters as $value) {
-                    // Standard case:
-                    $hfq = "{$field}:{$value}";
+                    $hfq = $field
+                        . ($this->filterRequiresFacetOperator($field) ?
+                            ":{$this->getFacetOperator($field)}" : '')
+                        . ":{$value}";
                     $params->add('filters', $hfq);
                 }
             }
         }
+    }
+
+    /**
+     * Determines if the given filter field is a normal one, which should include the AND/OR operator,
+     * or a special filter which should not.
+     *
+     * @param string $field Filter field name
+     *
+     * @return boolean
+     */
+    protected function filterRequiresFacetOperator($field)
+    {
+        return !(str_starts_with($field, 'LIMIT')
+            || str_starts_with($field, 'EXPAND')
+            || str_starts_with($field, 'SEARCHMODE')
+            || str_starts_with($field, 'PublicationDate'));
     }
 
     /**
@@ -88,7 +119,54 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
      */
     public function getView()
     {
-        $viewArr = explode('|', $this->view ?? '');
+        $viewArr = explode('_', $this->view ?? '');
         return $viewArr[0];
+    }
+
+    /**
+     * Get facet operator for the specified field
+     *
+     * @param string $field             Field name
+     * @param string $specifiedOperator Operator specified on a config filter line
+     *
+     * @return string
+     */
+    public function getFacetOperator($field, $specifiedOperator = null)
+    {
+        if ($specifiedOperator && $specifiedOperator != 'AND') {
+            return $specifiedOperator;
+        }
+        if (in_array($field, $this->forcedOrFields)) {
+            return 'OR';
+        }
+        return parent::getFacetOperator($field);
+    }
+
+    /**
+     * Return the value for which search view we use
+     *
+     * @return string
+     */
+    public function getEbscoView()
+    {
+        $viewArr = explode('_', $this->view ?? '');
+        return (1 < count($viewArr)) ? $viewArr[1] : $this->options->getEbscoView();
+    }
+
+    /**
+     * Basic 'getter' for list of available view options.
+     *
+     * @return array
+     */
+    public function getViewList()
+    {
+        $list = [];
+        foreach ($this->getOptions()->getViewOptions() as $key => $value) {
+            $list[$key] = [
+                'desc' => $value,
+                'selected' => ($key == $this->getView() . '_' . $this->getEbscoView()),
+            ];
+        }
+        return $list;
     }
 }

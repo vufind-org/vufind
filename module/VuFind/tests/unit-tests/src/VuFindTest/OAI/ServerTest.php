@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category Search
  * @package  Service
@@ -74,7 +74,7 @@ class ServerTest extends \PHPUnit\Framework\TestCase
         $server = new Server(
             $this->getMockResultsManager(),
             $this->getMockRecordLoader(),
-            $this->getMockTableManager(),
+            $this->getMockChangeTracker(),
             $this->getMockResumptionService()
         );
         $server->setRecordFormatter($this->getMockRecordFormatter());
@@ -102,13 +102,13 @@ class ServerTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock table manager
+     * Get a mock change tracker service
      *
-     * @return MockObject&\VuFind\Db\Table\PluginManager
+     * @return MockObject&\VuFind\Db\Service\ChangeTrackerServiceInterface
      */
-    protected function getMockTableManager(): MockObject&\VuFind\Db\Table\PluginManager
+    protected function getMockChangeTracker(): MockObject&\VuFind\Db\Service\ChangeTrackerServiceInterface
     {
-        return $this->createMock(\VuFind\Db\Table\PluginManager::class);
+        return $this->createMock(\VuFind\Db\Service\ChangeTrackerServiceInterface::class);
     }
 
     /**

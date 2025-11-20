@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -121,11 +121,11 @@ class RetryTraitTest extends \PHPUnit\Framework\TestCase
         $counter = 0;
         $this->expectExceptionMessage('Fail attempt 1');
         $testClass->call(
-            function () use (&$counter) {
+            function () use (&$counter): void {
                 ++$counter;
                 throw new \Exception("Fail attempt $counter");
             },
-            function ($attempt, $exception) use (&$counter) {
+            function ($attempt, $exception) use (&$counter): void {
                 $this->assertEquals($counter + 1, $attempt);
                 $this->assertInstanceOf(\Exception::class, $exception);
             },
@@ -149,11 +149,11 @@ class RetryTraitTest extends \PHPUnit\Framework\TestCase
         $retries = 0;
         try {
             $testClass->call(
-                function () use (&$counter) {
+                function () use (&$counter): void {
                     ++$counter;
                     throw new \Exception("Fail attempt $counter");
                 },
-                function ($attempt, $exception) use (&$counter, &$retries) {
+                function ($attempt, $exception) use (&$counter, &$retries): void {
                     $this->assertEquals($counter + 1, $attempt);
                     $this->assertInstanceOf(\Exception::class, $exception);
                     ++$retries;
@@ -204,10 +204,9 @@ class RetryTraitTest extends \PHPUnit\Framework\TestCase
      * @param int   $attempt  Attempt number
      * @param array $options  Current options
      *
-     * @dataProvider backoffDataProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('backoffDataProvider')]
     public function testBackoff(int $expected, int $attempt, array $options = [])
     {
         $testClass = $this->getMockRetryTestClass();

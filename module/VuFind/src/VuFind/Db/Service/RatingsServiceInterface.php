@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -44,7 +44,7 @@ use VuFind\Db\Entity\UserEntityInterface;
 interface RatingsServiceInterface extends DbServiceInterface
 {
     /**
-     * Get average rating and rating count associated with the specified resource.
+     * Get average rating and rating count associated with the specified record.
      *
      * @param string $id     Record ID to look up
      * @param string $source Source of record to look up
@@ -52,10 +52,10 @@ interface RatingsServiceInterface extends DbServiceInterface
      *
      * @return array Array with keys count and rating (between 0 and 100)
      */
-    public function getForResource(string $id, string $source, ?int $userId): array;
+    public function getRecordRatings(string $id, string $source, ?int $userId): array;
 
     /**
-     * Get rating breakdown for the specified resource.
+     * Get rating breakdown for the specified record.
      *
      * @param string $id     Record ID to look up
      * @param string $source Source of record to look up
@@ -64,7 +64,7 @@ interface RatingsServiceInterface extends DbServiceInterface
      * @return array Array with keys count and rating (between 0 and 100) as well as
      * an groups array with ratings from lowest to highest
      */
-    public function getCountsForResource(
+    public function getCountsForRecord(
         string $id,
         string $source,
         array $groups
@@ -73,11 +73,21 @@ interface RatingsServiceInterface extends DbServiceInterface
     /**
      * Deletes all ratings by a user.
      *
-     * @param int|UserEntityInterface $user User object or identifier
+     * @param UserEntityInterface|int $userOrId User object or identifier
      *
      * @return void
      */
-    public function deleteByUser(int|UserEntityInterface $user): void;
+    public function deleteByUser(UserEntityInterface|int $userOrId): void;
+
+    /**
+     * Deletes ratings by given rating ids and user id.
+     *
+     * @param array $ids    Array of rating ids
+     * @param int   $userId User ID
+     *
+     * @return void
+     */
+    public function deleteByIdsAndUserId(array $ids, int $userId): void;
 
     /**
      * Get statistics on use of Ratings.
@@ -89,16 +99,33 @@ interface RatingsServiceInterface extends DbServiceInterface
     /**
      * Add or update user's rating for a resource.
      *
-     * @param int|ResourceEntityInterface $resource Resource to add or update rating.
-     * @param int|UserEntityInterface     $user     User
-     * @param ?int                        $rating   Rating (null to delete)
+     * @param ResourceEntityInterface|int $resourceOrId Resource to add or update rating.
+     * @param UserEntityInterface|int     $userOrId     User
+     * @param ?int                        $rating       Rating (null to delete)
      *
      * @throws \Exception
      * @return int ID of rating added, deleted or updated
      */
     public function addOrUpdateRating(
-        int|ResourceEntityInterface $resource,
-        int|UserEntityInterface $user,
+        ResourceEntityInterface|int $resourceOrId,
+        UserEntityInterface|int $userOrId,
         ?int $rating
     ): int;
+
+    /**
+     * Get a paginated result of all ratings by user id.
+     *
+     * @param int    $userId User Id
+     * @param int    $limit  Limit
+     * @param int    $page   Page
+     * @param string $sort   Sort
+     *
+     * @return \Laminas\Paginator\Paginator
+     */
+    public function getRatingsPaginator(
+        int $userId,
+        int $limit,
+        int $page,
+        string $sort,
+    ): \Laminas\Paginator\Paginator;
 }

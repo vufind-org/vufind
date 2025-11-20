@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  I18n\Locale
@@ -68,12 +68,14 @@ class LocaleDetectorFactory implements DelegatorFactoryInterface
      * @throws ServiceNotCreatedException if an exception is raised when
      *     creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(
         ContainerInterface $container,
         $name,
         callable $callback,
-        array $options = null
+        ?array $options = null
     ) {
         $detector = call_user_func($callback);
         $settings = $container->get(LocaleSettings::class);
@@ -89,7 +91,7 @@ class LocaleDetectorFactory implements DelegatorFactoryInterface
         $cookies = $container->get(CookieManager::class);
         $detector->getEventManager()->attach(
             LocaleEvent::EVENT_FOUND,
-            function (EventInterface $event) use ($cookies) {
+            function (EventInterface $event) use ($cookies): void {
                 $language = $event->getParam('locale');
                 if ($language !== $cookies->get('language')) {
                     $cookies->set('language', $language);
@@ -107,7 +109,7 @@ class LocaleDetectorFactory implements DelegatorFactoryInterface
      *
      * @return \Generator
      */
-    protected function getStrategies(LocaleSettings $settings = null): \Generator
+    protected function getStrategies(?LocaleSettings $settings = null): \Generator
     {
         yield new LocaleDetectorParamStrategy();
 

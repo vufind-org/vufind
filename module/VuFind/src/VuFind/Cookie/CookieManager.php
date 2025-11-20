@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Cookie
@@ -104,7 +104,7 @@ class CookieManager
      * @param ?string $sessionName Session cookie name (if null defaults to PHP
      * settings)
      * @param bool    $httpOnly    Are cookies HTTP only? (default = true)
-     * @param string  $sameSite    Default SameSite attribute (defaut = 'Lax')
+     * @param string  $sameSite    Default SameSite attribute (default = 'Lax')
      */
     public function __construct(
         $cookies,

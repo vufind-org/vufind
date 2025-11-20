@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -44,18 +44,7 @@ use VuFind\Search\Solr\Results;
  */
 trait SolrSearchObjectTrait
 {
-    /**
-     * Get mock config manager.
-     *
-     * @return \VuFind\Config\PluginManager
-     */
-    public function getMockConfigManager(): \VuFind\Config\PluginManager
-    {
-        $manager = $this->createMock(\VuFind\Config\PluginManager::class);
-        $manager->expects($this->any())->method('get')
-            ->will($this->returnValue(new \Laminas\Config\Config([])));
-        return $manager;
-    }
+    use ConfigRelatedServicesTrait;
 
     /**
      * Get Solr options.
@@ -72,11 +61,11 @@ trait SolrSearchObjectTrait
     /**
      * Get Solr params.
      *
-     * @param Options $options Solr options to inject (null for default)
+     * @param ?Options $options Solr options to inject (null for default)
      *
      * @return Params
      */
-    public function getSolrParams(Options $options = null): Params
+    public function getSolrParams(?Options $options = null): Params
     {
         return new Params(
             $options ?? $this->getSolrOptions(),
@@ -87,11 +76,11 @@ trait SolrSearchObjectTrait
     /**
      * Get Solr results.
      *
-     * @param Params $params Solr parameters to inject (null for default)
+     * @param ?Params $params Solr parameters to inject (null for default)
      *
      * @return Results
      */
-    public function getSolrResults(Params $params = null): Results
+    public function getSolrResults(?Params $params = null): Results
     {
         return new Results(
             $params ?? $this->getSolrParams(),

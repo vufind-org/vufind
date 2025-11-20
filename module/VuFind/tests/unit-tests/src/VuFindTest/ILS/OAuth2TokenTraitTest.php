@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category CPK-vufind-6
  * @package  VuFindTest\ILS
@@ -34,6 +34,7 @@ namespace VuFindTest\ILS;
 use Laminas\Http\Client\Adapter\Test as TestAdapter;
 use Laminas\Http\Response as HttpResponse;
 use VuFind\ILS\Driver\XCNCIP2;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
  * Class OAuth2TokenTraitTest
@@ -46,6 +47,8 @@ use VuFind\ILS\Driver\XCNCIP2;
  */
 class OAuth2TokenTraitTest extends \PHPUnit\Framework\TestCase
 {
+    use ConfigRelatedServicesTrait;
+
     /**
      * Tested service
      *
@@ -132,6 +135,6 @@ class OAuth2TokenTraitTest extends \PHPUnit\Framework\TestCase
      */
     public function configureDriver(): void
     {
-        $this->driver = new XCNCIP2(new \VuFind\Date\Converter());
+        $this->driver = new XCNCIP2(new \VuFind\Date\Converter(), $this->getPathResolver());
     }
 }

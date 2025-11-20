@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Session_Handlers
@@ -33,6 +33,7 @@ namespace VuFind\Session;
 
 use Laminas\ServiceManager\Factory\DelegatorFactoryInterface;
 use Psr\Container\ContainerInterface;
+use VuFind\Crypt\BlockCipher;
 
 use function call_user_func;
 
@@ -64,7 +65,7 @@ class SecureDelegatorFactory implements DelegatorFactoryInterface
         ContainerInterface $container,
         $name,
         callable $callback,
-        array $options = null
+        ?array $options = null
     ): HandlerInterface {
         /**
          * The wrapped session handler.
@@ -72,8 +73,8 @@ class SecureDelegatorFactory implements DelegatorFactoryInterface
          * @var HandlerInterface $handler
          */
         $handler = call_user_func($callback);
-        $config = $container->get(\VuFind\Config\PluginManager::class);
-        $secure = $config->get('config')->Session->secure ?? false;
+        $secure = $container->get(\VuFind\Config\ConfigManagerInterface::class)
+            ->getConfigArray('config')['Session']['secure'] ?? false;
         return $secure ? $this->delegate($container, $handler) : $handler;
     }
 
@@ -90,6 +91,6 @@ class SecureDelegatorFactory implements DelegatorFactoryInterface
         HandlerInterface $handler
     ): HandlerInterface {
         $cookieManager = $container->get(\VuFind\Cookie\CookieManager::class);
-        return new SecureDelegator($cookieManager, $handler);
+        return new SecureDelegator($cookieManager, $handler, $container->get(BlockCipher::class));
     }
 }

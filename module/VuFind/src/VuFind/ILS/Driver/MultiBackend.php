@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILSdrivers
@@ -72,13 +72,6 @@ class MultiBackend extends AbstractMultiDriver
     protected $defaultDriver;
 
     /**
-     * ILS authenticator
-     *
-     * @var \VuFind\Auth\ILSAuthenticator
-     */
-    protected $ilsAuth;
-
-    /**
      * An array of methods that should determine source from a specific parameter
      * field
      *
@@ -119,17 +112,16 @@ class MultiBackend extends AbstractMultiDriver
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager  $configLoader Configuration loader
-     * @param \VuFind\Auth\ILSAuthenticator $ilsAuth      ILS authenticator
-     * @param PluginManager                 $dm           ILS driver manager
+     * @param \VuFind\Config\ConfigManagerInterface $configManager Configuration manager
+     * @param \VuFind\Auth\ILSAuthenticator         $ilsAuth       ILS authenticator
+     * @param PluginManager                         $driverManager ILS driver manager
      */
     public function __construct(
-        \VuFind\Config\PluginManager $configLoader,
-        \VuFind\Auth\ILSAuthenticator $ilsAuth,
-        PluginManager $dm
+        \VuFind\Config\ConfigManagerInterface $configManager,
+        protected \VuFind\Auth\ILSAuthenticator $ilsAuth,
+        PluginManager $driverManager
     ) {
-        parent::__construct($configLoader, $dm);
-        $this->ilsAuth = $ilsAuth;
+        parent::__construct($configManager, $driverManager);
     }
 
     /**
@@ -240,7 +232,7 @@ class MultiBackend extends AbstractMultiDriver
      * record.
      *
      * @param string $id      The record id to retrieve the holdings for
-     * @param array  $patron  Patron data
+     * @param ?array $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
      * @return array         On success, an associative array with the following
@@ -249,7 +241,7 @@ class MultiBackend extends AbstractMultiDriver
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null, array $options = [])
+    public function getHolding($id, ?array $patron = null, array $options = [])
     {
         $source = $this->getSource($id);
         if ($driver = $this->getDriver($source)) {
@@ -1030,6 +1022,29 @@ class MultiBackend extends AbstractMultiDriver
     }
 
     /**
+     * Patron Login
+     *
+     * This is responsible for authenticating a patron against the catalog.
+     *
+     * @param string $username The patron username
+     * @param string $password The patron password
+     *
+     * @return mixed           Associative array of patron info on successful login,
+     * null on unsuccessful login.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
+     */
+    public function patronLogin($username, $password)
+    {
+        $source = $this->getSource($username);
+        $result = $this->callMethodIfSupported($source, __FUNCTION__, func_get_args());
+        if (is_array($result)) {
+            $result['__source'] = $source;
+        }
+        return $result;
+    }
+
+    /**
      * Helper method to determine whether or not a certain method can be
      * called on this driver. Required method for any smart drivers.
      *
@@ -1119,14 +1134,13 @@ class MultiBackend extends AbstractMultiDriver
      */
     protected function getSourceForMethod(string $method, array $params): string
     {
-        $source = '';
-        $checkFields = $this->sourceCheckFields[$method] ?? null;
-        if ($checkFields) {
-            $source = $this->getSourceFromParams($params, (array)$checkFields);
-        } else {
-            $source = $this->getSourceFromParams($params);
+        if ($source = $params['__source'] ?? null) {
+            return $source;
         }
-        return $source;
+        if ($checkFields = $this->sourceCheckFields[$method] ?? null) {
+            return $this->getSourceFromParams($params, (array)$checkFields);
+        }
+        return $this->getSourceFromParams($params);
     }
 
     /**

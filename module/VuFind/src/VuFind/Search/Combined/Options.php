@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Base
@@ -30,6 +30,8 @@
  */
 
 namespace VuFind\Search\Combined;
+
+use VuFind\Config\ConfigManagerInterface;
 
 /**
  * Combined search model.
@@ -44,30 +46,18 @@ namespace VuFind\Search\Combined;
 class Options extends \VuFind\Search\Base\Options
 {
     /**
-     * Options plugin manager
-     *
-     * @var \VuFind\Search\Options\PluginManager
-     */
-    protected $optionsManager;
-
-    /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager         $configLoader   Config loader
+     * @param ConfigManagerInterface               $configManager  Config loader
      * @param \VuFind\Search\Options\PluginManager $optionsManager Options plugin manager
      */
     public function __construct(
-        \VuFind\Config\PluginManager $configLoader,
-        \VuFind\Search\Options\PluginManager $optionsManager
+        ConfigManagerInterface $configManager,
+        protected \VuFind\Search\Options\PluginManager $optionsManager
     ) {
-        parent::__construct($configLoader);
-        $this->optionsManager = $optionsManager;
-        $searchSettings = $this->configLoader->get('combined');
-        if (isset($searchSettings->Basic_Searches)) {
-            foreach ($searchSettings->Basic_Searches as $key => $value) {
-                $this->basicHandlers[$key] = $value;
-            }
-        }
+        parent::__construct($configManager);
+        $searchSettings = $this->configManager->getConfigArray('combined');
+        $this->basicHandlers = $searchSettings['Basic_Searches'] ?? [];
     }
 
     /**
@@ -89,15 +79,17 @@ class Options extends \VuFind\Search\Base\Options
      * @param string $handler Name of handler for which to load specific settings.
      *
      * @return array associative: location (top/side/etc.) => search settings
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getRecommendationSettings($handler = null)
     {
         $recommend = [];
-        $config = $this->configLoader->get('combined');
+        $config = $this->configManager->getConfigArray('combined');
         foreach (['top', 'bottom'] as $location) {
-            if (isset($config->RecommendationModules->$location)) {
+            if (isset($config['RecommendationModules'][$location])) {
                 $recommend[$location]
-                    = $config->RecommendationModules->$location->toArray();
+                    = $config['RecommendationModules'][$location];
             }
         }
         return $recommend;
@@ -110,7 +102,7 @@ class Options extends \VuFind\Search\Base\Options
      */
     public function getTabConfig()
     {
-        $config = $this->configLoader->get('combined')->toArray();
+        $config = $this->configManager->getConfigArray('combined');
 
         // Strip out non-tab sections of the configuration:
         unset($config['Basic_Searches']);
@@ -129,7 +121,7 @@ class Options extends \VuFind\Search\Base\Options
     public function supportsCart()
     {
         // Cart is supported if any of the tabs support cart:
-        foreach ($this->getTabConfig() as $current => $settings) {
+        foreach (array_keys($this->getTabConfig()) as $current) {
             [$searchClassId] = explode(':', $current);
             $currentOptions = $this->optionsManager->get($searchClassId);
             if ($currentOptions->supportsCart()) {

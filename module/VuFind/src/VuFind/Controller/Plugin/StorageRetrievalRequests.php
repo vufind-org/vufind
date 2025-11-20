@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -161,13 +161,24 @@ class StorageRetrievalRequests extends AbstractRequestBase
                 $flashMsg
                     ->addMessage('storage_retrieval_request_cancel_fail', 'error');
             } else {
+                $failed = 0;
+                foreach ($cancelResults['items'] ?? [] as $item) {
+                    if (!$item['success']) {
+                        ++$failed;
+                    }
+                }
+                if ($failed) {
+                    $flashMsg->addErrorMessage(
+                        ['msg' => 'storage_retrieval_request_cancel_fail_items', 'tokens' => ['%%count%%' => $failed]]
+                    );
+                }
                 if ($cancelResults['count'] > 0) {
-                    $msg = $this->getController()
-                        ->translate(
-                            'storage_retrieval_request_cancel_success_items',
-                            ['%%count%%' => $cancelResults['count']]
-                        );
-                    $flashMsg->addMessage($msg, 'success');
+                    $flashMsg->addSuccessMessage(
+                        [
+                            'msg' => 'storage_retrieval_request_cancel_success_items',
+                            'tokens' => ['%%count%%' => $cancelResults['count']],
+                        ]
+                    );
                 }
                 return $cancelResults;
             }

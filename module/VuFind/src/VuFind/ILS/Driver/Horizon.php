@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -30,8 +30,8 @@
 
 namespace VuFind\ILS\Driver;
 
-use Laminas\Log\LoggerAwareInterface;
 use PDO;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Log\LoggerAwareTrait;
@@ -343,7 +343,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      * record.
      *
      * @param string $id      The record id to retrieve the holdings for
-     * @param array  $patron  Patron data
+     * @param ?array $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
      * @throws DateException
@@ -354,7 +354,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null, array $options = [])
+    public function getHolding($id, ?array $patron = null, array $options = [])
     {
         $sqlArray = $this->getHoldingSql($id);
         $sql = $this->buildSqlFromArray($sqlArray);
@@ -542,27 +542,18 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             "and pin# = '" . addslashes($password) . "'";
 
         try {
-            $user = [];
-
             $sqlStmt = $this->db->query($sql);
             foreach ($sqlStmt as $row) {
                 [$lastname, $firstname] = explode(', ', $row['FULLNAME']);
-                $user = [
-                    'id' => $username,
-                    'firstname' => $firstname,
-                    'lastname' => $lastname,
-                    'cat_username' => $username,
-                    'cat_password' => $password,
-                    'email' => $row['EMAIL'],
-                    'major' => null,
-                    'college' => null,
-                ];
-
-                $this->debug(json_encode($user));
-
-                return $user;
+                return $this->createPatronArray(
+                    id: $username,
+                    cat_username: $username,
+                    cat_password: $password,
+                    firstname: $firstname,
+                    lastname: $lastname,
+                    email: $row['EMAIL']
+                );
             }
-
             throw new ILSException('Unable to login patron ' . $username);
         } catch (\Exception $e) {
             $this->logError($e->getMessage());
@@ -651,7 +642,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
     {
         if ($row['STATUS'] != 6) {
             $position  = ($row['STATUS'] != 1) ? $row['POSITION'] : false;
-            $available = ($row['STATUS'] == 1) ? true : false;
+            $available = $row['STATUS'] == 1;
             $expire    = false;
             $create    = false;
             // Convert Horizon Format to display format
@@ -843,7 +834,6 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
      */
     public function getMyProfile($patron)
     {
-        $profile = [];
         $sql = 'select name_reconstructed as FULLNAME, address1 as ADDRESS1, ' .
             'city_st.descr as ADDRESS2, postal_code as ZIP, phone_no as PHONE ' .
             'from borrower ' .
@@ -859,20 +849,15 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
         try {
             $sqlStmt = $this->db->query($sql);
             foreach ($sqlStmt as $row) {
-                [$lastname, $firstname] = explode(', ', $row['FULLNAME']);
-                $profile = [
-                    'lastname' => $lastname,
-                    'firstname' => $firstname,
-                    'address1' => $row['ADDRESS1'],
-                    'address2' => $row['ADDRESS2'],
-                    'zip' => $row['ZIP'],
-                    'phone' => $row['PHONE'],
-                    'group' => null,
-                ];
-
-                $this->debug(json_encode($profile));
-
-                return $profile;
+                [$lastname, $firstname] = $this->getLastAndFirstName($row['FULLNAME']);
+                return $this->createProfileArray(
+                    firstname: $firstname,
+                    lastname: $lastname,
+                    address1: $row['ADDRESS1'],
+                    address2: $row['ADDRESS2'],
+                    zip: $row['ZIP'],
+                    phone: $row['PHONE'],
+                );
             }
 
             throw new ILSException(
@@ -882,7 +867,6 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
             $this->logError($e->getMessage());
             $this->throwAsIlsException($e);
         }
-        return $profile;
     }
 
     /**

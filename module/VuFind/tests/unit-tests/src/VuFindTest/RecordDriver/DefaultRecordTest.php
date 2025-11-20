@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -30,7 +30,7 @@
 
 namespace VuFindTest\RecordDriver;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\RecordDriver\DefaultRecord;
 use VuFind\RecordDriver\Response\PublicationDetails;
 
@@ -91,6 +91,17 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
     {
         $geoLoc = [];
         $this->assertEquals($geoLoc, $this->getDriver()->getGeoLocation());
+    }
+
+    /**
+     * Test getSchemaOrgFormatsArray for a record.
+     *
+     * @return void
+     */
+    public function testGetSchemaOrgFormatsArray()
+    {
+        $formats = ['Book'];
+        $this->assertEquals($formats, $this->getDriver()->getSchemaOrgFormatsArray());
     }
 
     /**
@@ -327,7 +338,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
         $mock->setRawData($fields);
         $mock->expects($this->any())
             ->method('getBookOpenUrlParams')
-            ->will($this->returnValue($openUrlParams));
+            ->willReturn($openUrlParams);
 
         $this->assertEquals($openUrl, $mock->getOpenUrl());
     }
@@ -531,17 +542,16 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      * @param string $mode          Retrieval mode
      * @param bool   $filterInvalid Should we filter invalid ISBNs?
      *
-     * @dataProvider getCleanISBNsProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getCleanISBNsProvider')]
     public function testGetCleanISBNs($result, $mode, $filterInvalid)
     {
         $this->assertEquals($result, $this->getDriver()->getCleanISBNs($mode, $filterInvalid));
     }
 
     /**
-     * Test whether author deduplication works corrrectly.
+     * Test whether author deduplication works correctly.
      *
      * @return void
      */
@@ -577,12 +587,12 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a record driver with fake data.
      *
-     * @param array  $overrides  Fixture fields to override.
-     * @param Config $mainConfig Main configuration (optional).
+     * @param array   $overrides  Fixture fields to override.
+     * @param ?Config $mainConfig Main configuration (optional).
      *
      * @return SolrDefault
      */
-    protected function getDriver($overrides = [], Config $mainConfig = null)
+    protected function getDriver($overrides = [], ?Config $mainConfig = null)
     {
         $fixture = $this->getJsonFixture('misc/testbug2.json');
         $record = new DefaultRecord($mainConfig);

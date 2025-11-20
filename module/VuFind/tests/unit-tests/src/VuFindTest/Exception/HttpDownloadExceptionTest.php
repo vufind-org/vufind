@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,7 +29,6 @@
 
 namespace VuFindTest\Exception;
 
-use Laminas\Http\Headers;
 use VuFind\Exception\HttpDownloadException;
 
 /**
@@ -53,9 +52,9 @@ class HttpDownloadExceptionTest extends \PHPUnit\Framework\TestCase
         $message = 'Not Found';
         $url = 'https://mock.codes/404';
         $statusCode = 404;
-        $responseHeaders = Headers::fromString(
-            'content-type: application/json'
-        );
+        $responseHeaders = [
+            'content-type' => 'application/json',
+        ];
         $responseBody = '{"statusCode" : 404, "description": "Not Found"}';
         $previous = null;
 

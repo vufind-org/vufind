@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  OAI_Server
@@ -29,7 +29,6 @@
 
 namespace VuFind\OAI\Server;
 
-use VuFind\Db\Service\OaiResumptionServiceInterface;
 use VuFind\OAI\Server as Base;
 
 /**
@@ -46,34 +45,29 @@ use VuFind\OAI\Server as Base;
 class Auth extends Base
 {
     /**
-     * Constructor
+     * Search object class to use
      *
-     * @param \VuFind\Search\Results\PluginManager $resultsManager    Search manager for retrieving records
-     * @param \VuFind\Record\Loader                $recordLoader      Record loader
-     * @param \VuFind\Db\Table\PluginManager       $tableManager      Table manager
-     * @param OaiResumptionServiceInterface        $resumptionService Database service for resumption tokens
+     * @var string
      */
-    public function __construct(
-        protected \VuFind\Search\Results\PluginManager $resultsManager,
-        protected \VuFind\Record\Loader $recordLoader,
-        protected \VuFind\Db\Table\PluginManager $tableManager,
-        protected OaiResumptionServiceInterface $resumptionService
-    ) {
-        parent::__construct($resultsManager, $recordLoader, $tableManager, $resumptionService);
-        $this->core = 'authority';
-        $this->searchClassId = 'SolrAuth';
-    }
+    protected $searchClassId = 'SolrAuth';
+
+    /**
+     * What Solr core are we serving up?
+     *
+     * @var string
+     */
+    protected $core = 'authority';
 
     /**
      * Load data from the OAI section of config.ini. (This is called by the
      * constructor and is only a separate method to allow easy override by child
      * classes).
      *
-     * @param \Laminas\Config\Config $config VuFind configuration
+     * @param \VuFind\Config\Config $config VuFind configuration
      *
      * @return void
      */
-    protected function initializeSettings(\Laminas\Config\Config $config)
+    protected function initializeSettings(\VuFind\Config\Config $config)
     {
         // Use some of the same settings as the regular OAI server, but override
         // others:

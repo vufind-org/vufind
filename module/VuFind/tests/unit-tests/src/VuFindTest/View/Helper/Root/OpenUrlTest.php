@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -30,7 +30,7 @@
 
 namespace VuFindTest\View\Helper\Root;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\View\Helper\Root\OpenUrl;
 
 /**
@@ -257,11 +257,11 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
         $driver = $this->getMockBuilder($class)
             ->disableOriginalConstructor()->getMock();
         $driver->expects($this->any())->method('getOpenUrl')
-            ->will($this->returnValue($openUrl));
+            ->willReturn($openUrl);
         $driver->expects($this->any())->method('getCleanISSN')
-            ->will($this->returnValue($issn));
+            ->willReturn($issn);
         $driver->expects($this->any())->method('getFormats')
-            ->will($this->returnValue($formats));
+            ->willReturn($formats);
         return $driver;
     }
 

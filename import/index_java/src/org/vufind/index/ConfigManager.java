@@ -14,8 +14,8 @@ package org.vufind.index;
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 import java.io.File;
@@ -70,25 +70,28 @@ public class ConfigManager
     private File findConfigFile(String filename) throws IllegalStateException
     {
         // Find VuFind's home directory in the environment; if it's not available,
-        // try using a relative path on the assumption that we are currently in
-        // VuFind's import subdirectory:
+        // we cannot proceed:
         String vufindHome = System.getenv("VUFIND_HOME");
         if (vufindHome == null) {
             // this shouldn't happen since import-marc.sh and .bat always set VUFIND_HOME
             throw new IllegalStateException("VUFIND_HOME must be set");
         }
 
-        // Check for VuFind 2.0's local directory environment variable:
+        // Check for VuFind's local directory environment variable:
         String vufindLocal = System.getenv("VUFIND_LOCAL_DIR");
 
-        // Get the relative VuFind path from the properties file, defaulting to
-        // the 2.0-style config/vufind if necessary.
+        // If VUFIND_LOCAL_DIR is not set, issue a warning and try to derive it from VUFIND_HOME
+        if (vufindLocal == null || vufindLocal.length() == 0) {
+            vufindLocal = vufindHome + "/local";
+            logger.warn("The VUFIND_LOCAL_DIR environment variable is missing. Defaulting to " + vufindLocal);
+        }
+
+        // Get the relative VuFind path from the properties file, defaulting to config/vufind if necessary.
         String relativeConfigPath = PropertyUtils.getProperty(
             vuFindConfigs, "vufind.config.relative_path", "config/vufind"
         );
 
-        // Try several different locations for the file -- VuFind 2 local dir,
-        // VuFind 2 base dir, VuFind 1 base dir.
+        // Try several different locations for the file -- VuFind local dir, VuFind base dir, legacy base dir.
         File file;
         if (vufindLocal != null) {
             file = new File(vufindLocal + "/" + relativeConfigPath + "/" + filename);
@@ -97,10 +100,6 @@ public class ConfigManager
             }
         }
         file = new File(vufindHome + "/" + relativeConfigPath + "/" + filename);
-        if (file.exists()) {
-            return file;
-        }
-        file = new File(vufindHome + "/web/conf/" + filename);
         return file;
     }
 

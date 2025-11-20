@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -56,16 +56,16 @@ class HierarchyTree extends AbstractBase
     /**
      * Configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config = null;
 
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $config Configuration
+     * @param \VuFind\Config\Config $config Configuration
      */
-    public function __construct(\Laminas\Config\Config $config)
+    public function __construct(\VuFind\Config\Config $config)
     {
         $this->config = $config;
     }
@@ -73,7 +73,7 @@ class HierarchyTree extends AbstractBase
     /**
      * Get the VuFind configuration.
      *
-     * @return \Laminas\Config\Config
+     * @return \VuFind\Config\Config
      */
     protected function getConfig()
     {
@@ -156,26 +156,21 @@ class HierarchyTree extends AbstractBase
                 return true;
             }
         }
-
-        // Currently displaying top of tree?  Disable partial hierarchy:
-        if ($this->getActiveTree() == $recordDriver->getUniqueId()) {
-            return true;
-        }
-
-        // Only if we got this far is it appropriate to use a partial hierarchy:
-        return false;
+        // If displaying the top of the tree, we should show the full hierarchy;
+        // otherwise, if we got this far, it is appropriate to use a partial hierarchy.
+        return $this->getActiveTree() == $recordDriver->getUniqueId();
     }
 
     /**
      * Render a hierarchy tree
      *
-     * @param string  $id      Hierarchy ID (omit to use active tree)
+     * @param ?string $id      Hierarchy ID (omit to use active tree)
      * @param ?string $context Context for use by renderer or null for default
      * @param array   $options Additional options (like previewElement)
      *
      * @return string
      */
-    public function renderTree(string $id = null, ?string $context = null, array $options = [])
+    public function renderTree(?string $id = null, ?string $context = null, array $options = [])
     {
         $id ??= $this->getActiveTree();
         $recordDriver = $this->getRecordDriver();
@@ -206,6 +201,16 @@ class HierarchyTree extends AbstractBase
     {
         $config = $this->getConfig();
         return $config->Hierarchy->treeSearchLimit ?? -1;
+    }
+
+    /**
+     * Disable record preview when screen width is narrow
+     *
+     * @return bool
+     */
+    public function hidePreviewInNarrowDisplays(): bool
+    {
+        return (bool)$this->config->Hierarchy?->hide_preview_in_narrow_displays;
     }
 
     /**

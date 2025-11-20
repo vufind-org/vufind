@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -50,22 +50,13 @@ class ScssBuilderCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testBasicOperation()
     {
-        $cacheDir = '/foo';
-        $compiler = $this->getMockBuilder(\VuFindTheme\ScssCompiler::class)
-            ->disableOriginalConstructor()->getMock();
-        $compiler->expects($this->once())->method('setTempPath')
-            ->with($this->equalTo($cacheDir));
-        $compiler->expects($this->once())->method('compile')
-            ->with($this->equalTo(['foo', 'bar']));
-        $command = $this->getMockBuilder(ScssBuilderCommand::class)
-            ->onlyMethods(['getCompiler'])
-            ->setConstructorArgs([$cacheDir])
-            ->getMock();
-        $command->expects($this->once())->method('getCompiler')
-            ->will($this->returnValue($compiler));
+        $command = new ScssBuilderCommand();
         $commandTester = new CommandTester($command);
-        $commandTester->execute(['themes' => ['foo', 'bar', 'foo']]);
-        $this->assertEquals('', $commandTester->getDisplay());
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $commandTester->execute([]);
+        $this->assertEquals(
+            "This utility is no longer supported. Please use `npm run build:css` instead.\n",
+            $commandTester->getDisplay()
+        );
+        $this->assertEquals(1, $commandTester->getStatusCode());
     }
 }

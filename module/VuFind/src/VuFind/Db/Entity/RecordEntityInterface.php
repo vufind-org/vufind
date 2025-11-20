@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -28,6 +28,8 @@
  */
 
 namespace VuFind\Db\Entity;
+
+use DateTime;
 
 /**
  * Entity model interface for record table
@@ -40,4 +42,90 @@ namespace VuFind\Db\Entity;
  */
 interface RecordEntityInterface extends EntityInterface
 {
+    /**
+     * Get identifier (returns null for an uninitialized or non-persisted object).
+     *
+     * @return ?int
+     */
+    public function getId(): ?int;
+
+    /**
+     * Get record id.
+     *
+     * @return ?string
+     */
+    public function getRecordId(): ?string;
+
+    /**
+     * Set record id.
+     *
+     * @param ?string $recordId Record id
+     *
+     * @return static
+     */
+    public function setRecordId(?string $recordId): static;
+
+    /**
+     * Get record source.
+     *
+     * @return ?string
+     */
+    public function getSource(): ?string;
+
+    /**
+     * Set record source.
+     *
+     * @param ?string $recordSource Record source
+     *
+     * @return static
+     */
+    public function setSource(?string $recordSource): static;
+
+    /**
+     * Get record version.
+     *
+     * @return string
+     */
+    public function getVersion(): string;
+
+    /**
+     * Set record version.
+     *
+     * @param string $recordVersion Record version
+     *
+     * @return static
+     */
+    public function setVersion(string $recordVersion): static;
+
+    /**
+     * Get record data.
+     *
+     * @return ?string
+     */
+    public function getData(): ?string;
+
+    /**
+     * Set record data.
+     *
+     * @param ?string $recordData Record data
+     *
+     * @return static
+     */
+    public function setData(?string $recordData): static;
+
+    /**
+     * Get updated date.
+     *
+     * @return DateTime
+     */
+    public function getUpdated(): DateTime;
+
+    /**
+     * Set updated date.
+     *
+     * @param DateTime $dateTime Updated date
+     *
+     * @return static
+     */
+    public function setUpdated(DateTime $dateTime): static;
 }

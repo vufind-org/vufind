@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Metadata_Vocabularies
@@ -43,7 +43,7 @@ class Metadata extends \Laminas\View\Helper\AbstractHelper
     /**
      * Metadata configuration entries
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config;
 
@@ -65,12 +65,12 @@ class Metadata extends \Laminas\View\Helper\AbstractHelper
      * Constructor
      *
      * @param \VuFind\MetadataVocabulary\PluginManager $pm         Plugin manager
-     * @param \Laminas\Config\Config                   $config     Configuration
+     * @param \VuFind\Config\Config                    $config     Configuration
      * @param \Laminas\View\Helper\HeadMeta            $metaHelper Head meta helper
      */
     public function __construct(
         \VuFind\MetadataVocabulary\PluginManager $pm,
-        \Laminas\Config\Config $config,
+        \VuFind\Config\Config $config,
         \Laminas\View\Helper\HeadMeta $metaHelper
     ) {
         $this->pluginManager = $pm;
@@ -102,7 +102,7 @@ class Metadata extends \Laminas\View\Helper\AbstractHelper
      * Generate all metatags for RecordDriver and add to page
      *
      * Decide which Plugins to load for the given RecordDriver
-     * dependant on configuration. (only by class name,
+     * dependent on configuration. (only by class name,
      * namespace will not be considered)
      *
      * @param \VuFind\RecordDriver\AbstractBase $driver Record driver

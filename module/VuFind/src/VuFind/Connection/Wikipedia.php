@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Connection
@@ -271,7 +271,7 @@ class Wikipedia implements TranslatorAwareInterface
         // Loop through every match (link) we found
         if (is_array($new_matches)) {
             foreach ($new_matches as $nm) {
-                foreach ((array)$nm as $n) {
+                foreach ($nm as $n) {
                     // If it's a file link get rid of it
                     if (
                         str_starts_with(strtolower($n), '[[file:')

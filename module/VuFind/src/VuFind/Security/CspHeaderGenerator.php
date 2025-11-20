@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Security
@@ -49,14 +49,14 @@ use function in_array;
  * @SuppressWarnings(PHPMD.NumberOfChildren)
  */
 class CspHeaderGenerator implements
-    \Laminas\Log\LoggerAwareInterface
+    \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
     /**
      * Configuration for generator from contensecuritypolicy.ini
      *
-     * @var \Laminas\Config\Config
+     * @var array
      */
     protected $config;
 
@@ -77,13 +77,13 @@ class CspHeaderGenerator implements
     /**
      * CspHeaderGenerator constructor.
      *
-     * @param \Laminas\Config\Config          $config         Configuration
+     * @param \VuFind\Config\Config           $config         Configuration
      * @param \VuFind\Security\NonceGenerator $nonceGenerator Nonce generator
      */
     public function __construct($config, $nonceGenerator)
     {
         $this->nonce = $nonceGenerator->getNonce();
-        $this->config = $config;
+        $this->config = $config->toArray();
     }
 
     /**
@@ -110,31 +110,18 @@ class CspHeaderGenerator implements
      * Create CSP header base on given configuration
      *
      * @return ContentSecurityPolicy
-     *
-     * @deprecated Use getCspHeader instead
-     */
-    public function getHeader()
-    {
-        return $this->getCspHeader();
-    }
-
-    /**
-     * Create CSP header base on given configuration
-     *
-     * @return ContentSecurityPolicy
      */
     public function getCspHeader()
     {
         $cspHeader = $this->createHeaderObject();
-        $directives = $this->config->Directives ?? [];
+        $directives = $this->config['Directives'] ?? [];
         if (!$cspHeader || !$directives) {
             return null;
         }
-        foreach ($directives as $name => $value) {
-            $sources = $value->toArray();
+        foreach ($directives as $name => $sources) {
             if (
                 in_array($name, $this->scriptDirectives)
-                && $this->config->CSP->use_nonce
+                && ($this->config['CSP']['use_nonce'] ?? null)
             ) {
                 $sources[] = "'nonce-$this->nonce'";
             }
@@ -158,7 +145,7 @@ class CspHeaderGenerator implements
      */
     protected function createHeaderObject()
     {
-        $mode = $this->config->CSP->enabled[APPLICATION_ENV] ?? 'report_only';
+        $mode = $this->config['CSP']['enabled'][APPLICATION_ENV] ?? 'report_only';
         if (!$mode) {
             return null;
         }
@@ -178,17 +165,17 @@ class CspHeaderGenerator implements
         $reportToHeader->setFieldName('Report-To');
         $groupsText = [];
 
-        $reportTo = $this->config->ReportTo;
+        $reportTo = $this->config['ReportTo'] ?? [];
         foreach ($reportTo['groups'] ?? [] as $groupName) {
             $configSectionName = 'ReportTo' . $groupName;
-            $groupConfig = $this->config->$configSectionName ?? false;
+            $groupConfig = $this->config[$configSectionName] ?? false;
             if ($groupConfig) {
                 $group = [
                     'group' => $groupName,
-                    'max_age' => $groupConfig->max_age ?? 86400, // one day
+                    'max_age' => $groupConfig['max_age'] ?? 86400, // one day
                     'endpoints' => [],
                 ];
-                foreach ($groupConfig->endpoints_url ?? [] as $url) {
+                foreach ($groupConfig['endpoints_url'] ?? [] as $url) {
                     $group['endpoints'][] = [
                         'url' => $url,
                     ];
@@ -215,7 +202,7 @@ class CspHeaderGenerator implements
         $nelHeader->setFieldName('NEL');
         $nelData = [];
 
-        $nelConfig = $this->config->NetworkErrorLogging;
+        $nelConfig = $this->config['NetworkErrorLogging'] ?? [];
         if ($reportTo = $nelConfig['report_to'] ?? null) {
             $nelData['report_to'] = $reportTo;
         } else {

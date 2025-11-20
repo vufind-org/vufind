@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -48,7 +48,7 @@ class NextPrevNavTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testEmptySearchResultsCauseNoProblems()
+    public function testEmptySearchResultsCauseNoProblems(): void
     {
         $this->changeConfigs(
             ['config' => ['Record' => ['next_prev_navigation' => true, 'first_last_navigation' => true]]]
@@ -70,5 +70,35 @@ class NextPrevNavTest extends \VuFindTest\Integration\MinkTestCase
             'Test Publication 20001',
             $this->findCssAndGetText($page, 'div.media-body > h1[property=name]')
         );
+    }
+
+    /**
+     * If next_prev_navigation and first_last_navigation are set to true
+     * and a search results have been loaded via JS the navigation should
+     * be shown in the results.
+     *
+     * @return void
+     */
+    public function testJSCauseNoProblems(): void
+    {
+        $this->changeConfigs(
+            ['config' => ['Record' => ['next_prev_navigation' => true, 'first_last_navigation' => true]]]
+        );
+
+        // when a search returns no results
+        // make sure no errors occur when visiting a collection record after
+        $session = $this->getMinkSession();
+        $page = $session->getPage();
+
+        $session->visit($this->getVuFindUrl() . '/Search/Results?type=AllField');
+        $this->waitForPageLoad($page);
+
+        $this->clickCss($page, '.search-header .pagination-simple .page-next');
+        $this->waitForPageLoad($page);
+
+        $this->clickCss($page, '#result0 a.getFull');
+        $this->waitForPageLoad($page);
+
+        $this->findCss($page, 'nav .pager');
     }
 }

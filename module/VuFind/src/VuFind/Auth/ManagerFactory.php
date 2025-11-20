@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -63,21 +63,23 @@ class ManagerFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
         // Load dependencies:
-        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
-        $userService = $container->get(\VuFind\Db\Service\PluginManager::class)
-            ->get(\VuFind\Db\Service\UserServiceInterface::class);
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
+        $dbServiceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
+        $userService = $dbServiceManager->get(\VuFind\Db\Service\UserServiceInterface::class);
         $sessionManager = $container->get(\Laminas\Session\SessionManager::class);
         $pm = $container->get(\VuFind\Auth\PluginManager::class);
         $cookies = $container->get(\VuFind\Cookie\CookieManager::class);
         $csrf = $container->get(\VuFind\Validator\CsrfInterface::class);
         $loginTokenManager = $container->get(\VuFind\Auth\LoginTokenManager::class);
         $ils = $container->get(\VuFind\ILS\Connection::class);
+        $viewRenderer = $container->get('ViewRenderer');
+        $auditEventService = $dbServiceManager->get(\VuFind\Db\Service\AuditEventServiceInterface::class);
 
         // Build the object and make sure account credentials haven't expired:
         $manager = new $requestedName(
@@ -89,8 +91,11 @@ class ManagerFactory implements FactoryInterface
             $cookies,
             $csrf,
             $loginTokenManager,
-            $ils
+            $ils,
+            $viewRenderer,
+            $auditEventService
         );
+        $manager->setIlsAuthenticator($container->get(\VuFind\Auth\ILSAuthenticator::class));
         $manager->checkForExpiredCredentials();
         return $manager;
     }

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -29,10 +29,9 @@
 
 namespace VuFind\Db\Service;
 
-use Laminas\Log\LoggerAwareInterface;
+use DateTime;
 use VuFind\Db\Entity\AccessTokenEntityInterface;
-use VuFind\Db\Table\AccessToken;
-use VuFind\Log\LoggerAwareTrait;
+use VuFind\Db\Entity\UserEntityInterface;
 
 /**
  * Database service for access tokens.
@@ -45,17 +44,16 @@ use VuFind\Log\LoggerAwareTrait;
  */
 class AccessTokenService extends AbstractDbService implements
     AccessTokenServiceInterface,
-    LoggerAwareInterface
+    Feature\DeleteExpiredInterface
 {
-    use LoggerAwareTrait;
-
     /**
-     * Constructor.
+     * Create an access_token entity object.
      *
-     * @param AccessToken $accessTokenTable Access token table
+     * @return AccessTokenEntityInterface
      */
-    public function __construct(protected AccessToken $accessTokenTable)
+    public function createEntity(): AccessTokenEntityInterface
     {
+        return $this->entityPluginManager->get(AccessTokenEntityInterface::class);
     }
 
     /**
@@ -73,7 +71,22 @@ class AccessTokenService extends AbstractDbService implements
         string $type,
         bool $create = true
     ): ?AccessTokenEntityInterface {
-        return $this->accessTokenTable->getByIdAndType($id, $type, $create);
+        $dql = 'SELECT at '
+            . 'FROM ' . AccessTokenEntityInterface::class . ' at '
+            . 'WHERE at.id = :id '
+            . 'AND at.type = :type';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters(compact('id', 'type'));
+        $result = $query->getOneOrNullResult();
+        if ($result === null && $create) {
+            $result = $this->createEntity()
+                ->setId($id)
+                ->setType($type)
+                ->setCreated(new DateTime());
+            $this->persistEntity($result);
+        }
+
+        return $result;
     }
 
     /**
@@ -86,7 +99,11 @@ class AccessTokenService extends AbstractDbService implements
      */
     public function storeNonce(int $userId, ?string $nonce): void
     {
-        $this->accessTokenTable->storeNonce($userId, $nonce);
+        $type = 'openid_nonce';
+        $token = $this->getByIdAndType((string)$userId, $type);
+        $token->setUser($this->getDoctrineReference(UserEntityInterface::class, $userId));
+        $token->setData($nonce);
+        $this->persistEntity($token);
     }
 
     /**
@@ -98,6 +115,46 @@ class AccessTokenService extends AbstractDbService implements
      */
     public function getNonce(int $userId): ?string
     {
-        return $this->accessTokenTable->getNonce($userId);
+        $type = 'openid_nonce';
+        $token = $this->getByIdAndType((string)$userId, $type, false);
+        return $token?->getData();
+    }
+
+    /**
+     * Delete an access token.
+     *
+     * @param AccessTokenEntityInterface $accessToken AccessToken object to delete
+     *
+     * @return void
+     */
+    public function deleteAccessToken(AccessTokenEntityInterface $accessToken): void
+    {
+        $this->entityManager->remove($accessToken);
+        $this->entityManager->flush();
+    }
+
+    /**
+     * Delete expired records. Allows setting a limit so that rows can be deleted in small batches.
+     *
+     * @param DateTime $dateLimit Date threshold of an "expired" record.
+     * @param ?int     $limit     Maximum number of rows to delete or null for no limit.
+     *
+     * @return int Number of rows deleted
+     */
+    public function deleteExpired(DateTime $dateLimit, ?int $limit = null): int
+    {
+        $subQueryBuilder = $this->entityManager->createQueryBuilder();
+        $subQueryBuilder->select('CONCAT(a.id, a.type)')
+            ->from(AccessTokenEntityInterface::class, 'a')
+            ->where('a.created < :latestCreated')
+            ->setParameter('latestCreated', $dateLimit->format(VUFIND_DATABASE_DATETIME_FORMAT));
+        if ($limit) {
+            $subQueryBuilder->setMaxResults($limit);
+        }
+        $queryBuilder = $this->entityManager->createQueryBuilder();
+        $queryBuilder->delete(AccessTokenEntityInterface::class, 'a')
+            ->where('concat(a.id, a.type) IN (:ids)')
+            ->setParameter('ids', $subQueryBuilder->getQuery()->getResult());
+        return $queryBuilder->getQuery()->execute();
     }
 }

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,8 +29,8 @@
 
 namespace VuFindTest\Session;
 
-use Laminas\Config\Config;
 use PHPUnit\Framework\MockObject\MockObject;
+use VuFind\Config\Config;
 use VuFind\Db\Service\SessionServiceInterface;
 use VuFind\Session\Database;
 
@@ -85,8 +85,9 @@ class DatabaseTest extends \VuFindTest\Unit\SessionHandlerTestCase
         $handler = $this->getHandler();
         $session = $this->getMockSessionService();
         $session->expects($this->once())->method('garbageCollect')
-            ->with($this->equalTo(3600));
-        $this->assertTrue($handler->gc(3600));
+            ->with($this->equalTo(3600))
+            ->willReturn(150);
+        $this->assertEquals(150, $handler->gc(3600));
     }
 
     /**
@@ -122,15 +123,14 @@ class DatabaseTest extends \VuFindTest\Unit\SessionHandlerTestCase
     /**
      * Get the session handler to test.
      *
-     * @param Config $config Optional configuration
+     * @param ?Config $config Optional configuration
      *
      * @return Database
      */
-    protected function getHandler(Config $config = null): Database
+    protected function getHandler(?Config $config = null): Database
     {
         $handler = new Database($config);
-        $this->injectMockDatabaseServices($handler);
-        $this->injectMockDatabaseTables($handler);
+        $this->injectMockDatabaseDependencies($handler);
         return $handler;
     }
 

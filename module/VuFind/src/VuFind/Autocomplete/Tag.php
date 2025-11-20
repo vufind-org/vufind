@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Autocomplete
@@ -29,7 +29,7 @@
 
 namespace VuFind\Autocomplete;
 
-use VuFind\Db\Service\TagServiceInterface;
+use VuFind\Tags\TagsService;
 
 /**
  * Tag Autocomplete Module
@@ -47,9 +47,9 @@ class Tag implements AutocompleteInterface
     /**
      * Constructor
      *
-     * @param TagServiceInterface $tagService Tag database service
+     * @param TagsService $tagsService Tag database service
      */
-    public function __construct(protected TagServiceInterface $tagService)
+    public function __construct(protected TagsService $tagsService)
     {
     }
 
@@ -64,11 +64,9 @@ class Tag implements AutocompleteInterface
     public function getSuggestions($query)
     {
         $tagList = [];
-        $tags = $this->tagService->matchText($query);
-        if ($tags) {
-            foreach ($tags as $tag) {
-                $tagList[] = $tag['tag'];
-            }
+        $tags = $this->tagsService->getNonListTagsFuzzilyMatchingString($query);
+        foreach ($tags as $tag) {
+            $tagList[] = $tag['tag'];
         }
         return $tagList;
     }

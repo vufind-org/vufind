@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -30,6 +30,7 @@
 
 namespace VuFind\Db\Service;
 
+use DateTime;
 use VuFind\Db\Entity\ChangeTrackerEntityInterface;
 
 /**
@@ -44,6 +45,59 @@ use VuFind\Db\Entity\ChangeTrackerEntityInterface;
  */
 interface ChangeTrackerServiceInterface extends DbServiceInterface
 {
+    /**
+     * Retrieve a row from the database based on primary key; return null if it
+     * is not found.
+     *
+     * @param string $indexName The name of the Solr index holding the record.
+     * @param string $id        The ID of the record being indexed.
+     *
+     * @return ?ChangeTrackerEntityInterface
+     */
+    public function getChangeTrackerEntity(string $indexName, string $id): ?ChangeTrackerEntityInterface;
+
+    /**
+     * Retrieve a count of deleted rows from the database.
+     *
+     * @param string   $indexName The name of the Solr index holding the record.
+     * @param DateTime $from      The beginning date of the range to search.
+     * @param DateTime $until     The end date of the range to search.
+     *
+     * @return int
+     */
+    public function getDeletedCount(string $indexName, DateTime $from, DateTime $until): int;
+
+    /**
+     * Retrieve a set of deleted rows from the database.
+     *
+     * @param string   $indexName The name of the Solr index holding the record.
+     * @param DateTime $from      The beginning date of the range to search.
+     * @param DateTime $until     The end date of the range to search.
+     * @param int      $offset    Record number to retrieve first.
+     * @param ?int     $limit     Retrieval limit (null for no limit)
+     *
+     * @return ChangeTrackerEntityInterface[]
+     */
+    public function getDeletedEntities(
+        string $indexName,
+        DateTime $from,
+        DateTime $until,
+        int $offset = 0,
+        ?int $limit = null
+    ): array;
+
+    /**
+     * Update the change tracker table to indicate that a record has been deleted.
+     *
+     * The method returns the updated/created row when complete.
+     *
+     * @param string $core The Solr core holding the record.
+     * @param string $id   The ID of the record being indexed.
+     *
+     * @return ChangeTrackerEntityInterface
+     */
+    public function markDeleted(string $core, string $id): ChangeTrackerEntityInterface;
+
     /**
      * Update the change_tracker table to reflect that a record has been indexed.
      * We need to know the date of the last change to the record (independent of

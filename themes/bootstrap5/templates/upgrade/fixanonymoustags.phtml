@@ -1,0 +1,33 @@
+<?php
+    // Set up breadcrumbs:
+    $this->breadcrumbs()->set($this->translate('Upgrade'), $this->url('upgrade-home'))
+        ->add($this->translate('Upgrade VuFind'), active: true);
+?>
+<?=$this->component('page-title', ['title' => $this->translate('Upgrade VuFind')]);?>
+<?=$this->flashmessages()?>
+
+<p>Due to a bug in earlier versions of VuFind, you have <?=$this->anonymousTags?> tags
+in your database that are not associated with a user account.  It is
+recommended that you associate these tags with a user account for
+easier maintenance in the future.  Please enter a username (preferably
+an administrator) to associate with old anonymous tags.</p>
+
+<p>If you do not wish to fix the problem at this time, click the Skip button.</p>
+
+<p>See <a target="_jira" href="https://vufind.org/jira/browse/VUFIND-217">https://vufind.org/jira/browse/VUFIND-217</a> for more details.</p>
+
+<br>
+
+<form method="post" action="<?=$this->url('upgrade-fixanonymoustags')?>">
+  <?=$this->transEsc('Username') ?>: <input type="text" name="username"> <input type="submit" name="submitButton" value="<?=$this->transEscAttr('Submit') ?>"><br><br>
+  <input type="submit" name="skip" id="skip" value="<?=$this->transEscAttr('skip_step') ?>.">
+</form>
+<?php
+$skipText = $this->transEsc('skip_confirm');
+$script = <<<JS
+    $('#skip').click(function(e) {
+        return confirm('{$skipText}');
+    });
+    JS;
+?>
+<?=$this->assetManager()->outputInlineScriptString($script);

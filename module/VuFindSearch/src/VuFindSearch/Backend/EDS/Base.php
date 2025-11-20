@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category EBSCOIndustries
  * @package  EBSCO
@@ -30,7 +30,7 @@
 
 namespace VuFindSearch\Backend\EDS;
 
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 
 use function is_array;
 
@@ -97,6 +97,55 @@ abstract class Base implements LoggerAwareInterface
     protected $searchHttpMethod = 'POST';
 
     /**
+     * The EDS API Key for this client
+     *
+     * @var ?string
+     */
+    protected $apiKey = null;
+
+    /**
+     * The EDS API Key for this client (Guest Usage)
+     *
+     * @var ?string
+     */
+    protected $apiKeyGuest = null;
+
+    /**
+     * Indicator if user "isGuest"
+     *
+     * @var bool
+     */
+    protected $isGuest = true;
+
+    /**
+     * Indicator if additional headers should be sent
+     *
+     * @var bool
+     */
+    protected $sendUserIp = false;
+
+    /**
+     * Vendor (e.g. 10.1)
+     *
+     * @var ?string
+     */
+    protected $reportVendorVersion = null;
+
+    /**
+     * IpToReport (e.g. 123.123.123.13)
+     *
+     * @var ?string
+     */
+    protected $ipToReport = null;
+
+    /**
+     * UserAgent (e.g. 10.1)
+     *
+     * @var ?string
+     */
+    protected $userAgent = null;
+
+    /**
      * Constructor
      *
      * Sets up the EDS API Client
@@ -127,13 +176,35 @@ abstract class Base implements LoggerAwareInterface
                         break;
                     case 'search_http_method':
                         $this->searchHttpMethod = $value;
+                        break;
+                    case 'api_key':
+                        $this->apiKey = $value;
+                        break;
+                    case 'api_key_guest':
+                        $this->apiKeyGuest = $value;
+                        break;
+                    case 'is_guest':
+                        $this->isGuest = $value;
+                        break;
+                    case 'send_user_ip':
+                        $this->sendUserIp = $value;
+                        break;
+                    case 'report_vendor_version':
+                        $this->reportVendorVersion = $value;
+                        break;
+                    case 'ip_to_report':
+                        $this->ipToReport = $value;
+                        break;
+                    case 'user_agent':
+                        $this->userAgent = $value;
+                        break;
                 }
             }
         }
     }
 
     /**
-     * Obtain edsapi search critera and application related settings
+     * Obtain edsapi search criteria and application related settings
      *
      * @param string $authenticationToken Authentication token
      * @param string $sessionToken        Session token
@@ -170,41 +241,6 @@ abstract class Base implements LoggerAwareInterface
         $url = $this->sessionHost . '/createsession';
         $headers = $this->setTokens($authToken, null);
         return $this->call($url, $headers, $qs, 'GET', null, '', false);
-    }
-
-    /**
-     * Retrieves an EDS record specified by its identifiers
-     *
-     * @param string $an                  An of the record to retrieve from the
-     * EdsApi
-     * @param string $dbId                Database identifier of the record to
-     * retrieve from the EdsApi
-     * @param string $authenticationToken Authentication token
-     * @param string $sessionToken        Session token
-     * @param string $highlightTerms      Comma separated list of terms to highlight
-     * in the retrieved record responses
-     * @param array  $extraQueryParams    Extra query string parameters
-     *
-     * @return array    The requested record
-     *
-     * @deprecated Use retrieveEdsItem
-     */
-    public function retrieve(
-        $an,
-        $dbId,
-        $authenticationToken,
-        $sessionToken,
-        $highlightTerms = null,
-        $extraQueryParams = []
-    ) {
-        return $this->retrieveEdsItem(
-            $an,
-            $dbId,
-            $authenticationToken,
-            $sessionToken,
-            $highlightTerms,
-            $extraQueryParams
-        );
     }
 
     /**
@@ -335,7 +371,7 @@ abstract class Base implements LoggerAwareInterface
         $url = $data['url'] . '?' . http_build_query($params);
 
         $this->debug('Autocomplete URL: ' . $url);
-        $response = $this->call($url, null, null, 'GET', null);
+        $response = $this->call($url, [], null, 'GET', null);
         return $raw ? $response : $this->parseAutocomplete($response);
     }
 
@@ -374,7 +410,7 @@ abstract class Base implements LoggerAwareInterface
             $authInfo['Options'] = $params;
         }
         $messageBody = json_encode($authInfo);
-        return $this->call($url, null, null, 'POST', $messageBody, '', false);
+        return $this->call($url, [], null, 'POST', $messageBody, '', false);
     }
 
     /**
@@ -398,7 +434,7 @@ abstract class Base implements LoggerAwareInterface
                     }
                     $cnt = 0;
                     foreach ($value as $subValue) {
-                        $cnt = $cnt + 1;
+                        $cnt += 1;
                         $finalParameterName = $parameterName;
                         if (SearchRequestModel::isParameterIndexed($key)) {
                             $finalParameterName = $parameterName . '-' . $cnt;
@@ -430,7 +466,7 @@ abstract class Base implements LoggerAwareInterface
      */
     protected function call(
         $baseUrl,
-        $headerParams,
+        $headerParams = [],
         $params = [],
         $method = 'GET',
         $message = null,
@@ -442,16 +478,13 @@ abstract class Base implements LoggerAwareInterface
         $queryString = implode('&', $queryParameters);
         $this->debug("Querystring to use: $queryString ");
         // Build headers
-        $headers = [
-            'Accept' => $this->accept,
-            'Content-Type' => $this->contentType,
-            'Accept-Encoding' => 'gzip,deflate',
-        ];
-        if (null != $headerParams) {
-            foreach ($headerParams as $key => $value) {
-                $headers[$key] = $value;
-            }
-        }
+        $headers = $this->getRequestHeaders($headerParams);
+        // Debug some info about Guest Access & API Keys used
+        $this->debug(
+            'isGuest: ' . ($this->isGuest ? 'true' : 'false')
+            . ' | APIKey: ' . ($this->apiKey ? substr($this->apiKey, 0, 10) : '-')
+            . ' | APIKey Guest: ' . ($this->apiKeyGuest ? substr($this->apiKeyGuest, 0, 10) : '-')
+        );
         $response = $this->httpRequest(
             $baseUrl,
             $method,
@@ -462,6 +495,41 @@ abstract class Base implements LoggerAwareInterface
             $cacheable
         );
         return $this->process($response);
+    }
+
+    /**
+     * Creat Header Array for Call Function
+     *
+     * @param array $headerParams An array (could be empty) of headers to build
+     *
+     * @return array Array of Headers to be used in call function
+     */
+    protected function getRequestHeaders(array $headerParams = []): array
+    {
+        $headers = [
+            'Accept' => $this->accept,
+            'Content-Type' => $this->contentType,
+            'Accept-Encoding' => 'gzip,deflate',
+        ];
+        foreach ($headerParams as $key => $value) {
+            $headers[$key] = $value;
+        }
+        if (!empty($this->apiKey)) {
+            $headers['x-api-key'] = $this->apiKey;
+        }
+        if ($this->isGuest && !empty($this->apiKeyGuest)) {
+            $headers['x-api-key'] = $this->apiKeyGuest;
+        }
+        if ($this->sendUserIp) {
+            $headers['x-eis-enduser-ip-address'] = $this->ipToReport ?? '-';
+            $headers['x-eis-enduser-user-agent'] = $this->userAgent ?? 'No user agent';
+            $headers['x-eis-vendor'] = 'VuFind';
+            if (!empty($this->reportVendorVersion)) {
+                $headers['x-eis-vendor-version'] = $this->reportVendorVersion;
+            }
+        }
+
+        return $headers;
     }
 
     /**

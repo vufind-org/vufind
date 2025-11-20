@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -67,9 +67,8 @@ final class ResponsivenessTest extends \VuFindTest\Integration\MinkTestCase
      * @param array $controlVisibility Expected visibility of controls
      *
      * @return void
-     *
-     * @dataProvider windowDimensionProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('windowDimensionProvider')]
     public function testBulkControls(int $windowWidth, int $windowHeight, array $controlVisibility): void
     {
         // Activate the bulk options:
@@ -87,7 +86,14 @@ final class ResponsivenessTest extends \VuFindTest\Integration\MinkTestCase
 
         // Test visibility of search result bulk items and checkbox:
         $shouldBeVisible = $controlVisibility['bulk'];
-        $this->assertEquals($shouldBeVisible, $this->findCss($page, '.bulkActionButtons')->isVisible());
+        $this->assertEquals(
+            $shouldBeVisible,
+            $this->findCss($page, '#search-cart-form .bulkActionButtons')->isVisible()
+        );
+        $this->assertEquals(
+            $shouldBeVisible,
+            $this->findCss($page, '.mainbody > .bulkActionButtons')->isVisible()
+        );
         $this->assertEquals($shouldBeVisible, $this->findCss($page, '.checkbox-select-item')->isVisible());
 
         // Add a favorite:
@@ -118,9 +124,8 @@ final class ResponsivenessTest extends \VuFindTest\Integration\MinkTestCase
      * @param array $controlVisibility Expected visibility of controls
      *
      * @return void
-     *
-     * @dataProvider windowDimensionProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('windowDimensionProvider')]
     public function testOffcanvas(int $windowWidth, int $windowHeight, array $controlVisibility): void
     {
         // Activate offcanvas:
