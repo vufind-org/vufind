@@ -166,10 +166,11 @@ form {
   color: $gray;
 }
 
-/* hide checkboxes on mobile search */
+/* hide checkboxes on mobile search/favorites */
 
 @media (max-width: 767px) {
-  .template-dir-search.template-name-results .checkbox-select {
+  .template-dir-search.template-name-results .checkbox-select,
+  .template-dir-myresearch.template-name-mylist .checkbox-select {
     padding-inline-start: 0;
 
     .checkbox-select-item {
