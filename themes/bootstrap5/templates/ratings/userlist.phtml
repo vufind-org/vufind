@@ -87,9 +87,9 @@
                 <a href="<?=$this->url('record', ['id' => $rating['record_id']])?>"><?=$this->escapeHtml($rating['recordTitle'])?></a>
               </td>
               <td class="user-rating" data-label="<?=$this->transEscAttr('Rating')?>">
-                <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($rating['source'] . '|' . $rating['record_id'], 'Rating'))?>" data-lightbox>
-                  <?=$this->component('star-rating', ['readonly' => true, 'ratingData' => ['rating' => $rating['rating'], 'count' => 1]])?>
-                </a>
+                <?=$this->component('star-rating', ['readonly' => true, 'ratingData' => ['rating' => $rating['rating'], 'count' => 1], 'labelAttrs' => ['data-click-callback="addRecordRatingFromUserList"']])?>
+                <?php // The following link is triggered programmatically on click: ?>
+                <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getActionUrl($rating['source'] . '|' . $rating['record_id'], 'Rating'))?>" data-lightbox></a>
               </td>
             </tr>
           <?php endforeach; ?>
