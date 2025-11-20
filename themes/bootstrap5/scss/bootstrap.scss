@@ -395,6 +395,9 @@ body.rtl .dropdown-menu {
   flex-wrap: wrap;
   gap: 0.25rem;
   align-items: center;
+  button {
+    margin: 0 !important;
+  }
 }
 .cart-controls > .checkbox {
   /* wrap below */
