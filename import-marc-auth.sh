@@ -1,4 +1,4 @@
-#!/usr/bin/env bash
+#!/bin/bash
 #
 # Wrapper around import-marc.sh to allow import of authority records.
 #
@@ -56,7 +56,17 @@ for MAPPINGS_FILENAME in ${MAPPINGS_FILENAMES[@]}; do
   fi
 done
 
-export SOLRCORE="authority"
+# Get the Solr core name from the properties file, default to "authority"
+SOLRCORE=$(grep '^solr\.core\.name *=' $PROPERTIES_FILE | sed -n 's/^solr\.core\.name *= *\(.*\)/\1/p' | tr -d ' ')
+
+# Default to "authority" if not found
+if [ -z "$SOLRCORE" ]
+then
+  export SOLRCORE="authority"
+else
+  export SOLRCORE="$SOLRCORE"
+fi
+
 export EXTRA_SOLRMARC_SETTINGS="-Dsolr.indexer.properties=$MAPPINGS_FILES"
 
 # Call the standard script:

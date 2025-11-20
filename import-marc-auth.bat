@@ -56,7 +56,20 @@ for %%a in (%MAPPINGS_FILENAMES%) do (
 set MAPPINGS_FILES=%MAPPINGS_FILES:~2,99999%
 setlocal DisableDelayedExpansion
 
-set SOLRCORE="authority"
+rem Get the Solr core name from the properties file, default to "authority"
+set SOLRCORE=""
+for /f "delims=" %%a in ('findstr "^solr.core.name" %PROPERTIES_FILE%') do set SOLRCORE=%%a
+rem Removes the text solr.core.name from the string
+set SOLRCORE="%SOLRCORE:solr.core.name=%"
+rem Removes all spaces (replaces space with nothing)
+set SOLRCORE=%SOLRCORE: =%
+rem Removes all equals signs
+set SOLRCORE=%SOLRCORE:==%
+rem Removes all double quotes
+set SOLRCORE=%SOLRCORE:"=%
+rem If empty, default to 'authority'
+if "%SOLRCORE%"=="" set SOLRCORE=authority
+
 set EXTRA_SOLRMARC_SETTINGS="-Dsolr.indexer.properties=%MAPPINGS_FILES%"
 
 rem Call the standard script:
