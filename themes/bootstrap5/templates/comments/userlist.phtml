@@ -34,7 +34,7 @@
     </nav>
     <form action="<?=$this->url('comments-deletecomments')?>" name="updateForm" id="select_all_comments" method="post">
       <input type="hidden" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>" name="csrf">
-      <div class="toolbar">
+      <div class="toolbar table-checkbox-toolbar">
         <label>
           <div class="checkbox">
             <input type="checkbox" name="selectAll" class="checkbox-select-all">
