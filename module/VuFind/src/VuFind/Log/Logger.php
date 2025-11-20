@@ -51,7 +51,7 @@ use function is_string;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Logger implements LoggerInterface
+class Logger implements LoggerInterface, ExtendedLoggerInterface
 {
     /**
      * Is debug logging enabled?
