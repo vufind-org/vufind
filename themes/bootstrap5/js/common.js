@@ -993,7 +993,6 @@ function setupMultiILSLoginFields(loginMethods, idPrefix) {
 
 /**
  * Handle adding a rating to a record by programmatically clicking the rating link.
- *
  * @param {Event|null} event Click event, if any
  */
 function addRecordRatingFromUserList(event) {
