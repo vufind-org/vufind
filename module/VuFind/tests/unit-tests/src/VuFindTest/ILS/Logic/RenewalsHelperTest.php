@@ -36,7 +36,6 @@ use VuFind\ILS\Connection;
 use VuFind\ILS\Logic\RenewalsHelper;
 use VuFind\Validator\CsrfInterface;
 
-use function in_array;
 use function is_array;
 
 /**
@@ -159,11 +158,11 @@ class RenewalsHelperTest extends TestCase
         $flashMessenger->expects($this->exactly(2))
             ->method('addMessage')
             ->willReturnCallback(
-                function ($message, $level) use (&$flashMessages) {
+                function ($message, $level) use (&$flashMessages): void {
                     $flashMessages[] = [
                         'msg' => $message['msg'],
                         'count' => $message['tokens']['count'],
-                        'level' => $level
+                        'level' => $level,
                     ];
                 }
             );
@@ -172,7 +171,7 @@ class RenewalsHelperTest extends TestCase
         $result = $helper->processRenewals($request, $catalog, $patron, $flashMessenger);
 
         $this->assertEquals($renewalResult['details'], $result);
-        
+
         $this->assertCount(2, $flashMessages);
         $this->assertEquals('renew_success_summary', $flashMessages[0]['msg']);
         $this->assertEquals(2, $flashMessages[0]['count']);
@@ -258,7 +257,7 @@ class RenewalsHelperTest extends TestCase
 
         $catalog->expects($this->once())
             ->method('__call')
-            ->with('renewMyItems',[['details' => $idsToRenew, 'patron' => $patron]])
+            ->with('renewMyItems', [['details' => $idsToRenew, 'patron' => $patron]])
             ->willReturn($renewalResult);
 
         $flashMessenger->expects($this->once())
