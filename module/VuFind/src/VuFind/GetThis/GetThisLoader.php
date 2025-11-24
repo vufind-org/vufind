@@ -15,7 +15,7 @@
 namespace VuFind\GetThis;
 
 use Exception;
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use Throwable;
 use VuFind\ILS\Logic\AvailabilityStatusInterface;
 use VuFind\Log\LoggerAwareTrait;

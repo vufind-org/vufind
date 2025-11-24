@@ -953,7 +953,7 @@ class AbstractRecord extends AbstractBase
             $view->scrollData = $this->resultScroller()->getScrollData($driver);
         }
 
-        $getThisEnabled = ($config?->Record?->getThisEnabled ?? null) == true;
+        $getThisEnabled = ($config['Record']['getThisEnabled'] ?? null) == true;
         $view->getThis = $getThisEnabled ? $this->serviceLocator->get(GetThisLoader::class) : null;
         $view->callnumberHandler = $config['Item_Status']['callnumber_handler'] ?? false;
 
