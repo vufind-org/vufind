@@ -22,6 +22,10 @@ $(function pageLoad() {
     return e.target.matches(".get-this-dropdown .call-number-display, .get-this-dropdown .call-number-display *");
   }
 
+    /**
+     * Whether to show the arrow pointing up or down for the dropdown
+     * @param {boolean} open True to show the arrow pointing up, False pointing down
+     */
   function toggleDropdownArow(open) {
     document.querySelector(".get-this-dropdown .fa-close-dropdown").style.display = open ? 'block' : 'none';
     document.querySelector(".get-this-dropdown .fa-open-dropdown").style.display = open ? 'none' : 'block';
