@@ -57,10 +57,7 @@ class RenewalsHelperTest extends TestCase
      */
     public function testAddRenewDetailsWithLink(): void
     {
-        $catalog = $this->getMockBuilder(Connection::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['__call'])
-            ->getMock();
+        $catalog = $this->createMock(Connection::class);
 
         $ilsDetails = ['id' => 'item123', 'title' => 'Test Item'];
         $renewStatus = ['function' => 'renewMyItemsLink'];
@@ -68,10 +65,7 @@ class RenewalsHelperTest extends TestCase
 
         $catalog->expects($this->once())
             ->method('__call')
-            ->with(
-                $this->equalTo('renewMyItemsLink'),
-                $this->equalTo([$ilsDetails])
-            )
+            ->with('renewMyItemsLink', [$ilsDetails])
             ->willReturn($expectedLink);
 
         $helper = new RenewalsHelper();
@@ -89,10 +83,7 @@ class RenewalsHelperTest extends TestCase
      */
     public function testAddRenewDetailsWithForm(): void
     {
-        $catalog = $this->getMockBuilder(Connection::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['__call'])
-            ->getMock();
+        $catalog = $this->createMock(Connection::class);
 
         $ilsDetails = ['id' => 'item456', 'title' => 'Another Item'];
         $renewStatus = ['function' => 'renewMyItems'];
@@ -100,10 +91,7 @@ class RenewalsHelperTest extends TestCase
 
         $catalog->expects($this->once())
             ->method('__call')
-            ->with(
-                $this->equalTo('getRenewDetails'),
-                $this->equalTo([$ilsDetails])
-            )
+            ->with('getRenewDetails', [$ilsDetails])
             ->willReturn($expectedDetails);
 
         $helper = new RenewalsHelper();
@@ -146,10 +134,8 @@ class RenewalsHelperTest extends TestCase
         ]);
         $idsToRenew = ['id1', 'id2', 'id3'];
 
-        $catalog = $this->getMockBuilder(Connection::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['__call'])
-            ->getMock();
+        $catalog = $this->createMock(Connection::class);
+
         $patron = ['id' => 'patron1'];
         $flashMessenger = $this->createMock(FlashMessenger::class);
 
@@ -169,24 +155,31 @@ class RenewalsHelperTest extends TestCase
             )
             ->willReturn($renewalResult);
 
+        $flashMessages = [];
         $flashMessenger->expects($this->exactly(2))
             ->method('addMessage')
-            ->with(
-                $this->callback(
-                    fn ($arg) => is_array($arg) && (
-                        ($arg['msg'] === 'renew_success_summary' && $arg['tokens']['count'] === 2) ||
-                        ($arg['msg'] === 'renew_error_summary' && $arg['tokens']['count'] === 1)
-                    )
-                ),
-                $this->callback(
-                    fn ($arg) => in_array($arg, ['success', 'error'])
-                )
+            ->willReturnCallback(
+                function ($message, $level) use (&$flashMessages) {
+                    $flashMessages[] = [
+                        'msg' => $message['msg'],
+                        'count' => $message['tokens']['count'],
+                        'level' => $level
+                    ];
+                }
             );
 
         $helper = new RenewalsHelper();
         $result = $helper->processRenewals($request, $catalog, $patron, $flashMessenger);
 
         $this->assertEquals($renewalResult['details'], $result);
+        
+        $this->assertCount(2, $flashMessages);
+        $this->assertEquals('renew_success_summary', $flashMessages[0]['msg']);
+        $this->assertEquals(2, $flashMessages[0]['count']);
+        $this->assertEquals('success', $flashMessages[0]['level']);
+        $this->assertEquals('renew_error_summary', $flashMessages[1]['msg']);
+        $this->assertEquals(1, $flashMessages[1]['count']);
+        $this->assertEquals('error', $flashMessages[1]['level']);
     }
 
     /**
@@ -202,10 +195,7 @@ class RenewalsHelperTest extends TestCase
         ]);
         $idsToRenew = ['id_a', 'id_b'];
 
-        $catalog = $this->getMockBuilder(Connection::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['__call'])
-            ->getMock();
+        $catalog = $this->createMock(Connection::class);
         $patron = ['id' => 'patron1'];
         $flashMessenger = $this->createMock(FlashMessenger::class);
 
@@ -254,10 +244,7 @@ class RenewalsHelperTest extends TestCase
         ]);
         $idsToRenew = ['id_x', 'id_y', 'id_z'];
 
-        $catalog = $this->getMockBuilder(Connection::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['__call'])
-            ->getMock();
+        $catalog = $this->createMock(Connection::class);
         $patron = ['id' => 'patron1'];
         $flashMessenger = $this->createMock(FlashMessenger::class);
 
@@ -271,10 +258,7 @@ class RenewalsHelperTest extends TestCase
 
         $catalog->expects($this->once())
             ->method('__call')
-            ->with(
-                $this->equalTo('renewMyItems'),
-                $this->equalTo([['details' => $idsToRenew, 'patron' => $patron]])
-            )
+            ->with('renewMyItems',[['details' => $idsToRenew, 'patron' => $patron]])
             ->willReturn($renewalResult);
 
         $flashMessenger->expects($this->once())
@@ -301,10 +285,7 @@ class RenewalsHelperTest extends TestCase
     public function testProcessRenewalsNoAction(): void
     {
         $request = new Parameters([]);
-        $catalog = $this->getMockBuilder(Connection::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['__call'])
-            ->getMock();
+        $catalog = $this->createMock(Connection::class);
         $patron = ['id' => 'patron1'];
         $flashMessenger = $this->createMock(FlashMessenger::class);
 
@@ -331,10 +312,7 @@ class RenewalsHelperTest extends TestCase
             'renewSelected' => '1',
             'renewSelectedIDS' => null,
         ]);
-        $catalog = $this->getMockBuilder(Connection::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['__call'])
-            ->getMock();
+        $catalog = $this->createMock(Connection::class);
         $patron = ['id' => 'patron1'];
         $flashMessenger = $this->createMock(FlashMessenger::class);
 
@@ -363,10 +341,7 @@ class RenewalsHelperTest extends TestCase
             'renewAllIDS' => ['id1', 'id2', 'id3'],
             'csrf' => 'bad_token',
         ]);
-        $catalog = $this->getMockBuilder(Connection::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['__call'])
-            ->getMock();
+        $catalog = $this->createMock(Connection::class);
         $patron = ['id' => 'patron1'];
         $flashMessenger = $this->createMock(FlashMessenger::class);
         $csrfValidator = $this->createMock(CsrfInterface::class);
@@ -405,19 +380,13 @@ class RenewalsHelperTest extends TestCase
         ]);
         $idsToRenew = ['id1', 'id2'];
 
-        $catalog = $this->getMockBuilder(Connection::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['__call'])
-            ->getMock();
+        $catalog = $this->createMock(Connection::class);
         $patron = ['id' => 'patron1'];
         $flashMessenger = $this->createMock(FlashMessenger::class);
 
         $catalog->expects($this->once())
             ->method('__call')
-            ->with(
-                $this->equalTo('renewMyItems'),
-                $this->equalTo([['details' => $idsToRenew, 'patron' => $patron]])
-            )
+            ->with('renewMyItems', [['details' => $idsToRenew, 'patron' => $patron]])
             ->willReturn(false);
 
         $flashMessenger->expects($this->once())
