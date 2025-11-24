@@ -102,9 +102,9 @@ var VuFind = (function VuFind() {
 
   /**
    * Add function to be called once when an event is emitted or resolved.
-   *
    * @param {string} event The name of the event.
    * @param {Function} fn The function to call when the event is emitted.
+   * @returns {Function} A function to remove the listener or an empty function in case it was resolved immediately.
    */
   function listenOnce(event, fn) {
     return listen(event, fn, {once: true});
