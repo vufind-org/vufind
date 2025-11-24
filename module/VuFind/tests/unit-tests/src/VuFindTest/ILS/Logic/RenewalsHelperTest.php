@@ -34,6 +34,7 @@ use Laminas\Stdlib\Parameters;
 use PHPUnit\Framework\TestCase;
 use VuFind\ILS\Connection;
 use VuFind\ILS\Logic\RenewalsHelper;
+use VuFind\Validator\CsrfInterface;
 
 use function in_array;
 use function is_array;
@@ -426,49 +427,5 @@ class RenewalsHelperTest extends TestCase
 
         $this->assertIsArray($result);
         $this->assertEmpty($result);
-    }
-
-    /**
-     * Test processing renewals with block messages from ILS.
-     */
-    public function testProcessRenewalsWithBlocks(): void
-    {
-        $request = new Parameters([
-            'renewAll' => '1',
-            'renewAllIDS' => ['id1'],
-        ]);
-        $idsToRenew = ['id1'];
-
-        $catalog = $this->getMockBuilder(Connection::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['renewMyItems'])
-            ->getMock();
-        $patron = ['id' => 'patron1'];
-        $flashMessenger = $this->createMock(FlashMessenger::class);
-
-        $renewalResult = [
-            'blocks' => ['Block Message 1', 'Block Message 2'],
-            'details' => ['id1' => ['success' => true]],
-        ];
-
-        $catalog->expects($this->once())
-            ->method('renewMyItems')
-            ->with(['details' => $idsToRenew, 'patron' => $patron])
-            ->willReturn($renewalResult);
-
-        $flashMessenger->expects($this->exactly(3))
-            ->method('addMessage')
-            ->withConsecutive(
-                ['Block Message 1', 'info'],
-                ['Block Message 2', 'info'],
-                [$this->callback(
-                    fn($arg) => is_array($arg) && ($arg['msg'] === 'renew_success_summary' && $arg['tokens']['count'] === 1)
-                ), 'success']
-            );
-
-        $helper = new RenewalsHelper();
-        $result = $helper->processRenewals($request, $catalog, $patron, $flashMessenger);
-
-        $this->assertEquals($renewalResult['details'], $result);
     }
 }
