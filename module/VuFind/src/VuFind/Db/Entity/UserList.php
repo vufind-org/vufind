@@ -34,7 +34,7 @@ use Doctrine\ORM\Mapping as ORM;
 use VuFind\Db\Feature\DateTimeTrait;
 
 /**
- * UserList
+ * Entity model for user_list table
  *
  * @category VuFind
  * @package  Database
@@ -101,6 +101,20 @@ class UserList implements UserListEntityInterface
     protected UserEntityInterface $user;
 
     /**
+     * Type of the list.
+     *
+     * @var string
+     */
+    #[ORM\Column(
+        name: 'type',
+        type: 'string',
+        length: 200,
+        nullable: false,
+        options: ['default' => self::TYPE_DEFAULT]
+    )]
+    protected string $type = self::TYPE_DEFAULT;
+
+    /**
      * Constructor.
      */
     public function __construct()
@@ -163,6 +177,29 @@ class UserList implements UserListEntityInterface
     public function getDescription(): ?string
     {
         return $this->description;
+    }
+
+    /**
+     * Get list type
+     *
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    /**
+     * Set list type
+     *
+     * @param string $type Type of the user list
+     *
+     * @return static
+     */
+    public function setType(string $type): static
+    {
+        $this->type = $type;
+        return $this;
     }
 
     /**

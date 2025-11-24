@@ -154,7 +154,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
             ->method('query')
-            ->will($this->throwException(new \Exception()));
+            ->willThrowException(new \Exception());
         $back = new Backend($conn);
         $back->search(new Query(), 1, 1);
     }
@@ -172,7 +172,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $conn->expects($this->once())
             ->method('query')
             ->with($this->equalTo($expectedParams), $this->equalTo(0), $this->equalTo(10))
-            ->will($this->returnValue(['recordCount' => 0, 'documents' => []]));
+            ->willReturn(['recordCount' => 0, 'documents' => []]);
         $back = new Backend($conn);
         $back->search(new Query('baz'), 0, 10, $myParams);
     }

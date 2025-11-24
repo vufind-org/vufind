@@ -755,11 +755,7 @@ class Params
         }
 
         // Validate and assign the sort value:
-        if ($this->isValidSort($sort)) {
-            $this->sort = $sort;
-        } else {
-            $this->sort = $this->getDefaultSort();
-        }
+        $this->sort = $this->isValidSort($sort) ? $sort : $this->getDefaultSort();
 
         // In RSS mode, we may want to adjust sort settings:
         if (!$this->skipRssSort && $this->getView() == 'rss') {
@@ -1197,6 +1193,23 @@ class Params
             }
         }
         return $list;
+    }
+
+    /**
+     * Returns only the exclude filters (field starting with '-').
+     *
+     * @return array an array field => value without the '-' for the field
+     */
+    public function getExcludeFilters()
+    {
+        $result = [];
+        foreach ($this->filterList as $field => $values) {
+            [$operator, $fieldName] = $this->parseOperatorAndFieldName($field);
+            if ('NOT' === $operator) {
+                $result[$fieldName] = $values;
+            }
+        }
+        return $result;
     }
 
     /**
@@ -1740,14 +1753,7 @@ class Params
     {
         // Extract field and value from URL string:
         [$field, $value] = $this->parseFilter($filter);
-
-        if (
-            isset($this->hiddenFilters[$field])
-            && in_array($value, $this->hiddenFilters[$field])
-        ) {
-            return true;
-        }
-        return false;
+        return in_array($value, $this->hiddenFilters[$field] ?? []);
     }
 
     /**

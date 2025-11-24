@@ -30,8 +30,8 @@
 
 namespace VuFind\ILS\Driver;
 
-use Laminas\Log\LoggerAwareInterface;
 use PDO;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Log\LoggerAwareTrait;
@@ -642,7 +642,7 @@ class Horizon extends AbstractBase implements LoggerAwareInterface
     {
         if ($row['STATUS'] != 6) {
             $position  = ($row['STATUS'] != 1) ? $row['POSITION'] : false;
-            $available = ($row['STATUS'] == 1) ? true : false;
+            $available = $row['STATUS'] == 1;
             $expire    = false;
             $create    = false;
             // Convert Horizon Format to display format

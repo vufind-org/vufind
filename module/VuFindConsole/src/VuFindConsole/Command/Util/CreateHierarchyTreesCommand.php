@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Generic base class for Solr commands.
+ * Console command: populate hierarchy tree cache.
  *
  * PHP version 8
  *
@@ -40,7 +40,7 @@ use VuFind\Search\Results\PluginManager;
 use function count;
 
 /**
- * Generic base class for Solr commands.
+ * Console command: populate hierarchy tree cache.
  *
  * @category VuFind
  * @package  Console
@@ -109,7 +109,7 @@ class CreateHierarchyTreesCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $backendId = $input->getArgument('backend');
         $hierarchies = $this->resultsManager->get($backendId)
@@ -142,6 +142,6 @@ class CreateHierarchyTreesCommand extends Command
         }
         $output->writeln(count($list) . ' files');
 
-        return 0;
+        return self::SUCCESS;
     }
 }

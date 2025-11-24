@@ -68,7 +68,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $theme->expects($this->once())
             ->method('findContainingTheme')
             ->with($this->equalTo(['images/hidden-image.gif']))
-            ->will($this->returnValue(false));
+            ->willReturn(false);
         $loader = $this->getLoader([], null, $theme);
         $loader->getImage();
     }

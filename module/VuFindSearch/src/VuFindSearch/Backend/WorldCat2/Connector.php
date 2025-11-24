@@ -35,10 +35,10 @@ use Laminas\Http\Client\Exception\RuntimeException as ExceptionRuntimeException;
 use Laminas\Http\Exception\InvalidArgumentException;
 use Laminas\Http\Exception\RuntimeException;
 use Laminas\Http\Response;
-use Laminas\Log\LoggerAwareInterface;
 use Laminas\Session\Container;
 use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 use League\OAuth2\Client\Provider\GenericProvider;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Log\LoggerAwareTrait;
 use VuFindSearch\ParamBag;
 

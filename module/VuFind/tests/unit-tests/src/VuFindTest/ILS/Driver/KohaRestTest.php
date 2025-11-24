@@ -87,7 +87,7 @@ class KohaRestTest extends \VuFindTest\Unit\ILSDriverTestCase
     {
         $this->driver = new KohaRest(
             new \VuFind\Date\Converter(),
-            function () {
+            function (): void {
             },
             new \VuFind\Service\CurrencyFormatter()
         );
@@ -160,7 +160,7 @@ class KohaRestTest extends \VuFindTest\Unit\ILSDriverTestCase
         $this->driver->setCacheStorage($cache);
         $this->driver->expects($this->any())
             ->method('makeRequest')
-            ->will($this->returnCallback([$this, 'mockMakeRequest']));
+            ->willReturnCallback([$this, 'mockMakeRequest']);
         $this->driver->init();
     }
 

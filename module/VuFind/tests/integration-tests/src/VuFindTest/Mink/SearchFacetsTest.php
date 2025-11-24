@@ -339,10 +339,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      * @param array  $facets      Facets to apply
      * @param string $multiselect Use multiselection?
      *
-     * @dataProvider applyFacetProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('applyFacetProvider')]
     public function testApplyFacet(bool $deferred, bool $orFacets, array $facets, string $multiselect): void
     {
         $this->changeConfigs(
@@ -869,10 +868,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      * @param ?string $sort         Sort option
      * @param string  $expectedSort Expected sort order of facet hierarchy
      *
-     * @dataProvider hierarchicalFacetSortProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('hierarchicalFacetSortProvider')]
     public function testHierarchicalFacetSort(?string $sort, string $expectedSort): void
     {
         $facetConfig = [
@@ -1205,10 +1203,10 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool  $selectMulti   Select multiple?
      * @param bool  $unselectMulti Unselect multiple?
      *
-     * @return       void
-     * @throws       \Exception
-     * @dataProvider checkboxFacetSelectionProvider
+     * @return void
+     * @throws \Exception
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('checkboxFacetSelectionProvider')]
     public function testCheckboxFacetSelection(
         array $checkFacets,
         int $expectedCount,
@@ -1299,10 +1297,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool $deferred Are deferred facets enabled?
      * @param bool $counts   Are checkbox facet counts enabled?
      *
-     * @dataProvider checkboxFacetsProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('checkboxFacetsProvider')]
     public function testCheckboxFacets(bool $deferred, bool $counts): void
     {
         $this->changeConfigs(
@@ -1378,10 +1375,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @param string $multiselection Use multi-facet selection?
      *
-     * @dataProvider rangeFacetsProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('rangeFacetsProvider')]
     public function testRangeFacets(string $multiselection): void
     {
         $this->changeConfigs(
@@ -1533,10 +1529,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool $changeLanguage  Should we change the language before applying the facets?
      * @param bool $includeCheckbox Should we apply a checkbox prior to multi-selection?
      *
-     * @dataProvider multiSelectOnAdvancedSearchProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('multiSelectOnAdvancedSearchProvider')]
     public function testMultiSelectOnAdvancedSearch(bool $changeLanguage, bool $includeCheckbox): void
     {
         $facets = [

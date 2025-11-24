@@ -90,6 +90,7 @@ $fa-font-path: "../../bootstrap5/css/vendor/font-awesome/webfonts";
 @import "components/sidebar";
 @import "components/similar-carousel";
 @import "components/sliders";
+@import "components/tables";
 @import "components/trees";
 
 /**
@@ -149,19 +150,6 @@ h3.popover-header {
   padding-right: 0;
 }
 .icon-bar { background-color: #888; }
-
-// Icons vs. Underline fix
-.btn {
-  text-decoration: none;
-}
-.btn-link {
-  @extend .icon-link;
-
-  &.pull-left,
-  &.pull-right {
-    display: flex;
-  }
-}
 
 // More/less buttons
 .more-btn, .less-btn {
@@ -408,9 +396,11 @@ body.rtl .dropdown-menu {
   flex-wrap: wrap;
   gap: 0.25rem;
   align-items: center;
+  button {
+    margin: 0 !important;
+  }
 }
 .cart-controls > .checkbox {
-  margin-top: 0.5rem;
   /* wrap below */
   order: 1;
   flex-basis: 100%;
@@ -420,19 +410,23 @@ body.rtl .dropdown-menu {
   margin: 0;
   padding: 0;
 }
-.cart-controls {
-  padding-bottom: 0.5rem;
+.cart-controls.select-all-container {
+  padding: 0.5rem 0;
   border-bottom: 1px solid $border-color;
 }
 
-@include media-breakpoint-up(md) {
-  .cart-controls > .checkbox {
-    margin-block: 0;
-    padding-inline-end: 1rem;
-    padding-bottom: 0.25rem;
-    /* place inline */
-    order: unset;
-    flex-basis: auto;
+.cart-list {
+  margin-block: 0.75rem;
+  padding: 0;
+  list-style-type: none;
+}
+.cart-item {
+  display: flex;
+  gap: 1ch;
+  margin-block: 0.5rem;
+  line-height: normal;
+  .checkbox-select {
+    display: inline;
   }
 }
 
@@ -446,6 +440,8 @@ body.rtl .dropdown-menu {
 }
 
 /* ------ MyResearch ------ */
+form .toolbar { margin-block: 0.5em; } // bulk toolbar spacing
+form .toolbar.account-action-toolbar { margin-block-end: 0; }
 .form-login .btn-link ~ .btn-link { padding-left: 0; } // Login link spacing
 .myresearch-menu {
   ul {
@@ -597,11 +593,13 @@ body.rtl .dropdown-menu {
     vertical-align: middle;
   }
 }
+
 .usercontent-table {
   tbody > tr > td {
     vertical-align: middle;
     .checkbox-container {
       padding-top: 0rem;
+      padding-bottom: 0rem;
       border-bottom: 0px;
       .checkbox-select-item {
         float: none;
@@ -616,7 +614,15 @@ body.rtl .dropdown-menu {
       }
     }
   }
+
+  @include media-breakpoint-down(sm) {
+    .checkbox-col {
+      // Account for border to keep alignment:
+      padding: calc(0.5rem - 1px);
+    }
+  }
 }
+
 .fines-total {
   font-weight: bold;
 }
@@ -625,11 +631,6 @@ body.rtl .dropdown-menu {
 .fines-info-area {
   margin-bottom: 1rem;
 
-  div.card-holder {
-    display: flex;
-    align-items: center;
-    font-weight: bold;
-  }
   .amount {
     font-weight: bold;
   }
@@ -651,24 +652,27 @@ body.rtl .dropdown-menu {
       padding: 0.25rem;
     }
   }
-  .last-transaction-information {
-    @extend .alert;
-
-    background: lighten($gray-lighter, 20%);
-    border: 1px solid $gray-lighter;
-    display: flex;
-    align-items: center;
-    div {
-      flex: 1 1;
+}
+.online-payment .toolbar {
+  .checkbox {
+    display: inline-flex;
+  }
+  .payment-row {
+    display: inline-flex;
+    margin-inline-start: 0.5rem;
+    .btn-group {
+      margin-block-end: 0;
     }
   }
 }
-.terms-of-service__text {
+.confirm-payment {
+  .terms-of-service__text {
+      margin-bottom: 1rem;
+  }
+  .terms-of-service-logo {
+    width: 5rem;
     margin-bottom: 1rem;
-}
-.terms-of-service-logo {
-   width: 5rem;
-   margin-bottom: 1rem;
+  }
 }
 .last-payment-information {
   @extend .alert;
@@ -704,7 +708,7 @@ body.rtl .dropdown-menu {
   td {
     word-wrap: anywhere;
   }
-  td.fullAvailability, td.holdings-table {
+  td.fullAvailability, td.holdings-table, td.date {
     word-wrap: break-word;
   }
 }
@@ -731,49 +735,15 @@ body.rtl .dropdown-menu {
 @include media-breakpoint-down(sm) {
   @media screen {
     .table-responsive {
-      border: none;
-      thead, tfoot > tr > th {
-        position: absolute;
-        width: 1px;
-        height: 1px;
-        margin: -1px;
-        padding: 0;
-        overflow: hidden;
-        clip: rect(0, 0, 0, 0);
-        border: 0;
-      }
-      tbody > tr {
-        display: block;
-        margin-bottom: #{$line-height-base * $font-size-base};
-        border-left: 1px solid $table-border-color;
-        border-right: 1px solid $table-border-color;
-        border-bottom: 4px solid $table-border-color;
-
-        > :first-child {
-          border-top: var(--#{$prefix}border-width) solid var(--#{$prefix}table-border-color);
-        }
-      }
-      td, tbody > tr > th {
-        display: flex;
-        align-items: first baseline;
-        background: #fff;
-        &:before {
-          display: flex;
-          flex-basis: 40%;
-          flex-shrink: 0;
-          font-weight: bold;
-          content: attr(data-label);
-        }
-      }
-      tbody > tr > td:nth-child(even) {
-        background-color: var(--bs-table-striped-bg);
-      }
-      tfoot > tr > td {
-        border-top: none;
-      }
-      > :not(caption) > * > * {
-        box-shadow: none;
-      }
+      @include table-responsive;
+    }
+  }
+}
+/* ------ Responsive table for non-ultrawide screen size ------ */
+@include media-breakpoint-down(xl) {
+  @media screen {
+    .table-responsive.table-responsive__lg {
+      @include table-responsive;
     }
   }
 }

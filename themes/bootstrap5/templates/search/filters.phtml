@@ -88,23 +88,25 @@
           }
           $operatorClass = $this->escapeHtmlAttr(strtolower($value['operator']));
         ?>
-        <span class="filters-term filters-<?=$operatorClass?>">
-          <?=($index > 0 || 'NOT' === $value['operator']) ? $join : '' ?>
+        <span class="operator-and-term">
+          <span class="filters-term filters-<?=$operatorClass?>">
+            <?=($index > 0 || 'NOT' === $value['operator']) ? $join : '' ?>
+          </span>
+            <?php
+              $removeLink = isset($this->urlQuery) && !$fromSearchMemory
+                ? $urlQuery->removeFacet($value['field'], $value['value'], $value['operator'])
+                : $this->searchMemory()->getEditLink($this->searchClassId, 'removeFacet', $value);
+            ?>
+          <a class="<?=$dropdown ? 'dropdown-item ' : ''?>filter-value filters-<?=$operatorClass?>" href="<?=$removeLink?>">
+            <span class="visually-hidden">
+              <?=$this->translate('Remove filter') ?>
+            </span>
+            <span class="text">
+              <?=$this->escapeHtml($value['displayText'])?>
+            </span>
+            <?=$this->icon('search-filter-remove') ?>
+          </a>
         </span>
-          <?php
-            $removeLink = isset($this->urlQuery) && !$fromSearchMemory
-              ? $urlQuery->removeFacet($value['field'], $value['value'], $value['operator'])
-              : $this->searchMemory()->getEditLink($this->searchClassId, 'removeFacet', $value);
-          ?>
-        <a class="<?=$dropdown ? 'dropdown-item ' : ''?>filter-value filters-<?=$operatorClass?>" href="<?=$removeLink?>">
-          <span class="visually-hidden">
-            <?=$this->translate('Remove filter') ?>
-          </span>
-          <span class="text">
-            <?=$this->escapeHtml($value['displayText'])?>
-          </span>
-          <?=$this->icon('search-filter-remove') ?>
-        </a>
         <?php if ($dropdown): ?>
           </li>
         <?php endif; ?>

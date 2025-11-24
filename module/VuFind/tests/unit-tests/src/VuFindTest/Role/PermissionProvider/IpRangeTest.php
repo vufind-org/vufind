@@ -60,7 +60,7 @@ class IpRangeTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $mockIpReader->expects($this->once())->method('getUserIp')
-            ->will($this->returnValue($ipAddr));
+            ->willReturn($ipAddr);
         return new IpRange($mockRequest, $utils, $mockIpReader);
     }
 
@@ -81,7 +81,7 @@ class IpRangeTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $utils->expects($this->once())->method('isInRange')
             ->with($this->equalTo($ipAddr), $this->equalTo([$ipAddr]))
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $provider = $this->getPermissionProvider($ipAddr, $utils);
         $this->assertEquals(
             ['guest', 'loggedin'],
@@ -110,7 +110,7 @@ class IpRangeTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $utils->expects($this->once())->method('isInRange')
             ->with($this->equalTo($ipAddr), $this->equalTo($options))
-            ->will($this->returnValue(false));
+            ->willReturn(false);
         $provider = $this->getPermissionProvider($ipAddr, $utils);
         $this->assertEquals([], $provider->getPermissions($options));
     }

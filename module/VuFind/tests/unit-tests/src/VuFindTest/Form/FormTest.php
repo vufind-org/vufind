@@ -415,7 +415,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                 ->getMock();
             $mock->expects($this->any())->method('get')
                 ->with($this->equalTo('FeedbackForms.yaml'))
-                ->will($this->returnValue($config));
+                ->willReturn($config);
             $this->mockTestFormYamlReader = $mock;
         }
         return $this->mockTestFormYamlReader;
@@ -824,9 +824,8 @@ class FormTest extends \PHPUnit\Framework\TestCase
      * @param string $expectedSubject String to be expected.
      *
      * @return void
-     *
-     * @dataProvider getEmailSubjectsData
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getEmailSubjectsData')]
     public function testEmailSubjects(
         string $formToTest,
         string $expectedSubject
@@ -872,9 +871,8 @@ class FormTest extends \PHPUnit\Framework\TestCase
      * @param string $expected Expected value
      *
      * @return void
-     *
-     * @dataProvider getFormActionRouteData
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getFormActionRouteData')]
     public function testFormActionRoute(string $id, string $expected): void
     {
         $form = $this->getMockTestForm($id);

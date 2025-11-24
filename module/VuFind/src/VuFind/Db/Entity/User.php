@@ -34,7 +34,7 @@ use Doctrine\ORM\Mapping as ORM;
 use VuFind\Db\Feature\DateTimeTrait;
 
 /**
- * User
+ * Entity model for user table
  *
  * @category VuFind
  * @package  Database
@@ -737,7 +737,7 @@ class User implements UserEntityInterface
     /**
      * Get the list of roles of this identity
      *
-     * @return string[]|\Rbac\Role\RoleInterface[]
+     * @return string[]|\Laminas\Permissions\Rbac\RoleInterface[]
      */
     public function getRoles(): iterable
     {

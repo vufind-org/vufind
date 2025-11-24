@@ -195,7 +195,7 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
         // ini values 'true'/'false' are provided via ini reader as 1/0
         // only check embedAutoLoad for area if the current area passed checkContext
         if (
-            !($embedAutoLoad === '1' || $embedAutoLoad === '0')
+            $embedAutoLoad !== '1' && $embedAutoLoad !== '0'
             && !empty($this->area)
         ) {
             // embedAutoLoad is neither true nor false, so check if it contains an
@@ -284,14 +284,7 @@ class OpenUrl extends \Laminas\View\Helper\AbstractHelper
         // check first if OpenURLs are enabled for this RecordDriver
         // check second if OpenURLs are enabled for this context
         // check last if any rules apply
-        if (
-            !$this->recordDriver->getOpenUrl()
-            || !$this->checkContext()
-            || !$this->checkIfRulesApply()
-        ) {
-            return false;
-        }
-        return true;
+        return $this->recordDriver->getOpenUrl() && $this->checkContext() && $this->checkIfRulesApply();
     }
 
     /**

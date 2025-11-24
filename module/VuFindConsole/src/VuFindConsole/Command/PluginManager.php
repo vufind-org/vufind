@@ -73,6 +73,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'menu/menu' => Menu\MenuCommand::class,
         'onlinepayment/monitor' => OnlinePayment\MonitorCommand::class,
         'scheduledsearch/notify' => ScheduledSearch\NotifyCommand::class,
+        'upgrade/config' => Upgrade\ConfigCommand::class,
         'upgrade/database' => Upgrade\DatabaseCommand::class,
         'util/browscap' => Util\BrowscapCommand::class,
         'util/cleanuprecordcache' => Util\CleanUpRecordCacheCommand::class,
@@ -81,6 +82,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'util/createHierarchyTrees' => Util\CreateHierarchyTreesCommand::class,
         'util/dedupe' => Util\DedupeCommand::class,
         'util/deletes' => Util\DeletesCommand::class,
+        'util/download' => Util\DownloadCommand::class,
         'util/expire_access_tokens' => Util\ExpireAccessTokensCommand::class,
         'util/expire_audit_events' => Util\ExpireAuditEventsCommand::class,
         'util/expire_auth_hashes' => Util\ExpireAuthHashesCommand::class,
@@ -97,6 +99,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'util/sitemap' => Util\SitemapCommand::class,
         'util/suppressed' => Util\SuppressedCommand::class,
         'util/switch_db_hash' => Util\SwitchDbHashCommand::class,
+        'util/update_resource_metadata' => Util\UpdateResourceMetadataCommand::class,
     ];
 
     /**
@@ -130,6 +133,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Menu\MenuCommand::class => Menu\MenuCommandFactory::class,
         OnlinePayment\MonitorCommand::class => OnlinePayment\MonitorCommandFactory::class,
         ScheduledSearch\NotifyCommand::class => ScheduledSearch\NotifyCommandFactory::class,
+        Upgrade\ConfigCommand::class => Upgrade\ConfigCommandFactory::class,
         Upgrade\DatabaseCommand::class => Upgrade\DatabaseCommandFactory::class,
         Util\BrowscapCommand::class => Util\BrowscapCommandFactory::class,
         Util\CleanUpRecordCacheCommand::class => Util\CleanUpRecordCacheCommandFactory::class,
@@ -137,6 +141,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Util\CreateHierarchyTreesCommand::class => Util\CreateHierarchyTreesCommandFactory::class,
         Util\DedupeCommand::class => InvokableFactory::class,
         Util\DeletesCommand::class => Util\AbstractSolrCommandFactory::class,
+        Util\DownloadCommand::class => Util\DownloadCommandFactory::class,
         Util\ExpireAccessTokensCommand::class => Util\ExpireAccessTokensCommandFactory::class,
         Util\ExpireAuditEventsCommand::class => Util\ExpireAuditEventsCommandFactory::class,
         Util\ExpireAuthHashesCommand::class => Util\ExpireAuthHashesCommandFactory::class,
@@ -153,6 +158,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Util\SitemapCommand::class => Util\SitemapCommandFactory::class,
         Util\SuppressedCommand::class => Util\AbstractSolrAndIlsCommandFactory::class,
         Util\SwitchDbHashCommand::class => Util\SwitchDbHashCommandFactory::class,
+        Util\UpdateResourceMetadataCommand::class =>  Util\UpdateResourceMetadataCommandFactory::class,
     ];
 
     /**

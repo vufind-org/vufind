@@ -128,11 +128,11 @@ class CheckoutsController extends AbstractBase
         $purgeAllAllowed = !empty($functionConfig['purge_all']);
 
         // Get paging setup:
-        $config = $this->getConfig();
+        $config = $this->getConfigArray();
         $pageOptions = $this->paginationHelper->getOptions(
             (int)$this->params()->fromQuery('page', 1),
             $this->params()->fromQuery('sort'),
-            $config->Catalog->historic_loan_page_size ?? 50,
+            $config['Catalog']['historic_loan_page_size'] ?? 50,
             $functionConfig
         );
 

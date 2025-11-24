@@ -96,7 +96,7 @@ class PrimoController extends AbstractSearch
         // Don't save to history -- history page doesn't handle correctly:
         $this->saveToHistory = false;
 
-        $callback = function ($runner, $params, $searchId) {
+        $callback = function ($runner, $params, $searchId): void {
             $options = $params->getOptions();
             $options->disableHighlighting();
             $options->spellcheckEnabled(false);

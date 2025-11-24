@@ -73,7 +73,7 @@ class HelpTextTest extends \PHPUnit\Framework\TestCase
                 $this->equalTo($context),
                 $this->equalTo(null),
                 $this->equalTo('%pathPrefix%/%language%/%pageName%')
-            )->will($this->returnCallback($callback));
+            )->willReturnCallback($callback);
         return $helper;
     }
 

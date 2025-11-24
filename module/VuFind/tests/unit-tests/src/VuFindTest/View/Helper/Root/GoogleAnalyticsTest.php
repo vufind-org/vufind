@@ -115,6 +115,6 @@ class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
     {
         $helper = new GoogleAnalytics($key, $options);
         $helper->setView($this->getPhpRenderer());
-        return (string)$helper();
+        return $helper();
     }
 }

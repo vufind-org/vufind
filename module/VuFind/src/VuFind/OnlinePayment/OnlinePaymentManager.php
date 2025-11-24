@@ -24,7 +24,7 @@
  * @package  OnlinePayment
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 
 declare(strict_types=1);
@@ -32,10 +32,10 @@ declare(strict_types=1);
 namespace VuFind\OnlinePayment;
 
 use Laminas\Http\PhpEnvironment\Response;
-use Laminas\Log\LoggerAwareInterface;
 use Laminas\Session\Container as SessionContainer;
 use Laminas\Session\SessionManager;
 use Laminas\Stdlib\RequestInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Db\Entity\PaymentEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
@@ -59,7 +59,7 @@ use VuFind\OnlinePayment\Handler\PluginManager as HandlerPluginManager;
  * @package  OnlinePayment
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class OnlinePaymentManager implements LoggerAwareInterface
 {
@@ -570,13 +570,10 @@ class OnlinePaymentManager implements LoggerAwareInterface
             return [];
         }
 
-        // Check that mandatory settings exist
-        $mandatory = ['currency', 'handler'];
-        foreach ($mandatory as $current) {
-            if (empty($paymentConfig[$current])) {
-                $this->logError("Mandatory setting '$current' missing from ILS driver for $sourceIls");
-                return [];
-            }
+        // Check that mandatory handler setting exists
+        if (empty($paymentConfig['handler'])) {
+            $this->logError("Mandatory setting 'handler' missing from ILS driver for $sourceIls");
+            return [];
         }
 
         return $paymentConfig;

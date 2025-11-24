@@ -81,20 +81,12 @@ class Bookplate implements RelatedInterface
     protected $displayTitles;
 
     /**
-     * Configuration loader
-     *
-     * @var \VuFind\Config\PluginManager
-     */
-    protected $configLoader;
-
-    /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader PluginManager
+     * @param \VuFind\Config\ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(protected \VuFind\Config\ConfigManagerInterface $configManager)
     {
-        $this->configLoader = $configLoader;
     }
 
     /**
@@ -110,7 +102,7 @@ class Bookplate implements RelatedInterface
         $config = array_map('trim', explode(':', $settings));
         $configFile = !empty($config[0]) ? $config[0] : 'config';
         $configSection = !empty($config[1]) ? $config[1] : 'Record';
-        $this->config = $this->configLoader->get($configFile)->$configSection;
+        $this->config = $this->configManager->getConfigObject($configFile)->$configSection;
         $this->fields = $driver->getRawData();
         $this->bookplateStrs = $this->getBookplateData(
             $this->getBookplateTitlesField()

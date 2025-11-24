@@ -49,7 +49,7 @@ use function in_array;
  * @SuppressWarnings(PHPMD.NumberOfChildren)
  */
 class CspHeaderGenerator implements
-    \Laminas\Log\LoggerAwareInterface
+    \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 

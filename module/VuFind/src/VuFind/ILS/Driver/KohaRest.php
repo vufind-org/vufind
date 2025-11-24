@@ -64,7 +64,7 @@ use function is_string;
 class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     \VuFindHttp\HttpServiceAwareInterface,
     \VuFind\I18n\Translator\TranslatorAwareInterface,
-    \Laminas\Log\LoggerAwareInterface,
+    \Psr\Log\LoggerAwareInterface,
     \VuFind\I18n\HasSorterInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
@@ -380,7 +380,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
      */
     protected function getCacheKey($suffix = null)
     {
-        return 'KohaRest' . '-' . md5($this->config['Catalog']['host'] . $suffix);
+        return 'KohaRest-' . md5($this->config['Catalog']['host'] . $suffix);
     }
 
     /**
@@ -1810,11 +1810,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         );
 
         if (200 !== $result['code']) {
-            if (400 === $result['code']) {
-                $message = 'password_error_invalid';
-            } else {
-                $message = 'An error has occurred';
-            }
+            $message = 400 === $result['code'] ? 'password_error_invalid' : 'An error has occurred';
             return [
                 'success' => false, 'status' => $message,
             ];
@@ -2535,10 +2531,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
     protected function itemHoldAllowed($item)
     {
         $unavail = $item['availability']['unavailabilities'] ?? [];
-        if (!isset($unavail['Hold::NotHoldable'])) {
-            return true;
-        }
-        return false;
+        return !isset($unavail['Hold::NotHoldable']);
     }
 
     /**
@@ -2554,13 +2547,8 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         if (isset($unavail['ArticleRequest::NotAllowed'])) {
             return false;
         }
-        if (
-            empty($this->config['StorageRetrievalRequests']['allow_checked_out'])
-            && isset($unavail['Item::CheckedOut'])
-        ) {
-            return false;
-        }
-        return true;
+        return !(empty($this->config['StorageRetrievalRequests']['allow_checked_out'])
+            && isset($unavail['Item::CheckedOut']));
     }
 
     /**
@@ -3132,10 +3120,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             return false;
         }
         $paymentConfig = $this->config['OnlinePayment'] ?? [];
-        if (in_array($fine['__status'], $paymentConfig['nonPayableStatuses'] ?? [])) {
-            return false;
-        }
-        return true;
+        return !in_array($fine['__status'], $paymentConfig['nonPayableStatuses'] ?? []);
     }
 
     /**
@@ -3151,10 +3136,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             return true;
         }
         $paymentConfig = $this->config['OnlinePayment'] ?? [];
-        if (in_array($fine['__status'], $paymentConfig['blockingNonPayableStatuses'] ?? [])) {
-            return true;
-        }
-        return false;
+        return in_array($fine['__status'], $paymentConfig['blockingNonPayableStatuses'] ?? []);
     }
 
     /**

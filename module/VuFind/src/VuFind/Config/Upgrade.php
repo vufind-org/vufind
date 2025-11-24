@@ -30,7 +30,7 @@
 
 namespace VuFind\Config;
 
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Config\Location\ConfigDirectory;
 use VuFind\Config\Location\ConfigLocationInterface;
 use VuFind\Exception\FileAccess as FileAccessException;
@@ -222,11 +222,9 @@ class Upgrade implements LoggerAwareInterface
         foreach ($custom_ini as $k => $v) {
             // Make a recursive call if we need to merge array values into an
             // existing key... otherwise just drop the value in place.
-            if (is_array($v) && isset($config_ini[$k])) {
-                $config_ini[$k] = self::iniMerge($config_ini[$k], $custom_ini[$k]);
-            } else {
-                $config_ini[$k] = $v;
-            }
+            $config_ini[$k] = is_array($v) && isset($config_ini[$k])
+                ? self::iniMerge($config_ini[$k], $custom_ini[$k])
+                : $v;
         }
         return $config_ini;
     }
@@ -421,22 +419,23 @@ class Upgrade implements LoggerAwareInterface
     }
 
     /**
-     * Add warnings if Amazon problems were found.
+     * Add warnings if obsolete cover/review problems were found.
      *
-     * @param array $config Configuration to check
+     * @param array  $config Configuration to check
+     * @param string $site   Site name to check
      *
      * @return void
      */
-    protected function checkAmazonConfig(array $config): void
+    protected function checkObsoleteCoverOrReviewConfig(array $config, string $site): void
     {
         // Warn the user if they have Amazon enabled but do not have the appropriate
         // credentials set up.
-        $hasAmazonReview = stristr($config['Content']['reviews'] ?? '', 'amazon');
-        $hasAmazonCover = stristr($config['Content']['coverimages'] ?? '', 'amazon');
-        if ($hasAmazonReview || $hasAmazonCover) {
+        $hasBadReview = stristr($config['Content']['reviews'] ?? '', $site);
+        $hasBadCover = stristr($config['Content']['coverimages'] ?? '', $site);
+        if ($hasBadReview || $hasBadCover) {
             $this->addWarning(
-                'WARNING: You have Amazon content enabled, but VuFind no longer '
-                . 'supports it. You should remove Amazon references from config.ini.'
+                'WARNING: You have ' . $site . ' content enabled, but VuFind no longer '
+                . 'supports it. You should remove ' . $site . ' references from config.ini.'
             );
         }
     }
@@ -467,7 +466,14 @@ class Upgrade implements LoggerAwareInterface
         }
 
         // Warn the user about Amazon configuration issues:
-        $this->checkAmazonConfig($newConfig);
+        $this->checkObsoleteCoverOrReviewConfig($newConfig, 'Amazon');
+
+        // Warn the user about BookSite configuration issues:
+        $this->checkObsoleteCoverOrReviewConfig($newConfig, 'Booksite');
+        if (isset($newConfig['Booksite'])) {
+            unset($newConfig['Booksite']);
+            $this->addWarning('The [Booksite] section of config.ini is no longer supported.');
+        }
 
         // Warn the user if they have enabled a deprecated Google API:
         if (isset($newConfig['GoogleSearch'])) {
@@ -559,7 +565,7 @@ class Upgrade implements LoggerAwareInterface
         unset($newConfig['Index']['local']);
 
         // Warn the user if they are using an unsupported theme:
-        $this->checkTheme('theme', 'bootprint3');
+        $this->checkTheme('theme', 'sandal5');
         $this->checkTheme('mobile_theme', null);
 
         // Translate legacy auth settings:
@@ -600,10 +606,16 @@ class Upgrade implements LoggerAwareInterface
 
         // Update Syndetics config:
         if (isset($newConfig['Syndetics']['url'])) {
-            $newConfig['Syndetics']['use_ssl']
-                = (!str_contains($newConfig['Syndetics']['url'], 'https://'))
-                ? '' : 1;
             unset($newConfig['Syndetics']['url']);
+        }
+        if (isset($newConfig['Syndetics']['use_ssl'])) {
+            unset($newConfig['Syndetics']['use_ssl']);
+        }
+        if (isset($newConfig['Syndetics']['plus'])) {
+            unset($newConfig['Syndetics']['plus']);
+        }
+        if (isset($newConfig['Syndetics']['plus_id'])) {
+            unset($newConfig['Syndetics']['plus_id']);
         }
 
         // Convert spellchecker 'simple' option

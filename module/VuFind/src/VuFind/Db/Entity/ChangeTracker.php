@@ -33,7 +33,7 @@ use DateTime;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
- * ChangeTracker
+ * Entity model for change_tracker table
  *
  * @category VuFind
  * @package  Database

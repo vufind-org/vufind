@@ -2,6 +2,8 @@
 
 namespace VuFind\Module\Config;
 
+$doctrineCacheType = PHP_SAPI == 'cli' ? 'array' : 'filesystem';
+
 $config = [
     'router' => [
         'routes' => [
@@ -168,6 +170,7 @@ $config = [
             'VuFind\Controller\AjaxController' => 'VuFind\Controller\AjaxControllerFactory',
             'VuFind\Controller\AlmaController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\AlphabrowseController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFind\Controller\DeveloperSettingsController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\AuthorController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\AuthorityController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\AuthorityRecordController' => 'VuFind\Controller\AbstractBaseFactory',
@@ -232,6 +235,7 @@ $config = [
             'VuFind\Controller\WorldcatController' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\Worldcat2Controller' => 'VuFind\Controller\AbstractBaseFactory',
             'VuFind\Controller\Worldcat2recordController' => 'VuFind\Controller\AbstractBaseFactory',
+            'VuFind\Controller\ZoteroController' => 'VuFind\Controller\ZoteroControllerFactory',
         ],
         'initializers' => [
             'VuFind\ServiceManager\ServiceInitializer',
@@ -243,6 +247,8 @@ $config = [
             'alma' => 'VuFind\Controller\AlmaController',
             'Alphabrowse' => 'VuFind\Controller\AlphabrowseController',
             'alphabrowse' => 'VuFind\Controller\AlphabrowseController',
+            'DeveloperSettings' => 'VuFind\Controller\DeveloperSettingsController',
+            'developersettings' => 'VuFind\Controller\DeveloperSettingsController',
             'Author' => 'VuFind\Controller\AuthorController',
             'author' => 'VuFind\Controller\AuthorController',
             'Authority' => 'VuFind\Controller\AuthorityController',
@@ -374,6 +380,8 @@ $config = [
             'worldcat2' => 'VuFind\Controller\Worldcat2Controller',
             'Worldcat2Record' => 'VuFind\Controller\Worldcat2recordController',
             'worldcat2record' => 'VuFind\Controller\Worldcat2recordController',
+            'Zotero' => 'VuFind\Controller\ZoteroController',
+            'zotero' => 'VuFind\Controller\ZoteroController',
         ],
     ],
     'controller_plugins' => [
@@ -419,6 +427,7 @@ $config = [
             'League\CommonMark\MarkdownConverter' => 'VuFind\Service\MarkdownFactory',
             'VuFind\Account\UserAccountService' => 'VuFind\Account\UserAccountServiceFactory',
             'VuFind\AjaxHandler\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
+            'VuFind\DeveloperSettings\DeveloperSettingsService' => 'VuFind\DeveloperSettings\DeveloperSettingsServiceFactory',
             'VuFind\Auth\EmailAuthenticator' => 'VuFind\Auth\EmailAuthenticatorFactory',
             'VuFind\Auth\ILSAuthenticator' => 'VuFind\Auth\ILSAuthenticatorFactory',
             'VuFind\Auth\LoginTokenManager' => 'VuFind\Auth\LoginTokenManagerFactory',
@@ -476,6 +485,7 @@ $config = [
             'VuFind\DigitalContent\OverdriveConnector' => 'VuFind\DigitalContent\OverdriveConnectorFactory',
             'VuFind\Escaper\Escaper' => 'VuFind\Escaper\EscaperFactory',
             'VuFind\Export' => 'VuFind\ExportFactory',
+            'VuFind\Export\Zotero\ZoteroService' => 'VuFind\Export\Zotero\ZoteroServiceFactory',
             'VuFind\Favorites\FavoritesService' => 'VuFind\Favorites\FavoritesServiceFactory',
             'VuFind\Form\Form' => 'VuFind\Form\FormFactory',
             'VuFind\Form\Handler\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
@@ -567,6 +577,7 @@ $config = [
             'VuFindHttp\HttpService' => 'VuFind\Service\HttpServiceFactory',
             'VuFindSearch\Service' => 'VuFind\Service\SearchServiceFactory',
             'Laminas\Session\SessionManager' => 'VuFind\Session\ManagerFactory',
+            'Lmc\Rbac\Mvc\Service\AuthorizationService' => 'VuFind\Service\AuthorizationServiceFactory',
         ],
         'delegators' => [
             'Laminas\Mvc\I18n\Translator' => [
@@ -662,19 +673,20 @@ $config = [
     'doctrine' => [
         'configuration' => [
             'orm_vufind' => [
-                'query_cache' => 'filesystem',
-                'result_cache' => 'filesystem',
-                'metadata_cache' => 'filesystem',
-                'hydration_cache' => 'filesystem',
+                'query_cache' => $doctrineCacheType,
+                'result_cache' => $doctrineCacheType,
+                'metadata_cache' => $doctrineCacheType,
+                'hydration_cache' => $doctrineCacheType,
                 'proxy_dir' => LOCAL_CACHE_DIR . (PHP_SAPI == 'cli' ? '/cli' : '') . '/doctrine-proxies',
+                'class_metadata_factory_name' => \VuFind\Db\Mapping\ClassMetadataFactory::class,
             ],
         ],
         'driver' => [
             'vufind_attribute_driver' => [
                 'class' => \Doctrine\ORM\Mapping\Driver\AttributeDriver::class,
-                'cache' => 'filesystem',
+                'cache' => $doctrineCacheType,
                 'paths' => [
-                    'module/VuFind/src/VuFind/Db/Entity',
+                    __DIR__ . '/../src/VuFind/Db/Entity',
                 ],
             ],
             'orm_default' => [
@@ -783,6 +795,14 @@ $config = [
             ],
         ],
         'vufind_permission_provider_manager' => [ /* see VuFind\Role\PermissionProvider\PluginManager for defaults */ ],
+        'assertion_manager' => [
+            'factories' => [
+                'VuFind\Role\Assertion\HasVerifiedEmailAssertion' => 'Laminas\ServiceManager\Factory\InvokableFactory',
+            ],
+            'aliases' => [
+                'VerifiedEmail' => 'VuFind\Role\Assertion\HasVerifiedEmailAssertion',
+            ],
+        ],
     ],
 ];
 
@@ -886,6 +906,9 @@ $staticRoutes = [
     'Confirm/Confirm',
     'Cover/Show',
     'Cover/Unavailable',
+    'DeveloperSettings/DeleteApiKey',
+    'DeveloperSettings/DisplaySettings',
+    'DeveloperSettings/GenerateApiKey',
     'EDS/Advanced',
     'EDS/Home',
     'EDS/Search',
@@ -1027,6 +1050,8 @@ $staticRoutes = [
     'Worldcat2/Advanced',
     'Worldcat2/Home',
     'Worldcat2/Search',
+    'Zotero/AuthCallback',
+    'Zotero/Export',
 ];
 
 $routeGenerator = new \VuFind\Route\RouteGenerator();

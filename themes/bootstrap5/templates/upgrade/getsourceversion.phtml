@@ -10,11 +10,13 @@
     Please enter the version number you are upgrading from (e.g. 10.1.1):
     <input type="text" name="sourceversion" value="<?=$this->escapeHtmlAttr($oldVersion)?>">
   </p>
-  <p>Options:<br>
-  <?php foreach (['config' => 'Configuration', 'database' => 'Database Structure', 'metadata' => 'Stored Metadata'] as $key => $value): ?>
-    <input type="checkbox" name="skip[]" id="skip-<?=$this->escapeHtmlAttr($key)?>" value="<?=$this->escapeHtmlAttr($key)?>">
-    <label for="skip-<?=$this->escapeHtmlAttr($key)?>">Skip <?=$this->escapeHtml($value); ?> Upgrade</label><br>
-  <?php endforeach; ?>
+  <p>
+    Options:<br>
+    <input type="checkbox" name="skip[]" id="skip-config" value="config">
+    <label for="skip-config"><?=$this->transEsc('Skip Configuration Upgrade')?></label>
+    <br>
+    <input type="checkbox" name="skip[]" id="skip-database" value="database">
+    <label for="skip-database"><?=$this->transEsc('Skip Database Structure Upgrade')?></label>
   </p>
   <input class="btn btn-primary" type="submit">
 </form>

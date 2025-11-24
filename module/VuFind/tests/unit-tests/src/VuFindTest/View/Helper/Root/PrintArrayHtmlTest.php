@@ -370,9 +370,8 @@ class PrintArrayHtmlTest extends AbstractMakeTagTestCase
      * @param string       $expected Expected HTML
      *
      * @return void
-     *
-     * @dataProvider getPrintArrayHtmlData
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getPrintArrayHtmlData')]
     public function testPrintArrayHtml($entry, string $expected): void
     {
         $helper = $this->getHelper();

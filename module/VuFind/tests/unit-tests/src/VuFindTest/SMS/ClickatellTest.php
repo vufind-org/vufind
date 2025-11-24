@@ -90,19 +90,17 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
         $client->expects($this->once())
             ->method('setMethod')
             ->with($this->equalTo('GET'))
-            ->will($this->returnValue($client));
+            ->willReturn($client);
         $client->expects($this->once())
             ->method('setUri')
             ->with($this->equalTo($expectedUri))
-            ->will($this->returnValue($client));
+            ->willReturn($client);
         $client->expects($this->once())
             ->method('send')
-            ->will(
-                $this->throwException(
-                    new \VuFind\Exception\SMS(
-                        'Technical message',
-                        \VuFind\Exception\SMS::ERROR_UNKNOWN
-                    )
+            ->willThrowException(
+                new \VuFind\Exception\SMS(
+                    'Technical message',
+                    \VuFind\Exception\SMS::ERROR_UNKNOWN
                 )
             );
         $obj = $this->getClickatell($client);
@@ -128,12 +126,12 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
         $client->expects($this->once())
             ->method('setMethod')
             ->with($this->equalTo('GET'))
-            ->will($this->returnValue($client));
+            ->willReturn($client);
         $client->expects($this->once())
             ->method('setUri')
             ->with($this->equalTo($expectedUri))
-            ->will($this->returnValue($client));
-        $client->expects($this->once())->method('send')->will($this->returnValue($response));
+            ->willReturn($client);
+        $client->expects($this->once())->method('send')->willReturn($response);
         $obj = $this->getClickatell($client);
         $this->assertTrue(
             $obj->text('Clickatell', '1234567890', 'test@example.com', 'hello')
@@ -158,14 +156,14 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
         $client->expects($this->once())
             ->method('setMethod')
             ->with($this->equalTo('GET'))
-            ->will($this->returnValue($client));
+            ->willReturn($client);
         $client->expects($this->once())
             ->method('setUri')
             ->with($this->equalTo($expectedUri))
-            ->will($this->returnValue($client));
+            ->willReturn($client);
         $client->expects($this->once())
             ->method('send')
-            ->will($this->returnValue($response));
+            ->willReturn($response);
         $obj = $this->getClickatell($client);
         $obj->text('Clickatell', '1234567890', 'test@example.com', 'hello');
     }
@@ -187,14 +185,14 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
         $client->expects($this->once())
             ->method('setMethod')
             ->with($this->equalTo('GET'))
-            ->will($this->returnValue($client));
+            ->willReturn($client);
         $client->expects($this->once())
             ->method('setUri')
             ->with($this->equalTo($expectedUri))
-            ->will($this->returnValue($client));
+            ->willReturn($client);
         $client->expects($this->once())
             ->method('send')
-            ->will($this->returnValue($response));
+            ->willReturn($response);
         $obj = $this->getClickatell($client);
         $obj->text('Clickatell', '1234567890', 'test@example.com', 'hello');
     }
@@ -214,14 +212,14 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
         $client->expects($this->once())
             ->method('setMethod')
             ->with($this->equalTo('GET'))
-            ->will($this->returnValue($client));
+            ->willReturn($client);
         $client->expects($this->once())
             ->method('setUri')
             ->with($this->equalTo($expectedUri))
-            ->will($this->returnValue($client));
+            ->willReturn($client);
         $client->expects($this->once())
             ->method('send')
-            ->will($this->throwException(new \Exception('Foo')));
+            ->willThrowException(new \Exception('Foo'));
         $obj = $this->getClickatell($client);
         $obj->text('Clickatell', '1234567890', 'test@example.com', 'hello');
     }
