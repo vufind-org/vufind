@@ -414,7 +414,6 @@ $config = [
             'ilsRecords' => 'VuFind\Controller\Plugin\IlsRecords',
             'newItems' => 'VuFind\Controller\Plugin\NewItems',
             'permission' => 'VuFind\Controller\Plugin\Permission',
-            'renewals' => 'VuFind\Controller\Plugin\Renewals',
             'reserves' => 'VuFind\Controller\Plugin\Reserves',
             'resultScroller' => 'VuFind\Controller\Plugin\ResultScroller',
             'storageRetrievalRequests' => 'VuFind\Controller\Plugin\StorageRetrievalRequests',
