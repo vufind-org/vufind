@@ -70,18 +70,6 @@ class GetThisLoaderTest extends TestCase
     protected GetThisLoader $getThis;
 
     /**
-     * Constructor
-     *
-     * @param string $name Test name
-     */
-    public function __construct(string $name)
-    {
-        parent::__construct($name);
-        $this->yamlReader = new YamlReader($this->getPathResolver());
-        $this->config = $this->yamlReader->get(GetThisLoader::CONFIG_FILENAME);
-    }
-
-    /**
      * Test setUp function, before every test
      *
      * @return void
@@ -89,6 +77,8 @@ class GetThisLoaderTest extends TestCase
      */
     public function setUp(): void
     {
+        $this->yamlReader = new YamlReader($this->getPathResolver());
+        $this->config = $this->yamlReader->get(GetThisLoader::CONFIG_FILENAME);
         $regexConfig = $this->yamlReader->get('Regex.yaml');
         $regexConfig['LOCATION_EXCLUSIVE'][] = '/OUR CAMPUS/i';
         $translator = $this->createMock(Translate::class);
