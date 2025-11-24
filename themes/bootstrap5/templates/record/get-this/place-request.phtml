@@ -7,7 +7,6 @@ if (empty($item)) {
 $check = $item['check'] ?? false;
 $link = $this->getThis->getLink();
 $dataLightbox = !empty($item['linkLightbox']) ? 'data-lightbox' : '';
-$checkRequest = $check ? 'checkRequest ' : '';
 ?>
 <?php if (isset($item['is_holdable']) && !empty($link)) : ?>
   <div>
@@ -16,7 +15,7 @@ $checkRequest = $check ? 'checkRequest ' : '';
     </p>
     <ul>
       <li>
-        <a class="<?= $checkRequest ?>placehold"
+        <a
           <?= $dataLightbox ?>
           href="<?=$this->escapeHtmlAttr($this->recordLinker()->getRequestUrl($link))?>"
         >

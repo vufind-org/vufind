@@ -63,7 +63,7 @@
           </a>
         <?php endif; ?>
         <?php if ($getThisEnabled && !$isOnlineResource): ?>
-          <a class="<?=$check ? 'checkRequest request-check ' : ''?>placehold" data-lightbox href="<?= $getThisURI ?>" rel="nofollow">
+          <a data-lightbox href="<?= $getThisURI ?>" rel="nofollow">
             <?=$this->transEsc('Get This')?>
           </a>
         <?php endif; ?>
@@ -83,7 +83,7 @@
             </a>
           <?php endif; ?>
           <?php if ($getThisEnabled && !$isOnlineResource): ?>
-            <a class="<?=$check ? 'checkRequest request-check ' : ''?>placehold" data-lightbox href="<?= $getThisURI ?>" rel="nofollow">
+            <a data-lightbox href="<?= $getThisURI ?>" rel="nofollow">
               <?=$this->transEsc('Get this')?>
             </a>
           <?php endif; ?>
