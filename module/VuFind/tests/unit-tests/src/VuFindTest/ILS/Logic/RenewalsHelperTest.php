@@ -34,7 +34,9 @@ use Laminas\Stdlib\Parameters;
 use PHPUnit\Framework\TestCase;
 use VuFind\ILS\Connection;
 use VuFind\ILS\Logic\RenewalsHelper;
-use VuFind\Validator\CsrfInterface;
+
+use function in_array;
+use function is_array;
 
 /**
  * Unit tests for the RenewalsHelper
@@ -49,6 +51,8 @@ class RenewalsHelperTest extends TestCase
 {
     /**
      * Test adding renew details when using an external link.
+     *
+     * @return void
      */
     public function testAddRenewDetailsWithLink(): void
     {
@@ -79,6 +83,8 @@ class RenewalsHelperTest extends TestCase
 
     /**
      * Test adding renew details when using a form.
+     *
+     * @return void
      */
     public function testAddRenewDetailsWithForm(): void
     {
@@ -109,6 +115,8 @@ class RenewalsHelperTest extends TestCase
 
     /**
      * Test adding renew details when renewals are disabled.
+     *
+     * @return void
      */
     public function testAddRenewDetailsRenewalsDisabled(): void
     {
@@ -126,6 +134,8 @@ class RenewalsHelperTest extends TestCase
 
     /**
      * Test processing renewals with 'renewAll' button selected.
+     *
+     * @return void
      */
     public function testProcessRenewalsAll(): void
     {
@@ -162,13 +172,13 @@ class RenewalsHelperTest extends TestCase
             ->method('addMessage')
             ->with(
                 $this->callback(
-                    fn($arg) => is_array($arg) && (
+                    fn ($arg) => is_array($arg) && (
                         ($arg['msg'] === 'renew_success_summary' && $arg['tokens']['count'] === 2) ||
                         ($arg['msg'] === 'renew_error_summary' && $arg['tokens']['count'] === 1)
                     )
                 ),
                 $this->callback(
-                    fn($arg) => in_array($arg, ['success', 'error'])
+                    fn ($arg) => in_array($arg, ['success', 'error'])
                 )
             );
 
@@ -180,6 +190,8 @@ class RenewalsHelperTest extends TestCase
 
     /**
      * Test processing renewals with 'renewSelected' and specific IDs.
+     *
+     * @return void
      */
     public function testProcessRenewalsSelected(): void
     {
@@ -215,7 +227,8 @@ class RenewalsHelperTest extends TestCase
             ->method('addMessage')
             ->with(
                 $this->callback(
-                    fn($arg) => is_array($arg) && ($arg['msg'] === 'renew_success_summary' && $arg['tokens']['count'] === 2)
+                    fn ($arg) => is_array($arg)
+                        && ($arg['msg'] === 'renew_success_summary' && $arg['tokens']['count'] === 2)
                 ),
                 'success'
             );
@@ -228,6 +241,8 @@ class RenewalsHelperTest extends TestCase
 
     /**
      * Test processing renewals with 'renewSelected' and 'selectAll'.
+     *
+     * @return void
      */
     public function testProcessRenewalsSelectAll(): void
     {
@@ -265,7 +280,8 @@ class RenewalsHelperTest extends TestCase
             ->method('addMessage')
             ->with(
                 $this->callback(
-                    fn($arg) => is_array($arg) && ($arg['msg'] === 'renew_error_summary' && $arg['tokens']['count'] === 3)
+                    fn ($arg) => is_array($arg)
+                        && ($arg['msg'] === 'renew_error_summary' && $arg['tokens']['count'] === 3)
                 ),
                 'error'
             );
@@ -278,6 +294,8 @@ class RenewalsHelperTest extends TestCase
 
     /**
      * Test processing renewals with no renewal buttons pressed.
+     *
+     * @return void
      */
     public function testProcessRenewalsNoAction(): void
     {
@@ -303,6 +321,8 @@ class RenewalsHelperTest extends TestCase
 
     /**
      * Test processing renewals when a button is pressed but no items are selected.
+     *
+     * @return void
      */
     public function testProcessRenewalsEmptySelection(): void
     {
