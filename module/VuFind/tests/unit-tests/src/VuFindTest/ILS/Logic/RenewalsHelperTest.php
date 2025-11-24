@@ -394,7 +394,7 @@ class RenewalsHelperTest extends TestCase
 
     /**
      * Test processing renewals when ILS returns false
-     * 
+     *
      * @return void
      */
     public function testProcessRenewalsSystemFailure(): void
