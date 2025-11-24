@@ -75,7 +75,7 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
                 $this->equalTo('theme'),
                 $this->equalTo('theme_compiled'),
                 $this->equalTo(false)
-            )->will($this->returnValue(true));
+            )->willReturn(true);
         $command = new ThemeCommand($compiler);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['source' => 'theme']);
@@ -99,9 +99,9 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
                 $this->equalTo('theme'),
                 $this->equalTo('compiled_theme'),
                 $this->equalTo(false)
-            )->will($this->returnValue(false));
+            )->willReturn(false);
         $compiler->expects($this->once())->method('getLastError')
-            ->will($this->returnValue('Error!'));
+            ->willReturn('Error!');
         $command = new ThemeCommand($compiler);
         $commandTester = new CommandTester($command);
         $commandTester->execute(
@@ -130,7 +130,7 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
                 $this->equalTo('theme'),
                 $this->equalTo('compiled_theme'),
                 $this->equalTo(true)
-            )->will($this->returnValue(true));
+            )->willReturn(true);
         $command = new ThemeCommand($compiler);
         $commandTester = new CommandTester($command);
         $commandTester->execute(

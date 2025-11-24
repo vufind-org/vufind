@@ -148,7 +148,7 @@ class MapTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $recordDriver->expects($this->once())->method('tryMethod')
             ->with($this->equalTo('getDisplayCoordinates'))
-            ->will($this->returnValue($coordinates));
+            ->willReturn($coordinates);
         $obj->setRecordDriver($recordDriver);
         $value = ['56 00', '89 87 45 56'];
         $this->assertSame($value, $obj->getDisplayCoords());
@@ -168,7 +168,7 @@ class MapTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $recordDriver->expects($this->once())->method('tryMethod')
             ->with($this->equalTo('getGeoLocation'))
-            ->will($this->returnValue($coordinates));
+            ->willReturn($coordinates);
         $obj->setRecordDriver($recordDriver);
         $value = [[25.8,4.6,43.9,5.0]];
         $this->assertSame($value, $obj->getGeoLocationCoords());

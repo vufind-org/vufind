@@ -71,9 +71,9 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
             . 'COUNT(rt.id) AS total '
             . 'FROM ' . ResourceTagsEntityInterface::class . ' rt';
         $query = $this->entityManager->createQuery($dql);
-        $stats = current($query->getResult());
-        $resourceTagsService = $this->getDbService(ResourceTagsServiceInterface::class);
+        $stats = $query->getSingleResult();
         if ($extended) {
+            $resourceTagsService = $this->getDbService(ResourceTagsServiceInterface::class);
             $stats['unique'] = count($resourceTagsService->getUniqueTags(caseSensitive: $caseSensitiveTags));
             $stats['anonymous'] = $resourceTagsService->getAnonymousCount();
         }

@@ -108,7 +108,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()->getMock();
         $mock->expects($this->once())->method('__invoke')
             ->with($this->equalTo($expected))
-            ->will($this->returnValue(basename($expected)));
+            ->willReturn(basename($expected));
         return $mock;
     }
 

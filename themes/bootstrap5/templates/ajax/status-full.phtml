@@ -4,13 +4,9 @@
     <th><?=$this->transEsc('Call Number')?></th>
     <th><?=$this->transEsc('Status')?></th>
   </tr>
-  <?php $i = 0; ?>
-  <?php foreach ($this->statusItems as $item): ?>
+  <?php $maxItems = 5; ?>
+  <?php foreach (array_slice($this->statusItems, 0, $maxItems) as $item): ?>
     <?php
-      if (++$i == 5) {
-        // Show no more than 5 items
-        break;
-      }
       $callNumPrefix = !empty($item['callnumber_prefix']) ? $item['callnumber_prefix'] . ' ' : '';
 
       $itemHasAdditionalHoldingsFields = false;
@@ -62,7 +58,7 @@
       <?php endif; ?>
     <?php endforeach; ?>
   <?php endforeach; ?>
-<?php if (count($this->statusItems) > 5): ?>
-  <tr><td colspan="3"><a href="<?=$this->url('record', ['id' => $this->statusItems[0]['id']], ['query' => ['sid' => $this->searchId]])?>"><?=count($this->statusItems) - 5?> <?=$this->transEsc('more_ellipsis')?></a></td></tr>
+<?php if (count($this->statusItems) > $maxItems): ?>
+  <tr><td colspan="3"><a href="<?=$this->url('record', ['id' => $this->statusItems[0]['id']], ['query' => ['sid' => $this->searchId]])?>"><?=count($this->statusItems) - $maxItems?> <?=$this->transEsc('more_ellipsis')?></a></td></tr>
 <?php endif; ?>
 </table>

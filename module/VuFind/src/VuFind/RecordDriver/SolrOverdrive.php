@@ -270,7 +270,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function isLoggedIn()
     {
-        return $this->connector->getUser() ? true : false;
+        return (bool)$this->connector->getUser();
     }
 
     /**

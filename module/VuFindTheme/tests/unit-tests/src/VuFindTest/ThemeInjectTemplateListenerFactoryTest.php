@@ -67,7 +67,7 @@ class ThemeInjectTemplateListenerFactoryTest extends TestCase
         $mockModuleManager = $this->getMockBuilder(ModuleManager::class)
             ->disableOriginalConstructor()->getMock();
         $mockModuleManager->expects($this->once())->method('getModules')
-            ->will($this->returnValue($modules));
+            ->willReturn($modules);
         $container->set('ModuleManager', $mockModuleManager);
         $listener = $factory($container, InjectTemplateListener::class);
         $this->assertEquals(

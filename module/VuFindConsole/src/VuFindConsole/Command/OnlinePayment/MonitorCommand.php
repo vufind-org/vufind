@@ -24,7 +24,7 @@
  * @package  Service
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 
 namespace VuFindConsole\Command\OnlinePayment;
@@ -54,7 +54,7 @@ use function count;
  * @package  Service
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 #[AsCommand(
     name: 'onlinepayment/monitor'
@@ -195,7 +195,7 @@ class MonitorCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->output = $output;
         $this->retryMinutes = (int)$input->getOption('retry-duration');
@@ -207,7 +207,7 @@ class MonitorCommand extends Command
         // Abort if we have an invalid minimum paid age.
         if ($this->minimumPaidAge < 10) {
             $output->writeln('Minimum paid age must be at least 10 seconds');
-            return 1;
+            return self::FAILURE;
         }
 
         $this->msg('Online payment monitor started');
@@ -236,7 +236,7 @@ class MonitorCommand extends Command
 
         $this->msg('Online payment monitor completed');
 
-        return 0;
+        return self::SUCCESS;
     }
 
     /**
@@ -311,8 +311,7 @@ class MonitorCommand extends Command
             }
             $this->msg("Inform $errorCount expired payments to $recipient (source: $source)");
 
-            $adminUrl = ($this->viewRenderer->plugin('url'))('admin-payments');
-            $params = compact('source', 'errorCount', 'adminUrl');
+            $params = compact('source', 'errorCount');
             $message = $this->viewRenderer->render('Email/online-payment-alert.phtml', $params);
 
             try {

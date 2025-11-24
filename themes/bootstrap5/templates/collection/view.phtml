@@ -2,10 +2,7 @@
   // Set up standard record scripts:
   $this->assetManager()->appendScriptLink('record.js');
   $this->assetManager()->appendScriptLink('check_save_statuses.js');
-  // Activate Syndetics Plus if necessary:
-  if ($this->syndeticsPlus()->isActive()) {
-    $this->assetManager()->appendScriptLink($this->syndeticsPlus()->getScript());
-  }
+
   // Add any extra scripts the tabs require:
   foreach ($this->tabsExtraScripts as $script) {
     $this->assetManager()->appendScriptLink($script);

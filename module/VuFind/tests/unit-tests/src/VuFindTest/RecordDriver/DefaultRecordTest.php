@@ -338,7 +338,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
         $mock->setRawData($fields);
         $mock->expects($this->any())
             ->method('getBookOpenUrlParams')
-            ->will($this->returnValue($openUrlParams));
+            ->willReturn($openUrlParams);
 
         $this->assertEquals($openUrl, $mock->getOpenUrl());
     }

@@ -1,5 +1,5 @@
 /*global grecaptcha, loadCovers */
-/*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, extractClassParams, getFocusableNodes, getUrlRoot, htmlEncode, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery */
+/*exported VuFind, bulkFormHandler, deparam, escapeHtmlAttr, extractClassParams, getFocusableNodes, getUrlRoot, htmlEncode, recaptchaOnLoad, resetCaptcha, setupMultiILSLoginFields, unwrapJQuery, addRecordRatingFromUserList */
 
 var VuFind = (function VuFind() {
   var defaultSearchBackend = null;
@@ -278,7 +278,7 @@ var VuFind = (function VuFind() {
     clone.insertAdjacentHTML('afterbegin', _icons[name]);
     let element = clone.firstChild;
 
-    
+
     /**
      * Adds attributes to an HTML element.
      * @param {HTMLElement} _element The HTML element to which attributes will be added.
@@ -1016,6 +1016,17 @@ function setupMultiILSLoginFields(loginMethods, idPrefix) {
       }
     }
   }).trigger("change");
+}
+
+/**
+ * Handle adding a rating to a record by programmatically clicking the rating link.
+ * @param {Event|null} event Click event, if any
+ */
+function addRecordRatingFromUserList(event) {
+  const ratingLink = event.target.closest('.user-rating').querySelector('a');
+  if (ratingLink) {
+    ratingLink.click();
+  }
 }
 
 document.addEventListener('DOMContentLoaded', () => {

@@ -1,20 +1,24 @@
 <?php $baseLinkAttrs = ['class' => 'icon-link', 'rel' => 'noreferrer'] + (($newWindow ?? false) ? ['target' => '_blank'] : []); ?>
 <?php foreach ($data ?? [] as $link): ?>
-    <a<?=$this->htmlAttributes($baseLinkAttrs + ['href' => $link['link']])?>>
-        <?php if (isset($link['icon'])): ?>
-            <img<?=
-                $this->htmlAttributes(
-                    [
-                        'src' => $link['icon'],
-                        'alt' => '',
-                        'aria-hidden' => 'true',
-                        'class' => 'identifier-link-icon icon-link__icon',
-                    ]
-                )
-            ?>>
-        <?php elseif (isset($link['localIcon'])): ?>
-            <?=$link['localIcon']?>
-        <?php endif; ?>
-        <span<?=$this->htmlAttributes(['class' => 'icon-link__label'])?>><?=$this->escapeHtml($link['label'])?></span>
-    </a><br>
+    <div class="identifierLink" 
+        <?php if (isset($link['linkType'])): ?>data-link-type="<?=$this->escapeHtmlAttr($link['linkType'])?>" <?php endif; ?>
+    >
+        <a<?=$this->htmlAttributes($baseLinkAttrs + ['href' => $link['link']])?>>
+            <?php if (isset($link['icon'])): ?>
+                <img<?=
+                    $this->htmlAttributes(
+                        [
+                            'src' => $link['icon'],
+                            'alt' => '',
+                            'aria-hidden' => 'true',
+                            'class' => 'identifier-link-icon icon-link__icon',
+                        ]
+                    )
+                ?>>
+            <?php elseif (isset($link['localIcon'])): ?>
+                <?=$link['localIcon']?>
+            <?php endif; ?>
+            <span<?=$this->htmlAttributes(['class' => 'icon-link__label'])?>><?=$this->escapeHtml($link['label'])?></span>
+        </a>
+    </div>
 <?php endforeach; ?>

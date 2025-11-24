@@ -189,7 +189,6 @@ final class SsoTest extends \VuFindTest\Integration\MinkTestCase
             $this->getFixture('shibboleth/logout_notification.xml'),
             'application/xml'
         );
-        $this->assertTrue($result->isSuccess());
         $this->assertEquals(200, $result->getStatusCode());
 
         // Check that login link is back:

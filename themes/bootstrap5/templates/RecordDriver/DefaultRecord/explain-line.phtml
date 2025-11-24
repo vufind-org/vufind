@@ -24,7 +24,7 @@
         $exactMatchClass = ($exactMatch ?? 'unknown') . '-match';
         echo '<span class="' . $exactMatchClass . '">"' . $this->escapeHtml($value) . '"</span> ' . $this->transEsc('in');
         echo ' <span class="field-name" title="' . $this->escapeHtmlAttr($description) . '">';
-        echo  $this->escapeHtml($name) . (!empty($description) ? $this->icon('question-circle') : '');
+        echo  $this->escapeHtml($name) . (!empty($description) ? $this->icon('explain') : '');
         echo '</span>';
         echo ($i < count($fieldName) - 1) ? ', ' : '';
       }

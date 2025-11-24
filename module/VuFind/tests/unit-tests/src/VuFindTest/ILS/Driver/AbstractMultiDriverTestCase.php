@@ -254,7 +254,7 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
         $sm->expects($times ?? $this->any())
             ->method('get')
             ->with($driver)
-            ->will($this->returnValue($return));
+            ->willReturn($return);
         return $sm;
     }
 
@@ -306,7 +306,7 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
         if ($methods && in_array('init', $methods)) {
             $mock->expects($this->any())
                 ->method('init')
-                ->will($this->returnValue(null));
+                ->willReturn(null);
         }
         $mock->setConfig(['dummy_config' => true]);
         return $mock;
@@ -362,12 +362,10 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
             ->with(
                 call_user_func_array([$this, 'logicalOr'], array_keys($driverMap))
             )
-            ->will(
-                $this->returnCallback(
-                    function ($driver) use ($driverMap) {
-                        return $driverMap[$driver];
-                    }
-                )
+            ->willReturnCallback(
+                function ($driver) use ($driverMap) {
+                    return $driverMap[$driver];
+                }
             );
 
         $driver = $this->initDriver(['driverManager' => $sm]);

@@ -6,7 +6,7 @@ VuFind.register('identifierLinks', function identifierLinks() {
    */
   function embedIdentifierLinks(el) {
     var queryParams = new URLSearchParams();
-    var elements = el.classList.contains('identifierLink') ? [el] : el.querySelectorAll('.identifierLink');
+    var elements = el.classList.contains('identifierLinks') ? [el] : el.querySelectorAll('.identifierLinks');
     var postBody = {};
     elements.forEach(function extractIdentifierData(identifierLinkEl) {
       var currentInstance = identifierLinkEl.dataset.instance;
@@ -64,7 +64,7 @@ VuFind.register('identifierLinks', function identifierLinks() {
       VuFind.observerManager.createIntersectionObserver(
         'identifierLinks',
         embedIdentifierLinks,
-        Array.from(container.querySelectorAll('.identifierLink'))
+        Array.from(container.querySelectorAll('.identifierLinks'))
       );
     }
     VuFind.listen('results-init', updateContainer);
