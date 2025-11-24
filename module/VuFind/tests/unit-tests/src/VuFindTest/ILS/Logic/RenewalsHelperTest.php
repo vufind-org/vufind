@@ -349,4 +349,126 @@ class RenewalsHelperTest extends TestCase
         $this->assertIsArray($result);
         $this->assertEmpty($result);
     }
+
+    /**
+     * Test process renews with CSRF validation failure.
+     *
+     * @return void
+     */
+    public function testProcessRenewalsCsrfFailure(): void
+    {
+        $request = new Parameters([
+            'renewAll' => '1',
+            'renewAllIDS' => ['id1', 'id2', 'id3'],
+            'csrf' => 'bad_token',
+        ]);
+        $catalog = $this->getMockBuilder(Connection::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['__call'])
+            ->getMock();
+        $patron = ['id' => 'patron1'];
+        $flashMessenger = $this->createMock(FlashMessenger::class);
+        $csrfValidator = $this->createMock(CsrfInterface::class);
+
+        $csrfValidator->expects($this->once())
+            ->method('isValid')
+            ->with('bad_token')
+            ->willReturn(false);
+
+        $flashMessenger->expects($this->once())
+            ->method('addErrorMessage')
+            ->with('csrf_validation_failed');
+
+        $catalog->expects($this->never())
+            ->method('__call');
+        $csrfValidator->expects($this->never())
+            ->method('trimTokenList');
+
+        $helper = new RenewalsHelper();
+        $result = $helper->processRenewals($request, $catalog, $patron, $flashMessenger, $csrfValidator);
+
+        $this->assertIsArray($result);
+        $this->assertEmpty($result);
+    }
+
+    /**
+     * Test processing renewals when ILS returns false
+     */
+    public function testProcessRenewalsSystemFailure(): void
+    {
+        $request = new Parameters([
+            'renewAll' => '1',
+            'renewAllIDS' => ['id1', 'id2'],
+        ]);
+        $idsToRenew = ['id1', 'id2'];
+
+        $catalog = $this->getMockBuilder(Connection::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['__call'])
+            ->getMock();
+        $patron = ['id' => 'patron1'];
+        $flashMessenger = $this->createMock(FlashMessenger::class);
+
+        $catalog->expects($this->once())
+            ->method('__call')
+            ->with(
+                $this->equalTo('renewMyItems'),
+                $this->equalTo([['details' => $idsToRenew, 'patron' => $patron]])
+            )
+            ->willReturn(false);
+
+        $flashMessenger->expects($this->once())
+            ->method('addMessage')
+            ->with('renew_error', 'error');
+
+        $helper = new RenewalsHelper();
+        $result = $helper->processRenewals($request, $catalog, $patron, $flashMessenger);
+
+        $this->assertIsArray($result);
+        $this->assertEmpty($result);
+    }
+
+    /**
+     * Test processing renewals with block messages from ILS.
+     */
+    public function testProcessRenewalsWithBlocks(): void
+    {
+        $request = new Parameters([
+            'renewAll' => '1',
+            'renewAllIDS' => ['id1'],
+        ]);
+        $idsToRenew = ['id1'];
+
+        $catalog = $this->getMockBuilder(Connection::class)
+            ->disableOriginalConstructor()
+            ->onlyMethods(['renewMyItems'])
+            ->getMock();
+        $patron = ['id' => 'patron1'];
+        $flashMessenger = $this->createMock(FlashMessenger::class);
+
+        $renewalResult = [
+            'blocks' => ['Block Message 1', 'Block Message 2'],
+            'details' => ['id1' => ['success' => true]],
+        ];
+
+        $catalog->expects($this->once())
+            ->method('renewMyItems')
+            ->with(['details' => $idsToRenew, 'patron' => $patron])
+            ->willReturn($renewalResult);
+
+        $flashMessenger->expects($this->exactly(3))
+            ->method('addMessage')
+            ->withConsecutive(
+                ['Block Message 1', 'info'],
+                ['Block Message 2', 'info'],
+                [$this->callback(
+                    fn($arg) => is_array($arg) && ($arg['msg'] === 'renew_success_summary' && $arg['tokens']['count'] === 1)
+                ), 'success']
+            );
+
+        $helper = new RenewalsHelper();
+        $result = $helper->processRenewals($request, $catalog, $patron, $flashMessenger);
+
+        $this->assertEquals($renewalResult['details'], $result);
+    }
 }
