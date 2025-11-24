@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -51,10 +51,8 @@ class RenewalsHelper
      * Update ILS details with renewal-specific information, if appropriate.
      *
      * @param Connection $catalog     ILS connection object
-     * @param array      $ilsDetails  Transaction details from ILS driver's
-     * getMyTransactions() method
-     * @param array|bool $renewStatus Renewal settings from ILS driver's
-     * checkFunction() method
+     * @param array      $ilsDetails  Transaction details from ILS driver's getMyTransactions() method
+     * @param array|bool $renewStatus Renewal settings from ILS driver's checkFunction() method
      *
      * @return array $ilsDetails with renewal info added
      */
@@ -70,8 +68,7 @@ class RenewalsHelper
                 $ilsDetails['renew_link'] = $catalog->renewMyItemsLink($ilsDetails);
             } else {
                 // Form Details
-                $ilsDetails['renew_details']
-                    = $catalog->getRenewDetails($ilsDetails);
+                $ilsDetails['renew_details'] = $catalog->getRenewDetails($ilsDetails);
             }
         }
 
