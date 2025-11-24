@@ -645,11 +645,7 @@ class GetThisLoader implements LoggerAwareInterface
             return false;
         }
 
-        if ($this->isOut($itemId) || $this->isLibUseOnly($itemId) || $this->isUnavailable($itemId)) {
-            return true;
-        }
-
-        return false;
+        return $this->isOut($itemId) || $this->isLibUseOnly($itemId) || $this->isUnavailable($itemId);
     }
 
     /**
