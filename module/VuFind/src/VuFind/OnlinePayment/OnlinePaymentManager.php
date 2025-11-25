@@ -502,13 +502,14 @@ class OnlinePaymentManager implements LoggerAwareInterface
                         'Registration failed: fines updated'
                     );
                 } else {
+                    $error = $res['reason'] ?? 'no error information';
                     $payment->applyRegistrationFailedStatus(
-                        'Failed to mark fees paid: ' . ($res ?: 'no error information')
+                        "Failed to mark fees paid: $error"
                     );
                     $this->persistEntityWithAuditEvent(
                         $payment,
                         AuditEventSubtype::PaymentRegistration,
-                        'Registration failed: ' . ($res['reason'] ?? 'no error information')
+                        "Registration failed: $error"
                     );
                 }
                 return false;
