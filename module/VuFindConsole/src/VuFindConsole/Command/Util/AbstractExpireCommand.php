@@ -209,8 +209,7 @@ class AbstractExpireCommand extends Command
     {
         if ($daysOld == (int)$daysOld) {
             return new DateTime("now - $daysOld days");
-        }
-        else {
+        } else {
             $hoursOld = round($daysOld * 24);
             return new DateTime("now - $hoursOld hours");
         }
