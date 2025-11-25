@@ -3,95 +3,51 @@
 <?=$this->googleanalytics()?>
 <?php
   $this->defaultTab = strtolower($this->defaultTab);
-  $idSuffix = md5($this->driver->getUniqueId() . '|' . $this->driver->getSourceIdentifier());
+  $idSuffix = '-' . md5($this->driver->getUniqueId() . '|' . $this->driver->getSourceIdentifier());
   $idSuffixEsc = $this->escapeHtmlAttr($idSuffix);
+
+  $tabs = [];
+  $coreMetadata = trim($this->record($this->driver)->getCoreMetadata());
+  if (!empty($coreMetadata)) {
+    $content = '<input type="hidden" value="' . $this->escapeHtmlAttr($this->driver->getUniqueId()) . '" class="hiddenId" id="record_id_' . $idSuffixEsc . '">'
+      . '<input type="hidden" value="' . $this->escapeHtmlAttr($this->driver->getSourceIdentifier()) . '" class="hiddenSource">'
+      . $coreMetadata;
+    $tabs['information'] = [
+      'description' => 'ajaxview_label_information',
+      'content' => $content,
+      'paneAttributes' => [
+        'class' => 'record',
+        'data-init' => 'true',
+      ],
+    ];
+  }
+  $toolbar = trim($this->record($this->driver)->getToolbar());
+  if (!empty($toolbar)) {
+    $tabs['tools'] = [
+      'description' => 'ajaxview_label_tools',
+      'content' => $toolbar,
+      'paneAttributes' => [
+        'data-init' => 'true',
+      ],
+    ];
+  }
+  $list = $this->related()->getList($this->driver);
+  if (!empty($list)) {
+    $content = '';
+    foreach ($list as $current) {
+      $content .= $this->related()->render($current);
+    }
+    $tabs['related'] = [
+      'description' => 'Related Items',
+      'content' => $content,
+      'paneAttributes' => [
+        'data-init' => 'true',
+      ],
+    ];
+  }
+  $filteredTabs = array_filter($this->tabs, fn ($obj) => $obj->supportsSearchResultEmbedding());
+  $tabs = array_merge($tabs, $this->recordTabs($this->driver, $filteredTabs, $this->defaultTab));
 ?>
-<ul class="list-tabs nav nav-tabs" role="tablist">
-  <?php $coreMetadata = trim($this->record($this->driver)->getCoreMetadata()); ?>
-  <?php if (!empty($coreMetadata)): ?>
-    <li class="nav-item" role="presentation">
-      <a id="information_<?=$idSuffixEsc?>" class="nav-link list-tab-toggle loaded<?=$this->defaultTab === 'information' ? ' active" aria-selected="true"' : '"'?> data-bs-toggle="tab" data-bs-target="#information_<?=$idSuffixEsc?>-content" class="noajax" role="tab">
-        <?=$this->translate('ajaxview_label_information') ?>
-      </a>
-    </li>
-  <?php endif; ?>
-
-  <?php $toolbar = trim($this->record($this->driver)->getToolbar()); ?>
-  <?php if (!empty($toolbar)): ?>
-    <li class="nav-item" role="presentation">
-      <a id="tools_<?=$idSuffixEsc?>" class="nav-link list-tab-toggle loaded<?=$this->defaultTab === 'tools' ? ' active" aria-selected="true"' : '"'?> data-bs-toggle="tab" data-bs-target="#tools_<?=$idSuffixEsc?>-content" class="noajax" role="tab">
-      <?=$this->translate('ajaxview_label_tools') ?>
-      </a>
-    </li>
-  <?php endif; ?>
-
-  <?php $list = $this->related()->getList($this->driver); ?>
-  <?php if (!empty($list)): ?>
-    <li class="nav-item" role="presentation">
-      <a id="related_<?=$idSuffixEsc?>" class="nav-link list-tab-toggle loaded<?=$this->defaultTab === 'related' ? ' active" aria-selected="true"' : '"'?> data-bs-toggle="tab" data-bs-target="#related_<?=$idSuffixEsc?>-content" class="noajax" role="tab">
-        <?=$this->transEsc('Related Items')?>
-      </a>
-    </li>
-  <?php endif; ?>
-
-  <?php $filteredTabs = array_filter($this->tabs, fn ($obj) => $obj->supportsSearchResultEmbedding()); ?>
-  <?php foreach ($filteredTabs as $tab => $obj): ?>
-    <?php // add current tab to breadcrumbs if applicable:
-      $desc = $obj->getDescription();
-      $liAttrs = $this->htmlAttributes([
-        'class' => 'nav-item',
-        'role' => 'presentation',
-      ]);
-      $aAttrs = $this->htmlAttributes([
-        'id' => strtolower($tab) . '_' . $idSuffix,
-        'class' => 'nav-link list-tab-toggle',
-        'href' => $this->recordLinker()->getTabUrl($this->driver, $tab) . '#tabnav',
-        'data-bs-toggle' => 'tab',
-        'data-bs-target' => '#' . strtolower($tab) . '_' . $idSuffix . '-content',
-        'role' => 'tab',
-      ]);
-      if ($obj->supportsAjax() && in_array($tab, $this->backgroundTabs)) {
-        $aAttrs['data-background'] = true;
-      }
-      if ($this->defaultTab === strtolower($tab)) {
-        if (!$this->ajaxTabs || !$obj->supportsAjax()) {
-          $aAttrs->add('class', 'active');
-          $aAttrs->add('aria-selected', 'true');
-        }
-      }
-      if (!$obj->isVisible()) {
-        $liAttrs->add('class', 'hidden');
-      }
-      if (!$obj->supportsAjax()) {
-        $liAttrs->add('class', 'noajax');
-      }
-    ?>
-    <li<?=$liAttrs?>>
-      <a<?=$aAttrs?>><?=$this->transEsc($desc)?></a>
-    </li>
-  <?php endforeach; ?>
-</ul>
-<div class="tab-content">
-  <?php if (!empty($coreMetadata)): ?>
-    <div class="list-tab-content record tab-pane<?php if ($this->defaultTab === 'information'): ?> active<?php endif; ?>" id="information_<?=$idSuffixEsc?>-content">
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueId())?>" class="hiddenId" id="record_id_<?=$idSuffixEsc?>">
-      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier()) ?>" class="hiddenSource">
-      <?=$coreMetadata ?>
-    </div>
-  <?php endif; ?>
-  <?php if (!empty($toolbar)): ?>
-    <div class="list-tab-content tab-pane<?php if ($this->defaultTab === 'tools'): ?> active<?php endif; ?>" id="tools_<?=$idSuffixEsc?>-content">
-      <?=$toolbar ?>
-    </div>
-  <?php endif; ?>
-  <?php if (!empty($list)): ?>
-    <div class="list-tab-content tab-pane<?php if ($this->defaultTab === 'related'): ?> active<?php endif; ?>" id="related_<?=$idSuffixEsc?>-content">
-      <?php foreach ($list as $current): ?>
-        <?=$this->related()->render($current)?>
-      <?php endforeach; ?>
-    </div>
-  <?php endif; ?>
-  <?php foreach ($filteredTabs as $tab => $obj): ?>
-    <div class="list-tab-content tab-pane<?php if ($this->defaultTab === strtolower($tab)): ?> active<?php endif; ?>" id="<?=strtolower($tab)?>_<?=$idSuffixEsc?>-content"></div>
-  <?php endforeach; ?>
-</div>
+<?=
+  $this->tabs($tabs, $this->defaultTab, idSuffix: $idSuffix, extraClasses: ['tabNav' => ['list-tabs'], 'tabPane' => ['list-tab-content']]);
+?>

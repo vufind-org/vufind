@@ -101,8 +101,8 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->gotoRecord();
 
         // Click save inside the tools tab
-        $this->clickCss($page, '#tools_cd588d8723d65ca0ce9439e79755fa0a');
-        $this->clickCss($page, '#tools_cd588d8723d65ca0ce9439e79755fa0a-content .save-record');
+        $this->clickCss($page, '#tab-button-tools-cd588d8723d65ca0ce9439e79755fa0a');
+        $this->clickCss($page, '#tab-pane-tools-cd588d8723d65ca0ce9439e79755fa0a .save-record');
         // Make an account
         $this->clickCss($page, '.modal-body .createAccountLink');
         $this->fillInAccountForm($page);
@@ -113,8 +113,8 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
         $this->closeLightbox($page);
         $this->waitForPageLoad($page);
         // Check saved items status
-        $this->clickCss($page, '#information_cd588d8723d65ca0ce9439e79755fa0a');
-        $this->findCss($page, '#information_cd588d8723d65ca0ce9439e79755fa0a-content .savedLists ul');
+        $this->clickCss($page, '#tab-button-information-cd588d8723d65ca0ce9439e79755fa0a');
+        $this->findCss($page, '#tab-pane-information-cd588d8723d65ca0ce9439e79755fa0a .savedLists ul');
     }
 
     /**

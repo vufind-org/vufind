@@ -681,4 +681,22 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         // check that only default full sections included in the base config are added
         $this->assertFalse(isset($authorityConfig['Sort']));
     }
+
+    /**
+     * Test RecordTabs upgrade
+     *
+     * @return void
+     */
+    public function testRecordTabsUpgrade(): void
+    {
+        $upgrader = $this->runAndGetConfigUpgrader('record-tabs');
+        $results = $upgrader->getNewConfigs();
+        $tabScripts = $results['RecordTabs']['TabScripts'] ?? [];
+        $this->assertEquals(['record_holdings.js'], $tabScripts['Holdings']);
+        $this->assertEquals(['record_comments.js'], $tabScripts['UserComments']);
+        $this->assertEquals(
+            ['combined-search.js', 'check_item_statuses.js', 'record_versions.js'],
+            $tabScripts['Versions']
+        );
+    }
 }

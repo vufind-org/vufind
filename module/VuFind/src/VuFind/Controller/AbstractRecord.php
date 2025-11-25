@@ -78,13 +78,6 @@ class AbstractRecord extends AbstractBase
     protected $fallbackDefaultTab = 'Holdings';
 
     /**
-     * Array of background tabs
-     *
-     * @var array
-     */
-    protected $backgroundTabs = null;
-
-    /**
      * Array of extra scripts for tabs
      *
      * @var array
@@ -845,7 +838,6 @@ class AbstractRecord extends AbstractBase
             ->getTabDetailsForRecord($driver, $request, $this->fallbackDefaultTab);
         $this->allTabs = $details['tabs'];
         $this->defaultTab = $details['default'] ? $details['default'] : false;
-        $this->backgroundTabs = $manager->getBackgroundTabNames($driver);
         $this->tabsExtraScripts = $manager->getExtraScripts();
     }
 
@@ -874,19 +866,6 @@ class AbstractRecord extends AbstractBase
             $this->loadTabDetails();
         }
         return $this->allTabs;
-    }
-
-    /**
-     * Get names of tabs to be loaded in the background.
-     *
-     * @return array
-     */
-    protected function getBackgroundTabs()
-    {
-        if (null === $this->backgroundTabs) {
-            $this->loadTabDetails();
-        }
-        return $this->backgroundTabs;
     }
 
     /**
@@ -939,12 +918,16 @@ class AbstractRecord extends AbstractBase
         $config = $this->getConfigArray();
 
         $view = $this->createViewModel();
-        $view->tabs = $this->getAllTabs();
-        $view->activeTab = strtolower($tab);
-        $view->defaultTab = strtolower($this->getDefaultTab());
-        $view->backgroundTabs = $this->getBackgroundTabs();
+        $tabs = $this->getAllTabs();
+        $defaultTab = $this->getDefaultTab();
+        $activeTab = $defaultTab;
+        if (in_array(strtolower($tab), array_map('strtolower', array_keys($tabs)))) {
+            $activeTab = strtolower($tab);
+        }
+        $view->tabs = $tabs;
+        $view->activeTab = $activeTab;
+        $view->defaultTab = $defaultTab;
         $view->tabsExtraScripts = $this->getTabsExtraScripts($view->tabs);
-        $view->loadInitialTabWithAjax = (bool)($config['Site']['loadInitialTabWithAjax'] ?? false);
 
         // Set up next/previous record links (if appropriate)
         if ($this->getSearchMemory()->getCurrentSearch()?->getOptions()?->resultScrollerActive()) {

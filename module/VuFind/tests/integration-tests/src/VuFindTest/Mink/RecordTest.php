@@ -57,11 +57,11 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
         $session->visit($url);
         $page = $session->getPage();
         $this->waitForPageLoad($page);
-        $staffViewTab = $this->findCss($page, '.record-tabs .details a');
+        $staffViewTab = $this->findCss($page, '.record-tabs #tab-button-details');
         $this->assertEquals('Staff View', $staffViewTab->getText());
         $staffViewTab->click();
         $this->assertEqualsWithTimeout(
-            $url . '#details',
+            $url,
             [$session, 'getCurrentUrl']
         );
         $staffViewTable = $this->findCss($page, '.record-tabs .details-tab table.staff-view--marc');
@@ -83,22 +83,22 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
         $url = $this->getVuFindUrl(
             '/Record/' . ($encodeId ? rawurlencode($id) : $id) . '/Holdings#details'
         );
+        [$baseUrl] = explode('#', $url);
         $session = $this->getMinkSession();
         $session->visit($url);
         $page = $session->getPage();
+        $this->assertEquals($baseUrl, $session->getCurrentUrl());
         $this->assertStringStartsWith(
             'LEADER',
             $this->findCssAndGetText($page, '.record-tabs .details-tab table.staff-view--marc')
         );
-        $page = $session->getPage();
-        $staffViewTab = $this->findCss($page, '.record-tabs .holdings a');
-        $this->assertEquals('Holdings', $staffViewTab->getText());
-        $staffViewTab->click();
+        $holdingsTab = $this->findCss($page, '.record-tabs #tab-button-holdings');
+        $this->assertEquals('Holdings', $holdingsTab->getText());
+        $holdingsTab->click();
         $this->assertEquals(
             '3rd Floor Main Library',
             $this->findCssAndGetText($page, '.record-tabs .holdings-tab h2')
         );
-        [$baseUrl] = explode('#', $url);
         $this->assertEquals($baseUrl, $session->getCurrentUrl());
     }
 
