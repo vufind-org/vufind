@@ -1,11 +1,11 @@
 <?php
 
 /**
- * VuFind Action Helper - Renewals Support Methods
+ * VuFind Helper - Renewals Support Methods
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,43 +21,46 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Controller_Plugins
+ * @package  ILS_Logic
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
 
-namespace VuFind\Controller\Plugin;
+namespace VuFind\ILS\Logic;
 
-use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
+use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
+use Laminas\Stdlib\Parameters;
+use VuFind\ILS\Connection;
 use VuFind\Validator\CsrfInterface;
 
 use function is_array;
 
 /**
- * Action helper to perform renewal-related actions
+ * Helper to perform renewal-related actions
  *
  * @category VuFind
- * @package  Controller_Plugins
+ * @package  ILS_Logic
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Renewals extends AbstractPlugin
+class RenewalsHelper
 {
     /**
      * Update ILS details with renewal-specific information, if appropriate.
      *
-     * @param \VuFind\ILS\Connection $catalog     ILS connection object
-     * @param array                  $ilsDetails  Transaction details from ILS
-     * driver's getMyTransactions() method
-     * @param array                  $renewStatus Renewal settings from ILS driver's
-     * checkFunction() method
+     * @param Connection $catalog     ILS connection object
+     * @param array      $ilsDetails  Transaction details from ILS driver's getMyTransactions() method
+     * @param array|bool $renewStatus Renewal settings from ILS driver's checkFunction() method
      *
      * @return array $ilsDetails with renewal info added
      */
-    public function addRenewDetails($catalog, $ilsDetails, $renewStatus)
-    {
+    public function addRenewDetails(
+        Connection $catalog,
+        array $ilsDetails,
+        array|bool $renewStatus
+    ): array {
         // Only add renewal information if enabled:
         if ($renewStatus) {
             if ($renewStatus['function'] == 'renewMyItemsLink') {
@@ -65,8 +68,7 @@ class Renewals extends AbstractPlugin
                 $ilsDetails['renew_link'] = $catalog->renewMyItemsLink($ilsDetails);
             } else {
                 // Form Details
-                $ilsDetails['renew_details']
-                    = $catalog->getRenewDetails($ilsDetails);
+                $ilsDetails['renew_details'] = $catalog->getRenewDetails($ilsDetails);
             }
         }
 
@@ -77,20 +79,22 @@ class Renewals extends AbstractPlugin
     /**
      * Process renewal requests.
      *
-     * @param \Laminas\Stdlib\Parameters $request       Request object
-     * @param \VuFind\ILS\Connection     $catalog       ILS connection object
-     * @param array                      $patron        Current logged in patron
-     * @param CsrfInterface              $csrfValidator CSRF validator
+     * @param Parameters     $request        Request object
+     * @param Connection     $catalog        ILS connection object
+     * @param array          $patron         Current logged in patron
+     * @param FlashMessenger $flashMessenger Flash messenger for user messages
+     * @param ?CsrfInterface $csrfValidator  CSRF validator
      *
-     * @return array                  The result of the renewal, an
-     * associative array keyed by item ID (empty if no renewals performed)
+     * @return array The result of the renewal, an associative array keyed by
+     * item ID (empty if no renewals performed)
      */
     public function processRenewals(
-        $request,
-        $catalog,
-        $patron,
-        $csrfValidator = null
-    ) {
+        Parameters $request,
+        Connection $catalog,
+        array $patron,
+        FlashMessenger $flashMessenger,
+        ?CsrfInterface $csrfValidator = null
+    ): array {
         // Pick IDs to renew based on which button was pressed:
         $all = $request->get('renewAll');
         $selected = $request->get('renewSelected');
@@ -104,14 +108,11 @@ class Renewals extends AbstractPlugin
             $ids = [];
         }
 
-        // Retrieve the flashMessenger helper:
-        $flashMsg = $this->getController()->flashMessenger();
-
         // If there is actually something to renew, attempt the renewal action:
         if (is_array($ids) && !empty($ids)) {
             if (null !== $csrfValidator) {
                 if (!$csrfValidator->isValid($request->get('csrf'))) {
-                    $flashMsg->addErrorMessage('csrf_validation_failed');
+                    $flashMessenger->addErrorMessage('csrf_validation_failed');
                     return [];
                 }
                 // After successful token verification, clear list to shrink session
@@ -126,7 +127,7 @@ class Renewals extends AbstractPlugin
                 // Assign Blocks to the Template
                 if (is_array($renewResult['blocks'] ?? null)) {
                     foreach ($renewResult['blocks'] as $block) {
-                        $flashMsg->addMessage($block, 'info');
+                        $flashMessenger->addMessage($block, 'info');
                     }
                 } elseif (is_array($renewResult['details'] ?? null)) {
                     $bad = $good = 0;
@@ -138,13 +139,13 @@ class Renewals extends AbstractPlugin
                         }
                     }
                     if ($good > 0) {
-                        $flashMsg->addMessage(
+                        $flashMessenger->addMessage(
                             ['msg' => 'renew_success_summary', 'tokens' => ['count' => $good], 'icu' => true],
                             'success'
                         );
                     }
                     if ($bad > 0) {
-                        $flashMsg->addMessage(
+                        $flashMessenger->addMessage(
                             ['msg' => 'renew_error_summary', 'tokens' => ['count' => $bad], 'icu' => true],
                             'error'
                         );
@@ -155,11 +156,11 @@ class Renewals extends AbstractPlugin
                 return $renewResult['details'];
             } else {
                 // System failure:
-                $flashMsg->addMessage('renew_error', 'error');
+                $flashMessenger->addMessage('renew_error', 'error');
             }
         } elseif (!empty($all) || !empty($selected)) {
             // Button was clicked but no items were selected:
-            $flashMsg->addMessage('renew_empty_selection', 'error');
+            $flashMessenger->addMessage('renew_empty_selection', 'error');
         }
 
         return [];
