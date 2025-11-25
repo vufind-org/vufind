@@ -134,8 +134,8 @@ class SearchController extends AbstractSolrSearch
         $view->url = $this->params()->fromPost('url')
             ?? $this->params()->fromQuery('url')
             ?? $this->getRequest()->getServer()->get('HTTP_REFERER');
-        if (!$this->isLocalUrl($view->url)) {
-            throw new \Exception('Unexpected value passed to emailAction: ' . $view->url);
+        if (!$view->url || !$this->isLocalUrl($view->url)) {
+            throw new \Exception('Unexpected value passed to emailAction: ' . ($view->url ?? '<null>'));
         }
 
         $emailActionSettings = $this->getService(\VuFind\Config\AccountCapabilities::class)->getEmailActionSetting();
