@@ -487,14 +487,16 @@ function recordDocReady() {
   document.querySelectorAll('.record-tabs .nav-tabs a')
     .forEach((tab) => tab.addEventListener('click', (event) => {
       const li = tab.parentNode;
-      // Do nothing if the tab is already active:
-      if (tab.classList.contains('active')) {
-        event.preventDefault();
-        return;
-      }
       const tabId = li.dataset.tab;
       const top = tab.closest('.record-tabs');
       if (!top) return;
+      const targetPane = top.querySelector('.tab-pane.' + tabId + '-tab');
+      // Do nothing if the tab is already active:
+      if (tab.classList.contains('active') && targetPane && targetPane.classList.contains('active')) {
+        event.preventDefault();
+        $(tab).tab('show');
+        return;
+      }
       // if we're flagged to skip AJAX for this tab, we need special behavior:
       if (li.classList.contains('noajax')) {
         // if this was the initially active tab, we have moved away from it and
