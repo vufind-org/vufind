@@ -184,10 +184,10 @@ class Paytrail extends AbstractBase
 
             $items[] = $item;
         }
-        if ($serviceFee = $this->getServiceFee()) {
+        if (($serviceFee = $this->getServiceFee()) && ($serviceFeeProductCode = $this->getServiceFeeProductCode())) {
             $item = (new Item())
                 ->setDescription($this->translator->translate('Payment::Service Fee'))
-                ->setProductCode($this->getServiceFeeProductCode())
+                ->setProductCode($serviceFeeProductCode)
                 ->setUnitPrice($serviceFee)
                 ->setUnits(1)
                 ->setVatPercentage((float)($this->getServiceFeeTaxRate() ?? 0) / 100.0);
