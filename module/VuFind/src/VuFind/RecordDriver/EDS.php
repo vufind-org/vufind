@@ -636,10 +636,25 @@ class EDS extends DefaultRecord
                 }
             }
         }
+
+        // If EDS actually returned cover image data, use it.  EDS only provides this data
+        // for certain ebook packages.
         if ($closestMatch) {
             return $closestMatch;
         }
-        return parent::getThumbnail($size);
+
+        // Optionally use VuFind's default cover image loading
+        $useOtherThumbnailSources = $this->recordConfig?->Cover?->useOtherThumbnailSources ?? false;
+        if ($useOtherThumbnailSources) {
+            $parentThumbnail = parent::getThumbnail($size);
+
+            // Only use default cover image loading if it has a reasonable chance of success
+            if (($parentThumbnail['issn'] ?? false) || ($parentThumbnail['isbns'] ?? false)) {
+                return $parentThumbnail;
+            }
+        }
+
+        return false;
     }
 
     /**
