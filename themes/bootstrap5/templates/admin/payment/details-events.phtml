@@ -25,15 +25,14 @@
           <?=$this->escapeHtml($event->getServerName())?>
         </td>
         <td>
-          <?=$this->escapeHtml(json_decode($event->getData(), true)['__request_uri'] ?? '')?>
+          <?=$this->escapeHtml($event->getData()['__request_uri'] ?? '')?>
         </td>
         <td>
           <?=$this->transEsc('Payment::' . $event->getMessage())?>
         </td>
         <td>
           <?php
-            if ($data = $event->getData()) {
-              $details = json_decode($data, true);
+            if ($details = $event->getData()) {
               if ($error = $details['error'] ?? null) {
                 echo $this->transEsc("Payment::$error");
               }
