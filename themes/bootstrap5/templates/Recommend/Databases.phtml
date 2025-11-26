@@ -1,21 +1,19 @@
 <?php
-  $groupedDatabases = $this->recommend->getGroupedResults();
-  if (!$groupedDatabases) {
-    $databases = $this->recommend->getResults();
-  }
+  $databases = $this->recommend->getResults();
+  $useGroupedResults = $this->recommend->useGroupedResults();
   $linkToAll = $this->recommend->getLinkToAllDatabases();
 ?>
 <div class="databases">
-  <?php if (!empty($databases) || !empty($groupedDatabases)): ?>
+  <?php if (!empty($databases)): ?>
     <h2><?=$this->transEsc('databases_recommend_heading')?></h2>
     <?php if ($this->transEsc('databases_recommend_intro', [], '')): ?>
       <p><?=$this->transEsc('databases_recommend_intro')?></p>
     <?php endif; ?>
-    <?php if ($groupedDatabases): ?>
-      <?php foreach ($groupedDatabases as $group => $databases): ?>
-        <?php if (!empty($databases)): ?>
+    <?php if ($useGroupedResults): ?>
+      <?php foreach ($databases as $group => $databasesGroup): ?>
+        <?php if (!empty($databasesGroup)): ?>
           <h3><?=$this->transEsc('databases_recommend_group_' . $group, ['%%query%%' => $params->getQuery()->getAllTerms()])?></h3>
-          <?=$this->render('Recommend/Databases/database-list.phtml', compact('databases')); ?>
+          <?=$this->render('Recommend/Databases/database-list.phtml', ['databases' => $databasesGroup]); ?>
         <?php endif; ?>
       <?php endforeach; ?>
     <?php else: ?>

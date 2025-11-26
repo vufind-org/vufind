@@ -269,17 +269,41 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
     }
 
     /**
+     * Get results related to the query.  They may be grouped or ungrouped based on
+     * useGroupedResults().
+     *
+     * @return array
+     */
+    public function getResults()
+    {
+        if ($this->useGroupedResults()) {
+            return $this->getGroupedResults();
+        } else {
+            return $this->getUngroupedResults();
+        }
+    }
+
+    /**
+     * Return whether or not grouped results are enabled in config.
+     *
+     * @return bool
+     */
+    public function useGroupedResults()
+    {
+        return $this->useGroupedResults;
+    }
+
+    /**
      * Get an array of groups of results.  There is a group of results related to
      * the query, and a group related to the search results.  There may be additional
      * groups of search result databases within configured database types.
+     *
+     * Note that grouped results will be returned regardless of useGroupedResults().
      *
      * @return array
      */
     public function getGroupedResults()
     {
-        if (!$this->useGroupedResults) {
-            return null;
-        }
         $groupedResults = [];
 
         if ($resultsFromSearchQuery = $this->getResultsFromSearchQuery()) {
@@ -300,9 +324,11 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
     /**
      * Get a single list of databases related to both the query and the search results.
      *
+     * Note that ungrouped results will be returned regardless of useGroupedResults().
+     *
      * @return array
      */
-    public function getResults()
+    public function getUngroupedResults()
     {
         // Array of url => [name, url].  Key by URL so that the same database (under alternate
         // names) is not duplicated.
