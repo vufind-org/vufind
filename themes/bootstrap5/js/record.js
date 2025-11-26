@@ -491,7 +491,7 @@ function recordDocReady() {
       const top = tab.closest('.record-tabs');
       if (!top) return;
       const targetPane = top.querySelector('.tab-pane.' + tabId + '-tab');
-      // Do nothing if the tab is already active:
+      // Only trigger show on already active tabs to set up all attributes required for keyboard controls:
       if (tab.classList.contains('active') && targetPane && targetPane.classList.contains('active')) {
         event.preventDefault();
         $(tab).tab('show');
