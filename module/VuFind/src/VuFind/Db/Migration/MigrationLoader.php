@@ -101,9 +101,9 @@ class MigrationLoader
             function ($a, $b): int {
                 $aParts = explode(DIRECTORY_SEPARATOR, $a);
                 $bParts = explode(DIRECTORY_SEPARATOR, $b);
-                $aPartEnd = end($aParts);
-                $bPartEnd = end($bParts)
-                return $aPartEnd === $bPartEnd ? 0 : Comparator::greaterThan($aPartEnd, $bPartEnd) ? 1 : -1;
+                $aVersion = end($aParts);
+                $bVersion = end($bParts);
+                return $aVersion === $bVersion ? 0 : (Comparator::greaterThan($aVersion, $bVersion) ? 1 : -1);
             }
         );
 
