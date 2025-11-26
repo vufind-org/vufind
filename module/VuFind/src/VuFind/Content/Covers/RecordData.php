@@ -42,16 +42,13 @@ use VuFind\Record\Loader as RecordLoader;
  */
 class RecordData extends \VuFind\Content\AbstractCover
 {
-    protected RecordLoader $recordLoader;
-
     /**
      * Constructor.
      *
      * @param RecordLoader $recordLoader Record loader
      */
-    public function __construct(RecordLoader $recordLoader)
+    public function __construct(protected RecordLoader $recordLoader)
     {
-        $this->recordLoader = $recordLoader;
         $this->cacheAllowed = true;
         $this->supportsRecordid = true;
     }
@@ -70,7 +67,7 @@ class RecordData extends \VuFind\Content\AbstractCover
     public function getUrl($key, $size, $ids)
     {
         $recordId = $ids['recordid'];
-        $source = $ids['source'] ?? 'Solr';
+        $source = $ids['source'] ?? DEFAULT_SEARCH_BACKEND;
         $driver = $this->recordLoader->load($recordId, $source);
         $marc = $driver->getMarcReader();
         $fields856 = $marc->getFields('856');
