@@ -8,8 +8,12 @@ $grid-gutter-width: 20px;
 
 @import "bootstrap"; /* Include bootstrap theme's scss base */
 
+/* You can organize these styles in separate files and @import them */
+@import "home-page";
+
 /* Change specific styles below */
 body {
+  padding-inline: 1rem;
   font-size: 14px;
   color: #333;
   background-color: #5ab48a;
@@ -17,20 +21,39 @@ body {
 header {
   font-size: 16px;
   color: $dark-green;
+
+  .banner {
+    padding: 0;
+  }
+}
+#content {
+  padding-block: 1px; /* fix margin gap */
 }
 .container {
-  padding-left: 2rem;
-  padding-right: 2rem;
-  border-left: 2px solid $dark-green;
-  border-right: 2px solid $dark-green;
+  padding-inline: 2rem;
+  border-inline: 2px solid $dark-green;
   background-color: #fff;
   border-radius: 0;
 }
-footer .container { border-bottom: 2px solid #137752; }
-.alert { padding: 8px; }
+footer .container {
+  border-bottom: 2px solid #137752;
+}
 
-/* You can also organize these styles in separate files and @import them */
-@import "home-page";
+.alert {
+  padding: 8px;
+}
+
+/* Fix breadcrumbs margins */
+.breadcrumbs {
+  .container {
+    background-color: $breadcrumb-bg;
+  }
+
+  .breadcrumb {
+    margin: 0;
+    padding-inline: 0;
+  }
+}
 
 .searchForm .searchForm-query #searchForm-reset {
   aspect-ratio: 1;

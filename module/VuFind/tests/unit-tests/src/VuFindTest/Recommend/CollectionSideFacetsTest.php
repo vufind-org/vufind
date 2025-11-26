@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -42,7 +42,6 @@ use VuFind\Recommend\CollectionSideFacets;
  */
 class CollectionSideFacetsTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
     use \VuFindTest\Feature\SolrSearchObjectTrait;
 
     /**
@@ -53,8 +52,8 @@ class CollectionSideFacetsTest extends \PHPUnit\Framework\TestCase
     public function testKeywordFilter()
     {
         $results = $this->getSolrResults($this->getMockParams());
-        $results->getParams()->expects($this->once())->method('getDisplayQuery')->will($this->returnValue('foo'));
-        $csf = $this->getSideFacets(null, $results, '::facets:true');
+        $results->getParams()->expects($this->once())->method('getDisplayQuery')->willReturn('foo');
+        $csf = $this->getSideFacets($results, '::facets:true');
         $this->assertEquals('foo', $csf->getKeywordFilter());
         $this->assertTrue($csf->keywordFilterEnabled());
     }
@@ -62,25 +61,20 @@ class CollectionSideFacetsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a fully configured module
      *
-     * @param \VuFind\Config\PluginManager $configLoader config loader
-     * @param \VuFind\Search\Solr\Results  $results      results
-     * object
-     * @param string                       $settings     settings
-     * @param \Laminas\Stdlib\Parameters   $request      request
+     * @param ?\VuFind\Search\Solr\Results $results  results object
+     * @param string                       $settings settings
      *
-     * @return SideFacets
+     * @return CollectionSideFacets
      */
     protected function getSideFacets(
-        $configLoader = null,
-        $results = null,
-        $settings = '',
-        $request = null
-    ) {
-        $sf = new CollectionSideFacets($configLoader ?? $this->getMockConfigPluginManager([]));
+        ?\VuFind\Search\Solr\Results $results = null,
+        string $settings = ''
+    ): CollectionSideFacets {
+        $sf = new CollectionSideFacets($this->getMockConfigManager([]));
         $sf->setConfig($settings);
         $sf->init(
             $results->getParams(),
-            $request ?? new \Laminas\Stdlib\Parameters([])
+            new \Laminas\Stdlib\Parameters([])
         );
         $sf->process($results ?? $this->getSolrResults());
         return $sf;
@@ -101,7 +95,7 @@ class CollectionSideFacetsTest extends \PHPUnit\Framework\TestCase
         $params = $this->getMockBuilder(\VuFind\Search\Solr\Params::class)
             ->disableOriginalConstructor()->getMock();
         $params->expects($this->any())->method('getQuery')
-            ->will($this->returnValue($query));
+            ->willReturn($query);
         return $params;
     }
 }

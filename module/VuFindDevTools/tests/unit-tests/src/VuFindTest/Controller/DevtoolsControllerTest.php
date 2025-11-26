@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -57,7 +57,7 @@ class DevtoolsControllerTest extends \PHPUnit\Framework\TestCase
         $container = new \VuFindTest\Container\MockContainer($this);
         $container->get(\VuFind\I18n\Locale\LocaleSettings::class)
             ->expects($this->once())->method('getEnabledLocales')
-            ->will($this->returnValue(['en' => 'English']));
+            ->willReturn(['en' => 'English']);
         $c = new Controller($container);
         $result = $c->languageAction();
 

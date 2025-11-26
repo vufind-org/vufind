@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -31,7 +31,7 @@ namespace VuFindTest\Command\Harvest;
 
 use Symfony\Component\Console\Tester\CommandTester;
 use VuFindConsole\Command\Harvest\HarvestOaiCommand;
-use VuFindTest\Feature\PathResolverTrait;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
  * HarvestOai command test.
@@ -44,7 +44,7 @@ use VuFindTest\Feature\PathResolverTrait;
  */
 class HarvestOaiCommandTest extends \PHPUnit\Framework\TestCase
 {
-    use PathResolverTrait;
+    use ConfigRelatedServicesTrait;
 
     /**
      * Test that the --ini setting is overridden automatically.
@@ -53,10 +53,11 @@ class HarvestOaiCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testIniOverride()
     {
-        $command = new HarvestOaiCommand();
+        $pathResolver = $this->getPathResolver();
+        $command = new HarvestOaiCommand($pathResolver);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
-        $expectedIni = $this->getPathResolver()->getConfigPath('oai.ini', 'harvest');
+        $expectedIni = $pathResolver->getConfigPath('oai.ini', 'harvest');
         $this->assertEquals(
             "Please add OAI-PMH settings to $expectedIni.\n",
             $commandTester->getDisplay()

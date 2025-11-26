@@ -1,4 +1,11 @@
-<?=$this->doctype()?>
+<?php
+  if (($children = $this->layout()->getChildren()) && $children[0]?->getTemplate() === 'laminas_whoops/simple_error') {
+    // Whoops error is a complete page, so just output it and nothing else:
+    echo $this->layout()->content;
+    return;
+  }
+  echo $this->doctype();
+?>
 <?php
   // Set up the search box -- there are three possible cases:
   // 1. No search box was set; we should default to the normal box
@@ -46,8 +53,9 @@
           ]
       );
       // We need to generate the icons early, because they may add some stylesheets;
-      // if we render them after the headLink / headStyle calls, some dependencies
-      // may not load correctly. Thus, we render early, but use this later.
+      // if we render them after calling AssetManager's outputHeaderAssets method,
+      // some dependencies may not load correctly. Thus, we render early, but use
+      // this later.
       $icons = !isset($this->renderingError) ? $this->render('js-icons.phtml') : '{}';
     ?>
     <?php if ($this->layout()->rtl) {
@@ -157,8 +165,8 @@
     <div id="modal" class="modal fade hidden-print" tabindex="-1" role="dialog" aria-hidden="true">
       <div class="modal-dialog">
         <div class="modal-content">
-          <button type="button" class="close" data-bs-dismiss="modal">
-            <?=$this->icon('lightbox-close', ['aria-label' => $this->transEscAttr('Close')]) ?>
+          <button type="button" class="close" data-bs-dismiss="modal" aria-label="<?=$this->transEscAttr('Close')?>">
+            <?=$this->icon('lightbox-close')?>
           </button>
           <div class="modal-body"></div>
         </div>

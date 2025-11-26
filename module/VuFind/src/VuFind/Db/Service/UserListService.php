@@ -17,13 +17,14 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
  * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
@@ -31,16 +32,16 @@
 namespace VuFind\Db\Service;
 
 use Exception;
-use Laminas\Db\Sql\Expression;
-use Laminas\Db\Sql\ExpressionInterface;
-use Laminas\Db\Sql\Select;
+use Psr\Log\LoggerAwareInterface;
+use VuFind\Db\Entity\ResourceEntityInterface;
+use VuFind\Db\Entity\ResourceTagsEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
-use VuFind\Db\Table\DbTableAwareInterface;
-use VuFind\Db\Table\DbTableAwareTrait;
+use VuFind\Db\Entity\UserResourceEntityInterface;
 use VuFind\Exception\RecordMissing as RecordMissingException;
+use VuFind\Log\LoggerAwareTrait;
 
-use function is_int;
+use function count;
 
 /**
  * Database service for UserList.
@@ -49,12 +50,17 @@ use function is_int;
  * @package  Database
  * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @author   Demian Katz <demian.katz@villanova.edu>
+ * @author   Juha Luoma <juha.luoma@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class UserListService extends AbstractDbService implements DbTableAwareInterface, UserListServiceInterface
+class UserListService extends AbstractDbService implements
+    UserListServiceInterface,
+    LoggerAwareInterface,
+    DbServiceAwareInterface
 {
-    use DbTableAwareTrait;
+    use LoggerAwareTrait;
+    use DbServiceAwareTrait;
 
     /**
      * Create a UserList entity object.
@@ -63,7 +69,7 @@ class UserListService extends AbstractDbService implements DbTableAwareInterface
      */
     public function createEntity(): UserListEntityInterface
     {
-        return $this->getDbTable('UserList')->createRow();
+        return $this->entityPluginManager->get(UserListEntityInterface::class);
     }
 
     /**
@@ -75,8 +81,7 @@ class UserListService extends AbstractDbService implements DbTableAwareInterface
      */
     public function deleteUserList(UserListEntityInterface|int $listOrId): void
     {
-        $listId = $listOrId instanceof UserListEntityInterface ? $listOrId->getId() : $listOrId;
-        $this->getDbTable('UserList')->delete(['id' => $listId]);
+        $this->deleteEntity($this->getDoctrineReference(UserListEntityInterface::class, $listOrId));
     }
 
     /**
@@ -89,7 +94,7 @@ class UserListService extends AbstractDbService implements DbTableAwareInterface
      */
     public function getUserListById(int $id): UserListEntityInterface
     {
-        $result = $this->getDbTable('UserList')->select(['id' => $id])->current();
+        $result = $this->getEntityById(\VuFind\Db\Entity\UserListEntityInterface::class, $id);
         if (empty($result)) {
             throw new RecordMissingException('Cannot load list ' . $id);
         }
@@ -99,28 +104,35 @@ class UserListService extends AbstractDbService implements DbTableAwareInterface
     /**
      * Get public lists.
      *
-     * @param array $includeFilter List of list ids or entities to include in result.
-     * @param array $excludeFilter List of list ids or entities to exclude from result.
+     * @param array           $includeFilter List of list ids or entities to include in result.
+     * @param array           $excludeFilter List of list ids or entities to exclude from result.
+     * @param string|string[] $types         Types of user lists to get. Set to an empty array to get all.
      *
      * @return UserListEntityInterface[]
      */
-    public function getPublicLists(array $includeFilter = [], array $excludeFilter = []): array
-    {
-        $callback = function ($listOrId) {
-            return $listOrId instanceof UserListEntityInterface ? $listOrId->getId() : $listOrId;
-        };
-        $includeIds = array_map($callback, $includeFilter);
-        $excludeIds = array_map($callback, $excludeFilter);
-        $callback = function ($select) use ($includeIds, $excludeIds) {
-            $select->where->equalTo('public', 1);
-            if ($excludeIds) {
-                $select->where->notIn('id', $excludeIds);
-            }
-            if ($includeIds) {
-                $select->where->in('id', $includeIds);
-            }
-        };
-        return iterator_to_array($this->getDbTable('UserList')->select($callback));
+    public function getPublicLists(
+        array $includeFilter = [],
+        array $excludeFilter = [],
+        string|array $types = [UserListEntityInterface::TYPE_DEFAULT]
+    ): array {
+        $dql = 'SELECT ul FROM ' . UserListEntityInterface::class . ' ul '
+            . 'WHERE ul.public = :public ';
+
+        $parameters = ['public' => true];
+        if ($includeFilter) {
+            $dql .= 'AND ul IN (:includeFilter) ';
+            $parameters['includeFilter'] = $includeFilter;
+        }
+        if ($excludeFilter) {
+            $dql .= 'AND ul NOT IN (:excludeFilter) ';
+            $parameters['excludeFilter'] = $excludeFilter;
+        }
+        $this->addTypesCheck($dql, $parameters, $types);
+
+        $query = $this->entityManager->createQuery(trim($dql));
+        $query->setParameters($parameters);
+        $results = $query->getResult();
+        return $results;
     }
 
     /**
@@ -128,45 +140,32 @@ class UserListService extends AbstractDbService implements DbTableAwareInterface
      * list_entity and count keys.
      *
      * @param UserEntityInterface|int $userOrId User entity object or ID
+     * @param string|string[]         $types    Types of user lists to get. Set to an empty array to get all.
      *
      * @return array
      * @throws Exception
      */
-    public function getUserListsAndCountsByUser(UserEntityInterface|int $userOrId): array
-    {
-        $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
-        $callback = function (Select $select) use ($userId) {
-            $select->columns(
-                [
-                    Select::SQL_STAR,
-                    'cnt' => new Expression(
-                        'COUNT(DISTINCT(?))',
-                        ['ur.resource_id'],
-                        [ExpressionInterface::TYPE_IDENTIFIER]
-                    ),
-                ]
-            );
-            $select->join(
-                ['ur' => 'user_resource'],
-                'user_list.id = ur.list_id',
-                [],
-                $select::JOIN_LEFT
-            );
-            $select->where->equalTo('user_list.user_id', $userId);
-            $select->group(
-                [
-                    'user_list.id', 'user_list.user_id', 'title', 'description',
-                    'created', 'public',
-                ]
-            );
-            $select->order(['title']);
-        };
+    public function getUserListsAndCountsByUser(
+        UserEntityInterface|int $userOrId,
+        string|array $types = [UserListEntityInterface::TYPE_DEFAULT]
+    ): array {
+        $parameters = [
+            'user' => $this->getDoctrineReference(UserEntityInterface::class, $userOrId),
+        ];
+        $dql = 'SELECT ul AS list_entity, COUNT(DISTINCT(ur.resource)) AS count '
+            . 'FROM ' . UserListEntityInterface::class . ' ul '
+            . 'LEFT JOIN ' . UserResourceEntityInterface::class . ' ur WITH ur.list = ul.id '
+            . 'WHERE ul.user = :user ';
 
-        $result = [];
-        foreach ($this->getDbTable('UserList')->select($callback) as $row) {
-            $result[] = ['list_entity' => $row, 'count' => $row->cnt];
-        }
-        return $result;
+        $this->addTypesCheck($dql, $parameters, $types);
+
+        $dql .= 'GROUP BY ul '
+            . 'ORDER BY ul.title';
+
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $results = $query->getResult();
+        return $results;
     }
 
     /**
@@ -178,6 +177,7 @@ class UserListService extends AbstractDbService implements DbTableAwareInterface
      * @param bool                 $publicOnly        Whether to return only public lists
      * @param bool                 $andTags           Use AND operator when filtering by tag.
      * @param bool                 $caseSensitiveTags Should we treat tags case-sensitively?
+     * @param string|string[]      $types             Types of user lists to get. Set to an empty array to get all.
      *
      * @return UserListEntityInterface[]
      */
@@ -186,32 +186,105 @@ class UserListService extends AbstractDbService implements DbTableAwareInterface
         int|array|null $listId = null,
         bool $publicOnly = true,
         bool $andTags = true,
-        bool $caseSensitiveTags = false
+        bool $caseSensitiveTags = false,
+        string|array $types = [UserListEntityInterface::TYPE_DEFAULT]
     ): array {
-        $lists = $this->getDbTable('ResourceTags')
-            ->getListsForTag($tag, $listId, $publicOnly, $andTags, $caseSensitiveTags);
-        $listIds = array_column(iterator_to_array($lists), 'list_id');
-        $callback = function ($select) use ($listIds) {
-            $select->where->in('id', $listIds);
-        };
-        return iterator_to_array($this->getDbTable('UserList')->select($callback));
+        $tag = $tag ? (array)$tag : null;
+        $listId = $listId ? (array)$listId : null;
+        $dql = 'SELECT IDENTITY(rt.list) '
+            . 'FROM ' . ResourceTagsEntityInterface::class . ' rt '
+            . 'JOIN rt.tag t '
+            . 'JOIN rt.list ul '
+            // Discard tags assigned to a user resource:
+            . 'WHERE rt.resource IS NULL '
+            // Restrict to tags by list owner:
+            . 'AND rt.user = ul.user ';
+        $parameters = [];
+        if (null !== $listId) {
+            $dql .= 'AND rt.list IN (:listId) ';
+            $parameters['listId'] = $listId;
+        }
+        if ($publicOnly) {
+            $dql .= 'AND ul.public = :public ';
+            $parameters['public'] = true;
+        }
+        $this->addTypesCheck($dql, $parameters, $types);
+
+        if ($tag) {
+            if ($caseSensitiveTags) {
+                $dql .= 'AND t.tag IN (:tag) ';
+                $parameters['tag'] = $tag;
+            } else {
+                $tagClauses = [];
+                foreach ($tag as $i => $currentTag) {
+                    $tagPlaceholder = 'tag' . $i;
+                    $tagClauses[] = 'LOWER(t.tag) = LOWER(:' . $tagPlaceholder . ')';
+                    $parameters[$tagPlaceholder] = $currentTag;
+                }
+                $dql .= 'AND (' . implode(' OR ', $tagClauses) . ')';
+            }
+        }
+        $dql .= ' GROUP BY rt.list ';
+        if ($tag && $andTags) {
+            // If we are ANDing the tags together, only pick lists that match ALL tags:
+            $dql .= 'HAVING COUNT(DISTINCT(rt.tag)) = :cnt ';
+            $parameters['cnt'] = count(array_unique($tag));
+        }
+        $dql .= 'ORDER BY rt.list';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        return $this->getUserListsById($query->getSingleColumnResult());
     }
 
     /**
      * Get list objects belonging to the specified user.
      *
      * @param UserEntityInterface|int $userOrId User entity object or ID
+     * @param string|string[]         $types    Types of user lists to get. Set to an empty array to get all.
      *
      * @return UserListEntityInterface[]
      */
-    public function getUserListsByUser(UserEntityInterface|int $userOrId): array
-    {
-        $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
-        $callback = function ($select) use ($userId) {
-            $select->where->equalTo('user_id', $userId);
-            $select->order(['title']);
-        };
-        return iterator_to_array($this->getDbTable('UserList')->select($callback));
+    public function getUserListsByUser(
+        UserEntityInterface|int $userOrId,
+        string|array $types = [UserListEntityInterface::TYPE_DEFAULT]
+    ): array {
+        $dql = 'SELECT ul '
+            . 'FROM ' . UserListEntityInterface::class . ' ul '
+            . 'WHERE ul.user = :user ';
+
+        $parameters = [
+            'user' => $this->getDoctrineReference(UserEntityInterface::class, $userOrId),
+        ];
+        $this->addTypesCheck($dql, $parameters, $types);
+
+        $dql .= 'ORDER BY ul.title';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $results = $query->getResult();
+        return $results;
+    }
+
+    /**
+     * Retrieve a batch of list objects corresponding to the provided IDs
+     *
+     * @param int[]           $ids   List ids.
+     * @param string|string[] $types Types of user lists to get. Set to an empty array to get all.
+     *
+     * @return array
+     */
+    protected function getUserListsById(
+        array $ids,
+        string|array $types = [UserListEntityInterface::TYPE_DEFAULT]
+    ): array {
+        $dql = 'SELECT ul FROM ' . UserListEntityInterface::class . ' ul '
+            . 'WHERE ul.id IN (:ids)';
+        $parameters = compact('ids');
+        $this->addTypesCheck($dql, $parameters, $types);
+
+        $query = $this->entityManager->createQuery(trim($dql));
+        $query->setParameters($parameters);
+        $results = $query->getResult();
+        return $results;
     }
 
     /**
@@ -221,20 +294,51 @@ class UserListService extends AbstractDbService implements DbTableAwareInterface
      * @param string                       $source   Source of record to look up
      * @param UserEntityInterface|int|null $userOrId Optional user ID or entity object (to limit results
      * to a particular user).
+     * @param string|string[]              $types    Types of user lists to get. Set to an empty array to get all.
      *
      * @return UserListEntityInterface[]
      */
     public function getListsContainingRecord(
         string $recordId,
         string $source = DEFAULT_SEARCH_BACKEND,
-        UserEntityInterface|int|null $userOrId = null
+        UserEntityInterface|int|null $userOrId = null,
+        string|array $types = [UserListEntityInterface::TYPE_DEFAULT]
     ): array {
-        return iterator_to_array(
-            $this->getDbTable('UserList')->getListsContainingResource(
-                $recordId,
-                $source,
-                is_int($userOrId) ? $userOrId : $userOrId->getId()
-            )
-        );
+        $dql = 'SELECT ul FROM ' . UserListEntityInterface::class . ' ul '
+            . 'JOIN ' . UserResourceEntityInterface::class . ' ur WITH ur.list = ul.id '
+            . 'JOIN ' . ResourceEntityInterface::class . ' r WITH r.id = ur.resource '
+            . 'WHERE r.recordId = :recordId AND r.source = :source ';
+
+        $parameters = compact('recordId', 'source');
+        $this->addTypesCheck($dql, $parameters, $types);
+
+        if (null !== $userOrId) {
+            $dql .= 'AND ur.user = :user ';
+            $parameters['user'] = $this->getDoctrineReference(UserEntityInterface::class, $userOrId);
+        }
+
+        $dql .= 'ORDER BY ul.title';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $results = $query->getResult();
+        return $results;
+    }
+
+    /**
+     * Helper function to append type check into a dql
+     *
+     * @param string          $dql        Dql string
+     * @param array           $parameters Parameters for dql
+     * @param string|string[] $types      Types of user lists to get. Set to an empty array to get all.
+     *
+     * @return void
+     */
+    protected function addTypesCheck(string &$dql, array &$parameters, string|array $types): void
+    {
+        if (!$types) {
+            return;
+        }
+        $dql .= 'AND ul.type IN (:types) ';
+        $parameters['types'] = (array)$types;
     }
 }

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -60,7 +60,7 @@ class IpRangeTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $mockIpReader->expects($this->once())->method('getUserIp')
-            ->will($this->returnValue($ipAddr));
+            ->willReturn($ipAddr);
         return new IpRange($mockRequest, $utils, $mockIpReader);
     }
 
@@ -81,7 +81,7 @@ class IpRangeTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $utils->expects($this->once())->method('isInRange')
             ->with($this->equalTo($ipAddr), $this->equalTo([$ipAddr]))
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $provider = $this->getPermissionProvider($ipAddr, $utils);
         $this->assertEquals(
             ['guest', 'loggedin'],
@@ -110,7 +110,7 @@ class IpRangeTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $utils->expects($this->once())->method('isInRange')
             ->with($this->equalTo($ipAddr), $this->equalTo($options))
-            ->will($this->returnValue(false));
+            ->willReturn(false);
         $provider = $this->getPermissionProvider($ipAddr, $utils);
         $this->assertEquals([], $provider->getPermissions($options));
     }

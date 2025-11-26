@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  HierarchyTree_Renderer
@@ -143,6 +143,8 @@ class HTMLTree extends AbstractBase implements \VuFind\I18n\Translator\Translato
      * @param array   $options     Additional options
      *
      * @return mixed The desired hierarchy tree output (or false on error)
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function render(
         string $context,
@@ -197,6 +199,8 @@ class HTMLTree extends AbstractBase implements \VuFind\I18n\Translator\Translato
      * @param string $context Record or Collection
      *
      * @return string
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function getContextualUrl($node, $context)
     {

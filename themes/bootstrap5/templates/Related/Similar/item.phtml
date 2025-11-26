@@ -13,7 +13,7 @@
 ?>
 <a class="related__title" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($data))?>">
     <?=$this->icon('format-' . $icon, $attrs) ?>
-    <?=$this->escapeHtml($data->getTitle())?>
+    <?=$this->escapeOrCleanHtml($data->getTitle(), dataContext: 'title', renderingContext: 'link')?>
 </a>
 <?php $authors = $data->getPrimaryAuthors(); ?>
 <?php if (!empty($authors)): ?>

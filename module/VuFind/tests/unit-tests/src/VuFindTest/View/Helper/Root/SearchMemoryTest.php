@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -129,9 +129,8 @@ class SearchMemoryTest extends \PHPUnit\Framework\TestCase
      * @param array  $expectedRequestArray Expected request parameters to parse
      *
      * @return void
-     *
-     * @dataProvider getLastSearchParamsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getLastSearchParamsProvider')]
     public function testGetLastSearchParams(
         string $query,
         array $expectedRequestArray
@@ -159,7 +158,7 @@ class SearchMemoryTest extends \PHPUnit\Framework\TestCase
         $memory->expects($this->once())->method('getLastSearch')->willReturn($results);
         $helper = $this->getSearchMemoryViewHelper($memory);
         $helper->setView($this->getConfiguredView($results->getParams()));
-        $this->assertEquals('/foo/bar', $helper->getLastSearchUrl('Solr'));
+        $this->assertEquals('/foo/bar', $helper->getLastSearchUrl());
     }
 
     /**
@@ -173,7 +172,7 @@ class SearchMemoryTest extends \PHPUnit\Framework\TestCase
         $memory->expects($this->once())->method('getLastSearch')->willReturn(null);
         $helper = $this->getSearchMemoryViewHelper($memory);
         $helper->setView($this->getConfiguredView($this->createMock(Params::class)));
-        $this->assertNull($helper->getLastSearchUrl('Solr'));
+        $this->assertNull($helper->getLastSearchUrl());
     }
 
     /**

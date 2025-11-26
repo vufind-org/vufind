@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -30,13 +30,15 @@
 
 namespace VuFind\Db\Service;
 
+use DateTime;
 use Exception;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\ResourceEntityInterface;
+use VuFind\Db\Entity\ResourceTagsEntityInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
-use VuFind\Db\Table\Resource;
-
-use function count;
+use VuFind\Db\Entity\UserResourceEntityInterface;
+use VuFind\Log\LoggerAwareTrait;
 
 /**
  * Database service for resource.
@@ -44,53 +46,17 @@ use function count;
  * @category VuFind
  * @package  Database
  * @author   Demian Katz <demian.katz@villanova.edu>
- * @author   Sudharma Kellampalli <skellamp@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class ResourceService extends AbstractDbService implements ResourceServiceInterface, Feature\TransactionInterface
+class ResourceService extends AbstractDbService implements
+    ResourceServiceInterface,
+    DbServiceAwareInterface,
+    LoggerAwareInterface
 {
-    /**
-     * Constructor.
-     *
-     * @param Resource $resourceTable Resource table
-     */
-    public function __construct(protected Resource $resourceTable)
-    {
-    }
-
-    /**
-     * Begin a database transaction.
-     *
-     * @return void
-     * @throws Exception
-     */
-    public function beginTransaction(): void
-    {
-        $this->resourceTable->beginTransaction();
-    }
-
-    /**
-     * Commit a database transaction.
-     *
-     * @return void
-     * @throws Exception
-     */
-    public function commitTransaction(): void
-    {
-        $this->resourceTable->commitTransaction();
-    }
-
-    /**
-     * Roll back a database transaction.
-     *
-     * @return void
-     * @throws Exception
-     */
-    public function rollBackTransaction(): void
-    {
-        $this->resourceTable->rollbackTransaction();
-    }
+    use DbServiceAwareTrait;
+    use Feature\ResourceSortTrait;
+    use LoggerAwareTrait;
 
     /**
      * Lookup and return a resource.
@@ -101,7 +67,7 @@ class ResourceService extends AbstractDbService implements ResourceServiceInterf
      */
     public function getResourceById(int $id): ?ResourceEntityInterface
     {
-        return $this->resourceTable->select(['id' => $id])->current();
+        return $this->entityManager->find(ResourceEntityInterface::class, $id);
     }
 
     /**
@@ -111,23 +77,48 @@ class ResourceService extends AbstractDbService implements ResourceServiceInterf
      */
     public function createEntity(): ResourceEntityInterface
     {
-        return $this->resourceTable->createRow();
+        return $this->entityPluginManager->get(ResourceEntityInterface::class);
     }
 
     /**
-     * Get a set of records that do not have metadata stored in the resource
-     * table.
+     * Get a set of records that are missing metadata in the resource table. If maxAge is specified, this includes also
+     * records that need to be updated.
+     *
+     * @param ?int     $lastId  ID of last checked record, or null to start from beginning
+     * @param int      $limit   Limit for results
+     * @param ?int     $minAge  Minimum age (in days) for metadata before it needs to be updated, or null to search for
+     * records that are missing metadata
+     * @param string[] $sources Record source filter
      *
      * @return ResourceEntityInterface[]
      */
-    public function findMissingMetadata(): array
+    public function findMetadataToUpdate(?int $lastId, int $limit, ?int $minAge = null, array $sources = []): array
     {
-        $callback = function ($select) {
-            $select->where->equalTo('title', '')
-                ->OR->isNull('author')
-                ->OR->isNull('year');
-        };
-        return iterator_to_array($this->resourceTable->select($callback));
+        $dql = 'SELECT r FROM ' . ResourceEntityInterface::class . ' r';
+        $params = [];
+        if (null !== $minAge) {
+            $date = new DateTime("now - $minAge days");
+            $dql .= ' WHERE (r.updated <= :dateThreshold)';
+            $params['dateThreshold'] = $date->format(VUFIND_DATABASE_DATETIME_FORMAT);
+        } else {
+            $dql .= ' WHERE (r.displayTitle IS NULL OR r.author IS NULL)';
+        }
+        if ($sources) {
+            $dql .= ' AND r.source IN (:sources)';
+            $params['sources'] = $sources;
+        }
+        if (null !== $lastId) {
+            $dql .= ' AND r.id > :lastId';
+            $params['lastId'] = $lastId;
+        }
+        $dql .= ' ORDER BY r.id';
+
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($params);
+        $query->setMaxResults($limit);
+
+        $result = $query->getResult();
+        return $result;
     }
 
     /**
@@ -140,7 +131,7 @@ class ResourceService extends AbstractDbService implements ResourceServiceInterf
      */
     public function getResourceByRecordId(string $id, string $source = DEFAULT_SEARCH_BACKEND): ?ResourceEntityInterface
     {
-        return $this->resourceTable->select(['record_id' => $id, 'source' => $source])->current();
+        return current($this->getResourcesByRecordIds([$id], $source)) ?: null;
     }
 
     /**
@@ -153,11 +144,46 @@ class ResourceService extends AbstractDbService implements ResourceServiceInterf
      */
     public function getResourcesByRecordIds(array $ids, string $source = DEFAULT_SEARCH_BACKEND): array
     {
-        $callback = function ($select) use ($ids, $source) {
-            $select->where->in('record_id', $ids);
-            $select->where->equalTo('source', $source);
-        };
-        return iterator_to_array($this->resourceTable->select($callback));
+        $repo = $this->entityManager->getRepository(ResourceEntityInterface::class);
+        $criteria = [
+            'recordId' => $ids,
+            'source' => $source,
+        ];
+        return $repo->findBy($criteria);
+    }
+
+    /**
+     * Get resources associated with a particular tag.
+     *
+     * @param string $tag               Tag to match
+     * @param int    $user              ID of user owning favorite list
+     * @param ?int   $list              ID of list to retrieve (null for all favorites)
+     * @param bool   $caseSensitiveTags Should tags be treated case sensitively?
+     *
+     * @return array
+     */
+    protected function getResourceIDsForTag(
+        string $tag,
+        int $user,
+        ?int $list = null,
+        bool $caseSensitiveTags = false
+    ): array {
+        $dql = 'SELECT DISTINCT(rt.resource) AS resource_id '
+            . 'FROM ' . ResourceTagsEntityInterface::class . ' rt '
+            . 'JOIN rt.tag t '
+            . 'WHERE ' . ($caseSensitiveTags ? 't.tag = :tag' : 'LOWER(t.tag) = LOWER(:tag) ')
+            . 'AND rt.user = :user';
+
+        $user = $this->getDoctrineReference(UserEntityInterface::class, $user);
+        $parameters = compact('tag', 'user');
+        if (null !== $list) {
+            $list = $this->getDoctrineReference(UserListEntityInterface::class, $list);
+            $dql .= ' AND rt.list = :list';
+            $parameters['list'] = $list;
+        }
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        return $query->getSingleColumnResult();
     }
 
     /**
@@ -183,17 +209,53 @@ class ResourceService extends AbstractDbService implements ResourceServiceInterf
         ?int $limit = null,
         bool $caseSensitiveTags = false
     ): array {
-        return iterator_to_array(
-            $this->resourceTable->getFavorites(
-                $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId,
-                $listOrId instanceof UserListEntityInterface ? $listOrId->getId() : $listOrId,
-                $tags,
-                $sort,
-                $offset,
-                $limit,
-                $caseSensitiveTags
-            )
-        );
+        $user = $this->getDoctrineReference(UserEntityInterface::class, $userOrId);
+        $list = $listOrId ? $this->getDoctrineReference(UserListEntityInterface::class, $listOrId) : null;
+        $orderByDetails = empty($sort) ? [] : $this->getResourceOrderByClause($sort);
+        $dql = 'SELECT DISTINCT r';
+        if (!empty($orderByDetails['extraSelect'])) {
+            $dql .= ', ' . $orderByDetails['extraSelect'];
+        }
+        $dql .= ' FROM ' . ResourceEntityInterface::class . ' r '
+            . 'JOIN ' . UserResourceEntityInterface::class . ' ur WITH r.id = ur.resource ';
+        $dqlWhere = [];
+        $dqlWhere[] = 'ur.user = :user';
+        $parameters = compact('user');
+        if (null !== $list) {
+            $dqlWhere[] = 'ur.list = :list';
+            $parameters['list'] = $list;
+        }
+
+        // Adjust for tags if necessary:
+        if (!empty($tags)) {
+            $matches = null;
+            foreach ($tags as $tag) {
+                $nextTagBatch = $this->getResourceIDsForTag($tag, $user->getId(), $list?->getId(), $caseSensitiveTags);
+                $matches = array_intersect(
+                    $matches ?? $nextTagBatch, // first time, use whole batch
+                    $nextTagBatch
+                );
+            }
+            $dqlWhere[] = 'r.id IN (:ids)';
+            $parameters['ids'] = $matches;
+        }
+        $dql .= ' WHERE ' . implode(' AND ', $dqlWhere);
+        if (!empty($orderByDetails['orderByClause'])) {
+            $dql .= $orderByDetails['orderByClause'];
+        }
+
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+
+        if ($offset > 0) {
+            $query->setFirstResult($offset);
+        }
+        if (null !== $limit) {
+            $query->setMaxResults($limit);
+        }
+
+        $result = $query->getResult();
+        return $result;
     }
 
     /**
@@ -208,12 +270,12 @@ class ResourceService extends AbstractDbService implements ResourceServiceInterf
      */
     public function deleteResourceByRecordId(string $id, string $source): bool
     {
-        $row = $this->resourceTable->select(['source' => $source, 'record_id' => $id])->current();
-        if (!$row) {
-            return false;
-        }
-        $row->delete();
-        return true;
+        $dql = 'DELETE FROM ' . ResourceEntityInterface::class . ' r '
+            . 'WHERE r.recordId = :id AND r.source = :source';
+        $parameters = compact('id', 'source');
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        return $query->execute();
     }
 
     /**
@@ -226,12 +288,11 @@ class ResourceService extends AbstractDbService implements ResourceServiceInterf
      */
     public function renameSource(string $old, string $new): int
     {
-        $resourceWhere = ['source' => $old];
-        $resourceRows = $this->resourceTable->select($resourceWhere);
-        if ($count = count($resourceRows)) {
-            $this->resourceTable->update(['source' => $new], $resourceWhere);
-        }
-        return $count;
+        $dql = 'UPDATE ' . ResourceEntityInterface::class . ' r '
+            . 'SET r.source=:new WHERE r.source=:old';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters(compact('new', 'old'));
+        return $query->execute();
     }
 
     /**
@@ -243,7 +304,6 @@ class ResourceService extends AbstractDbService implements ResourceServiceInterf
      */
     public function deleteResource(ResourceEntityInterface|int $resourceOrId): void
     {
-        $id = $resourceOrId instanceof ResourceEntityInterface ? $resourceOrId->getId() : $resourceOrId;
-        $this->resourceTable->delete(['id' => $id]);
+        $this->deleteEntity($this->getDoctrineReference(ResourceEntityInterface::class, $resourceOrId));
     }
 }

@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Mailer
@@ -36,6 +36,7 @@ use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
 use Symfony\Component\Mime\Email;
 use Symfony\Component\Mime\Exception\RfcComplianceException;
+use Symfony\Component\Mime\Part\DataPart;
 use VuFind\Exception\Mail as MailException;
 use VuFind\RecordDriver\AbstractBase;
 
@@ -54,7 +55,7 @@ use function is_array;
  */
 class Mailer implements
     \VuFind\I18n\Translator\TranslatorAwareInterface,
-    \Laminas\Log\LoggerAwareInterface
+    \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\Log\LoggerAwareTrait;
@@ -200,12 +201,16 @@ class Mailer implements
     /**
      * Send an email message.
      *
-     * @param string|string[]|Address|Address[]      $to      Recipient email address(es) (or delimited list)
-     * @param string|Address                         $from    Sender name and email address
-     * @param string                                 $subject Subject line for message
-     * @param string|Email                           $body    Message body
-     * @param string|string[]|Address|Address[]|null $cc      CC recipient(s) (null for none)
-     * @param string|string[]|Address|Address[]|null $replyTo Reply-To address(es) (or delimited list, null for none)
+     * @param string|string[]|Address|Address[]      $to            Recipient email address(es) (or delimited list)
+     * @param string|Address                         $from          Sender name and email address
+     * @param string                                 $subject       Subject line for message
+     * @param string|Email                           $body          Message body
+     * @param string|string[]|Address|Address[]|null $cc            CC recipient(s) (null for none)
+     * @param string|string[]|Address|Address[]|null $replyTo       Reply-To address(es) (or delimited list, null for
+     * none)
+     * @param bool                                   $subjectInBody Allow subject to be extracted from body when
+     * body text begins with "Subject: " and $body is a string (ignored when $body is an Email object)
+     * @param DataPart[]                             $parts         Data parts to add
      *
      * @throws MailException
      * @return void
@@ -216,7 +221,9 @@ class Mailer implements
         string $subject,
         string|Email $body,
         string|Address|array|null $cc = null,
-        string|Address|array|null $replyTo = null
+        string|Address|array|null $replyTo = null,
+        bool $subjectInBody = true,
+        array $parts = []
     ) {
         try {
             if (!($from instanceof Address)) {
@@ -271,7 +278,6 @@ class Mailer implements
             $from = new Address($this->fromAddressOverride, $name);
         }
 
-        // Convert all exceptions thrown by mailer into MailException objects:
         try {
             // Send message
             if ($body instanceof Email) {
@@ -280,6 +286,17 @@ class Mailer implements
                     $email->subject($subject);
                 }
             } else {
+                if ($subjectInBody) {
+                    // Extract any subject line at the beginning of the message body:
+                    $body = preg_replace_callback(
+                        '/^Subject: (.+)\n+/',
+                        function ($matches) use (&$subject) {
+                            $subject = $matches[1];
+                            return '';
+                        },
+                        $body
+                    );
+                }
                 $email = $this->getNewMessage();
                 $email->text($body);
                 $email->subject($subject);
@@ -294,16 +311,20 @@ class Mailer implements
             foreach ($replyTo as $current) {
                 $email->addReplyTo($current);
             }
+            foreach ($parts as $part) {
+                $email->addPart($part);
+            }
             $this->getTransport()->send($email);
             if ($logFile = $this->options['message_log'] ?? null) {
                 $format = $this->options['message_log_format'] ?? 'plain';
                 $data = 'serialized' === $format
-                    ? serialize($email) . "\x1E" // use Record Separator to separate messages
+                    ? base64_encode(serialize($email)) . "\x1E" // Record Separator
                     : $email->toString() . "\n\n";
                 file_put_contents($logFile, $data, FILE_APPEND);
             }
         } catch (\Exception $e) {
-            $this->logError($e->getMessage());
+            $this->logError((string)$e);
+            // Convert all exceptions thrown by mailer into MailException objects:
             throw new MailException($e->getMessage(), MailException::ERROR_UNKNOWN, $e);
         }
     }

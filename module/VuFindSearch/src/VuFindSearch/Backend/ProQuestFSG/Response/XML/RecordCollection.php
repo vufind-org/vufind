@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -52,6 +52,13 @@ class RecordCollection extends AbstractRecordCollection
     protected $response;
 
     /**
+     * Facet fields.
+     *
+     * @var array
+     */
+    protected $facetFields = null;
+
+    /**
      * Constructor.
      *
      * @param array $response ProQuestFSG response
@@ -82,6 +89,19 @@ class RecordCollection extends AbstractRecordCollection
      */
     public function getFacets()
     {
-        return $this->response['facets'];
+        if ($this->facetFields === null) {
+            $this->facetFields = [];
+            $facets = $this->response['facets'] ?? [];
+            foreach ($facets as $facetName => $facetValues) {
+                usort($facetValues, fn ($a, $b) => ($a['count'] ?? 0) < ($b['count'] ?? 0));
+                $values = [];
+                foreach ($facetValues as $facetValue) {
+                    $facetValueName = "{$facetValue['code']}|{$facetValue['name']}";
+                    $values[$facetValueName] = $facetValue['count'];
+                }
+                $this->facetFields[$facetName] = $values;
+            }
+        }
+        return $this->facetFields;
     }
 }

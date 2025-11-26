@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authorization
@@ -49,7 +49,7 @@ use function in_array;
  */
 class ServerParam implements
     PermissionProviderInterface,
-    \Laminas\Log\LoggerAwareInterface
+    \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
@@ -195,11 +195,7 @@ class ServerParam implements
             return [$string];
         }
 
-        if ($delimiter === ' ') {
-            $pattern = ' +';
-        } else {
-            $pattern = preg_quote($delimiter, '/');
-        }
+        $pattern = $delimiter === ' ' ? ' +' : preg_quote($delimiter, '/');
 
         if ($escape === '') {
             $pattern = '(?<!' . preg_quote($escape, '/') . ')' . $pattern;

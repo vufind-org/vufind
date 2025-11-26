@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Translator
@@ -318,8 +318,8 @@ trait TranslatorAwareTrait
         // can still be provided if the input cannot be changed (e.g. if it comes
         // from a third-party system).
         return str_replace(
-            ['(', ')', '!', '?', '|'],
-            ['_28', '_29', '_21', '_3F', '_7C'],
+            ['&', '(', ')', '!', ';', '?', '|'],
+            ['_26', '_28', '_29', '_21', '_3B', '_3F', '_7C'],
             $key
         );
     }

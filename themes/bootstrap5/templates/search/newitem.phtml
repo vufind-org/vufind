@@ -1,7 +1,4 @@
 <?php
-    // Set up page title:
-    $this->headTitle($this->translate('New Item Search'));
-
     // Set up breadcrumbs:
     $this->breadcrumbs()->set($this->translate('New Items'), active: true);
 
@@ -11,7 +8,7 @@
     // Convenience variable:
     $offlineMode = $this->ils()->getOfflineMode();
 ?>
-<h2><?=$this->transEsc('Find New Items')?></h2>
+<?=$this->component('page-title', ['title' => $this->translate('Find New Items'), 'headTitle' => $this->translate('New Item Search')]);?>
 <?php if ($offlineMode == 'ils-offline'): ?>
   <?=$this->render('Helpers/ils-offline.phtml', ['offlineModeMsg' => 'ils_offline_holdings_message'])?>
 <?php endif; ?>

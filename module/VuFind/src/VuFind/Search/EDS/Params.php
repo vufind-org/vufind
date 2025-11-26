@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  EBSCO
@@ -31,9 +31,8 @@
 
 namespace VuFind\Search\EDS;
 
+use VuFind\Config\ConfigManagerInterface;
 use VuFindSearch\ParamBag;
-
-use function count;
 
 /**
  * EDS API Params
@@ -114,12 +113,12 @@ class Params extends AbstractEDSParams
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Base\Options  $options      Options to use
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param \VuFind\Search\Base\Options $options       Options to use
+     * @param ConfigManagerInterface      $configManager Config manager
      */
-    public function __construct($options, \VuFind\Config\PluginManager $configLoader)
+    public function __construct($options, ConfigManagerInterface $configManager)
     {
-        parent::__construct($options, $configLoader);
+        parent::__construct($options, $configManager);
     }
 
     /**
@@ -166,7 +165,7 @@ class Params extends AbstractEDSParams
             $backendParams->set('highlight', true);
         }
 
-        $view = $this->getEdsView();
+        $view = $this->getEbscoView();
         $backendParams->set('view', $view);
 
         $mode = $options->getSearchMode();
@@ -177,17 +176,6 @@ class Params extends AbstractEDSParams
         $this->createBackendFilterParameters($backendParams);
 
         return $backendParams;
-    }
-
-    /**
-     * Return the value for which search view we use
-     *
-     * @return string
-     */
-    public function getEdsView()
-    {
-        $viewArr = explode('_', $this->view ?? '');
-        return (1 < count($viewArr)) ? $viewArr[1] : $this->options->getEdsView();
     }
 
     /**
@@ -297,23 +285,6 @@ class Params extends AbstractEDSParams
                 true
             );
         }
-    }
-
-    /**
-     * Basic 'getter' for list of available view options.
-     *
-     * @return array
-     */
-    public function getViewList()
-    {
-        $list = [];
-        foreach ($this->getOptions()->getViewOptions() as $key => $value) {
-            $list[$key] = [
-                'desc' => $value,
-                'selected' => ($key == $this->getView() . '_' . $this->getEdsView()),
-            ];
-        }
-        return $list;
     }
 
     /**

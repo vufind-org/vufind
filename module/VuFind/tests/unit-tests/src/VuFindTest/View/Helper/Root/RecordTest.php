@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -95,7 +95,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
             false
         );
         $record->getView()->expects($this->any())->method('render')
-            ->will($this->throwException(new RuntimeException('boom')));
+            ->willThrowException(new RuntimeException('boom'));
         $record->getCoreMetadata();
     }
 
@@ -224,6 +224,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetListEntry(): void
     {
+        $recordNumber = 7;
         $driver = $this->createMock(RecordDriver::class);
         $driver->method('getUniqueID')->willReturn('foo');
         $driver->method('getSourceIdentifier')->willReturn('bar');
@@ -236,7 +237,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $serviceManager->expects($this->once())->method('get')->with(UserListServiceInterface::class)
             ->willReturn($listService);
         $expected = [
-            'driver' => $driver, 'list' => null, 'user' => $user, 'lists' => [1, 2, 3],
+            'driver' => $driver, 'list' => null, 'user' => $user, 'lists' => [1, 2, 3], 'recordNumber' => $recordNumber,
         ];
         $context = $this->getMockContext();
         $context->expects($this->once())->method('apply')
@@ -259,7 +260,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $record->getView()->expects($this->once())->method('render')
             ->with($this->equalTo($tpl))
             ->willReturn('success');
-        $this->assertEquals('success', $record->getListEntry(null, $user));
+        $this->assertEquals('success', $record->getListEntry(null, $user, $recordNumber));
     }
 
     /**
@@ -347,9 +348,8 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      * @param string $expected          Expected final result
      *
      * @return void
-     *
-     * @dataProvider getLinkProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getLinkProvider')]
     public function testGetLink(
         string $linkUrl,
         string $expectedSeparator,

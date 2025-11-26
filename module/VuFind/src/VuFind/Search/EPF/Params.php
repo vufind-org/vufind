@@ -19,8 +19,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  EBSCO
@@ -60,21 +60,11 @@ class Params extends \VuFind\Search\EDS\AbstractEDSParams
         // The documentation says that 'view' is optional,
         // but omitting it causes an error.
         // https://connect.ebsco.com/s/article/Publication-Finder-API-Reference-Guide-Search
-        $view = $this->getEpfView();
+        $view = $this->getEbscoView();
         $backendParams->set('view', $view);
 
         $this->createBackendFilterParameters($backendParams);
 
         return $backendParams;
-    }
-
-    /**
-     * Return the value for which search view we use
-     *
-     * @return string
-     */
-    public function getEpfView()
-    {
-        return $this->options->getEpfView();
     }
 }

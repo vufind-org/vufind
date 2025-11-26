@@ -7,7 +7,7 @@
     $user_id = $this->list->getUser()->getId();
   } else {
     $list_id = null;
-    $user_id = $this->user ? $this->user->id : null;
+    $user_id = $this->user ? $this->user->getId() : null;
   }
   // Thumbnail
   $coverDetails = $this->record($this->driver)->getCoverDetails('list-entry', 'medium', $this->recordLinker()->getUrl($this->driver));
@@ -26,7 +26,12 @@
   <?php endif; ?>
   <input type="hidden" value="<?=$this->escapeHtmlAttr($id) ?>" class="hiddenId">
   <input type="hidden" value="<?=$this->escapeHtmlAttr($source) ?>" class="hiddenSource">
-  <?=$this->record($this->driver)->getCheckbox()?>
+  <?php if (isset($this->overrideId)): // hiddenOverrideId is used for availability checking for non SOLR records?>
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->overrideId) ?>" class="hiddenOverrideId">
+  <?php endif; ?>
+  <?php if ($recordNumber): ?>
+    <?=$this->record($this->driver)->getCheckbox(number: $recordNumber)?>
+  <?php endif; ?>
   <div class="media">
     <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
       <?=$thumbnail ?>
@@ -41,7 +46,7 @@
             <?php if (!$missing): ?></a><?php endif; ?>
             <?php foreach ($this->driver->tryMethod('getTitlesAltScript', [], []) as $altTitle): ?>
               <div class="title-alt">
-                <?=$this->escapeHtml($altTitle)?>
+                <?=$this->escapeOrCleanHtml($altTitle, 'title')?>
               </div>
             <?php endforeach; ?>
 
@@ -207,29 +212,50 @@
       </div>
 
       <div class="result-links hidden-print">
-        <a href="<?=$this->url('myresearch-edit')?>?id=<?=urlencode($id)?>&amp;source=<?=urlencode($source)?><?php if (null !== $list_id):?>&amp;list_id=<?=urlencode($list_id)?><?php endif; ?>" class="edit tool icon-link">
-          <?=$this->icon('user-list-entry-edit', 'icon-link__icon') ?>
-          <span class="icon-link__label"><?=$this->transEsc('Edit')?></span>
-        </a><br>
-        <?php /* Use a different delete URL if we're removing from a specific list or the overall favorites: */
-          $deleteUrl = null === $list_id
-              ? $this->url('myresearch-favorites')
-              : $this->url('userList', ['id' => $list_id]);
-          $deleteUrlGet = $deleteUrl . '?delete=' . urlencode($id) . '&amp;source=' . urlencode($source);
-          $md5Id = md5($id);
-        ?>
-        <?=
-          $this->component(
-              'confirm-button',
-              [
-                  'buttonClass' => 'btn-link',
-                  'buttonLink' => $deleteUrlGet,
-                  'buttonIcon' => 'user-list-remove',
-                  'buttonLabel' => 'Delete',
-                  'confirmId' => 'confirm_delete_item_' . $md5Id,
-              ]
-          )
-        ?>
+        <?php if ($this->list === null || $this->userlist()->userCanEditList($this->auth()->getManager()->getUserObject(), $this->list)): ?>
+          <a href="<?=$this->url('myresearch-edit')?>?id=<?=urlencode($id)?>&amp;source=<?=urlencode($source)?><?php if (null !== $list_id):?>&amp;list_id=<?=urlencode($list_id)?><?php endif; ?>" class="edit tool icon-link">
+            <?=$this->icon('user-list-entry-edit', 'icon-link__icon') ?>
+            <span class="icon-link__label"><?=$this->transEsc('Edit')?></span>
+          </a><br>
+          <?php /* Use a different delete URL if we're removing from a specific list or the overall favorites: */
+            $deleteUrl = null === $list_id
+                ? $this->url('myresearch-favorites')
+                : $this->url('userList', ['id' => $list_id]);
+            $deleteUrlGet = $deleteUrl . '?delete=' . urlencode($id) . '&amp;source=' . urlencode($source);
+            $md5Id = md5($id);
+          ?>
+          <?=
+            $this->component(
+                'confirm-button',
+                [
+                    'buttonClass' => 'btn-link',
+                    'buttonLink' => $deleteUrlGet,
+                    'buttonIcon' => 'user-list-remove',
+                    'buttonLabel' => 'Delete',
+                    'confirmId' => 'confirm_delete_item_' . $md5Id,
+                ]
+            )
+          ?>
+          <?php
+            $escId = $this->escapeJs($id);
+            $escSource = $this->escapeJs($source);
+            $script = <<<JS
+                $('#confirm_delete_item_{$md5Id}').click(function(e) {
+                    e.preventDefault();
+                    $.post('{$deleteUrl}', {
+                                'delete':'{$escId}',
+                                'source':'{$escSource}',
+                                'confirm':true
+                            },
+                            function() {
+                                location.reload()
+                            }
+                        );
+                });
+                JS;
+          ?>
+          <?=$this->assetManager()->outputInlineScriptString($script);?>
+        <?php endif; ?>
         <?=$this->driver->supportsCoinsOpenUrl() ? '<span class="Z3988" aria-hidden="true" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>' : ''?>
       </div>
     </div>
@@ -237,23 +263,4 @@
       <?=$thumbnail ?>
     <?php endif; ?>
   </div>
-  <?php
-    $escId = $this->escapeJs($id);
-    $escSource = $this->escapeJs($source);
-    $script = <<<JS
-        $('#confirm_delete_item_{$md5Id}').click(function(e) {
-            e.preventDefault();
-            $.post('{$deleteUrl}', {
-                        'delete':'{$escId}',
-                        'source':'{$escSource}',
-                        'confirm':true
-                    },
-                    function() {
-                        location.reload()
-                    }
-                );
-        });
-        JS;
-  ?>
-  <?=$this->assetManager()->outputInlineScriptString($script);?>
 </li>

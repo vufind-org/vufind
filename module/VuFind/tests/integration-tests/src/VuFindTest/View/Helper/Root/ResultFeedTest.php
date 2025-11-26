@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -114,9 +114,8 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
      * @param string $expectedLink The link URL we expect to find in the first result in the feed.
      *
      * @return void
-     *
-     * @dataProvider rssProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('rssProvider')]
     public function testRSS(array $options, string $expectedLink): void
     {
         // Set up a request -- we'll sort by title to ensure a predictable order

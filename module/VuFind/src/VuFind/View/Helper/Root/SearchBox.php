@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -29,6 +29,7 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\Search\Base\Options;
 use VuFind\Search\Options\PluginManager as OptionsManager;
 
 use function count;
@@ -44,35 +45,9 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SearchBox extends \Laminas\View\Helper\AbstractHelper
+class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log\LoggerAwareInterface
 {
-    /**
-     * Configuration for search box.
-     *
-     * @var array
-     */
-    protected $config;
-
-    /**
-     * Alphabrowse settings for search box.
-     *
-     * @var array
-     */
-    protected $alphabrowseConfig;
-
-    /**
-     * Placeholders from config.ini
-     *
-     * @var array
-     */
-    protected $placeholders;
-
-    /**
-     * Search options plugin manager
-     *
-     * @var OptionsManager
-     */
-    protected $optionsManager;
+    use \VuFind\Log\LoggerAwareTrait;
 
     /**
      * Cache for configurations
@@ -92,15 +67,25 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
      * alphabrowse options to display in combined box (empty for none)
      */
     public function __construct(
-        OptionsManager $optionsManager,
-        $config = [],
-        $placeholders = [],
-        $alphabrowseConfig = []
+        protected OptionsManager $optionsManager,
+        protected array $config = [],
+        protected array $placeholders = [],
+        protected array $alphabrowseConfig = []
     ) {
-        $this->optionsManager = $optionsManager;
-        $this->config = $config;
-        $this->alphabrowseConfig = $alphabrowseConfig;
-        $this->placeholders = $placeholders;
+    }
+
+    /**
+     * Get the options object for the target backend (which may include a
+     * colon-delimited filter identifier as part of its name).
+     *
+     * @param string $target Target
+     *
+     * @return Options
+     */
+    protected function getOptionsForTarget(string $target): Options
+    {
+        [$backendId] = explode(':', $target);
+        return $this->optionsManager->get($backendId);
     }
 
     /**
@@ -114,8 +99,7 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
     {
         // Simple case -- no combined handlers:
         if (!$this->combinedHandlersActive()) {
-            $options = $this->optionsManager->get($activeSearchClass);
-            return $options->autocompleteEnabled();
+            return $this->getOptionsForTarget($activeSearchClass)->autocompleteEnabled();
         }
 
         // Complex case -- combined handlers:
@@ -126,7 +110,7 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
             $target = $settings['target'][$i];
 
             if ($type == 'VuFind') {
-                $options = $this->optionsManager->get($target);
+                $options = $this->getOptionsForTarget($target);
                 if ($options->autocompleteEnabled()) {
                     return true;
                 }
@@ -144,8 +128,7 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
      */
     public function autocompleteAutoSubmit($activeSearchClass)
     {
-        $options = $this->optionsManager->get($activeSearchClass);
-        return $options->autocompleteAutoSubmit();
+        return $this->getOptionsForTarget($activeSearchClass)->autocompleteAutoSubmit();
     }
 
     /**
@@ -162,18 +145,50 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
             $settings = $this->getCombinedHandlerConfig($activeSearchClass);
             foreach ($settings['target'] ?? [] as $i => $target) {
                 if (($settings['type'][$i] ?? null) === 'VuFind') {
-                    $options = $this->optionsManager->get($target);
-                    $handlerRules = $options->getAutocompleteFormattingRules();
-                    foreach ($handlerRules as $key => $val) {
-                        $rules["VuFind:$target|$key"] = $val;
+                    try {
+                        $options = $this->getOptionsForTarget($target);
+                        $handlerRules = $options->getAutocompleteFormattingRules() ?? [];
+                        foreach ($handlerRules as $key => $val) {
+                            $rules["VuFind:$target|$key"] = $val;
+                        }
+                    } catch (\Exception $e) {
+                        // Log a warning and ignore when we can't add the autocomplete rules for
+                        // any of the handlers
+                        $baseMsg = "Could not determine autocomplete formatting rules for {$target}.";
+                        $shortDetails = $e->getMessage();
+                        $fullDetails = (string)$e;
+                        $this->logWarning(
+                            $baseMsg,
+                            [
+                                'details' => [
+                                    1 => "$baseMsg $shortDetails",
+                                    2 => "$baseMsg $shortDetails",
+                                    3 => "$baseMsg $shortDetails",
+                                    4 => "$baseMsg $fullDetails",
+                                    5 => "$baseMsg $fullDetails",
+                                ],
+                            ]
+                        );
                     }
                 }
             }
         } else {
-            $options = $this->optionsManager->get($activeSearchClass);
+            $options = $this->getOptionsForTarget($activeSearchClass);
             $rules = $options->getAutocompleteFormattingRules();
         }
         return json_encode($rules);
+    }
+
+    /**
+     * Get limit of items in autocomplete list
+     *
+     * @param string $activeSearchClass Active search class ID
+     *
+     * @return bool
+     */
+    public function autocompleteDisplayLimit($activeSearchClass)
+    {
+        return $this->getOptionsForTarget($activeSearchClass)->getAutocompleteDisplayLimit();
     }
 
     /**
@@ -290,13 +305,14 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
      *
      * @param string $activeSearchClass Active search class ID
      * @param string $activeHandler     Active search handler
+     * @param array  $hiddenFilters     Currently applied hidden filters (if any)
      *
      * @return array
      */
-    public function getHandlers($activeSearchClass, $activeHandler)
+    public function getHandlers($activeSearchClass, $activeHandler, array $hiddenFilters = [])
     {
         return $this->combinedHandlersActive()
-            ? $this->getCombinedHandlers($activeSearchClass, $activeHandler)
+            ? $this->getCombinedHandlers($activeSearchClass, $activeHandler, $hiddenFilters)
             : $this->getBasicHandlers($activeSearchClass, $activeHandler);
     }
 
@@ -333,7 +349,7 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
     protected function getBasicHandlers($activeSearchClass, $activeHandler)
     {
         $handlers = [];
-        $options = $this->optionsManager->get($activeSearchClass);
+        $options = $this->getOptionsForTarget($activeSearchClass);
         foreach ($options->getBasicHandlers() as $searchVal => $searchDesc) {
             $handlers[] = [
                 'value' => $searchVal, 'label' => $searchDesc, 'indent' => false,
@@ -415,20 +431,68 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
+     * Given the current active search class and array of hidden filters, return the most appropriate active
+     * target value from the search box configuration.
+     *
+     * @param array  $handlerConfig     Settings from getCombinedHandlerConfig()
+     * @param string $activeSearchClass Current active backend
+     * @param array  $hiddenFilters     Current applied hidden filters
+     *
+     * @return string
+     */
+    protected function getFilteredActiveSearchClass(
+        array $handlerConfig,
+        string $activeSearchClass,
+        array $hiddenFilters
+    ): string {
+        $configHelper = $this->getView()->plugin('config');
+
+        // If we have hidden filters, let's try to match them up with a configured option:
+        if (!empty($hiddenFilters)) {
+            foreach ($handlerConfig['type'] as $i => $type) {
+                $target = $handlerConfig['target'][$i] ?? '';
+                if ($type === 'VuFind' && str_starts_with($target, $activeSearchClass . ':')) {
+                    $rawHFConfig = $configHelper->get('config')->toArray()['SearchTabsFilters'][$target]
+                        ?? $configHelper->get('combined')->toArray()[$target]['filter']
+                        ?? [];
+                    // Account for all possible configuration formats -- an array or a string:
+                    $hiddenFilterConfig = (array)($rawHFConfig);
+                    $match = true;
+                    foreach ($hiddenFilterConfig as $hf) {
+                        [$field, $value] = explode(':', $hf);
+                        $value = trim($value, '"');
+                        if (!in_array($value, $hiddenFilters[$field] ?? [])) {
+                            $match = false;
+                            break;
+                        }
+                    }
+                    if ($match) {
+                        return $target;
+                    }
+                }
+            }
+        }
+        return $activeSearchClass;
+    }
+
+    /**
      * Support method for getHandlers() -- load combined settings.
      *
      * @param string $activeSearchClass Active search class ID
      * @param string $activeHandler     Active search handler
+     * @param array  $hiddenFilters     Currently applied hidden filters (if any)
      *
      * @return array
      */
-    protected function getCombinedHandlers($activeSearchClass, $activeHandler)
+    protected function getCombinedHandlers($activeSearchClass, $activeHandler, array $hiddenFilters = [])
     {
         // Build settings:
         $handlers = [];
         $backupSelectedIndex = false;
         $addedBrowseHandlers = false;
         $settings = $this->getCombinedHandlerConfig($activeSearchClass);
+        $filteredActiveSearchClass
+            = $this->getFilteredActiveSearchClass($settings, $activeSearchClass, $hiddenFilters);
         $typeCount = count($settings['type']);
         for ($i = 0; $i < $typeCount; $i++) {
             $type = $settings['type'][$i];
@@ -436,20 +500,41 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
             $label = $settings['label'][$i];
 
             if ($type == 'VuFind') {
-                $options = $this->optionsManager->get($target);
                 $j = 0;
-                $basic = $options->getBasicHandlers();
+                try {
+                    $options = $this->getOptionsForTarget($target);
+                    $basic = $options->getBasicHandlers();
+                } catch (\Exception $e) {
+                    // If we can't get the options or basic handlers for the search
+                    // target, then log it and don't add it to the search box
+                    $baseMsg = "Missing required data for {$target}. Could not add to search box.";
+                    $shortDetails = $e->getMessage();
+                    $fullDetails = (string)$e;
+                    $this->logError(
+                        $baseMsg,
+                        [
+                            'details' => [
+                                1 => "$baseMsg $shortDetails",
+                                2 => "$baseMsg $shortDetails",
+                                3 => "$baseMsg $shortDetails",
+                                4 => "$baseMsg $fullDetails",
+                                5 => "$baseMsg $fullDetails",
+                            ],
+                        ]
+                    );
+                    continue;
+                }
                 if (empty($basic)) {
                     $basic = ['' => ''];
                 }
                 foreach ($basic as $searchVal => $searchDesc) {
                     $j++;
-                    $selected = $target == $activeSearchClass
+                    $selected = $target == $filteredActiveSearchClass
                         && $activeHandler == $searchVal;
                     if (
                         !$selected
                         && $backupSelectedIndex === false
-                        && $target == $activeSearchClass
+                        && $target == $filteredActiveSearchClass
                     ) {
                         $backupSelectedIndex = count($handlers);
                     }
@@ -462,7 +547,7 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper
                         $indent = false;
                     } else {
                         $finalLabel = $j == 1 ? $label : $searchDesc;
-                        $indent = $j == 1 ? false : true;
+                        $indent = $j != 1;
                     }
                     $handlers[] = [
                         'value' => $type . ':' . $target . '|' . $searchVal,

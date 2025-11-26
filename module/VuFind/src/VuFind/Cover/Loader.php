@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -593,11 +593,7 @@ class Loader extends \VuFind\ImageLoader
         if (!($imageGD = @imagecreatefromstring($imageData))) {
             return false;
         }
-        if (!@imagejpeg($imageGD, $jpeg)) {
-            return false;
-        }
-
-        return true;
+        return @imagejpeg($imageGD, $jpeg);
     }
 
     /**
@@ -649,12 +645,9 @@ class Loader extends \VuFind\ImageLoader
             // All other services cache based on configuration:
             $conf = isset($this->config->Content->coverimagesCache)
                 ? trim(strtolower($this->config->Content->coverimagesCache)) : true;
-            if ($conf === true || $conf === 1 || $conf === '1' || $conf === 'true') {
+            if (in_array($conf, [true, 1, '1', 'true'], true)) {
                 $cache = true;
-            } elseif (
-                $conf === false || $conf === 0 || $conf === '0'
-                || $conf === 'false'
-            ) {
+            } elseif (in_array($conf, [false, 0, '0', 'false'], true)) {
                 $cache = false;
             } else {
                 $conf = array_map('trim', explode(',', $conf));

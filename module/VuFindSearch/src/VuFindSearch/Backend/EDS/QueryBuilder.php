@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -48,6 +48,10 @@ class QueryBuilder
     /**
      * Default query (used when query string is empty). This should retrieve all
      * records in the index, facilitating high-level facet-based browsing.
+     *
+     * Note that as of May 13, 2025, this functionality is no longer supported by
+     * the API and was disabled in https://github.com/vufind-org/vufind/pull/4364
+     * but the code is retained in case it will be useful again in future.
      *
      * @var string
      */

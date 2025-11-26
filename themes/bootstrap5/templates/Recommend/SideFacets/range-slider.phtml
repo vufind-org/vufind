@@ -1,9 +1,9 @@
 <?php
   // Sanitize inputs:
   $sanitize = match($this->facet['type']) {
-    'date' => fn ($val) => preg_replace('/[^\d]*/', '', $val), // digits only for year-only dates
+    'date' => fn ($val) => preg_replace('/^.*?(-?\d+).*/', '$1', $val), // digits/sign only for year-only dates
     'fulldate' => fn ($val) => substr($val, 0, 10),
-    'numeric' => fn ($val) => preg_replace('/[^\d.]*/', '', $val), // digits/decimal points only for numeric
+    'numeric' => fn ($val) => preg_replace('/^.*?(-?[\d.]+).*/', '$1', $val), // digits/decimal points/sign only for numeric
     default => fn ($val) => $val, // no sanitization for "generic" ranges
   };
   $cleanValues = array_map($sanitize, $this->facet['values'] ?? []);
@@ -31,11 +31,14 @@
       </div>
     </div>
     <?php if ($isDateRange): ?>
+      <?php $options = $this->searchOptions($this->searchClassId); ?>
       <?=$this->component('date-range-slider', [
         'values' => $cleanValues,
         'sliderId' => $safeBaseId . $this->escapeHtml($this->facet['type']) . 'Slider',
         'inputMinId' => $safeBaseId . 'from',
         'inputMaxId' => $safeBaseId . 'to',
+        'rangeMin' => $options->getDateRangeSliderMinValue($this->title),
+        'rangeMax' => $options->getDateRangeSliderMaxValue($this->title),
       ])?>
     <?php endif; ?>
     <input class="btn btn-default" type="submit" value="<?=$this->transEscAttr('Set')?>">

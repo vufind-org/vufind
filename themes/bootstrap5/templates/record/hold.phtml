@@ -1,7 +1,4 @@
 <?php
-    // Set page title.
-    $this->headTitle($this->translate('request_place_text') . ': ' . $this->driver->getBreadcrumb());
-
     // Set up breadcrumbs:
     $this->breadcrumbs()->reset();
     if ($url = $this->searchMemory()->getLastSearchUrl()) {
@@ -9,8 +6,11 @@
     }
     $this->breadcrumbs()->add(...$this->recordLinker()->getBreadcrumbParams($this->driver))
       ->add($this->translate('request_place_text'), active: true);
+
+    $enumchronRaw = $this->gatheredDetails['requestedItem']['enumchron'] ?? '';
+    $enumchron = $enumchronRaw !== '' ? " ($enumchronRaw)" : '';
 ?>
-<h2><?=$this->transEsc('request_place_text')?></h2>
+<?=$this->component('page-title', ['title' => $this->translate('request_place_text'), 'headTitle' => $this->translate('request_place_text') . ': ' . $this->driver->getBreadcrumb()]);?>
 <?php if ($this->helpTextHtml): ?>
   <p class="helptext"><?=$this->helpTextHtml?></p>
 <?php endif; ?>
@@ -18,7 +18,7 @@
 <form class="form-record-hold" method="post" name="placeHold" data-clear-account-cache="holds">
   <?=$this->flashmessages()?>
   <label class="form-label"><?=$this->transEsc('Title')?></label>
-  <p class="form-control-static"><?=$this->driver->getBreadcrumb() ?></p>
+  <p class="form-control-static"><?=$this->escapeHtml($this->driver->getBreadcrumb() . $enumchron) ?></p>
   <?php if (in_array('comments', $this->extraHoldFields)): ?>
     <div class="form-group hold-comment">
       <label class="form-label"><?=$this->transEsc('Comments')?>:</label>
@@ -94,7 +94,7 @@
             <noscript> (<?=$this->transEsc('Please enable JavaScript.')?>)</noscript>
           <?php endif; ?>
         </label>
-        <select id="pickUpLocation" name="gatheredDetails[pickUpLocation]" data-default="<?=$this->escapeHtmlAttr($selected)?>" class="form-control">
+        <select id="pickUpLocation" name="gatheredDetails[pickUpLocation]" data-default="<?=$this->escapeHtmlAttr($selected)?>" class="form-select">
           <?php if ($selected === false): ?>
           <option value="" selected="selected">
             <?=$this->transEsc('select_pickup_location')?>

@@ -43,24 +43,8 @@ input[type="search"]::-webkit-search-decoration {
 
   // Loading spinner
   .loading-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    padding: 2rem;
-    display: flex;
-    font-size: 150%;
+    @include loading-overlay();
     align-items: flex-start;
-    justify-content: center;
-    background-color: rgba(0,0,0,0.2);
-
-    .loading-spinner {
-      padding: 2rem;
-      background-color: rgba(0,0,0,0.6);
-      border-radius: $border-radius-lg;
-      color: $gray-lighter;
-    }
   }
 }
 
@@ -155,7 +139,11 @@ input[type="search"]::-webkit-search-decoration {
   .home-facet-list { flex: 0 1 100%; }
 }
 
-header .container.navbar { margin-bottom: 0; }
+header .container.navbar {
+  margin-bottom: 0;
+  // Use same padding as front page that doesn't have a navbar:
+  --bs-navbar-padding-x: calc(var(--bs-gutter-x)*.5);
+}
 
 .search-sort,
 .search-result-limit {
@@ -179,10 +167,20 @@ header .container.navbar { margin-bottom: 0; }
   padding-bottom: 0.5rem;
 }
 
+.search-controls form:not(:last-child) {
+  margin-bottom: 0.25rem;
+}
+
 @include media-breakpoint-up(sm) {
   .search-header { display: flex; }
   .search-stats { flex-grow: 1; }
   .search-controls { text-align: right; }
+}
+
+// Hide record versions in embedded accordions/tabs:
+.record-list .panel-group .record-versions,
+.record-list .tab-content .record-versions {
+  display: none;
 }
 
 .versions-tab {
@@ -215,8 +213,18 @@ header .container.navbar { margin-bottom: 0; }
   padding-inline-end: 1rem;
   margin-top: .25rem;
 }
-.bulkActionButtons label { display: inline-block; }
-.bulkActionButtons label input { margin-top: 2px; }
+.bulkActionButtons label {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  padding-inline: 0;
+  padding-block: 0.5em;
+  line-height: normal;
+
+  [type="checkbox"] {
+    margin: 0;
+  }
+}
 
 .action-toolbar,
 .selection-controls-bar {
@@ -244,6 +252,7 @@ header .container.navbar { margin-bottom: 0; }
 }
 .result {
   display: flex;
+  align-items: start;
   padding-top: 1rem;
 
   .record-checkbox,
@@ -264,7 +273,6 @@ header .container.navbar { margin-bottom: 0; }
     padding-top: .2rem;
   }
 
-  .title,
   .result-author,
   .fulltext {
     display: inline-block;
@@ -293,22 +301,24 @@ header .container.navbar { margin-bottom: 0; }
     }
   }
 
-  @include media-breakpoint-down(sm) {
-    a {
-      max-width: 100%;
-      text-decoration: underline;
-    }
-  }
   @include media-breakpoint-up(sm) {
     .record-checkbox {
-      display: block;
-      flex: 0;
+      display: flex;
+      flex: none;
+      align-items: center;
+      gap: 0.2em;
+      height: fit-content;
       cursor: pointer;
+
+      input[type="checkbox"] {
+        margin: 0;
+      }
     }
     .record-number {
       display: block;
-      flex: 0 2rem;
-      text-align: center;
+      flex: none;
+      min-width: 2ch;
+      text-align: end;
     }
   }
 }
@@ -368,12 +378,16 @@ header .container.navbar { margin-bottom: 0; }
 }
 .recordcover {
   white-space: normal;
-  line-height: 1.15;
+  line-height: normal;
 }
 
 .result-body {
   padding: 0;
   padding-bottom: .25rem;
+
+  .author sup {
+    display: none;
+  }
 }
 
 .result-body,
@@ -391,6 +405,10 @@ header .container.navbar { margin-bottom: 0; }
 
 .result-links a {
   line-height: 1.5;
+
+  &.icon-link {
+    display: flex;
+  }
 }
 
 .result-links .alert { margin: 0; }
@@ -710,8 +728,14 @@ header .container.navbar { margin-bottom: 0; }
         padding: 0px;
       }
     }
+    .operator-and-term {
+      white-space:nowrap;
+    }
     .filters-term {
       font-size: 0.8em
+    }
+    .filters-not, .filters-or, .filters-and {
+      font-weight: bold;
     }
     .filter-value {
       display: inline-block;
@@ -752,8 +776,6 @@ header .container.navbar { margin-bottom: 0; }
   }
 }
 
-.toolbar-btn,
-.reset-filters-btn,
 .clear-selection {
   border: 0;
   color: $gray-dark;
@@ -766,37 +788,16 @@ header .container.navbar { margin-bottom: 0; }
   }
 }
 
-.toolbar-btn,
 .reset-filters-btn {
-  @extend .icon-link;
+  @extend .toolbar-btn;
   gap: 0.25rem;
   margin-bottom: 4px;
   margin-top: 4px;
-  padding: $btn-padding-y $btn-padding-x;
-}
-.reset-filters-btn {
-  flex: none;
 }
 
-.toolbar-btn {
-  display: inline-block;
-  vertical-align: middle;
-  border: 1px solid rgba(0 0 0 / 0.1);
-}
-
-.clear-selection{
+.clear-selection {
   font-weight: 700;
   flex-basis: 100%;
-}
-
-.selection-controls-bar {
-  .clear-selection, label {
-    padding: .25rem .4rem .15rem .4rem;
-  }
-
-  input[type="checkbox"] {
-    margin-inline-end: .4rem;
-  }
 }
 
 .active-filters .filters a.filter-value:hover,
@@ -897,11 +898,12 @@ table.search-history-table {
       height: 100%;
       display: flex;
       align-items: center;
-      gap: 0.2rem;
+      gap: 1ch;
     }
 
     #searchForm-reset {
       width: 2em;
+      height: 2em;
       border: none;
       border-radius: 50%;
       background-color: $gray-lighter;

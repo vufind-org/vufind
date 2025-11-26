@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,9 +29,18 @@
 
 namespace VuFindTest\Feature;
 
+use Laminas\Cache\Storage\Adapter\AdapterOptions;
+use Laminas\Cache\Storage\StorageInterface;
 use Laminas\View\Renderer\PhpRenderer;
+use Psr\Container\ContainerInterface;
+use VuFind\Cache\Manager as CacheManager;
+use VuFind\Config\ConfigManagerInterface;
+use VuFind\View\Helper\Root\CleanHtml;
+use VuFind\View\Helper\Root\CleanHtmlFactory;
 use VuFind\View\Helper\Root\SearchMemory;
+use VuFindTest\Container\MockContainer;
 use VuFindTheme\View\Helper\AssetManager;
+use VuFindTheme\View\Helper\AssetManagerFactory;
 
 /**
  * Trait for tests involving Laminas Views.
@@ -53,7 +62,9 @@ trait ViewTrait
      */
     protected function getAssetManager(PhpRenderer $renderer): AssetManager
     {
-        $helper = new AssetManager();
+        $container = new MockContainer($this);
+        $factory = new AssetManagerFactory();
+        $helper = $factory($container, AssetManager::class);
         $helper->setView($renderer);
         return $helper;
     }
@@ -120,5 +131,50 @@ trait ViewTrait
                 ->willReturn(-123);
         }
         return new \VuFind\View\Helper\Root\SearchMemory($memory);
+    }
+
+    /**
+     * Create the cleanHtml helper
+     *
+     * @return CleanHtml
+     */
+    protected function createCleanHtmlHelper(): CleanHtml
+    {
+        // The FilesystemOptions class is final and cannot be mocked, so create our own as a workaround:
+        $cacheOptions = new class () extends AdapterOptions {
+            /**
+             * Get cache dir
+             *
+             * @return string
+             */
+            public function getCacheDir(): string
+            {
+                return '';
+            }
+        };
+        $cache = $this->createMock(StorageInterface::class);
+        $cache->expects($this->any())
+            ->method('getOptions')
+            ->willReturn($cacheOptions);
+        $cacheManager = $this->createMock(CacheManager::class);
+        $cacheManager->expects($this->any())
+            ->method('getCache')
+            ->willReturn($cache);
+        $configManager = $this->createMock(ConfigManagerInterface::class);
+        $configManager->expects($this->any())
+            ->method('getConfigArray')
+            ->willReturn([]);
+        $container = $this->createMock(ContainerInterface::class);
+        $container->expects($this->any())
+            ->method('get')
+            ->willReturnCallback(
+                function ($class) use ($cacheManager, $configManager) {
+                    return match ($class) {
+                        CacheManager::class => $cacheManager,
+                        ConfigManagerInterface::class => $configManager,
+                    };
+                }
+            );
+        return (new CleanHtmlFactory())($container, CleanHtml::class);
     }
 }

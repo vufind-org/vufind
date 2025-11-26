@@ -11,16 +11,16 @@ jobs:
       VUFIND_LOCAL_DIR: $GITHUB_WORKSPACE/local
     strategy:
       matrix:
-        php-version: ['8.1', '8.2', '8.3']
+        php-version: ['8.2', '8.3', '8.4']
         # We run PHP-based tests on all platforms (qa-php), but we only include PHP AND
         # Javascript-related tests (qa-console) once. Since the JS results should be the
         # same on all platforms, we don't need to repeat them.
         include:
-          - php-version: 8.1
-            phing_tasks: "qa-php"
           - php-version: 8.2
-            phing_tasks: "qa-console"
+            phing_tasks: "qa-php"
           - php-version: 8.3
+            phing_tasks: "qa-console"
+          - php-version: 8.4
             phing_tasks: "qa-php"
 
     steps:
@@ -29,18 +29,18 @@ jobs:
         with:
           php-version: ${{ matrix.php-version }}
           extensions: intl, xsl
-          tools: composer:2.1.6
+          tools: composer:2.8.1
           ini-values: error_reporting=E_ALL
 
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
 
       - name: Disable Solr installation
         run: touch solr/.disableAutomaticInstall
 
       - name: Setup node
         if: ${{ matrix.phing_tasks == 'qa-console' }}
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: '20'
 
@@ -49,7 +49,7 @@ jobs:
         uses: actions/cache@v4
         with:
           path: ~/.npm
-          key: npm-${{ hashFiles('package-lock.json') }}
+          key: npm-${{ hashFiles('**/package.json') }}
           restore-keys: npm-
 
       - name: Install node dependencies
@@ -96,6 +96,13 @@ jobs:
           path: tests/phpcs.cache.json
           key: "php-${{ matrix.php-version }}-phpcs-${{ github.sha }}"
           restore-keys: "php-${{ matrix.php-version }}-phpcs-"
+
+      - name: Cache rector data
+        uses: actions/cache@v4
+        with:
+          path: .rector
+          key: "php-${{ matrix.php-version }}-rector-${{ github.sha }}"
+          restore-keys: "php-${{ matrix.php-version }}-rector-"
 
       - name: Install composer dependencies
         run: composer install

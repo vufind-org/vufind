@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -34,16 +34,15 @@ use function func_get_args;
 /**
  * Unit tests for Image CAPTCHA handler factory.
  *
- * @requires extension gd
- * @requires function imagepng
- * @requires function imageftbbox
- *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
+#[\PHPUnit\Framework\Attributes\RequiresPhpExtension('gd')]
+#[\PHPUnit\Framework\Attributes\RequiresFunction('imagepng')]
+#[\PHPUnit\Framework\Attributes\RequiresFunction('imageftbbox')]
 class ImageFactoryTest extends \PHPUnit\Framework\TestCase
 {
     /**
@@ -53,9 +52,8 @@ class ImageFactoryTest extends \PHPUnit\Framework\TestCase
      * @param string $expectedCache Expected cache path
      *
      * @return void
-     *
-     * @dataProvider factoryDataProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('factoryDataProvider')]
     public function testFactory($homeUrl = null, $expectedCache = '/cache/'): void
     {
         // Set up mock services expected by factory:
@@ -63,20 +61,20 @@ class ImageFactoryTest extends \PHPUnit\Framework\TestCase
         $container = new \VuFindTest\Container\MockContainer($this);
         $storage = $container->get(\Laminas\Cache\Storage\StorageInterface::class);
         $storage->expects($this->once())->method('getOptions')
-            ->will($this->returnValue($options));
+            ->willReturn($options);
         $cacheManager = $container->get(\VuFind\Cache\Manager::class);
         $cacheManager->expects($this->once())->method('getCache')
             ->with($this->equalTo('public'))
-            ->will($this->returnValue($storage));
+            ->willReturn($storage);
 
         $url = $container->get(\VuFind\View\Helper\Root\Url::class);
         $url->expects($this->once())->method('__invoke')
             ->with($this->equalTo('home'))
-            ->will($this->returnValue($homeUrl));
+            ->willReturn($homeUrl);
 
         $manager = $container->get('ViewHelperManager');
         $manager->expects($this->once())->method('get')
-            ->with($this->equalTo('url'))->will($this->returnValue($url));
+            ->with($this->equalTo('url'))->willReturn($url);
 
         $factory = new \VuFind\Captcha\ImageFactory();
         $fakeImage = new class () {

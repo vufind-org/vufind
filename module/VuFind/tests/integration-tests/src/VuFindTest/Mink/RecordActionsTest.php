@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -53,6 +53,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     use \VuFindTest\Feature\AutocompleteTrait;
     use \VuFindTest\Feature\LiveDatabaseTrait;
     use \VuFindTest\Feature\SearchSortTrait;
+    use \VuFindTest\Feature\TagTrait;
     use \VuFindTest\Feature\UserCreationTrait;
 
     /**
@@ -77,24 +78,6 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performSearch($query);
         $this->clickCss($page, '.result a.title');
         return $page;
-    }
-
-    /**
-     * Make new account
-     *
-     * @param Element $page     Page element
-     * @param string  $username Username to create
-     *
-     * @return void
-     */
-    protected function makeAccount(Element $page, string $username): void
-    {
-        $this->clickCss($page, '.modal-body .createAccountLink');
-        $this->fillInAccountForm(
-            $page,
-            ['username' => $username, 'email' => $username . '@vufind.org']
-        );
-        $this->clickCss($page, '#accountForm .btn.btn-primary');
     }
 
     /**
@@ -157,9 +140,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test adding comments on records (with Captcha enabled).
      *
      * @return void
-     *
-     * @depends testAddComment
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddComment')]
     public function testAddCommentWithCaptcha(): void
     {
         // Set up configs:
@@ -209,42 +191,11 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Add tags to a record
-     *
-     * @param Element $page Page object
-     * @param string  $tags Tag(s) to add
-     * @param ?string $user Username to log in with (null if already logged in)
-     * @param ?string $pass Password to log in with (null if already logged in)
-     *
-     * @return void
-     */
-    protected function addTagsToRecord(
-        Element $page,
-        string $tags,
-        ?string $user = null,
-        ?string $pass = null
-    ): void {
-        $this->clickCss($page, '.tag-record');
-        // Login if necessary
-        if (!empty($user) && !empty($pass)) {
-            $this->fillInLoginForm($page, $user, $pass);
-            $this->submitLoginForm($page);
-        }
-        // Add tags
-        $this->findCssAndSetValue($page, '.modal #addtag_tag', $tags);
-        $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->waitForPageLoad($page);
-        $this->assertEquals('Tags Saved', $this->findCssAndGetText($page, '.modal-body .alert-success'));
-        $this->closeLightbox($page);
-    }
-
-    /**
      * Test adding tags on records.
      *
      * @return void
-     *
-     * @depends testAddComment
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddComment')]
     public function testAddTag(): void
     {
         // Go to a record view
@@ -262,16 +213,9 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->addTagsToRecord($page, 'one 2 "three 4" five', 'username2', 'test');
         // Count tags
         $this->waitForPageLoad($page);
-        $tags = $page->findAll('css', '.tagList .tag');
-        $this->assertCount(4, $tags);
-        $tvals = [];
-        foreach ($tags as $t) {
-            $tvals[] = $this->findCssAndGetText($t, 'a');
-        }
-        sort($tvals);
-        $this->assertEquals($tvals, ['2', 'five', 'one', 'three 4']);
+        $this->assertEquals(['2', 'five', 'one', 'three 4'], $this->getTagsFromPage($page));
         // Remove a tag
-        $this->clickCss($tags[0], 'button');
+        $this->clickCss($page, '.tagList .tag button');
         $this->waitForPageLoad($page);
         $tags = $page->findAll('css', '.tagList .tag');
         // Count tags with missing
@@ -316,9 +260,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test searching for one of the tags created above.
      *
      * @return void
-     *
-     * @depends testAddTag
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddTag')]
     public function testTagSearch(): void
     {
         // First try an undefined tag:
@@ -358,11 +301,9 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $expectedLast  Expected last title after sorting
      *
      * @return void
-     *
-     * @dataProvider getTagSearchSortData
-     *
-     * @depends testTagSearch
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testTagSearch')]
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTagSearchSortData')]
     public function testTagSearchSort(
         int $index,
         string $expectedSort,
@@ -380,9 +321,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test that default autocomplete behavior is correct on a non-default search handler.
      *
      * @return void
-     *
-     * @depends testTagSearch
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testTagSearch')]
     public function testTagAutocomplete(): void
     {
         $session = $this->getMinkSession();
@@ -409,9 +349,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test adding case sensitive tags on records.
      *
      * @return void
-     *
-     * @depends testAddTag
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddTag')]
     public function testAddSensitiveTag(): void
     {
         // Set up configs:
@@ -440,35 +379,12 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Set up and access the Tag Admin page.
-     *
-     * @param string $subPage The tag admin sub-page (optional)
-     *
-     * @return Element
-     */
-    protected function goToTagAdmin(string $subPage = ''): Element
-    {
-        $this->changeConfigs(
-            [
-                'config' => [
-                    'Site' => ['admin_enabled' => 1],
-                    'Social' => ['case_sensitive_tags' => 'true'],
-                ],
-            ],
-        );
-        $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl('/Admin/Tags' . $subPage));
-        return $session->getPage();
-    }
-
-    /**
      * Test that the tag admin module works.
      *
      * @return void
-     *
-     * @depends testTagSearch
-     * @depends testAddSensitiveTag
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testTagSearch')]
+    #[\PHPUnit\Framework\Attributes\Depends('testAddSensitiveTag')]
     public function testTagAdminHome(): void
     {
         // Go to admin page:
@@ -483,10 +399,9 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test that listing tags in Admin works.
      *
      * @return void
-     *
-     * @depends testTagSearch
-     * @depends testAddSensitiveTag
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testTagSearch')]
+    #[\PHPUnit\Framework\Attributes\Depends('testAddSensitiveTag')]
     public function testTagAdminList(): void
     {
         $page = $this->goToTagAdmin('/List');
@@ -538,9 +453,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test that managing tags in Admin works.
      *
      * @return void
-     *
-     * @depends testTagAdminList
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testTagAdminList')]
     public function testTagAdminManage(): void
     {
         $page = $this->goToTagAdmin('/Manage');
@@ -587,7 +501,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCss($page, '.alert-info')->getText()
         );
         $this->assertStringContainsString(
-            'You are using the following filter - Username: All, Tag: All, Resource: dewey browse test (',
+            'You are using the following filter - Username: All, Tag: All, Resource: Dewey browse test (',
             $this->findCss($page, '.alert-info', index: 1)->getText()
         );
         $this->clickCss($page, 'input[value="No"]');
@@ -795,10 +709,9 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @param bool $allowRemove Value for remove_rating config
      *
-     * @dataProvider getTestRatingData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestRatingData')]
     public function testRating($allowRemove): void
     {
         // Set up configs:
@@ -947,6 +860,84 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test adding comments, rating and tag to a record and then
+     * delete them from user account menu
+     *
+     * @return void
+     */
+    public function testUserContentDeletion()
+    {
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Social' => [
+                        'rating' => true,
+                        'remove_rating' => true,
+                    ],
+                ],
+            ]
+        );
+
+        $page = $this->gotoRecord();
+        $this->waitForPageLoad($page);
+        $this->clickCss($page, '#loginOptions a');
+        $this->findCss($page, $this->openModalUsernameFieldSelector);
+        $this->makeAccount($page, 'username5');
+
+        // Add a rating
+        $this->waitForPageLoad($page);
+        $this->clickCss($page, 'div.rating-average a');
+        $this->waitForPageLoad($page);
+        $this->clickCss($page, '.modal form div.star-rating label', null, 5);
+        $this->waitForPageLoad($page);
+        $this->assertEquals('Rating Saved', $this->findCssAndGetText($page, '.alert-success'));
+
+        // Add two comments
+        $this->clickCss($page, '.record-tabs .usercomments a');
+        $this->waitForPageLoad($page);
+        $this->findCssAndSetValue($page, 'form.comment-form [name="comment"]', 'one');
+        $this->clickCss($page, 'form.comment-form .btn-primary');
+        $this->waitForPageLoad($page);
+        $this->findCssAndSetValue($page, 'form.comment-form [name="comment"]', 'two');
+        $this->clickCss($page, 'form.comment-form .btn-primary');
+        $this->waitForPageLoad($page);
+
+        // Add a tag
+        $this->addTagsToRecord($page, 'testtag');
+
+        // Remove comments, tags and ratings from user account menu
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/MyResearch/UserContent');
+        $page = $session->getPage();
+        $this->findCss($page, '.usercontent-table');
+        $this->assertCount(2, $page->findAll('css', 'div.user-comment-truncate'));
+        $this->clickCss($page, '.select-all-container input[name="selectAll"]');
+        $this->clickCss($page, 'button#cancelSelected');
+        $this->clickCss($page, 'a#confirm_cancel_selected_yes');
+        $this->unfindCss($page, '.usercontent-table');
+
+        $this->clickCss($page, 'li#user-content-tag a.nav-link');
+        $this->waitForPageLoad($page);
+        $this->findCss($page, '.usercontent-table');
+        $this->assertEquals('testtag', $this->findCssAndGetText($page, '.usercontent-table .user-tag div'));
+        $this->clickCss($page, '.select-all-container input[name="selectAll"]');
+        $this->clickCss($page, 'button#cancelSelected');
+        $this->clickCss($page, 'a#confirm_cancel_selected_yes');
+        $this->unfindCss($page, '.usercontent-table');
+
+        $this->clickCss($page, 'li#user-content-ratings a.nav-link');
+        $this->waitForPageLoad($page);
+        $this->findCss($page, '.usercontent-table');
+        $inputs = $page->findAll('css', 'div.star-rating input:checked');
+        $this->assertCount(1, $inputs);
+        $this->assertEquals('50', $inputs[0]->getValue());
+        $this->clickCss($page, '.select-all-container input[name="selectAll"]');
+        $this->clickCss($page, 'button#cancelSelected');
+        $this->clickCss($page, 'a#confirm_cancel_selected_yes');
+        $this->unfindCss($page, '.usercontent-table');
+    }
+
+    /**
      * Test export button found in toolbar
      *
      * @return void
@@ -982,6 +973,6 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      */
     public static function tearDownAfterClass(): void
     {
-        static::removeUsers(['username1', 'username2', 'username3', 'username4', 'emailmaniac']);
+        static::removeUsers(['username1', 'username2', 'username3', 'username4', 'username5', 'emailmaniac']);
     }
 }

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -51,9 +51,8 @@ class ConfigController extends AbstractAdmin
         $view->setTemplate('admin/config/home');
         $resolver = $this->getService(\VuFind\Config\PathResolver::class);
         $view->baseConfigPath = $resolver->getBaseConfigPath('');
-        $conf = $this->getConfig();
-        $view->showInstallLink
-            = isset($conf->System->autoConfigure) && $conf->System->autoConfigure;
+        $conf = $this->getConfigArray();
+        $view->showInstallLink = $conf['System']['autoConfigure'] ?? false;
         return $view;
     }
 
@@ -85,7 +84,8 @@ class ConfigController extends AbstractAdmin
 
             // Reload config now that it has been edited (otherwise, old setting
             // will persist in cache):
-            $this->getService(\VuFind\Config\PluginManager::class)->reload('config');
+            $this->getService(\VuFind\Config\ConfigManagerInterface::class)
+                ->getConfig('config', forceReload: true);
         } else {
             $this->flashMessenger()->addErrorMessage(
                 'Could not enable auto-configuration; check permissions on '

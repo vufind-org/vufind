@@ -2,10 +2,7 @@
   // Set up standard record scripts:
   $this->assetManager()->appendScriptLink('record.js');
   $this->assetManager()->appendScriptLink('check_save_statuses.js');
-  // Activate Syndetics Plus if necessary:
-  if ($this->syndeticsPlus()->isActive()) {
-    $this->assetManager()->appendScriptLink($this->syndeticsPlus()->getScript());
-  }
+
   // Add any extra scripts the tabs require:
   foreach ($this->tabsExtraScripts as $script) {
     $this->assetManager()->appendScriptLink($script);
@@ -30,7 +27,7 @@
   } else {
     $this->breadcrumbs()->add($this->translate('Collections'), $this->url('collections-home'));
   }
-  $this->breadcrumbs()->add(...$this->recordLinker()->getBreadcrumbParams($this->driver));
+  $this->breadcrumbs()->add(...$this->recordLinker()->getBreadcrumbParams($this->driver), active: true);
 
   // Set up search box:
   $this->layout()->searchbox = $this->context($this)->renderInContext(

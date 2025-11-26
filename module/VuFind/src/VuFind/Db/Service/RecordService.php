@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -31,9 +31,12 @@
 namespace VuFind\Db\Service;
 
 use Exception;
+use VuFind\Db\Entity\Record;
 use VuFind\Db\Entity\RecordEntityInterface;
-use VuFind\Db\Table\DbTableAwareInterface;
-use VuFind\Db\Table\DbTableAwareTrait;
+use VuFind\Db\Entity\ResourceEntityInterface;
+use VuFind\Db\Entity\UserResourceEntityInterface;
+
+use function count;
 
 /**
  * Database service for Records.
@@ -44,10 +47,8 @@ use VuFind\Db\Table\DbTableAwareTrait;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class RecordService extends AbstractDbService implements DbTableAwareInterface, RecordServiceInterface
+class RecordService extends AbstractDbService implements RecordServiceInterface
 {
-    use DbTableAwareTrait;
-
     /**
      * Retrieve a record by id.
      *
@@ -58,7 +59,13 @@ class RecordService extends AbstractDbService implements DbTableAwareInterface, 
      */
     public function getRecord(string $id, string $source): ?RecordEntityInterface
     {
-        return $this->getDbTable('record')->findRecord($id, $source);
+        $dql = 'SELECT r '
+            . 'FROM ' . RecordEntityInterface::class . ' r '
+            . 'WHERE r.recordId = :id AND r.source = :source';
+        $parameters = compact('id', 'source');
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        return $query->getOneOrNullResult();
     }
 
     /**
@@ -71,7 +78,18 @@ class RecordService extends AbstractDbService implements DbTableAwareInterface, 
      */
     public function getRecords(array $ids, string $source): array
     {
-        return $this->getDbTable('record')->findRecords($ids, $source);
+        if (empty($ids)) {
+            return [];
+        }
+
+        $dql = 'SELECT r '
+            . 'FROM ' . RecordEntityInterface::class . ' r '
+            . 'WHERE r.recordId IN (:ids) AND r.source = :source';
+        $parameters = compact('ids', 'source');
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $records = $query->getResult();
+        return $records;
     }
 
     /**
@@ -105,12 +123,25 @@ class RecordService extends AbstractDbService implements DbTableAwareInterface, 
      */
     public function cleanup(): int
     {
-        return $this->getDbTable('record')->cleanup();
+        $dql = 'SELECT r.id '
+            . 'FROM ' . RecordEntityInterface::class . ' r '
+            . 'JOIN ' . ResourceEntityInterface::class . ' re '
+            . 'WITH r.recordId = re.recordId AND r.source = re.source '
+            . 'LEFT JOIN ' . UserResourceEntityInterface::class . ' ur '
+            . 'WITH re.id = ur.resource '
+            . 'WHERE ur.id IS NULL';
+        $query = $this->entityManager->createQuery($dql);
+        $ids = $query->getResult();
+        $dql = 'DELETE FROM ' . RecordEntityInterface::class . ' r '
+            . 'WHERE r.id IN (:ids)';
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters(compact('ids'));
+        $query->execute();
+        return count($ids);
     }
 
     /**
-     * Delete a record by source and id. Return true if found and deleted, false if not found.
-     * Throws exception if something goes wrong.
+     * Delete a record by source and id
      *
      * @param string $id     Record ID
      * @param string $source Record source
@@ -120,12 +151,13 @@ class RecordService extends AbstractDbService implements DbTableAwareInterface, 
      */
     public function deleteRecord(string $id, string $source): bool
     {
-        $record = $this->getDbTable('record')->findRecord($id, $source);
-        if (!$record) {
-            return false;
-        }
-        $record->delete();
-        return true;
+        $dql = 'DELETE FROM ' . RecordEntityInterface::class . ' r '
+            . 'WHERE r.recordId = :id AND r.source = :source';
+        $parameters = compact('id', 'source');
+        $query = $this->entityManager->createQuery($dql);
+        $query->setParameters($parameters);
+        $result = $query->execute();
+        return $result;
     }
 
     /**
@@ -135,6 +167,6 @@ class RecordService extends AbstractDbService implements DbTableAwareInterface, 
      */
     public function createEntity(): RecordEntityInterface
     {
-        return $this->getDbTable('record')->createRow();
+        return $this->entityPluginManager->get(RecordEntityInterface::class);
     }
 }

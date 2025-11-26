@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -44,7 +44,7 @@ use VuFind\Service\MarkdownFactory;
  */
 class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Test to ensure the markdown factory is using right config for markdown
@@ -375,13 +375,13 @@ class MarkdownFactoryTest extends \PHPUnit\Framework\TestCase
             new \VuFindTest\Markdown\ExampleExtension()
         );
         $container->set(
-            \VuFind\Config\PluginManager::class,
-            $this->getMockConfigPluginManager(['markdown' => $config])
+            \VuFind\Config\ConfigManagerInterface::class,
+            $this->getMockConfigManager(['markdown' => $config])
         );
         $markdownFactory = new MarkdownFactory();
         return $markdownFactory(
             $container,
-            \League\CommonMark\ConverterInterface::class
+            \League\CommonMark\MarkdownConverter::class
         );
     }
 }

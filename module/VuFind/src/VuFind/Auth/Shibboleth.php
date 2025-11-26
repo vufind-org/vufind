@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -40,8 +40,6 @@ use VuFind\Auth\Shibboleth\ConfigurationLoaderInterface;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Service\ExternalSessionServiceInterface;
 use VuFind\Db\Service\UserCardServiceInterface;
-use VuFind\Db\Table\DbTableAwareInterface;
-use VuFind\Db\Table\DbTableAwareTrait;
 use VuFind\Exception\Auth as AuthException;
 
 /**
@@ -58,10 +56,8 @@ use VuFind\Exception\Auth as AuthException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Shibboleth extends AbstractBase implements DbTableAwareInterface
+class Shibboleth extends AbstractBase
 {
-    use DbTableAwareTrait;
-
     /**
      * Header name for entityID of the IdP that authenticated the user.
      */
@@ -238,9 +234,9 @@ class Shibboleth extends AbstractBase implements DbTableAwareInterface
      * @param string $target Full URL where external authentication method should
      * send user after login (some drivers may override this).
      *
-     * @return bool|string
+     * @return ?string
      */
-    public function getSessionInitiator($target)
+    public function getSessionInitiator(string $target): ?string
     {
         $config = $this->getConfig();
         $shibTarget = $config->Shibboleth->target ?? $target;
@@ -278,25 +274,19 @@ class Shibboleth extends AbstractBase implements DbTableAwareInterface
     }
 
     /**
-     * Perform cleanup at logout time.
+     * Get URL users should be redirected to for logout in external services if necessary.
      *
-     * @param string $url URL to redirect user to after logging out.
+     * @param string $url Internal URL to redirect user to after logging out.
      *
-     * @return string     Redirect URL (usually same as $url, but modified in
-     * some authentication modules).
+     * @return string Redirect URL (usually same as $url, but modified in some authentication modules).
      */
-    public function logout($url)
+    public function getLogoutRedirectUrl(string $url): string
     {
         // If single log-out is enabled, use a special URL:
         $config = $this->getConfig();
-        if (
-            isset($config->Shibboleth->logout)
-            && !empty($config->Shibboleth->logout)
-        ) {
-            $append = (str_contains($config->Shibboleth->logout, '?')) ? '&'
-                : '?';
-            $url = $config->Shibboleth->logout . $append . 'return='
-                . urlencode($url);
+        if (!empty($config->Shibboleth->logout)) {
+            $append = (str_contains($config->Shibboleth->logout, '?')) ? '&' : '?';
+            $url = $config->Shibboleth->logout . $append . 'return=' . urlencode($url);
         }
 
         // Send back the redirect URL (possibly modified):

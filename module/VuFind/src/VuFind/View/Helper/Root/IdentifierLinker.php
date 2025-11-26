@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -107,7 +107,7 @@ class IdentifierLinker extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Public method to render the identifier links template
+     * Render the identifier links template
      *
      * @param RecordDriver $driver The current record driver
      *
@@ -151,7 +151,7 @@ class IdentifierLinker extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Public method to check whether identifier links are active for current record
+     * Check whether identifier links are active for current record
      *
      * @param RecordDriver $driver  The current record driver
      * @param string       $context Display context ('results', 'record' or 'holdings')

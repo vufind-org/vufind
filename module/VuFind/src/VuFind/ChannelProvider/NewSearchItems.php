@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Channels
@@ -50,13 +50,7 @@ use function count;
 class NewSearchItems extends AbstractChannelProvider implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
-
-    /**
-     * Number of results to include in each channel.
-     *
-     * @var int
-     */
-    protected $channelSize;
+    use BatchTrait;
 
     /**
      * Maximum age (in days) of results to retrieve.
@@ -98,9 +92,9 @@ class NewSearchItems extends AbstractChannelProvider implements TranslatorAwareI
      */
     public function setOptions(array $options)
     {
-        $this->channelSize = $options['channelSize'] ?? 20;
         $this->maxAge = $options['maxAge'] ?? 30;
         $this->sort = $options['sort'] ?? 'first_indexed desc';
+        $this->setBatchSizeFromOptions($options);
     }
 
     /**
@@ -152,6 +146,7 @@ class NewSearchItems extends AbstractChannelProvider implements TranslatorAwareI
         $retVal = [
             'title' => $this->translate('New Items'),
             'providerId' => $this->providerId,
+            'limit' => $this->batchSize,
         ];
         $params->addHiddenFilter($this->newItems->getSolrFilter($this->maxAge));
         $params->setSort($this->sort, true);
@@ -160,7 +155,7 @@ class NewSearchItems extends AbstractChannelProvider implements TranslatorAwareI
         $command = new SearchCommand(
             $params->getSearchClassId(),
             $query,
-            limit: $this->channelSize,
+            limit: $this->batchSize,
             params: $paramBag
         );
         $result = $this->searchService->invoke($command)->getResult()->getRecords();

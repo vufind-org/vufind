@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -56,23 +56,6 @@ class TagsController extends AbstractAdmin
      * @var array
      */
     protected $params;
-
-    /**
-     * Get the url parameters
-     *
-     * @param string $param          A key to check the url params for
-     * @param bool   $prioritizePost If true, check the POST params first
-     * @param mixed  $default        Default value if no value found
-     *
-     * @return string
-     */
-    protected function getParam($param, $prioritizePost = true, $default = null)
-    {
-        $primary = $prioritizePost ? 'fromPost' : 'fromQuery';
-        $secondary = $prioritizePost ? 'fromQuery' : 'fromPost';
-        return $this->params()->$primary($param)
-            ?? $this->params()->$secondary($param, $default);
-    }
 
     /**
      * Tag Details
@@ -238,7 +221,8 @@ class TagsController extends AbstractAdmin
                     "Unexpected error retrieving resource $resourceId"
                 );
             }
-            $resourceMsg = "{$resource->getTitle()} ({$resource->getId()})";
+            $title = $resource->getDisplayTitle() ?? $resource->getTitle();
+            $resourceMsg = "$title ({$resource->getId()})";
         }
 
         $messages = [

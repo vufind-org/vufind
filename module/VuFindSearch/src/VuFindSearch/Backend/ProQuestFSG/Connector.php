@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ProQuestFSG
@@ -64,9 +64,11 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
      * Constructor
      *
      * @param \Laminas\Http\Client $client An HTTP client object
+     * @param array                $config ProQuestFSG config
      */
     public function __construct(
-        \Laminas\Http\Client $client
+        \Laminas\Http\Client $client,
+        protected array $config
     ) {
         parent::__construct(
             'https://fedsearch.proquest.com/search/sru',
@@ -87,7 +89,7 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
     {
         $params ??= new ParamBag();
         $params->set('query', "rec.identifier = \"{$id}\"");
-        return $this->search($params, 1, 1);
+        return $this->search($params, 0, 1);
     }
 
     /**
@@ -106,7 +108,10 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
         $params->set('recordSchema', 'marcxml');
 
         $options = $params->getArrayCopy();
-        $options['startRecord'] = $offset;
+
+        // startRecord uses 1-based offsets
+        $options['startRecord'] = $offset + 1;
+
         if (null !== $limit) {
             $options['maximumRecords'] = $limit;
         }
@@ -115,6 +120,11 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
         foreach (($options['filters'] ?? []) as $filter) {
             [$filterKey, $filterValue] = explode(':', $filter, 2);
             if ('Databases' == $filterKey) {
+                if (!$this->validateDatabaseValue($filterValue)) {
+                    // This may happen in the context of a blended search,
+                    // when the database is valid for another backend.
+                    return ['docs' => [], 'offset' => 0, 'total' => 0];
+                }
                 $path = '/' . $filterValue;
             } else {
                 $filterRelationValue = $filterValue ?
@@ -158,5 +168,27 @@ class Connector extends \VuFindSearch\Backend\SRU\Connector
             'total' => (int)($response->RecordCount),
             'facets' => $facets,
         ];
+    }
+
+    /**
+     * Checks whether a database code is valid for the ProQuestFSG API.
+     *
+     * @param string $value The database code to validate
+     *
+     * @return bool
+     */
+    protected function validateDatabaseValue(string $value)
+    {
+        if (!($this->config['Validation']['database_codes'] ?? false)) {
+            return true;
+        }
+
+        // ProQuestFSG database product codes are all-lowercase (and underscore) strings
+        if ($value != strtolower($value)) {
+            $this->debug("Invalid database code '$value'; should skip ProQuestFSG query.");
+            return false;
+        }
+
+        return true;
     }
 }

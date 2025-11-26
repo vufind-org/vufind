@@ -56,7 +56,6 @@ for %%a in (%MAPPINGS_FILENAMES%) do (
 set MAPPINGS_FILES=%MAPPINGS_FILES:~2,99999%
 setlocal DisableDelayedExpansion
 
-set SOLRCORE="authority"
 set EXTRA_SOLRMARC_SETTINGS="-Dsolr.indexer.properties=%MAPPINGS_FILES%"
 
 rem Call the standard script:

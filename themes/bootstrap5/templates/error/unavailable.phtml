@@ -1,14 +1,11 @@
 <?php
-  // Set page title.
-  $this->headTitle($this->translate('System Unavailable'));
-
   // Disable top search box -- this page has a special layout.
   $this->layout()->searchbox = false;
 
   $this->breadcrumbs()->set($this->translate('An error has occurred'), active: true);
 ?>
 <div class="alert alert-warning">
-  <h2><?=$this->transEsc('System Unavailable')?></h2>
+  <?=$this->component('page-title', ['title' => $this->translate('System Unavailable')]);?>
   <p>
     <?=$this->transEsc('The system is currently unavailable due to system maintenance')?>.
     <?=$this->transEsc('Please check back soon')?>.

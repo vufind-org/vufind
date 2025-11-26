@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -99,7 +99,7 @@ class AddUsingTemplateCommandTest extends \PHPUnit\Framework\TestCase
         $reader = $this->getMockReader();
         $reader->expects($this->once())->method('getTextDomain')
             ->with($this->equalTo($expectedPath), $this->equalTo(false))
-            ->will($this->returnValue(['bar' => 'baz']));
+            ->willReturn(['bar' => 'baz']);
         $command = $this->getMockCommand($normalizer, $reader);
         $command->expects($this->once())->method('addLineToFile')
             ->with(

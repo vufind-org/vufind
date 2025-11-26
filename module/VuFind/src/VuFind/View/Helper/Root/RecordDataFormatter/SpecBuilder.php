@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -41,13 +41,6 @@ namespace VuFind\View\Helper\Root\RecordDataFormatter;
 class SpecBuilder
 {
     /**
-     * Spec
-     *
-     * @var array
-     */
-    protected $spec = [];
-
-    /**
      * Highest position value so far.
      *
      * @var int
@@ -59,9 +52,8 @@ class SpecBuilder
      *
      * @param array $spec Existing specification lines (optional)
      */
-    public function __construct($spec = [])
+    public function __construct(protected array $spec = [])
     {
-        $this->spec = $spec;
         foreach ($spec as $current) {
             if (isset($current['pos']) && $current['pos'] > $this->maxPos) {
                 $this->maxPos = $current['pos'];
@@ -72,15 +64,19 @@ class SpecBuilder
     /**
      * Set a generic spec line.
      *
-     * @param string $key        Label to associate with this spec line
-     * @param string $dataMethod Method of data retrieval for rendering element
-     * @param string $renderType Type of rendering to use to generate output
-     * @param array  $options    Additional options
+     * @param string      $key        Label to associate with this spec line
+     * @param string|bool $dataMethod Method of data retrieval for rendering element
+     * @param ?string     $renderType Type of rendering to use to generate output
+     * @param array       $options    Additional options
      *
-     * @return void
+     * @return static
      */
-    public function setLine($key, $dataMethod, $renderType = null, $options = [])
-    {
+    public function setLine(
+        string $key,
+        string|bool $dataMethod,
+        ?string $renderType = null,
+        array $options = []
+    ): static {
         $options['dataMethod'] = $dataMethod;
         $options['renderType'] = $renderType;
         if (!isset($options['pos'])) {
@@ -88,6 +84,7 @@ class SpecBuilder
             $options['pos'] = $this->maxPos;
         }
         $this->spec[$key] = $options;
+        return $this;
     }
 
     /**
@@ -95,69 +92,70 @@ class SpecBuilder
      *
      * @param string $key Label associated with this spec line
      *
-     * @return void
+     * @return static
      */
-    public function removeLine($key)
+    public function removeLine(string $key): static
     {
         unset($this->spec[$key]);
+        return $this;
     }
 
     /**
      * Construct a multi-function template spec line.
      *
-     * @param string   $key        Label to associate with this spec line
-     * @param string   $dataMethod Method of data retrieval for rendering element
-     * @param callable $callback   Callback function for multi-processing
-     * @param array    $options    Additional options
+     * @param string      $key        Label to associate with this spec line
+     * @param string|bool $dataMethod Method of data retrieval for rendering element
+     * @param callable    $callback   Callback function for multi-processing
+     * @param array       $options    Additional options
      *
-     * @return void
+     * @return static
      */
-    public function setMultiLine($key, $dataMethod, $callback, $options = [])
+    public function setMultiLine(string $key, string|bool $dataMethod, callable $callback, array $options = []): static
     {
         $options['multiFunction'] = $callback;
-        $this->setLine($key, $dataMethod, 'Multi', $options);
+        return $this->setLine($key, $dataMethod, 'Multi', $options);
     }
 
     /**
      * Construct a combine alt template spec line.
      *
-     * @param string $key        Label to associate with this spec line
-     * @param string $dataMethod Method of data retrieval for rendering element
-     * @param array  $options    Additional options
+     * @param string      $key        Label to associate with this spec line
+     * @param string|bool $dataMethod Method of data retrieval for rendering element
+     * @param array       $options    Additional options
      *
-     * @return void
+     * @return static
      */
-    public function setCombineAltLine($key, $dataMethod, $options = [])
+    public function setCombineAltLine(string $key, string|bool $dataMethod, array $options = []): static
     {
-        $this->setLine($key, $dataMethod, 'CombineAlt', $options);
+        return $this->setLine($key, $dataMethod, 'CombineAlt', $options);
     }
 
     /**
      * Construct a record driver template spec line.
      *
-     * @param string $key        Label to associate with this spec line
-     * @param string $dataMethod Method of data retrieval for rendering element
-     * @param string $template   Record driver template to render with data
-     * @param array  $options    Additional options
+     * @param string      $key        Label to associate with this spec line
+     * @param string|bool $dataMethod Method of data retrieval for rendering element
+     * @param string      $template   Record driver template to render with data
+     * @param array       $options    Additional options
      *
-     * @return void
+     * @return static
      */
-    public function setTemplateLine($key, $dataMethod, $template, $options = [])
+    public function setTemplateLine(string $key, string|bool $dataMethod, string $template, array $options = []): static
     {
         $options['template'] = $template;
-        $this->setLine($key, $dataMethod, 'RecordDriverTemplate', $options);
+        return $this->setLine($key, $dataMethod, 'RecordDriverTemplate', $options);
     }
 
     /**
      * Reorder the specs to match the provided array of keys.
      *
      * @param array $orderedKeys Keys in the desired order
-     * @param int   $defaultPos  Position to use for elements not included in
+     * @param ?int  $defaultPos  Position to use for elements not included in
      * $orderedKeys (null to put unrecognized items at end of list).
      *
-     * @return void
+     * @return static
      */
-    public function reorderKeys($orderedKeys, $defaultPos = null)
+    public function reorderKeys(array $orderedKeys, ?int $defaultPos = null): static
     {
         $lookup = array_flip($orderedKeys);
         if (null === $defaultPos) {
@@ -167,6 +165,7 @@ class SpecBuilder
             $this->spec[$key]['pos'] = isset($lookup[$key])
                 ? ($lookup[$key] + 1) * 100 : $defaultPos;
         }
+        return $this;
     }
 
     /**
@@ -174,7 +173,7 @@ class SpecBuilder
      *
      * @return array
      */
-    public function getArray()
+    public function getArray(): array
     {
         return $this->spec;
     }

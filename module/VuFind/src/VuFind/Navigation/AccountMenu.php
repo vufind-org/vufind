@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Navigation
@@ -37,6 +37,8 @@ use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\DigitalContent\OverdriveConnector;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Connection;
+
+use function in_array;
 
 /**
  * Account menu
@@ -171,6 +173,13 @@ class AccountMenu extends AbstractMenu
                         'route' => 'search-history',
                         'icon' => 'search',
                         'checkMethod' => 'checkHistory',
+                    ],
+                    [
+                        'name' => 'usercontent',
+                        'label' => 'user_content',
+                        'route' => 'myresearch-usercontent',
+                        'icon' => 'user-content',
+                        'checkMethod' => 'checkUserContent',
                     ],
                     [
                         'name' => 'logout',
@@ -350,6 +359,24 @@ class AccountMenu extends AbstractMenu
     {
         return $this->isIlsOnline()
             && $this->ilsConnection->checkFunction($function, $this->getCapabilityParams());
+    }
+
+    /**
+     * Check whether to show user content (comments, ratings, tags)
+     *
+     * @return bool
+     */
+    protected function checkUserContent(): bool
+    {
+        return in_array(
+            'enabled',
+            [
+                $this->accountCapabilities->getCommentSetting(),
+                $this->accountCapabilities->getRatingSetting(),
+                $this->accountCapabilities->getTagSetting(),
+            ],
+            true
+        );
     }
 
     /**

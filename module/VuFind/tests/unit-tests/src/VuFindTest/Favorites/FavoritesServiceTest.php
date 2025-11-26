@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -34,6 +34,7 @@ use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\Entity\UserListEntityInterface;
 use VuFind\Db\Service\ResourceServiceInterface;
 use VuFind\Db\Service\ResourceTagsService;
+use VuFind\Db\Service\UserListService;
 use VuFind\Db\Service\UserListServiceInterface;
 use VuFind\Db\Service\UserResourceServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
@@ -111,7 +112,7 @@ class FavoritesServiceTest extends \PHPUnit\Framework\TestCase
         $newList = $this->createMock(UserListEntityInterface::class);
         $newList->expects($this->once())->method('setCreated')->willReturn($newList);
         $newList->expects($this->once())->method('setUser')->with($user)->willReturn($newList);
-        $listService = $this->createMock(UserListServiceInterface::class);
+        $listService = $this->createMock(UserListService::class);
         $listService->expects($this->once())->method('createEntity')->willReturn($newList);
         $service = $this->getFavoritesService($listService);
         $service->createListForUser($user);

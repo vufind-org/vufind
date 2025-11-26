@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -70,14 +70,14 @@ class ContentTest extends \PHPUnit\Framework\TestCase
                 $this->equalTo($expectedPathPrefix),
                 $this->equalTo($pageName),
                 $this->equalTo($pattern)
-            )->will($this->returnValue($contentBlockContext));
+            )->willReturn($contentBlockContext);
         $mockContext = $this->getMockBuilder(Context::class)
             ->disableOriginalConstructor()->getMock();
         $mockContext->expects($this->once())->method('renderInContext')
             ->with(
                 $this->equalTo('ContentBlock/TemplateBased.phtml'),
                 $this->equalTo($context + $contentBlockContext)
-            )->will($this->returnValue('rendered-content'));
+            )->willReturn('rendered-content');
         $content = new Content($mockTemplateBased, $mockContext);
         // Confirm that expected content was rendered:
         $pageDetails = [];

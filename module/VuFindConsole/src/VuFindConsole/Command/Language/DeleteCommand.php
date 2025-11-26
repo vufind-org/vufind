@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -87,7 +87,7 @@ class DeleteCommand extends AbstractCommand
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $target = $input->getArgument('target');
 
@@ -95,9 +95,9 @@ class DeleteCommand extends AbstractCommand
         $target = $key . ' = ';
 
         if (!($dir = $this->getLangDir($output, $domain))) {
-            return 1;
+            return self::FAILURE;
         }
-        $callback = function ($full) use ($output, $target) {
+        $callback = function ($full) use ($output, $target): void {
             $lines = file($full);
             $out = '';
             $found = false;
@@ -117,6 +117,6 @@ class DeleteCommand extends AbstractCommand
         };
         $this->processDirectory($dir, $callback, [$output, 'writeln']);
 
-        return 0;
+        return self::SUCCESS;
     }
 }

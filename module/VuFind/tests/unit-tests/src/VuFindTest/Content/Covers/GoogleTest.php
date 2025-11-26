@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -44,7 +44,7 @@ use VuFindCode\ISBN;
  */
 class GoogleTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
     use \VuFindTest\Feature\FixtureTrait;
 
     /**
@@ -66,8 +66,15 @@ class GoogleTest extends \PHPUnit\Framework\TestCase
                 $url
             );
             $this->assertEquals([], $params);
-            $response = $this->createMock(\Laminas\Http\Response::class);
-            $response->expects($this->any())->method('getBody')->willReturn($body);
+
+            $mockStream = $this->createMock(\Psr\Http\Message\StreamInterface::class);
+            $mockStream->method('getContents')->willReturn($body);
+
+            $response = $this->createMock(\Psr\Http\Message\ResponseInterface::class);
+            $response->method('getBody')->willReturn($mockStream);
+            $response->method('getStatusCode')->willReturn(200);
+            $response->method('getHeaders')->willReturn([]);
+
             return $callback($response, $url);
         };
     }

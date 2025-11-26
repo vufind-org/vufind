@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,6 +29,10 @@
 
 namespace VuFindTest\View\Helper;
 
+use Laminas\View\Helper\HeadLink;
+use Laminas\View\Helper\HeadMeta;
+use Laminas\View\Helper\HeadScript;
+use PHPUnit\Framework\MockObject\MockObject;
 use VuFindTheme\ResourceContainer;
 use VuFindTheme\View\Helper\SetupThemeResources;
 
@@ -108,49 +112,54 @@ class SetupThemeResourcesTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a fake HeadMeta helper.
      *
-     * @return \PHPUnit\Framework\MockObject\MockObject&\VuFindTheme\View\Helper\HeadMeta
+     * @return MockObject&HeadMeta
      */
-    protected function getMockHeadMeta()
+    protected function getMockHeadMeta(): MockObject&HeadMeta
     {
         $mock = $this->getMockBuilder(\Laminas\View\Helper\HeadMeta::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['__invoke'])
-            // These are side effects of __call and need to be added for mocking:
-            ->addMethods(['prependHttpEquiv', 'appendName'])
+            ->onlyMethods(['__invoke', '__call'])
             ->getMock();
-        $mock->expects($this->any())->method('__invoke')->will($this->returnValue($mock));
-        $mock->expects($this->once())->method('prependHttpEquiv')
-            ->with($this->equalTo('Content-Type'), $this->equalTo('text/html; charset=utf-8'));
-        $mock->expects($this->once())->method('appendName')
-            ->with($this->equalTo('Generator'), $this->equalTo('fake-generator'));
+        $mock->expects($this->any())->method('__invoke')->willReturn($mock);
+        $mock->expects($this->exactly(2))
+            ->method('__call')
+            ->willReturnCallback(function ($method, $args) use ($mock) {
+                if ($method === 'prependHttpEquiv') {
+                    $this->assertEquals('Content-Type', $args[0]);
+                    $this->assertEquals('text/html; charset=utf-8', $args[1]);
+                    return $mock;
+                }
+                if ($method === 'appendName') {
+                    $this->assertEquals('Generator', $args[0]);
+                    $this->assertEquals('fake-generator', $args[1]);
+                    return $mock;
+                }
+                return null;
+            });
         return $mock;
     }
 
     /**
      * Get a fake HeadLink helper.
      *
-     * @return \Laminas\View\Helper\HeadLink
+     * @return MockObject&HeadLink
      */
-    protected function getMockHeadLink()
+    protected function getMockHeadLink(): MockObject&HeadLink
     {
-        $mock = $this->getMockBuilder(\VuFindTheme\View\Helper\HeadLink::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $mock->expects($this->any())->method('__invoke')->will($this->returnValue($mock));
+        $mock = $this->createMock(HeadLink::class);
+        $mock->expects($this->any())->method('__invoke')->willReturn($mock);
         return $mock;
     }
 
     /**
      * Get a fake HeadScript helper.
      *
-     * @return \Laminas\View\Helper\HeadScript
+     * @return MockObject&HeadScript
      */
-    protected function getMockHeadScript()
+    protected function getMockHeadScript(): MockObject&HeadScript
     {
-        $mock = $this->getMockBuilder(\VuFindTheme\View\Helper\HeadScript::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $mock->expects($this->any())->method('__invoke')->will($this->returnValue($mock));
+        $mock = $this->createMock(HeadScript::class);
+        $mock->expects($this->any())->method('__invoke')->willReturn($mock);
         return $mock;
     }
 }

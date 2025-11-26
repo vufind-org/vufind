@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -45,32 +45,11 @@ use VuFind\Session\AbstractBase as SessionHandler;
 abstract class SessionHandlerTestCase extends \PHPUnit\Framework\TestCase
 {
     /**
-     * Mock database tables.
-     *
-     * @var \VuFind\Db\Table\PluginManager
-     */
-    protected $tables = false;
-
-    /**
      * Mock database services.
      *
      * @var \VuFind\Db\Service\PluginManager
      */
     protected $services = false;
-
-    /**
-     * Get mock database plugin manager
-     *
-     * @return \VuFind\Db\Table\PluginManager
-     */
-    protected function getTables()
-    {
-        if (!$this->tables) {
-            $this->tables
-                = new \VuFindTest\Container\MockDbTablePluginManager($this);
-        }
-        return $this->tables;
-    }
 
     /**
      * Get mock database service plugin manager
@@ -87,18 +66,6 @@ abstract class SessionHandlerTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Set up mock databases for a session handler.
-     *
-     * @param SessionHandler $handler Session handler
-     *
-     * @return void
-     */
-    protected function injectMockDatabaseTables(SessionHandler $handler)
-    {
-        $handler->setDbTableManager($this->getTables());
-    }
-
-    /**
      * Set up mock database services for a session handler.
      *
      * @param SessionHandler $handler Session handler
@@ -107,7 +74,6 @@ abstract class SessionHandlerTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function injectMockDatabaseDependencies(SessionHandler $handler)
     {
-        $this->injectMockDatabaseTables($handler);
         $handler->setDbServiceManager($this->getServices());
     }
 

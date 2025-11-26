@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDataFormatter
@@ -64,6 +64,10 @@ abstract class AbstractBase implements SpecInterface, \VuFind\I18n\Translator\Tr
     public function __construct(protected array $config)
     {
         $this->init();
+
+        foreach ($config['Defaults_Function_Mapping'] ?? [] as $key => $value) {
+            $this->setDefaults($key, [$this, $value]);
+        }
     }
 
     /**
@@ -112,14 +116,15 @@ abstract class AbstractBase implements SpecInterface, \VuFind\I18n\Translator\Tr
      * @param array|callable $values Defaults to store (either an array, or a
      * callable returning an array).
      *
-     * @return void
+     * @return static
      */
-    public function setDefaults(string $key, array|callable $values): void
+    public function setDefaults(string $key, array|callable $values): static
     {
         if (!is_array($values) && !is_callable($values)) {
             throw new \Exception('$values must be array or callable');
         }
         $this->defaults[$key] = $values;
+        return $this;
     }
 
     /**
@@ -157,6 +162,22 @@ abstract class AbstractBase implements SpecInterface, \VuFind\I18n\Translator\Tr
             });
             $options = array_merge($options, $contextOptions);
         }
+
+        foreach ($options['extraLineOptions'] ?? [] as $lineOptionSection) {
+            $extraLineOption = $this->config[$lineOptionSection] ?? [];
+            $lineIdentifierKey = $extraLineOption['lineIdentifierKey'] ?? 'label';
+            $lineIdentifierValue = $extraLineOption['lineIdentifierValue'] ?? null;
+            unset($extraLineOption['lineIdentifierKey']);
+            unset($extraLineOption['lineIdentifierValue']);
+            if ($lineIdentifierValue === null) {
+                continue;
+            }
+            $options['lineOptions'][$lineIdentifierKey][$lineIdentifierValue] = array_merge(
+                $options['lineOptions'][$lineIdentifierKey][$lineIdentifierValue] ?? [],
+                $extraLineOption,
+            );
+        }
+        unset($options['extraLineOptions']);
 
         return $options;
     }

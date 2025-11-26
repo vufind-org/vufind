@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -179,7 +179,7 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
     }
 
     /**
-     * Render the a brief record for use in collection mode.
+     * Render a brief record for use in collection mode.
      *
      * @return string
      */
@@ -264,13 +264,14 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
     /**
      * Render an entry in a favorite list.
      *
-     * @param ?UserListEntityInterface $list Currently selected list (null for
+     * @param ?UserListEntityInterface $list         Currently selected list (null for
      * combined favorites)
-     * @param ?UserEntityInterface     $user Current logged in user (null if none)
+     * @param ?UserEntityInterface     $user         Current logged in user (null if none)
+     * @param ?int                     $recordNumber Record number (null to omit/hide)
      *
      * @return string
      */
-    public function getListEntry($list = null, $user = null)
+    public function getListEntry($list = null, $user = null, $recordNumber = null)
     {
         // Get list of lists containing this entry
         $lists = null;
@@ -283,11 +284,8 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
         }
         return $this->renderTemplate(
             'list-entry.phtml',
-            [
+            compact('list', 'user', 'lists', 'recordNumber') + [
                 'driver' => $this->driver,
-                'list' => $list,
-                'user' => $user,
-                'lists' => $lists,
             ]
         );
     }
@@ -451,16 +449,16 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
     public function getTitleHtml($maxLength = 180)
     {
         $highlightedTitle = $this->driver->tryMethod('getHighlightedTitle');
-        $title = trim($this->driver->tryMethod('getTitle'));
-        if (!empty($highlightedTitle)) {
+        $title = $this->driver->tryMethod('getTitle');
+        if ('' !== $highlightedTitle) {
             $highlight = $this->getView()->plugin('highlight');
             $addEllipsis = $this->getView()->plugin('addEllipsis');
             return $highlight($addEllipsis($highlightedTitle, $title));
         }
-        if (!empty($title)) {
-            $escapeHtml = $this->getView()->plugin('escapeHtml');
+        if ('' !== trim($title)) {
+            $escape = $this->getView()->plugin('escapeOrCleanHtml');
             $truncate = $this->getView()->plugin('truncate');
-            return $escapeHtml($truncate($title, $maxLength));
+            return $escape($truncate($title, $maxLength), dataContext: 'title', renderingContext: 'link');
         }
         $transEsc = $this->getView()->plugin('transEsc');
         return $transEsc('Title not available');
@@ -836,16 +834,13 @@ class Record extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwa
     }
 
     /**
-     * Get all the links associated with this record depending on the OpenURL setting
-     * replace_other_urls. Returns an array of associative arrays each containing
-     * 'desc' and 'url' keys.
+     * Return the OpenURL setting replace_other_urls, defaulting to false.
      *
      * @return bool
      */
     protected function hasOpenUrlReplaceSetting()
     {
-        return isset($this->config->OpenURL->replace_other_urls)
-            && $this->config->OpenURL->replace_other_urls;
+        return $this->config?->OpenURL?->replace_other_urls ?? false;
     }
 
     /**

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  OAuth2
@@ -68,8 +68,8 @@ class AuthCodeEntity implements AuthCodeEntityInterface, \JsonSerializable
         foreach ($properties as $property) {
             $result[$property] = $this->{$property};
         }
-        $client = $this->getClient();
-        $result['clientIdentifier'] = $client ? $client->getIdentifier() : null;
+        // Only call getClient() if we know the client has been initialized to avoid trouble with its return type:
+        $result['clientIdentifier'] = isset($this->client) ? $this->getClient()->getIdentifier() : null;
 
         return $result;
     }

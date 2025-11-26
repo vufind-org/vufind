@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -36,7 +36,6 @@ use function count;
 use function in_array;
 use function is_array;
 use function sprintf;
-use function strlen;
 
 /**
  * VTLS Virtua Driver
@@ -445,11 +444,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             }
 
             // Call number
-            if ($row['ITEM_CALL_NUM'] != null) {
-                $call_num = $row['ITEM_CALL_NUM'];
-            } else {
-                $call_num = $row['BIB_CALL_NUM'];
-            }
+            $call_num = $row['ITEM_CALL_NUM'] ?? $row['BIB_CALL_NUM'];
 
             $temp = [
                 'id'            => $id,
@@ -558,11 +553,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
 
         // Set a flag for super users, better then
         //  the full function call inside the loop
-        if (in_array($patron_type, $type_list['Super User'])) {
-            $super_user = true;
-        } else {
-            $super_user = false;
-        }
+        $super_user = in_array($patron_type, $type_list['Super User']);
         // External Users cannot place a request
         if (in_array($patron_type, $type_list['Externals'])) {
             return $holdings;
@@ -1168,38 +1159,25 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             ')';
 
         $fields = ['barcode:string' => $barcode];
-        $result = $this->db->simpleSelect($sql, $fields);
-
-        if (count($result) > 0) {
-            // Valid Password
-            if ($result[0]['PASSWORD'] == $password) {
-                $user = [];
-                $split      = strpos($result[0]['NAME'], ',');
-                $last_name  = trim(substr($result[0]['NAME'], 0, $split));
-                $first_name = trim(substr($result[0]['NAME'], $split + 1));
-                $split      = strpos($first_name, ' ');
-                if ($split !== false) {
-                    $first_name = trim(substr($first_name, 0, $split));
-                }
-
-                $user['id']           = trim($result[0]['ID']);
-                $user['firstname']    = trim($first_name);
-                $user['lastname']     = trim($last_name);
-                $user['cat_username'] = strtoupper(trim($result[0]['BARCODE']));
-                $user['cat_password'] = trim($result[0]['PASSWORD']);
-                $user['email']        = trim($result[0]['E_MAIL_ADDRESS_PRIMARY']);
-                $user['major']        = trim($result[0]['DEPARTMENT']);
-                $user['college']      = null;
-
-                return $user;
-            } else {
-                // Invalid Password
-                return null;
-            }
-        } else {
-            // User not found
+        $result = $this->db->simpleSelect($sql, $fields)[0] ?? false;
+        if (!$result || $result['PASSWORD'] !== $password) {
             return null;
         }
+
+        [$last_name, $first_name] = $this->getLastAndFirstName($result['NAME']);
+        $split      = strpos($first_name, ' ');
+        if ($split !== false) {
+            $first_name = trim(substr($first_name, 0, $split));
+        }
+        return $this->createPatronArray(
+            id: $result['ID'],
+            firstname: $first_name,
+            lastname: $last_name,
+            cat_username: strtoupper($result['BARCODE']),
+            cat_password: $result['PASSWORD'],
+            email: $result['E_MAIL_ADDRESS_PRIMARY'],
+            major: $result['DEPARTMENT']
+        );
     }
 
     /**
@@ -1223,39 +1201,31 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
             'AND   p.patron_id      = :patron_id';
 
         $fields = ['patron_id:string' => $patron['id']];
-        $result = $this->db->simpleSelect($sql, $fields);
 
-        if (count($result) > 0) {
-            $split      = strpos($result[0]['NAME'], ',');
-            $last_name  = substr($result[0]['NAME'], 0, $split);
-            $first_name = substr($result[0]['NAME'], $split + 1);
-            $split      = strpos($result[0]['NAME'], ' ');
-            if ($split !== false) {
-                $first_name = substr($first_name, 0, $split);
-            }
-
-            $patron = [
-                'firstname' => trim($first_name),
-                'lastname'  => trim($last_name),
-                'address1'  => trim($result[0]['STREET_ADDRESS_1']),
-                'address2'  => trim($result[0]['STREET_ADDRESS_2']),
-                'zip'       => trim($result[0]['POSTAL_CODE']),
-                'phone'     => trim($result[0]['TELEPHONE_PRIMARY']),
-                'group'     => trim($result[0]['PATRON_TYPE']),
-                ];
-
-            if ($result[0]['CITY'] != null) {
-                if (strlen($patron['address2']) > 0) {
-                    $patron['address2'] .= ', ' . trim($result[0]['CITY']);
-                } else {
-                    $patron['address2'] = trim($result[0]['CITY']);
-                }
-            }
-
-            return $patron;
-        } else {
+        $result = $this->db->simpleSelect($sql, $fields)[0] ?? null;
+        if (!$result) {
             return null;
         }
+        [$last_name, $first_name] = $this->getLastAndFirstName($result['NAME']);
+        $split = strpos($first_name, ' ');
+        if ($split !== false) {
+            $first_name = substr($first_name, 0, $split);
+        }
+
+        $address2 = trim($result['STREET_ADDRESS_2'] ?? '');
+        if ($addressCity = $result['CITY'] ?? null) {
+            $address2 = trim("$address2, $addressCity", " ,\n\r\t\v\0");
+        }
+
+        return $this->createProfileArray(
+            firstname: $first_name,
+            lastname: $last_name,
+            address1: $result['STREET_ADDRESS_1'] ?? null,
+            address2: $address2,
+            zip: $result['POSTAL_CODE'] ?? null,
+            phone: $result['TELEPHONE_PRIMARY'] ?? null,
+            group: $result['PATRON_TYPE'] ?? null
+        );
     }
 
     /**
@@ -1465,11 +1435,7 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
     {
         // Change this value for debugging
         // eg. strtotime('25-12-2009') = Christmas
-        if ($fake_time) {
-            $time = strtotime($fake_time);
-        } else {
-            $time = strtotime('now');
-        }
+        $time = $fake_time ? strtotime($fake_time) : strtotime('now');
         $today = date('d-m-Y', $time);
         $time_format = 'H:i:s';
 
@@ -1787,24 +1753,24 @@ class Virtua extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterfa
 
         // Have to use raw post data because of the way
         //   virtua expects the barcodes to come across.
-        $post_data  = 'function=' . 'RENEWAL';
-        $post_data .= '&search=' . 'PATRON';
+        $post_data  = 'function=RENEWAL';
+        $post_data .= '&search=PATRON';
         $post_data .= '&sessionid=' . "$session_id";
-        $post_data .= '&skin=' . 'homepage';
+        $post_data .= '&skin=homepage';
         $post_data .= '&lng=' . $this->getConfiguredLanguage();
-        $post_data .= '&inst=' . 'consortium';
+        $post_data .= '&inst=consortium';
         $post_data .= '&conf=' . urlencode('.&#047;chameleon.conf');
-        $post_data .= '&u1=' . '12';
-        $post_data .= '&SourceScreen=' . 'PATRONACTIVITY';
-        $post_data .= '&pos=' . '1';
+        $post_data .= '&u1=12';
+        $post_data .= '&SourceScreen=PATRONACTIVITY';
+        $post_data .= '&pos=1';
         $post_data .= '&patronid=' . $patron['cat_username'];
         $post_data .= '&patronhost='
             . urlencode($this->config['Catalog']['patron_host']);
         $post_data .= '&host='
             . urlencode($this->config['Catalog']['host_string']);
         $post_data .= '&itembarcode=' . implode('&itembarcode=', $item_list);
-        $post_data .= '&submit=' . 'Renew';
-        $post_data .= '&reset=' . 'Clear';
+        $post_data .= '&submit=Renew';
+        $post_data .= '&reset=Clear';
 
         $result = $this->httpRequest($virtua_url, null, $post_data);
 

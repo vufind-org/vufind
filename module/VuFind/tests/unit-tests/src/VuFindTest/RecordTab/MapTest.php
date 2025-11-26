@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -30,6 +30,7 @@
 namespace VuFindTest\RecordTab;
 
 use VuFind\RecordTab\Map;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
  * Map Test Class
@@ -43,6 +44,7 @@ use VuFind\RecordTab\Map;
 class MapTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\WithConsecutiveTrait;
+    use ConfigRelatedServicesTrait;
 
     /**
      * Get a Map object
@@ -61,7 +63,7 @@ class MapTest extends \PHPUnit\Framework\TestCase
             'mapLabels'     => null,
             'graticule'     => true,
         ];
-        $obj = new Map($mapTabDisplay, $basemapOptions, $mapTabOptions);
+        $obj = new Map($this->getPathResolver(), $mapTabDisplay, $basemapOptions, $mapTabOptions);
         return $obj;
     }
 
@@ -96,7 +98,7 @@ class MapTest extends \PHPUnit\Framework\TestCase
     public function testGetMapGraticule(): void
     {
         $configuredMap = $this->getMap();
-        $defaultMap = new Map();
+        $defaultMap = new Map($this->getPathResolver());
         $this->assertTrue($configuredMap->getMapGraticule());
         $this->assertFalse($defaultMap->getMapGraticule());
     }
@@ -146,7 +148,7 @@ class MapTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $recordDriver->expects($this->once())->method('tryMethod')
             ->with($this->equalTo('getDisplayCoordinates'))
-            ->will($this->returnValue($coordinates));
+            ->willReturn($coordinates);
         $obj->setRecordDriver($recordDriver);
         $value = ['56 00', '89 87 45 56'];
         $this->assertSame($value, $obj->getDisplayCoords());
@@ -166,14 +168,14 @@ class MapTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $recordDriver->expects($this->once())->method('tryMethod')
             ->with($this->equalTo('getGeoLocation'))
-            ->will($this->returnValue($coordinates));
+            ->willReturn($coordinates);
         $obj->setRecordDriver($recordDriver);
         $value = [[25.8,4.6,43.9,5.0]];
         $this->assertSame($value, $obj->getGeoLocationCoords());
     }
 
     /**
-     * Test construction of map-coordinates adn labels.
+     * Test construction of map-coordinates and labels.
      *
      * @return void
      */

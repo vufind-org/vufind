@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Channels
@@ -49,13 +49,7 @@ use function count;
 class Random extends AbstractChannelProvider implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
-
-    /**
-     * Number of results to include in each channel.
-     *
-     * @var int
-     */
-    protected $channelSize;
+    use BatchTrait;
 
     /**
      * Mode
@@ -104,8 +98,8 @@ class Random extends AbstractChannelProvider implements TranslatorAwareInterface
      */
     public function setOptions(array $options)
     {
-        $this->channelSize = $options['channelSize'] ?? 20;
         $this->mode = $options['mode'] ?? 'retain';
+        $this->setBatchSizeFromOptions($options);
     }
 
     /**
@@ -140,11 +134,9 @@ class Random extends AbstractChannelProvider implements TranslatorAwareInterface
     public function getFromSearch(Results $results, $channelToken = null)
     {
         $params = $results->getParams();
-        if ('retain' !== $this->mode) {
-            $randomParams = $this->paramManager->get($params->getSearchClassId());
-        } else {
-            $randomParams = clone $params;
-        }
+        $randomParams = 'retain' !== $this->mode
+            ? $this->paramManager->get($params->getSearchClassId())
+            : clone $params;
         $channel = $this->buildChannelFromParams($randomParams);
         return (count($channel['contents']) > 0) ? [$channel] : [];
     }
@@ -162,13 +154,14 @@ class Random extends AbstractChannelProvider implements TranslatorAwareInterface
         $retVal = [
             'title' => $this->translate('random_recommendation_title'),
             'providerId' => $this->providerId,
+            'limit' => $this->batchSize,
         ];
         $query = $params->getQuery();
         $paramBag = $params->getBackendParameters();
         $command = new RandomCommand(
             $params->getSearchClassId(),
             $query,
-            $this->channelSize,
+            $this->batchSize,
             $paramBag
         );
         $random = $this->searchService->invoke($command)->getResult()->getRecords();
