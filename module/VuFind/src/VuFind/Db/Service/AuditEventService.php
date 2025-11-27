@@ -320,8 +320,8 @@ class AuditEventService extends AbstractDbService implements
     protected function getCallerOfParentMethod(int $intermediateMethods = 0): string
     {
         $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3 + $intermediateMethods);
-        $parentPos = 2 + $intermediateMethods;
-        $methodParts = [$backtrace[$parentPos]['class'] ?? '', $backtrace[$parentPos]['function'] ?? ''];
+        $caller = $backtrace[2 + $intermediateMethods];
+        $methodParts = [$caller['class'] ?? '', $caller['function'] ?? ''];
         return implode('::', array_filter($methodParts));
     }
 
