@@ -306,7 +306,8 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
     {
         // We need to build a variety of pieces so we can supply
         // information at five different verbosity levels:
-        $baseError = $error::class . ' : ' . $error->getMessage();
+        $baseError = $error::class . ' : ' . $error->getMessage() . ' at ' . $error->getFile() . ' line '
+            . $error->getLine();
         $prev = $error->getPrevious();
         while ($prev) {
             $baseError .= ' ; ' . $prev::class . ' : ' . $prev->getMessage();
