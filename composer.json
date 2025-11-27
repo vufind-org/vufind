@@ -90,6 +90,7 @@
         "league/oauth1-client": "1.11.0",
         "league/oauth2-client": "^2.7",
         "league/oauth2-server": "^9.2",
+        "lm-commons/lmc-rbac": "2.1.1",
         "lm-commons/lmc-rbac-mvc": "4.1.1",
         "matthiasmullie/minify": "1.3.75",
         "monolog/monolog": "^3.9",
