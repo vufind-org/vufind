@@ -103,7 +103,9 @@ class MigrationLoader
                 $bParts = explode(DIRECTORY_SEPARATOR, $b);
                 $aVersion = end($aParts);
                 $bVersion = end($bParts);
-                return $aVersion === $bVersion ? 0 : (Comparator::greaterThan($aVersion, $bVersion) ? 1 : -1);
+                return $aVersion === $bVersion
+                    ? $a <=> $b
+                    : (Comparator::greaterThan($aVersion, $bVersion) ? 1 : -1);
             }
         );
 
