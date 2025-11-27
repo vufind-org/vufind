@@ -316,7 +316,7 @@ class Logger implements LoggerInterface, ExtendedLoggerInterface
         $referer = $server->get('HTTP_REFERER', 'none');
         $ipAddr = $this->userIpReader->getUserIp();
         $basicServer
-            = '(Server: IP = ' . $ipAddr . ', '
+            = ' (Server: IP = ' . $ipAddr . ', '
             . 'Referer = ' . $referer . ', '
             . 'User Agent = '
             . $server->get('HTTP_USER_AGENT') . ', '
