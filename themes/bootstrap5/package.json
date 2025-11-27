@@ -8,13 +8,13 @@
   "dependencies": {
     "@popperjs/core": "2.11.8",
     "autocomplete.js": "vufind-org/autocomplete.js#v2.1.10",
-    "bootstrap": "5.3.3",
+    "bootstrap": "5.3.8",
     "chart.js": "^4.4.0",
     "jquery": "^3.7.1",
     "libphonenumber-js": "^1.12.10",
     "nouislider": "^15.8.1",
     "simple-keyboard": "^3.6.0",
     "simple-keyboard-layouts": "^3.0.0",
-    "vanilla-cookieconsent": "3.0.0"
+    "vanilla-cookieconsent": "3.1.0"
   }
 }

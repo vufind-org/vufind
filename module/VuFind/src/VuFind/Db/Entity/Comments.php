@@ -120,7 +120,17 @@ class Comments implements CommentsEntityInterface
     }
 
     /**
-     * Comment setter
+     * Get comment.
+     *
+     * @return string
+     */
+    public function getComment(): string
+    {
+        return $this->comment;
+    }
+
+    /**
+     * Set comment.
      *
      * @param string $comment Comment
      *
@@ -133,17 +143,17 @@ class Comments implements CommentsEntityInterface
     }
 
     /**
-     * Comment getter
+     * Get created date.
      *
-     * @return string
+     * @return DateTime
      */
-    public function getComment(): string
+    public function getCreated(): DateTime
     {
-        return $this->comment;
+        return $this->created;
     }
 
     /**
-     * Created setter.
+     * Set created date.
      *
      * @param DateTime $dateTime Created date
      *
@@ -156,17 +166,17 @@ class Comments implements CommentsEntityInterface
     }
 
     /**
-     * Created getter
+     * Get user.
      *
-     * @return DateTime
+     * @return ?UserEntityInterface
      */
-    public function getCreated(): DateTime
+    public function getUser(): ?UserEntityInterface
     {
-        return $this->created;
+        return $this->user;
     }
 
     /**
-     * User setter.
+     * Set user.
      *
      * @param ?UserEntityInterface $user User that created comment
      *
@@ -179,17 +189,17 @@ class Comments implements CommentsEntityInterface
     }
 
     /**
-     * User getter
+     * Get resource.
      *
-     * @return ?UserEntityInterface
+     * @return ResourceEntityInterface
      */
-    public function getUser(): ?UserEntityInterface
+    public function getResource(): ResourceEntityInterface
     {
-        return $this->user;
+        return $this->resource;
     }
 
     /**
-     * Resource setter.
+     * Set resource.
      *
      * @param ResourceEntityInterface $resource Resource
      *

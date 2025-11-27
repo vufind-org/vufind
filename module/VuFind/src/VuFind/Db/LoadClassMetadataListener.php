@@ -94,9 +94,21 @@ class LoadClassMetadataListener
             unset($mapping);
             // Override root entity so that any custom properties added are handled properly when persisted:
             $classMetadata->rootEntityName = $classMetadata->name;
-            // Copy other attributes from any parent class:
             if ($classMetadata->parentClasses) {
                 $parentMetadata = $this->loadedMetadata[end($classMetadata->parentClasses)] ?? null;
+                // Update association mappings:
+                foreach ($classMetadata->associationMappings as &$mapping) {
+                    if ($parentMetadata->name === $mapping['sourceEntity'] ?? null) {
+                        $mapping['sourceEntity'] = $name;
+                    }
+                    if ($parentMetadata->name === $mapping['targetEntity'] ?? null) {
+                        $mapping['targetEntity'] = $name;
+                    }
+                    unset($mapping['inherited']);
+                    unset($mapping['declared']);
+                }
+                unset($mapping);
+                // Copy other attributes from any parent class:
                 foreach ($parentMetadata->table ?? [] as $key => $val) {
                     // Merge arrays, always override table name and add missing fields:
                     if (is_array($val)) {
