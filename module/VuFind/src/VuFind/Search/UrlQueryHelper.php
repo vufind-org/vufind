@@ -320,7 +320,11 @@ class UrlQueryHelper
      */
     public function formatFilterString(string $field, string $value, string $operator = 'AND'): string
     {
-        $prefix = ($operator == 'NOT') ? '-' : ($operator == 'OR' ? '~' : '');
+        $prefix = match ($operator) {
+            'NOT' => '-',
+            'OR'  => '~',
+            default => '',
+        };
         return $prefix . $field . ':"' . $value . '"';
     }
 
