@@ -128,7 +128,7 @@ class SimilarItems extends AbstractChannelProvider implements TranslatorAwareInt
     {
         // If we have a token and it doesn't match the record driver, we can't
         // fetch any results!
-        if ($channelToken !== null && $channelToken !== $driver->getUniqueID()) {
+        if ($channelToken !== null && urldecode($channelToken) !== $driver->getUniqueID()) {
             return [];
         }
         $channel = $this->buildChannelFromRecord($driver);
@@ -148,10 +148,11 @@ class SimilarItems extends AbstractChannelProvider implements TranslatorAwareInt
     {
         $driver = null;
         $channels = [];
+        $decodedChannelToken = $channelToken === null ? null : urldecode($channelToken);
         foreach ($results->getResults() as $driver) {
             // If we have a token and it doesn't match the current driver, skip
             // that driver.
-            if ($channelToken !== null && $channelToken !== $driver->getUniqueID()) {
+            if ($channelToken !== null && $decodedChannelToken !== $driver->getUniqueID()) {
                 continue;
             }
             if (count($channels) < $this->maxRecordsToExamine) {
@@ -172,7 +173,7 @@ class SimilarItems extends AbstractChannelProvider implements TranslatorAwareInt
         ) {
             $command = new RetrieveCommand(
                 $driver->getSourceIdentifier(),
-                $channelToken
+                $decodedChannelToken
             );
             $driver = $this->searchService->invoke(
                 $command
@@ -206,7 +207,7 @@ class SimilarItems extends AbstractChannelProvider implements TranslatorAwareInt
         ];
 
         if ($tokenOnly) {
-            $retVal['token'] = $driver->getUniqueID();
+            $retVal['token'] = urlencode($driver->getUniqueID());
             return $retVal;
         }
 

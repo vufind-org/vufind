@@ -51,7 +51,7 @@ use function is_string;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Logger implements LoggerInterface
+class Logger implements LoggerInterface, ExtendedLoggerInterface
 {
     /**
      * Is debug logging enabled?
@@ -306,7 +306,8 @@ class Logger implements LoggerInterface
     {
         // We need to build a variety of pieces so we can supply
         // information at five different verbosity levels:
-        $baseError = $error::class . ' : ' . $error->getMessage();
+        $baseError = $error::class . ' : ' . $error->getMessage() . ' at ' . $error->getFile() . ' line '
+            . $error->getLine();
         $prev = $error->getPrevious();
         while ($prev) {
             $baseError .= ' ; ' . $prev::class . ' : ' . $prev->getMessage();
@@ -315,7 +316,7 @@ class Logger implements LoggerInterface
         $referer = $server->get('HTTP_REFERER', 'none');
         $ipAddr = $this->userIpReader->getUserIp();
         $basicServer
-            = '(Server: IP = ' . $ipAddr . ', '
+            = ' (Server: IP = ' . $ipAddr . ', '
             . 'Referer = ' . $referer . ', '
             . 'User Agent = '
             . $server->get('HTTP_USER_AGENT') . ', '
