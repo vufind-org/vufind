@@ -340,20 +340,43 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test Booksite section warning.
+     * Data provider for testSimpleWarnings().
+     *
+     * @return array[]
+     */
+    public static function simpleWarningsProvider(): array
+    {
+        return [
+            'booksite' => [
+                'booksite',
+                'The [Booksite] section of config.ini is no longer supported.',
+            ],
+            'umask' => [
+                'umaskwarning',
+                'The Cache umask setting never worked as intended and is no longer supported; '
+                . 'if you need a custom umask, please configure it at the operating system level.',
+            ],
+            'worldcat' => [
+                'worldcatwarnings',
+                'The [WorldCat] section of config.ini has been removed following'
+                . ' the shutdown of the v1 WorldCat search API; use WorldCat2.ini instead.',
+            ],
+        ];
+    }
+
+    /**
+     * Test upgrades that are expected to trigger a single warning
+     *
+     * @param string $fixture         Fixture to load
+     * @param string $expectedWarning Expected warning
      *
      * @return void
      */
-    public function testBooksiteWarning(): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('simpleWarningsProvider')]
+    public function testSimpleWarnings(string $fixture, string $expectedWarning): void
     {
-        $upgrader = $this->runAndGetConfigUpgrader('booksite');
-        $warnings = $upgrader->getWarnings();
-        $this->assertTrue(
-            in_array(
-                'The [Booksite] section of config.ini is no longer supported.',
-                $warnings
-            )
-        );
+        $upgrader = $this->runAndGetConfigUpgrader($fixture);
+        $this->assertEquals([$expectedWarning], $upgrader->getWarnings());
     }
 
     /**
@@ -383,24 +406,6 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse(isset($results['config']['Content']['recordMap']));
         $this->assertFalse(
             isset($results['config']['Content']['googleMapApiKey'])
-        );
-    }
-
-    /**
-     * Test WorldCat-related warnings.
-     *
-     * @return void
-     */
-    public function testWorldCatWarnings(): void
-    {
-        $upgrader = $this->runAndGetConfigUpgrader('worldcatwarnings');
-        $warnings = $upgrader->getWarnings();
-        $this->assertTrue(
-            in_array(
-                'The [WorldCat] section of config.ini has been removed following'
-                . ' the shutdown of the v1 WorldCat search API; use WorldCat2.ini instead.',
-                $warnings
-            )
         );
     }
 
