@@ -43,37 +43,20 @@ use function is_array;
 class GoogleAnalytics extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * API key (false if disabled)
-     *
-     * @var string|bool
-     */
-    protected $key;
-
-    /**
      * Options to pass to the ga() create command.
      *
      * @var string
      */
-    protected $createOptions;
+    protected string $createOptions;
 
     /**
      * Constructor
      *
-     * @param string|bool $key     API key (false if disabled)
-     * @param bool|array  $options Configuration options (supported option:
-     * 'create_options_js'). If a Boolean is provided instead of an array,
-     * no options will be set (for backward compatibility).
+     * @param ?string $key     API key (null if disabled)
+     * @param array   $options Configuration options (supported option: 'create_options_js').
      */
-    public function __construct($key, $options = [])
+    public function __construct(protected ?string $key, array $options = [])
     {
-        // The second constructor parameter used to be a Boolean representing
-        // an obsolete setting, but that is no longer meaningful, so treat it as
-        // an empty array for legacy compatibility. We should remove Boolean
-        // support entirely in a future release.
-        if (!is_array($options)) {
-            $options = [];
-        }
-        $this->key = $key;
         $this->createOptions = $options['create_options_js'] ?? "'auto'";
     }
 
