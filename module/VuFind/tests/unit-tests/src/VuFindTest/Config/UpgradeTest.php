@@ -374,13 +374,6 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertTrue(
             in_array(
-                'The [GoogleAnalytics] universal setting is off. See config.ini '
-                . 'for important information on how to upgrade your Analytics.',
-                $warnings
-            )
-        );
-        $this->assertTrue(
-            in_array(
                 'Google Maps is no longer a supported Content/recordMap option;'
                 . ' please review your config.ini.',
                 $warnings

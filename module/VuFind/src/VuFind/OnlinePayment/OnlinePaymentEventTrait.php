@@ -77,6 +77,6 @@ trait OnlinePaymentEventTrait
                 throw new \Exception('Event log service not set');
             }
         }
-        $this->auditEventService->addPaymentEvent($payment, $subtype, $message, $data);
+        $this->auditEventService->addPaymentEvent($payment, $subtype, $message, $data, 1);
     }
 }
