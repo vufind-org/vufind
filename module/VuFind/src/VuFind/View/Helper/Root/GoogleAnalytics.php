@@ -29,8 +29,6 @@
 
 namespace VuFind\View\Helper\Root;
 
-use function is_array;
-
 /**
  * GoogleAnalytics view helper
  *
