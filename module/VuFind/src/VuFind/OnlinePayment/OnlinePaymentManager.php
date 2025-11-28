@@ -502,13 +502,14 @@ class OnlinePaymentManager implements LoggerAwareInterface
                         'Registration failed: fines updated'
                     );
                 } else {
+                    $error = $res['reason'] ?? 'no error information';
                     $payment->applyRegistrationFailedStatus(
-                        'Failed to mark fees paid: ' . ($res ?: 'no error information')
+                        "Failed to mark fees paid: $error"
                     );
                     $this->persistEntityWithAuditEvent(
                         $payment,
                         AuditEventSubtype::PaymentRegistration,
-                        'Registration failed: ' . ($res['reason'] ?? 'no error information')
+                        "Registration failed: $error"
                     );
                 }
                 return false;
@@ -570,13 +571,10 @@ class OnlinePaymentManager implements LoggerAwareInterface
             return [];
         }
 
-        // Check that mandatory settings exist
-        $mandatory = ['currency', 'handler'];
-        foreach ($mandatory as $current) {
-            if (empty($paymentConfig[$current])) {
-                $this->logError("Mandatory setting '$current' missing from ILS driver for $sourceIls");
-                return [];
-            }
+        // Check that mandatory handler setting exists
+        if (empty($paymentConfig['handler'])) {
+            $this->logError("Mandatory setting 'handler' missing from ILS driver for $sourceIls");
+            return [];
         }
 
         return $paymentConfig;
@@ -716,7 +714,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
         $this->paymentService->beginTransaction();
         try {
             $this->paymentService->persistEntity($payment);
-            $this->auditEventService->addPaymentEvent($payment, $eventSubtype, $auditMessage, $eventData);
+            $this->auditEventService->addPaymentEvent($payment, $eventSubtype, $auditMessage, $eventData, 1);
         } catch (\Exception $e) {
             $this->paymentService->rollbackTransaction();
             throw $e;
