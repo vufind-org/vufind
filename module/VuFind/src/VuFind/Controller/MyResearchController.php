@@ -63,6 +63,7 @@ use VuFind\Exception\LoginRequired as LoginRequiredException;
 use VuFind\Exception\Mail as MailException;
 use VuFind\Exception\MissingField as MissingFieldException;
 use VuFind\Favorites\FavoritesService;
+use VuFind\ILS\Logic\RenewalsHelper;
 use VuFind\ILS\PaginationHelper;
 use VuFind\Mailer\Mailer;
 use VuFind\Search\RecommendListener;
@@ -1529,11 +1530,13 @@ class MyResearchController extends AbstractBase
 
         // Get the current renewal status and process renewal form, if necessary:
         $renewStatus = $catalog->checkFunction('Renewals', compact('patron'));
+        $renewalsHelper = $this->getService(RenewalsHelper::class);
         $renewResult = $renewStatus
-            ? $this->renewals()->processRenewals(
+            ? $renewalsHelper->processRenewals(
                 $this->getRequest()->getPost(),
                 $catalog,
                 $patron,
+                $this->flashMessenger(),
                 $this->getService(CsrfInterface::class)
             )
             : [];
@@ -1595,7 +1598,7 @@ class MyResearchController extends AbstractBase
         $driversNeeded = $hiddenTransactions = [];
         foreach ($result['records'] as $i => $current) {
             // Add renewal details if appropriate:
-            $current = $this->renewals()->addRenewDetails(
+            $current = $renewalsHelper->addRenewDetails(
                 $catalog,
                 $current,
                 $renewStatus

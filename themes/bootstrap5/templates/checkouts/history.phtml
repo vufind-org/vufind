@@ -45,7 +45,7 @@
       <input type="hidden" id="submitType" name="purgeSelected" value="1">
       <input type="hidden" name="csrf" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>">
       <?php if ($purgeSelectedAllowed || $purgeAllAllowed): ?>
-        <div class="toolbar">
+        <div class="toolbar account-action-toolbar">
           <?php if ($purgeSelectedAllowed): ?>
             <?=
               $this->component(
@@ -81,7 +81,7 @@
           <?php endif; ?>
         </div>
         <?php if ($purgeSelectedAllowed): ?>
-          <div class="checkbox">
+          <div class="select-all-container">
             <label class="select-all-label">
               <input type="checkbox" name="selectAll" class="checkbox-select-all">
               <?=$this->transEsc('select_all_on_page')?>

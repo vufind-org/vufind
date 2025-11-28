@@ -162,7 +162,7 @@ class Holds extends AbstractRequestBase
             foreach ($details as $info) {
                 // If the user input contains a value not found in the session
                 // legal list, something has been tampered with -- abort the process.
-                if (!in_array($info, $this->getSession()->validIds)) {
+                if (!in_array($info, $this->getValidIds())) {
                     $flashMsg->addErrorMessage('error_inconsistent_parameters');
                     return [];
                 }
