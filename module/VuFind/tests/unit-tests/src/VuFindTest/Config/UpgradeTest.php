@@ -660,6 +660,39 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Data provider for testLdapUriMigration.
+     *
+     * @return array[]
+     */
+    public static function ldapUriMigrationProvider(): array
+    {
+        return [
+            'host and port' => ['ldaphostandport', 'ldap://foo:123'],
+            'uri already present' => ['ldapuri', 'ldap://foo'],
+            'host only' => ['ldaphost', 'ldap://foo:389'],
+            'port only' => ['ldapport', 'ldap://localhost:123'],
+        ];
+    }
+
+    /**
+     * Test migration of [LDAP] host/port settings.
+     *
+     * @param string $fixture  Fixture to load
+     * @param string $expected Expected migrated uri setting
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('ldapUriMigrationProvider')]
+    public function testLdapUriMigration(string $fixture, string $expected): void
+    {
+        $upgrader = $this->runAndGetConfigUpgrader($fixture);
+        $results = $upgrader->getNewConfigs();
+        $this->assertFalse(isset($results['config']['LDAP']['host']));
+        $this->assertFalse(isset($results['config']['LDAP']['port']));
+        $this->assertEquals($expected, $results['config']['LDAP']['uri']);
+    }
+
+    /**
      * Test upgrades without a special logic.
      *
      * @return void

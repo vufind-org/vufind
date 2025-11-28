@@ -634,6 +634,21 @@ class Upgrade implements LoggerAwareInterface
             unset($this->newConfigs['searches']['Cache']);
         }
 
+        // Update LDAP settings (replace deprecated host/port with uri):
+        $ldapHost = $newConfig['LDAP']['host'] ?? null;
+        $ldapPort = $newConfig['LDAP']['port'] ?? null;
+        if ($ldapHost || $ldapPort) {
+            if (!isset($newConfig['LDAP']['uri'])) {
+                if ($ldapHost && (str_starts_with($ldapHost, 'ldap://') || str_starts_with($ldapHost, 'ldaps://'))) {
+                    $newConfig['LDAP']['uri'] = $ldapHost;
+                } else {
+                    $newConfig['LDAP']['uri'] = 'ldap://' . ($ldapHost ?? 'localhost') . ':' . ($ldapPort ?? '389');
+                }
+            }
+            unset($newConfig['LDAP']['host']);
+            unset($newConfig['LDAP']['port']);
+        }
+
         // Translate obsolete permission settings:
         $this->upgradeAdminPermissions();
 
