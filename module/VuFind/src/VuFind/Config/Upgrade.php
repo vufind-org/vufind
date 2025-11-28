@@ -494,17 +494,6 @@ class Upgrade implements LoggerAwareInterface
                 . ' please review your config.ini.'
             );
         }
-        if (isset($newConfig['GoogleAnalytics']['apiKey'])) {
-            if (
-                !isset($newConfig['GoogleAnalytics']['universal'])
-                || !$newConfig['GoogleAnalytics']['universal']
-            ) {
-                $this->addWarning(
-                    'The [GoogleAnalytics] universal setting is off. See config.ini '
-                    . 'for important information on how to upgrade your Analytics.'
-                );
-            }
-        }
 
         // Upgrade CAPTCHA Options
         $legacySettingsMap = [
