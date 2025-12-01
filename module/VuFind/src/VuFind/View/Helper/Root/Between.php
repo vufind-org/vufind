@@ -92,7 +92,7 @@ class Between extends \Laminas\View\Helper\AbstractHelper
             if (!$score) {
                 continue;
             }
-            if ($recordIndex > 0) {
+            if ($lastScore !== null) {
                 $diff = $lastScore - $score;
                 if ($diff > $maxDiff) {
                     $maxDiff = $diff;
