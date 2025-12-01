@@ -714,7 +714,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
         $this->paymentService->beginTransaction();
         try {
             $this->paymentService->persistEntity($payment);
-            $this->auditEventService->addPaymentEvent($payment, $eventSubtype, $auditMessage, $eventData);
+            $this->auditEventService->addPaymentEvent($payment, $eventSubtype, $auditMessage, $eventData, 1);
         } catch (\Exception $e) {
             $this->paymentService->rollbackTransaction();
             throw $e;

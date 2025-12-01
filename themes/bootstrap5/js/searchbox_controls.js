@@ -271,9 +271,9 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
           return;
         }
 
-        var hiddenFilters = [];
+        var filters = [];
         $('#searchForm').find('input[name="hiddenFilters[]"]').each(function hiddenFiltersEach() {
-          hiddenFilters.push($(this).val());
+          filters.push($(this).val());
         });
 
         if (applyActiveFilters) {
@@ -283,7 +283,7 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
             activeFilters.querySelectorAll(".filter-value").forEach(
               (element) => {
                 if (element.dataset.filter) {
-                  hiddenFilters.push(element.dataset.filter);
+                  filters.push(element.dataset.filter);
                 }
               }
             );
@@ -296,7 +296,7 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
             method: 'getACSuggestions',
             searcher: searcher,
             type: type,
-            hiddenFilters,
+            filters,
           },
           dataType: 'json',
           success: function autocompleteJSON(json) {
