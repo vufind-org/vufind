@@ -239,7 +239,13 @@ class RecordsHelperTest extends TestCase
         $helper = new RecordsHelper($config, $loader);
         $result = $helper->collectRequestStats($records);
 
-        $this->assertSame([$ilsDetails1, $ilsDetails2], $result);
+        $expected = [
+            'available' => 0,
+            'in_transit' => 0,
+            'other' => 2,
+        ];
+
+        $this->assertSame($expected, $result);
     }
 
     /**
@@ -277,7 +283,12 @@ class RecordsHelperTest extends TestCase
         $helper = new RecordsHelper($config, $loader);
         $result = $helper->collectRequestStats([]);
 
-        $this->assertSame([], $result);
+        $expected = [
+            'available' => 0,
+            'in_transit' => 0,
+            'other' => 0,
+        ];
+        $this->assertSame($expected, $result);
     }
 
     /**
