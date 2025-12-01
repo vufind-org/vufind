@@ -63,6 +63,7 @@ use VuFind\Exception\LoginRequired as LoginRequiredException;
 use VuFind\Exception\Mail as MailException;
 use VuFind\Exception\MissingField as MissingFieldException;
 use VuFind\Favorites\FavoritesService;
+use VuFind\ILS\Logic\RecordsHelper;
 use VuFind\ILS\Logic\RenewalsHelper;
 use VuFind\ILS\PaginationHelper;
 use VuFind\Mailer\Mailer;
@@ -1439,9 +1440,9 @@ class MyResearchController extends AbstractBase
             // locations, they are not supported and we should ignore them.
         }
 
-        $view->recordList = $this->ilsRecords()->getDrivers($driversNeeded);
-        $view->accountStatus = $this->ilsRecords()
-            ->collectRequestStats($view->recordList);
+        $recordsHelper = $this->getService(RecordsHelper::class);
+        $view->recordList = $recordsHelper->getDrivers($driversNeeded);
+        $view->accountStatus = $recordsHelper->collectRequestStats($view->recordList);
         return $view;
     }
 
@@ -1504,9 +1505,9 @@ class MyResearchController extends AbstractBase
             $driversNeeded[] = $current;
         }
 
-        $view->recordList = $this->ilsRecords()->getDrivers($driversNeeded);
-        $view->accountStatus = $this->ilsRecords()
-            ->collectRequestStats($view->recordList);
+        $recordsHelper = $this->getService(RecordsHelper::class);
+        $view->recordList = $recordsHelper->getDrivers($driversNeeded);
+        $view->accountStatus = $recordsHelper->collectRequestStats($view->recordList);
         return $view;
     }
 
@@ -1619,7 +1620,7 @@ class MyResearchController extends AbstractBase
             }
         }
 
-        $transactions = $this->ilsRecords()->getDrivers($driversNeeded);
+        $transactions = $this->getService(RecordsHelper::class)->getDrivers($driversNeeded);
 
         $displayItemBarcode = !empty($config['Catalog']['display_checked_out_item_barcode']);
 
