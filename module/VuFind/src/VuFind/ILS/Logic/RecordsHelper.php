@@ -21,13 +21,13 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Controller_Plugins
+ * @package  ILS_Logic
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
 
-namespace VuFind\Controller\Plugin;
+namespace VuFind\ILS\Logic;
 
 use VuFind\Config\Config;
 use VuFind\Record\Loader;
@@ -36,12 +36,12 @@ use VuFind\Record\Loader;
  * Action helper to perform ILS record related actions
  *
  * @category VuFind
- * @package  Controller_Plugins
+ * @package  ILS_Logic
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class IlsRecords extends \Laminas\Mvc\Controller\Plugin\AbstractPlugin
+class RecordsHelper
 {
     use \VuFind\ILS\Logic\SummaryTrait;
 
