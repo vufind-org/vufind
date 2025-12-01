@@ -33,8 +33,8 @@ namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\SessionManager;
-use VuFind\ILS\PaginationHelper;
 use VuFind\ILS\Logic\RecordsHelper;
+use VuFind\ILS\PaginationHelper;
 use VuFind\Validator\CsrfInterface;
 
 use function is_array;
