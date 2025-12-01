@@ -643,13 +643,13 @@ class EDS extends DefaultRecord
             return $closestMatch;
         }
 
-        // Optionally use VuFind's default cover image loading
-        $useOtherThumbnailSources = $this->recordConfig?->Cover?->useOtherThumbnailSources ?? false;
-        if ($useOtherThumbnailSources) {
+        // Optionally use VuFind's default cover loader
+        $fallBackToCoverLoader = $this->recordConfig?->Cover?->fallBackToCoverLoader?->toArray() ?? [];
+        if ($fallBackToCoverLoader) {
             $parentThumbnail = parent::getThumbnail($size);
 
-            // Only use default cover image loading if it has a reasonable chance of success
-            if (($parentThumbnail['issn'] ?? false) || ($parentThumbnail['isbns'] ?? false)) {
+            // Only use the default cover loader if the record contained at least one configured field
+            if (array_intersect_key($parentThumbnail, array_flip($fallBackToCoverLoader))) {
                 return $parentThumbnail;
             }
         }
