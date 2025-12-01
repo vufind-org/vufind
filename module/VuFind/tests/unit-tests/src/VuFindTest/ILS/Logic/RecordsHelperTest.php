@@ -62,8 +62,7 @@ class RecordsHelperTest extends TestCase
         $helper = new RecordsHelper($config, $loader);
         $result = $helper->getDrivers([]);
 
-        $this->assertIsArray($result);
-        $this->assertEmpty($result);
+        $this->assertSame([], $result);
     }
 
     /**
@@ -114,8 +113,6 @@ class RecordsHelperTest extends TestCase
         $helper = new RecordsHelper($config, $loader);
         $result = $helper->getDrivers($records);
 
-        $this->assertIsArray($result);
-        $this->assertCount(3, $result);
         $this->assertSame($mockDrivers, $result);
     }
 
@@ -152,8 +149,7 @@ class RecordsHelperTest extends TestCase
         $helper = new RecordsHelper($config, $loader);
         $result = $helper->getDrivers($records);
 
-        $this->assertIsArray($result);
-        $this->assertCount(1, $result);
+        $this->assertSame($mockDrivers, $result);
     }
 
     /**
@@ -189,18 +185,37 @@ class RecordsHelperTest extends TestCase
         $helper = new RecordsHelper($config, $loader);
         $result = $helper->getDrivers($records);
 
-        $this->assertIsArray($result);
-        $this->assertCount(1, $result);
+        $this->assertSame($mockDrivers, $result);
+    }
+
+    /**
+     * Data provider for ajax configuration tests
+     *
+     * @return array
+     */
+    public static function ajaxConfigProvider(): array
+    {
+        return [
+            'ajax explicitly enabled' => [
+                ['Authentication' => ['enableAjax' => true]],
+            ],
+            'ajax setting not specified (default enabled)' => [
+                ['Authentication' => []],
+            ],
+        ];
     }
 
     /**
      * Test collectRequestStats when ajax is enabled
      *
+     * @param array $configData Configuration data
+     *
      * @return void
      */
-    public function testCollectRequestStatsWithAjaxEnabled(): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('ajaxConfigProvider')]
+    public function testCollectRequestStatsWithAjaxEnabled(array $configData): void
     {
-        $config = new Config(['Authentication' => ['enableAjax' => true]]);
+        $config = new Config($configData);
         $loader = $this->createMock(Loader::class);
 
         $ilsDetails1 = ['id' => 'record1', 'status' => 'available'];
@@ -224,7 +239,7 @@ class RecordsHelperTest extends TestCase
         $helper = new RecordsHelper($config, $loader);
         $result = $helper->collectRequestStats($records);
 
-        $this->assertIsArray($result);
+        $this->assertSame([$ilsDetails1, $ilsDetails2], $result);
     }
 
     /**
@@ -250,32 +265,6 @@ class RecordsHelperTest extends TestCase
     }
 
     /**
-     * Test collectRequestStats when enableAjax is not set (defaults to true)
-     *
-     * @return void
-     */
-    public function testCollectRequestStatsWithDefaultAjaxSetting(): void
-    {
-        $config = new Config(['Authentication' => []]);
-        $loader = $this->createMock(Loader::class);
-
-        $ilsDetails = ['id' => 'record1', 'status' => 'available'];
-        $driver = $this->createMock(AbstractBase::class);
-
-        $driver->expects($this->once())
-            ->method('getExtraDetail')
-            ->with('ils_details')
-            ->willReturn($ilsDetails);
-
-        $records = [$driver];
-
-        $helper = new RecordsHelper($config, $loader);
-        $result = $helper->collectRequestStats($records);
-
-        $this->assertIsArray($result);
-    }
-
-    /**
      * Test collectRequestStats with empty records array
      *
      * @return void
@@ -288,7 +277,7 @@ class RecordsHelperTest extends TestCase
         $helper = new RecordsHelper($config, $loader);
         $result = $helper->collectRequestStats([]);
 
-        $this->assertIsArray($result);
+        $this->assertSame([], $result);
     }
 
     /**
@@ -332,8 +321,6 @@ class RecordsHelperTest extends TestCase
         $helper = new RecordsHelper($config, $loader);
         $result = $helper->getDrivers($records);
 
-        $this->assertSame($driver1, $result[0]);
-        $this->assertSame($driver2, $result[1]);
-        $this->assertSame($driver3, $result[2]);
+        $this->assertSame([$driver1, $driver2, $driver3], $result);
     }
 }
