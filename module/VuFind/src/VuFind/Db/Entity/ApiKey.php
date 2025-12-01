@@ -194,7 +194,8 @@ class ApiKey implements ApiKeyEntityInterface
      */
     public function getCreated(): DateTime
     {
-        return $this->created;
+        // Return to a clone to avoid indirect modification of the entity:
+        return $this->getDateTimeClone($this->created);
     }
 
     /**
@@ -217,7 +218,8 @@ class ApiKey implements ApiKeyEntityInterface
      */
     public function getLastUsed(): DateTime
     {
-        return $this->lastUsed;
+        // Return to a clone to avoid indirect modification of the entity:
+        return $this->getDateTimeClone($this->lastUsed);
     }
 
     /**

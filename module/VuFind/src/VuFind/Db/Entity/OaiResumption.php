@@ -171,6 +171,7 @@ class OaiResumption implements OaiResumptionEntityInterface
      */
     public function getExpiry(): DateTime
     {
-        return $this->expires;
+        // Return to a clone to avoid indirect modification of the entity:
+        return $this->getDateTimeClone($this->expires);
     }
 }

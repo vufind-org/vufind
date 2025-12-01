@@ -178,7 +178,8 @@ class AuditEvent implements AuditEventEntityInterface
      */
     public function getDate(): DateTime
     {
-        return $this->date;
+        // Return to a clone to avoid indirect modification of the entity:
+        return $this->getDateTimeClone($this->date);
     }
 
     /**
