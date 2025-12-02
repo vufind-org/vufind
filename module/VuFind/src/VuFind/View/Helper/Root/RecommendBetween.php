@@ -57,7 +57,7 @@ class RecommendBetween extends \Laminas\View\Helper\AbstractHelper
      * @param array   $recommendations Between recommendations config
      * @param Results $results         The primary search results
      *
-     * @return array An array containing a placement index (or false) for each between recommendation.
+     * @return array An array containing a placement index (or false to hide) for each between recommendation.
      */
     public function getPlacements(array $recommendations, Results $results)
     {
