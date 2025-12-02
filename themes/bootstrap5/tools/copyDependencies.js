@@ -36,7 +36,7 @@ function copy(fromRelPath, toRelPath) {
 console.log('Copying bootstrap5 dependencies...');
 
 // Bootstrap 5 SCSS
-copy('node_modules/bootstrap/scss/.', 'scss/vendor/bootstrap/scss/');
+copy('node_modules/bootstrap/scss/.', 'scss/vendor/bootstrap/');
 
 if (buildDepsOnly) {
     console.log('= Done copying build dependencies.');
