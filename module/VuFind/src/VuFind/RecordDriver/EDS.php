@@ -649,7 +649,7 @@ class EDS extends DefaultRecord
             $parentThumbnail = parent::getThumbnail($size);
 
             // Only use the default cover loader if the record contained at least one configured field
-            if (array_intersect_key($parentThumbnail, array_flip($fallBackToCoverLoader))) {
+            if (array_intersect(array_keys($parentThumbnail), $fallBackToCoverLoader)) {
                 return $parentThumbnail;
             }
         }
