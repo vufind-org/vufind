@@ -86,9 +86,7 @@ class RecommendBetween extends \Laminas\View\Helper\AbstractHelper
         $maxDiff = 0;
         $maxDiffIndex = 0;
         $lastScore = null;
-        $recordIndex = -1;
-        foreach ($scores as $score) {
-            $recordIndex++;
+        foreach ($scores as $recordIndex => $score) {
             if (!$score) {
                 continue;
             }
