@@ -222,7 +222,7 @@ final class LoggingTest extends MinkTestCase
                     '/VuFindSearch\\\\Backend\\\\Exception/',
                     '/Search\/Results.*lookfor.*test/',
                     self::DEBUG_LEVEL_REGEX,
-                    '/Invalid priority/'
+                    '/Invalid priority/',
                 ],
                 'unexpectedPatterns' => [
                 ],
