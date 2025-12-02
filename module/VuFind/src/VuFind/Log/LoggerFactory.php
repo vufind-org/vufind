@@ -368,6 +368,10 @@ class LoggerFactory implements FactoryInterface
             // Ensure verbosity is an int, default to 1 if not specified or invalid
             $verbosity = isset($parts[1]) && is_numeric($parts[1]) ? (int)$parts[1] : 1;
 
+            // Default logging level range logs everything:
+            $min = LogLevel::DEBUG;
+            $max = LogLevel::EMERGENCY;
+
             // VuFind's configuration provides four priority options, each
             // combining two of the standard PSR levels, but uppercase strings can
             // be used to match each PSR level:
@@ -400,7 +404,7 @@ class LoggerFactory implements FactoryInterface
                     $min = $max = constant(LogLevel::class . "::$priority");
                     break;
                 default:
-                    continue 2;
+                    // Fall through using defaults
             }
 
             // Clone the submitted baseHandler since we'll need a separate instance
