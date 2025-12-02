@@ -302,7 +302,9 @@ VuFind.register("channels", function Channels() {
           clampLines(record.querySelector(".channel-item-title"));
         }
 
-        ariaAnnounceNewItems(firstNewItem, pageSize);
+        if (firstNewItem !== null) {
+          ariaAnnounceNewItems(firstNewItem, pageSize);
+        }
 
         // Hide button
         if (records.length < Number(targetChannel.dataset.batchSize)) {
