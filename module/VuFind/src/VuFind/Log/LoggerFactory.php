@@ -375,6 +375,7 @@ class LoggerFactory implements FactoryInterface
             // VuFind's configuration provides four priority options, each
             // combining two of the standard PSR levels, but uppercase strings can
             // be used to match each PSR level:
+            $logBadPriority = false;
             $priority = trim($priority);
             switch ($priority) {
                 case 'debug':
@@ -404,7 +405,8 @@ class LoggerFactory implements FactoryInterface
                     $min = $max = constant(LogLevel::class . "::$priority");
                     break;
                 default:
-                    // Fall through using defaults
+                    // Fall through using defaults, but prepare to log a message about the priority
+                    $logBadPriority = true;
             }
 
             // Clone the submitted baseHandler since we'll need a separate instance
@@ -430,6 +432,9 @@ class LoggerFactory implements FactoryInterface
             } else {
                 // Add the fully configured handler (wrapped in its filter) to the Monolog logger.
                 $monologLogger->pushHandler($filterHandler);
+            }
+            if ($logBadPriority) {
+                $monologLogger->error("Invalid priority '$priority' specified; logging everything");
             }
         }
     }
