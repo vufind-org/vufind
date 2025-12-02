@@ -105,7 +105,7 @@ function compileTheme(themeName) {
     sourceMapContent = DO_SOURCEMAPS ? output.sourceMap.toString() : null;
 
     const reduction = (100 * output.stats.efficiency).toFixed(1);
-    console.log(`  - ${output.stats.timeSpent}ms (${reduction}% smaller)`);
+    console.log(`  - ${output.stats.timeSpent}ms (${reduction.toLocaleString()}% smaller)`);
   }
 
   // Write files
@@ -128,7 +128,7 @@ function compileTheme(themeName) {
     fs.writeFileSync(outCSSPath, cssContent, "utf8");
   }
 
-  console.log(`- done (${Math.ceil(performance.now() - start)}ms)`);
+  console.log(`- done (${Math.ceil(performance.now() - start).toLocaleString()}ms)`);
 }
 
 // Functions
