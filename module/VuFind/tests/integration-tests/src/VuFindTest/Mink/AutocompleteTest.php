@@ -135,22 +135,36 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
      */
     public static function filteredAutocompleteProvider(): array
     {
-        return ['filtered' => [true], 'unfiltered' => [false]];
+        return [
+            'retain filters, no explicit autocomplete setting' => [null, true, true],
+            'do not retain filters, no explicit autocomplete setting' => [null, false, false],
+            'retain filters, explicit autocomplete true setting' => [true, true, true],
+            'do not retain filters, explicit autocomplete true setting' => [true, false, true],
+            'retain filters, explicit autocomplete false setting' => [false, true, false],
+            'do not retain filters, explicit autocomplete false setting' => [false, false, false],
+        ];
     }
 
     /**
      * Test the apply_active_filters setting.
      *
-     * @param bool $filtered Should we apply the active filters?
+     * @param ?bool $filtered       Should we apply the active filters?
+     * @param bool  $retain         Should filters be retained by default?
+     * @param bool  $filterExpected Do we expect filtering to be applied?
      *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('filteredAutocompleteProvider')]
-    public function testFilteredAutocomplete(bool $filtered): void
+    public function testFilteredAutocomplete(?bool $filtered, bool $retain, bool $filterExpected): void
     {
         // Turn on autocomplete filtering:
         $this->changeConfigs(
-            ['searches' => ['Autocomplete' => ['apply_active_filters' => $filtered]]]
+            [
+                'searches' => [
+                    'Autocomplete' => $filtered === null ? [] : ['apply_active_filters' => $filtered],
+                    'General' => ['retain_filters_by_default' => $retain],
+                ],
+            ]
         );
 
         // Go to a filtered page:
@@ -159,7 +173,7 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
         $page = $session->getPage();
 
         // Depending on filter setting, we expect a different result:
-        $expected = $filtered ? 'The Hierarchy Example 9' : 'Al Gore';
+        $expected = $filterExpected ? 'The Hierarchy Example 9' : 'Al Gore';
         $this->assertAutocompleteValueAndReturnItem($page, 'jsto', $expected);
     }
 

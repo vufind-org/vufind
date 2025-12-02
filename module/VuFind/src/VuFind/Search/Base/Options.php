@@ -297,11 +297,11 @@ abstract class Options implements TranslatorAwareInterface
     protected $autocompleteAutoSubmit = true;
 
     /**
-     * Autocomplete apply active filters setting
+     * Autocomplete apply active filters setting (null to fall back to retainFiltersByDefault setting)
      *
-     * @var bool
+     * @var ?bool
      */
-    protected $autocompleteApplyActiveFilters = false;
+    protected $autocompleteApplyActiveFilters = null;
 
     /*
      * Autocomplete max display items setting
@@ -1066,7 +1066,7 @@ abstract class Options implements TranslatorAwareInterface
      */
     public function autocompleteApplyActiveFilters(): bool
     {
-        return $this->autocompleteApplyActiveFilters;
+        return $this->autocompleteApplyActiveFilters ?? $this->getRetainFilterSetting();
     }
 
     /**
