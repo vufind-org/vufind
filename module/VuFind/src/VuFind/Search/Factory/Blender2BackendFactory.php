@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Factory for Blender backend.
+ * Factory for Blender2 backend.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Search\Factory;
 
 /**
- * Factory for Blender backend.
+ * Factory for Blender2 backend.
  *
  * @category VuFind
  * @package  Search

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Factory for Blender search params objects.
+ * Factory for Blender2 search params objects.
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Search\Blender2;
 
 /**
- * Factory for Solr search params objects.
+ * Factory for Blender2 search params objects.
  *
  * @category VuFind
  * @package  Search_Blender

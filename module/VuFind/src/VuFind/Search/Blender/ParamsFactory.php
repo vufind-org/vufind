@@ -35,7 +35,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for Solr search params objects.
+ * Factory for Blender search params objects.
  *
  * @category VuFind
  * @package  Search_Blender

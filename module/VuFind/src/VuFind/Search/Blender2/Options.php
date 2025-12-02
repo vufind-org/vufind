@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Blender aspect of the Search Multi-class (Options)
+ * Blender2 aspect of the Search Multi-class (Options)
  *
  * PHP version 8
  *
