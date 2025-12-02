@@ -1,11 +1,11 @@
 <?php
 
 /**
- * VuFind Action Helper - Reserves Support Methods
+ * VuFind Helper - Reserves Support Methods
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010, 2022.
+ * Copyright (C) Villanova University 2010, 2022-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,28 +21,28 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Controller_Plugins
+ * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
 
-namespace VuFind\Controller\Plugin;
+namespace VuFind\Search;
 
-use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
+use VuFind\ILS\Connection;
 use VuFindSearch\Command\RetrieveCommand;
 use VuFindSearch\Service;
 
 /**
- * Action helper to perform reserves-related actions
+ * Helper to perform reserves-related actions
  *
  * @category VuFind
- * @package  Controller_Plugins
+ * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Reserves extends AbstractPlugin
+class ReservesHelper
 {
     /**
      * Do we need to use the Solr index for reserves (true) or the ILS driver
@@ -50,30 +50,42 @@ class Reserves extends AbstractPlugin
      *
      * @var bool
      */
-    protected $useIndex;
+    protected bool $useIndex;
 
     /**
      * Search service
      *
-     * @var Service
+     * @var ?Service
      */
-    protected $searchService;
+    protected ?Service $searchService;
+
+    /**
+     * ILS connection
+     *
+     * @var Connection
+     */
+    protected Connection $catalog;
 
     /**
      * Constructor
      *
-     * @param bool     $useIndex      Do we need to use the Solr index for reserves
+     * @param bool       $useIndex      Do we need to use the Solr index for reserves
      * (true) or the ILS driver (false)?
-     * @param ?Service $searchService Search service (only required when $useIndex
+     * @param ?Service   $searchService Search service (only required when $useIndex
      * is true).
+     * @param Connection $catalog       ILS connection
      */
-    public function __construct($useIndex = false, ?Service $searchService = null)
-    {
+    public function __construct(
+        bool $useIndex,
+        ?Service $searchService,
+        Connection $catalog
+    ) {
         $this->useIndex = $useIndex;
         if ($useIndex && null === $searchService) {
             throw new \Exception('Missing required search service');
         }
         $this->searchService = $searchService;
+        $this->catalog = $catalog;
     }
 
     /**
@@ -82,7 +94,7 @@ class Reserves extends AbstractPlugin
      *
      * @return bool
      */
-    public function useIndex()
+    public function useIndex(): bool
     {
         return $this->useIndex;
     }
@@ -96,7 +108,7 @@ class Reserves extends AbstractPlugin
      *
      * @return array
      */
-    public function findReserves($course = null, $inst = null, $dept = null)
+    public function findReserves(?string $course = null, ?string $inst = null, ?string $dept = null): array
     {
         // Special case -- process reserves info using index
         if ($this->useIndex()) {
@@ -127,7 +139,6 @@ class Reserves extends AbstractPlugin
         }
 
         // Default case -- find reserves info from the catalog
-        $catalog = $this->getController()->getILS();
-        return $catalog->findReserves($course, $inst, $dept);
+        return $this->catalog->findReserves($course, $inst, $dept);
     }
 }
