@@ -100,9 +100,10 @@
         ?>
         <li
           class="channel-item <?=$index < $channel['config']['pageSize'] ? '' : 'hidden-batch-item' ?>"
-          data-channel-id="<?=$this->escapeHtmlAttr($channelID)?>"
+          data-index="<?=$index ?>"
           data-record-id="<?=$this->escapeHtmlAttr($item['id']) ?>"
           data-record-source="<?=$this->escapeHtmlAttr($item['source']) ?>"
+          data-channel-id="<?=$this->escapeHtmlAttr($channelID)?>"
         >
           <div class="channel-item-thumb">
             <img
