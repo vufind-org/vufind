@@ -55,6 +55,7 @@ use VuFind\Log\Handler\StreamHandler;
 use VuFind\Mailer\Mailer;
 use VuFind\Net\UserIpReader;
 
+use function constant;
 use function error_log;
 use function explode;
 use function is_array;
@@ -367,12 +368,11 @@ class LoggerFactory implements FactoryInterface
             // Ensure verbosity is an int, default to 1 if not specified or invalid
             $verbosity = isset($parts[1]) && is_numeric($parts[1]) ? (int)$parts[1] : 1;
 
-            $min = LogLevel::DEBUG; // Default min, will be overwritten by switch
-            $max = LogLevel::EMERGENCY; // Default max, will be overwritten by switch
-
             // VuFind's configuration provides four priority options, each
-            // combining two of the standard Monolog levels.
-            switch (trim($priority)) {
+            // combining two of the standard PSR levels, but uppercase strings can
+            // be used to match each PSR level:
+            $priority = trim($priority);
+            switch ($priority) {
                 case 'debug':
                     $min = LogLevel::DEBUG;
                     $max = LogLevel::INFO;
@@ -388,6 +388,16 @@ class LoggerFactory implements FactoryInterface
                 case 'alert':
                     $min = LogLevel::ALERT;
                     $max = LogLevel::EMERGENCY;
+                    break;
+                case 'DEBUG':
+                case 'INFO':
+                case 'NOTICE':
+                case 'WARNING':
+                case 'ERROR':
+                case 'CRITICAL':
+                case 'ALERT':
+                case 'EMERGENCY':
+                    $min = $max = constant(LogLevel::class . "::$priority");
                     break;
                 default:
                     continue 2;
