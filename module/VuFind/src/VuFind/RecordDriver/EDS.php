@@ -602,13 +602,15 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Return a URL to a thumbnail preview of the record, if available; false
-     * otherwise.
+     * Returns one of three things: a full URL to a thumbnail preview of the record
+     * if an image is available in an external system; an array of parameters to
+     * send to VuFind's internal cover generator if no fixed URL exists; or false
+     * if no thumbnail can be generated.
      *
      * @param string $size Size of thumbnail (small, medium or large -- small is
      * default).
      *
-     * @return string
+     * @return string|array|bool
      */
     public function getThumbnail($size = 'small')
     {
@@ -634,7 +636,25 @@ class EDS extends DefaultRecord
                 }
             }
         }
-        return $closestMatch;
+
+        // If EDS actually returned cover image data, use it.  EDS only provides this data
+        // for certain ebook packages.
+        if ($closestMatch) {
+            return $closestMatch;
+        }
+
+        // Optionally use VuFind's default cover loader
+        $fallBackToCoverLoader = $this->recordConfig?->Cover?->fallBackToCoverLoader?->toArray() ?? [];
+        if ($fallBackToCoverLoader) {
+            $parentThumbnail = parent::getThumbnail($size);
+
+            // Only use the default cover loader if the record contained at least one configured field
+            if (array_intersect(array_keys($parentThumbnail), $fallBackToCoverLoader)) {
+                return $parentThumbnail;
+            }
+        }
+
+        return false;
     }
 
     /**
