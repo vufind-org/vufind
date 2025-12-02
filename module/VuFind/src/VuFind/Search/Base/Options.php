@@ -1556,9 +1556,7 @@ abstract class Options implements TranslatorAwareInterface
         if (null !== ($autosubmit = $autocompleteSettings['auto_submit'] ?? null)) {
             $this->autocompleteAutoSubmit = $autosubmit;
         }
-        if (null !== ($applyActive = $autocompleteSettings['apply_active_filters'] ?? null)) {
-            $this->autocompleteApplyActiveFilters = $applyActive;
-        }
+        $this->autocompleteApplyActiveFilters = $autocompleteSettings['apply_active_filters'] ?? null;
         if (null !== ($displaylimit = $autocompleteSettings['display_limit'] ?? null)) {
             $this->autocompleteDisplayLimit = (int)$displaylimit;
         }
