@@ -53,20 +53,6 @@ class ReservesHelper
     protected bool $useIndex;
 
     /**
-     * Search service
-     *
-     * @var ?Service
-     */
-    protected ?Service $searchService;
-
-    /**
-     * ILS connection
-     *
-     * @var Connection
-     */
-    protected Connection $catalog;
-
-    /**
      * Constructor
      *
      * @param bool       $useIndex      Do we need to use the Solr index for reserves
@@ -77,15 +63,14 @@ class ReservesHelper
      */
     public function __construct(
         bool $useIndex,
-        ?Service $searchService,
-        Connection $catalog
+        protected ?Service $searchService,
+        protected Connection $catalog
     ) {
+        
         $this->useIndex = $useIndex;
         if ($useIndex && null === $searchService) {
             throw new \Exception('Missing required search service');
         }
-        $this->searchService = $searchService;
-        $this->catalog = $catalog;
     }
 
     /**
