@@ -45,14 +45,6 @@ use VuFindSearch\Service;
 class ReservesHelper
 {
     /**
-     * Do we need to use the Solr index for reserves (true) or the ILS driver
-     * (false)?
-     *
-     * @var bool
-     */
-    protected bool $useIndex;
-
-    /**
      * Constructor
      *
      * @param bool       $useIndex      Do we need to use the Solr index for reserves
@@ -62,12 +54,10 @@ class ReservesHelper
      * @param Connection $catalog       ILS connection
      */
     public function __construct(
-        bool $useIndex,
+        protected bool $useIndex,
         protected ?Service $searchService,
         protected Connection $catalog
     ) {
-
-        $this->useIndex = $useIndex;
         if ($useIndex && null === $searchService) {
             throw new \Exception('Missing required search service');
         }

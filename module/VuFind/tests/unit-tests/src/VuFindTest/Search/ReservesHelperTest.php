@@ -178,10 +178,7 @@ class ReservesHelperTest extends TestCase
             ->method('getRecords')
             ->willReturn([$reserveRecord]);
 
-        $commandResponse = $this->getMockBuilder(\VuFindSearch\Command\RetrieveCommand::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['getResult'])
-            ->getMock();
+        $commandResponse = $this->createMock(\VuFindSearch\Command\RetrieveCommand::class);
         $commandResponse->expects($this->once())
             ->method('getResult')
             ->willReturn($recordCollection);
@@ -241,10 +238,7 @@ class ReservesHelperTest extends TestCase
         $recordCollection->expects($this->never())
             ->method('getRecords');
 
-        $commandResponse = $this->getMockBuilder(\VuFindSearch\Command\RetrieveCommand::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['getResult'])
-            ->getMock();
+        $commandResponse = $this->createMock(\VuFindSearch\Command\RetrieveCommand::class);
         $commandResponse->expects($this->once())
             ->method('getResult')
             ->willReturn($recordCollection);
