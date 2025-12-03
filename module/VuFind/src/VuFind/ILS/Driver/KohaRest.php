@@ -1922,7 +1922,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         );
         if ($result['code'] >= 300) {
             $msg = empty($result['data']['error'])
-                ? $result['code']
+                ? $this->getPrefixedMessage($result['code'])
                 : $this->getPrefixedMessage($result['data']['error']);
             return [
                 'success' => false,
@@ -2483,7 +2483,7 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
         // Replace ':' in status key if used as status since ':' is
         // the namespace separator in translatable strings:
         return $this->itemStatusMappings[$statusKey]
-            ?? $data['code']
+            ?? $this->getPrefixedMessage($data['code'])
             ?? $this->getPrefixedMessage(str_replace(':', '_', $statusKey));
     }
 
