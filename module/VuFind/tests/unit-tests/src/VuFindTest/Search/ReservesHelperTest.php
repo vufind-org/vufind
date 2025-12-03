@@ -57,8 +57,9 @@ class ReservesHelperTest extends TestCase
     {
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Missing required search service');
+        $catalog = $this->createMock(Connection::class);
 
-        new ReservesHelper(true, null, $this->createMock(Connection::class));
+        new ReservesHelper(true, null, $catalog);
     }
 
     /**
@@ -134,8 +135,8 @@ class ReservesHelperTest extends TestCase
         ];
 
         $catalog->expects($this->once())
-            ->method('__call')
-            ->with('findReserves', ['CS101', 'smith', 'Computer Science'])
+            ->method('findReserves')
+            ->with('CS101', 'smith', 'Computer Science')
             ->willReturn($expectedReserves);
 
         $helper = new ReservesHelper(false, null, $catalog);
@@ -154,6 +155,10 @@ class ReservesHelperTest extends TestCase
         $searchService = $this->createMock(Service::class);
         $catalog = $this->createMock(Connection::class);
 
+        // Mock the record collection
+        $recordCollection = $this->createMock(RecordCollectionInterface::class);
+
+        // Mock the SolrReserves record
         $reserveRecord = $this->createMock(SolrReserves::class);
 
         $reserveRecord->expects($this->once())
@@ -168,8 +173,6 @@ class ReservesHelperTest extends TestCase
             ->method('getItemIds')
             ->willReturn(['bib123', 'bib456', 'bib789']);
 
-        $recordCollection = $this->createMock(RecordCollectionInterface::class);
-        
         $recordCollection->expects($this->once())
             ->method('getTotal')
             ->willReturn(1);
@@ -178,20 +181,7 @@ class ReservesHelperTest extends TestCase
             ->method('getRecords')
             ->willReturn([$reserveRecord]);
 
-        $response = new class ($recordCollection) {
-            private $result;
-
-            public function __construct($result)
-            {
-                $this->result = $result;
-            }
-
-            public function getResult()
-            {
-                return $this->result;
-            }
-        };
-
+        // Mock the search service invoke method
         $searchService->expects($this->once())
             ->method('invoke')
             ->with($this->callback(function ($command) {
@@ -199,7 +189,7 @@ class ReservesHelperTest extends TestCase
                     && $command->getTargetIdentifier() === 'SolrReserves'
                     && $command->getArguments()[0] === 'MATH201|johnson|Mathematics';
             }))
-            ->willReturn($response);
+            ->willReturn((object)['getResult' => fn () => $recordCollection]);
 
         $helper = new ReservesHelper(true, $searchService, $catalog);
         $result = $helper->findReserves('MATH201', 'johnson', 'Mathematics');
@@ -238,6 +228,7 @@ class ReservesHelperTest extends TestCase
         $searchService = $this->createMock(Service::class);
         $catalog = $this->createMock(Connection::class);
 
+        // Mock the record collection with no results
         $recordCollection = $this->createMock(RecordCollectionInterface::class);
 
         $recordCollection->expects($this->once())
@@ -247,26 +238,13 @@ class ReservesHelperTest extends TestCase
         $recordCollection->expects($this->never())
             ->method('getRecords');
 
-        $response = new class ($recordCollection) {
-            private $result;
-
-            public function __construct($result)
-            {
-                $this->result = $result;
-            }
-
-            public function getResult()
-            {
-                return $this->result;
-            }
-        };
-
+        // Mock the search service invoke method
         $searchService->expects($this->once())
             ->method('invoke')
             ->with($this->callback(function ($command) {
                 return $command instanceof RetrieveCommand;
             }))
-            ->willReturn($response);
+            ->willReturn((object)['getResult' => fn () => $recordCollection]);
 
         $helper = new ReservesHelper(true, $searchService, $catalog);
         $result = $helper->findReserves('PHYS301', 'doe', 'Physics');
@@ -284,6 +262,10 @@ class ReservesHelperTest extends TestCase
         $searchService = $this->createMock(Service::class);
         $catalog = $this->createMock(Connection::class);
 
+        // Mock the record collection
+        $recordCollection = $this->createMock(RecordCollectionInterface::class);
+
+        // Mock the SolrReserves record
         $reserveRecord = $this->createMock(SolrReserves::class);
 
         $reserveRecord->expects($this->once())
@@ -298,7 +280,6 @@ class ReservesHelperTest extends TestCase
             ->method('getItemIds')
             ->willReturn(['bib001']);
 
-        $recordCollection = $this->createMock(RecordCollectionInterface::class);
         $recordCollection->expects($this->once())
             ->method('getTotal')
             ->willReturn(1);
@@ -307,27 +288,14 @@ class ReservesHelperTest extends TestCase
             ->method('getRecords')
             ->willReturn([$reserveRecord]);
 
-        $response = new class ($recordCollection) {
-            private $result;
-
-            public function __construct($result)
-            {
-                $this->result = $result;
-            }
-
-            public function getResult()
-            {
-                return $this->result;
-            }
-        };
-
+        // Verify that null parameters are properly formatted in the command
         $searchService->expects($this->once())
             ->method('invoke')
             ->with($this->callback(function ($command) {
                 return $command instanceof RetrieveCommand
                     && $command->getArguments()[0] === '||';
             }))
-            ->willReturn($response);
+            ->willReturn((object)['getResult' => fn () => $recordCollection]);
 
         $helper = new ReservesHelper(true, $searchService, $catalog);
         $result = $helper->findReserves(null, null, null);
@@ -350,8 +318,8 @@ class ReservesHelperTest extends TestCase
         ];
 
         $catalog->expects($this->once())
-            ->method('__call')
-            ->with('findReserves', [null, null, null])
+            ->method('findReserves')
+            ->with(null, null, null)
             ->willReturn($expectedReserves);
 
         $helper = new ReservesHelper(false, null, $catalog);

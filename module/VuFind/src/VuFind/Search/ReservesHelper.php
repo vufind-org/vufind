@@ -66,7 +66,7 @@ class ReservesHelper
         protected ?Service $searchService,
         protected Connection $catalog
     ) {
-        
+
         $this->useIndex = $useIndex;
         if ($useIndex && null === $searchService) {
             throw new \Exception('Missing required search service');
