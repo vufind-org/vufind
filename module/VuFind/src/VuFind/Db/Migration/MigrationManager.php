@@ -173,7 +173,6 @@ class MigrationManager
         foreach ($subDirectories as $next) {
             $matches = array_merge($matches, $this->getNeededMigrationsFromDir($next));
         }
-        natsort($matches);
         return array_values($matches);
     }
 

@@ -311,8 +311,7 @@ class MonitorCommand extends Command
             }
             $this->msg("Inform $errorCount expired payments to $recipient (source: $source)");
 
-            $adminUrl = ($this->viewRenderer->plugin('url'))('admin-payments');
-            $params = compact('source', 'errorCount', 'adminUrl');
+            $params = compact('source', 'errorCount');
             $message = $this->viewRenderer->render('Email/online-payment-alert.phtml', $params);
 
             try {

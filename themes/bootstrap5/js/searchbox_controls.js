@@ -141,7 +141,7 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
       }
       /**
        * Check if an element has a specific class
-       * @param {HTMLElement} el        The element to check. 
+       * @param {HTMLElement} el        The element to check.
        * @param {string}      className The class name to search for.
        * @returns {boolean} Return true of the element has the class name.
        */
@@ -213,6 +213,7 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
       const formattingRules = $searchbox.data('autocompleteFormattingRules');
       const typeFieldSelector = $searchbox.data('autocompleteTypeFieldSelector');
       const typePrefix = $searchbox.data('autocompleteTypePrefix');
+      const applyActiveFilters = $searchbox.data('autocompleteApplyActiveFilters');
       const displayLimit = $searchbox.data('autocompleteDisplayLimit');
       const getFormattingRule = function getAutocompleteFormattingRule(type) {
         if (typeof(formattingRules) !== "undefined") {
@@ -270,11 +271,24 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
           return;
         }
 
-        var hiddenFilters = [];
+        var filters = [];
         $('#searchForm').find('input[name="hiddenFilters[]"]').each(function hiddenFiltersEach() {
-          hiddenFilters.push($(this).val());
+          filters.push($(this).val());
         });
 
+        if (applyActiveFilters) {
+          // There may be multiple copies of the active-filters area, so be sure to only pull from one:
+          const activeFilters = document.querySelector(".active-filters");
+          if (activeFilters) {
+            activeFilters.querySelectorAll(".filter-value").forEach(
+              (element) => {
+                if (element.dataset.filter) {
+                  filters.push(element.dataset.filter);
+                }
+              }
+            );
+          }
+        }
         $.ajax({
           url: VuFind.path + '/AJAX/JSON',
           data: {
@@ -282,7 +296,7 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
             method: 'getACSuggestions',
             searcher: searcher,
             type: type,
-            hiddenFilters,
+            filters,
           },
           dataType: 'json',
           success: function autocompleteJSON(json) {

@@ -1,30 +1,12 @@
 <?php
-  $this->assetManager()->appendStyleLink('vendor/slick.css');
-  $this->assetManager()->appendStyleLink('vendor/slick-theme.css');
-  $this->assetManager()->appendScriptLink('vendor/slick.min.js');
   $this->assetManager()->appendScriptLink('channels.js');
   $this->jsTranslations()->addStrings([
-    'channel_browse' => 'channel_browse',
-    'channel_expand' => 'channel_expand',
-    'channel_options_dropdown_toggle' => 'channel_options_dropdown_toggle',
-    'channel_search' => 'channel_search',
+    'channel_more_items' => 'channel_more_items',
     'nohit_heading' => 'nohit_heading',
-    'View Record' => 'View Record',
   ]);
-
-  $finalChannels = [];
-  $finalCount = 0;
-  foreach ($channels as $current) {
-      if (isset($current['contents'])) {
-          $finalChannels[] = $current;
-          $finalCount++;
-      } elseif ($finalCount > 0 && isset($current['token'])) {
-          $finalChannels[$finalCount - 1]['relatedTokens'][] = $current;
-      }
-  }
 ?>
 
-<?php if (empty($token) && ($displaySearchBox ?? true)): ?>
+<?php if (empty($token) && ($displaySearchBox ?? true)): // no results ?>
   <form action="<?=$this->url('channels-search')?>" class="channel-search form-inline">
     <?=$this->transEsc('channel_searchbox_label')?>
     <input type="text" name="lookfor" class="form-control" value="<?=$this->escapeHtmlAttr($this->lookfor) ?>" aria-label="<?=$this->transEscAttr('search_terms') ?>">
@@ -32,42 +14,172 @@
   </form>
 <?php endif; ?>
 
-<?php $insideButton = false; ?>
-<?php foreach ($finalChannels as $channel): ?>
+<?php if (count($this->channels) === 0 && isset($lookfor)): ?>
+  <p><?=$this->translate('nohit_lookfor_html', ['%%lookfor%%' => $this->escapeHtml($lookfor)]) ?></p>
+<?php endif; ?>
+
+<?php foreach ($this->channels as $channel): ?>
   <?php
     $groupId = $channel['groupId'] ?? $channel['providerId'];
     $channelID = 'channel-' . md5(serialize($channel));
+    $providerData = $this->htmlAttributes([
+      'data-batch-size' => $channel['config']['batchSize'],
+      'data-page-size' => $channel['config']['pageSize'],
+      'data-row-size' => $channel['config']['rowSize'],
+      'id' => $channelID,
+    ]);
   ?>
-  <div class="channel-wrapper">
-    <div class="channel-title">
-      <h2><?=$this->escapeHtml($channel['title'])?></h2>
+  <div class="channel" <?=$providerData ?>>
+    <div class="channel-header">
+      <h2 class="channel-title" title="<?=$this->escapeHtmlAttr($channel['title']) ?>"><?=$this->escapeHtml($channel['title'])?></h2>
+
+      <?php if (count($this->relatedTokens[$groupId] ?? []) > 0): ?>
+        <div class="channel-add-menu btn-group" data-group="<?=$this->escapeHtmlAttr($groupId) ?>">
+          <button type="button" class="channel-add-more-btn btn btn-default"><?=$this->transEsc('channel_add_more') ?></button>
+          <button type="button" class="btn btn-default dropdown-toggle dropdown-toggle-split" data-bs-toggle="dropdown" aria-expanded="false">
+            <span class="visually-hidden"><?=$this->transEscAttr('channel_list_dropdown_toggle', ['%%channel%%' => $channel['title']]) ?></span>
+            <span aria-hidden="true"><?=$this->icon('dropdown-caret') ?></span>
+          </button>
+          <ul class="dropdown-menu">
+            <?php
+              $addChannelRoot = current(explode('?', $this->serverUrl(true)))
+                . '?' . (empty($queryParams) ? '' : $queryParams . '&')
+                . 'layout=lightbox';
+            ?>
+            <?php foreach ($this->relatedTokens[$groupId] as $related): ?>
+              <?php
+                $linkAttrs = $this->htmlAttributes([
+                  'class' => 'channel-add-link dropdown-item',
+                  'data-token' => $related['token'],
+                  'href' => $addChannelRoot .
+                    '&channelProvider=' . urlencode($related['providerId']) .
+                    '&channelToken=' . urlencode($related['token']),
+                ]);
+              ?>
+              <li><a <?=$linkAttrs ?>><?=$this->escapeHtml($this->truncate($related['title'], 100)) ?></a></li>
+            <?php endforeach; ?>
+          </ul>
+        </div>
+      <?php endif; ?>
+
+      <?php if (!empty($channel['links'])): ?>
+        <div class="channel-options dropdown">
+          <button class="btn btn-default dropdown-toggle"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false"
+            aria-label="<?=$this->transEsc('channel_options_dropdown_toggle', ['%%channel%%' => $channel['title']])?>"
+          >
+            <?=$this->transEsc('channel_options') ?>
+            <?=$this->icon('dropdown-caret') ?>
+          </button>
+          <ul class="dropdown-menu">
+            <?php foreach ($channel['links'] as $item): ?>
+              <li>
+                <a class="dropdown-item icon-link" href="<?=$this->escapeHtmlAttr($item['url']) ?>">
+                  <?=$this->icon($item['icon'], 'icon-link__icon') ?>
+                  <span class="icon-link__label"><?=$this->transEsc($item['label']) ?></span>
+                </a>
+              </li>
+            <?php endforeach; ?>
+          </ul>
+        </div>
+      <?php endif; ?>
     </div>
 
-    <?php if (count($channel['relatedTokens'] ?? []) > 0): ?>
-      <div class="channel-add-menu hidden" data-group="<?=$this->escapeHtmlAttr($groupId) ?>">
-        <button type="button" class="add-btn btn btn-link"><?=$this->transEsc('channel_add_more') ?></button><!--
-     --><button type="button" class="btn btn-link dropdown-toggle" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false" aria-label="<?=$this->transEscAttr('channel_list_dropdown_toggle', ['%%channel%%' => $channel['title']]) ?>">
-          <?=$this->icon('dropdown-caret')?>
-        </button>
-        <ul class="dropdown-menu">
-          <?php foreach ($channel['relatedTokens'] as $related): ?>
-            <li><a class="dropdown-item" href="<?=current(explode('?', $this->serverUrl(true)))?>?<?=empty($queryParams) ? '' : $this->escapeHtmlAttr($queryParams . '&')?>channelProvider=<?=urlencode($related['providerId']) ?>&amp;channelToken=<?=urlencode($related['token']) ?>&amp;layout=lightbox" data-token="<?=$this->escapeHtmlAttr($related['token']) ?>"><?=$this->escapeHtml($this->truncate($related['title'], 100)) ?></a></li>
-          <?php endforeach; ?>
-        </ul>
-      </div>
-    <?php endif; ?>
-
-    <div id="<?=$channelID ?>" class="channel" data-group="<?=$groupId ?>" data-link-json='<?=empty($channel['links']) ? '[]' : $this->htmlSafeJsonEncode($channel['links']) ?>'>
-      <!-- Wrapper for slides -->
-      <?php foreach ($channel['contents'] as $index => $item): ?>
-        <?php $url = empty($item['routeDetails']) ? $this->recordLinker()->getUrl("{$item['source']}|{$item['id']}") : $this->url($item['routeDetails']['route'], $item['routeDetails']['params']); ?>
-        <a href="<?=$this->escapeHtmlAttr($url)?>" class="channel-record slide hidden" data-channel-id="<?=$this->escapeHtmlAttr($channelID)?>" data-record-id="<?=$this->escapeHtmlAttr($item['id']) ?>" data-record-source="<?=$item['source'] ?>" title="<?=$this->escapeHtml($item['title'])?>">
-          <div class="thumb">
-            <img <?=$index < 6 ? 'src' : 'src="#" data-lazy' ?>="<?=$this->escapeHtmlAttr($item['thumbnail'] ? $item['thumbnail'] : $this->url('cover-unavailable'))?>" alt="">
+    <ul
+      class="channel-list"
+      data-group="<?=$this->escapeHtmlAttr($groupId) ?>"
+      style="--row-size:<?=$this->escapeHtmlAttr($channel['config']['rowSize']) ?>"
+    >
+      <?php foreach ($channel['contents'] ?? [] as $index => $item): ?>
+        <?php
+          $url = empty($item['routeDetails'])
+            ? $this->recordLinker()->getUrl("{$item['source']}|{$item['id']}")
+            : $this->url($item['routeDetails']['route'], $item['routeDetails']['params']);
+        ?>
+        <li
+          class="channel-item <?=$index < $channel['config']['pageSize'] ? '' : 'hidden-batch-item' ?>"
+          data-channel-id="<?=$this->escapeHtmlAttr($channelID)?>"
+          data-record-id="<?=$this->escapeHtmlAttr($item['id']) ?>"
+          data-record-source="<?=$this->escapeHtmlAttr($item['source']) ?>"
+        >
+          <div class="channel-item-thumb">
+            <img
+              class="channel-item-img"
+              src="<?=$this->escapeHtmlAttr($item['thumbnail'] ? $item['thumbnail'] : $this->url('cover-unavailable'))?>"
+              alt="" loading="lazy"
+            >
+            <a
+              class="channel-quick-look-btn"
+              href="<?=$this->escapeHtmlAttr($url)?>"
+              aria-label="<?=$this->transEscAttr('channel_quick_look_extended', ['%%title%%' => $item['title']]) ?>"
+            >
+              <?=$this->transEsc('channel_quick_look') ?>
+            </a>
           </div>
-          <p class="channel-record-title"><?=$this->escapeHtml($item['title'])?></p>
-        </a>
+
+          <a
+            class="channel-item-title"
+            href="<?=$this->escapeHtmlAttr($url)?>"
+            title="<?=$this->escapeHtml($item['title'])?>"
+          >
+            <?=$this->escapeHtml($item['title'])?>
+          </a>
+        </li>
       <?php endforeach; ?>
+    </ul>
+
+    <div class="channel-bottom-menu">
+      <?php
+        $loadMoreRoot = $this->url('channels-home') . '?' .
+          (empty($queryParams) ? '' : $queryParams . '&') .
+          'layout=lightbox';
+        $btnAttrs = [
+          'aria-label' => $this->translate('channel_more_items_extended', ['%%channel%%' => $channel['title']]),
+          'class' => 'channel-load-more-btn btn btn-default',
+          'data-href' => $loadMoreRoot .
+            '&channelProvider=' . urlencode($channel['providerId']) .
+            '&page=2&limit=' . urlencode($channel['config']['batchSize']),
+        ];
+        if (isset($channel['token'])) {
+          $btnAttrs['data-href'] .= '&channelToken=' . urlencode($channel['token']);
+        }
+
+        // if we don't have enough items to fill a row, hide button
+        if (count($channel['contents']) < $channel['config']['rowSize']) {
+          $btnAttrs['class'] .= ' visually-hidden disabled';
+          $btnAttrs['aria-disabled'] = 'true';
+        }
+      ?>
+      <button <?=$this->htmlAttributes($btnAttrs) ?>><?=$this->transEsc('channel_more_items') ?></button>
     </div>
   </div>
 <?php endforeach; ?>
+
+<template id="template-channels-quick-look">
+  <div
+    class="channels-quick-look"
+    data-channel-id="${record.dataset.channelID}"
+    data-record-id="${record.dataset.recordId}"
+    data-record-source="${record.dataset.recordSource}"
+  >
+    <h2 class="ql-title"></h2>
+
+    <a class="ql-view-record-btn btn btn-primary" href="${href}" data-lightbox-ignore>
+      <?=$this->transEsc('View Record') ?>
+    </a>
+
+    <div class="ql-btn-group btn-group">
+      <button class="ql-prev-item-btn btn btn-default">
+        <?=$this->transEsc('Prev') ?>
+      </button>
+      <a class="ql-expand-btn btn btn-default" href="${expandUrl}" data-lightbox-ignore>
+        <?=$this->transEsc('channel_expand') ?>
+      </a>
+      <button class="ql-next-item-btn btn btn-default">
+        <?=$this->transEsc('Next') ?>
+      </button>
+    </div>
+  </div>
+</template>

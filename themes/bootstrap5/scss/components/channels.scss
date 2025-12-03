@@ -1,108 +1,146 @@
-.channel-wrapper {
-  margin-top: 1rem;
-  margin-bottom: 2rem;
+.channel-search {
+  margin-block: 1rem;
 }
-@include media-breakpoint-down(sm) {
-  .channel-wrapper {
-    margin-left: 1rem;
-  }
-}
+
 .channel {
-  position: relative;
-  width: 100%;
-  max-height: 300px;
+  margin-block: 1rem;
   padding: 1rem;
   background-color: #eee;
   border-radius: $border-radius;
-}
+  container-type: inline-size;
 
-.channel-add-menu {
-  position: relative;
-  margin-bottom: 1rem;
-  padding-bottom: 1rem;
-  border-bottom: 1px solid $gray;
-  text-align: center;
-}
-@include media-breakpoint-up(sm) {
-  .channel-add-menu {
-    float: right;
-    margin: 0;
-    padding: 0;
-    border: 0;
+  .btn {
+    background-color: white;
+  }
 
-    body.rtl & {
-      float: left;
-    }
+  @container (width < 768px) {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
   }
 }
-.channel-add-menu .dropdown-menu {
-  left: auto;
-  right: 0;
-  max-width: 90vw;
-  overflow: hidden;
+
+.channel-header {
+  display: flex;
+
+  @media (max-width: 639px) {
+    flex-direction: column;
+    gap: 0.5rem;
+
+    .channel-options .dropdown-toggle {
+      width: 100%;
+    }
+  }
+
+  @media (min-width: 640px) {
+    align-items: center;
+    gap: 1rem;
+  }
 }
 
-.channel .channel-record.slide {
-  display: inline-block;
-  min-width: 100px;
-  max-height: 16em;
-  padding: 0 .5rem;
-  text-align: center;
-}
-.channel-record-title {
-  display: block;
-  height: 3em;
+.channel-title {
+  width: 100%;
   margin: 0;
-  line-height: 1.5;
+  padding-block: 4px;
+  white-space: nowrap;
   overflow: hidden;
+  text-overflow: ellipsis;
+
+  @media (min-width: 640px) {
+    flex: 1 1 0%;
+  }
 }
-.channel .channel-record .thumb {
-  display: flex;
-  height: 200px;
-  align-items: center;
-  justify-content: center;
+
+.channel-add-menu .dropdown-menu {
+  max-height: 256px; /* 8 items, 32px tall each */
+  overflow-y: auto;
 }
-.channel .channel-record .thumb img {
+
+.tab-pane {
+  container-type: inline-size;
+}
+.channel-list {
+  position: relative;
+  grid-area: channel;
+  display: grid;
+  grid-template-columns: repeat(var(--row-size, 6), 1fr);
+  gap: 1rem;
+  width: 100%;
+  margin-block: 1rem;
+  padding: 0;
+  border-radius: $border-radius;
+
+  @container (width < 768px) {
+    grid-template-columns: repeat(3, 1fr);
+  }
+  @container (width < 480px) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.channel-item {
+  display: inline-block;
+  text-align: center;
+  background-color: white;
+}
+.hidden-batch-item {
+  display: none;
+}
+
+.channel-item-thumb {
+  position: relative;
+  display: grid;
+  min-height: 140px;
+  place-items: center;
+}
+
+.channel-item-img {
   max-width: 100%;
   max-height: 100%;
 }
 
-.channel .popover {
-  width: 500px;
-  max-width: none;
-}
-.channel .popover-title {
-  font-size: 1.4rem;
-  font-weight: bold;
-}
-
-.channel-title h2 {
-  display: inline-block;
+.channel-item-title {
+  display: block;
   margin: 0;
-}
-.channel-title .dropdown {
-  display: inline-block;
-}
-.channel-title a:hover { text-decoration: none; }
-.channel-title i.fa-fw {
-  width: 1.4em;
-  padding-top: 0.5em;
-  font-size: 0.6em;
-  text-align: center;
-  vertical-align: top;
-}
-.channel-title .placeholder { width: 25px; }
-
-.channel-title .dropdown button {
-  font-size: 18px;
-  color: #777;
-  vertical-align: baseline;
-}
-.channel .slick-prev::before,
-.channel .slick-next::before {
-  color: #555;
+  padding: 0.5rem;
+  line-height: 1.15;
+  overflow: hidden;
+  word-break: break-word;
+  text-wrap: balance;
+  hyphens: auto;
+  text-overflow: ellipsis;
 }
 
-.channel-search {
-  margin-top: 1rem;
+.channel-quick-look-btn {
+  position: absolute;
+  inset-inline: 0;
+  z-index: 10;
+  display: none;
+  padding: 0.25em;
+  color: white;
+  background-color: black;
+  border: 1px solid black;
+
+  &:hover,
+  &:focus {
+    color: black;
+    background-color: white;
+  }
+}
+.channel-item:is(:hover, :focus) .channel-quick-look-btn {
+  display: block;
+}
+
+.ql-title {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.ql-view-record-btn {
+  display: block;
+  margin-block: 1rem;
+}
+.ql-btn-group {
+  width: 100%;
+  margin-block-end: 1rem;
 }
