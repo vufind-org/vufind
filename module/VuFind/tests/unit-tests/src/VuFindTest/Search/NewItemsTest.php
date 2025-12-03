@@ -11,6 +11,15 @@
  * it under the terms of the GNU General Public License version 2,
  * as published by the Free Software Foundation.
  *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
+ *
  * @category VuFind
  * @package  Tests
  * @author   Demian Katz <demian.katz@villanova.edu>
@@ -20,7 +29,6 @@
 
 namespace VuFindTest\Search;
 
-use VuFind\Config\Config;
 use VuFind\ILS\Connection;
 use VuFind\Search\NewItemsHelper;
 
@@ -36,6 +44,19 @@ use VuFind\Search\NewItemsHelper;
 class NewItemsTest extends \PHPUnit\Framework\TestCase
 {
     /**
+     * Get a NewItemsHelper instance for testing.
+     *
+     * @param array           $config     Configuration array
+     * @param Connection|null $connection ILS connection
+     *
+     * @return NewItemsHelper
+     */
+    protected function getMockHelper(array $config = [], ?Connection $connection = null): NewItemsHelper
+    {
+        return new NewItemsHelper($config, $connection ?? $this->createMock(Connection::class));
+    }
+
+    /**
      * Test ILS bib ID retrieval.
      *
      * @return void
@@ -43,11 +64,8 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
     public function testGetBibIDsFromCatalog()
     {
         $flash = $this->createMock(\Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger::class);
-        $config = new Config(['result_pages' => 10]);
-        $catalog = $this->createMock(Connection::class);
-        $newItems = new NewItemsHelper($config, $catalog);
+        $newItems = $this->getMockHelper(['result_pages' => 10], $this->getMockCatalog());
         $bibs = $newItems->getBibIDsFromCatalog(
-            $this->getMockCatalog(),
             $this->getMockParams(),
             10,
             'a',
@@ -66,11 +84,8 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
         $flash = $this->createMock(\Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger::class);
         $flash->expects($this->once())->method('addMessage')
             ->with($this->equalTo('too_many_new_items'), $this->equalTo('info'));
-        $config = new Config(['result_pages' => 10]);
-        $catalog = $this->createMock(Connection::class);
-        $newItems = new NewItemsHelper($config, $catalog);
+        $newItems = $this->getMockHelper(['result_pages' => 10], $this->getMockCatalog());
         $bibs = $newItems->getBibIDsFromCatalog(
-            $this->getMockCatalog(),
             $this->getMockParams(1),
             10,
             'a',
@@ -94,7 +109,7 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
                 fn ($method) => $method === 'getFunds' ? ['a', 'b', 'c'] : null
             );
 
-        $newItems = new NewItemsHelper(new Config([]), $catalog);
+        $newItems = $this->getMockHelper([], $catalog);
         $this->assertEquals(['a', 'b', 'c'], $newItems->getFundList());
     }
 
@@ -105,8 +120,7 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetFundListWithoutILS()
     {
-        $catalog = $this->createMock(Connection::class);
-        $newItems = new NewItemsHelper(new Config(['method' => 'solr']), $catalog);
+        $newItems = $this->getMockHelper(['method' => 'solr']);
         $this->assertEquals([], $newItems->getFundList());
     }
 
@@ -117,9 +131,7 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetSingleHiddenFilter()
     {
-        $catalog = $this->createMock(Connection::class);
-        $config = new Config(['filter' => 'a:b']);
-        $newItems = new NewItemsHelper($config, $catalog);
+        $newItems = $this->getMockHelper(['filter' => 'a:b']);
         $this->assertEquals(['a:b'], $newItems->getHiddenFilters());
     }
 
@@ -130,9 +142,7 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetMultipleHiddenFilters()
     {
-        $catalog = $this->createMock(Connection::class);
-        $config = new Config(['filter' => ['a:b', 'b:c']]);
-        $newItems = new NewItemsHelper($config, $catalog);
+        $newItems = $this->getMockHelper(['filter' => ['a:b', 'b:c']]);
         $this->assertEquals(['a:b', 'b:c'], $newItems->getHiddenFilters());
     }
 
@@ -143,9 +153,7 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
      */
     public function testDefaults()
     {
-        $catalog = $this->createMock(Connection::class);
-        $config = new Config([]);
-        $newItems = new NewItemsHelper($config, $catalog);
+        $newItems = $this->getMockHelper([]);
         $this->assertEquals([], $newItems->getHiddenFilters());
         $this->assertEquals('ils', $newItems->getMethod());
         $this->assertEquals(30, $newItems->getMaxAge());
@@ -160,9 +168,7 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
      */
     public function testCustomRanges()
     {
-        $catalog = $this->createMock(Connection::class);
-        $config = new Config(['ranges' => '10,150,300']);
-        $newItems = new NewItemsHelper($config, $catalog);
+        $newItems = $this->getMockHelper(['ranges' => '10,150,300']);
         $this->assertEquals([10, 150, 300], $newItems->getRanges());
     }
 
@@ -173,9 +179,7 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
      */
     public function testCustomResultPages()
     {
-        $catalog = $this->createMock(Connection::class);
-        $config = new Config(['result_pages' => '2']);
-        $newItems = new NewItemsHelper($config, $catalog);
+        $newItems = $this->getMockHelper(['result_pages' => '2']);
         $this->assertEquals(2, $newItems->getResultPages());
     }
 
@@ -186,9 +190,7 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
      */
     public function testIllegalResultPages()
     {
-        $config = new Config(['result_pages' => '-2']);
-        $catalog = $this->createMock(Connection::class);
-        $newItems = new NewItemsHelper($config, $catalog);
+        $newItems = $this->getMockHelper(['result_pages' => '-2']);
         // expect a default of 10 if a bad value was passed in
         $this->assertEquals(10, $newItems->getResultPages());
     }
@@ -202,34 +204,33 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
     {
         $range = 30;
         $expected = 'first_indexed:[NOW-' . $range . 'DAY TO NOW]';
-        $catalog = $this->createMock(Connection::class);
-        $newItems = new NewItemsHelper(new Config([]), $catalog);
+        $newItems = $this->getMockHelper([]);
         $this->assertEquals($expected, $newItems->getSolrFilter($range));
     }
 
     /**
      * Get a mock catalog object (for use in getBibIDs tests).
      *
-     * @return \VuFind\ILS\Connection
+     * @return Connection
      */
-    protected function getMockCatalog(): \VuFind\ILS\Connection
+    protected function getMockCatalog(): Connection
     {
         $catalog = $this->createMock(Connection::class);
 
         $catalog->expects($this->once())->method('__call')
-        ->willReturnCallback(
-            function ($method, $args) {
-                if ($method !== 'getNewItems') {
-                    return null;
-                }
-                $this->assertEquals(1, $args[0]);
-                $this->assertEquals(200, $args[1]);
-                $this->assertEquals(10, $args[2]);
-                $this->assertEquals('a', $args[3]);
+            ->willReturnCallback(
+                function ($method, $args) {
+                    if ($method !== 'getNewItems') {
+                        return null;
+                    }
+                    $this->assertEquals(1, $args[0]);
+                    $this->assertEquals(200, $args[1]);
+                    $this->assertEquals(10, $args[2]);
+                    $this->assertEquals('a', $args[3]);
 
-                return ['results' => [['id' => 1], ['id' => 2]]];
-            }
-        );
+                    return ['results' => [['id' => 1], ['id' => 2]]];
+                }
+            );
         return $catalog;
     }
 

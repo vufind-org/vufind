@@ -30,7 +30,6 @@
 namespace VuFind\Search;
 
 use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
-use VuFind\Config\Config;
 use VuFind\ILS\Connection;
 
 use function array_slice;
@@ -50,44 +49,26 @@ use function is_string;
 class NewItemsHelper
 {
     /**
-     * Configuration
-     *
-     * @var Config
-     */
-    protected Config $config;
-
-    /**
-     * ILS connection
-     *
-     * @var Connection
-     */
-    protected Connection $catalog;
-
-    /**
      * Constructor
      *
-     * @param Config     $config  Configuration
+     * @param array      $config  Configuration
      * @param Connection $catalog ILS connection
      */
-    public function __construct(Config $config, Connection $catalog)
+    public function __construct(protected array $config, protected Connection $catalog)
     {
-        $this->config = $config;
-        $this->catalog = $catalog;
     }
 
     /**
      * Figure out which bib IDs to load from the ILS.
      *
-     * @param Connection                 $catalog ILS connection (for backward compatibility)
-     * @param \VuFind\Search\Solr\Params $params  Solr parameters
-     * @param string                     $range   Range setting
-     * @param string                     $dept    Department setting
-     * @param FlashMessenger             $flash   Flash messenger
+     * @param \VuFind\Search\Solr\Params $params Solr parameters
+     * @param string                     $range  Range setting
+     * @param string                     $dept   Department setting
+     * @param FlashMessenger             $flash  Flash messenger
      *
      * @return array
      */
     public function getBibIDsFromCatalog(
-        Connection $catalog,
         \VuFind\Search\Solr\Params $params,
         string $range,
         string $dept,
@@ -98,7 +79,7 @@ class NewItemsHelper
         // sync with the ILS, we may see fewer results than expected.
         $resultPages = $this->getResultPages();
         $perPage = $params->getLimit();
-        $newItems = $catalog->getNewItems(1, $perPage * $resultPages, $range, $dept);
+        $newItems = $this->catalog->getNewItems(1, $perPage * $resultPages, $range, $dept);
 
         // Build a list of unique IDs
         $bibIDs = [];
@@ -125,7 +106,7 @@ class NewItemsHelper
      */
     public function getDefaultSort(): ?string
     {
-        return $this->config->default_sort ?? null;
+        return $this->config['default_sort'] ?? null;
     }
 
     /**
@@ -135,7 +116,7 @@ class NewItemsHelper
      */
     public function includeFacets(): bool
     {
-        return $this->config->include_facets ?? false;
+        return $this->config['include_facets'] ?? false;
     }
 
     /**
@@ -159,14 +140,14 @@ class NewItemsHelper
      */
     public function getHiddenFilters(): array
     {
-        if (!isset($this->config->filter)) {
+        if (! isset($this->config['filter'])) {
             return [];
         }
-        if (is_string($this->config->filter)) {
-            return [$this->config->filter];
+        if (is_string($this->config['filter'])) {
+            return [$this->config['filter']];
         }
         $hiddenFilters = [];
-        foreach ($this->config->filter as $current) {
+        foreach ($this->config['filter'] as $current) {
             $hiddenFilters[] = $current;
         }
         return $hiddenFilters;
@@ -189,7 +170,7 @@ class NewItemsHelper
      */
     public function getMethod(): string
     {
-        return $this->config->method ?? 'ils';
+        return $this->config['method'] ?? 'ils';
     }
 
     /**
@@ -202,8 +183,8 @@ class NewItemsHelper
         // Find out if there are user configured range options; if not,
         // default to the standard 1/5/30 days:
         $ranges = [];
-        if (isset($this->config->ranges)) {
-            $tmp = explode(',', $this->config->ranges);
+        if (isset($this->config['ranges'])) {
+            $tmp = explode(',', $this->config['ranges']);
             foreach ($tmp as $range) {
                 $range = intval($range);
                 if ($range > 0) {
@@ -224,8 +205,8 @@ class NewItemsHelper
      */
     public function getResultPages(): int
     {
-        if (isset($this->config->result_pages)) {
-            $resultPages = intval($this->config->result_pages);
+        if (isset($this->config['result_pages'])) {
+            $resultPages = intval($this->config['result_pages']);
             if ($resultPages < 1) {
                 $resultPages = 10;
             }
