@@ -371,7 +371,7 @@ interface UserEntityInterface extends
      *
      * @return DateTime
      */
-    public function getCreated(): Datetime;
+    public function getCreated(): DateTime;
 
     /**
      * Set email verification date (or null for unverified).

@@ -24,7 +24,7 @@
  * @package  Autocomplete
  * @author   Vaclav Rosecky <vaclav.rosecky@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:autosuggesters Wiki
+ * @link     https://vufind.org/wiki/development:plugins:autosuggesters Wiki
  */
 
 namespace VuFind\Autocomplete;

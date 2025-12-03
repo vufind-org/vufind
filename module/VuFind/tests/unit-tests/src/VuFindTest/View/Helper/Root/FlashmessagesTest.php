@@ -202,9 +202,8 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
      * @param string $expected Expected HTML
      *
      * @return void
-     *
-     * @dataProvider getTestFlashmessageData
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestFlashmessageData')]
     public function testFlashmessages(array $messages, string $expected): void
     {
         $fm = $this->getFlashmessages($messages);
@@ -230,11 +229,11 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
         $mockMessenger->expects($this->any())
             ->method('getMessages')
             ->with($this->isType('string'))
-            ->will($this->returnCallback($getMessages));
+            ->willReturnCallback($getMessages);
         $mockMessenger->expects($this->any())
             ->method('getCurrentMessages')
             ->with($this->isType('string'))
-            ->will($this->returnValue([]));
+            ->willReturn([]);
 
         $fm = new Flashmessages($mockMessenger);
 

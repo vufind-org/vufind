@@ -123,11 +123,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      */
     public function getConfig($function, $params = [])
     {
-        if (isset($this->config[$function])) {
-            $functionConfig = $this->config[$function];
-        } else {
-            $functionConfig = false;
-        }
+        $functionConfig = $this->config[$function] ?? false;
         return $functionConfig;
     }
 
@@ -168,13 +164,9 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     {
         $renewData = [];
 
-        $renewData['renewable'] = ($requested == 0) ? true : false;
+        $renewData['renewable'] = $requested == 0;
 
-        if (!$renewData['renewable']) {
-            $renewData['message'] = 'renew_item_requested';
-        } else {
-            $renewData['message'] = false;
-        }
+        $renewData['message'] = !$renewData['renewable'] ? 'renew_item_requested' : false;
 
         return $renewData;
     }
@@ -689,7 +681,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
                         'success' => true, 'status' => 'hold_cancel_success',
 
                     ];
-                    $count = $count + 1;
+                    $count += 1;
                 }
             }
         } else {

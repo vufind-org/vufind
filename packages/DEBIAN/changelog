@@ -1,420 +1,426 @@
+vufind 11.0.0 distribution; urgency=low
+
+  * VuFind 11.0.0 release (see https://vufind.org/wiki/changelog for details)
+
+ -- maintainer VuFind Project Management Committee <info@vufind.org>  Mo 24 Nov 2025 14:00:00 UTC
+
 vufind 10.2.1 distribution; urgency=low
 
-  * VuFind 10.2.1 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 10.2.1 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Management Committee <info@vufind.org>  Mo 13 Oct 2025 14:00:00 UTC
 
 vufind 10.2.0 distribution; urgency=low
 
-  * VuFind 10.2.0 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 10.2.0 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Management Committee <info@vufind.org>  Mo 23 Jun 2025 14:00:00 UTC
 
 vufind 10.1.4 distribution; urgency=low
 
-  * VuFind 10.1.4 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 10.1.4 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Management Committee <info@vufind.org>  Mo 7 Apr 2025 14:00:00 UTC
 
 vufind 10.1.3 distribution; urgency=low
 
-  * VuFind 10.1.3 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 10.1.3 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Management Committee <info@vufind.org>  Tu 18 Mar 2025 14:00:00 UTC
 
 vufind 10.1.2 distribution; urgency=low
 
-  * VuFind 10.1.2 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 10.1.2 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Management Committee <info@vufind.org>  Mo 17 Mar 2025 14:00:00 UTC
 
 vufind 10.1.1 distribution; urgency=low
 
-  * VuFind 10.1.1 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 10.1.1 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Management Committee <info@vufind.org>  Mo 13 Jan 2025 14:00:00 UTC
 
 vufind 10.1 distribution; urgency=low
 
-  * VuFind 10.1 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 10.1 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Management Committee <info@vufind.org>  Mo 4 Nov 2024 14:00:00 UTC
 
 vufind 10.0.1 distribution; urgency=low
 
-  * VuFind 10.0.1 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 10.0.1 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Management Committee <info@vufind.org>  Mo 14 Oct 2024 14:00:00 UTC
 
 vufind 10.0 distribution; urgency=low
 
-  * VuFind 10.0 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 10.0 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Management Committee <info@vufind.org>  Mo 24 Jun 2024 14:00:00 UTC
 
 vufind 9.1.2 distribution; urgency=low
 
-  * VuFind 9.1.2 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 9.1.2 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Management Committee <info@vufind.org>  Mo 17 Jun 2024 14:00:00 UTC
 
 vufind 9.1.1 distribution; urgency=low
 
-  * VuFind 9.1.1 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 9.1.1 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Management Committee <info@vufind.org>  Mo 12 Feb 2024 14:00:00 UTC
 
 vufind 9.1 distribution; urgency=low
 
-  * VuFind 9.1 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 9.1 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Management Committee <info@vufind.org>  Mo 30 Oct 2023 14:00:00 UTC
 
 vufind 9.0.3 distribution; urgency=low
 
-  * VuFind 9.0.3 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 9.0.3 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Management Committee <info@vufind.org>  Mo 24 Jul 2023 14:00:00 UTC
 
 vufind 9.0.2 distribution; urgency=low
 
-  * VuFind 9.0.2 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 9.0.2 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Management Committee <info@vufind.org>  Mo 26 Jun 2023 14:00:00 UTC
 
 vufind 9.0.1 distribution; urgency=low
 
-  * VuFind 9.0.1 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 9.0.1 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Management Committee <info@vufind.org>  Mo 24 Apr 2023 14:30:00 UTC
 
 vufind 9.0 distribution; urgency=low
 
-  * VuFind 9.0 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 9.0 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Management Committee <info@vufind.org>  Mo 24 Apr 2023 14:00:00 UTC
 
 vufind 8.1.2 distribution; urgency=low
 
-  * VuFind 8.1.2 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 8.1.2 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Management Committee <info@vufind.org>  Mo 6 Feb 2023 14:00:00 UTC
 
 vufind 8.1.1 distribution; urgency=low
 
-  * VuFind 8.1.1 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 8.1.1 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 5 Oct 2022 10:00:00 UTC
 
 vufind 8.1 distribution; urgency=low
 
-  * VuFind 8.1 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 8.1 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 18 Jul 2022 10:00:00 UTC
 
 vufind 8.0.4 distribution; urgency=low
 
-  * VuFind 8.0.4 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 8.0.4 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 28 Feb 2022 10:00:00 UTC
 
 vufind 8.0.3 distribution; urgency=low
 
-  * VuFind 8.0.3 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 8.0.3 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 20 Dec 2021 10:00:00 UTC
 
 vufind 8.0.2 distribution; urgency=low
 
-  * VuFind 8.0.2 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 8.0.2 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 29 Nov 2021 10:00:00 UTC
 
 vufind 8.0.1 distribution; urgency=low
 
-  * VuFind 8.0.1 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 8.0.1 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 27 Sep 2021 10:00:00 UTC
 
 vufind 8.0 distribution; urgency=low
 
-  * VuFind 8.0 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 8.0 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 20 Sep 2021 10:00:00 UTC
 
 vufind 7.1.1 distribution; urgency=low
 
-  * VuFind 7.1.1 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 7.1.1 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 5 Jul 2021 10:00:00 UTC
 
 vufind 7.1 distribution; urgency=low
 
-  * VuFind 7.1 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 7.1 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 22 Feb 2021 10:00:00 UTC
 
 vufind 7.0.2 distribution; urgency=low
 
-  * VuFind 7.0.2 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 7.0.2 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 7 Dec 2020 10:00:00 UTC
 
 vufind 7.0.1 distribution; urgency=low
 
-  * VuFind 7.0.1 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 7.0.1 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 31 Aug 2020 10:00:00 UTC
 
 vufind 7.0 distribution; urgency=low
 
-  * VuFind 7.0 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 7.0 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 20 Jul 2020 10:00:00 UTC
 
 vufind 6.1.2 distribution; urgency=low
 
-  * VuFind 6.1.2 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 6.1.2 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 13 Jul 2020 10:00:00 UTC
 
 vufind 6.1.1 distribution; urgency=low
 
-  * VuFind 6.1.1 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 6.1.1 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 16 Mar 2020 10:00:00 UTC
 
 vufind 6.1 distribution; urgency=low
 
-  * VuFind 6.1 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 6.1 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 3 Feb 2020 10:00:00 UTC
 
 vufind 6.0.1 distribution; urgency=low
 
-  * VuFind 6.0.1 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 6.0.1 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 16 Sep 2019 10:00:00 UTC
 
 vufind 6.0 distribution; urgency=low
 
-  * VuFind 6.0 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 6.0 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 15 Jul 2019 10:00:00 UTC
 
 vufind 5.1.1 distribution; urgency=low
 
-  * VuFind 5.1.1 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 5.1.1 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 6 May 2019 10:00:00 UTC
 
 vufind 5.1 distribution; urgency=low
 
-  * VuFind 5.1 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 5.1 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 4 Feb 2019 10:00:00 UTC
 
 vufind 5.0.1 distribution; urgency=low
 
-  * VuFind 5.0.1 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 5.0.1 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  We 10 Oct 2018 08:31:52 UTC
 
 vufind 5.0 distribution; urgency=low
 
-  * VuFind 5.0 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 5.0 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 16 Jul 2018 11:15:42 UTC
 
 vufind 4.1.3 distribution; urgency=low
 
-  * VuFind 4.1.3 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 4.1.3 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 11 Jun 2018 09:32:00 UTC
 
 vufind 4.1.2 distribution; urgency=low
 
-  * VuFind 4.1.2 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 4.1.2 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 29 Jan 2018 07:56:21 UTC
 
 vufind 4.1.1 distribution; urgency=low
 
-  * VuFind 4.1.1 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 4.1.1 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 20 Nov 2017 08:48:29 UTC
 
 vufind 4.1 distribution; urgency=low
 
-  * VuFind 4.1 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 4.1 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 2 Oct 2017 09:21:08 UTC
 
 vufind 4.0.1 distribution; urgency=low
 
-  * VuFind 4.0.1 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 4.0.1 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 28 Aug 2017 08:11:48 UTC
 
 vufind 4.0 distribution; urgency=low
 
-  * VuFind 4.0 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 4.0 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 10 Jul 2017 09:30:33 UTC
 
 vufind 3.1.4 distribution; urgency=low
 
-  * VuFind 3.1.4 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 3.1.4 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 10 Jul 2017 09:30:33 UTC
 
 vufind 3.1.3 distribution; urgency=low
 
-  * VuFind 3.1.3 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 3.1.3 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 13 Mar 2017 08:44:17 UTC
 
 vufind 3.1.2 distribution; urgency=low
 
-  * VuFind 3.1.2 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 3.1.2 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 16 Jan 2017 07:21:54 UTC
 
 vufind 3.1.1 distribution; urgency=low
 
-  * VuFind 3.1.1 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 3.1.1 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 31 Oct 2016 08:44:19 UTC
 
 vufind 3.1 distribution; urgency=low
 
-  * VuFind 3.1 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 3.1 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 26 Sep 2016 10:30:43 UTC
 
 vufind 3.0.3 distribution; urgency=low
 
-  * VuFind 3.0.3 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 3.0.3 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 1 Aug 2016 09:01:21 UTC
 
 vufind 3.0.2 distribution; urgency=low
 
-  * VuFind 3.0.2 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 3.0.2 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Tu 5 Jul 2016 12:02:33 UTC
 
 vufind 3.0.1 distribution; urgency=low
 
-  * VuFind 3.0.1 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 3.0.1 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Fr 27 May 2016 12:00:49 UTC
 
 vufind 3.0 distribution; urgency=low
 
-  * VuFind 3.0 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 3.0 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 25 Apr 2016 09:28:51 UTC
 
 vufind 2.5.4 distribution; urgency=low
 
-  * VuFind 2.5.4 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 2.5.4 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 25 Apr 2016 07:12:54 UTC
 
 vufind 2.5.3 distribution; urgency=low
 
-  * VuFind 2.5.3 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 2.5.3 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 18 Apr 2016 09:50:46 UTC
 
 vufind 2.5.2 distribution; urgency=low
 
-  * VuFind 2.5.2 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 2.5.2 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  We 3 Feb 2016 10:52:27 UTC
 
 vufind 2.5.1 distribution; urgency=low
 
-  * VuFind 2.5.1 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 2.5.1 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 11 Jan 2016 09:30:11 UTC
 
 vufind 2.5 distribution; urgency=low
 
-  * VuFind 2.5 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 2.5 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 28 Sep 2015 09:00:00 UTC
 
 vufind 2.4.1 distribution; urgency=low
 
-  * VuFind 2.4.1 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 2.4.1 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 25 May 2015 08:41:27 UTC
 
 vufind 2.4 distribution; urgency=low
 
-  * VuFind 2.4 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 2.4 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 23 Mar 2015 09:21:49 UTC
 
 vufind 2.3.1 distribution; urgency=low
 
-  * VuFind 2.3.1 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 2.3.1 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 17 Nov 2014 08:31:51 UTC
 
 vufind 2.3 distribution; urgency=low
 
-  * VuFind 2.3 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 2.3 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 11 Aug 2014 08:57:22 UTC
 
 vufind 2.2.1 distribution; urgency=low
 
-  * VuFind 2.2.1 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 2.2.1 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 26 Feb 2014 09:11:36 UTC
 
 vufind 2.2 distribution; urgency=low
 
-  * VuFind 2.2 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 2.2 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 27 Jan 2014 09:13:52 UTC
 
 vufind 2.1.1 distribution; urgency=low
 
-  * VuFind 2.1.1 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 2.1.1 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 9 Sep 2013 11:26:51 UTC
 
 vufind 2.1 distribution; urgency=low
 
-  * VuFind 2.1 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 2.1 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 26 Aug 2013 08:43:11 UTC
 
 vufind 2.0.1 distribution; urgency=low
 
-  * VuFind 2.0.1 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 2.0.1 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 25 Jun 2013 10:35:52 UTC
 
 vufind 2.0 distribution; urgency=low
 
-  * VuFind 2.0 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 2.0 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 24 Jun 2013 09:13:27 UTC
 
 vufind 2.0RC1 distribution; urgency=low
 
-  * VuFind 2.0RC1 release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 2.0RC1 release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 29 Apr 2013 12:03:19 UTC
 
 vufind 2.0beta distribution; urgency=low
 
-  * VuFind 2.0beta release (see http://vufind.org/wiki/changelog for details)
+  * VuFind 2.0beta release (see https://vufind.org/wiki/changelog for details)
 
  -- maintainer VuFind Project Administration Team <vufind-admins@lists.sourceforge.net>  Mo 1 Oct 2012 12:07:33 UTC
 

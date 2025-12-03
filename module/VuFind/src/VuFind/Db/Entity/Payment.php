@@ -24,7 +24,7 @@
  * @package  Database
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org   Main Site
  */
 
 declare(strict_types=1);
@@ -45,7 +45,7 @@ use function in_array;
  * @package  Database
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org   Main Site
  */
 #[ORM\Table(name: 'payment')]
 #[ORM\Index(name: 'payment_local_identifier_idx', columns: ['local_identifier'])]
@@ -389,9 +389,10 @@ class Payment implements PaymentEntityInterface
      *
      * @return DateTime
      */
-    public function getCreated(): Datetime
+    public function getCreated(): DateTime
     {
-        return $this->created;
+        // Return to a clone to avoid indirect modification of the entity:
+        return $this->getDateTimeClone($this->created);
     }
 
     /**
@@ -412,7 +413,7 @@ class Payment implements PaymentEntityInterface
      *
      * @return DateTime
      */
-    public function getPaidDate(): ?Datetime
+    public function getPaidDate(): ?DateTime
     {
         return $this->getNullableDateTimeFromNonNullable($this->paid);
     }
@@ -435,7 +436,7 @@ class Payment implements PaymentEntityInterface
      *
      * @return ?DateTime
      */
-    public function getRegistrationStartDate(): ?Datetime
+    public function getRegistrationStartDate(): ?DateTime
     {
         return $this->getNullableDateTimeFromNonNullable($this->registrationStarted);
     }
@@ -458,7 +459,7 @@ class Payment implements PaymentEntityInterface
      *
      * @return ?DateTime
      */
-    public function getRegistrationDate(): ?Datetime
+    public function getRegistrationDate(): ?DateTime
     {
         return $this->getNullableDateTimeFromNonNullable($this->registered);
     }

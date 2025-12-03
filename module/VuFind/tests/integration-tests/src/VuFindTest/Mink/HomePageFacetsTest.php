@@ -117,10 +117,9 @@ class HomePageFacetsTest extends \VuFindTest\Integration\MinkTestCase
      * @param ?string $defaultSort  Default sort option
      * @param string  $expectedSort Expected sort order of options
      *
-     * @dataProvider hierarchicalFacetsProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('hierarchicalFacetsProvider')]
     public function testHierarchicalFacets(?string $sort, ?string $defaultSort, string $expectedSort)
     {
         $config = [

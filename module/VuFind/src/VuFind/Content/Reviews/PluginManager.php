@@ -50,13 +50,14 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $aliases = [
         Amazon::class => Deprecated::class,
         AmazonEditorial::class => Deprecated::class,
+        Booksite::class => Deprecated::class,
         'amazon' => Deprecated::class,
         'amazoneditorial' => Deprecated::class,
-        'booksite' => Booksite::class,
+        'booksite' => Deprecated::class,
         'demo' => Demo::class,
         'guardian' => Guardian::class,
         'syndetics' => Syndetics::class,
-        'syndeticsplus' => SyndeticsPlus::class,
+        'syndeticsplus' => 'syndetics',
     ];
 
     /**
@@ -65,12 +66,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        Booksite::class => BooksiteFactory::class,
         Demo::class => \Laminas\ServiceManager\Factory\InvokableFactory::class,
         Deprecated::class => \Laminas\ServiceManager\Factory\InvokableFactory::class,
         Guardian::class => \Laminas\ServiceManager\Factory\InvokableFactory::class,
         Syndetics::class => \VuFind\Content\AbstractSyndeticsFactory::class,
-        SyndeticsPlus::class => \VuFind\Content\AbstractSyndeticsFactory::class,
     ];
 
     /**

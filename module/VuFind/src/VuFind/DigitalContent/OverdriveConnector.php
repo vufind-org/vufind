@@ -246,11 +246,7 @@ class OverdriveConnector implements
         } else {
             // assume that it is accessOnly
             $result = $this->getAccess();
-
-            if (!$result->status && $result->code == 'od_account_noaccess') {
-                return false;
-            }
-            return true;
+            return !(!$result->status && $result->code == 'od_account_noaccess');
         }
     }
 

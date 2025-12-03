@@ -105,9 +105,8 @@ class RateLimiterTest extends \VuFindTest\Integration\MinkTestCase
      * @param array  $query   Request URL query params
      *
      * @return void
-     *
-     * @dataProvider rateLimiterDataProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('rateLimiterDataProvider')]
     public function testRateLimiter(bool $crawler, bool $headers, ?int $limit, string $path, array $query): void
     {
         $this->changeYamlConfigs(

@@ -395,10 +395,17 @@ class Folio extends AbstractAPI implements
                 'Token taken from ' . $cacheType . ' cache: ' . substr($this->token, 0, 30) . '...'
             );
         }
-        if ($this->token == null) {
-            $this->renewTenantToken();
-        } else {
-            $this->checkTenantToken();
+        try {
+            if ($this->token == null) {
+                $this->renewTenantToken();
+            } else {
+                $this->checkTenantToken();
+            }
+        } catch (\Exception $e) {
+            // Errors in init() should not be fatal,
+            // it could prevent using other configured search handlers when FOLIO fails
+            $this->token = $this->tokenExpiration = null;
+            $this->logError('Failed to get a token to initialize the FOLIO driver: ' . $e->getMessage());
         }
     }
 
@@ -594,11 +601,11 @@ class Folio extends AbstractAPI implements
     }
 
     /**
-     * Support method for getHoldings() -- retrieve items by holding ids
+     * Support method for getHoldings() -- retrieve items by holding ids (including bound-with items)
      *
      * @param string[] $holdingIds the FOLIO holdings ids
      *
-     * @return object[]
+     * @return object[] The items, with an additional queryHoldingsRecordId property with the matching holdings id
      * @throws ILSException if there is an issue with the FOLIO response
      */
     protected function getItemsByHoldingIds(array $holdingIds)
@@ -608,21 +615,59 @@ class Folio extends AbstractAPI implements
         }
         $items = [];
         $folioItemSort = $this->config['Holdings']['folio_sort'] ?? '';
-        if (!empty($folioItemSort)) {
-            $querySuffix = ' sortby ' . $folioItemSort;
-        } else {
-            $querySuffix = '';
+        $querySuffix = !empty($folioItemSort) ? ' sortby ' . $folioItemSort : '';
+        if (count($holdingIds) == 1) {
+            // /inventory/items-by-holdings-id returns bound-with items too (but it only takes one holdingsRecordId)
+            foreach (
+                $this->getByBatch(
+                    $holdingIds,
+                    'holdingsRecordId',
+                    'items',
+                    '/inventory/items-by-holdings-id',
+                    $querySuffix
+                ) as $item
+            ) {
+                $item->queryHoldingsRecordId = $holdingIds[0];
+                $items[] = $item;
+            }
+            return $items;
         }
-        $endpoint = count($holdingIds) > 1 ? '/inventory/items' : '/inventory/items-by-holdings-id';
+        // /inventory/items does not return bound-with items, we have to retrieve them afterwards
         foreach (
             $this->getByBatch(
                 $holdingIds,
                 'holdingsRecordId',
                 'items',
-                $endpoint,
+                '/inventory/items',
                 $querySuffix
             ) as $item
         ) {
+            $item->queryHoldingsRecordId = $item->holdingsRecordId;
+            $items[] = $item;
+        }
+        $boundWithItemIds = [];
+        $itemIdToHoldingsRecordId = [];
+        foreach (
+            $this->getByBatch(
+                $holdingIds,
+                'holdingsRecordId',
+                'boundWithParts',
+                '/inventory-storage/bound-with-parts',
+                $querySuffix
+            ) as $boundWithPart
+        ) {
+            $boundWithItemIds[] = $boundWithPart->itemId;
+            $itemIdToHoldingsRecordId[$boundWithPart->itemId] = $boundWithPart->holdingsRecordId;
+        }
+        foreach (
+            $this->getByBatch(
+                $boundWithItemIds,
+                'id',
+                'items',
+                '/inventory/items'
+            ) as $item
+        ) {
+            $item->queryHoldingsRecordId = $itemIdToHoldingsRecordId[$item->id];
             $items[] = $item;
         }
         return $items;
@@ -1189,7 +1234,10 @@ class Folio extends AbstractAPI implements
             $nextBatch = [];
             $sortNeeded = false;
             $number = 0;
-            $folioItemsForHolding = array_filter($folioItems, fn ($item) => $item->holdingsRecordId == $holding->id);
+            $folioItemsForHolding = array_filter(
+                $folioItems,
+                fn ($item) => $item->queryHoldingsRecordId == $holding->id
+            );
             foreach ($folioItemsForHolding as $item) {
                 if ($item->discoverySuppress ?? false) {
                     continue;
@@ -1280,11 +1328,7 @@ class Folio extends AbstractAPI implements
         }
         $holdings = $this->getHoldingsByInstanceIds($instanceIds);
         $holdingIds = array_map(fn ($holding) => $holding->id, $holdings);
-        if (count($holdings) == 0) {
-            $folioItems = [];
-        } else {
-            $folioItems = $this->getItemsByHoldingIds($holdingIds);
-        }
+        $folioItems = count($holdings) == 0 ? [] : $this->getItemsByHoldingIds($holdingIds);
         $results = [];
         foreach ($bibIds as $bibId) {
             $instanceId = $bibIdToInstanceId[$bibId];
@@ -2027,9 +2071,9 @@ class Folio extends AbstractAPI implements
             '/request-preference-storage/request-preference?query=userId==' . $patron['id']
         );
         $requestPreferencesResponse = json_decode($response->getBody());
-        $requestPreferences = $requestPreferencesResponse->requestPreferences[0];
-        $allowHoldShelf = $requestPreferences->holdShelf;
-        $allowDelivery = $requestPreferences->delivery && ($this->config['Holds']['allowDelivery'] ?? true);
+        $requestPreferences = $requestPreferencesResponse->requestPreferences[0] ?? null;
+        $allowHoldShelf = $requestPreferences->holdShelf ?? true;
+        $allowDelivery = ($requestPreferences->delivery ?? false) && ($this->config['Holds']['allowDelivery'] ?? true);
         $locationsLabels = $this->config['Holds']['locationsLabelByRequestGroup'] ?? [];
         if ($allowHoldShelf && $allowDelivery) {
             return [

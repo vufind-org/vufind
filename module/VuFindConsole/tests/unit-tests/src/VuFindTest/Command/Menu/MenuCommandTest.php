@@ -132,9 +132,8 @@ class MenuCommandTest extends \PHPUnit\Framework\TestCase
      * @param bool $success Should the command succeed?
      *
      * @return void
-     *
-     * @dataProvider simpleExternalCommandProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('simpleExternalCommandProvider')]
     public function testSimpleExternalCommand(bool $success): void
     {
         $config = [

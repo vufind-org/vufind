@@ -56,7 +56,7 @@ class WriteDocumentCommandTest extends TestCase
             ->getMockBuilder(\VuFindSearch\Backend\BrowZine\Backend::class)
             ->disableOriginalConstructor()->getMock();
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue('foo'));
+            ->willReturn('foo');
         $this->expectExceptionMessage('foo does not support writeDocument()');
         $command->execute($backend);
     }
@@ -73,10 +73,10 @@ class WriteDocumentCommandTest extends TestCase
             ->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
             ->disableOriginalConstructor()->getMock();
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue('Solr'));
+            ->willReturn('Solr');
         $backend->expects($this->once())->method('writeDocument')
             ->with($this->equalTo($doc), $this->equalTo(60), $this->equalTo('update'))
-            ->will($this->returnValue(['core' => 'biblio']));
+            ->willReturn(['core' => 'biblio']);
         $command = new WriteDocumentCommand('Solr', $doc, 60);
         $this->assertEquals(
             ['core' => 'biblio'],

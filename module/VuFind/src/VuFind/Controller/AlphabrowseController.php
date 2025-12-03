@@ -80,29 +80,25 @@ class AlphabrowseController extends AbstractBase
     /**
      * Get browse types from config file, or use defaults if unavailable.
      *
-     * @param Config $config Configuration
+     * @param array $config Configuration
      *
      * @return array
      */
-    protected function getTypes(Config $config): array
+    protected function getTypes(array $config): array
     {
-        return empty($config->AlphaBrowse_Types)
-            ? $this->defaultTypes
-            : $config->AlphaBrowse_Types->toArray();
+        return empty($config['AlphaBrowse_Types']) ? $this->defaultTypes : $config['AlphaBrowse_Types'];
     }
 
     /**
      * Load any extras from config file, or use defaults if unavailable.
      *
-     * @param Config $config Configuration
+     * @param array $config Configuration
      *
      * @return array
      */
-    protected function getExtras(Config $config): array
+    protected function getExtras(array $config): array
     {
-        return isset($config->AlphaBrowse_Extras)
-            ? $config->AlphaBrowse_Extras->toArray()
-            : $this->defaultExtras;
+        return $config['AlphaBrowse_Extras'] ?? $this->defaultExtras;
     }
 
     /**
@@ -199,12 +195,12 @@ class AlphabrowseController extends AbstractBase
      */
     protected function applyTopicDelimiters(&$result): void
     {
-        $config = $this->getConfig();
+        $config = $this->getConfigArray();
 
         foreach ($result['Browse']['items'] as &$item) {
             $item['heading'] = str_replace(
                 "\u{2002}",
-                ($config->AlphaBrowse->topic_browse_separator ?? ' > '),
+                ($config['AlphaBrowse']['topic_browse_separator'] ?? ' > '),
                 $item['heading']
             );
         }
@@ -251,11 +247,11 @@ class AlphabrowseController extends AbstractBase
     public function homeAction(): ViewModel
     {
         // Load config parameters
-        $config = $this->getConfig();
-        $rowsBefore = ctype_digit((string)($config->AlphaBrowse->rows_before ?? '-'))
-            ? (int)$config->AlphaBrowse->rows_before : 0;
-        $limit  = ctype_digit((string)($config->AlphaBrowse->page_size ?? '-'))
-            ? (int)$config->AlphaBrowse->page_size : 20;
+        $config = $this->getConfigArray();
+        $rowsBefore = ctype_digit((string)($config['AlphaBrowse']['rows_before'] ?? '-'))
+            ? (int)$config['AlphaBrowse']['rows_before'] : 0;
+        $limit  = ctype_digit((string)($config['AlphaBrowse']['page_size'] ?? '-'))
+            ? (int)$config['AlphaBrowse']['page_size'] : 20;
 
         // Process incoming parameters:
         $source = $this->params()->fromQuery('source', false);
@@ -264,8 +260,7 @@ class AlphabrowseController extends AbstractBase
 
         // Load highlighting configuration while accounting for special case:
         // highlighting is pointless if there's no user input:
-        $highlighting = empty($from)
-            ? false : $config->AlphaBrowse->highlighting ?? false;
+        $highlighting = empty($from) ? false : $config['AlphaBrowse']['highlighting'] ?? false;
 
         // Set up any extra parameters to pass
         $extras = $this->getExtras($config);

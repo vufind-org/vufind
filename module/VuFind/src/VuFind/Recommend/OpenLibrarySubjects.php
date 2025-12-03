@@ -124,11 +124,7 @@ class OpenLibrarySubjects implements
             $this->pubFilter = false;
         }
 
-        if (isset($params[3])) {
-            $this->subjectTypes = explode(',', $params[3]);
-        } else {
-            $this->subjectTypes = ['topic'];
-        }
+        $this->subjectTypes = isset($params[3]) ? explode(',', $params[3]) : ['topic'];
 
         // A 4th parameter is not specified in searches.ini, if it exists
         //     it has been passed in by an AJAX call and carries the

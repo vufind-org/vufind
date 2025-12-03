@@ -159,9 +159,8 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      * @param array  $expected Expected result
      *
      * @return void
-     *
-     * @dataProvider databaseUpgradeProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('databaseUpgradeProvider')]
     public function testDatabaseUpgrade(string $fixture, array $expected): void
     {
         $upgrader = $this->runAndGetConfigUpgrader($fixture);
@@ -227,27 +226,35 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Data provider for testSyndetics.
+     *
+     * @return array
+     */
+    public static function syndeticsProvider(): array
+    {
+        return [
+            'syndeticsurl' => ['syndeticsurl'],
+            'syndeticsplus' => ['syndeticsplus'],
+        ];
+    }
+
+    /**
      * Test Syndetics upgrade.
+     *
+     * @param string $fixtureDir Fixture directory
      *
      * @return void
      */
-    public function testSyndetics(): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('syndeticsProvider')]
+    public function testSyndetics(string $fixtureDir): void
     {
         // Test upgrading an SSL URL
-        $upgrader = $this->runAndGetConfigUpgrader('syndeticsurlssl');
+        $upgrader = $this->runAndGetConfigUpgrader($fixtureDir);
         $results = $upgrader->getNewConfigs();
-        $this->assertEquals(
-            1,
-            $results['config']['Syndetics']['use_ssl']
-        );
-
-        // Test upgrading a non-SSL URL
-        $upgrader = $this->runAndGetConfigUpgrader('syndeticsurlnossl');
-        $results = $upgrader->getNewConfigs();
-        $this->assertEquals(
-            '',
-            $results['config']['Syndetics']['use_ssl']
-        );
+        $this->assertFalse(isset($results['config']['Syndetics']['url']));
+        $this->assertFalse(isset($results['config']['Syndetics']['use_ssl']));
+        $this->assertFalse(isset($results['config']['Syndetics']['plus']));
+        $this->assertFalse(isset($results['config']['Syndetics']['plus_id']));
     }
 
     /**
@@ -333,6 +340,23 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test Booksite section warning.
+     *
+     * @return void
+     */
+    public function testBooksiteWarning(): void
+    {
+        $upgrader = $this->runAndGetConfigUpgrader('booksite');
+        $warnings = $upgrader->getWarnings();
+        $this->assertTrue(
+            in_array(
+                'The [Booksite] section of config.ini is no longer supported.',
+                $warnings
+            )
+        );
+    }
+
+    /**
      * Test Google-related warnings.
      *
      * @return void
@@ -345,13 +369,6 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             in_array(
                 'The [GoogleSearch] section of config.ini is no '
                 . 'longer supported due to changes in Google APIs.',
-                $warnings
-            )
-        );
-        $this->assertTrue(
-            in_array(
-                'The [GoogleAnalytics] universal setting is off. See config.ini '
-                . 'for important information on how to upgrade your Analytics.',
                 $warnings
             )
         );
@@ -413,9 +430,8 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      * @param string $configName Configuration name, EDS or EPF
      *
      * @return void
-     *
-     * @dataProvider ebscoUpgradeProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('ebscoUpgradeProvider')]
     public function testEbscoUpgrade(string $backend, string $configName): void
     {
         $upgrader = $this->runAndGetConfigUpgrader($backend);
@@ -556,39 +572,45 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test deprecated Amazon cover content warning.
+     * Test deprecated Amazon/Booksite cover content warnings.
      *
      * @return void
      */
-    public function testAmazonCoverWarning(): void
+    public function testObsoleteCoverWarning(): void
     {
         $upgrader = $this->runAndGetConfigUpgrader('amazoncover');
         $warnings = $upgrader->getWarnings();
-        $this->assertTrue(
-            in_array(
-                'WARNING: You have Amazon content enabled, but VuFind no longer sup'
-                . 'ports it. You should remove Amazon references from config.ini.',
-                $warnings
-            )
-        );
+        foreach (['Amazon', 'Booksite'] as $service) {
+            $this->assertTrue(
+                in_array(
+                    "WARNING: You have $service content enabled, but VuFind no longer sup"
+                    . "ports it. You should remove $service references from config.ini.",
+                    $warnings
+                ),
+                "Missing $service warning"
+            );
+        }
     }
 
     /**
-     * Test deprecated Amazon review content warning.
+     * Test deprecated Amazon/Booksite review content warnings.
      *
      * @return void
      */
-    public function testAmazonReviewWarning(): void
+    public function testObsoleteReviewWarnings(): void
     {
         $upgrader = $this->runAndGetConfigUpgrader('amazonreview');
         $warnings = $upgrader->getWarnings();
-        $this->assertTrue(
-            in_array(
-                'WARNING: You have Amazon content enabled, but VuFind no longer sup'
-                . 'ports it. You should remove Amazon references from config.ini.',
-                $warnings
-            )
-        );
+        foreach (['Amazon', 'Booksite'] as $service) {
+            $this->assertTrue(
+                in_array(
+                    "WARNING: You have $service content enabled, but VuFind no longer sup"
+                    . "ports it. You should remove $service references from config.ini.",
+                    $warnings
+                ),
+                "Missing $service warning"
+            );
+        }
     }
 
     /**
@@ -627,15 +649,47 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      * @param string $expected Expected migrated setting
      *
      * @return void
-     *
-     * @dataProvider mailRequireLoginProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('mailRequireLoginProvider')]
     public function testMailRequireLoginMigration(string $fixture, string $expected): void
     {
         $upgrader = $this->runAndGetConfigUpgrader($fixture);
         $results = $upgrader->getNewConfigs();
         $this->assertFalse(isset($results['config']['Mail']['require_login']));
         $this->assertEquals($expected, $results['config']['Mail']['email_action']);
+    }
+
+    /**
+     * Data provider for testLdapUriMigration.
+     *
+     * @return array[]
+     */
+    public static function ldapUriMigrationProvider(): array
+    {
+        return [
+            'host and port' => ['ldaphostandport', 'ldap://foo:123'],
+            'uri already present' => ['ldapuri', 'ldap://foo'],
+            'host only' => ['ldaphost', 'ldap://foo:389'],
+            'port only' => ['ldapport', 'ldap://localhost:123'],
+        ];
+    }
+
+    /**
+     * Test migration of [LDAP] host/port settings.
+     *
+     * @param string $fixture  Fixture to load
+     * @param string $expected Expected migrated uri setting
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('ldapUriMigrationProvider')]
+    public function testLdapUriMigration(string $fixture, string $expected): void
+    {
+        $upgrader = $this->runAndGetConfigUpgrader($fixture);
+        $results = $upgrader->getNewConfigs();
+        $this->assertFalse(isset($results['config']['LDAP']['host']));
+        $this->assertFalse(isset($results['config']['LDAP']['port']));
+        $this->assertEquals($expected, $results['config']['LDAP']['uri']);
     }
 
     /**

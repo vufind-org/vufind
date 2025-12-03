@@ -141,7 +141,7 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
       }
       /**
        * Check if an element has a specific class
-       * @param {HTMLElement} el        The element to check. 
+       * @param {HTMLElement} el        The element to check.
        * @param {string}      className The class name to search for.
        * @returns {boolean} Return true of the element has the class name.
        */
@@ -270,9 +270,9 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
           return;
         }
 
-        var hiddenFilters = [];
+        var filters = [];
         $('#searchForm').find('input[name="hiddenFilters[]"]').each(function hiddenFiltersEach() {
-          hiddenFilters.push($(this).val());
+          filters.push($(this).val());
         });
 
         $.ajax({
@@ -282,7 +282,7 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
             method: 'getACSuggestions',
             searcher: searcher,
             type: type,
-            hiddenFilters,
+            filters,
           },
           dataType: 'json',
           success: function autocompleteJSON(json) {

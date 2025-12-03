@@ -68,9 +68,8 @@ class MigrationLoaderTest extends \PHPUnit\Framework\TestCase
      * @param string $expectedDir Expected result
      *
      * @return void
-     *
-     * @dataProvider getMigrationDirForPlatformProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getMigrationDirForPlatformProvider')]
     public function testGetMigrationDirForPlatform(string $platform, string $expectedDir): void
     {
         $loader = new MigrationLoader();
@@ -99,9 +98,8 @@ class MigrationLoaderTest extends \PHPUnit\Framework\TestCase
      * @param array  $expectedDirs Expected matching versions
      *
      * @return void
-     *
-     * @dataProvider getMigrationSubdirectoriesMatchingVersionProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getMigrationSubdirectoriesMatchingVersionProvider')]
     public function testGetMigrationSubdirectoriesMatchingVersion(string $version, array $expectedDirs): void
     {
         $fixtureDir = $this->getFixtureDir() . 'db-migrations';

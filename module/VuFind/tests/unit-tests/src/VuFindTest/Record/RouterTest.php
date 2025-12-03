@@ -178,7 +178,7 @@ class RouterTest extends \PHPUnit\Framework\TestCase
         $driver->expects($this->once())
             ->method('tryMethod')
             ->with($this->equalTo('isCollection'))
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $router = $this->getRouter(['Collections' => ['collections' => true]]);
         $this->assertEquals(
             [
@@ -245,9 +245,9 @@ class RouterTest extends \PHPUnit\Framework\TestCase
     {
         $driver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
         $driver->expects($this->any())->method('getUniqueId')
-            ->will($this->returnValue($id));
+            ->willReturn($id);
         $driver->expects($this->any())->method('getSourceIdentifier')
-            ->will($this->returnValue($source));
+            ->willReturn($source);
         return $driver;
     }
 

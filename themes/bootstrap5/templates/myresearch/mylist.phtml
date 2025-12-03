@@ -93,7 +93,7 @@
       <input class="hidden all-ids-global" type="text" name="all_ids_global" value="<?= $this->escapeHtmlAttr(json_encode($this->results->getAllIds())) ?>">
       <ul class="record-list">
         <?php foreach ($this->results->getResults() as $i => $current): ?>
-          <?=$this->record($current)->getListEntry($list, $user)?>
+          <?=$this->record($current)->getListEntry($list, $user, $this->results->getStartRecord() + $i)?>
         <?php endforeach; ?>
       </ul>
       <?=$this->context($this)->renderInContext('myresearch/bulk-action-buttons.phtml', ['isBottom' => true, 'list' => $list ?? null, 'account' => $this->account])?>

@@ -97,7 +97,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $searchService->expects($this->once())
             ->method('invoke')
-            ->will($this->returnCallback($callback));
+            ->willReturnCallback($callback);
         $recordLoader = $this->getMockBuilder(\VuFind\Record\Loader::class)
             ->disableOriginalConstructor()
             ->getMock();

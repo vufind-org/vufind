@@ -118,9 +118,9 @@ class ImportXslCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $testMode = $input->getOption('test-only') ? true : false;
+        $testMode = (bool)$input->getOption('test-only');
         $index = $input->getOption('index');
         $xml = $input->getArgument('XML_file');
         $properties = $input->getArgument('properties_file');
@@ -138,11 +138,11 @@ class ImportXslCommand extends Command
                     $e = $e->getPrevious();
                 }
             }
-            return 1;
+            return self::FAILURE;
         }
         if (!$testMode) {
             $output->writeln("Successfully imported $xml...");
         }
-        return 0;
+        return self::SUCCESS;
     }
 }

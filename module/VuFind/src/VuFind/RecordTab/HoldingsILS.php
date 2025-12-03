@@ -94,6 +94,18 @@ class HoldingsILS extends AbstractBase
     }
 
     /**
+     * Is this tab initially visible?
+     *
+     * @return bool
+     */
+    public function isVisible()
+    {
+        // Check if the driver has a supportsHoldingsTab method and use it,
+        // defaulting to true (visible) if the method doesn't exist
+        return $this->driver->tryMethod('supportsHoldingsTab', [], true);
+    }
+
+    /**
      * Support method used in getUniqueCallNumbers for templates when full
      * details are not supported -- extract all unique call numbers from
      * an array of items.

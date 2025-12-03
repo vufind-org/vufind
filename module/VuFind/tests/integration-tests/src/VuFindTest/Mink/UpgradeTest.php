@@ -136,7 +136,6 @@ final class UpgradeTest extends \VuFindTest\Integration\MinkTestCase
         $this->getMinkSession()->visit($this->getVuFindUrl('/Upgrade'));
         // Upgrade the database only:
         $this->clickCss($page, '#skip-config');
-        $this->clickCss($page, '#skip-metadata');
         $this->clickCss($page, '.main input.btn-primary');
         $this->waitForPageLoad($page);
         // Skip the security warning:

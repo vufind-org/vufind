@@ -109,7 +109,7 @@ class ImportCsvCommandTest extends \PHPUnit\Framework\TestCase
                 $this->equalTo('bar.ini'),
                 $this->equalTo('SolrTest'),
                 $this->equalTo(true)
-            )->will($this->throwException($e));
+            )->willThrowException($e);
         $command = new ImportCsvCommand($importer);
         $commandTester = new CommandTester($command);
         $commandTester->execute(

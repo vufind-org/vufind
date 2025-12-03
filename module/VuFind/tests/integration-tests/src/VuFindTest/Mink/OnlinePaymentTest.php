@@ -95,9 +95,8 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool $multibackend Use MultiBackend driver?
      *
      * @return void
-     *
-     * @dataProvider paymentDisabledProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('paymentDisabledProvider')]
     public function testPaymentDisabled(bool $multibackend): void
     {
         $this->changeConfigs($this->getConfigs($multibackend, null));
@@ -146,10 +145,9 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool  $multibackend    Use MultiBackend driver?
      *
      * @return void
-     *
-     * @dataProvider paymentProvider
-     * @depends      testPaymentDisabled
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testPaymentDisabled')]
+    #[\PHPUnit\Framework\Attributes\DataProvider('paymentProvider')]
     public function testPayment(array $paymentSettings, bool $receiptEnabled, bool $multibackend): void
     {
         $this->changeConfigs($this->getConfigs($multibackend, $paymentSettings));
@@ -293,13 +291,12 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test payment without returning to VuFind.
      *
+     * This test is excluded from HTML validation because the server returns plain text.
+     *
      * @return bool
-     *
-     * @depends testPayment
-     *
-     * Excluded from HTML validation, returns plain text.
      */
     #[\VuFindTest\Attribute\HtmlValidation(false)]
+    #[\PHPUnit\Framework\Attributes\Depends('testPayment')]
     public function testNotify(): bool
     {
         $this->changeConfigs($this->getConfigs(false, []));
@@ -358,9 +355,8 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool $status Status from testNotify
      *
      * @return void
-     *
-     * @depends testNotify
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testNotify')]
     public function testLastPaymentInfo(bool $status): void
     {
         if (true !== $status) {
@@ -401,16 +397,15 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test receipt on demand.
      *
+     * This test is excluded from HTML validation because the server returns HTML used for PDF creation.
+     *
      * @param bool $vatBreakdown VAT breakdown enabled?
      *
      * @return void
-     *
-     * @dataProvider receiptProvider
-     * @depends      testPayment
-     *
-     * Excluded from HTML validation, returns HTML used for PDF creation.
      */
     #[\VuFindTest\Attribute\HtmlValidation(false)]
+    #[\PHPUnit\Framework\Attributes\DataProvider('receiptProvider')]
+    #[\PHPUnit\Framework\Attributes\Depends('testPayment')]
     public function testReceipt(bool $vatBreakdown): void
     {
         $this->changeConfigs(
@@ -494,9 +489,8 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $expectedMsg     Expected block message
      *
      * @return void
-     *
-     * @dataProvider blockedPaymentProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('blockedPaymentProvider')]
     public function testBlockedPayment(array $paymentSettings, string $expectedMsg): void
     {
         $this->changeConfigs(
@@ -512,6 +506,115 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
             $expectedMsg,
             $this->findCssAndGetText($page, '.fines-info-area__blocked')
         );
+    }
+
+    /**
+     * Test payment with registration failure.
+     *
+     * @return void
+     */
+    public function testPaymentRegistrationFailure(): void
+    {
+        $demoConfig = $this->getDemoIniOverrides() + $this->getDemoIniOverridesForPayment(['receipt' => false]);
+        $demoConfig['Failure_Probabilities']['registerPayment'] = 100;
+        $this->changeConfigs(
+            [
+                'config' => $this->getConfigIniOverrides(false),
+                'Demo' => $demoConfig,
+            ]
+        );
+
+        $page = $this->goToFines(false, false);
+
+        $this->checkForMissingDevTools($page);
+
+        $this->findCss($page, '.online-payment');
+        $this->clickCss($page, '.checkbox-select-all');
+        $this->clickCss($page, '.js-pay-selected');
+        $this->clickCss($page, '#modal .btn.btn-primary', null, 1);
+        $localIdentifier = $this->getLocalIdentifierFromReturnUrl($page);
+        $this->clickCss($page, '.button-success');
+        $this->waitForPageLoad($page);
+        // Wait for the registration error message to appear:
+        $alert = $this->findCss($page, '.alert.alert-danger');
+        $this->assertEquals(
+            'The payment has been charged from your bank account, but registration in your library account has been'
+            . ' delayed. The paid items are still displayed until the registration has been completed.',
+            $alert->getText()
+        );
+
+        $payment = $this->getPaymentByLocalIdentifier($localIdentifier);
+        $this->assertEquals(
+            PaymentStatus::RegistrationFailed,
+            $payment->getStatus()
+        );
+
+        $auditEventService = $this->getDbService(AuditEventServiceInterface::class);
+        assert($auditEventService instanceof AuditEventServiceInterface);
+        $events = array_map(
+            function (AuditEventEntityInterface $event) {
+                $data = $event->getData();
+                return [
+                    $event->getSubType(),
+                    $event->getMessage(),
+                    $data['error'] ?? null,
+                    $data['__method'] ?? null,
+                ];
+            },
+            $auditEventService->getEvents(payment: $payment, sort: ['id desc'])
+        );
+        $expectedEvents = [
+            [
+                AuditEventSubtype::PaymentRegistration->value,
+                'Registration failed',
+                'Payment::registration_failed',
+                'VuFind\\OnlinePayment\\OnlinePaymentManager::registerPaymentForPatron',
+            ],
+            [
+                AuditEventSubtype::PaymentRegistration->value,
+                'Started registration',
+                null,
+                'VuFind\\OnlinePayment\\OnlinePaymentManager::registerPaymentForPatron',
+            ],
+            [
+                AuditEventSubtype::PaymentRegistration->value,
+                'Registration requested',
+                null,
+                'VuFind\\Controller\\MyResearchController::handleOnlinePayment',
+            ],
+            [
+                AuditEventSubtype::PaymentResponseHandler->value,
+                'Response handler called',
+                null,
+                'VuFind\\Controller\\MyResearchController::handleOnlinePayment',
+            ],
+            [
+                AuditEventSubtype::Payment->value,
+                'Payment marked as paid',
+                null,
+                'VuFind\\OnlinePayment\\OnlinePaymentManager::processPaymentHandlerResponse',
+            ],
+            [
+                AuditEventSubtype::PaymentNotifyHandler->value,
+                'Handler called',
+                null,
+                'VuFind\\AjaxHandler\\OnlinePaymentNotify::handleRequest',
+            ],
+            [
+                AuditEventSubtype::Payment->value,
+                'Redirected to payment gateway',
+                null,
+                'VuFind\\OnlinePayment\Handler\\AbstractBase::redirectToPayment',
+            ],
+            [
+                AuditEventSubtype::Payment->value,
+                'Payment created',
+                null,
+                'VuFind\\OnlinePayment\\OnlinePaymentManager::createPaymentEntity',
+            ],
+        ];
+
+        $this->assertEquals($expectedEvents, $events);
     }
 
     /**

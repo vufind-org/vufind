@@ -76,10 +76,12 @@ interface AuditEventServiceInterface extends DbServiceInterface
     /**
      * Add a payment event.
      *
-     * @param PaymentEntityInterface   $payment Payment
-     * @param AuditEventSubtype|string $subtype Event subtype
-     * @param string                   $message Status message
-     * @param array                    $data    Additional data
+     * @param PaymentEntityInterface   $payment             Payment
+     * @param AuditEventSubtype|string $subtype             Event subtype
+     * @param string                   $message             Status message
+     * @param array                    $data                Additional data
+     * @param int                      $intermediateMethods Number of intermediate methods between the actual method
+     * adding the event and this method (used for determining the caller name)
      *
      * @return void
      */
@@ -87,7 +89,8 @@ interface AuditEventServiceInterface extends DbServiceInterface
         PaymentEntityInterface $payment,
         AuditEventSubtype|string $subtype,
         string $message = '',
-        array $data = []
+        array $data = [],
+        int $intermediateMethods = 0
     ): void;
 
     /**

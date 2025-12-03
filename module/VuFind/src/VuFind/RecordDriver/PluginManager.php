@@ -83,6 +83,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $delegators = [
         SolrMarc::class => [IlsAwareDelegatorFactory::class],
         SolrMarcRemote::class => [IlsAwareDelegatorFactory::class],
+        EDS::class => [IlsAwareDelegatorFactory::class],
     ];
 
     /**
@@ -136,7 +137,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         parent::__construct($configOrContainerInstance, $v3config);
 
         // Add an initializer for setting up hierarchies
-        $initializer = function ($sm, $instance) {
+        $initializer = function ($sm, $instance): void {
             $hasHierarchyType = is_callable([$instance, 'getHierarchyType']);
             if (
                 $hasHierarchyType

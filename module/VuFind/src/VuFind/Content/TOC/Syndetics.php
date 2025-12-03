@@ -107,35 +107,29 @@ class Syndetics extends \VuFind\Content\AbstractSyndetics
                     throw new \Exception('Invalid XML');
                 }
 
-                // If we have syndetics plus, we don't actually want the content
-                // we'll just stick in the relevant div
-                if ($this->usePlus) {
-                    $toc = $sourceInfo['div'];
-                } else {
-                    // Get the marc field for toc (970)
-                    $nodes = $xmldoc2->GetElementsbyTagName('Fld970');
+                // Get the marc field for toc (970)
+                $nodes = $xmldoc2->GetElementsbyTagName('Fld970');
 
-                    foreach ($nodes as $node) {
-                        $li = '';
+                foreach ($nodes as $node) {
+                    $li = '';
 
-                        // Chapter labels.
-                        $nodeList = $node->getElementsByTagName('l');
-                        if ($nodeList->length > 0) {
-                            $li .= sprintf('%s. ', $nodeList->item(0)->nodeValue);
-                        }
-
-                        // Chapter title.
-                        $nodeList = $node->getElementsByTagName('t');
-                        if ($nodeList->length > 0) {
-                            $li .= $nodeList->item(0)->nodeValue;
-                        }
-
-                        $toc[] = preg_replace(
-                            '/<a>|<a [^>]*>|<\/a>/',
-                            '',
-                            html_entity_decode($li)
-                        );
+                    // Chapter labels.
+                    $nodeList = $node->getElementsByTagName('l');
+                    if ($nodeList->length > 0) {
+                        $li .= sprintf('%s. ', $nodeList->item(0)->nodeValue);
                     }
+
+                    // Chapter title.
+                    $nodeList = $node->getElementsByTagName('t');
+                    if ($nodeList->length > 0) {
+                        $li .= $nodeList->item(0)->nodeValue;
+                    }
+
+                    $toc[] = preg_replace(
+                        '/<a>|<a [^>]*>|<\/a>/',
+                        '',
+                        html_entity_decode($li)
+                    );
                 }
             }
         }

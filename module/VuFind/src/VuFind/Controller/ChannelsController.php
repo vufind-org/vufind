@@ -90,8 +90,7 @@ class ChannelsController extends AbstractBase
         $source = $this->params()->fromQuery('source', DEFAULT_SEARCH_BACKEND);
         $activeChannel = $this->params()->fromQuery('channelProvider');
         $token = $this->params()->fromQuery('channelToken');
-        $context = $this->loader
-            ->getRecordContext($recordId, $token, $activeChannel, $source);
+        $context = $this->loader->getRecordContext($recordId, $token, $activeChannel, $source);
         return $this->createViewModel($context);
     }
 

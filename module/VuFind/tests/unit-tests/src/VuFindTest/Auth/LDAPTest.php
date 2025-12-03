@@ -68,8 +68,7 @@ class LDAPTest extends \PHPUnit\Framework\TestCase
     public function getAuthConfig(): array
     {
         $ldapConfig = [
-            'host' => 'localhost',
-            'port' => 1234,
+            'uri' => 'ldaps://localhost',
             'basedn' => 'basedn',
             'username' => 'username',
         ];
@@ -84,8 +83,7 @@ class LDAPTest extends \PHPUnit\Framework\TestCase
     public static function configKeyProvider(): array
     {
         return [
-            'missing host' => ['host'],
-            'missing port' => ['port'],
+            'missing uri' => ['uri'],
             'missing basedn' => ['basedn'],
             'missing username' => ['username'],
         ];
@@ -97,9 +95,8 @@ class LDAPTest extends \PHPUnit\Framework\TestCase
      * @param string $key Configuration key to exclude
      *
      * @return void
-     *
-     * @dataProvider configKeyProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('configKeyProvider')]
     public function testWithMissingConfiguration(string $key): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
@@ -107,6 +104,20 @@ class LDAPTest extends \PHPUnit\Framework\TestCase
         $config = $this->getAuthConfig();
         unset($config['LDAP'][$key]);
         $this->getAuthObject($config)->getConfig();
+    }
+
+    /**
+     * Test legacy host/port configuration.
+     *
+     * @return void
+     */
+    public function testLegacyHostAndPortConfiguration(): void
+    {
+        $config = $this->getAuthConfig();
+        unset($config['LDAP']['uri']);
+        $config['LDAP']['host'] = 'localhost';
+        $config['LDAP']['port'] = '636';
+        $this->assertIsObject($this->getAuthObject($config)->getConfig());
     }
 
     /**

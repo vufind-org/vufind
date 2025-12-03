@@ -26,7 +26,12 @@
   <?php endif; ?>
   <input type="hidden" value="<?=$this->escapeHtmlAttr($id) ?>" class="hiddenId">
   <input type="hidden" value="<?=$this->escapeHtmlAttr($source) ?>" class="hiddenSource">
-  <?=$this->record($this->driver)->getCheckbox()?>
+  <?php if (isset($this->overrideId)): // hiddenOverrideId is used for availability checking for non SOLR records?>
+    <input type="hidden" value="<?=$this->escapeHtmlAttr($this->overrideId) ?>" class="hiddenOverrideId">
+  <?php endif; ?>
+  <?php if ($recordNumber): ?>
+    <?=$this->record($this->driver)->getCheckbox(number: $recordNumber)?>
+  <?php endif; ?>
   <div class="media">
     <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
       <?=$thumbnail ?>

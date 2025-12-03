@@ -55,7 +55,7 @@ class ComponentTest extends \PHPUnit\Framework\TestCase
         $view = $this->getMockBuilder(PhpRenderer::class)->getMock();
         $helper->setView($view);
 
-        $helper->getView()->method('render')->will($this->returnArgument(0));
+        $helper->getView()->method('render')->willReturnArgument(0);
 
         return $helper;
     }

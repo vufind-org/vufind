@@ -30,6 +30,7 @@
 namespace VuFind\RecordDriver;
 
 use function count;
+use function floatval;
 use function in_array;
 use function is_array;
 use function is_callable;
@@ -46,6 +47,8 @@ use function strlen;
  */
 class EDS extends DefaultRecord
 {
+    use Feature\IlsAwareTrait;
+
     /**
      * Document types that are treated as ePub links.
      *
@@ -61,9 +64,9 @@ class EDS extends DefaultRecord
     protected $pdfTypes = ['ebook-pdf', 'pdflink'];
 
     /**
-     * Return the unique identifier of this record within the Solr index;
-     * useful for retrieving additional information (like tags and user
-     * comments) from the external MySQL database.
+     * Return the unique identifier of this record within EDS API;
+     * As Accession Numbers (AN) could be repetitive, we use Database ID
+     * to ensure a unique ID exists
      *
      * @return string Unique identifier.
      */
@@ -72,6 +75,142 @@ class EDS extends DefaultRecord
         $dbid = $this->fields['Header']['DbId'];
         $an = $this->fields['Header']['An'];
         return $dbid . ',' . $an;
+    }
+
+    /**
+     * Return the rtac identifier of this record from EDS API;
+     * RTAC ID is basically the AN without the catalog prefix
+     *
+     * @return string unique rtac identifier
+     */
+    public function getUniqueIDOverrideForRequest()
+    {
+        $dbid = $this->fields['Header']['DbId'];
+        $an = $this->fields['Header']['An'];
+        $catId = $this->recordConfig?->Catalog?->CatalogDatabaseId ?? '';
+
+        $regexArray = $this->recordConfig?->Catalog?->CatalogANRegex ?? [];
+        $replaceArray = $this->recordConfig?->Catalog?->CatalogANReplace ?? [];
+
+        if ($dbid === $catId && $this->pubTypeRtacEnabled()) {
+            $returnValue = $an;
+            for ($i = 0; $i < count($regexArray); $i++) {
+                $returnValue =  preg_replace($regexArray[$i], $replaceArray[$i], $returnValue);
+            }
+            return $returnValue;
+        }
+        return $dbid . ',' . $an;
+    }
+
+    /**
+     * Identify if config tells us to expect a catalog, if catalog id is set
+     * and if catalog id matches databaseid
+     *
+     * @return bool
+     */
+    public function hasCatalog()
+    {
+        $dbid = $this->fields['Header']['DbId'];
+        $hasCatalog = $this->recordConfig?->Catalog?->EDSHasCatalog ?? false;
+        $catId = $this->recordConfig?->Catalog?->CatalogDatabaseId ?? '';
+
+        // if config empty or false, return false
+        if (!$hasCatalog) {
+            return false;
+        }
+
+        // if config empty or catId doesn't match dbid
+        if ($hasCatalog && ($catId == '' || $catId != $dbid)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Based on publication type determine if RTAC should be available
+     *
+     * @return bool
+     */
+    public function pubTypeRtacEnabled()
+    {
+        $pubTypeId = $this->fields['Header']['PubTypeId'];
+        return $pubTypeId !== 'ebook';
+    }
+
+    /**
+     * Return the relevancy score for this record.
+     *
+     * @return ?float
+     */
+    public function getScore()
+    {
+        $score =
+            $this->fields['Header']['PreciseRelevancyScore']
+            ?? $this->fields['Header']['RelevancyScore']
+            ?? null;
+        if ($score) {
+            return floatval($score);
+        }
+        return $score;
+    }
+
+    /**
+     * Does this record support the holdings tab?
+     *
+     * @return bool
+     */
+    public function supportsHoldingsTab()
+    {
+        // For EDS records, only show holdings tab if it's a catalog record
+        // and the publication type is not excluded from RTAC
+        return $this->hasCatalog() && $this->pubTypeRtacEnabled();
+    }
+
+    /**
+     * Get an array of information about record holdings, obtained in real-time
+     * from the ILS. Instead of getUniqueID we use getUniqueIDOverrideForRequest
+     *
+     * @return array
+     */
+    public function getRealTimeHoldings()
+    {
+        if (
+            !$this->hasILS() ||
+            !$this->hasCatalog() ||
+            !$this->pubTypeRtacEnabled()
+        ) {
+            return [];
+        }
+
+        // Retrieve holdings -- note that we need to use overrides because the ID used
+        // for retrieving values from the ILS differs from the ID used for linking to
+        // the EDS record.
+        $bibId = $this->getUniqueIDOverrideForRequest();
+        $overrides = ['source' => 'EDS', 'id' => $this->getUniqueID()];
+        return $this->holdLogic->getHoldings($bibId, linkOverrides: $overrides);
+    }
+
+    /**
+     * Get a link for placing a title level hold.
+     *
+     * @return mixed A url if a hold is possible, boolean false if not
+     */
+    public function getRealTimeTitleHold()
+    {
+        if ($this->hasILS() && $this->hasCatalog() && $this->pubTypeRtacEnabled()) {
+            $supportedPubTypes = ['book'];
+            $pubType = $this->fields['Header']['PubTypeId'];
+            if (in_array($pubType, $supportedPubTypes)) {
+                if ($this->ils->getTitleHoldsMode() != 'disabled') {
+                    $bibId = $this->getUniqueIDOverrideForRequest();
+                    $overrides = ['source' => 'EDS', 'id' => $this->getUniqueID()];
+                    return $this->titleHoldLogic->getHold($bibId, $overrides);
+                }
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -463,21 +602,58 @@ class EDS extends DefaultRecord
     }
 
     /**
-     * Return a URL to a thumbnail preview of the record, if available; false
-     * otherwise.
+     * Returns one of three things: a full URL to a thumbnail preview of the record
+     * if an image is available in an external system; an array of parameters to
+     * send to VuFind's internal cover generator if no fixed URL exists; or false
+     * if no thumbnail can be generated.
      *
      * @param string $size Size of thumbnail (small, medium or large -- small is
      * default).
      *
-     * @return string
+     * @return string|array|bool
      */
     public function getThumbnail($size = 'small')
     {
+        // Create a ranked list of sizes so we can use "best available" when appropriate.
+        // Note that "thumb" is a value used by EBSCO, not by VuFind; it is included so
+        // it can be matched up with requests for "small."
+        $sizes = ['thumb' => 0, 'small' => 1, 'medium' => 2, 'large' => 3];
+        $bestFit = -1;
+        $desiredFit = $sizes[$size] ?? count($sizes);
+        $closestMatch = false;
         foreach ($this->fields['ImageInfo'] ?? [] as $image) {
-            if ($size == ($image['Size'] ?? '')) {
-                return $image['Target'] ?? '';
+            $currentFit = $sizes[$image['Size'] ?? 'thumb'] ?? 0;
+            $target = $image['Target'] ?? '';
+            if ($target) {
+                if ($currentFit === $desiredFit) {
+                    return $target;
+                }
+                // Aim for the best match that is smaller than the requested size; we
+                // don't want to overflow, but something small is better than nothing.
+                if ($currentFit > $bestFit && $currentFit < $desiredFit) {
+                    $bestFit = $currentFit;
+                    $closestMatch = $target;
+                }
             }
         }
+
+        // If EDS actually returned cover image data, use it.  EDS only provides this data
+        // for certain ebook packages.
+        if ($closestMatch) {
+            return $closestMatch;
+        }
+
+        // Optionally use VuFind's default cover loader
+        $fallBackToCoverLoader = $this->recordConfig?->Cover?->fallBackToCoverLoader?->toArray() ?? [];
+        if ($fallBackToCoverLoader) {
+            $parentThumbnail = parent::getThumbnail($size);
+
+            // Only use the default cover loader if the record contained at least one configured field
+            if (array_intersect(array_keys($parentThumbnail), $fallBackToCoverLoader)) {
+                return $parentThumbnail;
+            }
+        }
+
         return false;
     }
 
@@ -712,7 +888,9 @@ class EDS extends DefaultRecord
     {
         $doi = $this->getItem('Name', 'DOI');
         if (isset($doi[0]['Data'])) {
-            return strip_tags($doi[0]['Data']);
+            $cleanDoi = strip_tags($doi[0]['Data']);
+            $cleanDoi = preg_replace('/https?:\/\/.*doi.org\//', '', $cleanDoi);
+            return $cleanDoi;
         }
         $dois = $this->getFilteredIdentifiers(['doi']);
         return $dois[0] ?? false;

@@ -214,9 +214,8 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
      * @param array $params Parameters to encode.
      *
      * @return void
-     *
-     * @dataProvider encodeParamsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('encodeParamsProvider')]
     public function testEncodeParams(array $params): void
     {
         $entityManager = $this->getEntityManager();
@@ -290,9 +289,9 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
      * @param array  $randomTokenSequence Array containing strings to simulate duplicate tokens
      * @param string $error               If set, will expect this iteration to throw this error message
      *
-     * @return       void
-     * @dataProvider getTestDuplicatesData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestDuplicatesData')]
     public function testDuplicates(array $token, array $randomTokenSequence, string $error = ''): void
     {
         if ($error) {
@@ -384,9 +383,9 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
      * @param string  $token          Token used to search for row
      * @param ?string $expectedParams Expected parameters to be returned or null for no results
      *
-     * @return       void
-     * @dataProvider getTestTokenRetrieval
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestTokenRetrieval')]
     public function testTokenRetrieval(string $token, ?string $expectedParams): void
     {
         $container = new \VuFindTest\Container\MockContainer($this);

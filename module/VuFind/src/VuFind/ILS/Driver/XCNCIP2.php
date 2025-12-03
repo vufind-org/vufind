@@ -592,7 +592,7 @@ class XCNCIP2 extends AbstractBase implements
      */
     protected function getCacheKey($suffix = null)
     {
-        return 'XCNCIP2' . '-' . md5($this->url . $suffix);
+        return 'XCNCIP2-' . md5($this->url . $suffix);
     }
 
     /**

@@ -112,9 +112,8 @@ final class EmailAuthenticationTest extends \VuFindTest\Integration\MinkTestCase
      * Test the (non-ILS) email authentication process with invalid email address.
      *
      * @return void
-     *
-     * @depends testEmailAuthentication
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testEmailAuthentication')]
     public function testEmailAuthenticationBadEmail(): void
     {
         $this->setUpDatabaseEmailConfig();
