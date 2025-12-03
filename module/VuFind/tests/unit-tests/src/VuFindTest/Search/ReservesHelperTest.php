@@ -30,12 +30,12 @@
 namespace VuFindTest\Search;
 
 use PHPUnit\Framework\TestCase;
-use VuFindSearch\Command\RetrieveCommand;
-use VuFindSearch\Response\RecordCollectionInterface;
-use VuFindSearch\Service;
 use VuFind\ILS\Connection;
 use VuFind\RecordDriver\SolrReserves;
 use VuFind\Search\ReservesHelper;
+use VuFindSearch\Command\RetrieveCommand;
+use VuFindSearch\Response\RecordCollectionInterface;
+use VuFindSearch\Service;
 
 /**
  * Unit tests for the ReservesHelper
