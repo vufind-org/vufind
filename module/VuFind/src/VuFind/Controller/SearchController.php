@@ -286,7 +286,6 @@ class SearchController extends AbstractSolrSearch
         if ($newItemsHelper->getMethod() == 'ils') {
             // Use standard search action with override parameter to show results:
             $bibIDs = $newItemsHelper->getBibIDsFromCatalog(
-                $this->getILS(),
                 $this->getResultsManager()->get('Solr')->getParams(),
                 $range,
                 $dept,
