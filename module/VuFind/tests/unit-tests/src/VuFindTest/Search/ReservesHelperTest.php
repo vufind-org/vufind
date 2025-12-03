@@ -186,9 +186,10 @@ class ReservesHelperTest extends TestCase
         $searchService->expects($this->once())
             ->method('invoke')
             ->with($this->callback(function ($command) {
-                return $command instanceof RetrieveCommand
-                && $command->getTargetIdentifier() === 'SolrReserves'
-                && $command->getArguments()[0] === 'MATH201|johnson|Mathematics';
+                $this->assertInstanceOf(RetrieveCommand::class, $command);
+                $this->assertSame('SolrReserves', $command->getTargetIdentifier());
+                $this->assertSame('MATH201|johnson|Mathematics', $command->getArguments()[0]);
+                return true;
             }))
             ->willReturn($commandResponse);
 
