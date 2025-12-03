@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Recommend Between view helper
+ * Between helper for recommendation module placement
  *
  * PHP version 8
  *
@@ -27,14 +27,14 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\View\Helper\Root;
+namespace VuFind\Recommend\Helper;
 
 use VuFind\Search\Base\Results;
 
 use function count;
 
 /**
- * Recommend Between view helper
+ * Between helper for recommendation module placement
  *
  * @category VuFind
  * @package  View_Helpers
@@ -42,7 +42,7 @@ use function count;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class RecommendBetween extends \Laminas\View\Helper\AbstractHelper
+class Between
 {
     /**
      * Minimum placement index of any between recommendation.

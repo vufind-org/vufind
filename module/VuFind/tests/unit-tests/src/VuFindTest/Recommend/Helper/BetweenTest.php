@@ -27,9 +27,9 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 
-namespace VuFindTest\Recommend;
+namespace VuFindTest\Recommend\Helper;
 
-use VuFind\View\Helper\Root\RecommendBetween;
+use VuFind\Recommend\Helper\Between;
 
 /**
  * Between recommendation module Test Class
@@ -40,7 +40,7 @@ use VuFind\View\Helper\Root\RecommendBetween;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class RecommendBetweenTest extends \PHPUnit\Framework\TestCase
+class BetweenTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test getMaxScoreDiff
@@ -49,17 +49,17 @@ class RecommendBetweenTest extends \PHPUnit\Framework\TestCase
      */
     public function testMaxScoreDiff()
     {
-        $between = $this->getRecommendBetween();
+        $between = $this->getBetween();
         $this->assertEquals(3, $between->getMaxScoreDiffIndex([100, null, 98, 50, 49, null, 48]));
     }
 
     /**
-     * Get a Between recommendation module
+     * Get a Between helper
      *
-     * @return RecommendBetween
+     * @return Between
      */
-    protected function getRecommendBetween()
+    protected function getBetween()
     {
-        return new RecommendBetween();
+        return new Between();
     }
 }
