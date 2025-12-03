@@ -30,12 +30,12 @@
 namespace VuFindTest\Search;
 
 use PHPUnit\Framework\TestCase;
-use VuFind\ILS\Connection;
-use VuFind\RecordDriver\SolrReserves;
-use VuFind\Search\ReservesHelper;
 use VuFindSearch\Command\RetrieveCommand;
 use VuFindSearch\Response\RecordCollectionInterface;
 use VuFindSearch\Service;
+use VuFind\ILS\Connection;
+use VuFind\RecordDriver\SolrReserves;
+use VuFind\Search\ReservesHelper;
 
 /**
  * Unit tests for the ReservesHelper
@@ -190,8 +190,8 @@ class ReservesHelperTest extends TestCase
             ->method('invoke')
             ->with($this->callback(function ($command) {
                 return $command instanceof RetrieveCommand
-                    && $command->getTargetIdentifier() === 'SolrReserves'
-                    && $command->getArguments()[0] === 'MATH201|johnson|Mathematics';
+                && $command->getTargetIdentifier() === 'SolrReserves'
+                && $command->getArguments()[0] === 'MATH201|johnson|Mathematics';
             }))
             ->willReturn($commandResponse);
 
