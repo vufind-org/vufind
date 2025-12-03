@@ -69,7 +69,7 @@ class GoogleAnalyticsFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
         $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
-        $key = $config->GoogleAnalytics->apiKey ?? false;
+        $key = $config->GoogleAnalytics->apiKey ?? null;
         $options = [
             'create_options_js' =>
                 $config->GoogleAnalytics->create_options_js ?? null,
