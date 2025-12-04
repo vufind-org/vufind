@@ -538,8 +538,7 @@ function recordDocReady() {
       }
       tab.addEventListener('click', tabEventHandler);
       tab.addEventListener('focus', tabEventHandler);
-    }
-  );
+    });
 
   document.querySelectorAll('[data-background]').forEach((el) => {
     backgroundLoadTab(el.dataset.tab);
