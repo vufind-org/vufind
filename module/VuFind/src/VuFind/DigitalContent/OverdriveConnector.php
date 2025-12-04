@@ -162,7 +162,7 @@ class OverdriveConnector implements
      *
      * Returns the currently logged in user or false if the user is not
      *
-     * @return array|bool  an array of user info from the ILSAuthenticator or false if user is not logged in.
+     * @return array|bool an array of user info from the ILSAuthenticator or false if user is not logged in.
      */
     public function getUser()
     {
