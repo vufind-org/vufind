@@ -67,8 +67,8 @@ abstract class AbstractPluginFactory implements AbstractFactoryInterface
      */
     protected function getClassName($requestedName)
     {
-        // If we have a FQCN that refers to an existing class, return it as-is:
-        if ((null === $this->defaultNamespace || str_contains($requestedName, '\\')) && class_exists($requestedName)) {
+        // If class name generation is disabled or we have a FQCN that refers to an existing class, return it as-is:
+        if (null === $this->defaultNamespace || (str_contains($requestedName, '\\') && class_exists($requestedName))) {
             return $requestedName;
         }
         // First try the raw service name, then try a normalized version:
