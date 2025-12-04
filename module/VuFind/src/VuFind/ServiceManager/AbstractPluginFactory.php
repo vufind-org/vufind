@@ -42,17 +42,17 @@ use Psr\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AbstractPluginFactory implements AbstractFactoryInterface
+abstract class AbstractPluginFactory implements AbstractFactoryInterface
 {
     /**
-     * Default namespace for building class names
+     * Default namespace for building class names (null to use class names as-is)
      *
-     * @var string
+     * @var ?string
      */
-    protected $defaultNamespace = 'VuFind';
+    protected $defaultNamespace = null;
 
     /**
-     * Optional suffix to append to class names
+     * Optional suffix to append to class names (ignored when defaultNamespace is null)
      *
      * @var string
      */
@@ -68,7 +68,7 @@ class AbstractPluginFactory implements AbstractFactoryInterface
     protected function getClassName($requestedName)
     {
         // If we have a FQCN that refers to an existing class, return it as-is:
-        if (str_contains($requestedName, '\\') && class_exists($requestedName)) {
+        if ((null === $this->defaultNamespace || str_contains($requestedName, '\\')) && class_exists($requestedName)) {
             return $requestedName;
         }
         // First try the raw service name, then try a normalized version:
