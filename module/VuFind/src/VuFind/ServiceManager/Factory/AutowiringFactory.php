@@ -29,8 +29,7 @@
 
 namespace VuFind\ServiceManager\Factory;
 
-use InvalidArgumentException;
-use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use LogicException;
 use Psr\Container\ContainerInterface;
 use ReflectionClass;
@@ -47,7 +46,7 @@ use VuFind\Config\ConfigManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AutowiringFactory implements AbstractFactoryInterface
+class AutowiringFactory implements FactoryInterface
 {
     /**
      * Configuration manager
@@ -55,45 +54,6 @@ class AutowiringFactory implements AbstractFactoryInterface
      * @var ?ConfigManager
      */
     protected ?ConfigManager $configManager = null;
-
-    /**
-     * Autowireability of known services.
-     *
-     * @var array
-     */
-    protected array $autowireable = [
-        'DoctrineModule\Cache\LaminasStorageCache' => false,
-    ];
-
-    /**
-     * Can the factory create an instance for the service?
-     *
-     * @param ContainerInterface $container     Service container
-     * @param string             $requestedName Name of service
-     *
-     * @return bool
-     */
-    public function canCreate(ContainerInterface $container, $requestedName)
-    {
-        if (null !== ($known = $this->autowireable[$requestedName] ?? null)) {
-            return $known;
-        }
-        if (!class_exists($requestedName)) {
-            $this->autowireable[$requestedName] = false;
-            return false;
-        }
-        $reflectionClass = new ReflectionClass($requestedName);
-        if (null === ($constructor = $reflectionClass->getConstructor())) {
-            $this->autowireable[$requestedName] = true;
-            return true;
-        }
-        $reflectionParameters = $constructor->getParameters();
-        if (empty($reflectionParameters)) {
-            $this->autowireable[$requestedName] = true;
-            return true;
-        }
-        return $this->autowireable[$requestedName] = !empty($constructor->getAttributes(Autowire::class));
-    }
 
     /**
      * Create a service for the specified name.
@@ -122,10 +82,6 @@ class AutowiringFactory implements AbstractFactoryInterface
         $reflectionParameters = $constructor->getParameters();
         if (empty($reflectionParameters)) {
             return new $requestedName();
-        }
-
-        if (empty($constructor->getAttributes(Autowire::class))) {
-            throw new InvalidArgumentException("Autowiring not enabled for $requestedName");
         }
 
         // Map constructor parameters:

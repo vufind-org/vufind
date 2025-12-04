@@ -423,9 +423,6 @@ $config = [
     ],
     'service_manager' => [
         'allow_override' => true,
-        'abstract_factories' => [
-            \VuFind\ServiceManager\Factory\AutowiringFactory::class,
-        ],
         'factories' => [
             'League\CommonMark\MarkdownConverter' => 'VuFind\Service\MarkdownFactory',
             'VuFind\Account\UserAccountService' => 'VuFind\Account\UserAccountServiceFactory',
