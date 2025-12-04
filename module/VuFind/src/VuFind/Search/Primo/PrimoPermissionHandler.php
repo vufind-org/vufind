@@ -109,7 +109,7 @@ class PrimoPermissionHandler
      * Determine the institution code
      * Returns false, if no institution can get set
      *
-     * @return string|boolean
+     * @return string|bool
      */
     public function getInstCode()
     {
@@ -255,7 +255,7 @@ class PrimoPermissionHandler
      * Determine the default institution code
      * Returns false, if no default code has been set
      *
-     * @return string|boolean
+     * @return string|bool
      */
     protected function getDefaultCode()
     {

@@ -31,6 +31,7 @@ namespace VuFind\Db\Entity;
 
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
+use VuFind\Db\Feature\DateTimeTrait;
 
 /**
  * Entity model for user_resource table
@@ -48,6 +49,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity]
 class UserResource implements UserResourceEntityInterface
 {
+    use DateTimeTrait;
+
     /**
      * Unique ID.
      *
@@ -219,7 +222,8 @@ class UserResource implements UserResourceEntityInterface
      */
     public function getSaved(): DateTime
     {
-        return $this->saved;
+        // Return to a clone to avoid indirect modification of the entity:
+        return $this->getDateTimeClone($this->saved);
     }
 
     /**

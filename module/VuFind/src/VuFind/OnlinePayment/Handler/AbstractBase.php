@@ -330,7 +330,7 @@ abstract class AbstractBase implements
      */
     protected function getCurrencyCode(): string
     {
-        return $this->paymentConfig['currency'] ?? 'USD';
+        return $this->paymentConfig['currency'] ?? $this->config['Site']['defaultCurrency'] ?? 'USD';
     }
 
     /**

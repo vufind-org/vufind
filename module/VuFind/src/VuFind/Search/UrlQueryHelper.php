@@ -310,6 +310,25 @@ class UrlQueryHelper
     }
 
     /**
+     * Format a set of facet parameters into a filter string.
+     *
+     * @param string $field    Facet field
+     * @param string $value    Facet value
+     * @param string $operator Facet type to add (AND, OR, NOT)
+     *
+     * @return string
+     */
+    public function formatFilterString(string $field, string $value, string $operator = 'AND'): string
+    {
+        $prefix = match ($operator) {
+            'NOT' => '-',
+            'OR'  => '~',
+            default => '',
+        };
+        return $prefix . $field . ':"' . $value . '"';
+    }
+
+    /**
      * Add a facet to the parameters.
      *
      * @param string $field    Facet field
@@ -321,8 +340,7 @@ class UrlQueryHelper
     public function addFacet($field, $value, $operator = 'AND')
     {
         // Facets are just a special case of filters:
-        $prefix = ($operator == 'NOT') ? '-' : ($operator == 'OR' ? '~' : '');
-        return $this->addFilter($prefix . $field . ':"' . $value . '"');
+        return $this->addFilter($this->formatFilterString($field, $value, $operator));
     }
 
     /**

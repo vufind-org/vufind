@@ -224,6 +224,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetListEntry(): void
     {
+        $recordNumber = 7;
         $driver = $this->createMock(RecordDriver::class);
         $driver->method('getUniqueID')->willReturn('foo');
         $driver->method('getSourceIdentifier')->willReturn('bar');
@@ -236,7 +237,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $serviceManager->expects($this->once())->method('get')->with(UserListServiceInterface::class)
             ->willReturn($listService);
         $expected = [
-            'driver' => $driver, 'list' => null, 'user' => $user, 'lists' => [1, 2, 3],
+            'driver' => $driver, 'list' => null, 'user' => $user, 'lists' => [1, 2, 3], 'recordNumber' => $recordNumber,
         ];
         $context = $this->getMockContext();
         $context->expects($this->once())->method('apply')
@@ -259,7 +260,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $record->getView()->expects($this->once())->method('render')
             ->with($this->equalTo($tpl))
             ->willReturn('success');
-        $this->assertEquals('success', $record->getListEntry(null, $user));
+        $this->assertEquals('success', $record->getListEntry(null, $user, $recordNumber));
     }
 
     /**

@@ -146,7 +146,7 @@ class YamlReaderTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testParentConfig(): void
+    public function testParentYamlAndMergedSections(): void
     {
         $reader = new YamlReader(
             $this->getPathResolver($this->getFixtureDir() . 'configs/yaml')
@@ -177,6 +177,51 @@ class YamlReaderTest extends \PHPUnit\Framework\TestCase
                 'ChildOnly' => [
                     'Child' => 'true',
                 ],
+            ],
+            $config
+        );
+    }
+
+    /**
+     * Data provider for testParentConfigName.
+     *
+     * @return array
+     */
+    public static function parentConfigNameProvider(): array
+    {
+        return [
+            'base-parent-base-child' => ['base', 'base'],
+            'base-parent-local-child' => ['base', 'local'],
+            'local-parent-base-child' => ['local', 'base'],
+            'local-parent-local-child' => ['local', 'local'],
+        ];
+    }
+
+    /**
+     * Test @parent_config_name
+     *
+     * @param string $parentLocation Location of parent configuration to be loaded
+     * @param string $childLocation  Location of child configuration to be loaded
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('parentConfigNameProvider')]
+    public function testParentConfigName(string $parentLocation, string $childLocation): void
+    {
+        $reader = new YamlReader(
+            $this->getPathResolver(
+                baseDir: $this->getFixtureDir() . 'configs/yaml/baseDir',
+                localDir: $this->getFixtureDir() . 'configs/yaml/localDir',
+                baseSubDir: '',
+                localSubDir: '',
+            )
+        );
+        $config = $reader->get($childLocation . '_child_' . $parentLocation . '_parent.yaml');
+        $this->assertEquals(
+            [
+                'All' => $childLocation . '-child',
+                'ChildOnly' => $childLocation . '-child',
+                'ParentOnly' => $parentLocation . '-parent',
             ],
             $config
         );
