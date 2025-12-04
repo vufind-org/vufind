@@ -33,6 +33,8 @@ use AltchaOrg\Altcha\ChallengeOptions;
 use AltchaOrg\Altcha\Hasher\Algorithm;
 use Laminas\Mvc\Controller\Plugin\Params;
 
+use function is_array;
+
 /**
  * Altcha proof-of-work CAPTCHA.
  *
