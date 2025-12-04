@@ -182,7 +182,7 @@ class YamlReader
             // Swallow the directive after processing it:
             unset($results['@parent_yaml']);
         }
-        // Override default parent with explicitly-defined parent, if present:
+        // Override default parent with a named configuration, if present:
         if (isset($results['@parent_config_name'])) {
             $parentConfigName = $results['@parent_config_name'] . '.yaml';
             $defaultParent = $useLocalConfig
