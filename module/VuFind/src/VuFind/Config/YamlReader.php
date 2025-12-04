@@ -169,6 +169,12 @@ class YamlReader
         $results = (!empty($file) && file_exists($file))
             ? Yaml::parse(file_get_contents($file)) : [];
 
+        if (isset($results['@parent_yaml']) && isset($results['@parent_config_name'])) {
+            error_log('Cannot use both directives @parent_yaml and '
+            . '@parent_config_name at the same time in one file.'
+            );
+        }
+
         // Override default parent with explicitly-defined parent, if present:
         if (isset($results['@parent_yaml'])) {
             // First try parent as absolute path, then as relative:
