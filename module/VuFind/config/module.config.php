@@ -426,7 +426,6 @@ $config = [
             \VuFind\I18n\Locale\LocaleSettings::class => \VuFind\Service\ServiceWithConfigIniFactory::class,
             \VuFind\ILS\Logic\Holds::class => \VuFind\ILS\Logic\LogicFactory::class,
             \VuFind\ILS\Logic\TitleHolds::class => \VuFind\ILS\Logic\LogicFactory::class,
-            \VuFind\Mailer\Mailer::class => \VuFind\Mailer\Factory::class,
             \VuFind\OAuth2\Repository\AccessTokenRepository::class => \VuFind\OAuth2\Repository\TokenRepositoryFactory::class,
             \VuFind\OAuth2\Repository\AuthCodeRepository::class => \VuFind\OAuth2\Repository\TokenRepositoryFactory::class,
             \VuFind\OAuth2\Repository\ClientRepository::class => \VuFind\OAuth2\Repository\RepositoryWithOAuth2ConfigFactory::class,

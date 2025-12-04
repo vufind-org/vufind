@@ -31,8 +31,8 @@ namespace VuFindTest\Mailer;
 
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
-use VuFind\Mailer\Factory as MailerFactory;
 use VuFind\Mailer\Mailer;
+use VuFind\Mailer\MailerFactory;
 use VuFindTest\Container\MockContainer;
 
 use function count;
