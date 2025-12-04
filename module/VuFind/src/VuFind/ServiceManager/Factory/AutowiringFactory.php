@@ -57,12 +57,12 @@ class AutowiringFactory implements AbstractFactoryInterface
     protected ?ConfigManager $configManager = null;
 
     /**
-     * Known services frequently requested but not autowireable.
+     * Autowireability of known services.
      *
      * @var array
      */
-    protected array $blockList = [
-        'DoctrineModule\Cache\LaminasStorageCache',
+    protected array $autowireable = [
+        'DoctrineModule\Cache\LaminasStorageCache' => false,
     ];
 
     /**
@@ -75,18 +75,24 @@ class AutowiringFactory implements AbstractFactoryInterface
      */
     public function canCreate(ContainerInterface $container, $requestedName)
     {
-        if (in_array($requestedName, $this->blockList) || !class_exists($requestedName)) {
+        if (null !== ($known = $this->autowireable[$requestedName] ?? null)) {
+            return $known;
+        }
+        if (!class_exists($requestedName)) {
+            $this->autowireable[$requestedName] = false;
             return false;
         }
         $reflectionClass = new ReflectionClass($requestedName);
         if (null === ($constructor = $reflectionClass->getConstructor())) {
+            $this->autowireable[$requestedName] = true;
             return true;
         }
         $reflectionParameters = $constructor->getParameters();
         if (empty($reflectionParameters)) {
+            $this->autowireable[$requestedName] = true;
             return true;
         }
-        return !empty($constructor->getAttributes(Autowire::class));
+        return $this->autowireable[$requestedName] = !empty($constructor->getAttributes(Autowire::class));
     }
 
     /**
