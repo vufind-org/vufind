@@ -207,6 +207,12 @@ class AbstractExpireCommand extends Command
      */
     protected function getDateThreshold(float $daysOld): DateTime
     {
-        return new DateTime("now - $daysOld days");
+        // DateTime doesn't support floating point relative values, so convert days to hours as needed:
+        if ($daysOld == (int)$daysOld) {
+            return new DateTime("now - $daysOld days");
+        } else {
+            $hoursOld = round($daysOld * 24);
+            return new DateTime("now - $hoursOld hours");
+        }
     }
 }
