@@ -1921,12 +1921,9 @@ class KohaRest extends \VuFind\ILS\Driver\AbstractBase implements
             ]
         );
         if ($result['code'] >= 300) {
-            $msg = empty($result['data']['error'])
-                ? $this->getPrefixedMessage($result['code'])
-                : $this->getPrefixedMessage($result['data']['error']);
             return [
                 'success' => false,
-                'error' => $msg,
+                'error' => $this->getPrefixedMessage($result['data']['error'] ?? $result['code']),
             ];
         }
         return [
