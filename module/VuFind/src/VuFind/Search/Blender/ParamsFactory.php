@@ -92,7 +92,6 @@ class ParamsFactory extends \VuFind\Search\Params\ParamsFactory
         if (!$backendConfig) {
             throw new \Exception('No backends enabled in ' . $this->blenderIni . '.ini');
         }
-        $this->blenderMappingsYaml = $blenderConfig->Blending->mappings ?? $this->blenderMappingsYaml;
 
         $facetHelper
             = $container->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class);

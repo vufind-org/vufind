@@ -53,4 +53,11 @@ class Blender2BackendFactory extends BlenderBackendFactory
      * @var string
      */
     protected $facetConfig = 'Blender2';
+
+    /**
+     * Mappings YAML configuration file identifier.
+     *
+     * @var string
+     */
+    protected $mappingsConfig = 'Blender2Mappings';
 }

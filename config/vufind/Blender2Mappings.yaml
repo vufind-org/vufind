@@ -1,0 +1,8 @@
+# This is the Blender mappings configuration for the backend configured in Blender2.ini.
+# Blender2-specific rules can be defined below.
+
+# By default, Blender2 inherits rules from the parent configuration. Disable this line
+# to not inherit those rules. Only sections not found in this file will be loaded in
+# from the parent file.
+"@parent_config_name": "BlenderMappings"
+
