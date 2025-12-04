@@ -57,6 +57,15 @@ class AutowiringFactory implements AbstractFactoryInterface
     protected ?ConfigManager $configManager = null;
 
     /**
+     * Known services frequently requested but not autowireable.
+     *
+     * @var array
+     */
+    protected array $blockList = [
+        'DoctrineModule\Cache\LaminasStorageCache',
+    ];
+
+    /**
      * Can the factory create an instance for the service?
      *
      * @param ContainerInterface $container     Service container
@@ -66,7 +75,7 @@ class AutowiringFactory implements AbstractFactoryInterface
      */
     public function canCreate(ContainerInterface $container, $requestedName)
     {
-        if (!class_exists($requestedName)) {
+        if (in_array($requestedName, $this->blockList) || !class_exists($requestedName)) {
             return false;
         }
         $reflectionClass = new ReflectionClass($requestedName);
