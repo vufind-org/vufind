@@ -111,10 +111,10 @@ class YamlReader
     /**
      * Given core and local filenames, retrieve the configuration data.
      *
-     * @param string  $defaultFile    Full path to file containing default YAML
-     * @param string  $customFile     Full path to file containing local customizations
+     * @param string $defaultFile    Full path to file containing default YAML
+     * @param string $customFile     Full path to file containing local customizations
      * (may be null if no local file exists).
-     * @param bool $useLocalConfig Use local configuration if available
+     * @param bool   $useLocalConfig Use local configuration if available
      *
      * @return array
      */
@@ -154,12 +154,12 @@ class YamlReader
     /**
      * Process a YAML file (and its parent, if necessary).
      *
-     * @param string  $file           YAML file to load (will evaluate to null
+     * @param string $file           YAML file to load (will evaluate to null
      * if file does not exist).
-     * @param string  $defaultParent  Parent YAML file from which $file should
+     * @param string $defaultParent  Parent YAML file from which $file should
      * inherit (unless overridden by a specific directive in $file). None by
      * default.
-     * @param bool $useLocalConfig Use local configuration if available
+     * @param bool   $useLocalConfig Use local configuration if available
      *
      * @return array
      */
