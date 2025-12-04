@@ -46,6 +46,15 @@ class Recommend extends \Laminas\View\Helper\AbstractHelper
     use ClassBasedTemplateRendererTrait;
 
     /**
+     * Constructor
+     *
+     * @param Between $between Between helper
+     */
+    public function __construct(protected Between $between)
+    {
+    }
+
+    /**
      * Render the output of a recommendation module.
      *
      * @param ?RecommendInterface $recommend The recommendation object to render
@@ -81,6 +90,6 @@ class Recommend extends \Laminas\View\Helper\AbstractHelper
      */
     public function getBetweenHelper()
     {
-        return new Between();
+        return $this->between;
     }
 }
