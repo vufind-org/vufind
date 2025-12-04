@@ -1,4 +1,7 @@
-import fs from "node:fs";
+const fs = require("node:fs");
+const path = require("node:path");
+
+const themeRoot = path.resolve(__dirname, "..");
 
 const jsAppendsRe = /appendScriptLink\('([^']+?)'/g;
 const jsTranslateRe = /VuFind\.translate\(['\"]([^,\)]+?)['\"](,|\))/g;
@@ -11,11 +14,11 @@ function getJsAppends(templateContents) {
 	}
 	const scripts = [];
 	for (const script of matches) {
-		const path = script[1];
-		if (path.startsWith("vendor") || path.startsWith("http")) {
+		const scriptPath = script[1];
+		if (scriptPath.startsWith("vendor") || scriptPath.startsWith("http")) {
 			continue;
 		}
-		scripts.push(path);
+		scripts.push(scriptPath);
 	}
 	return new Set(scripts);
 }
@@ -47,21 +50,48 @@ function getJsTranslations(contents) {
 	return new Set(strings);
 }
 
+// Set polyfills
+
+function setDifference(a, b) {
+	const union = new Set(a);
+	for (const item of b) {
+		union.delete(item);
+	}
+	return union;
+}
+
+function setJoin(set, sep = ", ") {
+	if (set.size === 0) {
+		return "[]";
+	}
+
+	return Array.from(set).toSorted().join(sep);
+}
+
+function setUnion(a, b) {
+	const union = new Set(a);
+	for (const item of b) {
+		union.add(item);
+	}
+	return union;
+}
+
 // main
 
 try {
 	let globalPhpStrings = null;
 	let templateList = [];
-	for (const entry of fs.readdirSync(".", { recursive: true, withFileTypes: true })) {
+	const dirContents = fs.readdirSync(themeRoot, { recursive: true, withFileTypes: true });
+	for (const entry of dirContents) {
 		if (entry.isDirectory() || !entry.name.endsWith("phtml")) {
 			continue;
 		}
 
-		const path = `${entry.path}/${entry.name}`;
-		const templateContents = fs.readFileSync(path, "utf8");
+		const entryPath = path.join(entry.path, entry.name);
+		const templateContents = fs.readFileSync(entryPath, "utf8");
 
 		const phpStrings = getPhpTranslations(templateContents);
-		if (path == "templates/layout/js-translations.phtml") {
+		if (entryPath.endsWith("templates/layout/js-translations.phtml")) {
 			globalPhpStrings = new Set(phpStrings);
 			continue;
 		}
@@ -70,13 +100,13 @@ try {
 		let jsStrings = getJsTranslations(templateContents);
 		for (const append of jsFiles) {
 			const jsPath = `./js/${append}`;
-			const jsContents = fs.readFileSync(jsPath, "utf8");
-			jsStrings = jsStrings.union(getJsTranslations(jsContents));
+			const jsContents = fs.readFileSync(path.join(themeRoot, jsPath), "utf8");
+			jsStrings = setUnion(jsStrings, getJsTranslations(jsContents));
 		}
 
 		if (jsStrings.size > 0 || phpStrings.size > 0) {
 			templateList.push({
-				path,
+				path: entryPath,
 				jsFiles,
 				jsStrings,
 				phpStrings,
@@ -84,46 +114,35 @@ try {
 		}
 	}
 
-	templateList.sort((a, b) => a.path.localeCompare(b.path));
-
-	function joinSet(set) {
-		if (set.size === 0) {
-			return "[]";
-		}
-		return Array.from(set).toSorted().join(", ");
-	}
-
-	console.log(
-		`global JS strings: ${JSON.stringify(Array.from(globalPhpStrings).toSorted(), null, "\t")}.`,
-	);
+	// show global translations
+	const globalPhpStringsJSON = JSON.stringify(Array.from(globalPhpStrings).toSorted(), null, "\t");
+	console.log(`global JS strings: ${globalPhpStringsJSON}.`);
 
 	const red = (str) => `\x1b[31m${str}\x1b[0m`;
 	const blue = (str) => `\x1b[34m${str}\x1b[0m`;
 
+	// sort for easier finding
+	templateList.sort((a, b) => a.path.localeCompare(b.path));
+
+	// compare available and needed strings
 	for (const template of templateList) {
-		const neededJsStrings = template.jsStrings.difference(globalPhpStrings);
-		const missingPhpStrings = neededJsStrings.difference(
-			template.phpStrings,
-		);
-		const extraPhpStrings = template.phpStrings.difference(neededJsStrings);
+		const neededJsStrings = setDifference(template.jsStrings, globalPhpStrings);
+		const missingPhpStrings = setDifference(neededJsStrings, template.phpStrings);
+		const extraPhpStrings = setDifference(template.phpStrings, neededJsStrings);
 
 		if (missingPhpStrings.size === 0 && extraPhpStrings.size === 0) {
 			continue;
 		}
 
 		console.log(`\n${template.path}`);
-		console.log(`- ${blue("JS files:")} ${joinSet(template.jsFiles)}.`);
-		console.log(`- ${blue("JS uses:")} ${joinSet(neededJsStrings)}.`);
-		console.log(`- ${blue("PHP-to-JS:")} ${joinSet(template.phpStrings)}.`);
+		console.log(`- ${blue("JS files:")} ${setJoin(template.jsFiles)}.`);
+		console.log(`- ${blue("JS uses:")} ${setJoin(neededJsStrings)}.`);
+		console.log(`- ${blue("PHP-to-JS:")} ${setJoin(template.phpStrings)}.`);
 		if (missingPhpStrings.size > 0) {
-			console.log(
-				`- ${red("Missing PHP strings:")} ${joinSet(missingPhpStrings)}.`,
-			);
+			console.log(`- ${red("Missing PHP strings:")} ${setJoin(missingPhpStrings)}.`);
 		}
 		if (extraPhpStrings.size > 0) {
-			console.log(
-				`- ${red("Extra PHP strings:")} ${joinSet(extraPhpStrings)}.`,
-			);
+			console.log(`- ${red("Extra PHP strings:")} ${setJoin(extraPhpStrings)}.`);
 		}
 	}
 } catch (err) {
