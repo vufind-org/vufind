@@ -108,7 +108,6 @@ class BlenderBackendFactory implements FactoryInterface
         foreach (array_keys($backendConfig) as $backendId) {
             $backends[$backendId] = $backendManager->get($backendId);
         }
-        $this->mappingsConfig = $blenderConfig->Blending->mappings ?? $this->mappingsConfig;
         $blenderMappings = $yamlReader->get($this->mappingsConfig . '.yaml');
         $backend = new Backend(
             $backends,
