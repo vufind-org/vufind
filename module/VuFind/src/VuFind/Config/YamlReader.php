@@ -114,7 +114,7 @@ class YamlReader
      * @param string  $defaultFile    Full path to file containing default YAML
      * @param string  $customFile     Full path to file containing local customizations
      * (may be null if no local file exists).
-     * @param boolean $useLocalConfig Use local configuration if available
+     * @param bool $useLocalConfig Use local configuration if available
      *
      * @return array
      */
