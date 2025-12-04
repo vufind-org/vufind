@@ -106,7 +106,6 @@ class Altcha extends AbstractBase
         $encoded = $params->fromPost('altcha', null);
         $json = base64_decode($encoded);
         $payload = json_decode($json, true);
-
-        return $this->altcha->verifySolution($payload, checkExpires: true);
+        return is_array($payload) ? $this->altcha->verifySolution($payload, checkExpires: true) : false;
     }
 }
