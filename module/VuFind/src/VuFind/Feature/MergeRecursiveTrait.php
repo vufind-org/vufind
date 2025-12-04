@@ -52,7 +52,7 @@ trait MergeRecursiveTrait
      *
      * @param mixed $op Variable to test
      *
-     * @return boolean
+     * @return bool
      */
     protected function isStringKeyedArray($op)
     {

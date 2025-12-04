@@ -1644,8 +1644,8 @@ class Alma extends AbstractBase implements
     /**
      * Parse a date.
      *
-     * @param string  $date     Date to parse
-     * @param boolean $withTime Add time to return if available?
+     * @param string $date     Date to parse
+     * @param bool   $withTime Add time to return if available?
      *
      * @return string
      */

@@ -1954,7 +1954,7 @@ class PAIA extends DAIA
      *
      * @param string $scope The scope to test for with the current session scopes.
      *
-     * @return boolean
+     * @return bool
      */
     protected function paiaCheckScope($scope)
     {
