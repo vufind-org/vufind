@@ -47,17 +47,20 @@ class Autowire
     /**
      * Constructor.
      *
-     * Use only one of the following parameters.
-     *
-     * @param string $config  Configuration to inject (as an array)
-     * @param string $service Service to inject
+     * @param string $config    Configuration to inject as an array (mutually exclusive with $service)
+     * @param string $service   Service to inject (mutually exclusive with $config)
+     * @param string $container Container or plugin manager to use to get the service
      */
     public function __construct(
         public readonly ?string $config = null,
         public readonly ?string $service = null,
+        public readonly ?string $container = null,
     ) {
         if (null !== $config && null !== $service) {
             throw new LogicException('#[Autowire] attribute cannot contain both config and service.');
+        }
+        if (null !== $container && null === $service) {
+            throw new LogicException('#[Autowire] attribute cannot contain container without a service.');
         }
     }
 }

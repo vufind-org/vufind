@@ -71,6 +71,10 @@ class AutowiringFactory implements FactoryInterface
         $requestedName,
         ?array $options = null
     ) {
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options passed to factory.');
+        }
+
         $reflectionClass = new ReflectionClass($requestedName);
 
         // Just create the object if there is no constructor:
@@ -92,9 +96,7 @@ class AutowiringFactory implements FactoryInterface
             if ($config = $autowireArgs['config'] ?? null) {
                 $params[] = $this->getConfigArray($container, $config);
             } else {
-                $params[] = $container->get(
-                    $autowireArgs['service'] ?? $this->resolveServiceName($container, $reflectionParameter)
-                );
+                $params[] = $this->resolveService($container, $autowireArgs, $reflectionParameter);
             }
         }
         return new $requestedName(...$params);
@@ -115,24 +117,32 @@ class AutowiringFactory implements FactoryInterface
     }
 
     /**
-     * Resolve service name for a constructor parameter.
+     * Resolve service for a constructor parameter.
      *
      * @param ContainerInterface  $container           Service container
+     * @param ?array              $autowireArgs        Autowire attribute arguments
      * @param ReflectionParameter $reflectionParameter Parameter
      *
-     * @return string
+     * @return mixed
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function resolveServiceName(
+    protected function resolveService(
         ContainerInterface $container,
+        ?array $autowireArgs,
         ReflectionParameter $reflectionParameter
-    ): string {
+    ) {
+        if ($service = $autowireArgs['service'] ?? null) {
+            return $service;
+        }
         $type = $reflectionParameter->getType();
         $name = $type->getName();
         if (null === $name || !($type instanceof ReflectionNamedType)) {
             throw new LogicException('Unable to resolve type of parameter ' . $reflectionParameter->getName());
         }
-        return $name;
+        $containerToUse = ($containerName = $autowireArgs['container'] ?? null)
+            ? $container->get($containerName)
+            : $container;
+        return $containerToUse->get((string)$name);
     }
 }
