@@ -535,7 +535,7 @@ function recordDocReady() {
           }
           ajaxLoadTab(newTab, tabId, !li.classList.contains('initiallyActive'));
         }
-      }
+      };
       tab.addEventListener('click', tabEventHandler);
       tab.addEventListener('focus', tabEventHandler);
     });
