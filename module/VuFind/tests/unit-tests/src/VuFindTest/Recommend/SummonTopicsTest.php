@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -60,12 +60,12 @@ class SummonTopicsTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $results->expects($this->once())->method('getParams')
-            ->will($this->returnValue($parms));
+            ->willReturn($parms);
         $parms->expects($this->once())->method('getSearchClassId')
-            ->will($this->returnValue('Summon'));
+            ->willReturn('Summon');
         $obj->process($results);
         $results->expects($this->once())->method('getTopicRecommendations')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
         $this->assertFalse($obj->getResults());
     }
 
@@ -82,14 +82,14 @@ class SummonTopicsTest extends \PHPUnit\Framework\TestCase
         $request = $this->getMockBuilder(\Laminas\Stdlib\Parameters::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $options = $this->getMockBuilder(\VuFind\Search\Base\Options::class)
+        $options = $this->getMockBuilder(\VuFind\Search\Summon\Options::class)
             ->disableOriginalConstructor()
-            ->addMethods(['setMaxTopicRecommendations'])
-            ->getMockForAbstractClass();
+            ->onlyMethods(['getSearchAction', 'setMaxTopicRecommendations'])
+            ->getMock();
         $parms->expects($this->once())->method('getSearchClassId')
-            ->will($this->returnValue('Summon'));
+            ->willReturn('Summon');
         $parms->expects($this->once())->method('getOptions')
-            ->will($this->returnValue($options));
+            ->willReturn($options);
         $options->expects($this->once())->method('setMaxTopicRecommendations')
             ->with($this->equalTo(1));
         $pm = $this->getMockBuilder(\VuFind\Search\Results\PluginManager::class)
@@ -120,15 +120,15 @@ class SummonTopicsTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $results->expects($this->once())->method('getParams')
-            ->will($this->returnValue($parms));
+            ->willReturn($parms);
         $parms->expects($this->once())->method('setBasicSearch')
             ->with($this->anything(), $this->equalTo('AllFields'));
-        $options = $this->getMockBuilder(\VuFind\Search\Base\Options::class)
+        $options = $this->getMockBuilder(\VuFind\Search\Summon\Options::class)
             ->disableOriginalConstructor()
-            ->addMethods(['setMaxTopicRecommendations'])
-            ->getMockForAbstractClass();
+            ->onlyMethods(['getSearchAction', 'setMaxTopicRecommendations'])
+            ->getMock();
         $results->expects($this->once())->method('getOptions')
-            ->will($this->returnValue($options));
+            ->willReturn($options);
         $options->expects($this->once())->method('setMaxTopicRecommendations')
             ->with($this->equalTo(1));
         $this->assertNull($method->invokeArgs($obj, [$results]));

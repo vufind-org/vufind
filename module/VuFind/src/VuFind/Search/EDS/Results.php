@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  EBSCO
@@ -130,5 +130,35 @@ class Results extends \VuFind\Search\Base\Results
             $this->performAndProcessSearch();
         }
         return $this->buildFacetList($this->responseFacets, $filter);
+    }
+
+    /**
+     * Get an array of the record ID mapped to its score.
+     *
+     * @return array
+     */
+    public function getScores()
+    {
+        $scoreMap = [];
+        foreach ($this->results as $record) {
+            $scoreMap[$record->getUniqueId()] = $record->getScore();
+        }
+        return $scoreMap;
+    }
+
+    /**
+     * Getting the highest relevance of all the results
+     *
+     * @return ?float
+     */
+    public function getMaxScore()
+    {
+        if (
+            empty($this->results) ||
+            'relevance' != $this->getParams()->getSort()
+        ) {
+            return null;
+        }
+        return $this->results[0]->getScore();
     }
 }

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -42,7 +42,6 @@ namespace VuFindTest\Auth;
  */
 final class ILSTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
     use \VuFindTest\Feature\LiveDatabaseTrait;
     use \VuFindTest\Feature\LiveDetectionTrait;
 
@@ -68,6 +67,16 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
             $this->markTestSkipped('Continuous integration not running.');
             return;
         }
+    }
+
+    /**
+     * Standard teardown method.
+     *
+     * @return void
+     */
+    public function tearDown(): void
+    {
+        $this->tearDownLiveDatabaseContainer();
     }
 
     /**
@@ -105,7 +114,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
             new \VuFindTest\Container\MockContainer($this)
         );
         $driverManager->setService('Sample', $driver);
-        $mockConfigReader = $this->getMockConfigPluginManager([]);
+        $mockConfigReader = $this->getMockConfigManager();
         $auth = new \VuFind\Auth\ILS(
             new \VuFind\ILS\Connection(
                 new \VuFind\Config\Config(['driver' => 'Sample']),
@@ -188,7 +197,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
         $driver = $this->getMockDriver();
         $driver->expects($this->once())->method('patronLogin')
             ->with($this->equalTo('testuser'), $this->equalTo('testpass'))
-            ->will($this->returnValue($response));
+            ->willReturn($response);
         $this->getAuth($driver)->authenticate($this->getLoginRequest());
     }
 
@@ -206,7 +215,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
         $driver = $this->getMockDriver();
         $driver->expects($this->once())->method('patronLogin')
             ->with($this->equalTo('testuser'), $this->equalTo('testpass'))
-            ->will($this->returnValue($response));
+            ->willReturn($response);
         $user = $this->getAuth($driver)->authenticate($this->getLoginRequest());
         $this->assertEquals('testuser', $user->getUsername());
         $this->assertEquals('user@test.com', $user->getEmail());
@@ -229,7 +238,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
         $driver = $this->getMockDriver();
         $driver->expects($this->once())->method('patronLogin')
             ->with($this->equalTo('testuser'), $this->equalTo('testpass'))
-            ->will($this->returnValue($response));
+            ->willReturn($response);
         $auth = $this->getAuth($driver);
         // Configure the authenticator to look for a cat_id; since there is no
         // cat_id in the response above, this will throw an exception.
@@ -316,7 +325,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
         );
         $driver = $this->getMockDriver('Demo', ['changePassword']);
         $driver->expects($this->once())->method('changePassword')
-            ->will($this->returnValue(['success' => true]));
+            ->willReturn(['success' => true]);
         $patron = ['cat_username' => 'testuser'];
         $user = $this->getAuth($driver, $patron)->updatePassword($request);
         $this->assertEquals('testuser', $user->getUsername());
@@ -339,7 +348,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
         );
         $driver = $this->getMockDriver('Demo', ['changePassword']);
         $driver->expects($this->once())->method('changePassword')
-            ->will($this->returnValue(['success' => true]));
+            ->willReturn(['success' => true]);
         $patron = ['cat_username' => 'testuser', 'cat_id' => '1234'];
         $auth = $this->getAuth($driver, $patron);
         $config = ['Authentication' => ['ILS_username_field' => 'cat_id']];

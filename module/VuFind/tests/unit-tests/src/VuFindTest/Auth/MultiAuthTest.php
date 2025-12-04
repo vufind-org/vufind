@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -55,7 +55,7 @@ class MultiAuthTest extends \PHPUnit\Framework\TestCase
     public function getAuthObject(?array $config = null): MultiAuth
     {
         $container = new \VuFindTest\Container\MockContainer($this);
-        $container->set(\VuFind\Log\Logger::class, $this->createMock(\Laminas\Log\LoggerInterface::class));
+        $container->set(\VuFind\Log\Logger::class, $this->createMock(\Psr\Log\LoggerInterface::class));
         $manager = new \VuFind\Auth\PluginManager($container);
         $obj = $manager->get('MultiAuth');
         $obj->setPluginManager($manager);

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -60,7 +60,7 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
     protected function setupConfig($config)
     {
         $this->container->set(
-            \VuFind\Config\ConfigManager::class,
+            \VuFind\Config\ConfigManagerInterface::class,
             $this->getMockConfigManager(compact('config'))
         );
     }
@@ -208,10 +208,9 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
      * @param bool   $newWindow  Expected "new window" setting
      * @param string $remoteIcon Expected icon value
      *
-     * @dataProvider getTestSingleLookupData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestSingleLookupData')]
     public function testSingleLookup(
         array $config,
         bool $newWindow,

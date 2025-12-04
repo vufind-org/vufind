@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -50,7 +50,7 @@ class ProQuestFSGBackendFactory extends AbstractBackendFactory
     /**
      * Logger.
      *
-     * @var \Laminas\Log\LoggerInterface
+     * @var \Psr\Log\LoggerInterface
      */
     protected $logger;
 
@@ -82,7 +82,7 @@ class ProQuestFSGBackendFactory extends AbstractBackendFactory
     public function __invoke(ContainerInterface $sm, $name, ?array $options = null)
     {
         $this->setup($sm);
-        $configManager = $this->getService(\VuFind\Config\ConfigManager::class);
+        $configManager = $this->getService(\VuFind\Config\ConfigManagerInterface::class);
         $this->config = $configManager->getConfigObject('config');
         $this->proQuestFSGConfig = $configManager->getConfigObject('ProQuestFSG');
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {

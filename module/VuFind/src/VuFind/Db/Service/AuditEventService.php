@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -32,6 +32,7 @@ namespace VuFind\Db\Service;
 use DateTime;
 use Doctrine\ORM\EntityManager;
 use VuFind\Db\Entity\AuditEventEntityInterface;
+use VuFind\Db\Entity\PaymentEntityInterface;
 use VuFind\Db\Entity\PluginManager as EntityPluginManager;
 use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Db\PersistenceManager;
@@ -65,17 +66,20 @@ class AuditEventService extends AbstractDbService implements
      * @param ?string             $clientIp            Client IP address (if applicable)
      * @param ?string             $serverIp            Server IP address (if applicable)
      * @param ?string             $serverName          Server name (if applicable)
+     * @param ?string             $requestUri          Request URI (if applicable)
      */
     public function __construct(
-        protected EntityManager $entityManager,
-        protected EntityPluginManager $entityPluginManager,
-        protected PersistenceManager $persistenceManager,
+        EntityManager $entityManager,
+        EntityPluginManager $entityPluginManager,
+        PersistenceManager $persistenceManager,
         protected array $enabledEventTypes,
         protected ?string $sessionId,
         protected ?string $clientIp,
         protected ?string $serverIp,
-        protected ?string $serverName
+        protected ?string $serverName,
+        protected ?string $requestUri
     ) {
+        parent::__construct($entityManager, $entityPluginManager, $persistenceManager);
     }
 
     /**
@@ -122,7 +126,51 @@ class AuditEventService extends AbstractDbService implements
             ->setServerIp($this->serverIp)
             ->setServerName($this->serverName)
             ->setMessage($message)
-            ->setData(json_encode($data));
+            ->setData($data);
+        // Persist and forget about this entity (this ensures that the user could be deleted without it causing issues
+        // with tracked event entities):
+        $this->persistEntity($event);
+        $this->detachEntity($event);
+    }
+
+    /**
+     * Add a payment event.
+     *
+     * @param PaymentEntityInterface   $payment             Payment
+     * @param AuditEventSubtype|string $subtype             Event subtype
+     * @param string                   $message             Status message
+     * @param array                    $data                Additional data
+     * @param int                      $intermediateMethods Number of intermediate methods between the actual method
+     * adding the event and this method
+     *
+     * @return void
+     */
+    public function addPaymentEvent(
+        PaymentEntityInterface $payment,
+        AuditEventSubtype|string $subtype,
+        string $message = '',
+        array $data = [],
+        int $intermediateMethods = 0
+    ): void {
+        $type = AuditEventType::Payment->value;
+        if (!in_array($type, $this->enabledEventTypes)) {
+            return;
+        }
+        $data = $this->scrubSecrets($data);
+        $data['__method'] = $this->getCallerOfParentMethod($intermediateMethods);
+        $data['__request_uri'] = $this->requestUri;
+        $event = $this->createEntity();
+        $event
+            ->setType($type)
+            ->setSubtype($subtype)
+            ->setUser($payment->getUser())
+            ->setPayment($payment)
+            ->setSessionId($this->sessionId)
+            ->setClientIp($this->clientIp)
+            ->setServerIp($this->serverIp)
+            ->setServerName($this->serverName)
+            ->setMessage($message)
+            ->setData($data);
         $this->persistEntity($event);
     }
 
@@ -138,7 +186,8 @@ class AuditEventService extends AbstractDbService implements
      * @param ?string                       $clientIp   Client's IP address
      * @param ?string                       $serverIp   Server's IP address
      * @param ?string                       $serverName Server's host name
-     * @param array                         $sort       Sort order
+     * @param ?PaymentEntityInterface       $payment    Payment entity
+     * @param ?array                        $sort       Sort order (null for default descending order)
      *
      * @return AuditEventEntityInterface[]
      */
@@ -152,9 +201,13 @@ class AuditEventService extends AbstractDbService implements
         ?string $clientIp = null,
         ?string $serverIp = null,
         ?string $serverName = null,
-        array $sort = ['date DESC']
+        ?PaymentEntityInterface $payment = null,
+        ?array $sort = null,
     ): array {
         $user = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
+        if (null === $sort) {
+            $sort = ['date DESC', 'id DESC'];
+        }
 
         $dql = 'SELECT e FROM ' . AuditEventEntityInterface::class . ' e';
         $conditions = [];
@@ -196,6 +249,10 @@ class AuditEventService extends AbstractDbService implements
         if (null !== $serverName) {
             $conditions[] = 'e.serverName = :serverName';
             $params['serverName'] = $serverName;
+        }
+        if (null !== $payment) {
+            $conditions[] = 'e.payment = :payment';
+            $params['payment'] = $payment->getId();
         }
 
         if ($conditions) {
@@ -255,12 +312,16 @@ class AuditEventService extends AbstractDbService implements
     /**
      * Get the method that called the parent method here.
      *
+     * @param int $intermediateMethods Number of intermediate methods between the actual method adding the event and the
+     * parent method (used for determining the caller name)
+     *
      * @return string
      */
-    protected function getCallerOfParentMethod(): string
+    protected function getCallerOfParentMethod(int $intermediateMethods = 0): string
     {
-        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3);
-        $methodParts = [$backtrace[2]['class'] ?? '', $backtrace[2]['function'] ?? ''];
+        $backtrace = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 3 + $intermediateMethods);
+        $caller = $backtrace[2 + $intermediateMethods];
+        $methodParts = [$caller['class'] ?? '', $caller['function'] ?? ''];
         return implode('::', array_filter($methodParts));
     }
 
@@ -275,7 +336,7 @@ class AuditEventService extends AbstractDbService implements
     {
         array_walk_recursive(
             $details,
-            function (&$value, $key) {
+            function (&$value, $key): void {
                 if ('csrf' === $key || str_contains($key, 'password')) {
                     $value = '***';
                 }

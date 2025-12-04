@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -31,9 +31,9 @@
 
 namespace VuFind\ILS\Driver;
 
-use Laminas\Log\LoggerAwareInterface;
 use PDO;
 use PDOException;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 use VuFindHttp\HttpServiceAwareInterface;
@@ -959,11 +959,9 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
 
             $duedate_formatted = $this->displayDate($duedate);
 
-            if ($rowItem['HLDBRNCH'] == null && $rowItem['HOMEBRANCH'] == null) {
-                $loc = 'Unknown';
-            } else {
-                $loc = $rowItem['LOCATION'];
-            }
+            $loc = $rowItem['HLDBRNCH'] == null && $rowItem['HOMEBRANCH'] == null
+                ? 'Unknown'
+                : $rowItem['LOCATION'];
 
             if ($this->showHomebranch) {
                 $branch = $rowItem['HOMEBRANCH'] ?? $rowItem['HLDBRNCH'] ?? '';
@@ -989,13 +987,6 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
                 ($rowItem['TRANSFERFROM'] != null)
                 && ($rowItem['TRANSFERTO'] != null)
             ) {
-                $branchSqlStmt->execute([':branch' => $rowItem['TRANSFERFROM']]);
-                $rowFrom = $branchSqlStmt->fetch();
-                $transferfrom = $rowFrom
-                    ? $rowFrom['BNAME'] : $rowItem['TRANSFERFROM'];
-                $branchSqlStmt->execute([':branch' => $rowItem['TRANSFERTO']]);
-                $rowTo = $branchSqlStmt->fetch();
-                $transferto = $rowTo ? $rowTo['BNAME'] : $rowItem['TRANSFERTO'];
                 $status = 'In transit between library locations';
                 $available = false;
                 $onTransfer = true;
@@ -1921,11 +1912,11 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      */
     public function patronLogin($username, $password)
     {
-        $request = 'LookupPatron' . '&id=' . urlencode($username)
+        $request = 'LookupPatron&id=' . urlencode($username)
             . '&id_type=userid';
 
         if ($this->validatePasswords) {
-            $request = 'AuthenticatePatron' . '&username='
+            $request = 'AuthenticatePatron&username='
                 . urlencode($username) . '&password=' . $password;
         }
 

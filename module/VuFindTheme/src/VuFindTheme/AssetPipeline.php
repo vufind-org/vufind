@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Theme
@@ -30,9 +30,9 @@
 namespace VuFindTheme;
 
 use Exception;
-use Laminas\Log\LoggerAwareInterface;
 use Laminas\View\Helper\Url;
 use MatthiasMullie\Minify\Minify;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Log\LoggerAwareTrait;
 use VuFindTheme\View\Helper\RelativePathTrait;
 
@@ -111,7 +111,7 @@ class AssetPipeline implements LoggerAwareInterface
     protected function isPipelineEnabledForType(string $fileType): bool
     {
         $config = $this->pipelineConfig;
-        if ($config === false || $config === 'off' || $config === 'false' || $config === '0') {
+        if (in_array($config, [false, 'off', 'false', '0'], true)) {
             return false;
         }
         if ($config == '*' || $config === 'on' || $config === 'true' || $config === true || $config === '1') {

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -54,7 +54,7 @@ use function is_callable;
  */
 class Alma extends AbstractBase implements
     \VuFindHttp\HttpServiceAwareInterface,
-    \Laminas\Log\LoggerAwareInterface,
+    \Psr\Log\LoggerAwareInterface,
     TranslatorAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
@@ -505,8 +505,7 @@ class Alma extends AbstractBase implements
      *
      * @param array $patron The patron array with username and password
      *
-     * @return array|boolean    An array of block messages or false if there are no
-     *                          blocks
+     * @return array|bool    An array of block messages or false if there are no blocks
      * @author Michael Birkner
      */
     public function getRequestBlocks($patron)
@@ -519,8 +518,7 @@ class Alma extends AbstractBase implements
      *
      * @param array $patron The patron array with username and password
      *
-     * @return array|boolean    An array of block messages or false if there are no
-     *                          blocks
+     * @return array|bool    An array of block messages or false if there are no blocks
      * @author Michael Birkner
      */
     public function getAccountBlocks($patron)
@@ -581,7 +579,7 @@ class Alma extends AbstractBase implements
     protected function getFulfillmentUnitByLocation($locationCode, $fulfillmentUnits)
     {
         foreach ($fulfillmentUnits as $key => $val) {
-            if (array_search($locationCode, $val) !== false) {
+            if (in_array($locationCode, $val)) {
                 return $key;
             }
         }
@@ -1246,9 +1244,7 @@ class Alma extends AbstractBase implements
                 //$loan['volume'] = ;
                 $loan['publication_year'] = (string)$itemLoan->publication_year;
                 $loan['renewable']
-                    = (strtolower((string)$itemLoan->renewable) == 'true')
-                    ? true
-                    : false;
+                    = strtolower((string)$itemLoan->renewable) == 'true';
                 //$loan['message'] = ;
                 $loan['title'] = (string)$itemLoan->title;
                 $loan['item_id'] = (string)$itemLoan->loan_id;
@@ -1646,8 +1642,8 @@ class Alma extends AbstractBase implements
     /**
      * Parse a date.
      *
-     * @param string  $date     Date to parse
-     * @param boolean $withTime Add time to return if available?
+     * @param string $date     Date to parse
+     * @param bool   $withTime Add time to return if available?
      *
      * @return string
      */
@@ -2014,13 +2010,25 @@ class Alma extends AbstractBase implements
     /**
      * Get list of funds
      *
-     * @return array with key = course ID, value = course name
+     * @return array with key = fund ID, value = fund name
      */
     public function getFunds()
     {
-        // TODO: implement me!
         // https://developers.exlibrisgroup.com/alma/apis/acq
         // GET /almaws/v1/acq/funds
-        return [];
+        try {
+            $xml = $this->makeRequest('/acq/funds');
+        } catch (ILSException $e) {
+            // API key not defined or not configured to allow this API.
+            // Required permission: Acquisition Read.
+            $xml = [];
+        }
+        $result = [];
+        foreach ($xml->fund ?? [] as $fund) {
+            $fundId = (string)$fund->id;
+            $fundName = (string)$fund->name;
+            $result[$fundId] = $fundName;
+        }
+        return $result;
     }
 }

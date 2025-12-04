@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Db
@@ -32,9 +32,10 @@ namespace VuFind\Db;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Exception as DBALException;
 use Exception;
+use VuFind\Config\Version;
+use VuFind\Db\Migration\MigrationLoader;
 
 use function in_array;
-use function strlen;
 
 /**
  * Database builder (for creating the database required by the system).
@@ -50,11 +51,12 @@ class DbBuilder
     /**
      * Constructor
      *
-     * @param ConnectionFactory $dbFactory Database connection factory
+     * @param ConnectionFactory $dbFactory       Database connection factory
+     * @param MigrationLoader   $migrationLoader Migration file loader
      *
      * @return void
      */
-    public function __construct(protected ConnectionFactory $dbFactory)
+    public function __construct(protected ConnectionFactory $dbFactory, protected MigrationLoader $migrationLoader)
     {
     }
 
@@ -110,16 +112,37 @@ class DbBuilder
      */
     protected function getPostCommands(string $driver, string $newUser): array
     {
-        // Special case: PostgreSQL:
+        $postCommands = [];
+        // Special case: PostgreSQL requires extra steps:
         if ($driver == 'pgsql') {
             $grantTables = 'GRANT ALL PRIVILEGES ON ALL TABLES IN '
                 . "SCHEMA public TO {$newUser}";
             $grantSequences = 'GRANT ALL PRIVILEGES ON ALL SEQUENCES'
                 . " IN SCHEMA public TO {$newUser}";
-            return [$grantTables, $grantSequences];
+            $postCommands = [$grantTables, $grantSequences];
         }
-        // Default: MySQL:
-        return [];
+        // Default: track setup state for future migrations.
+        // Version should always consist of digits and dots, but strip out anything
+        // unexpected just to be on the safe side -- don't want any weird SQL injection.
+        $version = Version::getBuildVersion();
+        $safeVersion = preg_replace('/[^\d.]/', '', $version);
+        $filename = $driver === 'pgsql' ? 'pgsql' : 'mysql';
+        $postCommands[] = 'INSERT INTO migrations(name, status, target_version) VALUES '
+            . "('{$filename}.sql', 'success', '$safeVersion')";
+        // Let's also treat any migrations for the current version as applied. Since we only
+        // change the version number when we make an actual release, users tracking the "bleeding
+        // edge" dev branch may apply SOME migrations for a release before ALL migrations have
+        // been created. This helps ensure that nothing gets missed or repeated.
+        $migrationDir = $this->migrationLoader->getMigrationDirForPlatform($driver);
+        $dirs = $this->migrationLoader->getMigrationSubdirectoriesMatchingVersion($version, $migrationDir);
+        foreach ($dirs as $dir) {
+            foreach ($this->migrationLoader->getMigrationsFromDir($dir) as $migration) {
+                $shortMigration = str_replace("$migrationDir/", '', $migration);
+                $postCommands[] = 'INSERT INTO migrations(name, status, target_version) VALUES '
+                    . "('{$shortMigration}', 'success', '$safeVersion')";
+            }
+        }
+        return $postCommands;
     }
 
     /**
@@ -145,6 +168,7 @@ class DbBuilder
      * @param string  $dbHost   Name of database host
      * @param string  $rootUser Root username for connecting to database
      * @param string  $rootPass Root password for connecting to database
+     * @param ?string $dbPort   Port for the database host
      * @param ?string $dbName   Database to connect to (null = default)
      *
      * @return Connection
@@ -155,6 +179,7 @@ class DbBuilder
         string $dbHost,
         string $rootUser,
         string $rootPass,
+        ?string $dbPort = null,
         ?string $dbName = null
     ): Connection {
         // We need a default database name to use to establish a connection:
@@ -163,6 +188,7 @@ class DbBuilder
             [
                 'driver' => $this->dbFactory->getDriverName($driver),
                 'host' => $dbHost,
+                'port' => $dbPort,
                 'user' => $rootUser,
                 'password' => $rootPass,
                 'dbname' => $dbName,
@@ -177,7 +203,7 @@ class DbBuilder
      * @param string   $newUser       Username for connecting to new database (will be created)
      * @param string   $newPass       Password for new user
      * @param string   $driver        Database driver to use
-     * @param string   $dbHost        Name of database host
+     * @param string   $dbHost        Name of database host (may include port number, e.g. localhost:3306)
      * @param string   $vufindHost    Name of VuFind host (for use in creating users)
      * @param string   $rootUser      Root username for connecting to database
      * @param string   $rootPass      Root password for connecting to database
@@ -200,14 +226,26 @@ class DbBuilder
         bool $returnSqlOnly = false,
         array $steps = []
     ): string {
+        // Account for possibility of port number attached to host:
+        [$dbHost, $dbPort] = str_contains($dbHost, ':')
+            ? explode(':', $dbHost)
+            : [$dbHost, null];
         try {
-            $db = $returnSqlOnly ? null : $this->getRootDatabaseConnection($driver, $dbHost, $rootUser, $rootPass);
+            $db = $returnSqlOnly
+                ? null
+                : $this->getRootDatabaseConnection(
+                    $driver,
+                    $dbHost,
+                    $rootUser,
+                    $rootPass,
+                    $dbPort
+                );
         } catch (\Exception $e) {
             throw new \Exception(
                 'Problem initializing database adapter; '
                 . 'check for missing ' . $driver
                 . ' library. Details: ' . $e->getMessage(),
-                'error',
+                $e->getCode(),
                 $e
             );
         }
@@ -237,13 +275,9 @@ class DbBuilder
             if ($db) {
                 // If we're already connected to the database, we should reconnect now using the name of
                 // the newly created database.
-                $db = $this->getRootDatabaseConnection($driver, $dbHost, $rootUser, $rootPass, $newName);
-                $statements = preg_split('/;\s*([\r\n]|$)/', $sql);
+                $db = $this->getRootDatabaseConnection($driver, $dbHost, $rootUser, $rootPass, $dbPort, $newName);
+                $statements = $this->migrationLoader->splitSqlIntoStatements($sql);
                 foreach ($statements as $current) {
-                    // Skip empty sections:
-                    if (strlen(trim($current)) == 0) {
-                        continue;
-                    }
                     $db->executeQuery($current);
                 }
             }

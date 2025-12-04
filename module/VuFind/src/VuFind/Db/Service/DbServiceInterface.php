@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Marker interface for VuFind database services.
+ * Base interface for VuFind database services.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -29,10 +29,11 @@
 
 namespace VuFind\Db\Service;
 
+use Exception;
 use VuFind\Db\Entity\EntityInterface;
 
 /**
- * Marker interface for VuFind database services.
+ * Base interface for VuFind database services.
  *
  * @category VuFind
  * @package  Database
@@ -50,4 +51,40 @@ interface DbServiceInterface
      * @return void
      */
     public function persistEntity(EntityInterface $entity): void;
+
+    /**
+     * Detach an entity.
+     *
+     * Makes the Entity Manager stop tracking the entity. This can save memory and work, but also helps when the target
+     * entity of this entity with "ON DELETE SET NULL" is going to be deleted.
+     *
+     * @param EntityInterface $entity Entity to detach.
+     *
+     * @return void
+     */
+    public function detachEntity(EntityInterface $entity): void;
+
+    /**
+     * Begin a database transaction.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function beginTransaction(): void;
+
+    /**
+     * Commit a database transaction.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function commitTransaction(): void;
+
+    /**
+     * Roll back a database transaction.
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function rollBackTransaction(): void;
 }

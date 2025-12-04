@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -31,7 +31,6 @@
 namespace VuFind\Db\Service;
 
 use DateTime;
-use Exception;
 use VuFind\Db\Entity\ShortlinksEntityInterface;
 
 /**
@@ -44,43 +43,8 @@ use VuFind\Db\Entity\ShortlinksEntityInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:database_gateways Wiki
  */
-class ShortlinksService extends AbstractDbService implements
-    ShortlinksServiceInterface,
-    Feature\TransactionInterface
+class ShortlinksService extends AbstractDbService implements ShortlinksServiceInterface
 {
-    /**
-     * Begin a database transaction.
-     *
-     * @return void
-     * @throws Exception
-     */
-    public function beginTransaction(): void
-    {
-        $this->entityManager->getConnection()->beginTransaction();
-    }
-
-    /**
-     * Commit a database transaction.
-     *
-     * @return void
-     * @throws Exception
-     */
-    public function commitTransaction(): void
-    {
-        $this->entityManager->getConnection()->commit();
-    }
-
-    /**
-     * Roll back a database transaction.
-     *
-     * @return void
-     * @throws Exception
-     */
-    public function rollBackTransaction(): void
-    {
-        $this->entityManager->getConnection()->rollBack();
-    }
-
     /**
      * Create a short link entity.
      *

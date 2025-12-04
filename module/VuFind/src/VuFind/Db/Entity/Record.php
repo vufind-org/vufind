@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -34,7 +34,7 @@ use Doctrine\ORM\Mapping as ORM;
 use VuFind\Db\Feature\DateTimeTrait;
 
 /**
- * Record
+ * Entity model for record table
  *
  * @category VuFind
  * @package  Database
@@ -221,7 +221,8 @@ class Record implements RecordEntityInterface
      */
     public function getUpdated(): DateTime
     {
-        return $this->updated;
+        // Return to a clone to avoid indirect modification of the entity:
+        return $this->getDateTimeClone($this->updated);
     }
 
     /**

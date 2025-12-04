@@ -21,8 +21,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -172,7 +172,11 @@ trait ClassBasedTemplateRendererTrait
     protected function getBriefClass($className)
     {
         $classParts = explode('\\', $className);
-        return array_pop($classParts);
+        $className = array_pop($classParts);
+        // In case this is an anonymous class, we may need to strip off a suffix
+        // (needed, for example, for RecordDataFormatterTest):
+        $classNameParts = explode('@', $className);
+        return $classNameParts[0];
     }
 
     /**

@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -115,7 +115,7 @@ class LuceneSyntaxHelper
         $lookahead = self::$insideQuotes;
         $boolReg = '/((\s+(AND|OR|NOT)\s+)|^NOT\s+)' . $lookahead . '/';
         $checkString = $this->capitalizeCaseInsensitiveBooleans($searchString);
-        return preg_match($boolReg, $checkString) ? true : false;
+        return (bool)preg_match($boolReg, $checkString);
     }
 
     /**
@@ -131,7 +131,7 @@ class LuceneSyntaxHelper
         if (!$this->caseSensitiveRanges) {
             $rangeReg .= 'i';
         }
-        return preg_match($rangeReg, $searchString) ? true : false;
+        return (bool)preg_match($rangeReg, $searchString);
     }
 
     /**
@@ -174,13 +174,8 @@ class LuceneSyntaxHelper
         ) {
             return true;
         }
-
         // Check for boosts:
-        if (preg_match('/[\^][0-9]+/', $searchString)) {
-            return true;
-        }
-
-        return false;
+        return (bool)preg_match('/[\^][0-9]+/', $searchString);
     }
 
     /**
@@ -304,7 +299,7 @@ class LuceneSyntaxHelper
                 &$result,
                 &$collected,
                 &$discardParens
-            ) {
+            ): void {
                 if (!$quoted) {
                     // Discard closing parenthesis for previously discarded opening
                     // ones to keep balance
@@ -606,17 +601,9 @@ class LuceneSyntaxHelper
      */
     protected function getBoolsToCap()
     {
-        if (
-            $this->caseSensitiveBooleans === false
-            || $this->caseSensitiveBooleans === 0
-            || $this->caseSensitiveBooleans === '0'
-        ) {
+        if (in_array($this->caseSensitiveBooleans, [false, 0, '0'], true)) {
             return $this->allBools;
-        } elseif (
-            $this->caseSensitiveBooleans === true
-            || $this->caseSensitiveBooleans === 1
-            || $this->caseSensitiveBooleans === '1'
-        ) {
+        } elseif (in_array($this->caseSensitiveBooleans, [true, 1, '1'], true)) {
             return [];
         }
 
@@ -691,7 +678,7 @@ class LuceneSyntaxHelper
     {
         $count = 0;
         $this->processQueryString(
-            function (string $ch, bool $quoted, bool $esc) use ($needle, &$count) {
+            function (string $ch, bool $quoted, bool $esc) use ($needle, &$count): void {
                 if (!$quoted && !$esc && $ch === $needle) {
                     ++$count;
                 }
@@ -714,7 +701,7 @@ class LuceneSyntaxHelper
     {
         $result = '';
         $this->processQueryString(
-            function (string $ch, bool $quoted, bool $esc) use ($needles, &$result) {
+            function (string $ch, bool $quoted, bool $esc) use ($needles, &$result): void {
                 if ($quoted || $esc || !in_array($ch, $needles)) {
                     $result .= $ch;
                 }

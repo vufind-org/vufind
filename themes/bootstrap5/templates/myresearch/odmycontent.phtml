@@ -171,46 +171,44 @@
                 <?php endif; ?>
 
                 <div class="float-end">
-                  <div class="btn-group">
-                    <button class="btn btn-primary "
-                            type="button" id="dropdownMenu1"
-                            data-bs-toggle="dropdown"
-                            aria-haspopup="true" aria-expanded="true">
-                                <?=$this->transEsc('od_but_edit_hold')?> <span class="caret"></span>
-                    </button>
-                    <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
-                      <li><a class="cancelhold"
-                            data-lightbox title="<?=$this->transEsc('request_place_text')?>"
-                            href="<?="$hold_url?od_id=" . urlencode($od_id) . '&rec_id=' . urlencode($rec_id) . '&action=cancelHoldConfirm'?>">
-                              <i class="fa fa-minus-circle" aria-hidden="true"></i>
-                              <?=$this->transEsc('od_but_cancel_hold')?></a>
-                      </li>
+                  <button class="btn btn-primary "
+                          type="button" id="dropdownMenu1"
+                          data-bs-toggle="dropdown"
+                          aria-haspopup="true" aria-expanded="true">
+                              <?=$this->transEsc('od_but_edit_hold')?> <?=$this->icon('dropdown-caret')?>
+                  </button>
+                  <ul class="dropdown-menu" aria-labelledby="dropdownMenu1">
+                    <li><a class="cancelhold"
+                          data-lightbox title="<?=$this->transEsc('request_place_text')?>"
+                          href="<?="$hold_url?od_id=" . urlencode($od_id) . '&rec_id=' . urlencode($rec_id) . '&action=cancelHoldConfirm'?>">
+                            <i class="fa fa-minus-circle" aria-hidden="true"></i>
+                            <?=$this->transEsc('od_but_cancel_hold')?></a>
+                    </li>
 
-                      <li><a class="editEmail"
-                            data-lightbox title="{$this->transEsc('edit_hold_email')}"
-                            href="<?="$hold_url?od_id=" . urlencode($od_id) . '&rec_id=' . urlencode($rec_id) . '&action=editHoldEmailConfirm'?>">
-                              <i class="fa fa-edit" aria-hidden="true"></i>
-                              <?=$this->transEsc('od_edit_hold_email')?></a>
-                      </li>
+                    <li><a class="editEmail"
+                          data-lightbox title="{$this->transEsc('edit_hold_email')}"
+                          href="<?="$hold_url?od_id=" . urlencode($od_id) . '&rec_id=' . urlencode($rec_id) . '&action=editHoldEmailConfirm'?>">
+                            <i class="fa fa-edit" aria-hidden="true"></i>
+                            <?=$this->transEsc('od_edit_hold_email')?></a>
+                    </li>
 
-                      <?php //user already has a hold suspension.  allow them to edit the suspension
-                      if (isset($resource['hold']->holdSuspension)): ?>
-                      <li><a class="edithold"
-                            data-lightbox title="<?=$this->transEsc('od_susp_hold_edit')?>"
-                              href="<?="$hold_url?od_id=" . urlencode($od_id) . '&rec_id=' . urlencode($rec_id) . '&action=editHoldConfirm'?>">
-                                <i class="fa fa-calendar" aria-hidden="true"></i>
-                                <?=$this->transEsc('od_but_edit_hold')?></a>
-                      </li>
-                      <?php else: ?>
-                      <li><a class="susphold"
-                            data-lightbox title="<?=$this->transEsc('suspend_hold')?>"
-                              href="<?="$hold_url?od_id=" . urlencode($od_id) . '&rec_id=' . urlencode($rec_id) . '&action=suspHoldConfirm'?>">
-                                <i class="fa fa-flag" aria-hidden="true"></i>
-                                <?=$this->transEsc('od_but_susp_hold')?></a>
-                      </li>
-                      <?php endif; ?>
-                    </ul>
-                  </div>
+                    <?php //user already has a hold suspension.  allow them to edit the suspension
+                    if (isset($resource['hold']->holdSuspension)): ?>
+                    <li><a class="edithold"
+                          data-lightbox title="<?=$this->transEsc('od_susp_hold_edit')?>"
+                            href="<?="$hold_url?od_id=" . urlencode($od_id) . '&rec_id=' . urlencode($rec_id) . '&action=editHoldConfirm'?>">
+                              <i class="fa fa-calendar" aria-hidden="true"></i>
+                              <?=$this->transEsc('od_but_edit_hold')?></a>
+                    </li>
+                    <?php else: ?>
+                    <li><a class="susphold"
+                          data-lightbox title="<?=$this->transEsc('suspend_hold')?>"
+                            href="<?="$hold_url?od_id=" . urlencode($od_id) . '&rec_id=' . urlencode($rec_id) . '&action=suspHoldConfirm'?>">
+                              <i class="fa fa-flag" aria-hidden="true"></i>
+                              <?=$this->transEsc('od_but_susp_hold')?></a>
+                    </li>
+                    <?php endif; ?>
+                  </ul>
                 </div>
               </div>
             </div>

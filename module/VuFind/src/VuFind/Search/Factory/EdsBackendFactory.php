@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -51,7 +51,7 @@ class EdsBackendFactory extends AbstractBackendFactory
     /**
      * Logger.
      *
-     * @var \Laminas\Log\LoggerInterface
+     * @var \Psr\Log\LoggerInterface
      */
     protected $logger = null;
 
@@ -101,7 +101,7 @@ class EdsBackendFactory extends AbstractBackendFactory
     public function __invoke(ContainerInterface $sm, $name, ?array $options = null)
     {
         $this->setup($sm);
-        $this->edsConfig = $this->getService(\VuFind\Config\ConfigManager::class)
+        $this->edsConfig = $this->getService(\VuFind\Config\ConfigManagerInterface::class)
             ->getConfigObject($this->getServiceName());
         if ($this->serviceLocator->has(\VuFind\Log\Logger::class)) {
             $this->logger = $this->getService(\VuFind\Log\Logger::class);
@@ -121,7 +121,7 @@ class EdsBackendFactory extends AbstractBackendFactory
      */
     protected function createBackend(Connector $connector)
     {
-        $auth = $this->getService(\LmcRbacMvc\Service\AuthorizationService::class);
+        $auth = $this->getService(\Lmc\Rbac\Mvc\Service\AuthorizationService::class);
         $isGuest = !$auth->isGranted('access.EDSExtendedResults');
         $session = new \Laminas\Session\Container(
             'EBSCO',
@@ -178,7 +178,7 @@ class EdsBackendFactory extends AbstractBackendFactory
      */
     protected function createConnectorOptions()
     {
-        $auth = $this->getService(\LmcRbacMvc\Service\AuthorizationService::class);
+        $auth = $this->getService(\Lmc\Rbac\Mvc\Service\AuthorizationService::class);
         $options = [
             'search_http_method' => $this->edsConfig->General->search_http_method
                 ?? 'POST',

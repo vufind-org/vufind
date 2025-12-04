@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -99,11 +99,12 @@ class NewSearchItemsTest extends \PHPUnit\Framework\TestCase
         $rci->expects($this->once())->method('getRecords')
             ->willReturn([$recordDriver]);
         $search->expects($this->once())->method('invoke')
-            ->with($this->callback($this->getCommandChecker([$query, 0, 20, $paramBag])))
+            ->with($this->callback($this->getCommandChecker([$query, 0, 24, $paramBag])))
             ->willReturn($commandObj);
         $expectedResult = [[
             'title' => 'New Items',
             'providerId' => 'foo_ProviderID',
+            'limit' => 24,
             'contents' => [[
                 'title' => 'foo_Title',
                 'source' => 'foo_Identifier',
@@ -168,9 +169,10 @@ class NewSearchItemsTest extends \PHPUnit\Framework\TestCase
         $target = 'Solr'
     ) {
         return function ($command) use ($class, $args, $target) {
-            return $command::class === $class
-                && $command->getArguments() == $args
-                && $command->getTargetIdentifier() === $target;
+            $this->assertSame($class, $command::class);
+            $this->assertEquals($args, $command->getArguments());
+            $this->assertSame($target, $command->getTargetIdentifier());
+            return true;
         };
     }
 

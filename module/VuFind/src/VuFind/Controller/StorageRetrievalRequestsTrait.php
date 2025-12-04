@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -182,8 +182,8 @@ trait StorageRetrievalRequestsTrait
             $defaultPickup = false;
         }
 
-        $config = $this->getConfig();
-        $homeLibrary = ($config->Account->set_home_library ?? true)
+        $config = $this->getConfigArray();
+        $homeLibrary = ($config['Account']['set_home_library'] ?? true)
             ? $this->getUser()->getHomeLibrary() : '';
         // helpText is only for backward compatibility with legacy code:
         $helpText = $helpTextHtml = $checkRequests['helpText'];

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -28,6 +28,8 @@
  */
 
 namespace VuFind\Db\Entity;
+
+use DateTime;
 
 /**
  * Entity model interface for resource table
@@ -80,6 +82,22 @@ interface ResourceEntityInterface extends EntityInterface
     public function getTitle(): string;
 
     /**
+     * Display title setter
+     *
+     * @param string $title Display title of the record.
+     *
+     * @return static
+     */
+    public function setDisplayTitle(string $title): static;
+
+    /**
+     * Display title getter
+     *
+     * @return ?string
+     */
+    public function getDisplayTitle(): ?string;
+
+    /**
      * Author setter
      *
      * @param ?string $author Author of the title.
@@ -89,6 +107,13 @@ interface ResourceEntityInterface extends EntityInterface
     public function setAuthor(?string $author): static;
 
     /**
+     * Author getter
+     *
+     * @return ?string
+     */
+    public function getAuthor(): ?string;
+
+    /**
      * Year setter
      *
      * @param ?int $year Year title is published.
@@ -96,6 +121,13 @@ interface ResourceEntityInterface extends EntityInterface
      * @return static
      */
     public function setYear(?int $year): static;
+
+    /**
+     * Year getter
+     *
+     * @return ?int
+     */
+    public function getYear(): ?int;
 
     /**
      * Source setter
@@ -128,4 +160,20 @@ interface ResourceEntityInterface extends EntityInterface
      * @return ?string
      */
     public function getExtraMetadata(): ?string;
+
+    /**
+     * Set last update date.
+     *
+     * @param DateTime $date Update date
+     *
+     * @return static
+     */
+    public function setUpdated(DateTime $date): static;
+
+    /**
+     * Get last update date.
+     *
+     * @return ?DateTime
+     */
+    public function getUpdated(): ?DateTime;
 }

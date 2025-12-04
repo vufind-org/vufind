@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -31,9 +31,10 @@ namespace VuFind\Db\Entity;
 
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
+use VuFind\Db\Feature\DateTimeTrait;
 
 /**
- * UserResource
+ * Entity model for user_resource table
  *
  * @category VuFind
  * @package  Database
@@ -48,6 +49,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity]
 class UserResource implements UserResourceEntityInterface
 {
+    use DateTimeTrait;
+
     /**
      * Unique ID.
      *
@@ -219,7 +222,8 @@ class UserResource implements UserResourceEntityInterface
      */
     public function getSaved(): DateTime
     {
-        return $this->saved;
+        // Return to a clone to avoid indirect modification of the entity:
+        return $this->getDateTimeClone($this->saved);
     }
 
     /**

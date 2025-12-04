@@ -13,7 +13,8 @@ $modules = [
     'Laminas\Cache\Storage\Adapter\Memory',
     'Laminas\Form',
     'Laminas\Router',
-    'LmcRbacMvc',
+    'Lmc\Rbac',
+    'Lmc\Rbac\Mvc',
     'Laminas\I18n',
     'Laminas\Mvc\I18n',
     'SlmLocale',
@@ -92,6 +93,7 @@ return [
             APPLICATION_PATH . '/module',
             APPLICATION_PATH . '/vendor',
         ],
+        'use_laminas_loader' => false,
     ],
     'service_manager' => [
         'use_defaults' => true,

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -154,9 +154,8 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
      * $record->getAllSubjectHeadings()
      *
      * @return void
-     *
-     * @dataProvider marcSubjectHeadingsSortOptionsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('marcSubjectHeadingsSortOptionsProvider')]
     public function testSubjectHeadingsOrder(?string $marcSubjectHeadingsSortConfig, array $expectedResults): void
     {
         $configArray = [
@@ -304,9 +303,8 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
      * @param array $expectedFormats The expected method output
      *
      * @return void
-     *
-     * @dataProvider getSchemaOrgFormatsArrayProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getSchemaOrgFormatsArrayProvider')]
     public function testGetSchemaOrgFormatsArray(bool $useIls, array $expectedFormats): void
     {
         // Set up record driver:

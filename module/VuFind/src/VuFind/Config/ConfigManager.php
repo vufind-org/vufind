@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Config
@@ -51,7 +51,7 @@ use function strval;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ConfigManager
+class ConfigManager implements ConfigManagerInterface
 {
     use KeyGeneratorTrait;
 
@@ -126,6 +126,24 @@ class ConfigManager
     public function getConfigObject(string $configPath, bool $forceReload = false, bool $useLocalConfig = true): Config
     {
         return new Config($this->getConfigArray($configPath, $forceReload, $useLocalConfig));
+    }
+
+    /**
+     * Get config in PluginManager style.
+     *
+     * @param string $name    Service name of plugin to retrieve.
+     * @param ?array $options Options to use when creating the instance.
+     *
+     * @return mixed
+     *
+     * @deprecated Use getConfigArray, getConfigObject or getConfig instead
+     */
+    public function get($name, ?array $options = null)
+    {
+        return $this->getConfigObject(
+            $name,
+            forceReload: $options['forceReload'] ?? false
+        );
     }
 
     /**

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -211,11 +211,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
         }
         while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
             $prestados = $row['PRESTADO'];
-            if ($row['PRESTADO'] == 0) {
-                $prestados = 'Disponible';
-            } else {
-                $prestados = 'No disponible';
-            }
+            $prestados = $row['PRESTADO'] == 0 ? 'Disponible' : 'No disponible';
         }
         return $prestados;
     }
@@ -245,11 +241,7 @@ class Amicus extends AbstractBase implements TranslatorAwareInterface
         }
         while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
             $diferencia = $row['DIFERENCIA'];
-            if ($diferencia > 50) {
-                $fecha = 'SIN DETERMINAR';
-            } else {
-                $fecha = $row['FECHADEV'];
-            }
+            $fecha = $diferencia > 50 ? 'SIN DETERMINAR' : $row['FECHADEV'];
         }
         return $fecha;
     }

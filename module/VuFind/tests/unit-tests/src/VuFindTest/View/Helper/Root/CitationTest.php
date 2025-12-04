@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -51,7 +51,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
      * @var array
      */
     protected $citations = [
-        // @codingStandardsIgnoreStart
+        // phpcs:disable
         [
             'raw' => [
                 'SecondaryAuthors' => ['Shafer, Kathleen Newton'],
@@ -358,7 +358,7 @@ class CitationTest extends \PHPUnit\Framework\TestCase
             'mla' => 'One, Person. &quot;Test Article.&quot; <i>Test Journal</i>, vol. 1, no. 7, 1999, pp. 19-21, https://doi.org/testDOI.',
             'chicago' => 'One, Person. &quot;Test Article.&quot; <i>Test Journal</i> 1, no. 7 (1999): 19-21. https://doi.org/testDOI.',
         ],
-        // @codingStandardsIgnoreEnd
+        // phpcs:enable
     ];
 
     /**

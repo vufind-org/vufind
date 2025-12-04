@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -71,7 +71,7 @@ class InjectHighlightingListenerTest extends \PHPUnit\Framework\TestCase
     protected function setUp(): void
     {
         $this->backend = $this->createMock(\VuFindSearch\Backend\Solr\Backend::class);
-        $this->backend->expects($this->any())->method('getIdentifier')->will($this->returnValue('foo'));
+        $this->backend->expects($this->any())->method('getIdentifier')->willReturn('foo');
         $this->listener = new InjectHighlightingListener($this->backend, 'bar,baz', ['xyzzy' => 'true']);
     }
 
@@ -108,7 +108,7 @@ class InjectHighlightingListenerTest extends \PHPUnit\Framework\TestCase
         );
         $mockQueryBuilder = $this->createMock(QueryBuilder::class);
         $this->backend->expects($this->once())->method('getQueryBuilder')
-            ->will($this->returnValue($mockQueryBuilder));
+            ->willReturn($mockQueryBuilder);
         $mockQueryBuilder->expects($this->once())->method('setFieldsToHighlight')
             ->with($this->equalTo('bar,baz'));
         $event = new Event(

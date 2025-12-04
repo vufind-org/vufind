@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -31,7 +31,7 @@
 
 namespace VuFindTest\Config;
 
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Config\Location\ConfigDirectory;
 use VuFind\Config\Location\ConfigFile;
 use VuFind\Exception\ConfigException;
@@ -59,13 +59,13 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
     /**
      * Get config manager.
      *
-     * @return ConfigManager
+     * @return ConfigManagerInterface
      */
-    protected function getConfigManager(): ConfigManager
+    protected function getConfigManager(): ConfigManagerInterface
     {
         $container = new \VuFindTest\Container\MockContainer($this);
         $this->addConfigRelatedServicesToContainer($container);
-        return $container->get(ConfigManager::class);
+        return $container->get(ConfigManagerInterface::class);
     }
 
     /**
@@ -190,10 +190,9 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @param string $key Key to change
      *
-     * @dataProvider readOnlyConfigProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('readOnlyConfigProvider')]
     public function testReadOnlyConfig($key): void
     {
         $this->expectException(ConfigException::class);
@@ -577,9 +576,8 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
      * @param array  $expectedConfig Expected config
      *
      * @return void
-     *
-     * @dataProvider localDirStackTestProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('localDirStackTestProvider')]
     public function testConfigsInLocalDirStack(
         $configPath,
         $expectedConfig
@@ -588,7 +586,7 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
         $configManager = $this->getContainerWithConfigRelatedServices(
             baseDir: $fixtureDir . 'base',
             localDir: $fixtureDir . 'primary'
-        )->get(ConfigManager::class);
+        )->get(ConfigManagerInterface::class);
 
         $config = $configManager->getConfigArray($configPath);
         $this->assertEquals(

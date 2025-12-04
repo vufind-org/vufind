@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  OAI_Server
@@ -482,11 +482,9 @@ class Server
 
         // Check for sets:
         $fields = $record->getRawData();
-        if (null !== $this->setField && !empty($fields[$this->setField])) {
-            $sets = (array)$fields[$this->setField];
-        } else {
-            $sets = [];
-        }
+        $sets = null !== $this->setField && !empty($fields[$this->setField])
+            ? (array)$fields[$this->setField]
+            : [];
         if (!empty($set)) {
             $sets = array_unique(array_merge($sets, [$set]));
         }
@@ -522,7 +520,7 @@ class Server
      * @param AbstractRecordDriver $record A record driver object
      * @param string               $format Metadata format to obtain
      *
-     * @return string|false String or false if an error occured
+     * @return string|false String or false if an error occurred
      */
     protected function getRecordAsXML(AbstractRecordDriver $record, string $format): string|false
     {
@@ -957,12 +955,10 @@ class Server
         }
 
         // Iterate over custom sets:
-        if (!empty($this->setQueries)) {
-            foreach ($this->setQueries as $setName => $solrQuery) {
-                $set = $xml->addChild('set');
-                $set->setName = $set->setSpec = $setName;
-                $set->setDescription = $solrQuery;
-            }
+        foreach ($this->setQueries as $setName => $solrQuery) {
+            $set = $xml->addChild('set');
+            $set->setName = $set->setSpec = $setName;
+            $set->setDescription = $solrQuery;
         }
 
         // Display the list:
@@ -1188,10 +1184,7 @@ class Server
         if ($from_time > $until_time) {
             throw new \Exception('noRecordsMatch:from vs. until');
         }
-        if ($from_time < $this->normalizeDate($this->earliestDatestamp)) {
-            return true;
-        }
-        return false;
+        return $from_time < $this->normalizeDate($this->earliestDatestamp);
     }
 
     /**
@@ -1346,7 +1339,7 @@ class Server
     protected function showError($code, $message)
     {
         // Certain errors should not echo parameters:
-        $echoParams = !($code == 'badVerb' || $code == 'badArgument');
+        $echoParams = $code != 'badVerb' && $code != 'badArgument';
         $response = $this->createResponse($echoParams);
 
         $xml = $response->addChild('error', htmlspecialchars($message));

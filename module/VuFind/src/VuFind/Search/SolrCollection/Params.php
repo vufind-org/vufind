@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_SolrAuthor
@@ -93,16 +93,13 @@ class Params extends \VuFind\Search\Solr\Params
         // Solr search backend come from searches.ini and are set up in the
         // AbstractSolrBackendFactory, we need to account for additional ones
         // from Collection.ini here.
-        $collectionConfig = $this->configLoader->get('Collection');
-        if (isset($collectionConfig->HiddenFilters)) {
-            foreach ($collectionConfig->HiddenFilters as $field => $value) {
-                $this->addHiddenFilter(sprintf('%s:"%s"', $field, $value));
-            }
+        $collectionConfig = $this->configManager->getConfigArray('Collection');
+        foreach ($collectionConfig['HiddenFilters'] ?? [] as $field => $value) {
+            $this->addHiddenFilter(sprintf('%s:"%s"', $field, $value));
         }
-        if (isset($collectionConfig->RawHiddenFilters)) {
-            foreach ($collectionConfig->RawHiddenFilters as $current) {
-                $this->addHiddenFilter($current);
-            }
+
+        foreach ($collectionConfig['RawHiddenFilters'] ?? [] as $current) {
+            $this->addHiddenFilter($current);
         }
     }
 

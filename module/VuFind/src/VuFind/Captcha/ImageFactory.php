@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  CAPTCHA
@@ -82,7 +82,7 @@ class ImageFactory implements FactoryInterface
             'imgDir' => $cacheOptions->getCacheDir(),
         ];
 
-        $config = $container->get(\VuFind\Config\ConfigManager::class)
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)
             ->getConfigArray('config')['Captcha'] ?? [];
         if (isset($config['image_length'])) {
             $imageOptions['wordLen'] = $config['image_length'];

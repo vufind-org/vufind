@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -66,7 +66,7 @@ class RouterFactory implements FactoryInterface
         ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
         // Try to get the base URL from the controller plugin; fail over to
         // the view helper if that doesn't work.
@@ -77,7 +77,8 @@ class RouterFactory implements FactoryInterface
             $base = ($container->get('ViewRenderer')->plugin('url'))('cover-show');
         }
         $coverLoader = $container->get(\VuFind\Cover\Loader::class);
-        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('config')['Content'] ?? [];
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)
+            ->getConfigArray('config')['Content'] ?? [];
         return new $requestedName($base, $coverLoader, $config);
     }
 }

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -30,7 +30,7 @@
 namespace VuFind\Db\Service;
 
 use Doctrine\ORM\Query\ResultSetMapping;
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Db\Entity\ResourceEntityInterface;
 use VuFind\Db\Entity\ResourceTagsEntityInterface;
 use VuFind\Db\Entity\TagsEntityInterface;
@@ -71,9 +71,9 @@ class TagService extends AbstractDbService implements TagServiceInterface, DbSer
             . 'COUNT(rt.id) AS total '
             . 'FROM ' . ResourceTagsEntityInterface::class . ' rt';
         $query = $this->entityManager->createQuery($dql);
-        $stats = current($query->getResult());
-        $resourceTagsService = $this->getDbService(ResourceTagsServiceInterface::class);
+        $stats = $query->getSingleResult();
         if ($extended) {
+            $resourceTagsService = $this->getDbService(ResourceTagsServiceInterface::class);
             $stats['unique'] = count($resourceTagsService->getUniqueTags(caseSensitive: $caseSensitiveTags));
             $stats['anonymous'] = $resourceTagsService->getAnonymousCount();
         }

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  AJAX
@@ -73,7 +73,7 @@ class GetResolverLinksFactory implements \Laminas\ServiceManager\Factory\Factory
             $container->get(\VuFind\Session\Settings::class),
             $container->get(\VuFind\Resolver\Driver\PluginManager::class),
             $container->get('ViewRenderer'),
-            $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config')
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config')
         );
     }
 }

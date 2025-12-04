@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,7 +29,7 @@
 
 namespace VuFindTest\Config;
 
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Config\PathResolver;
 use VuFindTest\Integration\ConfigTestCase;
 
@@ -74,9 +74,8 @@ class ConfigWritingTest extends ConfigTestCase
      * @param string $configName Config name
      *
      * @return void
-     *
-     * @dataProvider upgradeTestProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('upgradeTestProvider')]
     public function testWriting(string $fixture, string $configName): void
     {
         $container = $this->getContainerWithConfigRelatedServices(
@@ -84,7 +83,7 @@ class ConfigWritingTest extends ConfigTestCase
             baseSubDir: ''
         );
         $pathResolver = $container->get(PathResolver::class);
-        $configManager = $container->get(ConfigManager::class);
+        $configManager = $container->get(ConfigManagerInterface::class);
 
         $baseDirPath = $pathResolver->getBaseConfigDirPath();
         $baseConfigLocation = $pathResolver->getMatchingConfigLocation($baseDirPath, $configName);

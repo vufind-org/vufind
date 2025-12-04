@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Channels
@@ -30,6 +30,7 @@
 namespace VuFind\ChannelProvider;
 
 use VuFind\Cover\Router as CoverRouter;
+use VuFind\Http\PhpEnvironment\Request as HttpRequest;
 use VuFind\Record\Router as RecordRouter;
 use VuFind\Search\Base\Params;
 
@@ -68,13 +69,14 @@ abstract class AbstractChannelProvider implements ChannelProviderInterface
     /**
      * Hook to configure search parameters before executing search.
      *
-     * @param Params $params Search parameters to adjust
+     * @param Params      $params  Search parameters to adjust
+     * @param HttpRequest $request Current HTTP request
      *
      * @return void
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function configureSearchParams(Params $params)
+    public function configureSearchParams(Params $params, HttpRequest $request): void
     {
         // No action necessary by default.
     }

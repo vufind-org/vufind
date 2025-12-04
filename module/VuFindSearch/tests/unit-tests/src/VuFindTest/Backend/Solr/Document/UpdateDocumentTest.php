@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -52,10 +52,10 @@ class UpdateDocumentTest extends TestCase
      */
     public function testAsXML()
     {
-        $record = $this->getMockForAbstractClass(\VuFindSearch\Backend\Solr\Record\SerializableRecordInterface::class);
+        $record = $this->createMock(\VuFindSearch\Backend\Solr\Record\SerializableRecordInterface::class);
         $record->expects($this->once())
             ->method('getFields')
-            ->will($this->returnValue(['id' => 'ID', 'field' => 'FIELD']));
+            ->willReturn(['id' => 'ID', 'field' => 'FIELD']);
         $document = new UpdateDocument();
         $document->addRecord($record, ['boost' => '2.0']);
         $this->assertEquals(

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Config
@@ -393,11 +393,9 @@ class Writer
                 $section = substr($trimmed, 1, $closeBracket - 1);
                 if ('' !== $section) {
                     // Grab comments at the end of the line, if any:
-                    if (($semicolon = strpos($trimmed, ';')) !== false) {
-                        $inline = trim(substr($trimmed, $semicolon));
-                    } else {
-                        $inline = '';
-                    }
+                    $inline = str_contains($trimmed, ';')
+                        ? trim(substr($trimmed, strpos($trimmed, ';')))
+                        : '';
                     $retVal['sections'][$section] = [
                         'before' => $comments,
                         'inline' => $inline,
@@ -410,11 +408,9 @@ class Writer
                 $set = trim(str_replace('[]', '', $set));
                 if ('' !== $section && '' !== $set) {
                     // Grab comments at the end of the line, if any:
-                    if (($semicolon = strpos($trimmed, ';')) !== false) {
-                        $inline = trim(substr($trimmed, $semicolon));
-                    } else {
-                        $inline = '';
-                    }
+                    $inline = str_contains($trimmed, ';')
+                        ? trim(substr($trimmed, strpos($trimmed, ';')))
+                        : '';
                     // Currently, this data structure doesn't support arrays very
                     // well, since it can't distinguish which line of the array
                     // corresponds with which comments. For now, we just append all

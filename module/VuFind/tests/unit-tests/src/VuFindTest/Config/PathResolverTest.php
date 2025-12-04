@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -116,10 +116,9 @@ class PathResolverTest extends \PHPUnit\Framework\TestCase
      * @param string $filename         Filename to check
      * @param string $expectedFilePath Expected result (minus base path)
      *
-     * @dataProvider getTestPathStackData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestPathStackData')]
     public function testPathStack(string $filename, string $expectedFilePath): void
     {
         $fixtureDir = realpath($this->getFixtureDir() . 'configs/pathstack') . '/';

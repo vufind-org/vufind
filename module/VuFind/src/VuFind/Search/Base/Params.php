@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Base
@@ -31,6 +31,7 @@
 
 namespace VuFind\Search\Base;
 
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\I18n\TranslatableString;
 use VuFind\Search\Minified;
 use VuFind\Search\QueryAdapter;
@@ -227,13 +228,6 @@ class Params
     protected $searchContextParameters = [];
 
     /**
-     * Config loader
-     *
-     * @var \VuFind\Config\PluginManager
-     */
-    protected $configLoader;
-
-    /**
      * Query adapter
      *
      * @var ?QueryAdapterInterface
@@ -258,31 +252,30 @@ class Params
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Base\Options  $options      Options to use
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param \VuFind\Search\Base\Options $options       Options to use
+     * @param ConfigManagerInterface      $configManager Config manager
      */
-    public function __construct($options, \VuFind\Config\PluginManager $configLoader)
+    public function __construct($options, protected ConfigManagerInterface $configManager)
     {
         $this->setOptions($options);
-
-        $this->configLoader = $configLoader;
 
         // Make sure we have some sort of query object:
         $this->query = new Query();
 
         // Set up facet label settings, to be used as fallbacks if specific facets
         // are not already configured:
-        $config = $configLoader->get($options->getFacetsIni());
-        $sections = $config->FacetLabels->labelSections
+        $facetConfigName = $options->getFacetsIni();
+        $config = ($facetConfigName !== null) ? $configManager->getConfigArray($facetConfigName) : [];
+        $sections = $config['FacetLabels']['labelSections']
             ?? $this->defaultFacetLabelSections;
         foreach ($sections as $section) {
-            foreach ($config->$section ?? [] as $field => $label) {
+            foreach ($config[$section] ?? [] as $field => $label) {
                 $this->extraFacetLabels[$field] = $label;
             }
         }
 
         // Activate all relevant checkboxes, also important for labeling:
-        $checkboxSections = $config->FacetLabels->checkboxSections
+        $checkboxSections = $config['FacetLabels']['checkboxSections']
             ?? $this->defaultFacetLabelCheckboxSections;
         foreach ($checkboxSections as $checkboxSection) {
             $this->initCheckboxFacets($checkboxSection);
@@ -762,11 +755,7 @@ class Params
         }
 
         // Validate and assign the sort value:
-        if ($this->isValidSort($sort)) {
-            $this->sort = $sort;
-        } else {
-            $this->sort = $this->getDefaultSort();
-        }
+        $this->sort = $this->isValidSort($sort) ? $sort : $this->getDefaultSort();
 
         // In RSS mode, we may want to adjust sort settings:
         if (!$this->skipRssSort && $this->getView() == 'rss') {
@@ -1204,6 +1193,23 @@ class Params
             }
         }
         return $list;
+    }
+
+    /**
+     * Returns only the exclude filters (field starting with '-').
+     *
+     * @return array an array field => value without the '-' for the field
+     */
+    public function getExcludeFilters()
+    {
+        $result = [];
+        foreach ($this->filterList as $field => $values) {
+            [$operator, $fieldName] = $this->parseOperatorAndFieldName($field);
+            if ('NOT' === $operator) {
+                $result[$fieldName] = $values;
+            }
+        }
+        return $result;
     }
 
     /**
@@ -1747,14 +1753,7 @@ class Params
     {
         // Extract field and value from URL string:
         [$field, $value] = $this->parseFilter($filter);
-
-        if (
-            isset($this->hiddenFilters[$field])
-            && in_array($value, $this->hiddenFilters[$field])
-        ) {
-            return true;
-        }
-        return false;
+        return in_array($value, $this->hiddenFilters[$field] ?? []);
     }
 
     /**
@@ -2067,18 +2066,18 @@ class Params
      */
     protected function initFacetList($facetList, $facetSettings, $cfgFile = null)
     {
-        $config = $this->configLoader
-            ->get($cfgFile ?? $this->getOptions()->getFacetsIni());
-        if (!isset($config->$facetList)) {
+        $facetConfigName = $cfgFile ?? $this->getOptions()->getFacetsIni();
+        $config = ($facetConfigName !== null) ? $this->configManager->getConfigArray($facetConfigName) : [];
+        if (!isset($config[$facetList])) {
             return false;
         }
-        if (isset($config->$facetSettings->orFacets)) {
+        if (isset($config[$facetSettings]['orFacets'])) {
             $orFields
-                = array_map('trim', explode(',', $config->$facetSettings->orFacets));
+                = array_map('trim', explode(',', $config[$facetSettings]['orFacets']));
         } else {
             $orFields = [];
         }
-        foreach ($config->$facetList as $key => $value) {
+        foreach ($config[$facetList] as $key => $value) {
             $useOr = (isset($orFields[0]) && $orFields[0] == '*')
                 || in_array($key, $orFields);
             $this->addFacet($key, $value, $useOr);
@@ -2110,17 +2109,17 @@ class Params
         $facetList = 'CheckboxFacets',
         $cfgFile = null
     ) {
-        $config = $this->configLoader
-            ->get($cfgFile ?? $this->getOptions()->getFacetsIni());
+        $facetConfigName = $cfgFile ?? $this->getOptions()->getFacetsIni();
+        $config = ($facetConfigName !== null) ? $this->configManager->getConfigArray($facetConfigName) : [];
         $retVal = false;
         // If the section is in reverse order, the tilde will flag this:
         if (str_starts_with($facetList, '~')) {
-            foreach ($config->{substr($facetList, 1)} ?? [] as $value => $key) {
+            foreach ($config[substr($facetList, 1)] ?? [] as $value => $key) {
                 $this->addCheckboxFacet($key, $value);
                 $retVal = true;
             }
         } else {
-            foreach ($config->$facetList ?? [] as $key => $value) {
+            foreach ($config[$facetList] ?? [] as $key => $value) {
                 $this->addCheckboxFacet($key, $value);
                 $retVal = true;
             }

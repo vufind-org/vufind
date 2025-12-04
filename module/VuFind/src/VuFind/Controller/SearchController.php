@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -134,8 +134,8 @@ class SearchController extends AbstractSolrSearch
         $view->url = $this->params()->fromPost('url')
             ?? $this->params()->fromQuery('url')
             ?? $this->getRequest()->getServer()->get('HTTP_REFERER');
-        if (!$this->isLocalUrl($view->url)) {
-            throw new \Exception('Unexpected value passed to emailAction: ' . $view->url);
+        if (!$view->url || !$this->isLocalUrl($view->url)) {
+            throw new \Exception('Unexpected value passed to emailAction: ' . ($view->url ?? '<null>'));
         }
 
         $emailActionSettings = $this->getService(\VuFind\Config\AccountCapabilities::class)->getEmailActionSetting();
@@ -352,15 +352,25 @@ class SearchController extends AbstractSolrSearch
         }
 
         // If we got this far, we're using driver-based searching and need to
-        // send options to the view:
+        // send options to the view (but we should tolerate drivers that do not
+        // define all of the department/instructor/courses getters):
         $catalog = $this->getILS();
-        return $this->createViewModel(
-            [
-                'deptList' => $catalog->getDepartments(),
-                'instList' => $catalog->getInstructors(),
-                'courseList' =>  $catalog->getCourses(),
-            ]
-        );
+        try {
+            $deptList = $catalog->getDepartments();
+        } catch (\VuFind\Exception\ILS $e) {
+            $deptList = [];
+        }
+        try {
+            $instList = $catalog->getInstructors();
+        } catch (\VuFind\Exception\ILS $e) {
+            $instList = [];
+        }
+        try {
+            $courseList =  $catalog->getCourses();
+        } catch (\VuFind\Exception\ILS $e) {
+            $courseList = [];
+        }
+        return $this->createViewModel(compact('deptList', 'instList', 'courseList'));
     }
 
     /**
@@ -492,10 +502,10 @@ class SearchController extends AbstractSolrSearch
     {
         switch ($this->params()->fromQuery('method')) {
             case 'describe':
-                $config = $this->getConfig();
+                $config = $this->getConfigArray();
                 $xml = $this->getViewRenderer()->render(
                     'search/opensearch-describe.phtml',
-                    ['site' => $config->Site]
+                    ['site' => $config['Site']]
                 );
                 break;
             default:

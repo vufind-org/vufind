@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -60,12 +60,12 @@ class SummonDatabasesTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $results->expects($this->once())->method('getParams')
-            ->will($this->returnValue($parms));
+            ->willReturn($parms);
         $parms->expects($this->once())->method('getSearchClassId')
-            ->will($this->returnValue('Summon'));
+            ->willReturn('Summon');
         $obj->process($results);
         $results->expects($this->once())->method('getDatabaseRecommendations')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
         $this->assertFalse($obj->getResults());
     }
 }

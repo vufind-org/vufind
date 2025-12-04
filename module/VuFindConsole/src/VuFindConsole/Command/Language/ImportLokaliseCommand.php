@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -247,23 +247,23 @@ class ImportLokaliseCommand extends AbstractCommand
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $source = $input->getArgument('source');
         $target = $input->getArgument('target');
 
         if (!is_dir($source)) {
             $output->writeln("{$source} does not exist or is not a directory.");
-            return 1;
+            return self::FAILURE;
         }
         if (!is_dir($target)) {
             $output->writeln("{$target} does not exist or is not a directory.");
-            return 1;
+            return self::FAILURE;
         }
         $sourceFiles = $this->collectSourceFiles($source);
         $targetFiles = $this->matchTargetFiles($source, $target, $sourceFiles);
         array_map([$this, 'importStrings'], $sourceFiles, $targetFiles, array_fill(0, count($sourceFiles), $output));
         $output->writeln('Import complete.');
-        return 0;
+        return self::SUCCESS;
     }
 }

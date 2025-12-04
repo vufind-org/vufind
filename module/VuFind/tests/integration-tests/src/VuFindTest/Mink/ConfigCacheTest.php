@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -82,10 +82,9 @@ class ConfigCacheTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool $cacheIni         Ini cache enabled
      * @param bool $cacheSearchspecs Searchspecs cache enabled
      *
-     * @dataProvider cacheSettingsProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('cacheSettingsProvider')]
     public function testConfigurationCaching(bool $cacheDefault, bool $cacheIni, bool $cacheSearchspecs): void
     {
         $this->changeConfigs(

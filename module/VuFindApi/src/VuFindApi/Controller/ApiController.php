@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -104,9 +104,13 @@ class ApiController extends \VuFind\Controller\AbstractBase
      */
     protected function getApiSpecFragment()
     {
-        $config = $this->getConfig();
+        $config = $this->getConfigArray();
+        $this->initApiKeySettings($config['API_Keys'] ?? []);
         $params = [
             'config' => $config,
+            'apiKeysEnabled' => $this->developerSettingsService?->apiKeysEnabled() ?? false,
+            'apiKeyHeaderField' => $this->apiKeyHeaderField,
+            'apiKeyMode' => $this->developerSettingsService?->getApiKeyMode(),
             'version' => \VuFind\Config\Version::getBuildVersion(),
         ];
         return $this->getViewRenderer()->render('api/openapi', $params);

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -56,7 +56,7 @@ class InstallControllerTest extends \PHPUnit\Framework\TestCase
         );
         $method = $this->getMinimalPhpVersionMethod();
         $this->assertEquals(
-            '8.1.0',
+            '8.2.0',
             $method->invokeArgs($controller, [])
         );
     }
@@ -187,10 +187,9 @@ class InstallControllerTest extends \PHPUnit\Framework\TestCase
      * @param array  $json     JSON data
      * @param string $expected Expected version number
      *
-     * @dataProvider getMinimalPhpVersionProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getMinimalPhpVersionProvider')]
     public function testGetMinimalPhpVersion($json, $expected)
     {
         $controller = $this->mockControllerWithComposerJson($json);

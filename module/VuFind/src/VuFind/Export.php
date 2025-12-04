@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Export
@@ -107,13 +107,15 @@ class Export
         foreach ($matches[1] as $current) {
             $parts = explode('|', $current);
             switch ($parts[0]) {
+                case 'route':
+                    $urlHelper = $this->viewRenderer->plugin('url');
+                    $template = str_replace('{' . $current . '}', $urlHelper($parts[1] ?? '??'), $template);
+                    break;
                 case 'config':
                 case 'encodedConfig':
-                    if (null !== ($configValue = $this->mainConfig[$parts[1]][$parts[2]] ?? null)) {
-                        $value = $configValue;
-                    } else {
-                        $value = $parts[3];
-                    }
+                    $value = null !== ($configValue = $this->mainConfig[$parts[1]][$parts[2]] ?? null)
+                        ? $configValue
+                        : $parts[3];
                     if ($parts[0] == 'encodedConfig') {
                         $value = urlencode($value);
                     }
@@ -186,8 +188,11 @@ class Export
                 }
             }
             return $retVal->asXML();
+        } elseif (in_array('Content-type: application/json', $this->getHeaders($format))) {
+            // JSON mode -- create a JSON array from the individual JSON documents:
+            return json_encode(array_map('json_decode', $parts));
         } else {
-            // Not in XML mode -- just concatenate everything together:
+            // Not in XML or JSON mode -- just concatenate everything together:
             return implode('', $parts);
         }
     }

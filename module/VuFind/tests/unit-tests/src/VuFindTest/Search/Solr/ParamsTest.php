@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,7 +29,7 @@
 
 namespace VuFindTest\Search\Solr;
 
-use VuFind\Config\PluginManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Solr\Options;
 use VuFind\Search\Solr\Params;
 
@@ -134,8 +134,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
         ];
-        $configManager = $this->getMockConfigPluginManager($config);
-        $params = $this->getParams(null, $configManager);
+        $configManager = $this->getMockConfigManager($config);
+        $params = $this->getParams(mockConfigManager: $configManager);
         // We expect "normal" filters to NOT be always visible, and inverted
         // filters to be always visible.
         $this->assertEquals(
@@ -183,9 +183,8 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      * @param string $expectedResult Expected return value from normalizeSort
      *
      * @return void
-     *
-     * @dataProvider sortValueProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('sortValueProvider')]
     public function testSortTieBreakerParameter(
         string $sort,
         string $tieBreaker,
@@ -195,7 +194,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                 ->disableOriginalConstructor()
                 ->getMock();
         $options->expects($this->once())->method('getSortTieBreaker')
-                ->will($this->returnValue($tieBreaker));
+                ->willReturn($tieBreaker);
         $params = $this->getParams($options);
         $this->assertEquals(
             $expectedResult,
@@ -417,12 +416,11 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      * @param string $expectedSortList Expected sort list
      *
      * @return void
-     *
-     * @dataProvider sortListDataProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('sortListDataProvider')]
     public function testSortList(array $searchConfig, string $sort, array $expectedSortList): void
     {
-        $params = $this->getParams(mockConfig: $this->getMockConfigPluginManager(['searches' => $searchConfig]));
+        $params = $this->getParams(mockConfigManager: $this->getMockConfigManager(['searches' => $searchConfig]));
         $params->setSort($sort);
         $this->assertEquals($expectedSortList, $params->getSortList());
     }
@@ -430,19 +428,19 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get Params object
      *
-     * @param ?Options       $options    Options object (null to create)
-     * @param ?PluginManager $mockConfig Mock config plugin manager (null to create)
+     * @param ?Options                $options           Options object (null to create)
+     * @param ?ConfigManagerInterface $mockConfigManager Mock ConfigManager (null to create)
      *
      * @return Params
      */
     protected function getParams(
         ?Options $options = null,
-        ?PluginManager $mockConfig = null
+        ?ConfigManagerInterface $mockConfigManager = null
     ): Params {
-        $mockConfig ??= $this->createMock(PluginManager::class);
+        $mockConfigManager ??= $this->createMock(ConfigManagerInterface::class);
         return new Params(
-            $options ?? new Options($mockConfig),
-            $mockConfig
+            $options ?? new Options($mockConfigManager),
+            $mockConfigManager
         );
     }
 }

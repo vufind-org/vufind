@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  IdentifierLinker
@@ -107,7 +107,7 @@ class BrowZineFactory implements \Laminas\ServiceManager\Factory\FactoryInterfac
             throw new \Exception('Unexpected options passed to factory.');
         }
         $search = $container->get(\VuFindSearch\Service::class);
-        $fullConfig = $container->get(\VuFind\Config\ConfigManager::class)->getConfigArray('BrowZine');
+        $fullConfig = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('BrowZine');
         // DOI config section is supported as a fallback for legacy back-compatibility:
         $config = $fullConfig['IdentifierLinks'] ?? $fullConfig['DOI'] ?? [];
 

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -90,8 +90,7 @@ class ChannelsController extends AbstractBase
         $source = $this->params()->fromQuery('source', DEFAULT_SEARCH_BACKEND);
         $activeChannel = $this->params()->fromQuery('channelProvider');
         $token = $this->params()->fromQuery('channelToken');
-        $context = $this->loader
-            ->getRecordContext($recordId, $token, $activeChannel, $source);
+        $context = $this->loader->getRecordContext($recordId, $token, $activeChannel, $source);
         return $this->createViewModel($context);
     }
 

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -44,7 +44,7 @@ use DateTimeZone;
 trait DateTimeTrait
 {
     /**
-     * Get a date or null from non-nullable date with a default value.
+     * Get a (clone) date or null from non-nullable date with a default value.
      *
      * @param DateTime $date Date
      *
@@ -55,7 +55,7 @@ trait DateTimeTrait
         // Compare strings to avoid trouble with time zones:
         return $date->format(VUFIND_DATABASE_DATETIME_FORMAT)
             !== $this->getUnassignedDefaultDateTime()->format(VUFIND_DATABASE_DATETIME_FORMAT)
-            ? $date
+            ? $this->getDateTimeClone($date)
             : null;
     }
 
@@ -68,7 +68,7 @@ trait DateTimeTrait
      */
     protected function getNonNullableDateTimeFromNullable(?DateTime $date): DateTime
     {
-        return $date ?? $this->getUnassignedDefaultDateTime();
+        return $this->getDateTimeClone($date) ?? $this->getUnassignedDefaultDateTime();
     }
 
     /**
@@ -79,5 +79,17 @@ trait DateTimeTrait
     protected function getUnassignedDefaultDateTime(): DateTime
     {
         return DateTime::createFromFormat('Y-m-d H:i:s', '2000-01-01 00:00:00', new DateTimeZone('UTC'));
+    }
+
+    /**
+     * Return a clone for DateTime, or null if provided null.
+     *
+     * @param ?DateTime $dateTime DateTime or null
+     *
+     * @return ?DateTime
+     */
+    protected function getDateTimeClone(?DateTime $dateTime): ?DateTime
+    {
+        return $dateTime ? clone $dateTime : null;
     }
 }

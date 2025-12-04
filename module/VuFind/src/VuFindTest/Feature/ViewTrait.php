@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -34,7 +34,7 @@ use Laminas\Cache\Storage\StorageInterface;
 use Laminas\View\Renderer\PhpRenderer;
 use Psr\Container\ContainerInterface;
 use VuFind\Cache\Manager as CacheManager;
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\View\Helper\Root\CleanHtml;
 use VuFind\View\Helper\Root\CleanHtmlFactory;
 use VuFind\View\Helper\Root\SearchMemory;
@@ -160,7 +160,7 @@ trait ViewTrait
         $cacheManager->expects($this->any())
             ->method('getCache')
             ->willReturn($cache);
-        $configManager = $this->createMock(ConfigManager::class);
+        $configManager = $this->createMock(ConfigManagerInterface::class);
         $configManager->expects($this->any())
             ->method('getConfigArray')
             ->willReturn([]);
@@ -171,7 +171,7 @@ trait ViewTrait
                 function ($class) use ($cacheManager, $configManager) {
                     return match ($class) {
                         CacheManager::class => $cacheManager,
-                        ConfigManager::class => $configManager,
+                        ConfigManagerInterface::class => $configManager,
                     };
                 }
             );

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -108,11 +108,13 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
                             'link' => 'https://weblink',
                             'label' => 'View Complete Issue',
                             'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-open-book-icon.svg',
+                            'linkType' => 'browzineWebLink',
                         ],
                         [
                             'link' => 'https://fulltext',
                             'label' => 'PDF Full Text',
                             'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
+                            'linkType' => 'fullTextFile',
                         ],
                     ],
                 ],
@@ -127,6 +129,7 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
                             'link' => 'https://fulltext',
                             'label' => 'PDF Full Text',
                             'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
+                            'linkType' => 'fullTextFile',
                         ],
                     ],
                 ],
@@ -141,6 +144,7 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
                             'link' => 'https://weblink',
                             'label' => 'View Complete Issue',
                             'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-open-book-icon.svg',
+                            'linkType' => 'browzineWebLink',
                         ],
                     ],
                 ],
@@ -155,6 +159,7 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
                             'link' => 'https://fulltext',
                             'label' => 'PDF Full Text',
                             'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
+                            'linkType' => 'fullTextFile',
                         ],
                     ],
                 ],
@@ -169,6 +174,7 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
                             'link' => 'https://fulltext',
                             'label' => 'Get full text',
                             'localIcon' => 'browzine-best',
+                            'linkType' => 'fullTextFile',
                         ],
                     ],
                 ],
@@ -185,6 +191,7 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
                             'link' => 'https://fulltext',
                             'label' => 'Fancy Full Text',
                             'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
+                            'linkType' => 'fullTextFile',
                         ],
                     ],
                 ],
@@ -201,6 +208,7 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
                             'link' => 'https://fulltext',
                             'label' => 'Download Best PDF Ever',
                             'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
+                            'linkType' => 'fullTextFile',
                         ],
                     ],
                 ],
@@ -240,12 +248,12 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
         if ($bestIntegratorLinksConfig !== null) {
             $configArray['BestIntegratorLinks'] = $bestIntegratorLinksConfig;
         }
-        $mockConfigManager = $this->createMock(\VuFind\Config\ConfigManager::class);
+        $mockConfigManager = $this->createMock(\VuFind\Config\ConfigManagerInterface::class);
         $mockConfigManager->expects($this->once())
             ->method('getConfigArray')
             ->with('BrowZine')
             ->willReturn($configArray);
-        $container->set(\VuFind\Config\ConfigManager::class, $mockConfigManager);
+        $container->set(\VuFind\Config\ConfigManagerInterface::class, $mockConfigManager);
         $factory = new BrowZineFactory();
         return $factory($container, BrowZine::class);
     }
@@ -259,9 +267,8 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
      * @param array $expectedResponse          Expected response
      *
      * @return void
-     *
-     * @dataProvider doiProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('doiProvider')]
     public function testDOIApiSuccess(
         array $identifierLinksConfig,
         array $doiServicesConfig,
@@ -302,6 +309,7 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
                         'label' => 'Browse Available Issues',
                         'data' => $rawData['data'][0],
                         'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-open-book-icon.svg',
+                        'linkType' => 'browzineWebLink',
                     ],
                 ],
             ],

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -100,11 +100,9 @@ trait UserContentTrait
         $page = (int)$params->fromQuery('page', 1);
         $result['page'] = $page < 1 ? 1 : $page;
         $sort = $params->fromQuery('sort', '');
-        if (in_array($sort, array_keys($this->sortList))) {
-            $result['sort'] = $sort;
-        } else {
-            $result['sort'] = array_keys($this->sortList)[0];
-        }
+        $result['sort'] = in_array($sort, array_keys($this->sortList))
+            ? $sort
+            : array_keys($this->sortList)[0];
         return $result;
     }
 }

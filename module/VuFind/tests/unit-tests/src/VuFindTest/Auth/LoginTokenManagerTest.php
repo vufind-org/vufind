@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  VuFindTest\Auth
@@ -98,7 +98,7 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
             ->willReturn($this->getMockUser());
         $tokenTable = $this->getMockLoginTokenService();
         $tokenTable->expects($this->once())->method('matchToken')
-            ->will($this->throwException(new LoginTokenException('Token does not match', 0)));
+            ->willThrowException(new LoginTokenException('Token does not match', 0));
         $tokenTable->expects($this->once())->method('getByUser')
             ->willReturn([$mockToken]);
         $loginToken = $this->getLoginToken($cookieManager, $tokenTable, $userService, true);

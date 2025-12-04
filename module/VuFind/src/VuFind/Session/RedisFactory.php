@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Session_Handlers
@@ -71,7 +71,8 @@ class RedisFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
 
-        $config = $container->get(\VuFind\Config\ConfigManager::class)->getConfigObject('config')->Session ?? null;
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)
+            ->getConfigObject('config')->Session ?? null;
         $service = new $requestedName($this->getConnection($config), $config);
         $service->setDbServiceManager(
             $container->get(\VuFind\Db\Service\PluginManager::class)

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -196,9 +196,9 @@ class SierraRestTest extends \VuFindTest\Unit\ILSDriverTestCase
      * @param string $fixture  Name of the response fixture file
      * @param array  $expected Expected results
      *
-     * @return       void
-     * @dataProvider getTestGetMyProfileData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestGetMyProfileData')]
     public function testGetMyProfile(array $patron, string $fixture, array $expected): void
     {
         $requestMap = [
@@ -269,9 +269,9 @@ class SierraRestTest extends \VuFindTest\Unit\ILSDriverTestCase
      * @param string $fixture  Name of the response fixture file
      * @param array  $expected Expected results
      *
-     * @return       void
-     * @dataProvider getTestPatronLoginData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestPatronLoginData')]
     public function testPatronLogin(array $patron, string $fixture, array $expected): void
     {
         $request = [
