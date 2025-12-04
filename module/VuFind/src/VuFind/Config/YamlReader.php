@@ -159,7 +159,7 @@ class YamlReader
      * @param string  $defaultParent  Parent YAML file from which $file should
      * inherit (unless overridden by a specific directive in $file). None by
      * default.
-     * @param boolean $useLocalConfig Use local configuration if available
+     * @param bool $useLocalConfig Use local configuration if available
      *
      * @return array
      */
