@@ -802,9 +802,9 @@ class Aleph extends AbstractBase implements
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
      *
-     * @param array   $user    The patron array from patronLogin
-     * @param array   $params  Parameters
-     * @param boolean $history History
+     * @param array $user    The patron array from patronLogin
+     * @param array $params  Parameters
+     * @param bool  $history History
      *
      * @throws DateException
      * @throws ILSException

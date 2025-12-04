@@ -122,8 +122,8 @@ class HierarchicalFacetHelper implements
      *
      * Supports both flattened and hierarchical facet lists.
      *
-     * @param array          $facetList Facet list returned from Solr
-     * @param boolean|string $order     Sort order:
+     * @param array       $facetList Facet list returned from Solr
+     * @param bool|string $order     Sort order:
      * - true|top  sort top level alphabetically and the rest by count
      * - false|all sort all levels alphabetically
      * - count     sort all levels by count
