@@ -68,8 +68,7 @@ class LDAPTest extends \PHPUnit\Framework\TestCase
     public function getAuthConfig(): array
     {
         $ldapConfig = [
-            'host' => 'localhost',
-            'port' => 1234,
+            'uri' => 'ldaps://localhost',
             'basedn' => 'basedn',
             'username' => 'username',
         ];
@@ -84,8 +83,7 @@ class LDAPTest extends \PHPUnit\Framework\TestCase
     public static function configKeyProvider(): array
     {
         return [
-            'missing host' => ['host'],
-            'missing port' => ['port'],
+            'missing uri' => ['uri'],
             'missing basedn' => ['basedn'],
             'missing username' => ['username'],
         ];

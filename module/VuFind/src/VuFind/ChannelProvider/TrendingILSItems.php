@@ -71,7 +71,7 @@ class TrendingILSItems extends AbstractILSChannelProvider
     protected function getIlsResponse()
     {
         return $this->ils->checkCapability('getTrendingBibs')
-            ? $this->ils->getTrendingBibs($this->channelSize, $this->maxAge)
+            ? $this->ils->getTrendingBibs($this->batchSize, $this->maxAge)
             : [];
     }
 

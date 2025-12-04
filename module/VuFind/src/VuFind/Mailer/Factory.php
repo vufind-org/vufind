@@ -76,8 +76,8 @@ class Factory implements FactoryInterface
         $protocol = ($config['Mail']['secure'] ?? false) ? 'smtps' : 'smtp';
         $dsn = "$protocol://";
         if (
-            ($username = $config['Mail']['username'] ?? null)
-            && ($password = $this->getSecretFromConfig($config['Mail'], 'password'))
+            ('' !== ($username = rawurlencode($config['Mail']['username'] ?? '')))
+            && ('' !== ($password = rawurlencode($this->getSecretFromConfig($config['Mail'], 'password') ?? '')))
         ) {
             $dsn .= "$username:$password@";
         }

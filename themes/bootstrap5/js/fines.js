@@ -22,7 +22,7 @@ VuFind.register('fines', function fines() {
    */
   function getFraction(currency)
   {
-    var fraction = String(currency % 100);
+    let fraction = String(currency % 100);
     while (fraction.length < 2) {
       fraction += '0';
     }
@@ -74,13 +74,13 @@ VuFind.register('fines', function fines() {
     }
 
     // Count the balance for selected fees:
-    var selectedAmount = 0;
+    let selectedAmount = 0;
     document.querySelectorAll(CHECKBOX_ITEM_SELECTOR + ':checked').forEach((cb) => {
       selectedAmount += parseInt(cb.dataset.amount, 10);
     });
 
     // If something is selected, include any service fee:
-    var serviceFee = 0;
+    let serviceFee = 0;
     if (selectedAmount) {
       const serviceFeeElem = document.querySelector('.js-service-fee');
       if (serviceFeeElem) {
@@ -89,7 +89,7 @@ VuFind.register('fines', function fines() {
     }
 
     const minimumAmount = parseInt(minimumElem.dataset.raw, 10);
-    if (selectedAmount + serviceFee >= minimumAmount) {
+    if (selectedAmount && selectedAmount + serviceFee >= minimumAmount) {
       payButton.removeAttribute('disabled');
       payButton.value = formatAmount(selectedAmount + serviceFee, payButton.dataset.template);
       minimumElem.classList.add('hidden');
@@ -161,7 +161,7 @@ VuFind.register('fines', function fines() {
       });
   }
 
-  var my = {
+  let my = {
     init: init,
     registerPayment: registerPayment
   };

@@ -82,12 +82,7 @@ class PermissionManager
         if (!$authService) {
             return false;
         }
-
-        if ($authService->isGranted($permission, $context)) {
-            return true;
-        }
-
-        return false;
+        return $authService->isGranted($permission, $context);
     }
 
     /**

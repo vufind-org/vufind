@@ -125,7 +125,7 @@ class ILS extends AbstractBase
     public function supportsPasswordRecovery(?string $target = null)
     {
         $recoveryConfig = $this->getCatalog()->checkFunction('resetPassword');
-        return $recoveryConfig ? true : false;
+        return (bool)$recoveryConfig;
     }
 
     /**

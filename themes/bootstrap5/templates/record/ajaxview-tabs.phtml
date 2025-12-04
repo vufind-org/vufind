@@ -60,10 +60,10 @@
         }
       }
       if (!$obj->isVisible()) {
-        $tabAttrs->add('class', 'hidden');
+        $liAttrs->add('class', 'hidden');
       }
       if (!$obj->supportsAjax()) {
-        $tabAttrs->add('class', 'noajax');
+        $liAttrs->add('class', 'noajax');
       }
     ?>
     <li<?=$liAttrs?>>

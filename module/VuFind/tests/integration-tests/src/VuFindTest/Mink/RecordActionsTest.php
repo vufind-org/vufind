@@ -911,7 +911,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $session->getPage();
         $this->findCss($page, '.usercontent-table');
         $this->assertCount(2, $page->findAll('css', 'div.user-comment-truncate'));
-        $this->clickCss($page, '.checkbox input[name="selectAll"]');
+        $this->clickCss($page, '.select-all-container input[name="selectAll"]');
         $this->clickCss($page, 'button#cancelSelected');
         $this->clickCss($page, 'a#confirm_cancel_selected_yes');
         $this->unfindCss($page, '.usercontent-table');
@@ -920,7 +920,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->findCss($page, '.usercontent-table');
         $this->assertEquals('testtag', $this->findCssAndGetText($page, '.usercontent-table .user-tag div'));
-        $this->clickCss($page, '.checkbox input[name="selectAll"]');
+        $this->clickCss($page, '.select-all-container input[name="selectAll"]');
         $this->clickCss($page, 'button#cancelSelected');
         $this->clickCss($page, 'a#confirm_cancel_selected_yes');
         $this->unfindCss($page, '.usercontent-table');
@@ -931,7 +931,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $inputs = $page->findAll('css', 'div.star-rating input:checked');
         $this->assertCount(1, $inputs);
         $this->assertEquals('50', $inputs[0]->getValue());
-        $this->clickCss($page, '.checkbox input[name="selectAll"]');
+        $this->clickCss($page, '.select-all-container input[name="selectAll"]');
         $this->clickCss($page, 'button#cancelSelected');
         $this->clickCss($page, 'a#confirm_cancel_selected_yes');
         $this->unfindCss($page, '.usercontent-table');

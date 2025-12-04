@@ -32,6 +32,7 @@ namespace VuFind\Controller;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
 use VuFind\Search\Factory\UrlQueryHelperFactory;
+use VuFind\Search\ReservesHelper;
 
 use function array_slice;
 use function count;
@@ -134,8 +135,8 @@ class SearchController extends AbstractSolrSearch
         $view->url = $this->params()->fromPost('url')
             ?? $this->params()->fromQuery('url')
             ?? $this->getRequest()->getServer()->get('HTTP_REFERER');
-        if (!$this->isLocalUrl($view->url)) {
-            throw new \Exception('Unexpected value passed to emailAction: ' . $view->url);
+        if (!$view->url || !$this->isLocalUrl($view->url)) {
+            throw new \Exception('Unexpected value passed to emailAction: ' . ($view->url ?? '<null>'));
         }
 
         $emailActionSettings = $this->getService(\VuFind\Config\AccountCapabilities::class)->getEmailActionSetting();
@@ -347,7 +348,7 @@ class SearchController extends AbstractSolrSearch
 
         // No params?  Show appropriate form (varies depending on whether we're
         // using driver-based or Solr-based reserves searching).
-        if ($this->reserves()->useIndex()) {
+        if ($this->getService(ReservesHelper::class)->useIndex()) {
             return $this->forwardTo('Search', 'ReservesSearch');
         }
 
@@ -417,7 +418,7 @@ class SearchController extends AbstractSolrSearch
         $course = $this->params()->fromQuery('course');
         $inst = $this->params()->fromQuery('inst');
         $dept = $this->params()->fromQuery('dept');
-        $result = $this->reserves()->findReserves($course, $inst, $dept);
+        $result = $this->getService(ReservesHelper::class)->findReserves($course, $inst, $dept);
 
         // Build a list of unique IDs
         $callback = function ($i) {

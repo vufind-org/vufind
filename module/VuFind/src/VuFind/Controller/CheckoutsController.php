@@ -33,6 +33,7 @@ namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\SessionManager;
+use VuFind\ILS\Logic\RecordsHelper;
 use VuFind\ILS\PaginationHelper;
 use VuFind\Validator\CsrfInterface;
 
@@ -171,7 +172,7 @@ class CheckoutsController extends AbstractBase
             }
         }
 
-        $transactions = $this->ilsRecords()->getDrivers($driversNeeded);
+        $transactions = $this->getService(RecordsHelper::class)->getDrivers($driversNeeded);
         $sortList = $pageOptions['sortList'];
         $params = $pageOptions['ilsParams'];
         return $this->createViewModel(

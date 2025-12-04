@@ -50,7 +50,14 @@ interface CommentsEntityInterface extends EntityInterface
     public function getId(): ?int;
 
     /**
-     * Comment setter
+     * Get comment.
+     *
+     * @return string
+     */
+    public function getComment(): string;
+
+    /**
+     * Set comment.
      *
      * @param string $comment Comment
      *
@@ -59,14 +66,14 @@ interface CommentsEntityInterface extends EntityInterface
     public function setComment(string $comment): static;
 
     /**
-     * Comment getter
+     * Get created date.
      *
-     * @return string
+     * @return DateTime
      */
-    public function getComment(): string;
+    public function getCreated(): DateTime;
 
     /**
-     * Created setter.
+     * Set created date.
      *
      * @param DateTime $dateTime Created date
      *
@@ -75,14 +82,14 @@ interface CommentsEntityInterface extends EntityInterface
     public function setCreated(DateTime $dateTime): static;
 
     /**
-     * Created getter
+     * Get user.
      *
-     * @return DateTime
+     * @return ?UserEntityInterface
      */
-    public function getCreated(): DateTime;
+    public function getUser(): ?UserEntityInterface;
 
     /**
-     * User setter.
+     * Set user.
      *
      * @param ?UserEntityInterface $user User that created comment
      *
@@ -91,14 +98,14 @@ interface CommentsEntityInterface extends EntityInterface
     public function setUser(?UserEntityInterface $user): static;
 
     /**
-     * User getter
+     * Get resource.
      *
-     * @return ?UserEntityInterface
+     * @return ResourceEntityInterface
      */
-    public function getUser(): ?UserEntityInterface;
+    public function getResource(): ResourceEntityInterface;
 
     /**
-     * Resource setter.
+     * Set resource.
      *
      * @param ResourceEntityInterface $resource Resource
      *

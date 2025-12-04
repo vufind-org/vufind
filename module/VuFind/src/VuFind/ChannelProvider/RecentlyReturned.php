@@ -55,7 +55,7 @@ class RecentlyReturned extends AbstractILSChannelProvider
     protected function getIlsResponse()
     {
         return $this->ils->checkCapability('getRecentlyReturnedBibs')
-            ? $this->ils->getRecentlyReturnedBibs($this->channelSize, $this->maxAge)
+            ? $this->ils->getRecentlyReturnedBibs($this->batchSize, $this->maxAge)
             : [];
     }
 

@@ -145,11 +145,9 @@ class Utils
             // If we have year + month, parse that out:
             if (strlen($date) < 8) {
                 $day = null;
-                if (preg_match('/^[0-9]{4}-([0-9]{1,2})/', $date, $matches)) {
-                    $month = str_pad($matches[1], 2, '0', STR_PAD_LEFT);
-                } else {
-                    $month = null;
-                }
+                $month = preg_match('/^[0-9]{4}-([0-9]{1,2})/', $date, $matches)
+                    ? str_pad($matches[1], 2, '0', STR_PAD_LEFT)
+                    : null;
             } else {
                 // If we have year + month + day, parse that out:
                 $ymdRegex = '/^[0-9]{4}-([0-9]{1,2})-([0-9]{1,2})/';

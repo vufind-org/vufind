@@ -75,7 +75,6 @@ class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
     {
         $createJs = "{cookie_flags: 'max-age=7200;secure;samesite=none'}";
         $options = [
-            'universal' => true,
             'create_options_js' => $createJs,
         ];
         $expectedUrl = 'https&#x3A;&#x2F;&#x2F;www.googletagmanager.com&#x2F;gtag&#x2F;js&#x3F;id&#x3D;myfakekey';
@@ -100,18 +99,18 @@ class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
      */
     public function testDisabled(): void
     {
-        $this->assertEquals('', $this->renderGA(false));
+        $this->assertEquals('', $this->renderGA(null));
     }
 
     /**
      * Render the GA code
      *
-     * @param string $key     GA key (false for disabled)
-     * @param array  $options Options for GA helper
+     * @param ?string $key     GA key (null for disabled)
+     * @param array   $options Options for GA helper
      *
      * @return string
      */
-    protected function renderGA(string $key, $options = []): string
+    protected function renderGA(?string $key, array $options = []): string
     {
         $helper = new GoogleAnalytics($key, $options);
         $helper->setView($this->getPhpRenderer());
