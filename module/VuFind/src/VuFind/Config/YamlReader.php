@@ -100,7 +100,8 @@ class YamlReader
             $baseConfigPath = $this->pathResolver->getBaseConfigPath($filename);
             $this->files[$filename] = $this->getFromPaths(
                 $baseConfigPath,
-                $localConfigPath
+                $localConfigPath,
+                $useLocalConfig
             );
         }
 
@@ -110,13 +111,14 @@ class YamlReader
     /**
      * Given core and local filenames, retrieve the configuration data.
      *
-     * @param string $defaultFile Full path to file containing default YAML
-     * @param string $customFile  Full path to file containing local customizations
+     * @param string  $defaultFile    Full path to file containing default YAML
+     * @param string  $customFile     Full path to file containing local customizations
      * (may be null if no local file exists).
+     * @param boolean $useLocalConfig Use local configuration if available
      *
      * @return array
      */
-    protected function getFromPaths($defaultFile, $customFile = null)
+    protected function getFromPaths($defaultFile, $customFile = null, $useLocalConfig = true)
     {
         // Connect to the cache:
         $cache = (null !== $this->cacheManager)
@@ -140,7 +142,7 @@ class YamlReader
 
         // Generate data if not found in cache:
         if ($cache === false || !($results = $cache->getItem($cacheKey))) {
-            $results = $this->parseYaml($customFile, $defaultFile);
+            $results = $this->parseYaml($customFile, $defaultFile, $useLocalConfig);
             if ($cache !== false) {
                 $cache->setItem($cacheKey, $results);
             }
@@ -152,15 +154,16 @@ class YamlReader
     /**
      * Process a YAML file (and its parent, if necessary).
      *
-     * @param string $file          YAML file to load (will evaluate to null
+     * @param string  $file           YAML file to load (will evaluate to null
      * if file does not exist).
-     * @param string $defaultParent Parent YAML file from which $file should
+     * @param string  $defaultParent  Parent YAML file from which $file should
      * inherit (unless overridden by a specific directive in $file). None by
      * default.
+     * @param boolean $useLocalConfig Use local configuration if available
      *
      * @return array
      */
-    protected function parseYaml($file, $defaultParent = null)
+    protected function parseYaml($file, $defaultParent = null, $useLocalConfig = true)
     {
         // First load current file:
         $results = (!empty($file) && file_exists($file))
@@ -178,6 +181,22 @@ class YamlReader
             }
             // Swallow the directive after processing it:
             unset($results['@parent_yaml']);
+        }
+        // Override default parent with explicitly-defined parent, if present:
+        if (isset($results['@parent_config_name'])) {
+            $parentConfigName = $results['@parent_config_name'] . '.yaml';
+            $defaultParent = $useLocalConfig
+                ? $this->pathResolver->getLocalConfigPath($parentConfigName)
+                : null;
+            if ($defaultParent === null || !file_exists($defaultParent)) {
+                $defaultParent = $this->pathResolver->getBaseConfigPath($parentConfigName);
+            }
+            if (!file_exists($defaultParent)) {
+                $defaultParent = null;
+                error_log('Cannot find parent config: ' . $parentConfigName);
+            }
+            // Swallow the directive after processing it:
+            unset($results['@parent_config_name']);
         }
         // Check for sections to merge instead of overriding:
         $mergedSections = [];
