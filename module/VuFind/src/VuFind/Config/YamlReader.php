@@ -170,8 +170,9 @@ class YamlReader
             ? Yaml::parse(file_get_contents($file)) : [];
 
         if (isset($results['@parent_yaml']) && isset($results['@parent_config_name'])) {
-            error_log('Cannot use both directives @parent_yaml and '
-            . '@parent_config_name at the same time in one file.'
+            error_log(
+                'Cannot use both directives @parent_yaml and '
+                . '@parent_config_name at the same time in one file.'
             );
         }
 
