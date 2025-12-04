@@ -297,6 +297,13 @@ abstract class Options implements TranslatorAwareInterface
     protected $autocompleteAutoSubmit = true;
 
     /**
+     * Autocomplete apply active filters setting (null to fall back to retainFiltersByDefault setting)
+     *
+     * @var ?bool
+     */
+    protected $autocompleteApplyActiveFilters = null;
+
+    /*
      * Autocomplete max display items setting
      *
      * @var int
@@ -1053,6 +1060,16 @@ abstract class Options implements TranslatorAwareInterface
     }
 
     /**
+     * Should autocomplete apply active filters?
+     *
+     * @return bool
+     */
+    public function autocompleteApplyActiveFilters(): bool
+    {
+        return $this->autocompleteApplyActiveFilters ?? $this->getRetainFilterSetting();
+    }
+
+    /**
      * Get max number of displayed suggestions
      *
      * @return array
@@ -1539,6 +1556,7 @@ abstract class Options implements TranslatorAwareInterface
         if (null !== ($autosubmit = $autocompleteSettings['auto_submit'] ?? null)) {
             $this->autocompleteAutoSubmit = $autosubmit;
         }
+        $this->autocompleteApplyActiveFilters = $autocompleteSettings['apply_active_filters'] ?? null;
         if (null !== ($displaylimit = $autocompleteSettings['display_limit'] ?? null)) {
             $this->autocompleteDisplayLimit = (int)$displaylimit;
         }

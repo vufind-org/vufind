@@ -75,7 +75,6 @@ class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
     {
         $createJs = "{cookie_flags: 'max-age=7200;secure;samesite=none'}";
         $options = [
-            'universal' => true,
             'create_options_js' => $createJs,
         ];
         $expectedUrl = 'https&#x3A;&#x2F;&#x2F;www.googletagmanager.com&#x2F;gtag&#x2F;js&#x3F;id&#x3D;myfakekey';
