@@ -449,7 +449,9 @@ function applyRecordTabHash(scrollToTabs) {
   // Open tab in url hash
   if (initiallyActiveTab && (newTab.length <= 1 || newTab === '#tabnav')) {
     initiallyActiveTab.click();
-    initiallyActiveTab.focus();
+    if (newTab === '#tabnav') {
+      initiallyActiveTab.focus();
+    }
   } else if (newTab.length > 1 && '#' + activeTab !== newTab) {
     const tabLink = document.querySelector('.record-tabs .' + newTab.substring(1) + ' a');
     if (tabLink) {
