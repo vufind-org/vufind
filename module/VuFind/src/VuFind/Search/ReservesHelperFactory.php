@@ -34,6 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\ILS\Connection;
 
 /**
  * Factory for Reserves helper.
@@ -71,6 +72,6 @@ class ReservesHelperFactory implements FactoryInterface
         $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         $useIndex = $config['Reserves']['search_enabled'] ?? false;
         $ss = $useIndex ? $container->get(\VuFindSearch\Service::class) : null;
-        return new $requestedName($useIndex, $ss);
+        return new $requestedName($useIndex, $ss, $container->get(Connection::class));
     }
 }
