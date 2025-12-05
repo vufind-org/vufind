@@ -30,6 +30,7 @@
 namespace VuFind\ServiceManager\Factory;
 
 use Laminas\ServiceManager\Factory\FactoryInterface;
+use Laminas\View\Renderer\PhpRenderer;
 use LogicException;
 use Psr\Container\ContainerInterface;
 use ReflectionClass;
@@ -132,17 +133,19 @@ class AutowiringFactory implements FactoryInterface
         ?array $autowireArgs,
         ReflectionParameter $reflectionParameter
     ) {
-        if ($service = $autowireArgs['service'] ?? null) {
-            return $service;
-        }
-        $type = $reflectionParameter->getType();
-        $name = $type->getName();
-        if (null === $name || !($type instanceof ReflectionNamedType)) {
-            throw new LogicException('Unable to resolve type of parameter ' . $reflectionParameter->getName());
+        $name = $autowireArgs['service'] ?? null;
+        if (null === $name) {
+            $type = $reflectionParameter->getType();
+            $name = $type->getName();
+            if (null === $name || !($type instanceof ReflectionNamedType)) {
+                throw new LogicException('Unable to resolve type of parameter ' . $reflectionParameter->getName());
+            }
         }
         $containerToUse = ($containerName = $autowireArgs['container'] ?? null)
             ? $container->get($containerName)
             : $container;
-        return $containerToUse->get((string)$name);
+        return ($containerToUse instanceof PhpRenderer)
+            ? $containerToUse->plugin((string)$name)
+            : $containerToUse->get((string)$name);
     }
 }

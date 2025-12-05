@@ -59,8 +59,5 @@ class Autowire
         if (null !== $config && null !== $service) {
             throw new LogicException('#[Autowire] attribute cannot contain both config and service.');
         }
-        if (null !== $container && null === $service) {
-            throw new LogicException('#[Autowire] attribute cannot contain container without a service.');
-        }
     }
 }
