@@ -51,6 +51,7 @@ class BadStringsTest extends \PHPUnit\Framework\TestCase
      * @var array
      */
     protected array $badStrings = [
+        'non-standard boolean annotation (use bool)' => '/(@(param|return|var)\s+[^\s]*\|?boolean)/',
         'outdated license address' => '51 Franklin',
         'outdated PHP header comment' => '/\\* (PHP version [^8])\s*\n/',
         'outdated wiki link' => 'vufind.org/wiki/vufind2',

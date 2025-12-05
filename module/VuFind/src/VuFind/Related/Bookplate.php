@@ -156,7 +156,7 @@ class Bookplate implements RelatedInterface
     /**
      * Display titles under bookplates.
      *
-     * @return boolean
+     * @return bool
      */
     protected function displayBookplateTitles()
     {

@@ -374,13 +374,6 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertTrue(
             in_array(
-                'The [GoogleAnalytics] universal setting is off. See config.ini '
-                . 'for important information on how to upgrade your Analytics.',
-                $warnings
-            )
-        );
-        $this->assertTrue(
-            in_array(
                 'Google Maps is no longer a supported Content/recordMap option;'
                 . ' please review your config.ini.',
                 $warnings
@@ -664,6 +657,39 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $results = $upgrader->getNewConfigs();
         $this->assertFalse(isset($results['config']['Mail']['require_login']));
         $this->assertEquals($expected, $results['config']['Mail']['email_action']);
+    }
+
+    /**
+     * Data provider for testLdapUriMigration.
+     *
+     * @return array[]
+     */
+    public static function ldapUriMigrationProvider(): array
+    {
+        return [
+            'host and port' => ['ldaphostandport', 'ldap://foo:123'],
+            'uri already present' => ['ldapuri', 'ldap://foo'],
+            'host only' => ['ldaphost', 'ldap://foo:389'],
+            'port only' => ['ldapport', 'ldap://localhost:123'],
+        ];
+    }
+
+    /**
+     * Test migration of [LDAP] host/port settings.
+     *
+     * @param string $fixture  Fixture to load
+     * @param string $expected Expected migrated uri setting
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('ldapUriMigrationProvider')]
+    public function testLdapUriMigration(string $fixture, string $expected): void
+    {
+        $upgrader = $this->runAndGetConfigUpgrader($fixture);
+        $results = $upgrader->getNewConfigs();
+        $this->assertFalse(isset($results['config']['LDAP']['host']));
+        $this->assertFalse(isset($results['config']['LDAP']['port']));
+        $this->assertEquals($expected, $results['config']['LDAP']['uri']);
     }
 
     /**

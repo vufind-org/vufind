@@ -78,7 +78,13 @@ class Suggester
         $type = $request->get($typeParam, '');
         $query = $request->get($queryParam, '');
         $searcher = $request->get('searcher', 'Solr');
-        $hiddenFilters = $request->get('hiddenFilters', []);
+        // VuFind 11 and earlier used hiddenFilters as the argument name, but filters
+        // is more accurate. For now, we'll support both options. From the perspective
+        // of autocomplete, hidden or not makes no difference.
+        $filters = array_merge(
+            $request->get('filters', []),
+            $request->get('hiddenFilters', [])
+        );
 
         if (str_starts_with($type, 'VuFind:')) {
             // If we're using a combined search box, we need to override the searcher
@@ -121,7 +127,7 @@ class Suggester
         }
 
         if (is_callable([$handler, 'addFilters'])) {
-            $handler->addFilters($hiddenFilters);
+            $handler->addFilters($filters);
         }
 
         // if the handler needs the complete request, pass it on

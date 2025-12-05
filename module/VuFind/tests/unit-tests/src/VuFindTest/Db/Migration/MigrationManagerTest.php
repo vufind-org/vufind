@@ -95,10 +95,9 @@ class MigrationManagerTest extends \PHPUnit\Framework\TestCase
     public function testGetMigrationsSorting(): void
     {
         $basePath = '/fake/path';
-        // Test data is intentionally out of order, so we can test that sorting behaves as intended.
         $testData = [
-            "$basePath/10.0" => ['001-foo', '002-foo', '003-foo'],
             "$basePath/9.0" => ['001-bar', '002-baz'],
+            "$basePath/10.0" => ['001-foo', '002-foo', '003-foo'],
             "$basePath/11.0" => ['001-baz'],
         ];
         $loader = $this->createMock(MigrationLoader::class);

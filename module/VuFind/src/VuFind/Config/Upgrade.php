@@ -494,17 +494,6 @@ class Upgrade implements LoggerAwareInterface
                 . ' please review your config.ini.'
             );
         }
-        if (isset($newConfig['GoogleAnalytics']['apiKey'])) {
-            if (
-                !isset($newConfig['GoogleAnalytics']['universal'])
-                || !$newConfig['GoogleAnalytics']['universal']
-            ) {
-                $this->addWarning(
-                    'The [GoogleAnalytics] universal setting is off. See config.ini '
-                    . 'for important information on how to upgrade your Analytics.'
-                );
-            }
-        }
 
         // Upgrade CAPTCHA Options
         $legacySettingsMap = [
@@ -643,6 +632,24 @@ class Upgrade implements LoggerAwareInterface
                 $newConfig['CacheConfigName_searchspecs']['disabled'] = true;
             }
             unset($this->newConfigs['searches']['Cache']);
+        }
+
+        // Update LDAP settings (replace deprecated host/port with uri):
+        $ldapHost = $newConfig['LDAP']['host'] ?? null;
+        $ldapPort = $newConfig['LDAP']['port'] ?? null;
+        if ($ldapHost || $ldapPort) {
+            if (!isset($newConfig['LDAP']['uri'])) {
+                if ($ldapHost && (str_starts_with($ldapHost, 'ldap://') || str_starts_with($ldapHost, 'ldaps://'))) {
+                    // Note that ldap_connect ignores the port setting when the first argument is a URI, so it is
+                    // intentional that we ignore the port setting this case.
+                    $newConfig['LDAP']['uri'] = $ldapHost;
+                } else {
+                    // If the host setting is not a URI, convert it into one:
+                    $newConfig['LDAP']['uri'] = 'ldap://' . ($ldapHost ?? 'localhost') . ':' . ($ldapPort ?? '389');
+                }
+            }
+            unset($newConfig['LDAP']['host']);
+            unset($newConfig['LDAP']['port']);
         }
 
         // Translate obsolete permission settings:
