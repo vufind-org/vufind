@@ -150,8 +150,6 @@ class AutowiringFactory implements FactoryInterface
         $containerToUse = ($containerName = $autowireArgs['container'] ?? null)
             ? $container->get($containerName)
             : $container;
-        return ($containerToUse instanceof PhpRenderer)
-            ? $containerToUse->plugin((string)$name)
-            : $containerToUse->get((string)$name);
+        return $containerToUse->get((string)$name);
     }
 }

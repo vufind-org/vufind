@@ -31,6 +31,7 @@ declare(strict_types=1);
 
 namespace VuFindTest\ServiceManager\Factory\TestHarness;
 
+use Laminas\View\HelperPluginManager;
 use VuFind\Auth\Manager;
 use VuFind\ILS\Connection;
 use VuFind\ServiceManager\Factory\Autowire;
@@ -58,7 +59,7 @@ class AutowiredClass
     public function __construct(
         #[Autowire(config: 'config')]
         protected array $config,
-        #[Autowire(container: 'ViewRenderer')]
+        #[Autowire(container: HelperPluginManager::class)]
         protected Url $url,
         protected Manager $authManager,
         #[Autowire(service: Connection::class)]

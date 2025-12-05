@@ -31,6 +31,7 @@ declare(strict_types=1);
 
 namespace VuFindTest\ServiceManager\Factory;
 
+use Laminas\View\HelperPluginManager;
 use Laminas\View\Renderer\PhpRenderer;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Psr\Container\ContainerInterface;
@@ -121,11 +122,9 @@ class AutowiringFactoryTest extends \PHPUnit\Framework\TestCase
             ConfigManagerInterface::class,
             $this->getMockConfigManager(['config' => ['Foo' => 'bar']])
         );
-        $viewRenderer = new PhpRenderer();
         $plugins = new MockViewHelperContainer($this);
         $plugins->set(Url::class, $this->createMock(Url::class));
-        $viewRenderer->setHelperPluginManager($plugins);
-        $container->set('ViewRenderer', $viewRenderer);
+        $container->set(HelperPluginManager::class, $plugins);
         $container->set(AuthManager::class, $this->createMock(AuthManager::class));
         $container->set(Connection::class, $this->createMock(Connection::class));
         return $container;
