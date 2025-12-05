@@ -70,7 +70,7 @@ class ServerProvider
         }
 
         $this->server = Server::builder()
-            ->setServerInfo('VuFind Server', '0.0.1')
+            ->setServerInfo(name: 'VuFind Server', version: '0.0.1', description: 'The library catalog')
             ->setDiscovery(__DIR__, ['../Mcp'])
             ->setSession(new FileSessionStore(LOCAL_CACHE_DIR . '/mcp/session'))
             ->setContainer($container)

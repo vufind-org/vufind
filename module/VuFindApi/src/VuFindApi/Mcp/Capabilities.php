@@ -96,15 +96,13 @@ class Capabilities
     /**
      * Search records by keywords
      *
-     * @param string $keywords Keywords
+     * @param string $keywords Keywords to search for
      *
-     * @return array The records found
+     * @return array The records found for this search
      */
-    #[McpResourceTemplate(
-        uriTemplate: 'catalog://record/{keywords}',
+    #[McpTool(
         name: 'searchRecords',
-        description: 'Search catalog records by keywords.',
-        mimeType: 'application/json'
+        description: 'Search library catalog records (books, videos and more) by keywords.'
     )]
     public function searchRecords($keywords)
     {
