@@ -140,7 +140,7 @@ trait MockContainerTrait
      *
      * @return bool
      */
-    public function has($rawId): bool
+    public function has($rawId)
     {
         $id = $this->mockAliases[$rawId] ?? $rawId;
         // Assume every service exists unless explicitly disabled
