@@ -30,7 +30,6 @@
 namespace VuFind\ServiceManager\Factory;
 
 use Laminas\ServiceManager\Factory\FactoryInterface;
-use Laminas\View\Renderer\PhpRenderer;
 use LogicException;
 use Psr\Container\ContainerInterface;
 use ReflectionClass;

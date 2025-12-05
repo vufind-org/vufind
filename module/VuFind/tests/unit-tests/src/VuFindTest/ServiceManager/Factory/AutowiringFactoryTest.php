@@ -32,7 +32,6 @@ declare(strict_types=1);
 namespace VuFindTest\ServiceManager\Factory;
 
 use Laminas\View\HelperPluginManager;
-use Laminas\View\Renderer\PhpRenderer;
 use PHPUnit\Framework\Attributes\DataProvider;
 use Psr\Container\ContainerInterface;
 use VuFind\Auth\Manager as AuthManager;
