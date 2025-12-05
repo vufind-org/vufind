@@ -70,17 +70,6 @@ class Channels extends AbstractBase
     }
 
     /**
-     * Can this tab be loaded via AJAX?
-     *
-     * @return bool
-     */
-    public function supportsAjax()
-    {
-        // Due to heavy Javascript in channels, the tab cannot be AJAX-loaded:
-        return false;
-    }
-
-    /**
      * Return context variables used for rendering the block's template.
      *
      * @return array
