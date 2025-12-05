@@ -63,7 +63,7 @@ trait LowerCaseServiceNameTrait
      *
      * @return bool
      */
-    public function has($id)
+    public function has($id): bool
     {
         return parent::has($this->getNormalizedServiceName($id));
     }

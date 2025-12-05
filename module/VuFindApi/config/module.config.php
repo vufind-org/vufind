@@ -7,6 +7,7 @@ $config = [
         'factories' => [
             'VuFindApi\Controller\AdminApiController' => 'VuFindApi\Controller\AdminApiControllerFactory',
             'VuFindApi\Controller\ApiController' => 'VuFindApi\Controller\ApiControllerFactory',
+            'VuFindApi\Controller\McpController' => 'VuFindApi\Controller\McpControllerFactory',
             'VuFindApi\Controller\SearchApiController' => 'VuFindApi\Controller\SearchApiControllerFactory',
             'VuFindApi\Controller\Search2ApiController' => 'VuFindApi\Controller\Search2ApiControllerFactory',
             'VuFindApi\Controller\WebApiController' => 'VuFindApi\Controller\WebApiControllerFactory',
@@ -14,6 +15,7 @@ $config = [
         'aliases' => [
             'AdminApi' => 'VuFindApi\Controller\AdminApiController',
             'Api' => 'VuFindApi\Controller\ApiController',
+            'Mcp' => 'VuFindApi\Controller\McpController',
             'SearchApi' => 'VuFindApi\Controller\SearchApiController',
             'Search2Api' => 'VuFindApi\Controller\Search2ApiController',
             'WebApi' => 'VuFindApi\Controller\WebApiController',
@@ -25,11 +27,13 @@ $config = [
             'VuFindApi\Formatter\RecordFormatter' => 'VuFindApi\Formatter\RecordFormatterFactory',
             'VuFindApi\Formatter\Search2RecordFormatter' => 'VuFindApi\Formatter\Search2RecordFormatterFactory',
             'VuFindApi\Formatter\WebRecordFormatter' => 'VuFindApi\Formatter\WebRecordFormatterFactory',
+            'VuFindApi\Mcp\ServerProvider' => 'VuFindApi\Mcp\ServerProviderFactory',
         ],
     ],
     'vufind_api' => [
         'register_controllers' => [
             \VuFindApi\Controller\AdminApiController::class,
+            // \VuFindApi\Controller\McpController::class,
             \VuFindApi\Controller\SearchApiController::class,
             \VuFindApi\Controller\Search2ApiController::class,
             \VuFindApi\Controller\WebApiController::class,
@@ -78,6 +82,18 @@ $config = [
                     'defaults' => [
                         'controller' => 'SearchApi',
                         'action'     => 'record',
+                    ],
+                ],
+            ],
+            'mcpApiv1' => [
+                'type' => 'Laminas\Router\Http\Literal',
+                // 'verb' => 'get,post,options',
+                'verb' => 'post',
+                'options' => [
+                    'route'    => '/api/v1/mcp',
+                    'defaults' => [
+                        'controller' => 'Mcp',
+                        'action'     => 'mcp',
                     ],
                 ],
             ],
