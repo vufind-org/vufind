@@ -24,7 +24,7 @@ VuFind.register('embedded', function embedded() {
 
   /**
    * Add a record and its active tab to the storage status.
-   * @param {string} id  The record ID.
+   * @param {string} id The record ID.
    * @param {string} tab The ID of the active tab.
    * @private
    */
@@ -44,7 +44,7 @@ VuFind.register('embedded', function embedded() {
 
   /**
    * Toggle the embedded detailed view of a record.
-   * @param {HTMLElement} link   The link element.
+   * @param {HTMLElement} link The link element.
    * @param {string} [tabId] The ID of the tab to open (default = first available tab).
    * @returns {boolean} Return false to prevent the default link behavior.
    */
