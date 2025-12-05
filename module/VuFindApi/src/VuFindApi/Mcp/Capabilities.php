@@ -33,8 +33,10 @@ use Exception;
 use Mcp\Capability\Attribute\McpResourceTemplate;
 use Mcp\Capability\Attribute\McpTool;
 use Mcp\Exception\InvalidArgumentException;
+use Mcp\Exception\ResourceNotFoundException;
 use Mcp\Exception\ResourceReadException;
 use VuFind\Record\Loader;
+use VuFind\Search\SearchRunner;
 use VuFindApi\Formatter\RecordFormatter;
 
 /**
@@ -48,8 +50,33 @@ use VuFindApi\Formatter\RecordFormatter;
  */
 class Capabilities
 {
-    public function __construct(protected Loader $recordLoader, protected RecordFormatter $recordFormatter)
-    {
+    /**
+     * Search class Id
+     */
+    protected string $searchClassId = 'Solr';
+
+    /**
+     * Record fields to return
+     */
+    protected array $recordFields = ['title', 'authors', 'publicationDates'];
+
+    /**
+     * Limit for searches
+     */
+    protected $limit = 50;
+
+    /**
+     * Constructor
+     *
+     * @param Loader          $recordLoader    Record loader
+     * @param RecordFormatter $recordFormatter Record formatter
+     * @param SearchRunner    $searchRunner    Search runner
+     */
+    public function __construct(
+        protected Loader $recordLoader,
+        protected RecordFormatter $recordFormatter,
+        protected SearchRunner $searchRunner
+    ) {
     }
 
     /**
@@ -67,6 +94,47 @@ class Capabilities
     }
 
     /**
+     * Search records by keywords
+     *
+     * @param string $keywords Keywords
+     *
+     * @return array The records found
+     */
+    #[McpResourceTemplate(
+        uriTemplate: 'catalog://record/{keywords}',
+        name: 'searchRecords',
+        description: 'Search catalog records by keywords.',
+        mimeType: 'application/json'
+    )]
+    public function searchRecords($keywords)
+    {
+        $limit = $this->limit;
+        $results = $this->searchRunner->run(
+            ['lookfor' => urldecode($keywords)],
+            $this->searchClassId,
+            function (
+                $runner,
+                $params,
+                $searchId,
+                $results
+            ) use (
+                $limit
+            ): void {
+                $results->overrideStartRecord(1);
+                $params->setLimit($limit);
+            }
+        );
+        if ($results instanceof \VuFind\Search\EmptySet\Results) {
+            throw new ResourceNotFoundException('No records found');
+        }
+        $records = $this->recordFormatter->format(
+            $results->getResults(),
+            $this->recordFields
+        );
+        return $records;
+    }
+
+    /**
      * Retrieve a record by record ID.
      *
      * @param string $recordId The record ID
@@ -74,8 +142,8 @@ class Capabilities
      * @return array The record
      */
     #[McpResourceTemplate(
-        uriTemplate: 'record://{recordId}',
-        name: 'record',
+        uriTemplate: 'catalog://record/{recordId}',
+        name: 'getRecord',
         description: 'Get a catalog record by its ID.',
         mimeType: 'application/json'
     )]
@@ -86,14 +154,12 @@ class Capabilities
         }
 
         try {
-            $searchClassId = 'Solr';
-            $record = $this->recordLoader->load($recordId, $searchClassId);
+            $record = $this->recordLoader->load($recordId, $this->searchClassId);
         } catch (Exception $e) {
             throw new ResourceReadException(message: "Record not found for ID: {$recordId}", previous: $e);
         }
 
-        $fields = ['title', 'authors', 'publicationDates'];
-        $formattedRecord = $this->recordFormatter->format([$record], $fields)[0];
+        $formattedRecord = $this->recordFormatter->format([$record], $this->recordFields)[0];
         return $formattedRecord;
     }
 }

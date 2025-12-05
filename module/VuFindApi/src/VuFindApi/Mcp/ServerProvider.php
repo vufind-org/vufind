@@ -52,16 +52,22 @@ class ServerProvider
 
     /**
      * Constructor
+     *
+     * @param ServiceLocatorInterface $serviceLocator Service locator
      */
     public function __construct(protected ServiceLocatorInterface $serviceLocator)
     {
         $container = new Container();
-
-        $recordLoader = $serviceLocator->get(\VuFind\Record\Loader::class);
-        $container->set(\VuFind\Record\Loader::class, $recordLoader);
-
-        $recordFormatter = $serviceLocator->get(\VuFindApi\Formatter\RecordFormatter::class);
-        $container->set(\VuFindApi\Formatter\RecordFormatter::class, $recordFormatter);
+        foreach (
+            [
+            \VuFind\Record\Loader::class,
+            \VuFindApi\Formatter\RecordFormatter::class,
+            \VuFind\Search\SearchRunner::class,
+            ] as $class
+        ) {
+            // Provide these services to each capability class constructor
+            $container->set($class, $serviceLocator->get($class));
+        }
 
         $this->server = Server::builder()
             ->setServerInfo('VuFind Server', '0.0.1')
