@@ -30,6 +30,7 @@
 namespace VuFindApi\Mcp;
 
 use Mcp\Server;
+use Mcp\Server\Session\FileSessionStore;
 
 /**
  * ServerProvider for Model Context Protocol (MCP)
@@ -43,12 +44,20 @@ use Mcp\Server;
 class ServerProvider
 {
     /**
-     * Constructor
-     *
-     * @param Server $server MCP server
+     * MCP Server
      */
-    public function __construct(protected Server $server)
+    private Server $server;
+
+    /**
+     * Constructor
+     */
+    public function __construct()
     {
+        $this->server = Server::builder()
+            ->setServerInfo('VuFind Server', '0.0.1')
+            ->setDiscovery(__DIR__, ['../Mcp'])
+            ->setSession(new FileSessionStore(LOCAL_CACHE_DIR . '/mcp/session'))
+            ->build();
     }
 
     /**
