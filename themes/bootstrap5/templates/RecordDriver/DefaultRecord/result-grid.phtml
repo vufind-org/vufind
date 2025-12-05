@@ -14,11 +14,6 @@ $showCheckboxes = $this->searchSettings($this->results->getParams())->checkboxes
 
 <div class="grid-result<?=$this->driver->supportsAjaxStatus() ? ' ajaxItem' : ''?>">
   <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId">
-  <?php if ($showCheckboxes): ?>
-    <label class="grid-checkbox">
-      <?=$this->record($this->driver)->getCheckbox('', 'search-cart-form') ?>
-    </label>
-  <?php endif; ?>
   <div class="grid-body">
     <?=$this->record($this->driver)->getCover('result-grid', 'small', $recordLinker->getUrl($this->driver)); ?>
     <?php if (!$openUrlActive && empty($urls)): ?>
