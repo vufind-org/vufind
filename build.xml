@@ -255,10 +255,14 @@
 
   <!-- Psalm -->
   <target name="psalm-checkstyle">
-    <exec command="${srcdir}/vendor/bin/psalm --report=${builddir}/reports/psalm-checkstyle.xml" escape="false" passthru="true" checkreturn="true" />
+    <exec executable="${srcdir}/vendor/bin/psalm" escape="false" passthru="true" checkreturn="true">
+      <arg line="--report=${builddir}/reports/psalm-checkstyle.xml" />
+    </exec>
   </target>
   <target name="psalm-console">
-    <exec command="${srcdir}/vendor/bin/psalm --diff" escape="false" passthru="true" checkreturn="true" />
+    <exec executable="${srcdir}/vendor/bin/psalm" escape="false" passthru="true" checkreturn="true">
+      <arg line="--diff" />
+    </exec>
   </target>
 
   <!-- php-cs-fixer (first task applies fixes, second task simply checks if they are needed) -->
