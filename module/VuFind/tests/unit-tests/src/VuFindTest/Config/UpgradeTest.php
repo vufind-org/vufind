@@ -718,11 +718,13 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $upgrader = $this->runAndGetConfigUpgrader('record-tabs');
         $results = $upgrader->getNewConfigs();
         $tabScripts = $results['RecordTabs']['TabScripts'] ?? [];
-        $this->assertEquals(['record_holdings.js'], $tabScripts['Holdings']);
-        $this->assertEquals(['record_comments.js'], $tabScripts['UserComments']);
         $this->assertEquals(
-            ['combined-search.js', 'check_item_statuses.js', 'record_versions.js'],
-            $tabScripts['Versions']
+			[
+				'Holdings' => ['record_holdings.js'],
+				'UserComments' => ['record_comments.js'],
+				'Versions' => ['combined-search.js', 'check_item_statuses.js', 'record_versions.js'],
+			],
+            $tabScripts
         );
     }
 }
