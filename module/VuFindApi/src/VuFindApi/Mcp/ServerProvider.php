@@ -29,6 +29,8 @@
 
 namespace VuFindApi\Mcp;
 
+use Laminas\ServiceManager\ServiceLocatorInterface;
+use Mcp\Capability\Registry\Container;
 use Mcp\Server;
 use Mcp\Server\Session\FileSessionStore;
 
@@ -51,12 +53,21 @@ class ServerProvider
     /**
      * Constructor
      */
-    public function __construct()
+    public function __construct(protected ServiceLocatorInterface $serviceLocator)
     {
+        $container = new Container();
+
+        $recordLoader = $serviceLocator->get(\VuFind\Record\Loader::class);
+        $container->set(\VuFind\Record\Loader::class, $recordLoader);
+
+        $recordFormatter = $serviceLocator->get(\VuFindApi\Formatter\RecordFormatter::class);
+        $container->set(\VuFindApi\Formatter\RecordFormatter::class, $recordFormatter);
+
         $this->server = Server::builder()
             ->setServerInfo('VuFind Server', '0.0.1')
             ->setDiscovery(__DIR__, ['../Mcp'])
             ->setSession(new FileSessionStore(LOCAL_CACHE_DIR . '/mcp/session'))
+            ->setContainer($container)
             ->build();
     }
 

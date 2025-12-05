@@ -27,7 +27,7 @@ $config = [
             'VuFindApi\Formatter\RecordFormatter' => 'VuFindApi\Formatter\RecordFormatterFactory',
             'VuFindApi\Formatter\Search2RecordFormatter' => 'VuFindApi\Formatter\Search2RecordFormatterFactory',
             'VuFindApi\Formatter\WebRecordFormatter' => 'VuFindApi\Formatter\WebRecordFormatterFactory',
-            'VuFindApi\Mcp\ServerProvider' => 'Laminas\ServiceManager\Factory\InvokableFactory',
+            'VuFindApi\Mcp\ServerProvider' => 'VuFindApi\Mcp\ServerProviderFactory',
         ],
     ],
     'vufind_api' => [
@@ -87,8 +87,7 @@ $config = [
             ],
             'mcpApiv1' => [
                 'type' => 'Laminas\Router\Http\Literal',
-                // 'verb' => 'get,post,options',
-                'verb' => 'post',
+                'verb' => 'get,post,options',
                 'options' => [
                     'route'    => '/api/v1/mcp',
                     'defaults' => [

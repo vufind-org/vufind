@@ -29,7 +29,13 @@
 
 namespace VuFindApi\Mcp;
 
+use Exception;
+use Mcp\Capability\Attribute\McpResourceTemplate;
 use Mcp\Capability\Attribute\McpTool;
+use Mcp\Exception\InvalidArgumentException;
+use Mcp\Exception\ResourceReadException;
+use VuFind\Record\Loader;
+use VuFindApi\Formatter\RecordFormatter;
 
 /**
  * Capabilities (stub) for Model Context Protocol (MCP)
@@ -42,6 +48,10 @@ use Mcp\Capability\Attribute\McpTool;
  */
 class Capabilities
 {
+    public function __construct(protected Loader $recordLoader, protected RecordFormatter $recordFormatter)
+    {
+    }
+
     /**
      * Add two numbers.  It's AI-powered magic!
      *
@@ -54,5 +64,36 @@ class Capabilities
     public function add(int $a, int $b): int
     {
         return $a + $b;
+    }
+
+    /**
+     * Retrieve a record by record ID.
+     *
+     * @param string $recordId The record ID
+     *
+     * @return array The record
+     */
+    #[McpResourceTemplate(
+        uriTemplate: 'record://{recordId}',
+        name: 'record',
+        description: 'Get a catalog record by its ID.',
+        mimeType: 'application/json'
+    )]
+    public function getRecord(string $recordId): array
+    {
+        if (!$recordId) {
+            throw new InvalidArgumentException('Record ID required.');
+        }
+
+        try {
+            $searchClassId = 'Solr';
+            $record = $this->recordLoader->load($recordId, $searchClassId);
+        } catch (Exception $e) {
+            throw new ResourceReadException(message: "Record not found for ID: {$recordId}", previous: $e);
+        }
+
+        $fields = ['title', 'authors', 'publicationDates'];
+        $formattedRecord = $this->recordFormatter->format([$record], $fields)[0];
+        return $formattedRecord;
     }
 }
