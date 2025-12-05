@@ -36,7 +36,7 @@ use Psr\Container\ContainerInterface;
 use ReflectionClass;
 use ReflectionNamedType;
 use ReflectionParameter;
-use VuFind\Config\ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 
 /**
  * VuFind Autowiring Factory
@@ -52,9 +52,9 @@ class AutowiringFactory implements FactoryInterface
     /**
      * Configuration manager
      *
-     * @var ?ConfigManager
+     * @var ?ConfigManagerInterface
      */
-    protected ?ConfigManager $configManager = null;
+    protected ?ConfigManagerInterface $configManager = null;
 
     /**
      * Create a service for the specified name.
@@ -113,7 +113,7 @@ class AutowiringFactory implements FactoryInterface
      */
     protected function getConfigArray(ContainerInterface $container, string $config): array
     {
-        $this->configManager ??= $container->get(ConfigManager::class);
+        $this->configManager ??= $container->get(ConfigManagerInterface::class);
         return $this->configManager->getConfigArray($config);
     }
 
@@ -136,11 +136,17 @@ class AutowiringFactory implements FactoryInterface
         $name = $autowireArgs['service'] ?? null;
         if (null === $name) {
             $type = $reflectionParameter->getType();
-            $name = $type->getName();
+            $name = $type?->getName();
             if (null === $name || !($type instanceof ReflectionNamedType)) {
                 throw new LogicException('Unable to resolve type of parameter ' . $reflectionParameter->getName());
             }
+            if ($type->isBuiltIn()) {
+                throw new LogicException(
+                    'Unable to autowire parameter ' . $reflectionParameter->getName() . ' of type ' . $type->getName()
+                );
+            }
         }
+
         $containerToUse = ($containerName = $autowireArgs['container'] ?? null)
             ? $container->get($containerName)
             : $container;

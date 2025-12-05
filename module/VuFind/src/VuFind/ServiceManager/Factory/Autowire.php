@@ -56,8 +56,13 @@ class Autowire
         public readonly ?string $service = null,
         public readonly ?string $container = null,
     ) {
-        if (null !== $config && null !== $service) {
-            throw new LogicException('#[Autowire] attribute cannot contain both config and service.');
+        if (null !== $config) {
+            if (null !== $service) {
+                throw new LogicException('#[Autowire] attribute cannot contain both config and service.');
+            }
+            if (null !== $container) {
+                throw new LogicException('#[Autowire] attribute cannot contain both config and container.');
+            }
         }
     }
 }

@@ -32,7 +32,6 @@ namespace VuFind\ServiceManager\Factory;
 use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 use Psr\Container\ContainerInterface;
 use ReflectionClass;
-use VuFind\Config\ConfigManager;
 
 /**
  * VuFind Abstract Autowiring Factory
@@ -45,13 +44,6 @@ use VuFind\Config\ConfigManager;
  */
 class AbstractAutowiringFactory extends AutowiringFactory implements AbstractFactoryInterface
 {
-    /**
-     * Configuration manager
-     *
-     * @var ?ConfigManager
-     */
-    protected ?ConfigManager $configManager = null;
-
     /**
      * Autowireability of known services.
      *
