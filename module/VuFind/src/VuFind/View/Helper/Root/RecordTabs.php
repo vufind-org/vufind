@@ -82,19 +82,14 @@ class RecordTabs extends \Laminas\View\Helper\AbstractHelper
                 'class' => 'record-tab-button',
             ];
 
-            $isActiveTab = $activeTab === $tab;
-            $tabContent = '';
-            if (($isActiveTab && !$loadInitialTabWithAjax) || !$obj->supportsAjax()) {
-                $tabContent = $this->getView()->record($driver)->getTab($obj);
-            }
-
-            $tabItem['content'] = $tabContent;
+            $loadContent = (($activeTab === $tab) && !$loadInitialTabWithAjax) || !$obj->supportsAjax();
+            $tabItem['content'] = $loadContent ? $this->getView()->record($driver)->getTab($obj) : '';
             $tabItem['paneAttributes'] = [
                 'class' => 'record-tab-pane',
                 'data-tab-url' => $recordLinker->getTabUrl($driver, $tab),
                 'data-ajax-url' => $ajaxTabUrl,
             ];
-            if (!empty($tabContent) || !$obj->supportsAjax()) {
+            if ($loadContent) {
                 $tabItem['paneAttributes']['data-init'] = 'true';
             } else {
                 $tabItem['paneAttributes']['data-init'] = 'false';
