@@ -120,7 +120,20 @@ class SearchBox extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log\
     }
 
     /**
-     * Is autocomplete enabled for the current context?
+     * Is autocomplete configured to apply active filters for the current context?
+     *
+     * @param string $activeSearchClass Active search class ID
+     *
+     * @return bool
+     */
+    public function autocompleteApplyActiveFilters(string $activeSearchClass): bool
+    {
+        $options = $this->optionsManager->get($activeSearchClass);
+        return $options->autocompleteApplyActiveFilters();
+    }
+
+    /**
+     * Is autocomplete configured to autosubmit for the current context?
      *
      * @param string $activeSearchClass Active search class ID
      *
