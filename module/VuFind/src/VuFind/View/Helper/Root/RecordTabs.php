@@ -68,7 +68,8 @@ class RecordTabs extends \Laminas\View\Helper\AbstractHelper
         array $tabs,
         string $activeTab
     ): array {
-        $ajaxTabUrl = $this->getView()->recordLinker()->getTabUrl($driver, 'AjaxTab');
+        $recordLinker = $this->getView()->recordLinker();
+        $ajaxTabUrl = $recordLinker->getTabUrl($driver, 'AjaxTab');
         $loadInitialTabWithAjax = (bool)($this->config['Site']['loadInitialTabWithAjax'] ?? false);
         $backgroundTabs = $this->tabManager->getBackgroundTabNames($driver);
         $tabArray = [];
@@ -90,6 +91,7 @@ class RecordTabs extends \Laminas\View\Helper\AbstractHelper
             $tabItem['content'] = $tabContent;
             $tabItem['paneAttributes'] = [
                 'class' => 'record-tab-pane',
+                'data-tab-url' => $recordLinker->getTabUrl($driver, $tab),
                 'data-ajax-url' => $ajaxTabUrl,
             ];
             if (!empty($tabContent) || !$obj->supportsAjax()) {

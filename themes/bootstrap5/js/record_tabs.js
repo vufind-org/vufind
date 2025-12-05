@@ -42,6 +42,10 @@ VuFind.register('recordTabs', function RecordTabs() {
         tabButton.addEventListener('show.bs.tab', () => {
           let tabPane = document.querySelector(tabButton.dataset.bsTarget);
           if (!tabPane) return;
+          let tabUrl = tabPane.dataset.tabUrl;
+          if (window.history.replaceState && tabUrl) {
+            window.history.replaceState({}, document.title, tabUrl);
+          }
           _ajaxLoadTab(tabPane);
         });
       });
