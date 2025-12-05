@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -29,6 +29,7 @@
 
 namespace VuFindConsole\Command\Generate;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -42,15 +43,12 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'generate/extendservice',
+    description: 'Service generator'
+)]
 class ExtendServiceCommand extends AbstractCommand
 {
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'generate/extendservice';
-
     /**
      * Configure the command.
      *
@@ -59,7 +57,6 @@ class ExtendServiceCommand extends AbstractCommand
     protected function configure()
     {
         $this
-            ->setDescription('Service generator')
             ->setHelp('Override a service with a new child class.')
             ->addArgument(
                 'config_path',
@@ -81,7 +78,7 @@ class ExtendServiceCommand extends AbstractCommand
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $source = $input->getArgument('config_path');
         $target = $input->getArgument('target_module');
@@ -91,9 +88,9 @@ class ExtendServiceCommand extends AbstractCommand
             $this->generatorTools->extendService($source, $target);
         } catch (\Exception $e) {
             $output->writeln($e->getMessage());
-            return 1;
+            return self::FAILURE;
         }
 
-        return 0;
+        return self::SUCCESS;
     }
 }

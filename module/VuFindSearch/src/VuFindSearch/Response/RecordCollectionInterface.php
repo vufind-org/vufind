@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category Search
  * @package  Service
@@ -116,6 +116,17 @@ interface RecordCollectionInterface extends \Countable, \Iterator
      * @return string
      */
     public function getSourceIdentifier();
+
+    /**
+     * Sets the result set identifier for the record.
+     *
+     * This method assigns a UUID or a unique string identifier to the result set.
+     *
+     * @param string $uuid A valid UUID or unique identifier to be assigned to the result set.
+     *
+     * @return void
+     */
+    public function setResultSetIdentifier(string $uuid);
 
     /**
      * Add a record to the collection.

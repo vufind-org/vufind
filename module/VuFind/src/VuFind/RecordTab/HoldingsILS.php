@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -47,14 +47,14 @@ class HoldingsILS extends AbstractBase
     /**
      * ILS connection (or null if not applicable)
      *
-     * @param Connection
+     * @var Connection
      */
     protected $catalog;
 
     /**
      * Name of template to use for rendering holdings.
      *
-     * @param string
+     * @var string
      */
     protected $template;
 
@@ -68,15 +68,13 @@ class HoldingsILS extends AbstractBase
     /**
      * Constructor
      *
-     * @param \VuFind\ILS\Connection|bool $catalog       ILS connection to use to
-     * check for holdings before displaying the tab; may be set to null if no check
-     * is needed.
-     * @param string                      $template      Holdings template to use
-     * @param bool                        $hideWhenEmpty Whether the
-     * holdings tab should be hidden when empty or not
+     * @param ?Connection $catalog       ILS connection to use to check for holdings before displaying the tab;
+     * may be set to null if no check is needed.
+     * @param ?string     $template      Holdings template to use
+     * @param bool        $hideWhenEmpty Whether the holdings tab should be hidden when empty or not
      */
     public function __construct(
-        Connection $catalog = null,
+        ?Connection $catalog = null,
         $template = null,
         $hideWhenEmpty = false
     ) {
@@ -93,6 +91,18 @@ class HoldingsILS extends AbstractBase
     public function getDescription()
     {
         return 'Holdings';
+    }
+
+    /**
+     * Is this tab initially visible?
+     *
+     * @return bool
+     */
+    public function isVisible()
+    {
+        // Check if the driver has a supportsHoldingsTab method and use it,
+        // defaulting to true (visible) if the method doesn't exist
+        return $this->driver->tryMethod('supportsHoldingsTab', [], true);
     }
 
     /**

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -79,7 +79,7 @@ class TemplatePathTest extends \PHPUnit\Framework\TestCase
 
         $stackMock->expects($this->any())
             ->method('getPaths')
-            ->will($this->returnValue($return));
+            ->willReturn($return);
 
         // Make helper
         return new TemplatePath($stackMock);
@@ -107,7 +107,7 @@ class TemplatePathTest extends \PHPUnit\Framework\TestCase
     public function testThemeDoesntExist()
     {
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('emplate not found in missing: file.phtml');
+        $this->expectExceptionMessage('Template not found in missing: file.phtml');
 
         $helper = $this->getHelper();
         $helper('file.phtml', 'missing');
@@ -121,7 +121,7 @@ class TemplatePathTest extends \PHPUnit\Framework\TestCase
     public function testFileDoesntExist()
     {
         $this->expectException(\Exception::class);
-        $this->expectExceptionMessage('emplate not found in parent: missing.phtml');
+        $this->expectExceptionMessage('Template not found in parent: missing.phtml');
 
         $helper = $this->getHelper();
         $helper('missing.phtml', 'parent');

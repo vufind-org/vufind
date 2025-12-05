@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -31,7 +31,6 @@ namespace VuFindSearch\Backend\Blender;
 
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\EventManager;
-use Laminas\EventManager\EventManagerInterface;
 use VuFindSearch\Backend\AbstractBackend;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Blender\Response\Json\RecordCollection;
@@ -55,6 +54,8 @@ use function intval;
  */
 class Backend extends AbstractBackend
 {
+    use \VuFindSearch\Feature\SearchBackendEventManagerTrait;
+
     /**
      * Actual backends
      *
@@ -86,7 +87,7 @@ class Backend extends AbstractBackend
     /**
      * Blender configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config;
 
@@ -107,16 +108,16 @@ class Backend extends AbstractBackend
     /**
      * Constructor.
      *
-     * @param array                  $backends Actual backends
-     * @param \Laminas\Config\Config $config   Blender configuration
-     * @param array                  $mappings Mappings configuration
-     * @param EventManager           $events   Event manager
+     * @param array                 $backends Actual backends
+     * @param \VuFind\Config\Config $config   Blender configuration
+     * @param array                 $mappings Mappings configuration
+     * @param EventManager          $events   Event manager
      *
      * @return void
      */
     public function __construct(
         array $backends,
-        \Laminas\Config\Config $config,
+        \VuFind\Config\Config $config,
         $mappings,
         EventManager $events
     ) {
@@ -142,7 +143,7 @@ class Backend extends AbstractBackend
      * @param AbstractQuery $query  Search query
      * @param int           $offset Search offset
      * @param int           $limit  Search limit
-     * @param ParamBag      $params Search backend parameters
+     * @param ?ParamBag     $params Search backend parameters
      *
      * @return RecordCollectionInterface
      */
@@ -150,7 +151,7 @@ class Backend extends AbstractBackend
         AbstractQuery $query,
         $offset,
         $limit,
-        ParamBag $params = null
+        ?ParamBag $params = null
     ) {
         $mergedCollection = $this->createRecordCollection();
 
@@ -304,12 +305,10 @@ class Backend extends AbstractBackend
         }
 
         $backendOffsets = [];
-        $collectionOffsets = [];
         $backendTotals = [];
         $availableBackendIds = array_keys($collections);
         foreach ($availableBackendIds as $backendId) {
             $backendOffsets[$backendId] = 0;
-            $collectionOffsets[$backendId] = 0;
             $backendTotals[$backendId] = $collections[$backendId]->getTotal();
         }
         // First iterate through the merged records before the offset to
@@ -367,12 +366,12 @@ class Backend extends AbstractBackend
     /**
      * Retrieve a single document.
      *
-     * @param string   $id     Document identifier
-     * @param ParamBag $params Search backend parameters
+     * @param string    $id     Document identifier
+     * @param ?ParamBag $params Search backend parameters
      *
      * @return \VuFindSearch\Response\RecordCollectionInterface
      */
-    public function retrieve($id, ParamBag $params = null)
+    public function retrieve($id, ?ParamBag $params = null)
     {
         throw new \Exception('Blender does not support retrieve');
     }
@@ -512,20 +511,6 @@ class Backend extends AbstractBackend
             }
         }
         return $this->blockSize;
-    }
-
-    /**
-     * Set EventManager instance.
-     *
-     * @param EventManagerInterface $events Event manager
-     *
-     * @return void
-     * @todo   Deprecate `VuFind\Search' event namespace (2.2)
-     */
-    protected function setEventManager(EventManagerInterface $events)
-    {
-        $events->setIdentifiers(['VuFind\Search', 'VuFindSearch']);
-        $this->events = $events;
     }
 
     /**

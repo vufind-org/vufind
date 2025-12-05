@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Session_Handlers
@@ -91,14 +91,13 @@ class ManagerFactory implements FactoryInterface
     protected function getHandler(ContainerInterface $container)
     {
         // Load and validate session configuration:
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        if (!isset($config->Session->type)) {
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
+        if (!isset($config['Session']['type'])) {
             throw new \Exception('Cannot initialize session; configuration missing');
         }
 
         return $container->get(\VuFind\Session\PluginManager::class)
-            ->get($config->Session->type);
+            ->get($config['Session']['type']);
     }
 
     /**
@@ -115,7 +114,7 @@ class ManagerFactory implements FactoryInterface
     protected function registerShutdownFunction(SessionManager $sessionManager)
     {
         register_shutdown_function(
-            function () use ($sessionManager) {
+            function () use ($sessionManager): void {
                 // If storage is immutable, the session is already closed:
                 if (!$sessionManager->getStorage()->isImmutable()) {
                     $sessionManager->writeClose();
@@ -141,7 +140,7 @@ class ManagerFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');

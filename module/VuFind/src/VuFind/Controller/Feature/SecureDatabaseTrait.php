@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -28,6 +28,9 @@
  */
 
 namespace VuFind\Controller\Feature;
+
+use VuFind\Db\Service\UserCardServiceInterface;
+use VuFind\Db\Service\UserServiceInterface;
 
 use function count;
 
@@ -64,15 +67,16 @@ trait SecureDatabaseTrait
     protected function hasSecureDatabase(): bool
     {
         // Are configuration settings missing?
-        $config = $this->getConfig();
-        $status = ($config->Authentication->hash_passwords ?? false)
-            && ($config->Authentication->encrypt_ils_password ?? false);
+        $config = $this->getConfigArray();
+        $status = ($config['Authentication']['hash_passwords'] ?? false)
+            && ($config['Authentication']['encrypt_ils_password'] ?? false);
 
         // If we're correctly configured, check that the data in the database is ok:
         if ($status) {
             try {
-                $rows = $this->getTable('user')->getInsecureRows();
-                $status = (count($rows) == 0);
+                $userRows = $this->getDbService(UserServiceInterface::class)->getInsecureRows();
+                $cardRows = $this->getDbService(UserCardServiceInterface::class)->getInsecureRows();
+                $status = (count($userRows) + count($cardRows) == 0);
             } catch (\Exception $e) {
                 // Any exception means we have a problem!
                 $status = false;

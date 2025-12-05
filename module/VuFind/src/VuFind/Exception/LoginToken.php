@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Exceptions
@@ -42,4 +42,28 @@ namespace VuFind\Exception;
  */
 class LoginToken extends \Exception
 {
+    /**
+     * Constructor
+     *
+     * @param string          $message  Exception message
+     * @param int             $userId   User ID
+     * @param \Throwable|null $previous Previous exception
+     */
+    public function __construct(
+        string $message,
+        protected int $userId,
+        ?\Throwable $previous = null
+    ) {
+        parent::__construct($message, 0, $previous);
+    }
+
+    /**
+     * Get the associated user ID
+     *
+     * @return int
+     */
+    public function getUserId(): int
+    {
+        return $this->userId;
+    }
 }

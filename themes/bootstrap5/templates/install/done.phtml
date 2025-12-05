@@ -1,0 +1,11 @@
+<?php
+    // Set up breadcrumbs:
+    $this->breadcrumbs()->set($this->translate('auto_configure_title'), $this->url('install-home'));
+?>
+<?=$this->component('page-title', ['title' => $this->translate('auto_configure_title')]);?>
+
+<p>Auto configuration has been successfully disabled.</p>
+
+<p>If you are concerned about security, you may want to change the permissions on
+the <strong><?=$this->escapeHtml($this->configDir)?></strong> directory to prevent the
+web server from writing changes to configurations in the future.</p>

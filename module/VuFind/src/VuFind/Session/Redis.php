@@ -21,8 +21,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Session_Handlers
@@ -35,7 +35,7 @@
 
 namespace VuFind\Session;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 
 /**
  * Redis session handler
@@ -70,10 +70,10 @@ class Redis extends AbstractBase
      * Constructor
      *
      * @param \Credis_Client $connection Redis connection object
-     * @param Config         $config     Session configuration ([Session] section of
+     * @param ?Config        $config     Session configuration ([Session] section of
      * config.ini)
      */
-    public function __construct(\Credis_Client $connection, Config $config = null)
+    public function __construct(\Credis_Client $connection, ?Config $config = null)
     {
         parent::__construct($config);
         $this->redisVersion = (int)($config->redis_version ?? 3);

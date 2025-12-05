@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Primo
@@ -185,17 +185,18 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Get a user-friendly string to describe the provided facet field.
      *
-     * @param string $field   Facet field name.
-     * @param string $value   Facet value.
-     * @param string $default Default field name (null for default behavior).
+     * @param string $field               Facet field name.
+     * @param string $value               Facet value.
+     * @param string $default             Default field name (null for default behavior).
+     * @param bool   $allowCheckboxFacets Should checkbox facet labels be allowed too?
      *
-     * @return string         Human-readable description of field.
+     * @return string Human-readable description of field.
      */
-    public function getFacetLabel($field, $value = null, $default = null)
+    public function getFacetLabel($field, $value = null, $default = null, $allowCheckboxFacets = true)
     {
         if (in_array($field, ['citing', 'citedby'])) {
             return $field;
         }
-        return parent::getFacetLabel($field, $value, $default);
+        return parent::getFacetLabel($field, $value, $default, $allowCheckboxFacets);
     }
 }

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -58,8 +58,7 @@ class AbstractSolrSearch extends AbstractSearch
      */
     protected function addFacetDetailsToView(ViewModel $view, $list = 'Advanced'): void
     {
-        $facets = $this->serviceLocator
-            ->get(\VuFind\Search\FacetCache\PluginManager::class)
+        $facets = $this->getService(\VuFind\Search\FacetCache\PluginManager::class)
             ->get($this->searchClassId)
             ->getList($list);
         $view->hierarchicalFacets
@@ -157,6 +156,8 @@ class AbstractSolrSearch extends AbstractSearch
      * (if any)
      *
      * @return array Sorted facets, with selected values flagged.
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function processAdvancedFacets(
         $facetList,
@@ -172,8 +173,7 @@ class AbstractSolrSearch extends AbstractSearch
             if (in_array($facet, $hierarchicalFacets)) {
                 // Process the facets
                 if (!$facetHelper) {
-                    $facetHelper = $this->serviceLocator
-                        ->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class);
+                    $facetHelper = $this->getService(\VuFind\Search\Solr\HierarchicalFacetHelper::class);
                     $options = $this->getOptionsForClass();
                 }
 
@@ -221,10 +221,8 @@ class AbstractSolrSearch extends AbstractSearch
      */
     protected function getHierarchicalFacets($config)
     {
-        $facetConfig = $this->getConfig($config);
-        return isset($facetConfig->SpecialFacets->hierarchical)
-            ? $facetConfig->SpecialFacets->hierarchical->toArray()
-            : [];
+        $facetConfig = $this->getConfigArray($config);
+        return $facetConfig['SpecialFacets']['hierarchical'] ?? [];
     }
 
     /**
@@ -236,17 +234,9 @@ class AbstractSolrSearch extends AbstractSearch
      */
     protected function getAdvancedHierarchicalFacetsSortOptions($config)
     {
-        $facetConfig = $this->getConfig($config);
-        $baseConfig
-            = isset($facetConfig->SpecialFacets->hierarchicalFacetSortOptions)
-            ? $facetConfig->SpecialFacets->hierarchicalFacetSortOptions->toArray()
-            : [];
-        $advancedConfig
-            = isset($facetConfig->Advanced_Settings->hierarchicalFacetSortOptions)
-            ? $facetConfig->Advanced_Settings->hierarchicalFacetSortOptions
-                ->toArray()
-            : [];
-
+        $facetConfig = $this->getConfigArray($config);
+        $baseConfig = $facetConfig['SpecialFacets']['hierarchicalFacetSortOptions'] ?? [];
+        $advancedConfig = $facetConfig['Advanced_Settings']['hierarchicalFacetSortOptions'] ?? [];
         return array_merge($baseConfig, $advancedConfig);
     }
 }

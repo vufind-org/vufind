@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  AJAX
@@ -30,8 +30,10 @@
 namespace VuFind\AjaxHandler;
 
 use Laminas\Mvc\Controller\Plugin\Params;
+use Laminas\View\Renderer\PhpRenderer;
+use VuFind\Account\AccountStatusLevelType;
 use VuFind\Auth\ILSAuthenticator;
-use VuFind\Db\Row\User;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\ILS\Connection;
 use VuFind\Service\CurrencyFormatter;
 use VuFind\Session\Settings as SessionSettings;
@@ -45,35 +47,29 @@ use VuFind\Session\Settings as SessionSettings;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class GetUserFines extends AbstractIlsAndUserAction
+class GetUserFines extends AbstractIlsUserAndRendererAction
 {
     use \VuFind\ILS\Logic\SummaryTrait;
 
     /**
-     * Currency formatter
-     *
-     * @var CurrencyFormatter
-     */
-    protected $currencyFormatter;
-
-    /**
      * Constructor
      *
-     * @param SessionSettings   $ss                Session settings
-     * @param Connection        $ils               ILS connection
-     * @param ILSAuthenticator  $ilsAuthenticator  ILS authenticator
-     * @param User|bool         $user              Logged in user (or false)
-     * @param CurrencyFormatter $currencyFormatter Currency formatter
+     * @param SessionSettings      $ss                Session settings
+     * @param Connection           $ils               ILS connection
+     * @param ILSAuthenticator     $ilsAuthenticator  ILS authenticator
+     * @param ?UserEntityInterface $user              Logged in user (or false)
+     * @param PhpRenderer          $renderer          Renderer
+     * @param CurrencyFormatter    $currencyFormatter Currency formatter
      */
     public function __construct(
         SessionSettings $ss,
         Connection $ils,
         ILSAuthenticator $ilsAuthenticator,
-        $user,
-        CurrencyFormatter $currencyFormatter
+        ?UserEntityInterface $user,
+        PhpRenderer $renderer,
+        protected CurrencyFormatter $currencyFormatter,
     ) {
-        parent::__construct($ss, $ils, $ilsAuthenticator, $user);
-        $this->currencyFormatter = $currencyFormatter;
+        parent::__construct($ss, $ils, $ilsAuthenticator, $user, $renderer);
     }
 
     /**
@@ -94,8 +90,21 @@ class GetUserFines extends AbstractIlsAndUserAction
             return $this->formatResponse('', self::STATUS_HTTP_ERROR);
         }
         $fines = $this->ils->getMyFines($patron);
-        return $this->formatResponse(
-            $this->getFineSummary($fines, $this->currencyFormatter)
-        );
+        $result = $this->getFineSummary($fines, $this->currencyFormatter);
+        $result['level'] = $this->getAccountStatusLevel($result);
+        $result['html'] = $this->renderer->render('ajax/account/fines.phtml', $result);
+        return $this->formatResponse($result);
+    }
+
+    /**
+     * Get account status level for notification icon
+     *
+     * @param array $status Status information
+     *
+     * @return AccountStatusLevelType
+     */
+    protected function getAccountStatusLevel(array $status): AccountStatusLevelType
+    {
+        return $status['total'] ? AccountStatusLevelType::ActionRequired : AccountStatusLevelType::Normal;
     }
 }

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -29,6 +29,7 @@
 
 namespace VuFindConsole\Command\Language;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -42,15 +43,12 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'language/addusingtemplate',
+    description: 'Template-based string builder'
+)]
 class AddUsingTemplateCommand extends AbstractCommand
 {
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'language/addusingtemplate';
-
     /**
      * Configure the command.
      *
@@ -59,7 +57,6 @@ class AddUsingTemplateCommand extends AbstractCommand
     protected function configure()
     {
         $this
-            ->setDescription('Template-based string builder')
             ->setHelp(
                 'Builds new language strings from existing ones using a template'
             )->addArgument(
@@ -82,7 +79,7 @@ class AddUsingTemplateCommand extends AbstractCommand
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $target = $input->getArgument('target');
         $template = $input->getArgument('template');
@@ -90,7 +87,7 @@ class AddUsingTemplateCommand extends AbstractCommand
         // Make sure a valid target has been specified:
         [$targetDomain, $targetKey] = $this->extractTextDomain($target);
         if (!($targetDir = $this->getLangDir($output, $targetDomain, true))) {
-            return 1;
+            return self::FAILURE;
         }
 
         // Extract required source values from template:
@@ -109,9 +106,9 @@ class AddUsingTemplateCommand extends AbstractCommand
         foreach ($lookups as $domain => & $tokens) {
             $sourceDir = $this->getLangDir($output, $domain, false);
             if (!$sourceDir) {
-                return 1;
+                return self::FAILURE;
             }
-            $sourceCallback = function ($full) use (&$tokens) {
+            $sourceCallback = function ($full) use (&$tokens): void {
                 $strings = $this->reader->getTextDomain($full, false);
                 foreach ($tokens as & $current) {
                     $sourceKey = $current['key'];
@@ -130,10 +127,10 @@ class AddUsingTemplateCommand extends AbstractCommand
             $template,
             $targetKey,
             $lookups
-        ) {
+        ): void {
             $lang = basename($full);
             $in = $out = [];
-            foreach ($lookups as $domain => $tokens) {
+            foreach ($lookups as $tokens) {
                 foreach ($tokens as $token => $details) {
                     if (!isset($details['translations'][$lang])) {
                         $output->writeln("Skipping; no match for token: $token");
@@ -151,6 +148,6 @@ class AddUsingTemplateCommand extends AbstractCommand
             $this->normalizer->normalizeFile($full);
         };
         $this->processDirectory($targetDir, $targetCallback, [$output, 'writeln']);
-        return 0;
+        return self::SUCCESS;
     }
 }

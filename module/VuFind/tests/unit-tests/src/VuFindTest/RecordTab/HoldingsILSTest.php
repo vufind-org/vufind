@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,6 +29,7 @@
 
 namespace VuFindTest\RecordTab;
 
+use VuFind\RecordDriver\EDS;
 use VuFind\RecordTab\HoldingsILS;
 
 /**
@@ -42,6 +43,53 @@ use VuFind\RecordTab\HoldingsILS;
  */
 class HoldingsILSTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+
+    /**
+     * Default test configuration Patron Empowerment Framework (PEF)
+     *
+     * @var array
+     */
+    protected $defaultDriverConfigPEF = [
+        'General' => [
+            'default_sort' => 'relevance',
+        ],
+        'ItemGlobalOrder' => [],
+        'Catalog' => [
+            'EDSHasCatalog' => true,
+            'CatalogDatabaseId' => 'cat012345a',
+            'CatalogANRegex' => [
+                '/^demo\.oai\.edge\.demo\.folio\.provider\.com\.fs00000000\./',
+                '/\./',
+            ],
+            'CatalogANReplace' => [
+                '',
+                '-',
+            ],
+        ],
+    ];
+
+    /**
+     * Generate a new Eds driver to return responses set in a json fixture
+     *
+     * Overwrites $this->driver
+     * Uses session cache
+     *
+     * @param ?string $test   Name of test fixture to load
+     * @param ?array  $config Driver configuration (null to use default)
+     *
+     * @return EDS
+     */
+    protected function getDriver(?string $test = null, ?array $config = null): EDS
+    {
+        $record = new EDS(null, new \VuFind\Config\Config($this->defaultDriverConfigPEF));
+        if (null !== $test) {
+            $json = $this->getJsonFixture('eds/' . $test . '.json');
+            $record->setRawData($json);
+        }
+        return $record;
+    }
+
     /**
      * Test getUniqueCallNumbers.
      *
@@ -86,5 +134,47 @@ class HoldingsILSTest extends \PHPUnit\Framework\TestCase
         ];
         $expected4 = ['b'];
         $this->assertSame($expected4, $obj->getUniqueCallNumbers($items4, false));
+    }
+
+    /**
+     * Test isVisible true, when driver supports holdings tab
+     *
+     * @return void
+     */
+    public function testIsVisibleTrue()
+    {
+        $searchObj = $this->createMock(\VuFind\ILS\Connection::class);
+        $obj = new HoldingsILS($searchObj);
+
+        // Create a mock driver that supports holdings tab
+        $driver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
+        $driver->expects($this->once())
+            ->method('tryMethod')
+            ->with('supportsHoldingsTab', [], true)
+            ->willReturn(true);
+
+        $obj->setRecordDriver($driver);
+        $this->assertTrue($obj->isVisible());
+    }
+
+    /**
+     * Test isVisible false, when driver doesn't support holdings tab
+     *
+     * @return void
+     */
+    public function testIsVisibleFalse()
+    {
+        $searchObj = $this->createMock(\VuFind\ILS\Connection::class);
+        $obj = new HoldingsILS($searchObj);
+
+        // Create a mock driver that doesn't support holdings tab
+        $driver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
+        $driver->expects($this->once())
+            ->method('tryMethod')
+            ->with('supportsHoldingsTab', [], true)
+            ->willReturn(false);
+
+        $obj->setRecordDriver($driver);
+        $this->assertFalse($obj->isVisible());
     }
 }

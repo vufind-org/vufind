@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Content
@@ -64,19 +64,18 @@ class BuchhandelFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $url = isset($config->Buchhandel->url)
-            ? trim($config->Buchhandel->url, '/') . '/'
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
+        $url = isset($config['Buchhandel']['url'])
+            ? trim($config['Buchhandel']['url'], '/') . '/'
             : 'https://api.vlb.de/api/v1/cover/';
-        if (!isset($config->Buchhandel->token)) {
+        if (!isset($config['Buchhandel']['token'])) {
             throw new \Exception("Buchhandel.de 'token' not set in VuFind config");
         }
-        return new $requestedName($url, $config->Buchhandel->token);
+        return new $requestedName($url, $config['Buchhandel']['token']);
     }
 }

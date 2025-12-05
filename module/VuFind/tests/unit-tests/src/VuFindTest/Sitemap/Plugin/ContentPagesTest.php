@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -48,7 +48,7 @@ use function func_get_args;
  */
 class ContentPagesTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Mock container
@@ -63,30 +63,49 @@ class ContentPagesTest extends \PHPUnit\Framework\TestCase
      * @var array
      */
     protected $themeInfoData = [
-        [
-          'theme' => 'bootstrap3',
-          'file' => '/themepath/templates/content/asklibrary_en.phtml',
-          'relativeFile' => 'templates/content/asklibrary_en.phtml',
+        'templates/content/**/*.phtml' => [
+            [
+                'theme' => 'bootstrap5',
+                'file' => '/themepath/templates/content/asklibrary_en.phtml',
+                'relativeFile' => 'templates/content/asklibrary_en.phtml',
+            ],
+            [
+                'theme' => 'bootstrap5',
+                'file' => '/themepath/templates/content/asklibrary.phtml',
+                'relativeFile' => 'templates/content/asklibrary.phtml',
+            ],
+            [
+                'theme' => 'bootstrap5',
+                'file' => '/themepath/templates/content/content.phtml',
+                'relativeFile' => 'templates/content/content.phtml',
+            ],
+            [
+                'theme' => 'bootstrap5',
+                'file' => '/themepath/templates/content/faq.phtml',
+                'relativeFile' => 'templates/content/faq.phtml',
+            ],
+            [
+                'theme' => 'bootstrap5',
+                'file' => '/themepath/templates/content/help/search.phtml',
+                'relativeFile' => 'templates/content/help/search.phtml',
+            ],
+            [
+                'theme' => 'bootstrap5',
+                'file' => '/themepath/templates/content/help/search_en.phtml',
+                'relativeFile' => 'templates/content/help/search_en.phtml',
+            ],
+            [
+                'theme' => 'bootstrap5',
+                'file' => '/themepath/templates/content/markdown.phtml',
+                'relativeFile' => 'templates/content/markdown.phtml',
+            ],
         ],
-        [
-          'theme' => 'bootstrap3',
-          'file' => '/themepath/templates/content/asklibrary.phtml',
-          'relativeFile' => 'templates/content/asklibrary.phtml',
-        ],
-        [
-          'theme' => 'bootstrap3',
-          'file' => '/themepath/templates/content/content.phtml',
-          'relativeFile' => 'templates/content/content.phtml',
-        ],
-        [
-          'theme' => 'bootstrap3',
-          'file' => '/themepath/templates/content/faq.phtml',
-          'relativeFile' => 'templates/content/faq.phtml',
-        ],
-        [
-          'theme' => 'bootstrap3',
-          'file' => '/themepath/templates/content/markdown.phtml',
-          'relativeFile' => 'templates/content/markdown.phtml',
+        'templates/content/**/*.md' => [
+            [
+                'theme' => 'bootstrap5',
+                'file' => '/themepath/templates/content/example.md',
+                'relativeFile' => 'templates/content/example.md',
+            ],
         ],
     ];
 
@@ -116,8 +135,8 @@ class ContentPagesTest extends \PHPUnit\Framework\TestCase
     ): ContentPages {
         // Set up configuration:
         $this->container->set(
-            \VuFind\Config\PluginManager::class,
-            $this->getMockConfigPluginManager(compact('config'))
+            \VuFind\Config\ConfigManagerInterface::class,
+            $this->getMockConfigManager(compact('config'))
         );
 
         // Set up other dependencies:
@@ -146,7 +165,7 @@ class ContentPagesTest extends \PHPUnit\Framework\TestCase
             return $options['name'] . '/' . $params['page'];
         };
         $router->expects($this->any())->method('assemble')
-            ->will($this->returnCallback($callback));
+            ->willReturnCallback($callback);
         return $router;
     }
 
@@ -157,14 +176,13 @@ class ContentPagesTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockThemeInfo(): ThemeInfo
     {
-        $expectedTemplates = [
-            'templates/content/*.phtml',
-            'templates/content/*.md',
-        ];
         $themeInfo = $this->container->get(ThemeInfo::class);
-        $themeInfo->expects($this->once())->method('findInThemes')
-            ->with($this->equalTo($expectedTemplates))
-            ->will($this->returnValue($this->themeInfoData));
+        $themeInfo->expects($this->exactly(2))->method('findInThemes')
+            ->willReturnCallback(
+                function ($paths) {
+                    return $this->themeInfoData[reset($paths)] ?? null;
+                }
+            );
         return $themeInfo;
     }
 
@@ -183,6 +201,9 @@ class ContentPagesTest extends \PHPUnit\Framework\TestCase
                 'content-page/asklibrary_en',
                 'content-page/asklibrary',
                 'content-page/faq',
+                'content-page/help/search',
+                'content-page/help/search_en',
+                'content-page/example',
             ],
             iterator_to_array($plugin->getUrls())
         );
@@ -202,6 +223,8 @@ class ContentPagesTest extends \PHPUnit\Framework\TestCase
             [
                 'content-page/asklibrary',
                 'content-page/faq',
+                'content-page/help/search',
+                'content-page/example',
             ],
             iterator_to_array($plugin->getUrls())
         );

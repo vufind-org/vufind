@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -29,12 +29,14 @@
 
 namespace VuFind\RecordDriver;
 
+use VuFind\String\PropertyString;
 use VuFind\View\Helper\Root\RecordLinker;
 use VuFindCode\ISBN;
 
 use function count;
 use function in_array;
 use function is_array;
+use function sprintf;
 use function strlen;
 
 /**
@@ -60,11 +62,11 @@ class DefaultRecord extends AbstractBase
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $mainConfig     VuFind main configuration (omit
+     * @param \VuFind\Config\Config $mainConfig     VuFind main configuration (omit
      * for built-in defaults)
-     * @param \Laminas\Config\Config $recordConfig   Record-specific configuration
+     * @param \VuFind\Config\Config $recordConfig   Record-specific configuration
      * file (omit to use $mainConfig as $recordConfig)
-     * @param \Laminas\Config\Config $searchSettings Search-specific configuration
+     * @param \VuFind\Config\Config $searchSettings Search-specific configuration
      * file
      */
     public function __construct(
@@ -121,6 +123,23 @@ class DefaultRecord extends AbstractBase
                 : [$i];
         };
         return array_map($callback, array_unique($headings));
+    }
+
+    /**
+     * Get the subject headings as a flat array of strings.
+     *
+     * @return array Subject headings
+     */
+    public function getAllSubjectHeadingsFlattened()
+    {
+        $headings = [];
+        $subjects = $this->getAllSubjectHeadings();
+        if (is_array($subjects)) {
+            foreach ($subjects as $subj) {
+                $headings[] = implode(' -- ', $subj);
+            }
+        }
+        return $headings;
     }
 
     /**
@@ -242,7 +261,7 @@ class DefaultRecord extends AbstractBase
      */
     public function getCallNumbers()
     {
-        return (array)($this->fields['callnumber-raw'] ?? []);
+        return array_unique((array)($this->fields['callnumber-raw'] ?? []));
     }
 
     /**
@@ -443,7 +462,7 @@ class DefaultRecord extends AbstractBase
         }
 
         // deduplicate
-        $dedup = function (&$array1, &$array2) {
+        $dedup = function (&$array1, &$array2): void {
             if (!empty($array1) && !empty($array2)) {
                 $keys = array_keys($array1);
                 foreach ($keys as $author) {
@@ -462,7 +481,7 @@ class DefaultRecord extends AbstractBase
         $dedup($authors['secondary'], $authors['corporate']);
         $dedup($authors['primary'], $authors['secondary']);
 
-        $dedup_data = function (&$array) {
+        $dedup_data = function (&$array): void {
             foreach ($array as $author => $data) {
                 foreach ($data as $field => $values) {
                     if (is_array($values)) {
@@ -540,7 +559,7 @@ class DefaultRecord extends AbstractBase
     public function getPrimaryAuthorsWithHighlighting()
     {
         $highlights = [];
-        // Create a map of de-highlighted valeus => highlighted values.
+        // Create a map of de-highlighted values => highlighted values.
         foreach ($this->getRawAuthorHighlights() as $current) {
             $dehighlighted = str_replace(
                 ['{{{{START_HILITE}}}}', '{{{{END_HILITE}}}}'],
@@ -797,12 +816,20 @@ class DefaultRecord extends AbstractBase
         $pubDate = $this->getPublicationDates();
         $pubDate = empty($pubDate) ? '' : $pubDate[0];
 
+        // Add DOI to rft_id (if available)
+        $rftId = [];
+        $doi = (string)$this->getCleanDOI();
+        if ($doi !== '') {
+            $rftId[] = 'info:doi/' . $doi;
+        }
+
         // Start an array of OpenURL parameters:
         return [
             'url_ver' => 'Z39.88-2004',
             'ctx_ver' => 'Z39.88-2004',
             'ctx_enc' => 'info:ofi/enc:UTF-8',
             'rfr_id' => 'info:sid/' . $this->getCoinsID() . ':generator',
+            'rft_id' => $rftId,
             'rft.title' => $this->getTitle(),
             'rft.date' => $pubDate,
         ];
@@ -949,17 +976,16 @@ class DefaultRecord extends AbstractBase
         // Set up parameters based on the format of the record:
         $format = $this->getOpenUrlFormat();
         $method = "get{$format}OpenUrlParams";
-        if (method_exists($this, $method)) {
-            $params = $this->$method();
-        } else {
-            $params = $this->getUnknownFormatOpenUrlParams($format);
-        }
+        $params = method_exists($this, $method)
+            ? $this->$method()
+            : $this->getUnknownFormatOpenUrlParams($format);
 
         // Assemble the URL:
         $query = [];
         foreach ($params as $key => $value) {
-            $value = (array)$value;
-            foreach ($value as $sub) {
+            // Avoid casting since the field can be a PropertyString too (and casting would return an array of object
+            // properties):
+            foreach (is_array($value) ? $value : [$value] as $sub) {
                 $query[] = urlencode($key) . '=' . urlencode($sub);
             }
         }
@@ -1253,9 +1279,9 @@ class DefaultRecord extends AbstractBase
     public function getSummary()
     {
         // We need to return an array, so if we have a description, turn it into an
-        // array (it should be a flat string according to the default schema, but we
-        // might as well support the array case just to be on the safe side:
-        return (array)($this->fields['description'] ?? []);
+        // array (it is a flat string in the default Solr schema, but we also
+        // support multivalued fields for other backends):
+        return $this->getFieldAsArray('description');
     }
 
     /**
@@ -1347,7 +1373,7 @@ class DefaultRecord extends AbstractBase
     public function getTitleSection()
     {
         // Not currently stored in the default index schema
-        return null;
+        return '';
     }
 
     /**
@@ -1359,7 +1385,7 @@ class DefaultRecord extends AbstractBase
     public function getTitleStatement()
     {
         // Not currently stored in the default index schema
-        return null;
+        return '';
     }
 
     /**
@@ -1688,6 +1714,7 @@ class DefaultRecord extends AbstractBase
     public function getSchemaOrgFormatsArray()
     {
         $types = [];
+
         foreach ($this->getFormats() as $format) {
             switch ($format) {
                 case 'Book':
@@ -1711,6 +1738,14 @@ class DefaultRecord extends AbstractBase
                     $types['CreativeWork'] = 1;
             }
         }
+
+        // Check for functionality from IlsAwareTrait. If this record comes from a real ILS, we need
+        // to add a type of "Product" to support the system's use of https://schema.org/Offer to
+        // represent availability.
+        if ($this->tryMethod('hasILS') && isset($this->ils) && $this->ils->getOfflineMode() !== 'ils-none') {
+            $types['Product'] = 1;
+        }
+
         return array_keys($types);
     }
 
@@ -1720,6 +1755,8 @@ class DefaultRecord extends AbstractBase
      * itself if nothing else matches.
      *
      * @return string
+     *
+     * @deprecated Use \VuFind\View\Helper\Root\SchemaOrg::getRecordTypes()
      */
     public function getSchemaOrgFormats()
     {
@@ -1786,5 +1823,34 @@ class DefaultRecord extends AbstractBase
     public function getCoordinateLabels()
     {
         return (array)($this->fields['long_lat_label'] ?? []);
+    }
+
+    /**
+     * Get class name for RecordDataFormatter spec.
+     *
+     * @return ?string
+     */
+    public function getRecordDataFormatterSpecClass(): ?string
+    {
+        return \VuFind\RecordDataFormatter\Specs\DefaultRecord::class;
+    }
+
+    /**
+     * Get a field as an array
+     *
+     * @param string $field Field
+     *
+     * @return array
+     */
+    protected function getFieldAsArray(string $field): array
+    {
+        // Make sure to return only non-empty values:
+        $value = $this->fields[$field] ?? '';
+        if ('' === $value) {
+            return [];
+        }
+        // Avoid casting since the field can be a PropertyString too (and casting would return an array of object
+        // properties):
+        return is_array($value) ? $value : [$value];
     }
 }

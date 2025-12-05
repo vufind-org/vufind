@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,7 +29,7 @@
 
 namespace VuFindTest\Search\EDS;
 
-use VuFind\Config\PluginManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\EDS\Options;
 use VuFind\Search\EDS\Params;
 
@@ -58,12 +58,12 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
             ['selectedvalue' => 'limitervalue', 'description' => 'limiter'],
         ];
         $options->expects($this->once())->method('getSearchScreenLimiters')
-            ->will($this->returnValue($limiters));
+            ->willReturn($limiters);
         $expanders = [
             ['selectedvalue' => 'expandervalue', 'description' => 'expander'],
         ];
         $options->expects($this->once())->method('getSearchScreenExpanders')
-            ->will($this->returnValue($expanders));
+            ->willReturn($expanders);
         $params = $this->getParams($options);
         // We expect "normal" filters to NOT be always visible, and inverted
         // filters to be always visible.
@@ -91,19 +91,19 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     /**
      * Get Params object
      *
-     * @param Options       $options    Options object (null to create)
-     * @param PluginManager $mockConfig Mock config plugin manager (null to create)
+     * @param ?Options                $options           Options object (null to create)
+     * @param ?ConfigManagerInterface $mockConfigManager Mock ConfigManager (null to create)
      *
      * @return Params
      */
     protected function getParams(
-        Options $options = null,
-        PluginManager $mockConfig = null
+        ?Options $options = null,
+        ?ConfigManagerInterface $mockConfigManager = null
     ): Params {
-        $mockConfig ??= $this->createMock(PluginManager::class);
+        $mockConfigManager ??= $this->createMock(ConfigManagerInterface::class);
         return new Params(
-            $options ?? new Options($mockConfig),
-            $mockConfig
+            $options ?? new Options($mockConfigManager),
+            $mockConfigManager
         );
     }
 }

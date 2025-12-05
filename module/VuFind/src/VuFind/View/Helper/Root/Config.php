@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -29,7 +29,7 @@
 
 namespace VuFind\View\Helper\Root;
 
-use VuFind\Config\PluginManager;
+use VuFind\Config\ConfigManagerInterface;
 
 /**
  * Config view helper
@@ -43,20 +43,26 @@ use VuFind\Config\PluginManager;
 class Config extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Configuration plugin manager
+     * Display date format
      *
-     * @var PluginManager
+     * @var ?string
      */
-    protected $configLoader;
+    protected $displayDateFormat = null;
+
+    /**
+     * Display time format
+     *
+     * @var ?string
+     */
+    protected $displayTimeFormat = null;
 
     /**
      * Config constructor.
      *
-     * @param PluginManager $configLoader Configuration loader
+     * @param ConfigManagerInterface $configManager Configuration manager
      */
-    public function __construct(PluginManager $configLoader)
+    public function __construct(protected ConfigManagerInterface $configManager)
     {
-        $this->configLoader = $configLoader;
     }
 
     /**
@@ -64,11 +70,11 @@ class Config extends \Laminas\View\Helper\AbstractHelper
      *
      * @param string $config Name of configuration
      *
-     * @return \Laminas\Config\Config
+     * @return \VuFind\Config\Config
      */
     public function get($config)
     {
-        return $this->configLoader->get($config);
+        return $this->configManager->getConfigObject($config);
     }
 
     /**
@@ -123,5 +129,72 @@ class Config extends \Laminas\View\Helper\AbstractHelper
     {
         return (bool)($this->get('config')->Record
             ->alwaysDisplayIndexRecordInStaffView ?? false);
+    }
+
+    /**
+     * Get offcanvas sidebar side
+     *
+     * @return ?string 'left', 'right' or null for no offcanvas
+     */
+    public function offcanvasSide(): ?string
+    {
+        $config = $this->get('config');
+        if (!($config->Site->offcanvas ?? false)) {
+            return null;
+        }
+        return ($config->Site->sidebarOnLeft ?? false)
+            ? 'left'
+            : 'right';
+    }
+
+    /**
+     * Get date display format
+     *
+     * @return string
+     */
+    public function dateFormat(): string
+    {
+        if (null === $this->displayDateFormat) {
+            $config = $this->get('config');
+            $this->displayDateFormat = $config->Site->displayDateFormat ?? 'm-d-Y';
+        }
+        return $this->displayDateFormat;
+    }
+
+    /**
+     * Get time display format
+     *
+     * @return string
+     */
+    public function timeFormat(): string
+    {
+        if (null === $this->displayTimeFormat) {
+            $config = $this->get('config');
+            $this->displayTimeFormat = $config->Site->displayTimeFormat ?? 'H:i';
+        }
+        return $this->displayTimeFormat;
+    }
+
+    /**
+     * Get date+time display format
+     *
+     * @param string $separator String between date and time
+     *
+     * @return string
+     */
+    public function dateTimeFormat($separator = ' '): string
+    {
+        return $this->dateFormat() . $separator . $this->timeFormat();
+    }
+
+    /**
+     * Check if the loan type should be displayed in holdings
+     *
+     * @return bool
+     */
+    public function displayLoanType(): bool
+    {
+        return (bool)($this->get('config')->Catalog
+            ->display_loan_type_in_holdings ?? false);
     }
 }

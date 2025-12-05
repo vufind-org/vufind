@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -30,8 +30,6 @@
 namespace VuFindTest\OAuth2\Repository;
 
 use VuFind\OAuth2\Entity\ScopeEntity;
-use VuFind\OAuth2\Repository\AccessTokenRepository;
-use VuFind\OAuth2\Repository\RefreshTokenRepository;
 
 /**
  * OAuth2 RefreshTokenRepository tests.
@@ -51,9 +49,8 @@ class RefreshTokenRepositoryTest extends AbstractTokenRepositoryTestCase
      */
     public function testRefreshTokenRepository(): void
     {
-        $table = $this->getMockAccessTokenTable();
-        $repo = new RefreshTokenRepository($table);
-        $accessTokenRepo = new AccessTokenRepository($table);
+        $repo = $this->getRefreshTokenRepository();
+        $accessTokenRepo = $this->getAccessTokenRepository();
 
         $accessToken = $accessTokenRepo->getNewToken(
             $this->createClientEntity(),

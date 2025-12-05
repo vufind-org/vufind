@@ -1,0 +1,108 @@
+<?php
+  // Set up breadcrumbs:
+  $this->breadcrumbs()->set($this->translate('Your Account'), $this->url('myresearch-home'))
+    ->add($this->translate('Comments'), active: true);
+
+  $this->assetManager()->appendScriptLink('requests.js');
+  $tabs = $this->accountCapabilities()->getUserContentTabs();
+?>
+<?php $this->headTitle($this->translate('Comments'));?>
+<?=$this->component('show-account-menu-button')?>
+
+<div class="<?=$this->layoutClass('mainbody')?>">
+  <ul class="nav nav-tabs" role="tablist">
+    <?php foreach ($tabs as $tab => $title): ?>
+      <li class="nav-item" role="presentation" id="user-content-<?=$this->escapeHtmlAttr($tab)?>" data-tab="<?=$this->escapeHtmlAttr($tab)?>"><a class="<?='comments' === $tab ? 'active' : ''?> nav-link" href="<?=$this->url($tab . '-' . 'userlist')?>"><?=$this->transEsc($title)?></a></li>
+    <?php endforeach; ?>
+  </ul>
+  <h2><?=$this->transEsc('Your Comments')?></h2>
+  <?php if (count($this->comments) !== 0): ?>
+    <nav class="search-header hidden-print">
+      <?php
+        $abs = $this->comments->getAbsoluteItemNumber($this->comments->getItemCountPerPage());
+        $end = min($abs, $this->comments->getTotalItemCount());
+        $transParams = [
+          '%%start%%' => $this->localizedNumber($this->comments->getAbsoluteItemNumber(1)),
+          '%%end%%' => $this->localizedNumber($end),
+          '%%total%%' => $this->localizedNumber($this->comments->getTotalItemCount()),
+        ];
+      ?>
+      <div class="search-stats">
+        <?=$this->translate('showing_items_of_html', $transParams); ?>
+      </div>
+      <?=$this->context($this)->renderInContext('myresearch/controls/sort.phtml', ['sortList' => $this->sortList]); ?>
+    </nav>
+    <form action="<?=$this->url('comments-deletecomments')?>" name="updateForm" id="select_all_comments" method="post">
+      <input type="hidden" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>" name="csrf">
+      <div class="toolbar table-checkbox-toolbar">
+        <?=
+          $this->component(
+              'confirm-button',
+              [
+                  'buttonId' => 'cancelSelected',
+                  'buttonName' => 'cancelSelected',
+                  'buttonLabel' => 'delete_selected',
+                  'header' => 'confirm_usercomment_delete_selected_text',
+                  'confirmId' => 'confirm_cancel_selected_yes',
+                  'cancelClass' => 'confirm_cancel_no',
+                  'ignoreLightbox' => true,
+              ]
+          )
+        ?>
+        <div class="select-all-container">
+          <label class="select-all-label">
+            <input type="checkbox" name="selectAll" class="checkbox-select-all">
+            <?=$this->transEsc('select_all_on_page')?>
+          </label>
+        </div>
+      </div>
+      <table class="usercontent-table table-striped table table-responsive">
+        <thead>
+          <tr>
+            <th></th>
+            <th><?=$this->transEsc('Created')?></th>
+            <th><?=$this->transEsc('Title')?></th>
+            <th><?=$this->transEsc('Comment')?></th>
+          </tr>
+        </thead>
+        <tbody>
+          <?php foreach ($this->comments as $comment):?>
+            <tr>
+              <td class="checkbox-col unlabeled-column">
+                <div class="checkbox-container result">
+                  <div class="checkbox">
+                    <label>
+                      <span class="sr-only"><?=$this->transEsc('Select');?></span>
+                      <input class="checkbox-select-item" type="checkbox" name="deleteSelectedcomment[]" value="<?=$this->escapeHtmlAttr(($comment['id']))?>" id="checkbox_comment_<?=$comment['id']?>">
+                    </label>
+                  </div>
+                </div>
+              </td>
+              <td class="date" data-label="<?=$this->transEscAttr('Created')?>"><?=$this->dateTime()->convertToDisplayDateAndTime('U', $comment['created']->getTimestamp())?></td>
+              <td data-label="<?=$this->transEscAttr('Title')?>">
+                <a href="<?=$this->url('record', ['id' => $comment['record_id']])?>"><?=$this->escapeHtml($comment['recordTitle'])?></a>
+              </td>
+              <td class="user-comment" data-label="<?=$this->transEscAttr('Comment')?>">
+                <?php $truncateSettings = ['rows' => 5]?>
+                <div class="user-comment-truncate" data-truncate="<?=$this->htmlSafeJsonEncode($truncateSettings)?>"><?=$this->escapeHtml($comment['comment'] ?? '')?></div>
+              </td>
+            </tr>
+          <?php endforeach; ?>
+        </tbody>
+      </table>
+    </form>
+  <?php else: ?>
+    <?=$this->transEsc('No Comments')?>
+  <?php endif; ?>
+  <?=$this->paginationControl($this->comments, 'Sliding', 'Helpers/pagination.phtml', ['params' => $this->params])?>
+</div>
+
+<div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
+  <?=$this->accountMenu()->render('usercontent')?>
+</div>
+<?php
+  $script = <<<JS
+      VuFind.truncate.initTruncate('.user-comment-truncate');
+      JS;
+?>
+<?=$this->assetManager()->outputInlineScriptString($script);?>

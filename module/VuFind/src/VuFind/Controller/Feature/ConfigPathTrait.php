@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -49,7 +49,7 @@ trait ConfigPathTrait
      */
     protected function getBaseConfigFilePath(string $filename): string
     {
-        $resolver = $this->serviceLocator->get(\VuFind\Config\PathResolver::class);
+        $resolver = $this->getService(\VuFind\Config\PathResolver::class);
         return $resolver->getBaseConfigPath($filename);
     }
 
@@ -62,7 +62,7 @@ trait ConfigPathTrait
      */
     protected function getForcedLocalConfigPath(string $filename): string
     {
-        $resolver = $this->serviceLocator->get(\VuFind\Config\PathResolver::class);
+        $resolver = $this->getService(\VuFind\Config\PathResolver::class);
         return $resolver->getLocalConfigPath($filename, null, true);
     }
 }

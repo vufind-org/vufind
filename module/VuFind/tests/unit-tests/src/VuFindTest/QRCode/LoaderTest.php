@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,7 +29,7 @@
 
 namespace VuFindTest\QRCode;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\QRCode\Loader;
 use VuFindTheme\ThemeInfo;
 
@@ -51,7 +51,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      *
      * @var string
      */
-    protected $testTheme = 'bootstrap3';
+    protected $testTheme = 'bootstrap5';
 
     /**
      * Test that failure to load even the baseline image causes an exception.
@@ -68,7 +68,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $theme->expects($this->once())
             ->method('findContainingTheme')
             ->with($this->equalTo(['images/noQRCode.gif']))
-            ->will($this->returnValue(false));
+            ->willReturn(false);
         $loader = $this->getLoader([], $theme);
         $loader->getImage();
     }

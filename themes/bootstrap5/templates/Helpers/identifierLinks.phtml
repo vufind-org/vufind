@@ -1,0 +1,14 @@
+<?php
+    $attribs = ['class' => 'identifierLinks', 'data-instance' => $instance ?? 0];
+    if (!empty($doi)) {
+        $attribs['data-doi'] = $doi;
+    }
+    if (!empty($isbn)) {
+        $attribs['data-isbn'] = $isbn;
+    }
+    if (!empty($issn)) {
+        $attribs['data-issn'] = $issn;
+    }
+    echo $this->assetManager()->outputInlineScriptLink('identifierLinks.js');
+?>
+<div<?=$this->htmlAttributes($attribs)?>></div>

@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -32,6 +32,7 @@
 namespace VuFind\Controller;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFind\Config\Config;
 use VuFind\Search\SearchRunner;
 
 use function count;
@@ -49,8 +50,9 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class CombinedController extends AbstractSearch
+class CombinedController extends AbstractSearch implements \Psr\Log\LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
     use AjaxResponseTrait;
 
     /**
@@ -73,7 +75,7 @@ class CombinedController extends AbstractSearch
     {
         // We need to load blocks differently in this controller since it
         // doesn't follow the usual configuration pattern.
-        $blocks = $this->serviceLocator->get(\VuFind\ContentBlock\BlockLoader::class)
+        $blocks = $this->getService(\VuFind\ContentBlock\BlockLoader::class)
             ->getFromConfig('combined');
         return $this->createViewModel(compact('blocks'));
     }
@@ -92,7 +94,7 @@ class CombinedController extends AbstractSearch
 
         // Validate configuration:
         $sectionId = $this->params()->fromQuery('id');
-        $optionsManager = $this->serviceLocator->get(\VuFind\Search\Options\PluginManager::class);
+        $optionsManager = $this->getService(\VuFind\Search\Options\PluginManager::class);
         $combinedOptions = $optionsManager->get('combined');
         $tabConfig = $combinedOptions->getTabConfig();
         if (!isset($tabConfig[$sectionId])) {
@@ -124,13 +126,18 @@ class CombinedController extends AbstractSearch
                 'currentSearch' => $settings,
                 'domId' => 'combined_' . str_replace(':', '____', $sectionId),
             ];
-            // Load custom CSS, if necessary:
-            $html = ($this->getViewRenderer()->plugin('headLink'))();
+            if (!empty($settings['view']->extraErrors)) {
+                $viewParams['extraErrors'] = $settings['view']->extraErrors;
+            }
+            // Initialize theme resources:
+            ($this->getViewRenderer()->plugin('setupThemeResources'))(true);
             // Render content:
-            $html .= $this->getViewRenderer()->render(
+            $html = $this->getViewRenderer()->render(
                 'combined/results-list.phtml',
                 $viewParams
             );
+            // Prepend CSS in case of custom files added by templates:
+            $html = ($this->getViewRenderer()->plugin('headLink'))() . $html;
         }
         return $this->getAjaxResponse('text/html', $html);
     }
@@ -145,7 +152,7 @@ class CombinedController extends AbstractSearch
         // Set up current request context:
         $request = $this->getRequest()->getQuery()->toArray()
             + $this->getRequest()->getPost()->toArray();
-        $results = $this->serviceLocator->get(SearchRunner::class)->run(
+        $results = $this->getService(SearchRunner::class)->run(
             $request,
             'Combined',
             $this->getSearchSetupCallback()
@@ -158,13 +165,34 @@ class CombinedController extends AbstractSearch
 
         // Gather combined results:
         $combinedResults = [];
-        $optionsManager = $this->serviceLocator->get(\VuFind\Search\Options\PluginManager::class);
+        $optionsManager = $this->getService(\VuFind\Search\Options\PluginManager::class);
         $combinedOptions = $optionsManager->get('combined');
         // Save the initial type value, since it may get manipulated below:
         $initialType = $this->params()->fromQuery('type');
         foreach ($combinedOptions->getTabConfig() as $current => $settings) {
             [$searchClassId] = explode(':', $current);
-            $currentOptions = $optionsManager->get($searchClassId);
+            try {
+                $currentOptions = $optionsManager->get($searchClassId);
+            } catch (\Exception $e) {
+                // Prevent errors from any of the combined search results
+                // from raising up to the user interface and instead just skip them
+                $baseMsg = "Failed get combined options for {$searchClassId}.";
+                $shortDetails = $e->getMessage();
+                $fullDetails = (string)$e;
+                $this->logError(
+                    $baseMsg,
+                    [
+                        'details' => [
+                            1 => "$baseMsg $shortDetails",
+                            2 => "$baseMsg $shortDetails",
+                            3 => "$baseMsg $shortDetails",
+                            4 => "$baseMsg $fullDetails",
+                            5 => "$baseMsg $fullDetails",
+                        ],
+                    ]
+                );
+                continue;
+            }
             $this->adjustQueryForSettings(
                 $settings,
                 $currentOptions->getHandlerForLabel($initialType)
@@ -199,7 +227,7 @@ class CombinedController extends AbstractSearch
         $results->performAndProcessSearch();
 
         $actualMaxColumns = count($combinedResults);
-        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)->get('combined')->toArray();
+        $config = $this->getService(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('combined');
         $columnConfig = intval($config['Layout']['columns'] ?? $actualMaxColumns);
         $columns = min($columnConfig, $actualMaxColumns);
         $placement = $config['Layout']['stack_placement'] ?? 'distributed';
@@ -210,7 +238,7 @@ class CombinedController extends AbstractSearch
         // Identify if any modules use include_recommendations_side or
         // include_recommendations_noresults_side.
         $columnSideRecommendations = [];
-        $recommendationManager = $this->serviceLocator->get(\VuFind\Recommend\PluginManager::class);
+        $recommendationManager = $this->getService(\VuFind\Recommend\PluginManager::class);
         foreach ($config as $subconfig) {
             foreach (['include_recommendations_side', 'include_recommendations_noresults_side'] as $type) {
                 if (is_array($subconfig[$type] ?? false)) {
@@ -247,7 +275,8 @@ class CombinedController extends AbstractSearch
         [$type, $target] = explode(':', $this->params()->fromQuery('type'), 2);
         switch ($type) {
             case 'VuFind':
-                [$searchClassId, $type] = explode('|', $target);
+                [$fullSearchClassId, $type] = explode('|', $target);
+                [$searchClassId] = explode(':', $fullSearchClassId);
                 $params = $this->getRequest()->getQuery()->toArray();
                 $params['type'] = $type;
 
@@ -259,8 +288,20 @@ class CombinedController extends AbstractSearch
                 // We don't need to pass activeSearchClassId forward:
                 unset($params['activeSearchClassId']);
 
-                $route = $this->serviceLocator
-                    ->get(\VuFind\Search\Options\PluginManager::class)
+                // If we are using a filtered section, apply appropriate filters:
+                if ($fullSearchClassId !== $searchClassId) {
+                    // Try to find matching filter settings first in [SearchTabsFilters] in config.ini, and then
+                    // in the combined.ini filters setting.
+                    $hiddenFilters = $this->getConfigArray()['SearchTabsFilters'][$fullSearchClassId]
+                        ?? $this->getConfigArray('combined')[$fullSearchClassId]['filter']
+                        ?? [];
+                    // Account for all possible configuration formats -- a Config object, an array, or a string:
+                    $params['hiddenFilters']
+                        = (array)($hiddenFilters instanceof Config ? $hiddenFilters->toArray() : $hiddenFilters);
+                } else {
+                    unset($params['hiddenFilters']);
+                }
+                $route = $this->getService(\VuFind\Search\Options\PluginManager::class)
                     ->get($searchClassId)->getSearchAction();
                 $base = $this->url()->fromRoute($route);
                 return $this->redirect()
@@ -298,6 +339,11 @@ class CombinedController extends AbstractSearch
         // Apply limit setting, if any:
         $query = $this->getRequest()->getQuery();
         $query->limit = $settings['limit'] ?? null;
+
+        // Disable default filters, if requested:
+        if ($settings['disable_default_filters'] ?? false) {
+            $query->dfApplied = 1;
+        }
 
         // Apply filters, if any:
         $query->filter = isset($settings['filter'])

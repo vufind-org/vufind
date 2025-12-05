@@ -1,32 +1,32 @@
 <?xml version="1.0" ?>
-<schema name="VuFind Authority Index" version="1.2">
+<schema name="VuFind Authority Index" version="1.7">
   <types>
     <!-- Define fieldType long as it is needed by the _version_ field required by Solr 4.x -->
     <fieldType name="long" class="solr.LongPointField" positionIncrementGap="0"/>
-    <fieldtype name="string" class="solr.StrField" sortMissingLast="true" omitNorms="true"/>
-    <fieldtype name="boolean" class="solr.BoolField" sortMissingLast="true" omitNorms="true"/>
-    <fieldtype name="date" class="solr.DatePointField" sortMissingLast="true" omitNorms="true"/>
+    <fieldtype name="string" class="solr.StrField" sortMissingLast="true"/>
+    <fieldtype name="boolean" class="solr.BoolField" sortMissingLast="true"/>
+    <fieldtype name="date" class="solr.DatePointField" sortMissingLast="true"/>
     <fieldType name="text" class="solr.TextField" positionIncrementGap="100">
       <analyzer type="index">
         <tokenizer class="solr.ICUTokenizerFactory"/>
-        <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="1" catenateNumbers="1" catenateAll="0" splitOnCaseChange="1"/>
-        <filter class="solr.ICUFoldingFilterFactory"/>
-        <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+        <filter name="wordDelimiterGraph" generateWordParts="1" generateNumberParts="1" catenateWords="1" catenateNumbers="1" catenateAll="0" splitOnCaseChange="1"/>
+        <filter name="icuFolding"/>
+        <filter name="removeDuplicates"/>
       </analyzer>
       <analyzer type="query">
         <tokenizer class="solr.ICUTokenizerFactory"/>
-        <filter class="solr.WordDelimiterGraphFilterFactory" generateWordParts="1" generateNumberParts="1" catenateWords="0" catenateNumbers="0" catenateAll="0" splitOnCaseChange="1"/>
-        <filter class="solr.ICUFoldingFilterFactory"/>
-        <filter class="solr.RemoveDuplicatesTokenFilterFactory"/>
+        <filter name="wordDelimiterGraph" generateWordParts="1" generateNumberParts="1" catenateWords="0" catenateNumbers="0" catenateAll="0" splitOnCaseChange="1"/>
+        <filter name="icuFolding"/>
+        <filter name="removeDuplicates"/>
       </analyzer>
     </fieldType>
   </types>
   <fields>
-    <!-- Required by Solr 4.x -->
-    <field name="_version_" type="long" indexed="true" stored="true"/>
+    <!-- Required by Solr -->
+   <field name="_version_" type="long" indexed="false" stored="false"/>
     <!-- Core Fields  -->
     <field name="id" type="string" indexed="true" stored="true"/>
-    <field name="fullrecord" type="string" indexed="false" stored="true"/>
+    <field name="fullrecord" type="string" indexed="false" stored="true" docValues="false"/>
     <field name="marc_error" type="string" indexed="false" stored="true" multiValued="true"/>
     <field name="allfields" type="text" indexed="true" stored="false" multiValued="true"/>
     <field name="record_format" type="string" indexed="true" stored="true"/>

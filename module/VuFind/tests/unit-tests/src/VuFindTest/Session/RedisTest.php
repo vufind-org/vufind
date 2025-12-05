@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -49,12 +49,17 @@ class RedisTest extends \VuFindTest\Unit\SessionHandlerTestCase
      */
     public function testRead()
     {
-        $client = $this->getMockBuilder(\Credis_Client::class)
-            ->addMethods(['get'])   // mocking __call
-            ->getMock();
-        $client->expects($this->once())->method('get')
-            ->with($this->equalTo('vufind_sessions/foo'))
-            ->will($this->returnValue('bar'));
+        $client = $this->createMock(\Credis_Client::class);
+        $client->expects($this->once())->method('__call')
+            ->willReturnCallback(
+                function ($method, $args) {
+                    if ($method === 'get') {
+                        $this->assertEquals('vufind_sessions/foo', $args[0]);
+                        return 'bar';
+                    }
+                    return null;
+                }
+            );
         $handler = $this->getHandler($client);
         $this->assertEquals('bar', $handler->read('foo'));
     }
@@ -66,16 +71,19 @@ class RedisTest extends \VuFindTest\Unit\SessionHandlerTestCase
      */
     public function testWrite()
     {
-        $client = $this->getMockBuilder(\Credis_Client::class)
-            ->addMethods(['setex']) // mocking __call
-            ->getMock();
-        $client->expects($this->once())->method('setex')
-            ->with(
-                $this->equalTo('vufind_sessions/foo'),
-                $this->equalTo(3600),
-                $this->equalTo('stuff')
-            )
-            ->will($this->returnValue(true));
+        $client = $this->createMock(\Credis_Client::class);
+        $client->expects($this->once())->method('__call')
+            ->willReturnCallback(
+                function ($method, $args) {
+                    if ($method === 'setex') {
+                        $this->assertEquals('vufind_sessions/foo', $args[0]);
+                        $this->assertEquals(3600, $args[1]);
+                        $this->assertEquals('stuff', $args[2]);
+                        return true;
+                    }
+                    return null;
+                }
+            );
         $handler = $this->getHandler($client);
         $this->assertTrue($handler->write('foo', 'stuff'));
     }
@@ -87,12 +95,17 @@ class RedisTest extends \VuFindTest\Unit\SessionHandlerTestCase
      */
     public function testDestroyDefault()
     {
-        $client = $this->getMockBuilder(\Credis_Client::class)
-            ->addMethods(['del'])   // mocking __call
-            ->getMock();
-        $client->expects($this->once())->method('del')
-            ->with($this->equalTo('vufind_sessions/foo'))
-            ->will($this->returnValue(1));
+        $client = $this->createMock(\Credis_Client::class);
+        $client->expects($this->once())->method('__call')
+            ->willReturnCallback(
+                function ($method, $args) {
+                    if ($method === 'del') {
+                        $this->assertEquals('vufind_sessions/foo', $args[0]);
+                        return 1;
+                    }
+                    return null;
+                }
+            );
         $handler = $this->getHandler($client);
         $this->setUpDestroyExpectations('foo');
 
@@ -106,13 +119,18 @@ class RedisTest extends \VuFindTest\Unit\SessionHandlerTestCase
      */
     public function testDestroyNewRedis()
     {
-        $client = $this->getMockBuilder(\Credis_Client::class)
-            ->addMethods(['unlink']) // mocking __call
-            ->getMock();
-        $client->expects($this->once())->method('unlink')
-            ->with($this->equalTo('vufind_sessions/foo'))
-            ->will($this->returnValue(1));
-        $config = new \Laminas\Config\Config(
+        $client = $this->createMock(\Credis_Client::class);
+        $client->expects($this->once())->method('__call')
+            ->willReturnCallback(
+                function ($method, $args) {
+                    if ($method === 'unlink') {
+                        $this->assertEquals('vufind_sessions/foo', $args[0]);
+                        return 1;
+                    }
+                    return null;
+                }
+            );
+        $config = new \VuFind\Config\Config(
             ['redis_version' => 4]
         );
         $handler = $this->getHandler($client, $config);
@@ -124,15 +142,15 @@ class RedisTest extends \VuFindTest\Unit\SessionHandlerTestCase
     /**
      * Get the session handler to test.
      *
-     * @param \Credis_Client         $client Client object
-     * @param \Laminas\Config\Config $config Optional configuration
+     * @param \Credis_Client        $client Client object
+     * @param \VuFind\Config\Config $config Optional configuration
      *
      * @return Database
      */
     protected function getHandler($client, $config = null)
     {
         $handler = new Redis($client, $config);
-        $this->injectMockDatabaseTables($handler);
+        $this->injectMockDatabaseDependencies($handler);
         return $handler;
     }
 }

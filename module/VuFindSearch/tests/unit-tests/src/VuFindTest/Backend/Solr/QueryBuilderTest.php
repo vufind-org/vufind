@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -30,6 +30,7 @@
 namespace VuFindTest\Backend\Solr;
 
 use VuFindSearch\Backend\Solr\QueryBuilder;
+use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
 
@@ -199,7 +200,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Run the standard suite of question mark tests, accounting for differences
-     * between stanard Lucene, basic Dismax and eDismax handlers.
+     * between standard Lucene, basic Dismax and eDismax handlers.
      *
      * @param array  $builderParams Parameters for QueryBuilder constructor
      * @param string $handler       Search handler: dismax|edismax|standard
@@ -598,7 +599,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     {
         return [
             'Single value, no extra params' => [
-                null,
+                'globalExtraParams' => null,
                 'expected1' => [
                     'bf' => ['a:filter'],
                     'bq' => null,
@@ -609,7 +610,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
             'Single value' => [
-                'GlobalExtraParams' => [
+                'globalExtraParams' => [
                     [
                         'param' => 'bq',
                         'value' => 'a:foo',
@@ -625,7 +626,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
             'Two values' => [
-                'GlobalExtraParams' => [
+                'globalExtraParams' => [
                     [
                         'param' => 'bq',
                         'value' => [
@@ -650,7 +651,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
             'Value with SearchTypeIn condition' => [
-                'GlobalExtraParams' => [
+                'globalExtraParams' => [
                     [
                         'param' => 'bq',
                         'value' => 'a:foo',
@@ -673,7 +674,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
             'Value with SearchTypeNotIn condition' => [
-                'GlobalExtraParams' => [
+                'globalExtraParams' => [
                     [
                         'param' => 'bq',
                         'value' => 'a:foo',
@@ -696,13 +697,59 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
             'Value with NoDisMaxParams = [bf] condition' => [
-                'GlobalExtraParams' => [
+                'globalExtraParams' => [
                     [
                         'param' => 'bq',
                         'value' => 'a:foo',
                         'conditions' => [
                             [
                                 'NoDismaxParams' => ['bf'],
+                            ],
+                        ],
+                    ],
+                ],
+                'expected1' => [
+                    'bf' => ['a:filter'],
+                    'bq' => null,
+                ],
+                'expected2' => [
+                    'bf' => null,
+                    'bq' => ['a:foo'],
+                ],
+            ],
+            'Value with SortIn condition' => [
+                'globalExtraParams' => [
+                    [
+                        'param' => 'bq',
+                        'value' => 'a:foo',
+                        'conditions' => [
+                            [
+                                'SortIn' => [
+                                    'score desc',
+                                ],
+                            ],
+                        ],
+                    ],
+                ],
+                'expected1' => [
+                    'bf' => ['a:filter'],
+                    'bq' => ['a:foo'],
+                ],
+                'expected2' => [
+                    'bf' => null,
+                    'bq' => null,
+                ],
+            ],
+            'Value with SortNotIn condition' => [
+                'globalExtraParams' => [
+                    [
+                        'param' => 'bq',
+                        'value' => 'a:foo',
+                        'conditions' => [
+                            [
+                                'SortNotIn' => [
+                                    'score desc',
+                                ],
                             ],
                         ],
                     ],
@@ -727,16 +774,17 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      * @param array $expected2         Second set of expected fields
      *
      * @return void
-     *
-     * @dataProvider globalExtraParamsIndividualQueryDataProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('globalExtraParamsIndividualQueryDataProvider')]
     public function testIndividualQueryHandlerWithGlobalExtraParams(
         $globalExtraParams,
         $expected1,
         $expected2
     ) {
         $q1 = new Query('q', 'test');
+        $params1 = new ParamBag(['sort' => 'score desc']);
         $q2 = new Query('q', 'test2');
+        $params2 = new ParamBag(['sort' => 'title asc']);
 
         $specs = [
             'test' => [
@@ -751,7 +799,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
         }
 
         $qb = new QueryBuilder($specs);
-        $response = $qb->build($q1);
+        $response = $qb->build($q1, $params1);
         foreach ($expected1 as $field => $expected) {
             $values = $response->get($field);
             $this->assertEquals(
@@ -760,7 +808,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 'query 1'
             );
         }
-        $response = $qb->build($q2);
+        $response = $qb->build($q2, $params2);
         foreach ($expected2 as $field => $expected) {
             $values = $response->get($field);
             $this->assertEquals(
@@ -780,7 +828,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     {
         return [
             'Search type in [test]' => [
-                'GlobalExtraParams' => [
+                'globalExtraParams' => [
                     [
                         'param' => 'bq',
                         'value' => 'a:foo',
@@ -791,12 +839,12 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                         ],
                     ],
                 ],
-                'expected' => [
+                'expectedFields' => [
                     'bq' => ['a:foo'],
                 ],
             ],
             'All search types in [test, test2]' => [
-                'GlobalExtraParams' => [
+                'globalExtraParams' => [
                     [
                         'param' => 'bq',
                         'value' => 'a:foo',
@@ -807,12 +855,12 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                         ],
                     ],
                 ],
-                'expected' => [
+                'expectedFields' => [
                     'bq' => ['a:foo'],
                 ],
             ],
             'All search types in [test, no]' => [
-                'GlobalExtraParams' => [
+                'globalExtraParams' => [
                     [
                         'param' => 'bq',
                         'value' => 'a:foo',
@@ -823,12 +871,12 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                         ],
                     ],
                 ],
-                'expected' => [
+                'expectedFields' => [
                     'bq' => null,
                 ],
             ],
             'All search types in [test, test2, no]' => [
-                'GlobalExtraParams' => [
+                'globalExtraParams' => [
                     [
                         'param' => 'bq',
                         'value' => 'a:foo',
@@ -839,7 +887,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                         ],
                     ],
                 ],
-                'expected' => [
+                'expectedFields' => [
                     'bq' => ['a:foo'],
                 ],
             ],
@@ -853,9 +901,8 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
      * @param array $expectedFields    Expected fields
      *
      * @return void
-     *
-     * @dataProvider globalExtraParamsGroupedQueryDataProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('globalExtraParamsGroupedQueryDataProvider')]
     public function testGroupedQueryHandlerWithGlobalExtraParams(
         $globalExtraParams,
         $expectedFields
@@ -933,5 +980,42 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
             ['((*:* NOT (q1 OR q2)) OR (q3 AND q4))'],
             $response->get('q')
         );
+    }
+
+    /**
+     * Test dismax munge.
+     *
+     * @return void
+     */
+    public function testDismaxMunge()
+    {
+        // Set up an array of expected inputs and outputs:
+        $tests = [
+            ['title - sub', 'title sub'],        // normalization of freestanding hyphen
+            ['test + test', 'test and test'],    // freestanding plus with munge
+            ['test+test', 'test+test'],          // non-freestanding plus
+            ['test~0.9', 'test0.9'],             // munge for removing char
+            ['test~10', 'test 10'],              // more specific munge followed by normalization
+            ['TEST', 'test'],                    // lc munge
+        ];
+        $specs = [
+            'test' => [
+                'DismaxFields' => ['foo'],
+                'DismaxMunge' => [
+                    ['preg_replace', '/\s[\+]\s/', ' and '],
+                    ['preg_replace', '/~1/', ' + 1'],
+                    ['preg_replace', '/~/', ''],
+                    ['lowercase'],
+                ],
+            ],
+        ];
+        $qb = new QueryBuilder($specs);
+        foreach ($tests as $test) {
+            [$input, $output] = $test;
+            $q = new Query($input, 'test');
+            $response = $qb->build($q);
+            $processedQ = $response->get('q');
+            $this->assertEquals($output, $processedQ[0]);
+        }
     }
 }

@@ -1,0 +1,32 @@
+.btn.missing_count, .btn.extra_count {
+  padding: 0;
+  height: auto;
+}
+
+#lang-summary .progress {
+  margin-bottom: 0;
+  border: 1px solid #555;
+  background-color: #fff;
+}
+#lang-summary .progress-border-info {
+  border-color: $info;
+}
+#lang-summary .progress-border-warning {
+  border-color: $warning;
+}
+#lang-summary .progress-border-danger {
+  border-color: $danger;
+}
+
+#lang-summary .progress-bar {
+  min-width: 2rem;
+}
+#lang-summary th,
+#lang-summary td {
+  text-align: left;
+  vertical-align: middle;
+}
+
+.devtools-icon-container {
+  column-width: 225px;
+}

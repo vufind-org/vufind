@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Cover_Generator
@@ -34,6 +34,8 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+
+use function is_callable;
 
 /**
  * Cover caching proxy factory.
@@ -63,18 +65,22 @@ class CachingProxyFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
-        $cacheDir = $container->get(\VuFind\Cache\Manager::class)
-            ->getCache('cover')->getOptions()->getCacheDir();
-        $client = $container->get(\VuFindHttp\HttpService::class)->createClient();
-        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config')
-            ->toArray();
+        $cacheOptions = $container->get(\VuFind\Cache\Manager::class)
+            ->getCache('cover')->getOptions();
+        $cacheDir = is_callable([$cacheOptions, 'getCacheDir'])
+            ? $cacheOptions->getCacheDir() : null;
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         $allowedHosts = isset($config['Content']['coverproxyCache'])
             ? (array)$config['Content']['coverproxyCache'] : [];
-        return new $requestedName($client, $cacheDir . '/proxy', $allowedHosts);
+        return new $requestedName(
+            $container->get(\VuFindHttp\HttpService::class)->createClient(),
+            $cacheDir === null ? null : $cacheDir . '/proxy',
+            $allowedHosts
+        );
     }
 }

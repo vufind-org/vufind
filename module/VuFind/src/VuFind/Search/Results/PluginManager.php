@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -59,6 +59,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'mixedlist' => \VuFind\Search\MixedList\Results::class,
         'pazpar2' => \VuFind\Search\Pazpar2\Results::class,
         'primo' => \VuFind\Search\Primo\Results::class,
+        'proquestfsg' => \VuFind\Search\ProQuestFSG\Results::class,
         'search2' => \VuFind\Search\Search2\Results::class,
         'search2collection' => \VuFind\Search\Search2Collection\Results::class,
         'solr' => \VuFind\Search\Solr\Results::class,
@@ -71,6 +72,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'summon' => \VuFind\Search\Summon\Results::class,
         'tags' => \VuFind\Search\Tags\Results::class,
         'worldcat' => \VuFind\Search\WorldCat\Results::class,
+        'worldcat2' => \VuFind\Search\WorldCat2\Results::class,
     ];
 
     /**
@@ -94,6 +96,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         \VuFind\Search\MixedList\Results::class => ResultsFactory::class,
         \VuFind\Search\Pazpar2\Results::class => ResultsFactory::class,
         \VuFind\Search\Primo\Results::class => ResultsFactory::class,
+        \VuFind\Search\ProQuestFSG\Results::class => ResultsFactory::class,
         \VuFind\Search\Search2\Results::class =>
             \VuFind\Search\Search2\ResultsFactory::class,
         \VuFind\Search\Search2Collection\Results::class => ResultsFactory::class,
@@ -110,6 +113,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         \VuFind\Search\Tags\Results::class =>
             \VuFind\Search\Tags\ResultsFactory::class,
         \VuFind\Search\WorldCat\Results::class => ResultsFactory::class,
+        \VuFind\Search\WorldCat2\Results::class => ResultsFactory::class,
     ];
 
     /**

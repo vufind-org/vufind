@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -32,6 +32,7 @@ namespace VuFind\Controller;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Solr\Utils as SolrUtils;
 
+use function array_key_exists;
 use function in_array;
 
 /**
@@ -54,18 +55,6 @@ class EdsController extends AbstractSearch
     {
         $this->searchClassId = 'EDS';
         parent::__construct($sm);
-    }
-
-    /**
-     * Is the result scroller active?
-     *
-     * @return bool
-     */
-    protected function resultScrollerActive()
-    {
-        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
-            ->get('EDS');
-        return $config->Record->next_prev_navigation ?? false;
     }
 
     /**
@@ -138,17 +127,22 @@ class EdsController extends AbstractSearch
 
                     // If we haven't already found a selected facet and the current
                     // facet has been applied to the search, we should store it as
-                    // the selected facet for the current control.
+                    // the selected facet for the current control. Cover AND and OR
+                    // filter cases to be on the safe side; either might be used,
+                    // but we don't currently expect both at once on the same field.
                     if ($searchObject) {
                         $limitFilt = 'LIMIT|' . $fullFilter;
+                        $orLimitFilt = '~' . $limitFilt;
                         if ($searchObject->getParams()->hasFilter($limitFilt)) {
-                            $facetList[$facet]['LimiterValues'][$key]['selected']
-                                = true;
+                            $facetList[$facet]['LimiterValues'][$key]['selected'] = true;
                             // Remove the filter from the search object -- we don't
                             // want it to show up in the "applied filters" sidebar
                             // since it will already be accounted for by being
                             // selected in the filter select list!
                             $searchObject->getParams()->removeFilter($limitFilt);
+                        } elseif ($searchObject->getParams()->hasFilter($orLimitFilt)) {
+                            $facetList[$facet]['LimiterValues'][$key]['selected'] = true;
+                            $searchObject->getParams()->removeFilter($orLimitFilt);
                         }
                     } else {
                         if ('y' == $facetList[$facet]['DefaultOn']) {
@@ -197,7 +191,7 @@ class EdsController extends AbstractSearch
     }
 
     /**
-     * Process the publicationd date range limiter widget
+     * Process the publication date range limiter widget
      *
      * @param object $searchObject Saved search object (false if none)
      *
@@ -236,9 +230,10 @@ class EdsController extends AbstractSearch
         $params = $results->getParams();
         $options = $params->getOptions();
         $searchModes = $options->getModeOptions();
+        $useDefault = true;
         // Process the facets, assuming they came back
-        foreach ($searchModes as $key => $mode) {
-            if ($searchObject) {
+        if ($searchObject) {
+            foreach ($searchModes as $key => $mode) {
                 $modeFilter = 'SEARCHMODE:' . $mode['Value'];
                 if ($searchObject->getParams()->hasFilter($modeFilter)) {
                     $searchModes[$key]['selected'] = true;
@@ -247,11 +242,14 @@ class EdsController extends AbstractSearch
                     // will already be accounted for by being selected in the
                     // filter select list!
                     $searchObject->getParams()->removeFilter($modeFilter);
+                    $useDefault = false;
                 }
-            } else {
-                if ($key == $options->getDefaultMode()) {
-                    $searchModes[$key]['selected'] = true;
-                }
+            }
+        }
+        if ($useDefault) {
+            $key = $options->getDefaultMode();
+            if (array_key_exists($key, $searchModes)) {
+                $searchModes[$key]['selected'] = true;
             }
         }
 

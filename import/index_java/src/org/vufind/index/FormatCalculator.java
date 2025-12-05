@@ -14,8 +14,8 @@ package org.vufind.index;
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 import org.marc4j.marc.Record;
@@ -195,7 +195,15 @@ public class FormatCalculator
                     case 'd':
                         char formatCode5 = formatString.length() > 4
                             ? formatString.charAt(4) : ' ';
-                        return formatCode5 == 's' ? "BRDisc" : "VideoDisc";
+                        switch(formatCode5) {
+                            case 'g':
+                                return "LaserDisc";
+                            case 's':
+                                return "BRDisc";
+                            case 'v':
+                                return "DVD";
+                        }
+                        return "VideoDisc";
                     case 'f':
                         return "VideoCassette";
                     case 'r':
@@ -278,6 +286,8 @@ public class FormatCalculator
                 break;
             // Serial
             case 's':
+                // For some materials, we may want to know if this is an online item:
+                boolean isOnline = (recordType == 'a' || recordType == 'm') && (get008Value(marc008, 23) == 'o');
                 // Look in 008 to determine what type of Continuing Resource
                 // Make sure we have the applicable LDR/06: Language Material
                 if (recordType == 'a') {
@@ -285,13 +295,13 @@ public class FormatCalculator
                         case 'n':
                             return "Newspaper";
                         case 'p':
-                            return "Journal";
+                            return isOnline ? "eJournal" : "Journal";
                         default: break;
                     }
                 }
-                // Default to serial even if 008 is missing
+                // Default to serial even if 008 is missing (but use eJournal for online things)
                 if (!isConferenceProceeding(record)) {
-                    return "Serial";
+                    return isOnline ? "eJournal" : "Serial";
                 }
                 break;
         }

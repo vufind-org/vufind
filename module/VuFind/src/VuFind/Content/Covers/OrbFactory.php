@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Content
@@ -64,21 +64,20 @@ class OrbFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $configPluginManager = $container->get(\VuFind\Config\PluginManager::class);
-        $config = $configPluginManager->get('config');
-        $url = $config->Orb->url ?? 'api.base-orb.fr/v1';
-        if (!isset($config->Orb->user)) {
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
+        $url = $config['Orb']['url'] ?? 'api.base-orb.fr/v1';
+        if (!isset($config['Orb']['user'])) {
             throw new \Exception("Orb 'user' not set in VuFind config");
         }
-        if (!isset($config->Orb->key)) {
+        if (!isset($config['Orb']['key'])) {
             throw new \Exception("Orb 'key' not set in VuFind config");
         }
-        $orb = new $requestedName($url, $config->Orb->user, $config->Orb->key);
+        $orb = new $requestedName($url, $config['Orb']['user'], $config['Orb']['key']);
         $cachingDownloader = $container->get(\VuFind\Http\CachingDownloader::class);
         $orb->setCachingDownloader($cachingDownloader);
         return $orb;

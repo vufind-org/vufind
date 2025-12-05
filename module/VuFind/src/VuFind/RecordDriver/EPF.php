@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -68,6 +68,26 @@ class EPF extends EDS
     }
 
     /**
+     * Get ISSNs (of containing record)
+     *
+     * @return array
+     */
+    public function getISSNs()
+    {
+        return $this->getFilteredIdentifiers(['issn-print', 'issn-online']);
+    }
+
+    /**
+     * Get an array of ISBNs
+     *
+     * @return array
+     */
+    public function getISBNs()
+    {
+        return $this->getFilteredIdentifiers(['isbn-print', 'isbn-online']);
+    }
+
+    /**
      * Get the list of full text holdings for the record
      *
      * @return array
@@ -75,5 +95,15 @@ class EPF extends EDS
     public function getFullTextHoldings()
     {
         return $this->fields['FullTextHoldings'] ?? [];
+    }
+
+    /**
+     * Get class name for RecordDataFormatter spec.
+     *
+     * @return ?string
+     */
+    public function getRecordDataFormatterSpecClass(): ?string
+    {
+        return \VuFind\RecordDataFormatter\Specs\EPF::class;
     }
 }

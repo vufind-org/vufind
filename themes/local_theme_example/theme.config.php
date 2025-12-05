@@ -1,6 +1,6 @@
 <?php
 return [
-    'extends' => 'bootstrap3',
+    'extends' => 'bootstrap5',
 
     /**
      * The following is all custom attributes for this theme

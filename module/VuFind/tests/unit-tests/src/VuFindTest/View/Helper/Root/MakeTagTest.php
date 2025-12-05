@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -168,12 +168,11 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
      * @param string $expected Expected value
      * @param array  $params   Parameters to test
      *
-     * @dataProvider htmlAttributesTests
-     * @dataProvider helperOptionTests
-     * @dataProvider voidTags
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('htmlAttributesTests')]
+    #[\PHPUnit\Framework\Attributes\DataProvider('helperOptionTests')]
+    #[\PHPUnit\Framework\Attributes\DataProvider('voidTags')]
     public function testElements($expected, $params): void
     {
         $helper = $this->getHelper();
@@ -207,10 +206,9 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
      *
      * @param string $tagName Tag name to use in test
      *
-     * @dataProvider validTags
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('validTags')]
     public function testValidTagNames($tagName): void
     {
         $helper = $this->getHelper();
@@ -246,10 +244,9 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
      *
      * @param string $tagName Tag name to use in test
      *
-     * @dataProvider invalidTags
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('invalidTags')]
     public function testInvalidTagNames($tagName): void
     {
         $helper = $this->getHelper();
@@ -275,11 +272,16 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
         $helper('sanity-check', 'this is good');
 
         $this->expectExceptionMessage("'<marquee>' is deprecated and should be replaced.");
-        $errorCallback = function (int $code, string $msg) {
+        $errorCallback = function (int $code, string $msg): void {
             throw new \Exception($msg, $code);
         };
         set_error_handler($errorCallback, E_USER_WARNING);
-        $helper('marquee', 'Now Playing: A Simpler Time!');
-        restore_error_handler();
+        try {
+            $helper('marquee', 'Now Playing: A Simpler Time!');
+        } catch (\Throwable $e) {
+            throw $e;
+        } finally {
+            restore_error_handler();
+        }
     }
 }

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -29,6 +29,7 @@
 
 namespace VuFindConsole\Command\Util;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
@@ -44,15 +45,12 @@ use function ini_get;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'util/commit',
+    description: 'Solr commit tool'
+)]
 class CommitCommand extends AbstractSolrCommand
 {
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'util/commit';
-
     /**
      * The name of the Solr command, for use in help messages.
      *
@@ -68,7 +66,6 @@ class CommitCommand extends AbstractSolrCommand
     protected function configure()
     {
         $this
-            ->setDescription('Solr ' . $this->solrCommand . ' tool')
             ->setHelp('Sends a ' . $this->solrCommand . ' command to a Solr index.')
             ->addArgument(
                 'core',
@@ -88,7 +85,7 @@ class CommitCommand extends AbstractSolrCommand
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         // Check time limit; increase if necessary:
         if (ini_get('max_execution_time') < 3600) {
@@ -100,6 +97,6 @@ class CommitCommand extends AbstractSolrCommand
 
         // Commit to the Solr Index
         $this->solr->commit($core);
-        return 0;
+        return self::SUCCESS;
     }
 }

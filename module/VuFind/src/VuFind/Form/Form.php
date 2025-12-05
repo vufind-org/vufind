@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Form
@@ -132,7 +132,7 @@ class Form extends \Laminas\Form\Form implements
      * @param YamlReader          $yamlReader        YAML reader
      * @param HelperPluginManager $viewHelperManager View helper manager
      * @param HandlerManager      $handlerManager    Handler plugin manager
-     * @param array               $config            VuFind main configuration
+     * @param ?array              $config            VuFind main configuration
      * (optional)
      *
      * @throws \Exception
@@ -141,7 +141,7 @@ class Form extends \Laminas\Form\Form implements
         YamlReader $yamlReader,
         HelperPluginManager $viewHelperManager,
         HandlerManager $handlerManager,
-        array $config = null
+        ?array $config = null
     ) {
         parent::__construct();
 
@@ -160,7 +160,7 @@ class Form extends \Laminas\Form\Form implements
      * @param array  $prefill Prefill form with these values.
      *
      * @return void
-     * @throws Exception
+     * @throws \Exception
      */
     public function setFormId($formId, $params = [], $prefill = [])
     {
@@ -253,11 +253,21 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
+     * Return form action route if set in config
+     *
+     * @return string Form action route or feedback-form as default
+     */
+    public function getFormActionRoute(): string
+    {
+        return $this->formConfig['formActionRoute'] ?? 'feedback-form';
+    }
+
+    /**
      * Return form recipient(s).
      *
      * @param array $postParams Posted form data
      *
-     * @return array of reciepients, each consisting of an array with
+     * @return array of recipients, each consisting of an array with
      * name, email or null if not configured
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
@@ -345,7 +355,7 @@ class Form extends \Laminas\Form\Form implements
     }
 
     /**
-     * Return reponse that is shown after successful form submit.
+     * Return response that is shown after successful form submit.
      *
      * @return string
      */
@@ -463,6 +473,8 @@ class Form extends \Laminas\Form\Form implements
      * Retrieve input filter used by this form
      *
      * @return InputFilterInterface
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getInputFilter(): InputFilterInterface
     {
@@ -561,13 +573,11 @@ class Form extends \Laminas\Form\Form implements
      * @param string $formId Form id
      *
      * @return mixed null|array
-     * @throws Exception
+     * @throws \Exception
      */
     protected function getFormConfig($formId = null)
     {
         $confName = 'FeedbackForms.yaml';
-        $localConfig = $config = null;
-
         $config = $this->yamlReader->get($confName, false, true);
         $localConfig = $this->yamlReader->get($confName, true, true);
 
@@ -755,7 +765,7 @@ class Form extends \Laminas\Form\Form implements
 
         $elements[] = [
             'type' => 'submit',
-            'name' => 'submit',
+            'name' => 'submitButton',
             'label' => 'Send',
         ];
 
@@ -851,6 +861,7 @@ class Form extends \Laminas\Form\Form implements
             'emailFrom',
             'emailSubject',
             'enabled',
+            'formActionRoute',
             'help',
             'onlyForLoggedUsers',
             'recipient',
@@ -938,14 +949,12 @@ class Form extends \Laminas\Form\Form implements
         $conf['type'] = $class;
         $conf['options'] = [];
 
-        $attributes = $el['settings'] ?? [];
-
         $attributes = [
             'id' => $this->getElementId($el['name']),
             'class' => [$el['settings']['class'] ?? null],
         ];
 
-        if ($type !== 'submit') {
+        if (!in_array($type, ['submit', 'radio', 'checkbox', 'select'], true)) {
             $attributes['class'][] = 'form-control';
         }
 
@@ -960,7 +969,7 @@ class Form extends \Laminas\Form\Form implements
             !empty($el['label']) && 'hidden' !== $type
             && !isset($attributes['aria-label'])
         ) {
-            $attributes['aria-label'] = $el['label'];
+            $attributes['aria-label'] = $this->translate($el['label']);
         }
 
         switch ($type) {
@@ -976,6 +985,7 @@ class Form extends \Laminas\Form\Form implements
                         'value' => $key,
                         'attributes' => [
                             'id' => $this->getElementId($el['name'] . '_' . $key),
+                            'class' => 'form-check-input',
                         ],
                     ];
                 }
@@ -1004,6 +1014,7 @@ class Form extends \Laminas\Form\Form implements
                         'label_attributes' => ['for' => $elemId],
                         'attributes' => [
                             'id' => $elemId,
+                            'class' => 'form-check-input',
                         ],
                         'selected' => $first,
                     ];
@@ -1012,6 +1023,7 @@ class Form extends \Laminas\Form\Form implements
                 $conf['options'] = ['value_options' => $optionElements];
                 break;
             case 'select':
+                $attributes['class'][] = 'form-select';
                 if (isset($el['options'])) {
                     $options = $el['options'];
                     foreach ($options as $key => &$option) {

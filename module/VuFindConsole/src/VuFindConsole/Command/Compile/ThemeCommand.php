@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -29,6 +29,7 @@
 
 namespace VuFindConsole\Command\Compile;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -45,15 +46,12 @@ use VuFindTheme\ThemeCompiler;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'compile/theme',
+    description: 'Theme compiler'
+)]
 class ThemeCommand extends Command
 {
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'compile/theme';
-
     /**
      * Theme compiler
      *
@@ -82,7 +80,6 @@ class ThemeCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('Theme compiler')
             ->setHelp('Flattens a theme hierarchy for improved performance.')
             ->addArgument(
                 'source',
@@ -109,19 +106,19 @@ class ThemeCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $source = $input->getArgument('source');
         $target = $input->getArgument('target');
         if (empty($target)) {
             $target = "{$source}_compiled";
         }
-        $force = $input->getOption('force') ? true : false;
+        $force = (bool)$input->getOption('force');
         if (!$this->compiler->compile($source, $target, $force)) {
             $output->writeln($this->compiler->getLastError());
-            return 1;
+            return self::FAILURE;
         }
         $output->writeln('Success.');
-        return 0;
+        return self::SUCCESS;
     }
 }

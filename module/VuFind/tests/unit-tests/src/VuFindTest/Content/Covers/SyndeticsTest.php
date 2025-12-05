@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,7 +29,7 @@
 
 namespace VuFindTest\Content\Covers;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\Content\Covers\Syndetics;
 use VuFind\Http\CachingDownloader;
 use VuFindCode\ISBN;
@@ -62,7 +62,6 @@ class SyndeticsTest extends \PHPUnit\Framework\TestCase
         ?bool $useSyndeticsCoverImageFallback = true
     ): Syndetics {
         $loader = new Syndetics(new Config([
-            'use_ssl' => false,
             'use_syndetics_cover_image_fallback' => $useSyndeticsCoverImageFallback,
         ]));
         if ($fixtureFile) {
@@ -71,8 +70,8 @@ class SyndeticsTest extends \PHPUnit\Framework\TestCase
                 ->getMock();
             $fixture = $this->getFixture($fixtureFile);
             $mockDownloader->expects($this->once())->method('download')
-                ->with($this->equalTo("http://syndetics.com/index.aspx?client=test&isbn=$isbn/index.xml"))
-                ->will($this->returnValue($fixture));
+                ->with($this->equalTo("https://secure.syndetics.com/index.aspx?client=test&isbn=$isbn/index.xml"))
+                ->willReturn($fixture);
             $loader->setCachingDownloader($mockDownloader);
         }
         return $loader;
@@ -87,7 +86,7 @@ class SyndeticsTest extends \PHPUnit\Framework\TestCase
     {
         $loader = $this->getLoader('content/covers/syndetics-metadata_with_images.xml', '9780520080607', false);
         $this->assertEquals(
-            'http://syndetics.com/index.aspx?client=test&isbn=9780520080607/SC.GIF',
+            'https://secure.syndetics.com/index.aspx?client=test&isbn=9780520080607/SC.GIF',
             $loader->getUrl(
                 'test',
                 'small',
@@ -105,7 +104,7 @@ class SyndeticsTest extends \PHPUnit\Framework\TestCase
     {
         $loader = $this->getLoader(null, '9780709933847', true);
         $this->assertEquals(
-            'http://syndetics.com/index.aspx?client=test&isbn=9780709933847/SC.GIF',
+            'https://secure.syndetics.com/index.aspx?client=test&isbn=9780709933847/SC.GIF',
             $loader->getUrl(
                 'test',
                 'small',

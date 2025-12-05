@@ -3,6 +3,9 @@
 # Script for installing VuFind on Ubuntu
 # This does not include the OCI8 libraries
 
+# Load debconf library
+. /usr/share/debconf/confmodule
+
 # Set environment variables for use below
 VUFIND_HOME=/usr/local/vufind
 VUFIND_LOCAL_DIR=$VUFIND_HOME/local
@@ -15,12 +18,12 @@ chown -R www-data:www-data $VUFIND_LOCAL_DIR/cache
 chown -R www-data:www-data $VUFIND_LOCAL_DIR/config
 
 # Set up CLI cache.
-mkdir $VUFIND_LOCAL_DIR/cache/cli
+mkdir -p $VUFIND_LOCAL_DIR/cache/cli
 chmod 777 $VUFIND_LOCAL_DIR/cache/cli
 
 # Create the Apache configuration
 cd $VUFIND_HOME
-php install.php --use-defaults
+php install.php --use-defaults --no-apache-help
 
 # Update the profile file to set required environment variables:
 sh -c 'echo export JAVA_HOME=\"/usr/lib/jvm/default-java\" > /etc/profile.d/vufind.sh'
@@ -31,5 +34,15 @@ APACHE_CONF_DIR=/etc/apache2/conf.d
 if [ ! -d $APACHE_CONF_DIR ]; then
   APACHE_CONF_DIR=/etc/apache2/conf-enabled
 fi
-ln -s $VUFIND_LOCAL_DIR/httpd-vufind.conf $APACHE_CONF_DIR/vufind.conf
+ln -s -f $VUFIND_LOCAL_DIR/httpd-vufind.conf $APACHE_CONF_DIR/vufind.conf
 /etc/init.d/apache2 force-reload
+
+# Set up Solr user and directory permissions
+db_get vufind/solr-user
+SOLR_USER=$RET;
+if ! id -u $SOLR_USER > /dev/null 2>&1; then
+  adduser --system $SOLR_USER
+fi
+chown -R $SOLR_USER $VUFIND_HOME/solr
+echo "Use the following command to start Solr manually:"
+echo "cd $VUFIND_HOME; sudo -u $SOLR_USER ./solr.sh start"

@@ -1,0 +1,103 @@
+<?php
+    // Set up breadcrumbs:
+    $this->breadcrumbs()->reset();
+    if ($url = $this->searchMemory()->getLastSearchUrl()) {
+      $this->breadcrumbs()->add($this->translate('Search'), $url);
+    }
+    $this->breadcrumbs()->add($this->translate('Book Bag'), $this->url('cart-home'))
+      ->add($this->translate('Export Favorites'), active: true);
+?>
+<?=$this->component('page-title', ['title' => $this->translate('Export Favorites')]);?>
+
+<?=$this->flashmessages()?>
+
+<?php if (!empty($this->exportOptions) && count($this->records) > 0): ?>
+  <form class="form-cart-export" method="post" action="<?=$this->url('cart-export')?>" name="exportForm" title="<?=$this->transEscAttr('Export Items')?>">
+    <?php foreach ($this->records as $current): ?>
+      <input type="hidden" name="ids[]" value="<?=$this->escapeHtmlAttr($current->getSourceIdentifier() . '|' . $current->getUniqueId())?>">
+    <?php endforeach; ?>
+    <div class="form-group">
+      <label class="form-label"><?=$this->transEsc('Title')?>:</label>
+      <?php if (count($this->records) > 1): ?>
+        <button type="button" class="btn btn-default hidden js-item-button" data-bs-toggle="collapse" data-bs-target="#itemhide">
+          <?=count($this->records) . ' ' . $this->transEsc('items') ?>
+        </button>
+        <div id="itemhide" class="collapse show">
+          <ul>
+            <?php foreach ($this->records as $current): ?>
+              <li><?=$this->escapeHtml($current->getBreadcrumb())?></li>
+            <?php endforeach; ?>
+          </ul>
+        </div>
+      <?php else: ?>
+        <p class="form-control-static"><?=$this->records[0]->getBreadcrumb() ?></p>
+      <?php endif; ?>
+    </div>
+    <div class="form-group">
+    <label for="format" class="form-label"><?=$this->transEsc('Format')?>:</label>
+      <select name="format" id="format" class="form-select">
+        <?php $firstOption = null; ?>
+        <?php foreach ($this->exportOptions as $exportOption): ?>
+          <?php
+            if ($firstOption == null) {
+              $firstOption = $exportOption;
+            }
+          ?>
+          <option value="<?=$this->escapeHtmlAttr($exportOption)?>"<?php if ($this->export()->needsRedirect($exportOption)): ?> data-redirect="<?=$this->escapeHtmlAttr($this->export()->getTargetWindow($exportOption))?>"<?php endif; ?>><?=$this->transEsc($this->export()->getLabelForFormat($exportOption))?></option>
+        <?php endforeach; ?>
+      </select>
+    </div>
+    <div class="form-group">
+      <input class="export btn btn-primary" type="submit" name="submitButton" value="<?=$this->transEscAttr('Export')?>"<?php if ($this->export()->needsRedirect($firstOption)): ?> data-lightbox-ignore<?php endif; ?>>
+    </div>
+  </form>
+<?php endif; ?>
+<?php
+  $script = <<<JS
+        (function initExport() {
+          const collapseBtn = document.querySelector('.js-item-button');
+          const itemCollapseEl = document.getElementById('itemhide');
+          if (collapseBtn && itemCollapseEl) {
+            collapseBtn.classList.remove('hidden');
+            itemCollapseEl.classList.remove('show');
+          }
+          const formatEl = document.getElementById('format');
+          const exportBtn = document.querySelector('.export.btn');
+          const formEl = document.querySelector('form[name=exportForm]');
+          if (!formatEl || !exportBtn || !formEl) {
+            console.warn('Export element(s) missing!');
+            return;
+          }
+          exportBtn.addEventListener('click', () => {
+            if (formatEl.selectedOptions[0].dataset.redirect !== undefined) {
+              VuFind.modal('hide');
+            }
+          });
+
+          // Set selected option before formatChangeHandler below runs:
+          const lastExportFormat = sessionStorage.getItem('bulk-export-format');
+          if (lastExportFormat) {
+            Array.from(formatEl.options).forEach(option => {
+              if (option.value === lastExportFormat) {
+                option.selected = true;
+              }
+            });
+          }
+
+          const formatChangeHandler = () => {
+            sessionStorage.setItem('bulk-export-format', formatEl.selectedOptions[0].value);
+            const redirect = formatEl.selectedOptions[0].dataset.redirect;
+            if (redirect === undefined) {
+              delete exportBtn.dataset.lightboxIgnore;
+              formEl.removeAttribute('target');
+            } else {
+              exportBtn.dataset.lightboxIgnore = '1';
+              formEl.setAttribute('target', redirect);
+            }
+          };
+          formatEl.addEventListener('change', formatChangeHandler);
+          formatChangeHandler();
+        })();
+      JS;
+?>
+<?=$this->assetManager()->outputInlineScriptString($script) ?>

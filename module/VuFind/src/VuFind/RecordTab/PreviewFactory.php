@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -67,23 +67,23 @@ class PreviewFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $cfg = $container->get(\VuFind\Config\PluginManager::class)->get('config');
+        $cfg = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         // currently only active if config [content] [previews] contains google
         // and googleoptions[tab] is not empty.
         $active = false;
-        if (isset($cfg->Content->previews)) {
+        if (isset($cfg['Content']['previews'])) {
             $previews = array_map(
                 'trim',
-                explode(',', strtolower($cfg->Content->previews))
+                explode(',', strtolower($cfg['Content']['previews']))
             );
             if (
                 in_array('google', $previews)
-                && strlen(trim($cfg->Content->GoogleOptions['tab'] ?? '')) > 0
+                && strlen(trim($cfg['Content']['GoogleOptions']['tab'] ?? '')) > 0
             ) {
                 $active = true;
             }

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -123,26 +123,26 @@ class FileTest extends \VuFindTest\Unit\SessionHandlerTestCase
         $this->assertEquals('bar', $handler->read('foo'));
         // Use a negative garbage collection age so we can purge everything
         // without having to wait for time to pass in the test!
-        $this->assertTrue($handler->gc(-1));
+        $this->assertEquals(1, $handler->gc(-1));
         $this->assertEquals('', $handler->read('foo'));
     }
 
     /**
      * Get the session handler to test.
      *
-     * @param \Laminas\Config\Config $config Optional configuration
+     * @param \VuFind\Config\Config $config Optional configuration
      *
      * @return Database
      */
     protected function getHandler($config = null)
     {
         if (null === $config) {
-            $config = new \Laminas\Config\Config(
+            $config = new \VuFind\Config\Config(
                 ['file_save_path' => $this->path]
             );
         }
         $handler = new File($config);
-        $this->injectMockDatabaseTables($handler);
+        $this->injectMockDatabaseDependencies($handler);
         return $handler;
     }
 }

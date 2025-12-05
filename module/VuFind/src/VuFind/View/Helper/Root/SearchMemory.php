@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -74,13 +74,26 @@ class SearchMemory extends AbstractHelper
      */
     public function getLastSearchLink($link, $prefix = '', $suffix = '')
     {
+        if ($url = $this->getLastSearchUrl()) {
+            $escaper = $this->getView()->plugin('escapeHtml');
+            return $prefix . '<a href="' . $escaper($url) . '">' . $link . '</a>' . $suffix;
+        }
+        return '';
+    }
+
+    /**
+     * If a previous search is recorded in the session, return its URL
+     *
+     * @return string|null
+     */
+    public function getLastSearchUrl(): ?string
+    {
         if ($lastSearch = $this->getLastSearch()) {
             $searchClassId = $lastSearch->getBackendId();
             $params = $lastSearch->getParams();
             // Use last settings for params that are not stored in the search:
             foreach (['limit', 'view', 'sort'] as $setting) {
-                $value
-                    = $this->memory->retrieveLastSetting($searchClassId, $setting);
+                $value = $this->memory->retrieveLastSetting($searchClassId, $setting);
                 if ($value) {
                     $method = 'set' . ucfirst($setting);
                     $params->$method($value);
@@ -98,14 +111,18 @@ class SearchMemory extends AbstractHelper
             if (!empty($searchContext['page'])) {
                 $queryHelper = $queryHelper->setPage($searchContext['page']);
             }
+            $queryHelper = $queryHelper->setJumpto(false);
 
             $url .= $queryHelper->getParams(false);
 
-            $escaper = $this->getView()->plugin('escapeHtml');
-            return $prefix . '<a href="' . $escaper($url) . '">' . $link . '</a>'
-                . $suffix;
+            // Make sure the URL stored in search memory stays in sync; if the stored URL has been manipulated
+            // through the EditMemory action and the user goes back to a page with a sid parameter, things can
+            // get into a bad state. Refreshing the value here ensures consistent behavior.
+            $this->memory->rememberSearch($url);
+
+            return $url;
         }
-        return '';
+        return null;
     }
 
     /**

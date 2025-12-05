@@ -6,7 +6,7 @@
  * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
- * Copyright (C) The National Library of Finland 2023.
+ * Copyright (C) The National Library of Finland 2023-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -32,7 +32,9 @@
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
+use VuFindTest\Feature\RetryClickTrait;
 use VuFindTest\Feature\SearchFacetFilterTrait;
+use VuFindTest\Feature\SearchLimitTrait;
 use VuFindTest\Feature\SearchSortTrait;
 
 /**
@@ -47,6 +49,8 @@ use VuFindTest\Feature\SearchSortTrait;
  */
 class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 {
+    use RetryClickTrait;
+    use SearchLimitTrait;
     use SearchSortTrait;
     use SearchFacetFilterTrait;
 
@@ -60,45 +64,85 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Get filtered search
      *
+     * @param string $building Building filter to use
+     *
      * @return Element
      */
-    protected function getFilteredSearch(): Element
+    protected function getFilteredSearch(string $building = 'weird_ids.mrc'): Element
     {
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Results?filter%5B%5D=building%3A"weird_ids.mrc"');
+        $session->visit($this->getVuFindUrl() . '/Search/Results?filter%5B%5D=building%3A"' . $building . '"');
         return $session->getPage();
     }
 
     /**
      * Helper function for simple facet application test
      *
-     * @param Element $page Mink page object
+     * @param Element $page        Mink page object
+     * @param array   $facets      Facets to apply (title and expected counts)
+     * @param bool    $multiselect Use multi-facet selection?
      *
      * @return void
      */
-    protected function facetApplyProcedure(Element $page): void
+    protected function facetApplyProcedure(Element $page, array $facets, bool $multiselect): void
     {
         // Confirm that we have 9 results and no filters to begin with:
         $this->assertStringStartsWith(
             'Showing 1 - 9 results of 9',
             $this->findCssAndGetText($page, '.search-stats')
         );
-        $items = $page->findAll('css', $this->activeFilterSelector);
-        $this->assertCount(0, $items);
+        $this->assertNoFilters($page);
 
-        // Facet to Fiction (after making sure we picked the right link):
-        $fictionSelector = '#side-collapse-genre_facet a[data-title="Fiction"]';
-        $this->assertEquals('Fiction 7 results 7', $this->findCssAndGetText($page, $fictionSelector));
-        $this->clickCss($page, $fictionSelector);
+        $active = 0;
 
-        // Check that when the page reloads, we have fewer results and a filter:
-        $this->waitForPageLoad($page);
-        $this->assertStringStartsWith(
-            'Showing 1 - 7 results of 7',
-            $this->findCssAndGetText($page, '.search-stats')
-        );
-        $items = $page->findAll('css', $this->activeFilterSelector);
-        $this->assertCount(1, $items);
+        if ($multiselect) {
+            $this->activateMultiFilterSelection($page);
+        }
+        foreach ($facets as $facet) {
+            $title = $facet['title'];
+            $count = $facet['count'];
+            $resultCount = $facet['resultCount'];
+            // Apply the facet (after making sure we picked the right link):
+            $facetSelector = '#side-collapse-genre_facet a[data-title="' . $title . '"]';
+            $this->assertEquals(
+                "$title $count results $count",
+                $this->getFacetTextByLinkSelector($page, $facetSelector)
+            );
+            $this->clickCss($page, $facetSelector);
+            ++$active;
+
+            if (!$multiselect) {
+                // Check that when the page reloads, we have fewer results and a filter:
+                $this->waitForPageLoad($page);
+                $this->assertStringStartsWith(
+                    "Showing 1 - $resultCount results of $resultCount",
+                    $this->findCssAndGetText($page, '.search-stats')
+                );
+                $this->assertFilterCount($page, $active);
+            }
+        }
+        if ($multiselect) {
+            // Apply and check that we have the count indicated in the last facet to select:
+            $facet = end($facets);
+            $resultCount = $facet['resultCount'];
+            $this->clickCss($page, '.js-apply-multi-facets-selection');
+            $this->waitForPageLoad($page);
+            $this->assertStringStartsWith(
+                "Showing 1 - $resultCount results of $resultCount",
+                $this->findCssAndGetText($page, '.search-stats')
+            );
+            $this->assertFilterCount($page, $active);
+        }
+
+        // Confirm that all selected facets show as active:
+        foreach ($facets as $facet) {
+            $title = $facet['title'];
+            $activeFacetSelector = '#side-collapse-genre_facet .active a[data-title="' . $title . '"]';
+            $this->findCss($page, $activeFacetSelector);
+        }
+        if ($multiselect) {
+            $this->deactivateMultiFilterSelection($page);
+        }
     }
 
     /**
@@ -113,16 +157,12 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     protected function facetListProcedure(Element $page, int $limit, bool $exclusionActive = false): void
     {
         $this->waitForPageLoad($page);
-        $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
-        $this->assertCount($limit, $items);
-        $excludes = $page
-            ->findAll('css', '#modal #facet-list-count .exclude');
-        $this->assertCount($exclusionActive ? $limit : 0, $excludes);
+        $this->assertFullListFacetCount($page, 'count', $limit, $exclusionActive);
         // more
         $this->clickCss($page, '#modal .js-facet-next-page');
         $this->waitForPageLoad($page);
-        $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
-        $this->assertCount($limit * 2, $items);
+        $this->assertFullListFacetCount($page, 'count', $limit * 2, $exclusionActive);
+
         $excludeControl = $exclusionActive ? 'Exclude matching results ' : '';
         $this->assertEquals(
             'Weird IDs 9 results 9 ' . $excludeControl
@@ -136,15 +176,11 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             . 'more…',
             $this->findCssAndGetText($page, '#modal #facet-list-count')
         );
-        $excludes = $page
-            ->findAll('css', '#modal #facet-list-count .exclude');
-        $this->assertCount($exclusionActive ? $limit * 2 : 0, $excludes);
 
         // sort by title
         $this->clickCss($page, '[data-sort="index"]');
         $this->waitForPageLoad($page);
-        $items = $page->findAll('css', '#modal #facet-list-index .js-facet-item');
-        $this->assertCount($limit, $items); // reset number of items
+        $this->assertFullListFacetCount($page, 'index', $limit, $exclusionActive);
         $this->assertEquals(
             'Fiction 7 results 7 ' . $excludeControl
             . 'The Study Of P|pes 1 results 1 ' . $excludeControl
@@ -153,21 +189,17 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             . 'more…',
             $this->findCssAndGetText($page, '#modal #facet-list-index')
         );
-        $excludes = $page
-            ->findAll('css', '#modal #facet-list-index .exclude');
-        $this->assertCount($exclusionActive ? $limit : 0, $excludes);
         // sort by count again
         $this->clickCss($page, '[data-sort="count"]');
         $this->waitForPageLoad($page);
-        $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
-        $this->assertCount($limit, $items); // reload, resetting to just one page of results
+        // reload, resetting to just one page of results:
+        $this->assertFullListFacetCount($page, 'count', $limit, $exclusionActive);
         // now back to title, to see if loading a second page works
         $this->clickCss($page, '[data-sort="index"]');
         $this->waitForPageLoad($page);
         $this->clickCss($page, '#modal #facet-list-index .js-facet-next-page');
         $this->waitForPageLoad($page);
-        $items = $page->findAll('css', '#modal #facet-list-index .js-facet-item');
-        $this->assertCount($limit * 2, $items); // reset number of items
+        $this->assertFullListFacetCount($page, 'index', $limit * 2, $exclusionActive);
         $this->assertEquals(
             'Fiction 7 results 7 ' . $excludeControl
             . 'The Study Of P|pes 1 results 1 ' . $excludeControl
@@ -183,8 +215,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         // back to count one last time...
         $this->clickCss($page, '[data-sort="count"]');
         $this->waitForPageLoad($page);
-        // When exclusion is active, the result count is outside of the link tag:
-        $expectedLinkText = $exclusionActive ? 'Weird IDs' : 'Weird IDs 9 results 9';
+        $expectedLinkText = 'Weird IDs 9 results 9';
         $weirdIDs = $this->findAndAssertLink(
             $page->findById('modal'),
             $expectedLinkText
@@ -196,39 +227,137 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test applying a facet to filter results (standard facet sidebar)
+     * Data provider for testApplyFacet
+     *
+     * @return array
+     */
+    public static function applyFacetProvider(): array
+    {
+        $andFacets = [
+            [
+                'title' => 'Fiction',
+                'count' => 7,
+                'resultCount' => 7,
+            ],
+        ];
+
+        $orFacets = [
+            [
+                'title' => 'Fiction',
+                'count' => 7,
+                'resultCount' => 7,
+            ],
+            [
+                'title' => 'The Study Of P|pes',
+                'count' => 1,
+                'resultCount' => 8,
+            ],
+            [
+                'title' => 'Weird IDs',
+                'count' => 9,
+                'resultCount' => 9,
+            ],
+        ];
+
+        return [
+            'non-deferred AND facets' => [
+                false,
+                false,
+                $andFacets,
+                'false',
+            ],
+            'deferred AND facets' => [
+                true,
+                false,
+                $andFacets,
+                'false',
+            ],
+            'non-deferred OR facets' => [
+                false,
+                true,
+                $orFacets,
+                'false',
+            ],
+            'deferred OR facets' => [
+                true,
+                true,
+                $orFacets,
+                'false',
+            ],
+            'multiselect non-deferred AND facets' => [
+                false,
+                false,
+                $andFacets,
+                'unchecked',
+            ],
+            'multiselect deferred AND facets' => [
+                true,
+                false,
+                $andFacets,
+                 'unchecked',
+            ],
+            'multiselect non-deferred OR facets' => [
+                false,
+                true,
+                $orFacets,
+                'unchecked',
+            ],
+            'multiselect deferred OR facets' => [
+                true,
+                true,
+                $orFacets,
+                'unchecked',
+            ],
+        ];
+    }
+
+    /**
+     * Flip-flop the language to cause URL rewrites (useful for testing handling of
+     * arrays in query parameters).
+     *
+     * @param Element $page Current page object
      *
      * @return void
      */
-    public function testApplyFacet(): void
+    protected function flipflopLanguage(Element $page): void
     {
-        $page = $this->performSearch('building:weird_ids.mrc');
-        $this->sortResults($page, 'title');
+        // Flip to German:
+        $this->clickCss($page, '.language.dropdown');
+        $this->clickCss($page, '.language.dropdown li a:not(.active)');
         $this->waitForPageLoad($page);
-
-        // Confirm that we are NOT using the AJAX sidebar:
-        $ajaxContainer = $page->findAll('css', '.side-facets-container-ajax');
-        $this->assertCount(0, $ajaxContainer);
-
-        // Now run the body of the test procedure:
-        $this->facetApplyProcedure($page);
-
-        // Verify that sort order is still correct:
-        $this->assertSelectedSort($page, 'title');
+        // Flip back to English:
+        $this->clickCss($page, '.language.dropdown');
+        $this->clickCss($page, '.language.dropdown li a:not(.active)');
+        $this->waitForPageLoad($page);
     }
 
     /**
      * Test applying a facet to filter results (deferred facet sidebar)
      *
+     * @param bool   $deferred    Are deferred facets enabled?
+     * @param bool   $orFacets    Are OR facets enabled?
+     * @param array  $facets      Facets to apply
+     * @param string $multiselect Use multiselection?
+     *
      * @return void
      */
-    public function testApplyFacetDeferred(): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('applyFacetProvider')]
+    public function testApplyFacet(bool $deferred, bool $orFacets, array $facets, string $multiselect): void
     {
         $this->changeConfigs(
             [
                 'searches' => [
                     'General' => [
-                        'default_side_recommend[]' => 'SideFacetsDeferred:Results:CheckboxFacets',
+                        'default_side_recommend[]'
+                            => ($deferred ? 'SideFacetsDeferred' : 'SideFacets') . ':Results:CheckboxFacets',
+                        'limit_options' => '20,40',
+                    ],
+                ],
+                'facets' => [
+                    'Results_Settings' => [
+                        'orFacets' => $orFacets ? '*' : 'false',
+                        'collapsedFacets' => '*',
+                        'multiFacetsSelection' => $multiselect,
                     ],
                 ],
             ]
@@ -236,16 +365,24 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performSearch('building:weird_ids.mrc');
         $this->sortResults($page, 'title');
         $this->waitForPageLoad($page);
+        $this->setResultLimit($page, 40);
+        $this->waitForPageLoad($page);
 
-        // Confirm that we ARE using the AJAX sidebar:
+        // Confirm that we ARE using the correct sidebar type:
         $ajaxContainer = $page->findAll('css', '.side-facets-container-ajax');
-        $this->assertCount(1, $ajaxContainer);
+        $this->assertCount($deferred ? 1 : 0, $ajaxContainer);
+
+        // Uncollapse the genre facet to load its contents:
+        $this->clickCss($page, '#side-panel-genre_facet .collapsed');
 
         // Now run the body of the test procedure:
-        $this->facetApplyProcedure($page);
+        $this->facetApplyProcedure($page, $facets, $multiselect !== 'false');
 
         // Verify that sort order is still correct:
         $this->assertSelectedSort($page, 'title');
+
+        // Verify that limit is still correct:
+        $this->assertLimitControl($page, [20, 40], 40);
     }
 
     /**
@@ -288,6 +425,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
                 'facets' => [
                     'Results_Settings' => [
                         'showMoreInLightbox[*]' => true,
+                        'exclude' => null,
                     ],
                 ],
             ]
@@ -489,7 +627,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         // Open the genre facet
         $this->clickCss($page, $this->genreMoreSelector);
         $this->facetListProcedure($page, $limit, true);
-        $this->assertCount(1, $page->findAll('css', $this->activeFilterSelector));
+        $this->assertFilterCount($page, 1);
     }
 
     /**
@@ -540,6 +678,58 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test multiselection in facet lightbox
+     *
+     * @return void
+     */
+    public function testFacetLightboxMultiselect(): void
+    {
+        $this->changeConfigs(
+            [
+                'facets' => [
+                    'Results_Settings' => [
+                        'showMoreInLightbox[*]' => true,
+                        'lightboxLimit' => 10,
+                        'multiFacetsSelection' => 'unchecked',
+                        'exclude' => '*',
+                    ],
+                ],
+            ]
+        );
+        $page = $this->performSearch('building:weird_ids.mrc');
+        // Open the genre facet
+        $this->clickCss($page, $this->genreMoreSelector);
+        $modal = $this->findCss($page, '#modal');
+        $this->assertIsObject($modal);
+        // Make sure the filter control is available in the modal before proceeding; otherwise,
+        // timing issues in activateMultiFilterSelection can break the test.
+        $this->findCss($page, '#modal .js-user-selection-multi-filters');
+        // Check for multi-filter controls:
+        $this->activateMultiFilterSelection($modal);
+        $this->unfindCss($modal, '.loading-spinner');
+        $this->findCss($modal, '.js-full-facet-list.multi-facet-selection-active');
+        $this->findCss($modal, '.js-apply-multi-facets-selection');
+        // Change order and check for multi-filter controls:
+        $this->clickCss($modal, '[data-sort="index"]');
+        $this->unfindCss($modal, '.loading-spinner');
+        $this->findCss($modal, '.js-full-facet-list.multi-facet-selection-active');
+        $this->findCss($modal, '.js-apply-multi-facets-selection');
+        // Load more:
+        $this->clickCss($modal, '.js-facet-next-page');
+        $this->waitForPageLoad($page);
+        // Select and exclude a facet item:
+        $this->clickCss($modal, 'a[data-title="Weird IDs"]');
+        $this->clickCss($this->findCss($modal, 'a[data-title="Fiction"]')->getParent(), 'a.exclude');
+        $this->clickCss($modal, '.js-apply-multi-facets-selection');
+        $this->waitForPageLoad($page);
+        $this->assertFilterCount($page, 2);
+        $this->assertEquals(
+            'Genre: NOT Remove Filter Fiction AND Remove Filter Weird IDs',
+            $this->findCss($page, $this->activeFilterListSelector)->getText()
+        );
+    }
+
+    /**
      * Support method to click a hierarchical facet.
      *
      * @param Element $page Mink page object
@@ -555,7 +745,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         // Click second level facet:
         $this->clickCss($page, $this->facetSecondLevelLinkSelector);
         // Check the active filter:
-        $this->assertAppliedFilter($page, 'level1a/level2a');
+        $this->assertAppliedFilters($page, ['hierarchy:level1a/level2a']);
         // Check that the applied facet is displayed properly:
         $this->findCss($page, $this->facetSecondLevelActiveLinkSelector);
     }
@@ -575,6 +765,9 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
                     ],
                     'SpecialFacets' => [
                         'hierarchical[]' => 'hierarchical_facet_str_mv',
+                    ],
+                    'Results_Settings' => [
+                        'multiFacetsSelection' => 'false',
                     ],
                 ],
             ]
@@ -609,6 +802,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
                     ],
                     'Results_Settings' => [
                         'exclude' => 'hierarchical_facet_str_mv',
+                        'multiFacetsSelection' => 'false',
                     ],
                 ],
             ]
@@ -624,11 +818,17 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $this->clickCss($page, $this->facetExpandSelector);
         $this->clickCss($page, $this->facetSecondLevelExcludeLinkSelector);
-        $this->assertEquals('hierarchy:', $this->findCssAndGetText($page, '.filters .filters-title'));
-        $this->assertEquals(
-            'Remove Filter level1a/level2a',
-            $this->findCssAndGetText($page, $this->activeFilterSelector)
-        );
+        try {
+            $this->assertAppliedFilters($page, ['hierarchy:level1a/level2a']);
+        } catch (\Exception $e) {
+            // Sometimes the click doesn't go through possibly due to transition, so retry once:
+            $this->retryClickWithResizedWindow(
+                $this->getMinkSession(),
+                $page,
+                $this->facetSecondLevelExcludeLinkSelector
+            );
+            $this->assertAppliedFilters($page, ['hierarchy:level1a/level2a']);
+        }
         $this->assertEquals(
             'Showing 1 - 7 results of 7',
             $extractCount($this->findCssAndGetText($page, '.search-stats'))
@@ -645,60 +845,19 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         return [
             [
                 null,
-                [
-                    [
-                        'value' => 'Top Level, Sorted Last',
-                        'children' => [
-                            'level2a',
-                            'level2b',
-                        ],
-                    ],
-                    [
-                        'value' => 'Top Level, Sorted First',
-                        'children' => [
-                            'Second Level, Sorted Last',
-                            'Second Level, Sorted First',
-                        ],
-                    ],
-                ],
+                'count',
+            ],
+            [
+                'count',
+                'count',
             ],
             [
                 'top',
-                [
-                    [
-                        'value' => 'Top Level, Sorted First',
-                        'children' => [
-                            'Second Level, Sorted Last',
-                            'Second Level, Sorted First',
-                        ],
-                    ],
-                    [
-                        'value' => 'Top Level, Sorted Last',
-                        'children' => [
-                            'level2a',
-                            'level2b',
-                        ],
-                    ],
-                ],
+                'top',
             ],
             [
                 'all',
-                [
-                    [
-                        'value' => 'Top Level, Sorted First',
-                        'children' => [
-                            'Second Level, Sorted First',
-                            'Second Level, Sorted Last',
-                        ],
-                    ],
-                    [
-                        'value' => 'Top Level, Sorted Last',
-                        'children' => [
-                            'level2a',
-                            'level2b',
-                        ],
-                    ],
-                ],
+                'all',
             ],
         ];
     }
@@ -706,14 +865,13 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that hierarchical facet sort options work properly.
      *
-     * @param ?string $sort     Sort option
-     * @param array   $expected Expected facet values in order
-     *
-     * @dataProvider hierarchicalFacetSortProvider
+     * @param ?string $sort         Sort option
+     * @param string  $expectedSort Expected sort order of facet hierarchy
      *
      * @return void
      */
-    public function testHierarchicalFacetSort(?string $sort, array $expected): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('hierarchicalFacetSortProvider')]
+    public function testHierarchicalFacetSort(?string $sort, string $expectedSort): void
     {
         $facetConfig = [
             'Results' => [
@@ -735,22 +893,10 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         $page = $this->performSearch('building:"hierarchy.mrc"');
-        foreach ($expected as $index => $facet) {
-            $topLi = $this->findCss($page, '#side-collapse-hierarchical_facet_str_mv ul.facet-tree > li', null, $index);
-            $this->assertEquals(
-                $facet['value'],
-                $this->findCssAndGetText($topLi, '.facet-value'),
-                "Hierarchical facet item $index"
-            );
-            foreach ($facet['children'] as $childIndex => $childFacet) {
-                $childLi = $this->findCss($topLi, 'ul > li.facet-tree__parent', null, $childIndex);
-                $this->assertEquals(
-                    $childFacet,
-                    $this->findCssAndGetText($childLi, '.facet-value'),
-                    "Hierarchical facet item $index child $childIndex"
-                );
-            }
-        }
+
+        $expected = $this->getExpectedHierarchicalFacetTreeItems($expectedSort);
+        $actual = $this->getHierarchicalFacetTreeItems($page, '#side-collapse-hierarchical_facet_str_mv');
+        $this->assertSame($expected, $actual);
     }
 
     /**
@@ -768,6 +914,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
                     ],
                     'Results_Settings' => [
                         'collapsedFacets' => '*',
+                        'multiFacetsSelection' => 'false',
                     ],
                     'SpecialFacets' => [
                         'hierarchical[]' => 'hierarchical_facet_str_mv',
@@ -784,66 +931,11 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 
         // We have now reloaded the page. Let's toggle format off and on to confirm
         // that it was opened, and let's also toggle building on to confirm that
-        // it was not alread opened.
+        // it was not already opened.
         $this->clickCss($page, '#side-panel-format .title'); // off
         $this->waitForPageLoad($page);
         $this->clickCss($page, '#side-panel-format .collapsed'); // on
         $this->clickCss($page, '#side-panel-building .collapsed'); // on
-    }
-
-    /**
-     * Assert that the filter used by these tests is still applied.
-     *
-     * @param Element $page Mink page object
-     *
-     * @return void
-     */
-    protected function assertFilterIsStillThere(Element $page): void
-    {
-        $this->assertEquals(
-            'Remove Filter weird_ids.mrc',
-            $this->findCssAndGetText($page, $this->activeFilterSelector)
-        );
-    }
-
-    /**
-     * Assert that no filters are applied.
-     *
-     * @param Element $page Mink page object
-     *
-     * @return void
-     */
-    protected function assertNoFilters(Element $page): void
-    {
-        $items = $page->findAll('css', $this->activeFilterSelector);
-        $this->assertCount(0, $items);
-    }
-
-    /**
-     * Assert that the "reset filters" button is present.
-     *
-     * @param \Behat\Mink\Element\Element $page Mink page object
-     *
-     * @return void
-     */
-    protected function assertResetFiltersButton($page)
-    {
-        $reset = $page->findAll('css', '.reset-filters-btn');
-        // The toggle bar has its own reset button, so we should have 2:
-        $this->assertCount(2, $reset);
-    }
-
-    /**
-     * Assert that the "reset filters" button is not present.
-     *
-     * @param Element $page Mink page object
-     *
-     * @return void
-     */
-    protected function assertNoResetFiltersButton(Element $page): void
-    {
-        $reset = $page->findAll('css', '.reset-filters-btn');
-        $this->assertCount(0, $reset);
     }
 
     /**
@@ -899,6 +991,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertFilterIsStillThere($page);
         // Re-click the search button...
         $this->clickCss($page, '#searchForm .btn.btn-primary');
+        $this->waitForPageLoad($page);
         // Confirm that filter is STILL applied
         $this->assertFilterIsStillThere($page);
     }
@@ -1071,5 +1164,568 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             "Showing 1 - 20 results of $expectedTotal",
             $this->findCssAndGetText($page, '.search-header .search-stats')
         );
+    }
+
+    /**
+     * Data provider for testCheckboxFacets
+     *
+     * @return array
+     */
+    public static function checkboxFacetSelectionProvider(): array
+    {
+        $result = [];
+        foreach ([false, true] as $selectMulti) {
+            foreach ([false, true] as $unselectMulti) {
+                $params = '(' . ($selectMulti ? 'multi' : 'single') . '/' . ($unselectMulti ? 'multi' : 'single') . ')';
+                $result["select one $params"] = [
+                    ['Books'],
+                    8,
+                    $selectMulti,
+                    $unselectMulti,
+                ];
+                $name = "select two $params";
+                $result[$name] = [
+                    ['Books', 'Fiction'],
+                    7,
+                    $selectMulti,
+                    $unselectMulti,
+                ];
+            }
+        }
+        return $result;
+    }
+
+    /**
+     * Test checkbox facet selection
+     *
+     * @param array $checkFacets   Facet checkboxes to check
+     * @param int   $expectedCount Expected result count
+     * @param bool  $selectMulti   Select multiple?
+     * @param bool  $unselectMulti Unselect multiple?
+     *
+     * @return void
+     * @throws \Exception
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('checkboxFacetSelectionProvider')]
+    public function testCheckboxFacetSelection(
+        array $checkFacets,
+        int $expectedCount,
+        bool $selectMulti,
+        bool $unselectMulti
+    ): void {
+        $multiSelectActive = $selectMulti || $unselectMulti;
+        $this->changeConfigs(
+            [
+                'facets' => [
+                    'Results_Settings' => [
+                        'multiFacetsSelection' => $multiSelectActive ? 'unchecked' : 'false',
+                    ],
+                    'CheckboxFacets' => [
+                        'format:Book' => 'Books',
+                        'genre_facet:Fiction' => 'Fiction',
+                    ],
+                ],
+            ]
+        );
+
+        $page = $this->performSearch('building:weird_ids.mrc OR building:journals.mrc');
+        $sidebar = $this->findCss($page, '.sidebar');
+        $checkboxFilters = $this->findCss($sidebar, '.checkbox-filters');
+
+        // Check all facets:
+        if ($multiSelectActive) {
+            $this->multiFilterSelectionToggle($sidebar, $selectMulti);
+        }
+        foreach ($checkFacets as $facet) {
+            $link = $this->findAndAssertLink($checkboxFilters, $facet);
+            $link->click();
+            if (!$selectMulti) {
+                $this->waitForPageLoad($page);
+            }
+        }
+        if ($selectMulti) {
+            $this->clickCss($sidebar, '.js-apply-multi-facets-selection');
+            $this->waitForPageLoad($page);
+        }
+        $this->assertStringContainsString(
+            "Showing 1 - $expectedCount results",
+            $this->findCssAndGetText($page, '.search-header .search-stats')
+        );
+
+        // Uncheck all facets:
+        if ($multiSelectActive) {
+            $this->multiFilterSelectionToggle($sidebar, $unselectMulti);
+        }
+        foreach ($checkFacets as $facet) {
+            $link = $this->findAndAssertLink($checkboxFilters, $facet);
+            $link->click();
+            if (!$unselectMulti) {
+                $this->waitForPageLoad($page);
+            }
+        }
+        if ($unselectMulti) {
+            $this->clickCss($sidebar, '.js-apply-multi-facets-selection');
+            $this->waitForPageLoad($page);
+        }
+        $this->assertStringContainsString(
+            'Showing 1 - 19 results',
+            $this->findCssAndGetText($page, '.search-header .search-stats')
+        );
+        if ($multiSelectActive) {
+            $this->deactivateMultiFilterSelection($sidebar);
+        }
+    }
+
+    /**
+     * Data provider for testCheckboxFacets
+     *
+     * @return array
+     */
+    public static function checkboxFacetsProvider(): array
+    {
+        return [
+            'non-deferred, no counts' => [false, false],
+            'non-deferred, with counts' => [false, true],
+            'deferred, no counts' => [true, false],
+            'deferred, with counts' => [true, true],
+        ];
+    }
+
+    /**
+     * Test checkbox facets
+     *
+     * @param bool $deferred Are deferred facets enabled?
+     * @param bool $counts   Are checkbox facet counts enabled?
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('checkboxFacetsProvider')]
+    public function testCheckboxFacets(bool $deferred, bool $counts): void
+    {
+        $this->changeConfigs(
+            [
+                'searches' => [
+                    'General' => [
+                        'default_side_recommend[]'
+                            => ($deferred ? 'SideFacetsDeferred' : 'SideFacets') . ':Results:CheckboxFacets',
+                    ],
+                ],
+                'facets' => [
+                    'Results_Settings' => [
+                        'checkboxFacetCounts' => $counts,
+                        'multiFacetsSelection' => 'false',
+                    ],
+                    'CheckboxFacets' => [
+                        'format:Book' => 'Books',
+                        'illustrated:Illustrated' => 'Illustrated',
+                    ],
+                ],
+            ]
+        );
+        $page = $this->getFilteredSearch('authoritybibs.mrc');
+        $this->waitForPageLoad($page);
+
+        // format:Book is also a normal facet, but count should still be empty unless enabled:
+        $filter = $this->findCss($page, '.checkbox-filter');
+        $this->assertNotNull($filter);
+        $this->assertEquals('Books', $this->findCssAndGetText($filter->getParent(), '.icon-link__label'));
+        $this->assertEqualsWithTimeout(
+            $counts ? '9' : '',
+            function () use ($filter) {
+                return $this->findCssAndGetText($filter->getParent(), '.avail-count');
+            }
+        );
+
+        // illustrated:Illustrated is only a checkbox facet:
+        $filter2 = $this->findCss($page, '.checkbox-filter', null, 1);
+        $this->assertNotNull($filter2);
+        $this->assertEquals('Illustrated', $this->findCssAndGetText($filter2->getParent(), '.icon-link__label'));
+        $illustratedCount = $this->findCssAndGetText($filter2->getParent(), '.avail-count');
+        $this->assertEquals($counts ? '2' : '', $illustratedCount);
+
+        // If we have counts, apply the checkbox facet and check result count:
+        if ($counts) {
+            $filter2->click();
+            $this->waitForPageLoad($page);
+            $this->assertStringContainsString(
+                "Showing 1 - $illustratedCount results of $illustratedCount",
+                $this->findCssAndGetText($page, '.search-header .search-stats')
+            );
+        }
+    }
+
+    /**
+     * Data provider for testRangeFacets
+     *
+     * @return array
+     */
+    public static function rangeFacetsProvider(): array
+    {
+        return [
+            ['false'],
+            ['true'],
+            ['checked'],
+            ['unchecked'],
+            ['always'],
+        ];
+    }
+
+    /**
+     * Test range facets
+     *
+     * @param string $multiselection Use multi-facet selection?
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('rangeFacetsProvider')]
+    public function testRangeFacets(string $multiselection): void
+    {
+        $this->changeConfigs(
+            [
+                'facets' => [
+                    'Results_Settings' => [
+                        'multiFacetsSelection' => $multiselection,
+                    ],
+                    'CheckboxFacets' => [
+                        'format:Book' => 'Books',
+                    ],
+                ],
+            ]
+        );
+        $multiselection = $multiselection !== 'false';
+
+        $page = $this->performSearch('building:weird_ids.mrc OR building:really_old.xml');
+        $sidebar = $this->findCss($page, '.sidebar');
+        if ($multiselection) {
+            $this->activateMultiFilterSelection($sidebar);
+        }
+
+        // Filter by date range and checkbox filter:
+        $checkboxFilters = $this->findCss($sidebar, '.checkbox-filters');
+        $this->clickCss($checkboxFilters, 'a.checkbox-filter');
+        if ($multiselection === false) {
+            $this->waitForPageLoad($page);
+        }
+
+        // Un-collapse range otherwise we can not set a value
+        if ($elem = $sidebar->find('css', '#side-panel-publishDate .collapsed')) {
+            $elem->click();
+        }
+
+        $this->applyRangeFacet($page, 'publishDateRange', '2000', '', $multiselection);
+
+        // Verify that we have two filters:
+        $this->assertAppliedFilters($page, [':Books', 'Year of Publication:2000 - *']);
+
+        // Change date range filter and check results:
+        $this->applyRangeFacet($page, 'publishDateRange', null, '2001', $multiselection);
+        $this->assertAppliedFilters($page, [':Books', 'Year of Publication:2000 - 2001']);
+
+        // Change date range filter again and check results:
+        $this->applyRangeFacet($page, 'publishDateRange', '2001', '2007', $multiselection);
+        $this->assertAppliedFilters($page, [':Books', 'Year of Publication:2001 - 2007']);
+
+        // Remove dates in range filter and check results:
+        $this->applyRangeFacet($page, 'publishDateRange', '', '', $multiselection);
+        $this->assertAppliedFilters($page, [':Books']);
+
+        // Add date range filter again and check results:
+        $this->applyRangeFacet($page, 'publishDateRange', '2001', '2007', $multiselection);
+        $this->assertAppliedFilters($page, [':Books', 'Year of Publication:2001 - 2007']);
+        $this->assertResultTitles(
+            $page,
+            8,
+            '<HTML> The Basics',
+            'Questions about Percents'
+        );
+
+        // Change date range filter to include old records and check results:
+        $this->applyRangeFacet($page, 'publishDateRange', '-500', '2007', $multiselection);
+        $this->assertAppliedFilters($page, [':Books', 'Year of Publication:-500 - 2007']);
+        $this->assertResultTitles(
+            $page,
+            10,
+            first: 'Pyrgi Gold Tablets',
+            second: 'Book of Kells',
+            last: 'Questions about Percents'
+        );
+
+        if ($multiselection) {
+            // Apply another facet and change date range at the same time:
+            $this->clickCss($page, '#side-collapse-institution a[data-title="MyInstitution"]');
+            $this->applyRangeFacet($page, 'publishDateRange', '2001', '2010', $multiselection);
+            $this->assertAppliedFilters(
+                $page,
+                [':Books', 'Institution:MyInstitution', 'Year of Publication:2001 - 2010']
+            );
+
+            // Remove all filters and check results:
+            $this->clickCss($checkboxFilters, 'a.checkbox-filter');
+            $this->clickCss($page, '#side-collapse-institution a[data-title="MyInstitution"]');
+            $this->applyRangeFacet($page, 'publishDateRange', '', '', true);
+            $this->assertNoFilters($page);
+            $this->deactivateMultiFilterSelection($sidebar);
+        }
+    }
+
+    /**
+     * Assert that the filter used by these tests is still applied.
+     *
+     * @param Element $page Mink page object
+     *
+     * @return void
+     */
+    protected function assertFilterIsStillThere(Element $page): void
+    {
+        $this->assertAppliedFilters($page, ['Library:weird_ids.mrc']);
+    }
+
+    /**
+     * Assert that the "reset filters" button is present.
+     *
+     * @param \Behat\Mink\Element\Element $page Mink page object
+     *
+     * @return void
+     */
+    protected function assertResetFiltersButton($page)
+    {
+        $reset = $page->findAll('css', '.reset-filters-btn');
+        // The toggle bar has its own reset button, so we should have 2:
+        $this->assertCount(2, $reset);
+    }
+
+    /**
+     * Assert that the "reset filters" button is not present.
+     *
+     * @param Element $page Mink page object
+     *
+     * @return void
+     */
+    protected function assertNoResetFiltersButton(Element $page): void
+    {
+        $reset = $page->findAll('css', '.reset-filters-btn');
+        $this->assertCount(0, $reset);
+    }
+
+    /**
+     * Data provider for testMultiSelectOnAdvancedSearch()
+     *
+     * @return array[]
+     */
+    public static function multiSelectOnAdvancedSearchProvider(): array
+    {
+        return [
+            'with language switch / with checkbox' => [true, true],
+            'without language switch / with checkbox' => [false, true],
+            'with language switch / without checkbox' => [true, false],
+            'without language switch / without checkbox' => [false, false],
+        ];
+    }
+
+    /**
+     * Test applying multi-facet selection to advanced search results, with or without changing the
+     * language setting first and/or including a pre-existing checkbox filter.
+     *
+     * @param bool $changeLanguage  Should we change the language before applying the facets?
+     * @param bool $includeCheckbox Should we apply a checkbox prior to multi-selection?
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('multiSelectOnAdvancedSearchProvider')]
+    public function testMultiSelectOnAdvancedSearch(bool $changeLanguage, bool $includeCheckbox): void
+    {
+        $facets = [
+            'Results_Settings' => [
+                'multiFacetsSelection' => 'unchecked',
+            ],
+        ];
+        if ($includeCheckbox) {
+            // Create a pointless checkbox filter that will not impact the result set size
+            // (we're just testing that it applies to the URL correctly):
+            $facets['CheckboxFacets']['title:*'] = 'Has Title';
+        }
+        $this->changeConfigs(compact('facets'));
+        $path = '/Search/Advanced';
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . $path);
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+        $this->findCssAndSetValue($page, '#search_lookfor0_0', 'test');
+        $this->findCssAndSetValue($page, '#search_lookfor0_1', 'history');
+        $this->findCss($page, '[type=submit]')->press();
+
+        if ($includeCheckbox) {
+            $link = $this->findAndAssertLink($page, 'Has Title');
+            $link->click();
+            $this->waitForPageLoad($page);
+        }
+
+        if ($changeLanguage) {
+            $this->flipflopLanguage($page);
+        }
+
+        // Activate the first two facet values (and the checkbox filter, if requested):
+        $this->activateMultiFilterSelection($page);
+        $this->clickCss($page, '.facet__list__item a');
+        $this->clickCss($page, '.facet__list__item a', index: 1);
+        $this->clickCss($page, '.js-apply-multi-facets-selection');
+
+        // A past bug would cause search terms to get duplicated after facets
+        // were applied; make sure the search remains as expected!
+        $this->assertEquals(
+            '(All Fields:test AND All Fields:history)',
+            $this->findCssAndGetText($page, '.adv_search_terms strong')
+        );
+
+        // Make sure we have the expected number of filters applied on screen and in the URL query:
+        $appliedFacetCount = $includeCheckbox ? 3 : 2;
+        $this->assertCount($appliedFacetCount, $page->findAll('css', '.facet.active'));
+        $query = parse_url($session->getCurrentUrl(), PHP_URL_QUERY);
+        parse_str($query, $queryArray);
+        $this->assertCount($appliedFacetCount, $queryArray['filter']);
+
+        // If configured, flip-flop language again to potentially modify filter params:
+        if ($changeLanguage) {
+            $this->flipflopLanguage($page);
+        }
+
+        // Let's also confirm that we can now remove the filters:
+        for ($i = 0; $i < $appliedFacetCount; $i++) {
+            $this->clickCss($page, '.facet.active');
+        }
+        $this->clickCss($page, '.js-apply-multi-facets-selection');
+        $this->assertCount(0, $page->findAll('css', '.facet.active'));
+        $this->deactivateMultiFilterSelection($page);
+    }
+
+    /**
+     * Test persistence across page reload of the checkbox state for multi facet selection
+     *
+     * @return void
+     */
+    public function testMultiFacetsSelectionPersistence(): void
+    {
+        $this->changeConfigs(
+            [
+                'facets' => [
+                    'Results_Settings' => [
+                        'multiFacetsSelection' => 'unchecked',
+                    ],
+                ],
+            ]
+        );
+
+        $page = $this->performSearch('building:weird_ids.mrc OR building:journals.mrc');
+        $sidebar = $this->findCss($page, '.sidebar');
+        $checkbox = $this->findCss($sidebar, '.js-user-selection-multi-filters');
+        $this->assertFalse($checkbox->isChecked()); // unchecked by default
+        $this->activateMultiFilterSelection($sidebar);
+
+        $page = $this->performSearch('building:weird_ids.mrc OR building:journals.mrc');
+        $sidebar = $this->findCss($page, '.sidebar');
+        $checkbox = $this->findCss($sidebar, '.js-user-selection-multi-filters');
+        $this->assertTrue($checkbox->isChecked()); // checked state remembered from last page
+        $this->deactivateMultiFilterSelection($sidebar);
+    }
+
+    /**
+     * Test setting "checked" for multi facet selection, the feature is checked by default
+     *
+     * @return void
+     */
+    public function testMultiFacetsSelectionChecked(): void
+    {
+        $this->changeConfigs(
+            [
+                'facets' => [
+                    'Results_Settings' => [
+                        'multiFacetsSelection' => 'checked',
+                    ],
+                ],
+            ]
+        );
+
+        $page = $this->performSearch('building:weird_ids.mrc OR building:journals.mrc');
+        $sidebar = $this->findCss($page, '.sidebar');
+        $checkbox = $this->findCss($sidebar, '.js-user-selection-multi-filters');
+        $this->assertStringContainsString($checkbox->isChecked(), true);
+    }
+
+    /**
+     * Test setting "always" for multi facet selection, the feature is enabled but the checkbox is hidden
+     *
+     * @return void
+     */
+    public function testMultiFacetsSelectionAlways(): void
+    {
+        $this->changeConfigs(
+            [
+                'facets' => [
+                    'Results_Settings' => [
+                        'multiFacetsSelection' => 'always',
+                    ],
+                ],
+            ]
+        );
+
+        $page = $this->performSearch('building:weird_ids.mrc OR building:journals.mrc');
+        $sidebar = $this->findCss($page, '.sidebar');
+        $this->assertFalse($this->findCss($sidebar, '.js-user-selection-multi-filters')->isVisible());
+        $this->assertNotNull($sidebar->find('css', '.js-apply-multi-facets-selection'));
+    }
+
+    /**
+     * Test that filters applied during search show up on the record page and can be removed there.
+     *
+     * @return void
+     */
+    public function testFilterClearingOnRecordPage(): void
+    {
+        // Start with a search with multiple filters applied:
+        $path = '/Search/Results'
+            . '?filter[]=building%3A"geo.mrc"'
+            . '&filter[]=format%3A"Book"'
+            . '&filter[]=author_facet%3A"Erickson%2C+Joette"&type=AllFields';
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . $path);
+        $page = $session->getPage();
+        $this->assertCount(3, $page->findAll('css', '.facet.active'));
+        $this->clickCss($page, '#result0 a.title');
+        $this->waitForPageLoad($page);
+
+        // Make sure the active filters show up:
+        $filterArea = $this->findCss($page, '.active-filters');
+        $filters = $filterArea->findAll('css', '.filter-value');
+        $this->assertCount(3, $filters);
+
+        // Save the current URL so we can return to it:
+        $urlWithSid = $session->getCurrentUrl();
+
+        // Remove the first filter:
+        $filters[0]->click();
+        $this->waitForPageLoad($page);
+
+        // There should now be fewer filters:
+        $filters = $filterArea->findAll('css', '.filter-value');
+        $this->assertCount(2, $filters);
+
+        // Now submit a new search:
+        $this->clickCss($page, '#searchForm .btn-primary');
+        $this->waitForPageLoad($page);
+        $this->assertCount(2, $page->findAll('css', '.facet.active'));
+
+        // Now go back to the original record page with the SID in the URL and
+        // confirm the return of the filters:
+        $session->visit($urlWithSid);
+        $filters = $filterArea->findAll('css', '.filter-value');
+        $this->assertCount(3, $filters);
+
+        // Remove the second filter:
+        $filters[1]->click();
+        $this->waitForPageLoad($page);
+
+        // There should now be fewer filters:
+        $filters = $filterArea->findAll('css', '.filter-value');
+        $this->assertCount(2, $filters);
     }
 }

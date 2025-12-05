@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -49,7 +49,7 @@ class CollectionHierarchyTreeTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetActiveRecord(): void
     {
-        $conf = $this->getMockBuilder(\Laminas\Config\Config::class)
+        $conf = $this->getMockBuilder(\VuFind\Config\Config::class)
             ->disableOriginalConstructor()
             ->getMock();
         $load = $this->getMockBuilder(\VuFind\Record\Loader::class)
@@ -60,13 +60,13 @@ class CollectionHierarchyTreeTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $request->expects($this->once())->method('getQuery')
             ->with($this->equalTo('recordID'), $this->equalTo(false))
-            ->will($this->returnValue('foo'));
+            ->willReturn('foo');
         $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\AbstractBase::class)
             ->disableOriginalConstructor()
             ->getMock();
         $load->expects($this->once())->method('load')
             ->with($this->equalTo('foo'))
-            ->will($this->returnValue($recordDriver));
+            ->willReturn($recordDriver);
         $obj = new CollectionHierarchyTree($conf, $load);
         $obj->setRequest($request);
         $this->assertSame($recordDriver, $obj->getActiveRecord());
@@ -79,7 +79,7 @@ class CollectionHierarchyTreeTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetActiveRecordWithEmptyId(): void
     {
-        $conf = $this->getMockBuilder(\Laminas\Config\Config::class)
+        $conf = $this->getMockBuilder(\VuFind\Config\Config::class)
             ->disableOriginalConstructor()
             ->getMock();
         $load = $this->getMockBuilder(\VuFind\Record\Loader::class)
@@ -90,7 +90,7 @@ class CollectionHierarchyTreeTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $request->expects($this->once())->method('getQuery')
             ->with($this->equalTo('recordID'), $this->equalTo(false))
-            ->will($this->returnValue(null));
+            ->willReturn(null);
         $load->expects($this->never())->method('load');
         $obj = new CollectionHierarchyTree($conf, $load);
         $obj->setRequest($request);

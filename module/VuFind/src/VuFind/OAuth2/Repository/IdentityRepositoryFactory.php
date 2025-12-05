@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022.
+ * Copyright (C) The National Library of Finland 2022-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -63,19 +63,19 @@ class IdentityRepositoryFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
-        $tablePluginManager = $container
-            ->get(\VuFind\Db\Table\PluginManager::class);
+        $dbPluginManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
         return new $requestedName(
-            $tablePluginManager->get('User'),
-            $tablePluginManager->get('AccessToken'),
+            $dbPluginManager->get(\VuFind\Db\Service\UserServiceInterface::class),
+            $dbPluginManager->get(\VuFind\Db\Service\AccessTokenServiceInterface::class),
             $container->get(\VuFind\ILS\Connection::class),
-            $yamlReader->get('OAuth2Server.yaml')
+            $yamlReader->get('OAuth2Server.yaml'),
+            $container->get(\VuFind\Auth\ILSAuthenticator::class)
         );
     }
 }

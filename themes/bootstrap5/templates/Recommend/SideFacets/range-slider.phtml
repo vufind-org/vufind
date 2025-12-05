@@ -1,0 +1,46 @@
+<?php
+  // Sanitize inputs:
+  $sanitize = match($this->facet['type']) {
+    'date' => fn ($val) => preg_replace('/^.*?(-?\d+).*/', '$1', $val), // digits/sign only for year-only dates
+    'fulldate' => fn ($val) => substr($val, 0, 10),
+    'numeric' => fn ($val) => preg_replace('/^.*?(-?[\d.]+).*/', '$1', $val), // digits/decimal points/sign only for numeric
+    default => fn ($val) => $val, // no sanitization for "generic" ranges
+  };
+  $cleanValues = array_map($sanitize, $this->facet['values'] ?? []);
+  $safeBaseId = $this->escapeHtmlAttr($this->title);
+  $isDateRange = $this->facet['type'] == 'date';
+  $inputType = $isDateRange ? 'number' : 'text';
+?>
+<div class="facet">
+  <form class="facet-range-form" name="<?=$safeBaseId?>Filter" id="<?=$safeBaseId?>Filter" data-name="<?=$safeBaseId?>" data-filter-field="<?=$this->escapeHtmlAttr($this->facet['type'])?>range[]">
+    <?=$results->getUrlQuery()->asHiddenFields(['page' => '/./', 'filter' => "/^{$this->title}:.*/"])?>
+    <input type="hidden" name="<?=$this->escapeHtmlAttr($this->facet['type'])?>range[]" value="<?=$this->escapeHtmlAttr($this->title)?>">
+    <div class="date-fields">
+      <?php $extraInputAttribs = ($this->facet['type'] == 'date') ? 'min="-9999" max="9999" ' : ''; ?>
+      <div class="date-from">
+        <label id="<?=$safeBaseId?>from-label" for="<?=$safeBaseId?>from">
+          <?=$this->transEsc('date_from')?>:
+        </label>
+        <input type="<?=$inputType?>" class="form-control" name="<?=$safeBaseId?>from" id="<?=$safeBaseId?>from" value="<?=$this->escapeHtmlAttr($cleanValues[0] ?? '')?>" <?=$extraInputAttribs?>>
+      </div>
+      <div class="date-to">
+        <label id="<?=$safeBaseId?>to-label" for="<?=$safeBaseId?>to">
+          <?=$this->transEsc('date_to')?>:
+        </label>
+        <input type="<?=$inputType?>" class="form-control" name="<?=$safeBaseId?>to" id="<?=$safeBaseId?>to" value="<?=$this->escapeHtmlAttr($cleanValues[1] ?? '')?>" <?=$extraInputAttribs?>>
+      </div>
+    </div>
+    <?php if ($isDateRange): ?>
+      <?php $options = $this->searchOptions($this->searchClassId); ?>
+      <?=$this->component('date-range-slider', [
+        'values' => $cleanValues,
+        'sliderId' => $safeBaseId . $this->escapeHtml($this->facet['type']) . 'Slider',
+        'inputMinId' => $safeBaseId . 'from',
+        'inputMaxId' => $safeBaseId . 'to',
+        'rangeMin' => $options->getDateRangeSliderMinValue($this->title),
+        'rangeMax' => $options->getDateRangeSliderMaxValue($this->title),
+      ])?>
+    <?php endif; ?>
+    <input class="btn btn-default" type="submit" value="<?=$this->transEscAttr('Set')?>">
+  </form>
+</div>

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -33,6 +33,9 @@ use InvalidArgumentException;
 use RuntimeException;
 use VuFindSearch\Backend\AbstractHandlerMap;
 use VuFindSearch\ParamBag;
+
+use function in_array;
+use function sprintf;
 
 /**
  * SOLR backend handler map.
@@ -234,7 +237,7 @@ class HandlerMap extends AbstractHandlerMap
      */
     public function setParameters($handler, $type, array $parameters)
     {
-        if ($type != 'invariants' && $type != 'appends' && $type != 'defaults') {
+        if (!in_array($type, ['invariants', 'appends', 'defaults'])) {
             throw new InvalidArgumentException(
                 sprintf('Invalid parameter key: %s', $type)
             );
@@ -243,7 +246,7 @@ class HandlerMap extends AbstractHandlerMap
     }
 
     /**
-     * Return handler defauls, appends, or invariants.
+     * Return handler defaults, appends, or invariants.
      *
      * @param string $handler Request handler
      * @param string $type    Parameter type, one of 'defaults', 'appends',

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -29,10 +29,14 @@
 
 namespace VuFindAdmin\Controller;
 
+use DateTime;
 use Laminas\Cache\Psr\SimpleCache\SimpleCacheDecorator;
-use Laminas\Log\LoggerInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use Psr\Log\LoggerInterface;
 use VuFind\Cache\Manager as CacheManager;
+use VuFind\Db\Service\Feature\DeleteExpiredInterface;
+use VuFind\Db\Service\SearchServiceInterface;
+use VuFind\Db\Service\SessionServiceInterface;
 use VuFind\Http\GuzzleService;
 
 use function ini_get;
@@ -98,7 +102,7 @@ class MaintenanceController extends AbstractAdmin
     public function homeAction()
     {
         $view = $this->createViewModel();
-        $cacheManager = $this->serviceLocator->get(\VuFind\Cache\Manager::class);
+        $cacheManager = $this->getService(\VuFind\Cache\Manager::class);
         $view->caches = $cacheManager->getCacheList();
         $view->nonPersistentCaches = $cacheManager->getNonPersistentCacheList();
         $view->scripts = $this->getScripts();
@@ -107,15 +111,14 @@ class MaintenanceController extends AbstractAdmin
     }
 
     /**
-     * Get a list of the names of scripts available to run thorugh the admin panel.
+     * Get a list of the names of scripts available to run through the admin panel.
      *
      * @return array
      */
     protected function getScripts(): array
     {
         // Load the AdminScripts.ini settings
-        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class)
-            ->get('AdminScripts')->toArray();
+        $config = $this->getService(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('AdminScripts');
         $globalConfig = $config['Global'] ?? [];
         unset($config['Global']);
 
@@ -165,7 +168,7 @@ class MaintenanceController extends AbstractAdmin
     public function clearcacheAction()
     {
         $cache = null;
-        $cacheManager = $this->serviceLocator->get(\VuFind\Cache\Manager::class);
+        $cacheManager = $this->getService(\VuFind\Cache\Manager::class);
         foreach ($this->params()->fromQuery('cache', []) as $cache) {
             $cacheManager->getCache($cache)->flush();
         }
@@ -188,7 +191,7 @@ class MaintenanceController extends AbstractAdmin
         // database from old search histories that were not caught by the
         // session garbage collector.
         return $this->expire(
-            'Search',
+            SearchServiceInterface::class,
             '%%count%% expired searches deleted.',
             'No expired searches to delete.'
         );
@@ -204,7 +207,7 @@ class MaintenanceController extends AbstractAdmin
         // Delete the expired sessions--this cleans up any junk left in the
         // database by the session garbage collector.
         return $this->expire(
-            'Session',
+            SessionServiceInterface::class,
             '%%count%% expired sessions deleted.',
             'No expired sessions to delete.'
         );
@@ -227,7 +230,7 @@ class MaintenanceController extends AbstractAdmin
     /**
      * Abstract delete method.
      *
-     * @param string $table         Table to operate on.
+     * @param string $serviceName   Service to operate on.
      * @param string $successString String for reporting success.
      * @param string $failString    String for reporting failure.
      * @param int    $minAge        Minimum age allowed for expiration (also used
@@ -235,7 +238,7 @@ class MaintenanceController extends AbstractAdmin
      *
      * @return mixed
      */
-    protected function expire($table, $successString, $failString, $minAge = 2)
+    protected function expire($serviceName, $successString, $failString, $minAge = 2)
     {
         $daysOld = intval($this->params()->fromQuery('daysOld', $minAge));
         if ($daysOld < $minAge) {
@@ -247,17 +250,14 @@ class MaintenanceController extends AbstractAdmin
                 )
             );
         } else {
-            $search = $this->getTable($table);
-            if (!method_exists($search, 'deleteExpired')) {
-                throw new \Exception($table . ' does not support deleteExpired()');
+            $service = $this->getDbService($serviceName);
+            if (!$service instanceof DeleteExpiredInterface) {
+                throw new \Exception("Unsupported service: $serviceName");
             }
-            $threshold = date('Y-m-d H:i:s', time() - $daysOld * 24 * 60 * 60);
-            $count = $search->deleteExpired($threshold);
-            if ($count == 0) {
-                $msg = $failString;
-            } else {
-                $msg = str_replace('%%count%%', $count, $successString);
-            }
+            $count = $service->deleteExpired(new DateTime("now - $daysOld days"));
+            $msg = $count == 0
+                ? $failString
+                : str_replace('%%count%%', $count, $successString);
             $this->flashMessenger()->addSuccessMessage($msg);
         }
         return $this->forwardTo('AdminMaintenance', 'Home');
@@ -292,7 +292,7 @@ class MaintenanceController extends AbstractAdmin
         $cache = new SimpleCacheDecorator($this->cacheManager->getCache('browscap'));
         $client = $this->guzzleService->createClient();
 
-        $bc = new \BrowscapPHP\BrowscapUpdater($cache, new \Laminas\Log\PsrLoggerAdapter($this->logger), $client);
+        $bc = new \BrowscapPHP\BrowscapUpdater($cache, $this->logger, $client);
         try {
             $bc->checkUpdate();
         } catch (\BrowscapPHP\Exception\NoNewVersionException $e) {

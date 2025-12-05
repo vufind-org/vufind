@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -62,10 +62,10 @@ class SimulatedSSOFactory implements \Laminas\ServiceManager\Factory\FactoryInte
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
         $helpers = $container->get('ViewHelperManager');
         // The view helpers aren't set up yet when this factory runs, so we need to
@@ -78,8 +78,12 @@ class SimulatedSSOFactory implements \Laminas\ServiceManager\Factory\FactoryInte
                 $url('simulatedsso-login', [], ['query' => ['return' => $target]])
             );
         };
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('SimulatedSSO')->toArray();
-        return new $requestedName($getUrl, $config);
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('SimulatedSSO');
+        return new $requestedName(
+            $getUrl,
+            $config,
+            $container->get(\VuFind\Auth\ILSAuthenticator::class),
+            $container->get(\Laminas\Session\SessionManager::class)
+        );
     }
 }

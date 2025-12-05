@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Form
@@ -30,6 +30,8 @@
 declare(strict_types=1);
 
 namespace VuFind\Form\Handler;
+
+use VuFind\Db\Entity\UserEntityInterface;
 
 /**
  * Interface HandlerInterface
@@ -47,13 +49,13 @@ interface HandlerInterface
      *
      * @param \VuFind\Form\Form                     $form   Submitted form
      * @param \Laminas\Mvc\Controller\Plugin\Params $params Request params
-     * @param ?\VuFind\Db\Row\User                  $user   Authenticated user
+     * @param ?UserEntityInterface                  $user   Authenticated user
      *
      * @return bool
      */
     public function handle(
         \VuFind\Form\Form $form,
         \Laminas\Mvc\Controller\Plugin\Params $params,
-        ?\VuFind\Db\Row\User $user = null
+        ?UserEntityInterface $user = null
     ): bool;
 }

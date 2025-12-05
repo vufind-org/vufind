@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,7 +29,7 @@
 
 namespace VuFindTest\Related;
 
-use VuFind\Config\PluginManager as ConfigManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Related\Bookplate;
 use VuFind\Related\BookplateFactory;
 use VuFindTest\Container\MockContainer;
@@ -46,7 +46,7 @@ use VuFindTest\RecordDriver\TestHarness as RecordDriver;
  */
 class BookplateTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Test default behavior (no bookplates)
@@ -152,7 +152,7 @@ class BookplateTest extends \PHPUnit\Framework\TestCase
      *
      * @return Bookplate
      */
-    protected function getBookplate(MockContainer $container = null): Bookplate
+    protected function getBookplate(?MockContainer $container = null): Bookplate
     {
         $factory = new BookplateFactory();
         return $factory($container ?? $this->getContainer(), Bookplate::class);
@@ -172,8 +172,8 @@ class BookplateTest extends \PHPUnit\Framework\TestCase
     ): MockContainer {
         $container = new MockContainer($this);
         $container->set(
-            ConfigManager::class,
-            $this->getMockConfigPluginManager([$expectedConfig => $config])
+            ConfigManagerInterface::class,
+            $this->getMockConfigManager([$expectedConfig => $config])
         );
         return $container;
     }

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Recommendations
@@ -232,7 +232,7 @@ class SwitchQuery implements RecommendInterface
     protected function checkLowercaseBools($query)
     {
         // This test only applies if booleans are case-sensitive and there is a
-        // capitalizaton method available:
+        // capitalization method available:
         $lh = $this->getLuceneHelper();
         if (!$lh || !$lh->hasCaseSensitiveBooleans()) {
             return false;

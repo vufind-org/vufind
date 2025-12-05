@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  AJAX
@@ -49,7 +49,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'checkRequestIsValid' => CheckRequestIsValid::class,
         'commentRecord' => CommentRecord::class,
         'deleteRecordComment' => DeleteRecordComment::class,
-        'doiLookup' => DoiLookup::class,
+        'identifierLinksLookup' => IdentifierLinksLookup::class,
         'getACSuggestions' => GetACSuggestions::class,
         'getIlsStatus' => GetIlsStatus::class,
         'getItemStatuses' => GetItemStatuses::class,
@@ -73,6 +73,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'getUserTransactions' => GetUserTransactions::class,
         'getVisData' => GetVisData::class,
         'keepAlive' => KeepAlive::class,
+        'onlinePaymentNotify' => OnlinePaymentNotify::class,
+        'onlinePaymentRegister' => OnlinePaymentRegister::class,
         'recommend' => Recommend::class,
         'relaisAvailability' => RelaisAvailability::class,
         'relaisInfo' => RelaisInfo::class,
@@ -90,7 +92,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         CheckRequestIsValid::class => AbstractIlsAndUserActionFactory::class,
         CommentRecord::class => CommentRecordFactory::class,
         DeleteRecordComment::class => DeleteRecordCommentFactory::class,
-        DoiLookup::class => DoiLookupFactory::class,
+        IdentifierLinksLookup::class => IdentifierLinksLookupFactory::class,
         GetACSuggestions::class => GetACSuggestionsFactory::class,
         GetIlsStatus::class => GetIlsStatusFactory::class,
         GetItemStatuses::class => GetItemStatusesFactory::class,
@@ -109,13 +111,14 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         GetSearchResults::class => GetSearchResultsFactory::class,
         GetSideFacets::class => GetSideFacetsFactory::class,
         GetUserFines::class => GetUserFinesFactory::class,
-        GetUserHolds::class => AbstractIlsAndUserActionFactory::class,
-        GetUserILLRequests::class => AbstractIlsAndUserActionFactory::class,
-        GetUserStorageRetrievalRequests::class =>
-            AbstractIlsAndUserActionFactory::class,
-        GetUserTransactions::class => AbstractIlsAndUserActionFactory::class,
+        GetUserHolds::class => AbstractIlsUserAndRendererActionFactory::class,
+        GetUserILLRequests::class => AbstractIlsUserAndRendererActionFactory::class,
+        GetUserStorageRetrievalRequests::class => AbstractIlsUserAndRendererActionFactory::class,
+        GetUserTransactions::class => AbstractIlsUserAndRendererActionFactory::class,
         GetVisData::class => GetVisDataFactory::class,
         KeepAlive::class => KeepAliveFactory::class,
+        OnlinePaymentNotify::class => AbstractOnlinePaymentActionFactory::class,
+        OnlinePaymentRegister::class => AbstractOnlinePaymentActionFactory::class,
         Recommend::class => RecommendFactory::class,
         RelaisAvailability::class => AbstractRelaisActionFactory::class,
         RelaisInfo::class =>  AbstractRelaisActionFactory::class,

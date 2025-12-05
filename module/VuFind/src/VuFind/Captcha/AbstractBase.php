@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  CAPTCHA
@@ -45,7 +45,7 @@ use function get_class;
 abstract class AbstractBase
 {
     /**
-     * Get list of URLs with JS dependancies to load for the active CAPTCHA type.
+     * Get list of URLs with JS dependencies to load for the active CAPTCHA type.
      *
      * @return array
      */

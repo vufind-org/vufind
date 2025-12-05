@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -45,6 +45,7 @@ use Behat\Mink\Element\Element;
 final class BulkTest extends \VuFindTest\Integration\MinkTestCase
 {
     use \VuFindTest\Feature\LiveDatabaseTrait;
+    use \VuFindTest\Feature\RetryClickTrait;
     use \VuFindTest\Feature\UserCreationTrait;
 
     /**
@@ -189,10 +190,9 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that the save control works.
      *
-     * @depends testBulkEmail
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testBulkEmail')]
     public function testBulkSave(): void
     {
         $page = $this->setUpGenericBulkTest();
@@ -214,7 +214,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
 
         // Save the favorites.
         $this->waitForPageLoad($page);
-        $this->clickCss($page, '.modal-body input[name=submit]');
+        $this->clickCss($page, '.modal-body input[name=submitButton]');
         $this->assertEquals(
             'Your item(s) were saved successfully. Go to List.',
             $this->findCssAndGetText($page, '.modal-body .alert-success')
@@ -234,9 +234,8 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      * Test that we can bulk-delete records from a favorites list.
      *
      * @return void
-     *
-     * @depends testBulkSave
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testBulkSave')]
     public function testBulkDeleteFromList(): void
     {
         // Log in to account that owns the list:
@@ -269,66 +268,100 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#modal input[type="submit"]');
         $this->waitForPageLoad($page);
 
-        // If all records were deleted, success message should be visible in
-        // lightbox, and delete button should be gone after lightbox is closed.
+        // If all records were deleted, success message should be visible, and delete button should be gone after
+        // lightbox is closed.
+        $this->waitForLightboxHidden();
         $this->assertEquals(
             'Your saved item(s) were deleted.',
-            $this->findCssAndGetText($page, '.modal .alert-success')
+            $this->findCssAndGetText($page, '.alert-success')
         );
-        $this->closeLightbox($page, true);
         $this->unfindCss($page, 'button[name="delete"]');
+    }
+
+    /**
+     * Data provider to allow testing of top or bottom controls.
+     *
+     * @return array[]
+     */
+    public static function topOrBottomProvider(): array
+    {
+        return [
+            'top button' => [''],
+            'bottom button' => ['bottom_'],
+        ];
     }
 
     /**
      * Test that the export control works.
      *
+     * @param string $idPrefix Prefix for bulk control IDs.
+     *
      * @return void
      */
-    public function testBulkExport(): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('topOrBottomProvider')]
+    public function testBulkExport(string $idPrefix): void
     {
+        $session = $this->getMinkSession();
         $page = $this->setUpGenericBulkTest();
-        $button = $this->findCss($page, '#ribbon-export');
+        $buttonSelector = '#' . $idPrefix . 'ribbon-export';
 
         // First try clicking without selecting anything:
-        $button->click();
+        $this->clickCss($page, $buttonSelector);
         $this->checkForNonSelectedMessage($page);
         $this->closeLightbox($page, true);
 
         // Now do it for real -- we should get a lightbox prompt.
-        $page->find('css', '#addFormCheckboxSelectAll')->check();
-        $button->click();
+        $page->find('css', '#' . $idPrefix . 'addFormCheckboxSelectAll')->check();
+        $this->waitStatement('$("input.checkbox-select-item:checked").length === 2');
+        $this->clickCss($page, $buttonSelector);
 
         // Select EndNote option
-        $select = $this->findCss($page, '#format');
+        try {
+            // We don't want to wait the full default timeout here since that wastes a lot
+            // of time if a click failed to register; however, we shouldn't wait for too
+            // short of a time, or else a slow response can break the test by causing a
+            // double form submission.
+            $select = $this->findCss($page, '#format', 1500);
+        } catch (\Exception $e) {
+            $this->retryClickWithResizedWindow($session, $page, $buttonSelector);
+            $select = $this->findCss($page, '#format');
+        }
         $select->selectOption('EndNote');
 
         // Do the export:
-        $submit = $this->findCss($page, '.modal-body input[name=submit]');
-        $submit->click();
-        $result = $this->findCss($page, '.modal-body .alert .text-center .btn');
-        $this->assertEquals('Download File', $result->getText());
+        $this->clickCss($page, '.form-cart-export input[name=submitButton]');
+        $buttonText = $this->findCssAndGetText($page, '.alert .text-center .btn');
+        $this->assertEquals('Download File', $buttonText);
     }
 
     /**
      * Test that the print control works.
      *
+     * @param string $idPrefix Prefix for bulk control IDs.
+     *
      * @return void
      */
-    public function testBulkPrint(): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('topOrBottomProvider')]
+    public function testBulkPrint(string $idPrefix): void
     {
         $session = $this->getMinkSession();
         $page = $this->setUpGenericBulkTest();
-        $button = $this->findCss($page, '#ribbon-print');
+        $buttonSelector = '#' . $idPrefix . 'ribbon-print';
 
         // First try clicking without selecting anything:
-        $button->click();
+        $this->clickCss($page, $buttonSelector);
         $this->checkForNonSelectedMessage($page);
         $page->find('css', '.modal-body .btn')->click();
 
         // Now do it for real -- we should get redirected.
-        $page->find('css', '#addFormCheckboxSelectAll')->check();
-        $button->click();
+        $page->find('css', '#' . $idPrefix . 'addFormCheckboxSelectAll')->check();
+        $this->waitStatement('$("input.checkbox-select-item:checked").length === 2');
+        $this->clickCss($page, $buttonSelector);
         [, $params] = explode('?', $session->getCurrentUrl());
+        if (str_starts_with($params, 'lookfor')) {
+            $this->retryClickWithResizedWindow($session, $page, $buttonSelector);
+            [, $params] = explode('?', $session->getCurrentUrl());
+        }
         $this->assertEquals(
             'print=true&id[]=Solr|testsample1&id[]=Solr|testsample2',
             str_replace(['%5B', '%5D', '%7C'], ['[', ']', '|'], $params)
@@ -340,6 +373,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testBulkEmail')]
     public function testBulkActionLimits(): void
     {
         $session = $this->getMinkSession();
@@ -396,7 +430,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
 
         // Save the favorites.
         $this->waitForPageLoad($page);
-        $this->clickCss($page, '.modal-body input[name=submit]');
+        $this->clickCss($page, '.modal-body input[name=submitButton]');
         $this->assertEquals(
             'Your item(s) were saved successfully. Go to List.',
             $this->findCssAndGetText($page, '.modal-body .alert-success')
@@ -407,7 +441,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $select = $this->findCss($page, '#format');
         $select->selectOption('EndNote');
-        $submit = $this->findCss($page, '.modal-body input[name=submit]');
+        $submit = $this->findCss($page, '.modal-body input[name=submitButton]');
         $submit->click();
         $this->checkForLimitExceededMessage($page, 2, 1);
         $this->closeLightbox($page);
@@ -418,7 +452,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $select = $this->findCss($page, '#format');
         $select->selectOption('MARC');
-        $submit = $this->findCss($page, '.modal-body input[name=submit]');
+        $submit = $this->findCss($page, '.modal-body input[name=submitButton]');
         $submit->click();
         $this->assertEquals(
             'Download File',

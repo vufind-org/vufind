@@ -1,0 +1,8 @@
+<h2><?=$this->transEsc('recovery_title') ?></h2>
+<?=$this->flashmessages()?>
+<form class="form-password-recovery" method="post">
+  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->auth()->getManager()->getCsrfHash())?>" name="csrf">
+  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->target)?>" name="target">
+
+  <?=$this->auth()->getPasswordRecoveryForm() ?>
+</form>

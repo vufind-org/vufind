@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -53,7 +53,7 @@ class RecordCollectionFactoryTest extends TestCase
         $this->expectException(\VuFindSearch\Exception\InvalidArgumentException::class);
         $this->expectExceptionMessage('Record factory must be callable.');
 
-        $factory = new RecordCollectionFactory(12345);
+        new RecordCollectionFactory(12345);
     }
 
     /**
@@ -67,7 +67,7 @@ class RecordCollectionFactoryTest extends TestCase
         $this->expectExceptionMessage('Unexpected type of value: Expected array, got string');
 
         $factory = new RecordCollectionFactory(
-            function () {
+            function (): void {
             }
         );
         $factory->factory('bad');

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Connection
@@ -43,7 +43,7 @@ namespace VuFind\Connection;
 interface OauthServiceInterface
 {
     /**
-     * Authentiate via the OAuth Client Credentials grant type.
+     * Authenticate via the OAuth Client Credentials grant type.
      *
      * @param string $oauthUrl     URL of thee OAuth service
      * @param string $clientId     client_id for a client_credentials grant

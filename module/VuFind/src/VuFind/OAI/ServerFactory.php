@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  OAI_Server
@@ -63,15 +63,19 @@ class ServerFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
+        $servicePluginManager = $container->get(
+            \VuFind\Db\Service\PluginManager::class
+        );
         return new $requestedName(
             $container->get(\VuFind\Search\Results\PluginManager::class),
             $container->get(\VuFind\Record\Loader::class),
-            $container->get(\VuFind\Db\Table\PluginManager::class)
+            $servicePluginManager->get(\VuFind\Db\Service\ChangeTrackerServiceInterface::class),
+            $servicePluginManager->get(\VuFind\Db\Service\OaiResumptionServiceInterface::class)
         );
     }
 }

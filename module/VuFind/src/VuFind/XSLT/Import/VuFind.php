@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Import_Tools
@@ -50,6 +50,13 @@ use function strlen;
 class VuFind
 {
     /**
+     * ISO8601 date format string
+     *
+     * @var string
+     */
+    protected const ISO8601_FORMAT = 'Y-m-d\TH:i:s\Z';
+
+    /**
      * Service locator
      *
      * @var ServiceLocatorInterface
@@ -69,14 +76,14 @@ class VuFind
     }
 
     /**
-     * Get the change tracker table object.
+     * Get the change tracker service object.
      *
-     * @return \VuFind\Db\Table\ChangeTracker
+     * @return \VuFind\Db\Service\ChangeTrackerServiceInterface
      */
     public static function getChangeTracker()
     {
-        return static::$serviceLocator->get(\VuFind\Db\Table\PluginManager::class)
-            ->get('ChangeTracker');
+        return static::$serviceLocator->get(\VuFind\Db\Service\PluginManager::class)
+            ->get(\VuFind\Db\Service\ChangeTrackerServiceInterface::class);
     }
 
     /**
@@ -84,12 +91,11 @@ class VuFind
      *
      * @param string $config Configuration name
      *
-     * @return \Laminas\Config\Config
+     * @return \VuFind\Config\Config
      */
     public static function getConfig($config = 'config')
     {
-        return static::$serviceLocator->get(\VuFind\Config\PluginManager::class)
-            ->get($config);
+        return static::$serviceLocator->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject($config);
     }
 
     /**
@@ -105,8 +111,7 @@ class VuFind
     {
         $date = strtotime($date);
         $row = static::getChangeTracker()->index($core, $id, $date);
-        $iso8601 = 'Y-m-d\TH:i:s\Z';
-        return date($iso8601, strtotime($row->first_indexed));
+        return $row->getFirstIndexed()->format(self::ISO8601_FORMAT);
     }
 
     /**
@@ -122,8 +127,7 @@ class VuFind
     {
         $date = strtotime($date);
         $row = static::getChangeTracker()->index($core, $id, $date);
-        $iso8601 = 'Y-m-d\TH:i:s\Z';
-        return date($iso8601, strtotime($row->last_indexed));
+        return $row->getLastIndexed()->format(self::ISO8601_FORMAT);
     }
 
     /**

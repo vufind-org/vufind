@@ -1,0 +1,32 @@
+<?php $target = ($newWindow ?? false) ? ' target="_blank"' : ''; ?>
+<?php if ($this->driver->hasHTMLFullTextAvailable()): ?>
+  <span>
+    <a href="<?=$this->escapeHtmlAttr($recordLinker->getUrl($this->driver)) ?>#html" class="icon--eds html fulltext _record_link"<?=$target?>>
+      <?=$this->transEsc('HTML Full Text')?>
+    </a>
+  </span>
+<?php endif; ?>
+
+<?php if ($this->driver->hasLinkedFullTextAvailable()): ?>
+  <span>
+    <a href="<?=$this->escapeHtmlAttr($recordLinker->getTabUrl($this->driver, 'LinkedText')) ?>" class="fulltext"<?=$target?>>
+      <?=$this->transEsc('Linked Full Text')?>
+    </a>
+  </span>
+<?php endif; ?>
+
+<?php if ($this->driver->hasPdfAvailable()): ?>
+  <span>
+    <a href="<?=$this->escapeHtmlAttr($recordLinker->getTabUrl($this->driver, 'PDF')) ?>" class="icon--eds pdf fulltext"<?=$target?>>
+      <?=$this->transEsc('PDF Full Text')?>
+    </a>
+  </span>
+<?php endif; ?>
+
+<?php if ($this->driver->hasEpubAvailable()): ?>
+  <span>
+    <a href="<?=$this->escapeHtmlAttr($recordLinker->getTabUrl($this->driver, 'Epub')) ?>" class="icon--eds epub fulltext"<?=$target?>>
+      <?=$this->transEsc('ePub Full Text')?>
+    </a>
+  </span>
+<?php endif; ?>

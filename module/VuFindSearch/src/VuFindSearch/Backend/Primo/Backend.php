@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -66,15 +66,14 @@ class Backend extends AbstractBackend
     /**
      * Constructor.
      *
-     * @param ConnectorInterface               $connector Primo connector
-     * @param RecordCollectionFactoryInterface $factory   Record collection factory
-     * (null for default)
+     * @param ConnectorInterface                $connector Primo connector
+     * @param ?RecordCollectionFactoryInterface $factory   Record collection factory (null for default)
      *
      * @return void
      */
     public function __construct(
         ConnectorInterface $connector,
-        RecordCollectionFactoryInterface $factory = null
+        ?RecordCollectionFactoryInterface $factory = null
     ) {
         if (null !== $factory) {
             $this->setRecordCollectionFactory($factory);
@@ -88,7 +87,7 @@ class Backend extends AbstractBackend
      * @param AbstractQuery $query  Search query
      * @param int           $offset Search offset
      * @param int           $limit  Search limit
-     * @param ParamBag      $params Search backend parameters
+     * @param ?ParamBag     $params Search backend parameters
      *
      * @return RecordCollectionInterface
      */
@@ -96,7 +95,7 @@ class Backend extends AbstractBackend
         AbstractQuery $query,
         $offset,
         $limit,
-        ParamBag $params = null
+        ?ParamBag $params = null
     ) {
         $baseParams = $this->getQueryBuilder()->build($query);
         if (null !== $params) {
@@ -129,12 +128,12 @@ class Backend extends AbstractBackend
     /**
      * Retrieve a single document.
      *
-     * @param string   $id     Document identifier
-     * @param ParamBag $params Search backend parameters
+     * @param string    $id     Document identifier
+     * @param ?ParamBag $params Search backend parameters
      *
      * @return RecordCollectionInterface
      */
-    public function retrieve($id, ParamBag $params = null)
+    public function retrieve($id, ?ParamBag $params = null)
     {
         $onCampus = (null !== $params) ? $params->get('onCampus') : [false];
         $onCampus = $onCampus ? $onCampus[0] : false;
@@ -248,15 +247,27 @@ class Backend extends AbstractBackend
 
         // Use special pcAvailability filter if it has been set:
         foreach ($options['filterList'] ?? [] as $i => $filter) {
-            if ('pcAvailability' === $filter['field']) {
-                $value = reset($filter['values']);
-                // Note that '' is treated as true for the simple case with no value
-                $options['pcAvailability'] = !in_array($value, [false, 0, '0', 'false'], true);
+            if (in_array($filter['field'], ['pcAvailability', 'cdiFulltext'])) {
+                $options[$filter['field']] = $this->getSpecialFilterBool($filter);
                 unset($options['filterList'][$i]);
                 break;
             }
         }
 
         return $options;
+    }
+
+    /**
+     * Get boolean value for a special filter
+     *
+     * @param array $filter Filter
+     *
+     * @return bool
+     */
+    protected function getSpecialFilterBool(array $filter): bool
+    {
+        $value = reset($filter['values']);
+        // Note that '' is treated as true for the simple case with no value
+        return !in_array($value, [false, 0, '0', 'false'], true);
     }
 }

@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -33,6 +33,8 @@ namespace VuFind\Controller;
 
 use Laminas\Cache\Storage\StorageInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFind\Db\Type\AuditEventSubtype;
+use VuFind\Db\Type\AuditEventType;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\Validator\CsrfInterface;
 
@@ -99,11 +101,22 @@ class HoldsController extends AbstractBase
         // Process cancel requests if necessary:
         $cancelStatus = $catalog->checkFunction('cancelHolds', compact('patron'));
         $view = $this->createViewModel();
-        $view->cancelResults = $cancelStatus
-            ? $this->holds()->cancelHolds($catalog, $patron) : [];
+        $view->cancelResults = $cancelStatus ? $this->holds()->cancelHolds($catalog, $patron) : [];
         // If we need to confirm
         if (!is_array($view->cancelResults)) {
             return $view->cancelResults;
+        }
+
+        if ($view->cancelResults) {
+            $this->getAuditEventService()->addEvent(
+                AuditEventType::ILS,
+                AuditEventSubtype::CancelHolds,
+                $this->getUser(),
+                data: [
+                    'username' => $patron['cat_username'],
+                    'results' => $view->cancelResults,
+                ]
+            );
         }
 
         // Process any update request results stored in the session:
@@ -198,6 +211,13 @@ class HoldsController extends AbstractBase
      */
     public function editAction()
     {
+        $this->ilsExceptionResponse = $this->createViewModel(
+            [
+                'selectedIDS' => [],
+                'fields' => [],
+            ]
+        );
+
         // Stop now if the user does not have valid catalog credentials available:
         if (!is_array($patron = $this->catalogLogin())) {
             return $patron;
@@ -273,8 +293,19 @@ class HoldsController extends AbstractBase
                     );
                     $this->flashMessenger()->addErrorMessage($msg);
                 }
+
+                $this->getAuditEventService()->addEvent(
+                    AuditEventType::ILS,
+                    AuditEventSubtype::UpdateHolds,
+                    $this->getUser(),
+                    data: [
+                        'username' => $patron['cat_username'],
+                        'results' => $results,
+                    ]
+                );
+
                 return $this->inLightbox()
-                    ? $this->getRefreshResponse()
+                    ? $this->getRefreshResponse(true)
                     : $this->redirect()->toRoute('holds-list');
             }
         }
@@ -460,7 +491,7 @@ class HoldsController extends AbstractBase
     {
         return new \Laminas\Session\Container(
             'hold_update',
-            $this->serviceLocator->get(\Laminas\Session\SessionManager::class)
+            $this->getService(\Laminas\Session\SessionManager::class)
         );
     }
 

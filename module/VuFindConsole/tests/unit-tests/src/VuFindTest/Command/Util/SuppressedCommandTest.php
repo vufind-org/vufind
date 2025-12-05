@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -72,12 +72,12 @@ class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Get command to test.
      *
-     * @param Writer     $solr Solr writer
-     * @param Connection $ils  ILS connection
+     * @param ?Writer     $solr Solr writer
+     * @param ?Connection $ils  ILS connection
      *
      * @return SuppressedCommand
      */
-    protected function getCommand(Writer $solr = null, Connection $ils = null)
+    protected function getCommand(?Writer $solr = null, ?Connection $ils = null)
     {
         $args = [
             $solr ?? $this->getMockSolrWriter(),
@@ -99,7 +99,7 @@ class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
         $ils = $this->getMockIlsConnection();
         $ils->expects($this->once())->method('__call')
             ->with($this->equalTo('getSuppressedRecords'))
-            ->will($this->returnValue([]));
+            ->willReturn([]);
         $command = $this->getCommand(null, $ils);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
@@ -120,7 +120,7 @@ class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
         $ils = $this->getMockIlsConnection();
         $ils->expects($this->once())->method('__call')
             ->with($this->equalTo('getSuppressedRecords'))
-            ->will($this->returnValue([1, 2]));
+            ->willReturn([1, 2]);
         $solr = $this->getMockSolrWriter();
         $solr->expects($this->once())->method('deleteRecords')
             ->with($this->equalTo('Solr'), $this->equalTo([1, 2]));
@@ -145,7 +145,7 @@ class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
         $ils = $this->getMockIlsConnection();
         $ils->expects($this->once())->method('__call')
             ->with($this->equalTo('getSuppressedAuthorityRecords'))
-            ->will($this->returnValue([]));
+            ->willReturn([]);
         $command = $this->getCommand(null, $ils);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['--authorities' => true]);
@@ -166,11 +166,11 @@ class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
         $ils = $this->getMockIlsConnection();
         $ils->expects($this->once())->method('__call')
             ->with($this->equalTo('getSuppressedRecords'))
-            ->will($this->returnValue([1, 2]));
+            ->willReturn([1, 2]);
         $command = $this->getCommand(null, $ils);
         $command->expects($this->once())->method('writeToDisk')
             ->with($this->equalTo('foo'), $this->equalTo("1\n2"))
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['--outfile' => 'foo']);
         $this->assertEquals(0, $commandTester->getStatusCode());
@@ -187,11 +187,11 @@ class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
         $ils = $this->getMockIlsConnection();
         $ils->expects($this->once())->method('__call')
             ->with($this->equalTo('getSuppressedRecords'))
-            ->will($this->returnValue([1, 2]));
+            ->willReturn([1, 2]);
         $command = $this->getCommand(null, $ils);
         $command->expects($this->once())->method('writeToDisk')
             ->with($this->equalTo('foo'), $this->equalTo("1\n2"))
-            ->will($this->returnValue(false));
+            ->willReturn(false);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['--outfile' => 'foo']);
         $this->assertEquals(1, $commandTester->getStatusCode());

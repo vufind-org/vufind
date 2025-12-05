@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Base
@@ -34,7 +34,9 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\I18n\Locale\LocaleSettings;
+use VuFind\Search\Solr\HierarchicalFacetHelper;
 
 use function count;
 
@@ -81,16 +83,18 @@ class FacetCacheFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
         $parts = explode('\\', $requestedName);
         $requestedNamespace = $parts[count($parts) - 2];
         $results = $this->getResults($container, $requestedNamespace);
         $cacheManager = $container->get(\VuFind\Cache\Manager::class);
         $language = $container->get(LocaleSettings::class)->getUserLocale();
-        return new $requestedName($results, $cacheManager, $language);
+        $hierarchicalFacetHelper = $container->get(HierarchicalFacetHelper::class);
+        $configManager = $container->get(ConfigManagerInterface::class);
+        return new $requestedName($results, $cacheManager, $language, $hierarchicalFacetHelper, $configManager);
     }
 }

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  OAuth2
@@ -30,8 +30,11 @@
 namespace VuFind\OAuth2\Repository;
 
 use League\OAuth2\Server\Entities\ClientEntityInterface;
+use League\OAuth2\Server\Entities\ScopeEntityInterface;
 use League\OAuth2\Server\Repositories\ScopeRepositoryInterface;
 use VuFind\OAuth2\Entity\ScopeEntity;
+
+use function in_array;
 
 /**
  * OAuth2 scope repository implementation.
@@ -66,9 +69,9 @@ class ScopeRepository implements ScopeRepositoryInterface
      *
      * @param string $identifier The scope identifier
      *
-     * @return ScopeEntityInterface|null
+     * @return ?ScopeEntityInterface
      */
-    public function getScopeEntityByIdentifier($identifier)
+    public function getScopeEntityByIdentifier($identifier): ?ScopeEntityInterface
     {
         if (!isset($this->oauth2Config['Scopes'][$identifier])) {
             return null;
@@ -87,6 +90,7 @@ class ScopeRepository implements ScopeRepositoryInterface
      * @param string                 $grantType      Grant type
      * @param ClientEntityInterface  $clientEntity   Client
      * @param null|string            $userIdentifier User ID
+     * @param ?string                $authCodeId     Auth code ID
      *
      * @return ScopeEntityInterface[]
      *
@@ -96,8 +100,21 @@ class ScopeRepository implements ScopeRepositoryInterface
         array $scopes,
         $grantType,
         ClientEntityInterface $clientEntity,
-        $userIdentifier = null
-    ) {
+        $userIdentifier = null,
+        ?string $authCodeId = null
+    ): array {
+        $clientId = $clientEntity->getIdentifier();
+        // Apply any client-specific filter to scopes:
+        if ($allowedScopes = $this->oauth2Config['Clients'][$clientId]['allowedScopes'] ?? null) {
+            $scopes = array_values(
+                array_filter(
+                    $scopes,
+                    function ($scope) use ($allowedScopes) {
+                        return in_array($scope->getIdentifier(), $allowedScopes);
+                    }
+                )
+            );
+        }
         return $scopes;
     }
 }

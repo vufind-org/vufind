@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -29,6 +29,7 @@
 
 namespace VuFindConsole\Command\Import;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -47,15 +48,12 @@ use function is_callable;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'import/import-csv',
+    description: 'CSV importer'
+)]
 class ImportCsvCommand extends Command
 {
-    /**
-     * The name of the command
-     *
-     * @var string
-     */
-    protected static $defaultName = 'import/import-csv';
-
     /**
      * CSV importer
      *
@@ -84,7 +82,6 @@ class ImportCsvCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('CSV importer')
             ->setHelp('Indexes CSV files into Solr.')
             ->addArgument(
                 'CSV_file',
@@ -121,9 +118,9 @@ class ImportCsvCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $testMode = $input->getOption('test-only') ? true : false;
+        $testMode = (bool)$input->getOption('test-only');
         $index = $input->getOption('index');
         $csv = $input->getArgument('CSV_file');
         $ini = $input->getArgument('ini_file');
@@ -141,11 +138,11 @@ class ImportCsvCommand extends Command
                     $e = $e->getPrevious();
                 }
             }
-            return 1;
+            return self::FAILURE;
         }
         if (!$testMode) {
             $output->writeln("Successfully imported $csv...");
         }
-        return 0;
+        return self::SUCCESS;
     }
 }

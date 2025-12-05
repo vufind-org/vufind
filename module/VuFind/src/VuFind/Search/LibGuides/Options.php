@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_LibGuides
@@ -28,6 +28,8 @@
  */
 
 namespace VuFind\Search\LibGuides;
+
+use VuFind\Config\ConfigManagerInterface;
 
 /**
  * LibGuides Search Options
@@ -40,8 +42,6 @@ namespace VuFind\Search\LibGuides;
  */
 class Options extends \VuFind\Search\Base\Options
 {
-    use \VuFind\Config\Feature\ExplodeSettingTrait;
-
     /**
      * Name of .ini file to use for LibGuides API and display settings.
      *
@@ -52,19 +52,12 @@ class Options extends \VuFind\Search\Base\Options
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(ConfigManagerInterface $configManager)
     {
         $this->searchIni = $this->facetsIni = $this->iniName;
-        parent::__construct($configLoader);
-        $searchSettings = $configLoader->get($this->searchIni);
-        if (isset($searchSettings->General->default_limit)) {
-            $this->defaultLimit = $searchSettings->General->default_limit;
-        }
-        if (isset($searchSettings->General->limit_options)) {
-            $this->limitOptions = $this->explodeListSetting($searchSettings->General->limit_options);
-        }
+        parent::__construct($configManager);
     }
 
     /**

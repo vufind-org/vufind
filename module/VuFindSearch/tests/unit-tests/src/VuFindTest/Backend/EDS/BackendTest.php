@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -62,7 +62,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $conn->expects($this->once())
             ->method('call')
             ->with($this->equalTo($expectedUri))
-            ->will($this->returnValue($this->loadResponse('autocomplete')));
+            ->willReturn($this->loadResponse('autocomplete'));
 
         $back = $this->getBackend(
             $conn,
@@ -77,7 +77,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         ];
         $back->expects($this->any())
             ->method('getAutocompleteData')
-            ->will($this->returnValue($autocompleteData));
+            ->willReturn($autocompleteData);
 
         $coll = $back->autocomplete('bla', 'rawdata');
         // check count
@@ -97,7 +97,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $conn = $this->getConnectorMock(['retrieveEdsItem']);
         $conn->expects($this->once())
             ->method('retrieveEdsItem')
-            ->will($this->returnValue($this->loadResponse('retrieveEdsItem')));
+            ->willReturn($this->loadResponse('retrieveEdsItem'));
 
         $back = $this->getBackend(
             $conn,
@@ -110,10 +110,10 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $back->setBackendType('EDS');
         $back->expects($this->any())
             ->method('getAuthenticationToken')
-            ->will($this->returnValue('auth1234'));
+            ->willReturn('auth1234');
         $back->expects($this->any())
             ->method('getSessionToken')
-            ->will($this->returnValue('sess1234'));
+            ->willReturn('sess1234');
         $back->setIdentifier('test');
 
         $coll = $back->retrieve('bwh,201407212251PR.NEWS.USPR.MM73898');
@@ -134,7 +134,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $conn = $this->getConnectorMock(['retrieveEpfItem']);
         $conn->expects($this->once())
             ->method('retrieveEpfItem')
-            ->will($this->returnValue($this->loadResponse('retrieveEpfItem')));
+            ->willReturn($this->loadResponse('retrieveEpfItem'));
 
         $back = $this->getBackend(
             $conn,
@@ -147,10 +147,10 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $back->setBackendType('EPF');
         $back->expects($this->any())
             ->method('getAuthenticationToken')
-            ->will($this->returnValue('auth1234'));
+            ->willReturn('auth1234');
         $back->expects($this->any())
             ->method('getSessionToken')
-            ->will($this->returnValue('sess1234'));
+            ->willReturn('sess1234');
         $back->setIdentifier('test');
 
         $coll = $back->retrieve('edp297646');
@@ -171,7 +171,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $conn = $this->getConnectorMock(['search']);
         $conn->expects($this->once())
             ->method('search')
-            ->will($this->returnValue($this->loadResponse('search')));
+            ->willReturn($this->loadResponse('search'));
 
         $back = $this->getBackend(
             $conn,
@@ -183,10 +183,10 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         );
         $back->expects($this->any())
             ->method('getAuthenticationToken')
-            ->will($this->returnValue('auth1234'));
+            ->willReturn('auth1234');
         $back->expects($this->any())
             ->method('getSessionToken')
-            ->will($this->returnValue('sess1234'));
+            ->willReturn('sess1234');
         $back->setIdentifier('test');
 
         $coll = $back->search(new Query('foobar'), 0, 3);
@@ -330,9 +330,9 @@ class BackendTest extends \PHPUnit\Framework\TestCase
                 ->disableOriginalConstructor()->getMock();
         }
         if (null === $mock) {
-            return new Backend($connector, $factory, $cache, $container, new \Laminas\Config\Config($settings));
+            return new Backend($connector, $factory, $cache, $container, new \VuFind\Config\Config($settings));
         } else {
-            $params = [$connector, $factory, $cache, $container, new \Laminas\Config\Config($settings)];
+            $params = [$connector, $factory, $cache, $container, new \VuFind\Config\Config($settings)];
             return $this->getMockBuilder(\VuFindSearch\Backend\EDS\Backend::class)
                 ->onlyMethods($mock)
                 ->setConstructorArgs($params)

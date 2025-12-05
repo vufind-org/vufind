@@ -6,7 +6,7 @@
  * PHP version 8
  *
  * Copyright (C) Villanova University 2021.
- * Copyright (C) The National Library of Finland 2023.
+ * Copyright (C) The National Library of Finland 2023-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -99,6 +99,11 @@ class SearchSortTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertResultTitles($page, 20, 'Test Publication 20177', 'Test Publication 201738');
         // Check that url no longer contains the page parameter:
         $this->assertStringNotContainsString('&page', $this->getCurrentQueryString());
+
+        // Change sort back to relevance (first option) and verify:
+        $this->clickCss($page, $this->sortControlSelector . ' option');
+        $this->waitForPageLoad($page);
+        $this->assertResultTitles($page, 20, 'Test Publication 20001', 'Test Publication 20020');
     }
 
     /**
@@ -141,14 +146,63 @@ class SearchSortTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test sort stickiness
+     *
+     * @return void
+     */
+    public function testSortStickiness(): void
+    {
+        // Call number has a custom default sort; if we do a regular search and leave
+        // the sort at default, then do a call number search, we expect the sort to
+        // change accordingly. We also expect it to change back if we do a non-call-no
+        // search.
+        $page = $this->performSearch('*:*');
+        $this->assertSelectedSort($page, 'relevance');
+        $this->submitSearchForm($page, '*:*', 'CallNumber');
+        $this->assertSelectedSort($page, 'callnumber-sort');
+        $this->submitSearchForm($page, '*:*', 'AllFields');
+        $this->assertSelectedSort($page, 'relevance');
+
+        // However, if we choose a non-default sort, we expect it to stick across
+        // all search types:
+        $this->clickCss($page, $this->sortControlSelector . ' option', null, 2);
+        $this->waitForPageLoad($page);
+        $this->assertSelectedSort($page, 'year asc');
+        $this->submitSearchForm($page, '*:*', 'CallNumber');
+        $this->assertSelectedSort($page, 'year asc');
+        $this->submitSearchForm($page, '*:*', 'AllFields');
+        $this->assertSelectedSort($page, 'year asc');
+    }
+
+    /**
+     * Test publication date sort order
+     *
+     * @return void
+     */
+    public function testPublicationDateSort(): void
+    {
+        $page = $this->setUpSearch('publishDate', 'publishDate', ['geo.mrc', 'really_old.xml']);
+
+        // Check expected first and last record on first page:
+        $this->assertResultTitles(
+            $page,
+            20,
+            first: 'Pyrgi Gold Tablets',
+            second: 'Book of Kells',
+            last: 'Test Publication 20018'
+        );
+    }
+
+    /**
      * Set up a search page with sorting configured
      *
      * @param string $sortParam Requested sort option
      * @param string $default   default_sort setting for searches.ini
+     * @param array  $buildings building filters to use
      *
      * @return Element
      */
-    protected function setUpSearch(string $sortParam, string $default): Element
+    protected function setUpSearch(string $sortParam, string $default, array $buildings = ['geo.mrc']): Element
     {
         $this->changeConfigs(
             [
@@ -163,8 +217,12 @@ class SearchSortTest extends \VuFindTest\Integration\MinkTestCase
                 ],
             ]
         );
+        $filters = [];
+        foreach ($buildings as $building) {
+            $filters[] = 'filter[]=' . urlencode("~building:\"$building\"");
+        }
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . "/Search/Results?filter[]=building%3A%22geo.mrc%22&sort=$sortParam");
+        $session->visit($this->getVuFindUrl() . '/Search/Results?' . implode('&', $filters) . "&sort=$sortParam");
         return $session->getPage();
     }
 

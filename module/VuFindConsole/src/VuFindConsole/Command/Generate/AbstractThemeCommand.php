@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -118,7 +118,7 @@ abstract class AbstractThemeCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $name = $input->getArgument('name');
         if (empty($name)) {
@@ -130,9 +130,9 @@ abstract class AbstractThemeCommand extends Command
 
         if (!$this->generate($name)) {
             $output->writeln($this->generator->getLastError());
-            return 1;
+            return self::FAILURE;
         }
         $output->writeln(rtrim("\tFinished. {$this->extraSuccessMessage}"));
-        return 0;
+        return self::SUCCESS;
     }
 }

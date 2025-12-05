@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -105,7 +105,7 @@ class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $loader->expects($this->once())->method('load')
             ->with($this->equalTo('recordid'), $this->equalTo('foo'))
-            ->will($this->returnValue($record ?? $this->getMockRecord()));
+            ->willReturn($record ?? $this->getMockRecord());
         return $loader;
     }
 
@@ -133,14 +133,14 @@ class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
         ];
         $results->expects($this->once())->method('getFullFieldFacets')
             ->with($this->equalTo(['hierarchy_top_id']))
-            ->will($this->returnValue($output));
+            ->willReturn($output);
         return $results;
     }
 
     /**
      * Get mock results manager.
      *
-     * @param Results $results Results object
+     * @param ?Results $results Results object
      *
      * @return PluginManager
      */
@@ -151,21 +151,21 @@ class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $manager->expects($this->once())->method('get')
             ->with($this->equalTo('foo'))
-            ->will($this->returnValue($results ?? $this->getMockResults()));
+            ->willReturn($results ?? $this->getMockResults());
         return $manager;
     }
 
     /**
      * Get command to test.
      *
-     * @param Loader        $loader  Record loader
-     * @param PluginManager $results Search results plugin manager
+     * @param ?Loader        $loader  Record loader
+     * @param ?PluginManager $results Search results plugin manager
      *
      * @return SuppressedCommand
      */
     protected function getCommand(
-        Loader $loader = null,
-        PluginManager $results = null
+        ?Loader $loader = null,
+        ?PluginManager $results = null
     ) {
         return new CreateHierarchyTreesCommand(
             $loader ?? $this->getMockRecordLoader(),
@@ -185,7 +185,7 @@ class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo('recordid'), $this->equalTo(['refresh' => true]));
         $driver = $this->getMockHierarchyDriver();
         $driver->expects($this->any())->method('getTreeSource')
-            ->will($this->returnValue($tree));
+            ->willReturn($tree);
         $loader = $this->getMockRecordLoader($this->getMockRecord($driver));
         $command = $this->getCommand($loader);
         $commandTester = new CommandTester($command);

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -47,6 +47,7 @@ use VuFind\View\Helper\Root\Translate;
 class FlashmessagesTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\ViewTrait;
+    use \VuFindTest\Feature\TranslatorTrait;
 
     /**
      * Data provider for testFlashmessageData
@@ -201,9 +202,8 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
      * @param string $expected Expected HTML
      *
      * @return void
-     *
-     * @dataProvider getTestFlashmessageData
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestFlashmessageData')]
     public function testFlashmessages(array $messages, string $expected): void
     {
         $fm = $this->getFlashmessages($messages);
@@ -229,11 +229,11 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
         $mockMessenger->expects($this->any())
             ->method('getMessages')
             ->with($this->isType('string'))
-            ->will($this->returnCallback($getMessages));
+            ->willReturnCallback($getMessages);
         $mockMessenger->expects($this->any())
             ->method('getCurrentMessages')
             ->with($this->isType('string'))
-            ->will($this->returnValue([]));
+            ->willReturn([]);
 
         $fm = new Flashmessages($mockMessenger);
 
@@ -273,26 +273,17 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
      */
     protected function getViewHelpers()
     {
-        $getTranslation = function ($str, $tokens = [], $default = null) {
-            $strings = [
+        $translations = [
+            'default' => [
                 'Good' => 'Good Translation',
                 'paragraph' => 'Tag <p>',
                 'foo_html' => '<p>Foo</p>',
                 'foo_placeholder' => 'foo %%ph%%',
-            ];
-            $translated = $strings[$str] ?? $default ?? $str;
-            return str_replace(
-                array_keys($tokens),
-                array_values($tokens),
-                $translated
-            );
-        };
-
-        $translate = $this->getMockBuilder(Translate::class)->getMock();
-        $translate->expects($this->any())
-            ->method('__invoke')
-            ->will($this->returnCallback($getTranslation));
-
+            ],
+        ];
+        $translator = $this->getMockTranslator($translations);
+        $translate = new Translate();
+        $translate->setTranslator($translator);
         $transEsc = new TransEsc();
         $transEsc->setView(
             $this->getPhpRenderer(

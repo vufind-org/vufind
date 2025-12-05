@@ -1,0 +1,26 @@
+<?php
+  // Determine link attributes; use legacy $this->link property as a fallback for backward compatibility.
+  $linkAttributes = $this->linkAttributes ?? ($this->link ? ['href' => $this->link] : []);
+  if ($linkAttributes && !isset($linkAttributes['class'])) {
+    $linkAttributes['class'] = 'record-cover-link';
+  }
+?>
+<?php if ($linkAttributes): ?>
+  <a<?=$this->htmlAttributes($linkAttributes)?>>
+<?php else: ?>
+  <div aria-hidden="true">
+<?php endif; ?>
+<?php /* Display thumbnail if appropriate: */ ?>
+<?php if ($cover): ?>
+  <img src="<?=$this->escapeHtmlAttr($cover); ?>" <?php if ($linkPreview): ?>data-linkpreview="true" <?php endif; ?>class="recordcover" alt="<?=$this->transEscAttr('Cover Image') ?>">
+<?php elseif ($cover === false): ?>
+  <img src="<?=$this->url('cover-unavailable')?>" <?php if ($linkPreview): ?>data-linkpreview="true" <?php endif; ?>class="recordcover" alt="<?=$this->transEscAttr('No Cover Image') ?>">
+<?php else: ?>
+  <div class="ajaxcover">
+    <div class="spinner"><?=$this->icon('spinner') ?> <?=$this->translate('loading_ellipsis')?></div>
+    <div class="cover-container">
+      <img <?php if ($linkPreview): ?>data-linkpreview="true" <?php endif; ?>data-context="<?=$this->escapeHtmlAttr($this->context)?>" data-recordsource="<?=$this->escapeHtmlAttr($driver->getSourceIdentifier())?>" data-recordid="<?=$this->escapeHtmlAttr($driver->getUniqueID())?>" data-coversize="<?=$this->escapeHtmlAttr($size)?>" class="recordcover ajax" alt="<?=$this->transEscAttr('Cover Image') ?>">
+    </div>
+  </div>
+<?php endif; ?>
+<?php if ($linkAttributes): ?></a><?php else: ?></div><?php endif; ?>

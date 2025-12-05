@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,7 +29,7 @@
 
 namespace VuFindTest\Search\Solr;
 
-use VuFind\Config\PluginManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Solr\Options;
 
 /**
@@ -43,19 +43,19 @@ use VuFind\Search\Solr\Options;
  */
 class OptionsTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Get Options object
      *
-     * @param PluginManager $configManager Config manager for Options object (null
+     * @param ?ConfigManagerInterface $configManager Config manager for Options object (null
      * for new mock)
      *
      * @return Options
      */
-    protected function getOptions(PluginManager $configManager = null): Options
+    protected function getOptions(?ConfigManagerInterface $configManager = null): Options
     {
-        return new Options($configManager ?? $this->getMockConfigPluginManager([]));
+        return new Options($configManager ?? $this->getMockConfigManager());
     }
 
     /**
@@ -86,7 +86,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
     public function testSortTieBreakerConfiguration(): void
     {
         $configs = ['searches' => ['General' => ['tie_breaker_sort' => 'foo']]];
-        $options = $this->getOptions($this->getMockConfigPluginManager($configs));
+        $options = $this->getOptions($this->getMockConfigManager($configs));
         $this->assertEquals('foo', $options->getSortTieBreaker());
     }
 }

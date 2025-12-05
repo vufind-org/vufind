@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Plugin Manager factory.
+ * HMAC factory.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Crypt
@@ -34,9 +34,10 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Exception\BadConfig;
 
 /**
- * Plugin Manager factory.
+ * HMAC factory.
  *
  * @category VuFind
  * @package  Crypt
@@ -63,13 +64,15 @@ class HMACFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        return new $requestedName($config->Security->HMACkey);
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
+        if (!isset($config['Security']['HMACkey'])) {
+            throw new BadConfig('Security HMACkey is not set.');
+        }
+        return new $requestedName($config['Security']['HMACkey']);
     }
 }

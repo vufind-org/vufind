@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -33,6 +33,7 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Auth\Shibboleth\ConfigurationLoaderInterface;
 use VuFind\Auth\Shibboleth\MultiIdPConfigurationLoader;
 use VuFind\Auth\Shibboleth\SingleIdPConfigurationLoader;
 
@@ -66,17 +67,18 @@ class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
         $loader = $this->getConfigurationLoader($container);
         $request = $container->get('Request');
         return new $requestedName(
             $container->get(\Laminas\Session\SessionManager::class),
             $loader,
-            $request
+            $request,
+            $container->get(\VuFind\Auth\ILSAuthenticator::class)
         );
     }
 
@@ -85,20 +87,17 @@ class ShibbolethFactory implements \Laminas\ServiceManager\Factory\FactoryInterf
      *
      * @param ContainerInterface $container Service manager
      *
-     * @return configuration loader
+     * @return ConfigurationLoaderInterface Configuration loader
      */
-    public function getConfigurationLoader(ContainerInterface $container)
+    public function getConfigurationLoader(ContainerInterface $container): ConfigurationLoaderInterface
     {
-        $configManager = $container->get(\VuFind\Config\PluginManager::class);
-        $config = $configManager->get('config');
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
+        $config = $configManager->getConfigObject('config');
         $override = $config->Shibboleth->allow_configuration_override ?? false;
-        $loader = null;
         if ($override) {
-            $shibConfig = $configManager->get(self::SHIBBOLETH_CONFIG_FILE_NAME);
-            $loader = new MultiIdPConfigurationLoader($config, $shibConfig);
-        } else {
-            $loader = new SingleIdPConfigurationLoader($config);
+            $shibConfig = $configManager->getConfigObject(self::SHIBBOLETH_CONFIG_FILE_NAME);
+            return new MultiIdPConfigurationLoader($config, $shibConfig);
         }
-        return $loader;
+        return new SingleIdPConfigurationLoader($config);
     }
 }

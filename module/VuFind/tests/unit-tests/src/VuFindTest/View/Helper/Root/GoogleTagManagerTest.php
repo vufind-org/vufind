@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -52,8 +52,8 @@ class GoogleTagManagerTest extends \PHPUnit\Framework\TestCase
     public function testHeadCode(): void
     {
         $output = $this->renderGTMHeadCode('fakeContainerId');
-        $this->assertTrue(false !== strstr($output, 'gtm.js'));
-        $this->assertTrue(false !== strstr($output, 'fakeContainerId'));
+        $this->assertStringContainsString('gtm.js', $output);
+        $this->assertStringContainsString('fakeContainerId', $output);
     }
 
     /**
@@ -64,8 +64,8 @@ class GoogleTagManagerTest extends \PHPUnit\Framework\TestCase
     public function testBodyCode(): void
     {
         $output = $this->renderGTMBodyCode('fakeContainerId');
-        $this->assertTrue(false !== strstr($output, 'ns.html'));
-        $this->assertTrue(false !== strstr($output, 'fakeContainerId'));
+        $this->assertStringContainsString('ns.html', $output);
+        $this->assertStringContainsString('fakeContainerId', $output);
     }
 
     /**

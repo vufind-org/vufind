@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -113,8 +113,8 @@ class HierarchyController extends AbstractBase
     public function searchtreeAction(): ResponseInterface
     {
         $this->disableSessionWrites();  // avoid session write timing bug
-        $config = $this->getConfig();
-        $limit = $config->Hierarchy->treeSearchLimit;
+        $config = $this->getConfigArray();
+        $limit = $config['Hierarchy']['treeSearchLimit'];
         $resultIDs = [];
         $hierarchyID = $this->params()->fromQuery('hierarchyID');
         $source = $this->params()
@@ -122,8 +122,7 @@ class HierarchyController extends AbstractBase
         $lookfor = $this->params()->fromQuery('lookfor', '');
         $searchType = $this->params()->fromQuery('type', 'AllFields');
 
-        $results = $this->serviceLocator
-            ->get(\VuFind\Search\Results\PluginManager::class)->get($source);
+        $results = $this->getService(\VuFind\Search\Results\PluginManager::class)->get($source);
         $results->getParams()->setBasicSearch($lookfor, $searchType);
         $results->getParams()->addFilter('hierarchy_top_id:' . $hierarchyID);
         $facets = $results->getFullFieldFacets(['id'], false, null === $limit ? -1 : $limit + 1);

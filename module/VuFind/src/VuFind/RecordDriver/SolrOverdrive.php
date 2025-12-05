@@ -17,9 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
- * USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -32,8 +31,8 @@
 
 namespace VuFind\RecordDriver;
 
-use Laminas\Config\Config;
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
+use VuFind\Config\Config;
 use VuFind\DigitalContent\OverdriveConnector;
 
 use function in_array;
@@ -72,14 +71,14 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     /**
      * Constructor
      *
-     * @param Config             $mainConfig   VuFind main configuration
-     * @param Config             $recordConfig Record-specific configuration
-     * @param OverdriveConnector $connector    Overdrive Connector
+     * @param ?Config             $mainConfig   VuFind main configuration
+     * @param ?Config             $recordConfig Record-specific configuration
+     * @param ?OverdriveConnector $connector    Overdrive Connector
      */
     public function __construct(
-        Config $mainConfig = null,
+        ?Config $mainConfig = null,
         $recordConfig = null,
-        OverdriveConnector $connector = null
+        ?OverdriveConnector $connector = null
     ) {
         $this->connector = $connector;
         $this->config = $connector->getConfig();
@@ -177,7 +176,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     public function getFormattedDigitalFormats()
     {
         $results = [];
-        foreach ($this->getDigitalFormats() as $key => $format) {
+        foreach ($this->getDigitalFormats() as $format) {
             $tmpresults = [];
             if ($format->fileSize > 0) {
                 if ($format->fileSize > 1000000) {
@@ -229,17 +228,13 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
             $data = json_decode($jsonData, false);
         }
 
-        if (isset($data->formats[0]->samples[0])) {
-            foreach ($data->formats[0]->samples as $format) {
-                if (
-                    $format->formatType == 'audiobook-overdrive'
-                    || $format->formatType == 'ebook-overdrive'
-                ) {
-                    $results = $format;
-                }
+        $samples = $data->formats[0]->samples ?? [];
+        $previewFormats = ['audiobook-overdrive', 'ebook-overdrive', 'magazine-overdrive'];
+        foreach ($samples as $format) {
+            if (in_array($format->formatType ?? '', $previewFormats) && isset($format->url)) {
+                $results[] = $format->url;
             }
         }
-        $this->debug('previewlinks:' . print_r($results, true));
         return $results;
     }
 
@@ -250,8 +245,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function supportsAjaxStatus()
     {
-        // TODO: add this as an Overdrive configuration to turn it off
-        return true;
+        return $this->config->enableAjaxStatus ?? true;
     }
 
     /**
@@ -272,11 +266,11 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      *
      * Returns whether the current user is logged in
      *
-     * @return object|bool User if logged in, false if not.
+     * @return bool
      */
     public function isLoggedIn()
     {
-        return $this->connector->getUser();
+        return (bool)$this->connector->getUser();
     }
 
     /**
@@ -303,7 +297,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
                 $result = strtolower($this->getUniqueID());
             }
         }
-        $this->debug("odid: $result");
         return $result;
     }
 
@@ -321,34 +314,59 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
     }
 
     /**
+     * Returns a boolean indicating if patron actions are supported
+     *
+     * @return bool
+     */
+    public function supportsPatronActions()
+    {
+        return $this->config->usePatronAPI;
+    }
+
+    /**
      * Is Checked Out
      *
      * Is this resource already checked out to the user?
      *
      * @return object Returns the checkout information if currently checked out
-     *    by this user or false if not.
+     *    by this user or false in the data property if not.
      * @throws \Exception
      */
     public function isCheckedOut()
     {
-        $this->debug(' ischeckout', [], true);
-        $overdriveID = $this->getOverdriveID();
-        $result = $this->connector->getCheckouts(true);
-        if ($result->status) {
-            $checkedout = false;
-            $checkouts = $result->data;
-            foreach ($checkouts as $checkout) {
-                if (strtolower($checkout->reserveId) == $overdriveID) {
-                    $checkedout = true;
-                    $result->status = true;
-                    $result->data = $checkout;
+        $result = $this->connector->getResultObject();
+        if ($this->isLoggedIn() && $this->supportsPatronActions()) {
+            $overdriveID = $this->getOverdriveID();
+            $result = $this->connector->getCheckouts(true);
+            if ($result->status) {
+                $checkedout = false;
+                $checkouts = $result->data;
+                // In case of a magazine issue, we have to get all the checkouts to see if the
+                // current title is the parentID of one of the user's checkouts. Return data as
+                // array in case there are multiple issues checked out to the user.
+                $result->data = [];
+                $result->isMagazine = false;
+                foreach ($checkouts as $checkout) {
+                    if ($checkout->metadata->mediaType == 'Magazine') {
+                        $idToCheck = strtolower($checkout->metadata->parentMagazineReferenceId);
+                    } else {
+                        $idToCheck = $checkout->reserveId;
+                    }
+                    if (strtolower($idToCheck) == $overdriveID) {
+                        $checkedout = true;
+                        $result->status = true;
+                        $result->data[] = $checkout;
+                        //this checkout is a magazine issue of the current title
+                        if ($checkout->metadata->mediaType == 'Magazine') {
+                            $result->isMagazine =  true;
+                        }
+                    }
+                }
+                if (!$checkedout) {
+                    $result->data = false;
                 }
             }
-            if (!$checkedout) {
-                $result->data = false;
-            }
         }
-        // If it didn't work, an error should be logged from the connector
         return $result;
     }
 
@@ -361,13 +379,15 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function isHeld()
     {
-        $overDriveId = $this->getOverdriveID();
-        $result = $this->connector->getHolds(true);
-        if ($result->status) {
-            $holds = $result->data;
-            foreach ($holds as $hold) {
-                if (strtolower($hold->reserveId) == $overDriveId) {
-                    return $hold;
+        if ($this->isLoggedIn() && $this->supportsPatronActions()) {
+            $overDriveId = $this->getOverdriveID();
+            $result = $this->connector->getHolds(true);
+            if ($result->status) {
+                $holds = $result->data;
+                foreach ($holds as $hold) {
+                    if (strtolower($hold->reserveId) == $overDriveId) {
+                        return $hold;
+                    }
                 }
             }
         }
@@ -472,7 +492,7 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
 
         $newDesc = preg_replace('/&#8217;/i', '', $desc);
         $newDesc = strip_tags($newDesc);
-        return ['Summary' => $newDesc];
+        return [$newDesc];
     }
 
     /**
@@ -519,7 +539,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
      */
     public function getFormattedRawData()
     {
-        $result = [];
         $jsonData = $this->fields['fullrecord'];
         $data = json_decode($jsonData, true);
         $c_arr = [];
@@ -528,8 +547,6 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
                 . $creator['name'];
         }
         $data['creators'] = implode('<br>', $c_arr);
-
-        $this->debug('raw data:' . print_r($data, true));
         return $data;
     }
 
@@ -549,5 +566,43 @@ class SolrOverdrive extends SolrMarc implements LoggerAwareInterface
             'anchor' => '',
         ];
         return $urlDetails;
+    }
+
+    /**
+     * Return an array of associative URL arrays with one or more of the following
+     * keys:
+     *
+     * <li>
+     *   <ul>desc: URL description text to display (optional)</ul>
+     *   <ul>url: fully-formed URL (required if 'route' is absent)</ul>
+     *   <ul>route: VuFind route to build URL with (required if 'url' is absent)</ul>
+     *   <ul>routeParams: Parameters for route (optional)</ul>
+     *   <ul>queryString: Query params to append after building route (optional)</ul>
+     * </li>
+     *
+     * @return array
+     */
+    public function getURLs()
+    {
+        return $this->getIsMarc()
+            ? parent::getURLs()
+            : $this->getPermanentLink();
+    }
+
+    /**
+     * Get Permanent Link to the resource on your institution's OverDrive site
+     *
+     * @return array the permanent link to the resource
+     */
+    public function getPermanentLink()
+    {
+        if (!empty($libraryURL = $this->config->libraryURL)) {
+            $data = json_decode($this->fields['fullrecord'], false);
+            $desc = $this->translate('od_resource_page');
+            $permlink = "$libraryURL/media/" . $data->crossRefId;
+            return  [['url' => $permlink, 'desc' => $desc ?: $permlink]];
+        } else {
+            return [];
+        }
     }
 }

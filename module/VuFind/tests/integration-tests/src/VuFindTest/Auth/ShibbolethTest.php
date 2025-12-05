@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,11 +29,12 @@
 
 namespace VuFindTest\Auth;
 
-use Laminas\Config\Config;
 use Laminas\Http\Headers;
+use Laminas\Http\Request;
 use VuFind\Auth\Shibboleth;
 use VuFind\Auth\Shibboleth\MultiIdPConfigurationLoader;
 use VuFind\Auth\Shibboleth\SingleIdPConfigurationLoader;
+use VuFind\Config\Config;
 
 /**
  * Shibboleth authentication test class.
@@ -105,32 +106,42 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Standard teardown method.
+     *
+     * @return void
+     */
+    public function tearDown(): void
+    {
+        $this->tearDownLiveDatabaseContainer();
+    }
+
+    /**
      * Get an authentication object.
      *
-     * @param Config  $config             Configuration to use (null for default)
-     * @param Config  $shibConfig         Configuration with IdP
-     * @param boolean $useHeaders         use HTTP headers instead of environment variables
-     * @param boolean $requiredAttributes required attributes
+     * @param ?array $config             Configuration to use (null for default)
+     * @param ?array $shibConfig         Configuration with IdP
+     * @param bool   $useHeaders         use HTTP headers instead of environment variables
+     * @param bool   $requiredAttributes required attributes
      *
      * @return Shibboleth
      */
-    public function getAuthObject($config = null, $shibConfig = null, $useHeaders = false, $requiredAttributes = true)
-    {
-        if (null === $config) {
-            $config = $this->getAuthConfig($useHeaders, $requiredAttributes);
-        }
-        $loader = null;
-        if ($shibConfig == null) {
-            $loader = new SingleIdPConfigurationLoader($config);
-        } else {
-            $loader = new MultiIdPConfigurationLoader($config, $shibConfig);
-        }
+    public function getAuthObject(
+        ?array $config = null,
+        ?array $shibConfig = null,
+        bool $useHeaders = false,
+        bool $requiredAttributes = true
+    ): Shibboleth {
+        $config = new Config($config ?? $this->getAuthConfig($useHeaders, $requiredAttributes));
+        $loader = ($shibConfig === null)
+            ? new SingleIdPConfigurationLoader($config)
+            : new MultiIdPConfigurationLoader($config, new Config($shibConfig));
         $obj = new Shibboleth(
             $this->createMock(\Laminas\Session\ManagerInterface::class),
             $loader,
-            $this->createMock(\Laminas\Http\PhpEnvironment\Request::class)
+            $this->createMock(\Laminas\Http\PhpEnvironment\Request::class),
+            $this->createMock(\VuFind\Auth\ILSAuthenticator::class)
         );
-        $obj->setDbTableManager($this->getLiveTableManager());
+        $obj->setDbServiceManager($this->getLiveDbServiceManager());
         $obj->setConfig($config);
         return $obj;
     }
@@ -141,9 +152,9 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
      * @param bool $useHeaders         Value for use_headers config setting
      * @param bool $requiredAttributes Should we include a required attribute in config?
      *
-     * @return Config
+     * @return array
      */
-    public function getAuthConfig($useHeaders = false, $requiredAttributes = true)
+    public function getAuthConfig(bool $useHeaders = false, bool $requiredAttributes = true): array
     {
         $config = [
             'login' => 'http://myserver',
@@ -157,42 +168,31 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
                 'userattribute_value_1' => 'testpass',
             ];
         }
-        $shibConfig = new Config($config, true);
-        return new Config(['Shibboleth' => $shibConfig], true);
+        return ['Shibboleth' => $config];
     }
 
     /**
      * Get a working configuration for the Shibboleth object
      *
-     * @return Config
+     * @return array
      */
-    public function getShibbolethConfig()
+    public function getShibbolethConfig(): array
     {
-        $example1 = new Config(
-            [
-                'entityId' => 'https://idp1.example.org/',
-                'username' => 'username',
-                'email' => 'email',
-                'cat_username' => 'userLibraryId',
-            ],
-            true
-        );
-        $example2 = new Config(
-            [
-                'entityId' => 'https://idp2.example.org/',
-                'username' => 'eppn',
-                'email' => 'email',
-                'cat_username' => 'alephId',
-                'userattribute_1' => 'eduPersonScopedAffiliation',
-                'userattribute_value_1' => 'member@example.org',
-            ],
-            true
-        );
-        $config = [
-            'example1' => $example1,
-            'example2' => $example2,
+        $example1 = [
+            'entityId' => 'https://idp1.example.org/',
+            'username' => 'username',
+            'email' => 'email',
+            'cat_username' => 'userLibraryId',
         ];
-        return new Config($config, true);
+        $example2 = [
+            'entityId' => 'https://idp2.example.org/',
+            'username' => 'eppn',
+            'email' => 'email',
+            'cat_username' => 'alephId',
+            'userattribute_1' => 'eduPersonScopedAffiliation',
+            'userattribute_value_1' => 'member@example.org',
+        ];
+        return compact('example1', 'example2');
     }
 
     /**
@@ -200,7 +200,7 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCreateIsDisallowed()
+    public function testCreateIsDisallowed(): void
     {
         $this->assertFalse($this->getAuthObject()->supportsCreation());
     }
@@ -209,12 +209,12 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
      * Support method -- get parameters to log into an account (but allow override of
      * individual parameters so we can test different scenarios).
      *
-     * @param array   $overrides  Associative array of parameters to override.
-     * @param boolean $useHeaders Use headers instead of environment variables
+     * @param array $overrides  Associative array of parameters to override.
+     * @param bool  $useHeaders Use headers instead of environment variables
      *
-     * @return \Laminas\Http\Request
+     * @return Request
      */
-    protected function getLoginRequest($overrides = [], $useHeaders = false)
+    protected function getLoginRequest(array $overrides = [], bool $useHeaders = false): Request
     {
         $server = $overrides + [
             'username' => 'testuser', 'email' => 'user@test.com',
@@ -236,7 +236,7 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLoginWithBlankUsername()
+    public function testLoginWithBlankUsername(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
 
@@ -249,7 +249,7 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLoginWithBlankPassword()
+    public function testLoginWithBlankPassword(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
 
@@ -262,12 +262,12 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testWithMissingAttributeValue()
+    public function testWithMissingAttributeValue(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
 
         $config = $this->getAuthConfig();
-        unset($config->Shibboleth->userattribute_value_1);
+        unset($config['Shibboleth']['userattribute_value_1']);
         $this->getAuthObject($config)->authenticate($this->getLoginRequest());
     }
 
@@ -276,12 +276,12 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testWithoutUsername()
+    public function testWithoutUsername(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
 
         $config = $this->getAuthConfig();
-        unset($config->Shibboleth->username);
+        unset($config['Shibboleth']['username']);
         $this->getAuthObject($config)->authenticate($this->getLoginRequest());
     }
 
@@ -290,12 +290,12 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testWithoutLoginSetting()
+    public function testWithoutLoginSetting(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
 
         $config = $this->getAuthConfig();
-        unset($config->Shibboleth->login);
+        unset($config['Shibboleth']['login']);
         $this->getAuthObject($config)->getSessionInitiator('http://target');
     }
 
@@ -304,7 +304,7 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSessionInitiator()
+    public function testSessionInitiator(): void
     {
         $this->assertEquals(
             'http://myserver?target=http%3A%2F%2Ftarget%3Fauth_method%3DShibboleth',
@@ -317,11 +317,11 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLogin()
+    public function testLogin(): void
     {
         $user = $this->getAuthObject()->authenticate($this->getLoginRequest());
-        $this->assertEquals('testuser', $user->username);
-        $this->assertEquals('user@test.com', $user->email);
+        $this->assertEquals('testuser', $user->getUsername());
+        $this->assertEquals('user@test.com', $user->getEmail());
     }
 
     /**
@@ -329,12 +329,12 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLogin1()
+    public function testLogin1(): void
     {
         $user = $this->getAuthObject(null, $this->getShibbolethConfig())
             ->authenticate($this->getLoginRequest($this->user1, false));
-        $this->assertEquals($user->cat_username, 'example1.testuser1');
-        $this->assertEquals($user->username, 'testuser1');
+        $this->assertEquals($user->getCatUsername(), 'example1.testuser1');
+        $this->assertEquals($user->getUsername(), 'testuser1');
     }
 
     /**
@@ -342,12 +342,12 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLogin2()
+    public function testLogin2(): void
     {
         $user = $this->getAuthObject(null, $this->getShibbolethConfig())
             ->authenticate($this->getLoginRequest($this->user2, false));
-        $this->assertEquals($user->cat_username, 'example2.12345');
-        $this->assertEquals($user->username, 'testuser2');
+        $this->assertEquals($user->getCatUsername(), 'example2.12345');
+        $this->assertEquals($user->getUsername(), 'testuser2');
     }
 
     /**
@@ -355,10 +355,10 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testFailedLogin()
+    public function testFailedLogin(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
-        $user = $this->getAuthObject(null, $this->getShibbolethConfig())
+        $this->getAuthObject(null, $this->getShibbolethConfig())
             ->authenticate($this->getLoginRequest($this->user3, false));
     }
 
@@ -367,12 +367,12 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testProxyLogin()
+    public function testProxyLogin(): void
     {
         $user = $this->getAuthObject(null, $this->getShibbolethConfig(), true, false)
             ->authenticate($this->getLoginRequest($this->proxyUser, true));
-        $this->assertEquals($user->cat_username, 'example1.testuser3');
-        $this->assertEquals($user->username, 'testuser3');
+        $this->assertEquals($user->getCatUsername(), 'example1.testuser3');
+        $this->assertEquals($user->getUsername(), 'testuser3');
     }
 
     /**

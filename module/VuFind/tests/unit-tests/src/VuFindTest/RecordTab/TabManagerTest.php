@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,8 +29,9 @@
 
 namespace VuFindTest\RecordTab;
 
-use VuFind\Config\PluginManager as ConfigManager;
-use VuFind\RecordTab\PluginManager;
+use PHPUnit\Framework\MockObject\MockObject;
+use VuFind\Config\ConfigManagerInterface;
+use VuFind\RecordTab\PluginManager as RecordTabPluginManager;
 use VuFind\RecordTab\TabManager;
 
 /**
@@ -44,15 +45,21 @@ use VuFind\RecordTab\TabManager;
  */
 class TabManagerTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Default configuration for mock plugin manager
      *
      * @var array
      */
-    protected $defaultConfig = [
+    protected array $defaultConfig = [
         'RecordTabs' => [
+            'VuFind\RecordDriver\AbstractBase' => [
+                'tabs' => [
+                    'foo' => 'bar',
+                ],
+                'defaultTab' => null,
+            ],
             'VuFind\RecordDriver\EDS' => [
                 'tabs' => [
                     'xyzzy' => 'yzzyx',
@@ -62,30 +69,71 @@ class TabManagerTest extends \PHPUnit\Framework\TestCase
                 'backgroundLoadedTabs' => ['xyzzy'],
             ],
         ],
+        'CollectionTabs' => [
+            'VuFind\RecordDriver\AbstractBase' => [
+                'tabs' => [
+                    'coll' => 'ection',
+                ],
+                'defaultTab' => null,
+            ],
+        ],
     ];
 
     /**
      * Set up a tab manager for testing.
      *
-     * @param PluginManager $pluginManager Plugin manager to use (null for default)
-     * @param ConfigManager $configManager Config manager to use (null for default)
+     * @param ?RecordTabPluginManager $recordTabPluginManager Plugin manager to use (null for default)
+     * @param ?ConfigManagerInterface $configManager          Config manager to use (null for default)
+     * @param array                   $legacyConfig           Legacy config
      *
      * @return TabManager
      */
     protected function getTabManager(
-        PluginManager $pluginManager = null,
-        ConfigManager $configManager = null
-    ) {
+        ?RecordTabPluginManager $recordTabPluginManager = null,
+        ?ConfigManagerInterface $configManager = null,
+        array $legacyConfig = []
+    ): TabManager {
+        return new TabManager(
+            $recordTabPluginManager ?? $this->getMockRecordTabPluginManager(),
+            $configManager
+                ?? $this->getMockConfigManager($this->defaultConfig),
+            $legacyConfig
+        );
+    }
+
+    /**
+     * Build a mock plugin manager.
+     *
+     * @return MockObject&RecordTabPluginManager
+     */
+    protected function getMockRecordTabPluginManager(): MockObject&RecordTabPluginManager
+    {
+        $mockTab = $this->createMock(\VuFind\RecordTab\StaffViewArray::class);
+        $mockTab->expects($this->any())->method('isActive')
+            ->willReturn(true);
+        $pm = $this->createMock(\VuFind\RecordTab\PluginManager::class);
+        $pm->expects($this->any())->method('has')
+            ->willReturn(true);
+        $pm->expects($this->any())->method('get')
+            ->willReturn($mockTab);
+        return $pm;
+    }
+
+    /**
+     * Test deprecated config warning.
+     *
+     * @return void
+     */
+    public function testDeprecatedConfigTriggersWarning(): void
+    {
+        $this->expectExceptionMessage(
+            'Using deprecated way of fetching tab configuration! Use RecordTabs.ini instead.'
+        );
+        $errorCallback = function (int $code, string $msg): void {
+            throw new \Exception($msg, $code);
+        };
         $legacyConfig = [
             'vufind' => [
-                'recorddriver_collection_tabs' => [
-                    'VuFind\RecordDriver\AbstractBase' => [
-                        'tabs' => [
-                            'coll' => 'ection',
-                        ],
-                        'defaultTab' => null,
-                    ],
-                ],
                 'recorddriver_tabs' => [
                     'VuFind\RecordDriver\AbstractBase' => [
                         'tabs' => [
@@ -96,32 +144,14 @@ class TabManagerTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
         ];
-        return new TabManager(
-            $pluginManager ?? $this->getMockPluginManager(),
-            $configManager
-                ?? $this->getMockConfigPluginManager($this->defaultConfig),
-            $legacyConfig
-        );
-    }
-
-    /**
-     * Build a mock plugin manager.
-     *
-     * @return PluginManager
-     */
-    protected function getMockPluginManager()
-    {
-        $mockTab = $this->getMockBuilder(\VuFind\RecordTab\StaffViewArray::class)
-            ->disableOriginalConstructor()->onlyMethods(['isActive'])->getMock();
-        $mockTab->expects($this->any())->method('isActive')
-            ->will($this->returnValue(true));
-        $pm = $this->getMockBuilder(\VuFind\RecordTab\PluginManager::class)
-            ->disableOriginalConstructor()->getMock();
-        $pm->expects($this->any())->method('has')
-            ->will($this->returnValue(true));
-        $pm->expects($this->any())->method('get')
-            ->will($this->returnValue($mockTab));
-        return $pm;
+        set_error_handler($errorCallback, E_USER_WARNING);
+        try {
+            $this->getTabManager(legacyConfig: $legacyConfig);
+        } catch (\Throwable $e) {
+            throw $e;
+        } finally {
+            restore_error_handler();
+        }
     }
 
     /**
@@ -129,16 +159,14 @@ class TabManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetTabDetailsForRecord()
+    public function testGetTabDetailsForRecord(): void
     {
         $tabManager = $this->getTabManager();
-        $driver1 = $this->getMockBuilder(\VuFind\RecordDriver\EDS::class)
-            ->disableOriginalConstructor()->getMock();
+        $driver1 = $this->createMock(\VuFind\RecordDriver\EDS::class);
         $details1 = $tabManager->getTabDetailsForRecord($driver1);
         $this->assertEquals('zip', $details1['default']);
         $this->assertEquals(['xyzzy', 'zip'], array_keys($details1['tabs']));
-        $driver2 = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
-            ->disableOriginalConstructor()->getMock();
+        $driver2 = $this->createMock(\VuFind\RecordDriver\SolrDefault::class);
         $details2 = $tabManager->getTabDetailsForRecord($driver2);
         $this->assertEquals('foo', $details2['default']);
         $this->assertEquals(['foo'], array_keys($details2['tabs']));
@@ -154,14 +182,12 @@ class TabManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetBackgroundTabNames()
+    public function testGetBackgroundTabNames(): void
     {
         $tabManager = $this->getTabManager();
-        $driver1 = $this->getMockBuilder(\VuFind\RecordDriver\EDS::class)
-            ->disableOriginalConstructor()->getMock();
+        $driver1 = $this->createMock(\VuFind\RecordDriver\EDS::class);
         $this->assertEquals(['xyzzy'], $tabManager->getBackgroundTabNames($driver1));
-        $driver2 = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
-            ->disableOriginalConstructor()->getMock();
+        $driver2 = $this->createMock(\VuFind\RecordDriver\SolrDefault::class);
         $this->assertEquals([], $tabManager->getBackgroundTabNames($driver2));
     }
 }

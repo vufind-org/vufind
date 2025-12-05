@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -32,11 +32,12 @@
 
 namespace VuFindSearch;
 
-use Laminas\EventManager\EventManager;
 use Laminas\EventManager\EventManagerInterface;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\Command\CommandInterface;
+
+use function sprintf;
 
 /**
  * Search service.
@@ -51,6 +52,8 @@ use VuFindSearch\Command\CommandInterface;
  */
 class Service
 {
+    use \VuFindSearch\Feature\SearchBackendEventManagerTrait;
+
     /**
      * Event identifiers.
      *
@@ -60,13 +63,6 @@ class Service
     public const EVENT_POST    = 'post';
     public const EVENT_ERROR   = 'error';
     public const EVENT_RESOLVE = 'resolve';
-
-    /**
-     * Event manager.
-     *
-     * @var EventManager
-     */
-    protected $events;
 
     /**
      * Cache resolved backends.
@@ -82,7 +78,7 @@ class Service
      *
      * @return void
      */
-    public function __construct(EventManagerInterface $events = null)
+    public function __construct(?EventManagerInterface $events = null)
     {
         if (null !== $events) {
             $this->setEventManager($events);
@@ -116,35 +112,6 @@ class Service
         $this->triggerPost($this, $args);
 
         return $command;
-    }
-
-    /**
-     * Set EventManager instance.
-     *
-     * @param EventManagerInterface $events Event manager
-     *
-     * @return void
-     * @todo   Deprecate `VuFind\Search' event namespace (2.2)
-     */
-    public function setEventManager(EventManagerInterface $events)
-    {
-        $events->setIdentifiers(['VuFind\Search', 'VuFindSearch']);
-        $this->events = $events;
-    }
-
-    /**
-     * Return EventManager instance.
-     *
-     * Lazy loads a new EventManager if none was set.
-     *
-     * @return EventManagerInterface
-     */
-    public function getEventManager()
-    {
-        if (!$this->events) {
-            $this->setEventManager(new EventManager());
-        }
-        return $this->events;
     }
 
     /**

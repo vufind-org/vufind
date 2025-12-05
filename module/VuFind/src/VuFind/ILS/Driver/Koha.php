@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -32,6 +32,7 @@ namespace VuFind\ILS\Driver;
 
 use PDO;
 use PDOException;
+use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 
 use function count;
@@ -79,7 +80,7 @@ class Koha extends AbstractBase
     /**
      * Should we validate passwords against Koha system?
      *
-     * @var boolean
+     * @var bool
      */
     protected $validatePasswords;
 
@@ -180,10 +181,10 @@ class Koha extends AbstractBase
      * record.
      *
      * @param string $id      The record id to retrieve the holdings for
-     * @param array  $patron  Patron data
+     * @param ?array $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
-     * @throws VuFind\Date\DateException
+     * @throws DateException
      * @throws ILSException
      * @return array         On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
@@ -191,7 +192,7 @@ class Koha extends AbstractBase
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null, array $options = [])
+    public function getHolding($id, ?array $patron = null, array $options = [])
     {
         $holding = [];
         $available = true;
@@ -310,7 +311,7 @@ class Koha extends AbstractBase
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException
+     * @throws DateException
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */
@@ -356,7 +357,7 @@ class Koha extends AbstractBase
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException
+     * @throws DateException
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
@@ -403,7 +404,6 @@ class Koha extends AbstractBase
     {
         $id = 0;
         $sql = $sqlStmt = $row = '';
-        $profile = [];
         try {
             $id = $patron['id'];
             $sql = 'select address as ADDR1, address2 as ADDR2, zipcode as ZIP, ' .
@@ -411,18 +411,16 @@ class Koha extends AbstractBase
                 'where borrowernumber = :id';
             $sqlStmt = $this->db->prepare($sql);
             $sqlStmt->execute([':id' => $id]);
-            $row = $sqlStmt->fetch();
-            if ($row) {
-                $profile = [
-                    'firstname' => $patron['firstname'],
-                    'lastname' => $patron['lastname'],
-                    'address1' => $row['ADDR1'],
-                    'address2' => $row['ADDR2'],
-                    'zip' => $row['ZIP'],
-                    'phone' => $row['PHONE'],
-                    'group' => $row['GRP'],
-                ];
-                return $profile;
+            if ($row = $sqlStmt->fetch()) {
+                return $this->createProfileArray(
+                    firstname: $patron['firstname'],
+                    lastname: $patron['lastname'],
+                    address1: $row['ADDR1'],
+                    address2: $row['ADDR2'],
+                    zip: $row['ZIP'],
+                    phone: $row['PHONE'],
+                    group: $row['GRP']
+                );
             }
         } catch (PDOException $e) {
             $this->throwAsIlsException($e);
@@ -438,7 +436,7 @@ class Koha extends AbstractBase
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException
+     * @throws DateException
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
@@ -522,7 +520,7 @@ class Koha extends AbstractBase
      * @param array $patron The patron array from patronLogin
      * @param array $params Parameters
      *
-     * @throws VuFind\Date\DateException
+     * @throws DateException
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
@@ -678,7 +676,6 @@ class Koha extends AbstractBase
      */
     public function patronLogin($username, $password)
     {
-        $patron = [];
         $row = '';
 
         $stored_hash = '';
@@ -727,18 +724,14 @@ class Koha extends AbstractBase
                 // saved in a clear text as user provided. If 'cat_password' =>
                 // $db_pwd was used, then password will be saved encrypted as in
                 // 'borrowers' table of 'koha' database
-                $patron = [
-                    'id' => $row['ID'],
-                    'firstname' => $row['FNAME'],
-                    'lastname' => $row['LNAME'],
-                    'cat_username' => $username,
-                    'cat_password' => $password,
-                    'email' => $row['EMAIL'],
-                    'major' => null,
-                    'college' => null,
-                ];
-
-                return $patron;
+                return $this->createPatronArray(
+                    id: $row['ID'],
+                    cat_username: $username,
+                    cat_password: $password,
+                    firstname:  $row['FNAME'],
+                    lastname: $row['LNAME'],
+                    email: $row['EMAIL']
+                );
             }
             return null;
         } catch (PDOException $e) {

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -32,6 +32,7 @@ namespace VuFindSearch\Backend\Solr\Response\Json;
 use ArrayObject;
 use Countable;
 use IteratorAggregate;
+use Traversable;
 
 use function is_array;
 use function strlen;
@@ -127,7 +128,7 @@ class Spellcheck implements IteratorAggregate, Countable
             }
         }
 
-        // Store secondary suggestions in case merge yielded non-useful
+        // Store secondary suggestions in case merge yielded useless
         // result set:
         if (!$this->secondary) {
             $this->secondary = $spellcheck;
@@ -141,9 +142,9 @@ class Spellcheck implements IteratorAggregate, Countable
     /**
      * Return aggregated iterator.
      *
-     * @return ArrayIterator
+     * @return Traversable
      */
-    public function getIterator(): \Traversable
+    public function getIterator(): Traversable
     {
         return $this->terms->getIterator();
     }

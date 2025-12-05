@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Translator
@@ -30,6 +30,7 @@
 namespace VuFind\I18n\Translator\Loader;
 
 use Laminas\I18n\Exception\InvalidArgumentException;
+use Laminas\I18n\Exception\RuntimeException;
 use Laminas\I18n\Translator\Loader\FileLoaderInterface;
 use Laminas\I18n\Translator\TextDomain;
 
@@ -108,17 +109,17 @@ class ExtendedIni implements FileLoaderInterface
     /**
      * Constructor
      *
-     * @param array             $pathStack       List of directories to search for
+     * @param array              $pathStack       List of directories to search for
      * language files.
-     * @param string|string[]   $fallbackLocales Fallback locale(s) to use for
+     * @param string|string[]    $fallbackLocales Fallback locale(s) to use for
      * language strings missing from selected file.
-     * @param ExtendedIniReader $reader          Helper for reading .ini files from
+     * @param ?ExtendedIniReader $reader          Helper for reading .ini files from
      * disk.
      */
     public function __construct(
         $pathStack = [],
         $fallbackLocales = null,
-        ExtendedIniReader $reader = null
+        ?ExtendedIniReader $reader = null
     ) {
         $this->pathStack = $pathStack;
         $this->fallbackLocales = $fallbackLocales ? (array)$fallbackLocales : [];
@@ -193,7 +194,7 @@ class ExtendedIni implements FileLoaderInterface
      */
     public function getLanguageFilename($locale, $domain)
     {
-        return empty($domain)
+        return (empty($domain) || $domain === 'default')
             ? $locale . '.ini'
             : $domain . '/' . $locale . '.ini';
     }
@@ -382,11 +383,13 @@ class ExtendedIni implements FileLoaderInterface
     /**
      * Search the path stack for language files and merge them together.
      *
-     * @param string $filename    Name of file to search path stack for.
-     * @param bool   $failOnError If true, throw an exception when file not found.
-     * @param bool   $aliasDomain Name of TextDomain for which we should process aliases
+     * @param string  $filename    Name of file to search path stack for.
+     * @param bool    $failOnError If true, throw an exception when file not found.
+     * @param ?string $aliasDomain Name of TextDomain for which we should process aliases
      * (or null to skip alias processing)
      *
+     * @throws RuntimeException
+     * @throws InvalidArgumentException
      * @return TextDomain
      */
     protected function loadLanguageFile($filename, $failOnError, ?string $aliasDomain)
@@ -432,7 +435,7 @@ class ExtendedIni implements FileLoaderInterface
      * Support method for loadLanguageFile: retrieve parent data.
      *
      * @param TextDomain $data        TextDomain to populate with parent information.
-     * @param bool       $aliasDomain Name of TextDomain for which we should process aliases
+     * @param ?string    $aliasDomain Name of TextDomain for which we should process aliases
      * (or null to skip alias processing)
      *
      * @return TextDomain

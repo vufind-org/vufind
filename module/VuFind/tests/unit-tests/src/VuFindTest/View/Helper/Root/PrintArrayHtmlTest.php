@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -110,10 +110,10 @@ class PrintArrayHtmlTest extends AbstractMakeTagTestCase
             ],
             [ // Set 5
                 [
-                    0 => "Escaped vals <>&'\"",
+                    0 => "Escaped values <>&'\"",
                 ],
                 <<<END
-                    <span class="detail">Escaped vals &lt;&gt;&amp;&#039;&quot;</span><br>
+                    <span class="detail">Escaped values &lt;&gt;&amp;&#039;&quot;</span><br>
 
                     END,
             ],
@@ -370,9 +370,8 @@ class PrintArrayHtmlTest extends AbstractMakeTagTestCase
      * @param string       $expected Expected HTML
      *
      * @return void
-     *
-     * @dataProvider getPrintArrayHtmlData
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getPrintArrayHtmlData')]
     public function testPrintArrayHtml($entry, string $expected): void
     {
         $helper = $this->getHelper();

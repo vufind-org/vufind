@@ -9,14 +9,16 @@
  * @package  Controller
  * @author   Josiah Knoll <jk1135@ship.edu>
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
 
 namespace VuFind\Controller;
 
-use Laminas\Log\LoggerAwareInterface;
 use Laminas\View\Model\ViewModel;
+use Psr\Log\LoggerAwareInterface;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Form\Form;
 use VuFind\Log\LoggerAwareTrait;
 
@@ -27,6 +29,7 @@ use VuFind\Log\LoggerAwareTrait;
  * @package  Controller
  * @author   Josiah Knoll <jk1135@ship.edu>
  * @author   Samuli Sillanpää <samuli.sillanpaa@helsinki.fi>
+ * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
@@ -66,7 +69,7 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
 
         $user = $this->getUser();
 
-        $form = $this->serviceLocator->get($this->formClass);
+        $form = $this->getService($this->formClass);
         $prefill = $this->params()->fromQuery();
         $params = [];
         if ($refererHeader = $this->getRequest()->getHeader('Referer')) {
@@ -92,7 +95,7 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
         $params = $this->params();
         $form->setData($params->fromPost());
 
-        if (!$this->formWasSubmitted('submit', $view->useCaptcha)) {
+        if (!$this->formWasSubmitted(useCaptcha: $view->useCaptcha)) {
             $form = $this->prefillUserInfo($form, $user);
             return $view;
         }
@@ -101,21 +104,29 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
             return $view;
         }
 
+        if ($this->senderIsBlocked($form)) {
+            $this->flashMessenger()->addErrorMessage('could_not_process_feedback');
+            return $view;
+        }
+        if ($this->senderIsIgnored($form)) {
+            $view->setVariable('successMessage', $form->getSubmitResponse());
+            $view->setTemplate('feedback/response');
+            return $view;
+        }
+
         $primaryHandler = $form->getPrimaryHandler();
-        $success = $primaryHandler->handle($form, $params, $user ?: null);
+        $success = $primaryHandler->handle($form, $params, $user);
         if ($success) {
             $view->setVariable('successMessage', $form->getSubmitResponse());
             $view->setTemplate('feedback/response');
         } else {
-            $this->flashMessenger()->addErrorMessage(
-                $this->translate('could_not_process_feedback')
-            );
+            $this->flashMessenger()->addErrorMessage('could_not_process_feedback');
         }
 
         $handlers = $form->getSecondaryHandlers();
         foreach ($handlers as $handler) {
             try {
-                $handler->handle($form, $params, $user ?: null);
+                $handler->handle($form, $params, $user);
             } catch (\Exception $e) {
                 $this->logError($e->getMessage());
             }
@@ -127,21 +138,70 @@ class FeedbackController extends AbstractBase implements LoggerAwareInterface
     /**
      * Prefill form sender fields for logged in users.
      *
-     * @param Form  $form Form
-     * @param array $user User
+     * @param Form                 $form Form
+     * @param ?UserEntityInterface $user User
      *
      * @return Form
      */
-    protected function prefillUserInfo($form, $user)
+    protected function prefillUserInfo(Form $form, ?UserEntityInterface $user)
     {
         if ($user) {
             $form->setData(
                 [
-                 'name' => $user->firstname . ' ' . $user->lastname,
-                 'email' => $user['email'],
+                 'name' => $user->getFirstname() . ' ' . $user->getLastname(),
+                 'email' => $user->getEmail(),
                 ]
             );
         }
         return $form;
+    }
+
+    /**
+     * Check if sender email is blocked
+     *
+     * @param Form $form Form
+     *
+     * @return bool
+     */
+    protected function senderIsBlocked(Form $form): bool
+    {
+        $config = $this->getConfigArray();
+        return $this->senderEmailMatchesPattern($form, (array)($config['Feedback']['blocked_senders'] ?? []));
+    }
+
+    /**
+     * Check if sender email is ignored
+     *
+     * @param Form $form Form
+     *
+     * @return bool
+     */
+    protected function senderIsIgnored(Form $form): bool
+    {
+        $config = $this->getConfigArray();
+        return $this->senderEmailMatchesPattern($form, (array)($config['Feedback']['ignored_senders'] ?? []));
+    }
+
+    /**
+     * Check if an email address matches any of the given patterns
+     *
+     * @param Form  $form     Form
+     * @param array $patterns Patterns (substring or regexp)
+     *
+     * @return bool
+     */
+    protected function senderEmailMatchesPattern(Form $form, array $patterns): bool
+    {
+        $email = $form->getData()['email'] ?? '';
+        foreach ($patterns as $pattern) {
+            if (str_starts_with($pattern, '/') && str_ends_with($pattern, '/')) {
+                if (preg_match($pattern, $email)) {
+                    return true;
+                }
+            } elseif (str_contains($email, $pattern)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

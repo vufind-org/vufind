@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,7 +29,7 @@
 
 namespace VuFindTest\RecordTab;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\RecordTab\Versions;
 
 /**
@@ -55,12 +55,10 @@ class VersionsTest extends \PHPUnit\Framework\TestCase
         $count = 5;
         $som = $this->getMockPluginManager();
         $config = $this->getMockConfig();
-        $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $recordDriver = $this->createMock(\VuFind\RecordDriver\SolrDefault::class);
         $recordDriver->expects($this->any())->method('tryMethod')
             ->with($this->equalTo('getOtherVersionCount'))
-            ->will($this->returnValue($count));
+            ->willReturn($count);
         $obj = new Versions($config, $som);
         $obj->setRecordDriver($recordDriver);
         $translator = $this->getMockTranslator(
@@ -97,29 +95,26 @@ class VersionsTest extends \PHPUnit\Framework\TestCase
      * @param bool $expectedResult Expected return value from isActive
      *
      * @return void
-     *
-     * @dataProvider isActiveProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('isActiveProvider')]
     public function testisActive(bool $versionAction, int $versionCount, bool $expectedResult): void
     {
         $som = $this->getMockPluginManager();
         $config = $this->getMockConfig();
-        $optionsMock = $this->getMockBuilder(\VuFind\Search\Base\Options::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $optionsMock = $this->createMock(\VuFind\Search\Base\Options::class);
         $som->expects($this->any())->method('get')
             ->with($this->equalTo('foo'))
-            ->will($this->returnValue($optionsMock));
+            ->willReturn($optionsMock);
         $optionsMock->expects($this->once())->method('getVersionsAction')
-            ->will($this->returnValue($versionAction));
+            ->willReturn($versionAction);
         $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
             ->disableOriginalConstructor()
             ->getMock();
         $recordDriver->expects($this->once())->method('getSourceIdentifier')
-            ->will($this->returnValue('foo'));
+            ->willReturn('foo');
         $recordDriver->expects($this->any())->method('tryMethod')
             ->with($this->equalTo('getOtherVersionCount'))
-            ->will($this->returnValue($versionCount));
+            ->willReturn($versionCount);
         $obj = new Versions($config, $som);
         $obj->setRecordDriver($recordDriver);
         $this->assertSame($expectedResult, $obj->isActive());
@@ -132,10 +127,7 @@ class VersionsTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockPluginManager()
     {
-        $som = $this->getMockBuilder(\VuFind\Search\Options\PluginManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        return $som;
+        return $this->createMock(\VuFind\Search\Options\PluginManager::class);
     }
 
     /**
@@ -145,9 +137,6 @@ class VersionsTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockConfig()
     {
-        $config = $this->getMockBuilder(\Laminas\Config\Config::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        return $config;
+        return $this->createMock(\VuFind\Config\Config::class);
     }
 }

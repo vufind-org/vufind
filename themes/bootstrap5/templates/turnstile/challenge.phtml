@@ -1,0 +1,23 @@
+<?php
+  $this->assetManager()->appendScriptLink($jsLibraryUrl, ['defer' => '', 'async' => '']);
+  $js = <<<JS
+      function turnstileChallengeEnded(token) {
+          document.getElementById('turnstile_token').setAttribute('value', token);
+          document.getElementById('turnstile_form').submit();
+      }
+      JS;
+?>
+<?=$this->assetManager()->outputInlineScriptString($js)?>
+
+<div
+    class="cf-turnstile"
+    data-sitekey="<?=$this->escapeHtml($siteKey)?>"
+    data-callback="turnstileChallengeEnded"
+    data-error-callback="turnstileChallengeEnded"
+></div>
+<form id="turnstile_form" method="post" action="<?=$this->url('turnstile-verify')?>">
+    <input id="turnstile_token" name="token" type="hidden">
+    <input name="policyId" type="hidden" value="<?=$this->escapeHtml($policyId)?>">
+    <input name="destination" type="hidden" value="<?=$this->escapeHtml($destination)?>">
+    <input name="hash" type="hidden" value="<?=$this->escapeHtml($hash)?>">
+</form>

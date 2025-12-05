@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  EBSCO
@@ -31,9 +31,8 @@
 
 namespace VuFind\Search\EDS;
 
+use VuFind\Config\ConfigManagerInterface;
 use VuFindSearch\ParamBag;
-
-use function count;
 
 /**
  * EDS API Params
@@ -47,6 +46,16 @@ use function count;
  */
 class Params extends AbstractEDSParams
 {
+    /**
+     * Fields that the EDS API will always filter multiple values using OR, not AND.
+     *
+     * @var array
+     */
+    protected $forcedOrFields = [
+        'ContentProvider',
+        'SourceType',
+    ];
+
     /**
      * Settings for the date facet only
      *
@@ -104,12 +113,12 @@ class Params extends AbstractEDSParams
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Base\Options  $options      Options to use
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param \VuFind\Search\Base\Options $options       Options to use
+     * @param ConfigManagerInterface      $configManager Config manager
      */
-    public function __construct($options, \VuFind\Config\PluginManager $configLoader)
+    public function __construct($options, ConfigManagerInterface $configManager)
     {
-        parent::__construct($options, $configLoader);
+        parent::__construct($options, $configManager);
     }
 
     /**
@@ -156,7 +165,7 @@ class Params extends AbstractEDSParams
             $backendParams->set('highlight', true);
         }
 
-        $view = $this->getEdsView();
+        $view = $this->getEbscoView();
         $backendParams->set('view', $view);
 
         $mode = $options->getSearchMode();
@@ -167,17 +176,6 @@ class Params extends AbstractEDSParams
         $this->createBackendFilterParameters($backendParams);
 
         return $backendParams;
-    }
-
-    /**
-     * Return the value for which search view we use
-     *
-     * @return string
-     */
-    public function getEdsView()
-    {
-        $viewArr = explode('|', $this->view ?? '');
-        return (1 < count($viewArr)) ? $viewArr[1] : $this->options->getEdsView();
     }
 
     /**
@@ -221,13 +219,14 @@ class Params extends AbstractEDSParams
     /**
      * Get a user-friendly string to describe the provided facet field.
      *
-     * @param string $field   Facet field name.
-     * @param string $value   Facet value.
-     * @param string $default Default field name (null for default behavior).
+     * @param string $field               Facet field name.
+     * @param string $value               Facet value.
+     * @param string $default             Default field name (null for default behavior).
+     * @param bool   $allowCheckboxFacets Should checkbox facet labels be allowed too?
      *
-     * @return string         Human-readable description of field.
+     * @return string Human-readable description of field.
      */
-    public function getFacetLabel($field, $value = null, $default = null)
+    public function getFacetLabel($field, $value = null, $default = null, $allowCheckboxFacets = true)
     {
         // Also store Limiter/Search Mode IDs/Values in the config file
         if (str_starts_with($field, 'LIMIT|')) {
@@ -237,7 +236,7 @@ class Params extends AbstractEDSParams
         } else {
             $facetId = $field;
         }
-        return parent::getFacetLabel($facetId, $value, $default ?: $facetId);
+        return parent::getFacetLabel($facetId, $value, $default ?: $facetId, $allowCheckboxFacets);
     }
 
     /**
@@ -286,23 +285,6 @@ class Params extends AbstractEDSParams
                 true
             );
         }
-    }
-
-    /**
-     * Basic 'getter' for list of available view options.
-     *
-     * @return array
-     */
-    public function getViewList()
-    {
-        $list = [];
-        foreach ($this->getOptions()->getViewOptions() as $key => $value) {
-            $list[$key] = [
-                'desc' => $value,
-                'selected' => ($key == $this->getView() . '|' . $this->getEdsView()),
-            ];
-        }
-        return $list;
     }
 
     /**

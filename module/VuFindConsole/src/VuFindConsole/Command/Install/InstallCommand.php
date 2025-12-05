@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -29,6 +29,7 @@
 
 namespace VuFindConsole\Command\Install;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -37,6 +38,7 @@ use Symfony\Component\Console\Question\Question;
 
 use function in_array;
 use function intval;
+use function is_array;
 
 /**
  * Console command: VuFind installer.
@@ -47,18 +49,15 @@ use function intval;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'install/install',
+    description: 'VuFind® installer'
+)]
 class InstallCommand extends Command
 {
     public const MULTISITE_NONE = 0;
     public const MULTISITE_DIR_BASED = 1;
     public const MULTISITE_HOST_BASED = 2;
-
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'install/install';
 
     /**
      * Base directory of VuFind installation.
@@ -110,6 +109,20 @@ class InstallCommand extends Command
     protected $solrPort = '8983';
 
     /**
+     * Should we make backups of existing files?
+     *
+     * @var bool
+     */
+    protected $makeBackups = true;
+
+    /**
+     * Should we display the Apache setup help messages?
+     *
+     * @var bool
+     */
+    protected $showApacheHelp = false;
+
+    /**
      * Constructor
      *
      * @param string|null $name The name of the command; passing null means it must
@@ -134,13 +147,12 @@ class InstallCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('VuFind installer')
-            ->setHelp('Set up (or modify) initial VuFind installation.')
+            ->setHelp('Set up (or modify) initial VuFind® installation.')
             ->addOption(
                 'use-defaults',
                 null,
                 InputOption::VALUE_NONE,
-                'Use VuFind defaults to configure '
+                'Use VuFind® defaults to configure '
                 . '(ignores any other arguments passed)'
             )->addOption(
                 'overridedir',
@@ -157,8 +169,8 @@ class InstallCommand extends Command
                 'basepath',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'What base path should be used in VuFind\'s URL?'
-                . " (defaults to {$this->baseDir} when --non-interactive is set)"
+                'What base path should be used in VuFind®\'s URL?'
+                . " (defaults to {$this->basePath} when --non-interactive is set)"
             )->addOption(
                 'multisite',
                 null,
@@ -170,7 +182,7 @@ class InstallCommand extends Command
                 'hostname',
                 null,
                 InputOption::VALUE_REQUIRED,
-                'Specify the hostname for the VuFind Site, when multisite=host'
+                'Specify the hostname for the VuFind® Site, when multisite=host'
             )->addOption(
                 'solr-port',
                 null,
@@ -182,6 +194,16 @@ class InstallCommand extends Command
                 null,
                 InputOption::VALUE_NONE,
                 'Use settings if provided via arguments, otherwise use defaults'
+            )->addOption(
+                'skip-backups',
+                null,
+                InputOption::VALUE_NONE,
+                'Overwrite existing files without creating backups'
+            )->addOption(
+                'no-apache-help',
+                null,
+                InputOption::VALUE_NONE,
+                'Skip displaying of Apache configuration help messages when installation is completed'
             );
     }
 
@@ -327,7 +349,7 @@ class InstallCommand extends Command
             $basePathInput = $this->getInput(
                 $input,
                 $output,
-                "What base path should be used in VuFind's URL? [{$this->basePath}] "
+                "What base path should be used in VuFind®'s URL? [{$this->basePath}] "
             );
             if (empty($basePathInput)) {
                 return $this->basePath;
@@ -466,7 +488,7 @@ class InstallCommand extends Command
     {
         // Get custom module name:
         $output->writeln(
-            "\nVuFind supports use of a custom module for storing local code "
+            "\nVuFind® supports use of a custom module for storing local code "
             . "changes.\nIf you do not plan to customize the code, you can "
             . "skip this step.\nIf you decide to use a custom module, the name "
             . "you choose will be used for\nthe module's directory name and its "
@@ -500,7 +522,7 @@ class InstallCommand extends Command
         OutputInterface $output
     ) {
         $output->writeln(
-            "\nWhen running multiple VuFind sites against a single installation, you"
+            "\nWhen running multiple VuFind® sites against a single installation, you"
             . " need\nto decide how to distinguish between instances. Choose an "
             . "option:\n\n" . self::MULTISITE_DIR_BASED . '.) Directory-based '
             . "(i.e. http://server/vufind1 vs. http://server/vufind2)\n"
@@ -598,7 +620,7 @@ class InstallCommand extends Command
      */
     protected function backUpFile(OutputInterface $output, string $filename, string $desc)
     {
-        if (file_exists($filename)) {
+        if ($this->makeBackups && file_exists($filename)) {
             $bak = $filename . '.bak.' . time();
             if (!copy($filename, $bak)) {
                 return "Problem backing up $filename to $bak";
@@ -747,11 +769,8 @@ class InstallCommand extends Command
     protected function buildImportConfig(OutputInterface $output, $filename)
     {
         $target = $this->overrideDir . '/import/' . $filename;
-        if (file_exists($target)) {
-            $output->writeln(
-                "Warning: $target already exists; skipping file creation."
-            );
-            return true;
+        if (($msg = $this->backUpFile($output, $target, 'import configuration')) !== true) {
+            return $msg;
         }
         $import = @file_get_contents($this->baseDir . '/import/' . $filename);
         $import = str_replace(
@@ -791,16 +810,18 @@ class InstallCommand extends Command
      * Make sure all modules exist (and create them if they do not). Returns true
      * on success, error message otherwise.
      *
+     * @param OutputInterface $output Output object
+     *
      * @return bool|string
      */
-    protected function buildModules()
+    protected function buildModules(OutputInterface $output)
     {
         if (!empty($this->module)) {
             foreach (explode(',', $this->module) as $module) {
                 $moduleDir = $this->baseDir . '/module/' . $module;
                 // Is module missing? If so, create it from the template:
                 if (!file_exists($moduleDir . '/Module.php')) {
-                    if (($result = $this->buildModule($module)) !== true) {
+                    if (($result = $this->buildModule($module, $output)) !== true) {
                         return $result;
                     }
                 }
@@ -813,11 +834,12 @@ class InstallCommand extends Command
      * Build the module for storing local code changes. Returns true on success,
      * error message otherwise.
      *
-     * @param string $module The name of the new module (assumed valid!)
+     * @param string          $module The name of the new module (assumed valid!)
+     * @param OutputInterface $output Output object
      *
      * @return bool|string
      */
-    protected function buildModule($module)
+    protected function buildModule(string $module, OutputInterface $output): bool|string
     {
         // Create directories:
         $moduleDir = $this->baseDir . '/module/' . $module;
@@ -858,7 +880,31 @@ class InstallCommand extends Command
             $moduleDir . '/Module.php',
             str_replace('VuFindLocalTemplate', $module, $contents)
         );
-        return $success ? true : "Problem writing {$moduleDir}/Module.php.";
+        if (!$success) {
+            return "Problem writing {$moduleDir}/Module.php.";
+        }
+
+        // Set up Composer settings:
+        $localComposer = $this->baseDir . '/composer.local.json';
+        $this->backUpFile($output, $localComposer, 'local Composer configuration');
+        $json = json_decode(file_exists($localComposer) ? file_get_contents($localComposer) : '{}', true);
+        if (!is_array($json)) {
+            return "Unable to parse $localComposer.";
+        }
+        $json['autoload']['psr-4'][$module . '\\'] = ["module/$module/src/$module", "module/$module"];
+        if (!file_put_contents($localComposer, json_encode($json, JSON_PRETTY_PRINT))) {
+            return "Cannot write to $localComposer.";
+        }
+
+        // Try to automatically run Composer to update autoloader; output warning if it fails:
+        chdir($this->baseDir);
+        if (false === exec('composer install', result_code: $composerResult) || $composerResult !== 0) {
+            $output->writeLn(
+                "<error>WARNING: Could not run composer to update autoload rules for module $module.\n"
+                . 'Please run "composer install" to ensure correct custom module loading.</error>'
+            );
+        }
+        return true;
     }
 
     /**
@@ -888,30 +934,33 @@ class InstallCommand extends Command
      */
     protected function displaySuccessMessage(OutputInterface $output)
     {
-        $output->writeln(
-            "Apache configuration written to {$this->overrideDir}/httpd-vufind.conf."
-            . "\n\nYou now need to load this configuration into Apache."
-        );
-        $this->getApacheLocation($output);
-        if (!empty($this->host)) {
+        if ($this->showApacheHelp) {
             $output->writeln(
-                'Since you are using a host-based multisite configuration, you will '
-                . "also \nneed to do some virtual host configuration. See\n"
-                . "     http://httpd.apache.org/docs/2.4/vhosts/\n"
+                "Apache configuration written to {$this->overrideDir}/httpd-vufind.conf."
+                . "\n\nYou now need to load this configuration into Apache."
+            );
+            $this->getApacheLocation($output);
+            if (!empty($this->host)) {
+                $output->writeln(
+                    'Since you are using a host-based multisite configuration, you will '
+                    . "also \nneed to do some virtual host configuration. See\n"
+                    . "     http://httpd.apache.org/docs/2.4/vhosts/\n"
+                );
+            }
+            if ('/' == $this->basePath) {
+                $output->writeln(
+                    'Since you are installing VuFind® at the root of your domain, you '
+                    . "will also\nneed to edit your Apache configuration to change "
+                    . "DocumentRoot to:\n" . $this->baseDir . "/public\n"
+                );
+            }
+            $output->writeln(
+                "Once the configuration is linked, restart Apache. You should now be able\n"
+                . "to access VuFind® at http://localhost{$this->basePath}"
             );
         }
-        if ('/' == $this->basePath) {
-            $output->writeln(
-                'Since you are installing VuFind at the root of your domain, you '
-                . "will also\nneed to edit your Apache configuration to change "
-                . "DocumentRoot to:\n" . $this->baseDir . "/public\n"
-            );
-        }
-        $output->writeln(
-            'Once the configuration is linked, restart Apache. You should now be '
-            . "able\nto access VuFind at http://localhost{$this->basePath}\n\nFor "
-            . "proper use of command line tools, you should also ensure that your\n"
-        );
+        $output->writeln('');
+        $output->writeln("For proper use of command line tools, you should ensure that your\n");
         $finalMsg = empty($this->addOptionmodule)
             ? "VUFIND_HOME and VUFIND_LOCAL_DIR environment variables are set to\n"
             . "{$this->baseDir} and {$this->overrideDir} respectively."
@@ -919,6 +968,7 @@ class InstallCommand extends Command
             . "variables are set to {$this->baseDir}, {$this->module} and "
             . "{$this->overrideDir} respectively.";
         $output->writeln($finalMsg);
+        $output->writeln('');
     }
 
     /**
@@ -983,7 +1033,7 @@ class InstallCommand extends Command
                 $this->multisiteMode = self::MULTISITE_DIR_BASED;
             } elseif ($mode === 'host') {
                 $this->multisiteMode = self::MULTISITE_HOST_BASED;
-            } elseif ($mode !== true && $mode !== null && $mode !== false) {
+            } elseif (!in_array($mode, [true, null, false], true)) {
                 return $this->failWithError(
                     $output,
                     'Unexpected multisite mode: ' . $mode
@@ -1021,7 +1071,14 @@ class InstallCommand extends Command
         // Normalize the module setting to remove whitespace:
         $this->module = preg_replace('/\s/', '', $this->module);
 
-        return 0;
+        // Should we make backups of existing files?
+        if ($input->getOption('skip-backups')) {
+            $this->makeBackups = false;
+        }
+
+        // Should we display Apache help messages?
+        $this->showApacheHelp = !$input->getOption('no-apache-help');
+        return self::SUCCESS;
     }
 
     /**
@@ -1061,7 +1118,7 @@ class InstallCommand extends Command
         }
 
         // Build the custom module(s), if necessary:
-        if (($result = $this->buildModules()) !== true) {
+        if (($result = $this->buildModules($output)) !== true) {
             return $this->failWithError($output, $result);
         }
 
@@ -1069,7 +1126,7 @@ class InstallCommand extends Command
         if (($result = $this->buildApacheConfig($output)) !== true) {
             return $this->failWithError($output, $result);
         }
-        return 0;
+        return self::SUCCESS;
     }
 
     /**
@@ -1080,9 +1137,9 @@ class InstallCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $output->writeln("VuFind has been found in {$this->baseDir}.");
+        $output->writeln("VuFind® has been found in {$this->baseDir}.");
 
         // Collect and process parameters, and stop if an error is encountered
         // along the way....
@@ -1090,11 +1147,11 @@ class InstallCommand extends Command
             $this->collectParameters($input, $output) !== 0
             || $this->processParameters($output) !== 0
         ) {
-            return 1;
+            return self::FAILURE;
         }
 
         // Report success:
         $this->displaySuccessMessage($output);
-        return 0;
+        return self::SUCCESS;
     }
 }

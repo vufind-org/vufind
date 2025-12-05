@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -61,14 +61,22 @@ class TransEscWithPrefix extends AbstractHelper implements TranslatorAwareInterf
      *                                             found (null for no default).
      * @param bool                $useIcuFormatter Should we use an ICU message formatter instead
      * of the default behavior?
+     * @param string[]            $fallbackDomains Text domains to check if no match is found in
+     * the domain specified in $target
      *
      * @return string
      */
-    public function __invoke($prefix, $str, $tokens = [], $default = null, $useIcuFormatter = false)
-    {
+    public function __invoke(
+        $prefix,
+        $str,
+        $tokens = [],
+        $default = null,
+        $useIcuFormatter = false,
+        $fallbackDomains = []
+    ) {
         $escaper = $this->getView()->plugin('escapeHtml');
         return $escaper(
-            $this->translateWithPrefix($prefix, $str, $tokens, $default, $useIcuFormatter)
+            $this->translateWithPrefix($prefix, $str, $tokens, $default, $useIcuFormatter, $fallbackDomains)
         );
     }
 }

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -46,15 +46,15 @@ trait MockSearchCommandTrait
     /**
      * Get a mock search command.
      *
-     * @param ParamBag $params    Parameters for command to return
-     * @param mixed    $context   Context for command to return
-     * @param string   $backendId Backend ID for command
-     * @param mixed    $result    Result to return
+     * @param ?ParamBag $params    Parameters for command to return
+     * @param mixed     $context   Context for command to return
+     * @param string    $backendId Backend ID for command
+     * @param mixed     $result    Result to return
      *
      * @return Command
      */
     protected function getMockSearchCommand(
-        ParamBag $params = null,
+        ?ParamBag $params = null,
         $context = null,
         string $backendId = 'foo',
         $result = null
@@ -63,19 +63,15 @@ trait MockSearchCommandTrait
             ->disableOriginalConstructor()
             ->getMock();
         if ($params) {
-            $command->expects($this->any())->method('getSearchParameters')
-                ->will($this->returnValue($params));
+            $command->expects($this->any())->method('getSearchParameters')->willReturn($params);
         }
         if ($context) {
-            $command->expects($this->any())->method('getContext')
-                ->will($this->returnValue($context));
+            $command->expects($this->any())->method('getContext')->willReturn($context);
         }
         if ($result) {
-            $command->expects($this->any())->method('getResult')
-                ->will($this->returnValue($result));
+            $command->expects($this->any())->method('getResult')->willReturn($result);
         }
-        $command->expects($this->any())->method('getTargetIdentifier')
-            ->will($this->returnValue($backendId));
+        $command->expects($this->any())->method('getTargetIdentifier')->willReturn($backendId);
         return $command;
     }
 }

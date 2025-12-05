@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -61,10 +61,9 @@ class ContentControllerTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @param string $basePath Base path of content route
      *
-     * @dataProvider basePathProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('basePathProvider')]
     public function testMarkdownContentRendering(string $basePath): void
     {
         // Switch to the example theme, because that's where a Markdown example lives:
@@ -90,5 +89,112 @@ class ContentControllerTest extends \VuFindTest\Integration\MinkTestCase
             'Static Pages documentation',
             $this->findCssAndGetText($page, '#content a')
         );
+    }
+
+    /**
+     * Data provider for testDirectoryHandling().
+     *
+     * @return array
+     */
+    public static function requestPathProvider(): array
+    {
+        return [
+            'main path en' => [
+                'en',
+                'test',
+                'MAIN LEVEL TEST',
+                'html',
+            ],
+            'main path de' => [
+                'de',
+                'test',
+                'MAIN LEVEL TEST',
+                'html',
+            ],
+            'main path fi' => [
+                'fi',
+                'test',
+                'FINNISH TEST',
+                'html',
+            ],
+            'sub path phtml' => [
+                'en',
+                'test/test',
+                'SUB LEVEL PHTML',
+                'html',
+            ],
+            'sub path md' => [
+                'en',
+                'test/testmd',
+                'SUB LEVEL MD',
+                'md',
+            ],
+            'sub sub path phtml' => [
+                'en',
+                'test/sub/test',
+                'SUB SUB LEVEL PHTML',
+                'html',
+            ],
+            'bad sub path phtml' => [
+                'en',
+                'test/sub/bad/test',
+                'An error has occurred',
+                'error',
+            ],
+            'bad path 1' => [
+                'en',
+                'test//testmd',
+                'An error has occurred',
+                'error',
+            ],
+            'bad path 2' => [
+                'en',
+                'test/.testmd',
+                'An error has occurred',
+                'error',
+            ],
+        ];
+    }
+
+    /**
+     * Test directory handling.
+     *
+     * @param string $language Language
+     * @param string $path     Path to request
+     * @param string $expected Expected heading
+     * @param string $pageType Page type (html, md or error)
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('requestPathProvider')]
+    public function testDirectoryHandling(string $language, string $path, string $expected, string $pageType): void
+    {
+        // Switch to the minktest theme:
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Site' => [
+                        'theme' => 'minktest',
+                        'language' => $language,
+                    ],
+                ],
+            ]
+        );
+        // Open the page:
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . "/Content/$path");
+        $page = $session->getPage();
+        // Confirm that the correct page was retrieved:
+        $this->assertEquals($expected, $this->findCssAndGetText($page, 'h1'));
+        // Confirm that we have the correct footer:
+        if ('html' === $pageType) {
+            $this->findCss($page, 'body.template-dir-content.template-name-content');
+            $this->findCss($page, '.content-footer');
+        } else {
+            $this->unFindCss($page, '.content-footer');
+            if ('md' === $pageType) {
+                $this->findCss($page, 'body.template-dir-content.template-name-markdown');
+            }
+        }
     }
 }

@@ -6,7 +6,7 @@
  * PHP version 8
  *
  * Copyright (C) Villanova University 2011.
- * Copyright (C) The National Library of Finland 2022.
+ * Copyright (C) The National Library of Finland 2022-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -31,7 +31,8 @@
 
 namespace VuFindTest\Mink;
 
-use VuFind\Db\Table\User;
+use Doctrine\ORM\EntityManager;
+use VuFind\Db\Service\UserService;
 
 use function count;
 
@@ -49,6 +50,7 @@ use function count;
  */
 final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
 {
+    use \VuFindTest\Feature\EmailTrait;
     use \VuFindTest\Feature\LiveDatabaseTrait;
     use \VuFindTest\Feature\UserCreationTrait;
     use \VuFindTest\Feature\DemoDriverTestTrait;
@@ -133,10 +135,9 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test username case-insensitivity.
      *
-     * @depends testChangePassword
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testChangePassword')]
     public function testCaseInsensitiveUsername(): void
     {
         $session = $this->getMinkSession();
@@ -177,11 +178,9 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool   $secure Should we enable secure session mode?
      *
      * @return void
-     *
-     * @depends testChangePassword
-     *
-     * @dataProvider sessionSettingsProvider
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testChangePassword')]
+    #[\PHPUnit\Framework\Attributes\DataProvider('sessionSettingsProvider')]
     public function testLoginWithSessionSettings(string $type, bool $secure): void
     {
         // Adjust session settings:
@@ -211,10 +210,9 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that changing email is disabled by default.
      *
-     * @depends testChangePassword
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testChangePassword')]
     public function testChangeEmailDisabledByDefault(): void
     {
         // Go to profile page:
@@ -236,10 +234,9 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test changing an email.
      *
-     * @depends testChangePassword
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testChangePassword')]
     public function testChangeEmail(): void
     {
         // Turn on email change option:
@@ -270,7 +267,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Change the email:
         $this->findCssAndSetValue($page, '[name="email"]', 'new@email.com');
-        $this->clickCss($page, '[name="submit"]');
+        $this->clickCss($page, '[name="submitButton"]');
         $this->waitForPageLoad($page);
         $this->assertEquals(
             'Your email address has been changed successfully',
@@ -328,8 +325,8 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->submitCatalogLoginForm($page, 'catuser', 'catpass');
 
         // Check the default library and possible values:
-        $userTable = $this->getTable(User::class);
-        $this->assertSame('', $userTable->getByUsername('username2')->home_library);
+        $userService = $this->getDbService(UserService::class);
+        $this->assertSame('', $userService->getUserByUsername('username2')->getHomeLibrary());
         $this->assertEquals(
             '',
             $this->findCssAndGetValue($page, '#home_library')
@@ -354,9 +351,11 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#profile_form .btn');
         $this->waitForPageLoad($page);
         $this->assertEquals('B', $this->findCssAndGetValue($page, '#home_library'));
+        $entityManager = $this->getLiveDatabaseContainer()->get(EntityManager::class);
+        $entityManager->clear();
         $this->assertEquals(
             'B',
-            $userTable->getByUsername('username2')->home_library
+            $userService->getUserByUsername('username2')->getHomeLibrary()
         );
 
         // Change to "Always ask me":
@@ -367,7 +366,8 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
             ' ** ',
             $this->findCssAndGetValue($page, '#home_library')
         );
-        $this->assertNull($userTable->getByUsername('username2')->home_library);
+        $entityManager->clear();
+        $this->assertNull($userService->getUserByUsername('username2')->getHomeLibrary());
 
         // Back to default:
         $this->findCssAndSetValue($page, '#home_library', '');
@@ -377,7 +377,8 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
             '',
             $this->findCssAndGetValue($page, '#home_library')
         );
-        $this->assertSame('', $userTable->getByUsername('username2')->home_library);
+        $entityManager->clear();
+        $this->assertSame('', $userService->getUserByUsername('username2')->getHomeLibrary());
     }
 
     /**
@@ -413,6 +414,344 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Log out
         $this->clickCss($page, '.logoutOptions a.logout');
+    }
+
+    /**
+     * Test account deletion.
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testDefaultPickUpLocation')]
+    public function testAccountDeletion(): void
+    {
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Authentication' => ['account_deletion' => true],
+                ],
+            ]
+        );
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $page = $session->getPage();
+
+        // Log in
+        $this->fillInLoginForm($page, 'username2', 'test', false);
+        $this->submitLoginForm($page, false);
+        $this->waitForPageLoad($page);
+
+        // Delete the account
+        $this->clickCss($page, '.fa-trash-o');
+        $this->clickCss($page, '.modal #delete-account-submit');
+        $this->waitForPageLoad($page);
+
+        // Try to log back in; it shouldn't work:
+        $session->visit($this->getVuFindUrl('/MyResearch/Profile'));
+        $page = $session->getPage();
+        $this->fillInLoginForm($page, 'username2', 'test', false);
+        $this->submitLoginForm($page, false);
+        $this->waitForPageLoad($page);
+        $this->assertEquals('Invalid login -- please try again.', $this->findCssAndGetText($page, '.alert-danger'));
+    }
+
+    /**
+     * Data provider for testRecoverPasswordByUsername().
+     *
+     * @return array[]
+     */
+    public static function honestyProvider(): array
+    {
+        return [
+            'be honest' => [true],
+            'be dishonest' => [false],
+        ];
+    }
+
+    /**
+     * Test attempting to recover a password with an invalid username.
+     *
+     * @param bool $beHonest Should the recovery error message be honest?
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testChangePassword')]
+    #[\PHPUnit\Framework\Attributes\DataProvider('honestyProvider')]
+    public function testRecoveryHonesty(bool $beHonest): void
+    {
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Authentication' => [
+                        'recover_password' => true,
+                        'recover_interval' => 0,
+                        'recover_be_honest' => $beHonest,
+                    ],
+                    'Mail' => [
+                        'testOnly' => true,
+                        'message_log' => $this->getEmailLogPath(),
+                        'message_log_format' => $this->getEmailLogFormat(),
+                    ],
+                ],
+            ]
+        );
+
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl());
+        $page = $session->getPage();
+        $this->resetEmailLog();
+
+        // Recover account
+        $this->clickCss($page, '#loginOptions a');
+        $this->clickCss($page, '.modal-body .recover-account-link');
+        $this->findCssAndSetValue($page, '#recovery_username', 'bad');
+        $this->clickCss($page, '.modal-body input[type="submit"]');
+        if ($beHonest) {
+            $this->assertEquals('We could not find your account', $this->findCssAndGetText($page, '.alert-danger'));
+        } else {
+            $this->assertEquals(
+                'Password recovery instructions have been sent to the email address registered with this account.',
+                $this->findCssAndGetText($page, '.alert-success')
+            );
+        }
+
+        // No email should have been sent
+        $this->assertEmpty($this->getLoggedEmails(allowEmpty: true));
+    }
+
+    /**
+     * Test recovering a password by username.
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testChangePassword')]
+    public function testRecoverPasswordByUsername(): void
+    {
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Authentication' => [
+                        'recover_password' => true,
+                        'recover_interval' => 0,
+                    ],
+                    'Mail' => [
+                        'testOnly' => true,
+                        'message_log' => $this->getEmailLogPath(),
+                        'message_log_format' => $this->getEmailLogFormat(),
+                    ],
+                ],
+            ]
+        );
+
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl());
+        $page = $session->getPage();
+        $this->resetEmailLog();
+
+        // Recover account
+        $this->clickCss($page, '#loginOptions a');
+        $this->clickCss($page, '.modal-body .recover-account-link');
+        $this->findCssAndSetValue($page, '#recovery_username', 'username1');
+        $this->clickCss($page, '.modal-body input[type="submit"]');
+        $this->assertEquals(
+            'Password recovery instructions have been sent to the email address registered with this account.',
+            $this->findCssAndGetText($page, '.alert-success')
+        );
+
+        // Extract URL from email:
+        $email = $this->getLoggedEmail();
+        preg_match('/You can reset your password at this URL: (http.*)/', $email->getBody()->getBody(), $matches);
+        $link = $matches[1];
+
+        // Reset the password:
+        $session->visit($link);
+        $this->assertEquals('username1', $this->findCssAndGetText($page, '.form-control-static'));
+        $this->findCssAndSetValue($page, '#password', 'recovered');
+        $this->findCssAndSetValue($page, '#password2', 'recovered');
+        $this->clickCss($page, '.form-new-password .btn-primary');
+        $this->assertEquals(
+            'Your password has successfully been changed',
+            $this->findCssAndGetText($page, '.alert-success')
+        );
+
+        $this->resetEmailLog();
+    }
+
+    /**
+     * Data provider for testRecoverILSPassword
+     *
+     * @return array
+     */
+    public static function recoverILSPasswordProvider(): array
+    {
+        return [
+            [false, false],
+            [false, true],
+            [true, false],
+            [true, true],
+        ];
+    }
+
+    /**
+     * Test recovering an ILS password.
+     *
+     * @param bool $multiBackend Test with MultiBackend driver?
+     * @param bool $choiceAuth   Test with ChoiceAuth?
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('recoverILSPasswordProvider')]
+    public function testRecoverILSPassword(bool $multiBackend, bool $choiceAuth): void
+    {
+        $configs = [
+            'config' => [
+                'Authentication' => [
+                    'change_password' => false,
+                    'recover_password' => true,
+                    'recover_interval' => 0,
+                ],
+                'Catalog' => [
+                    'driver' => 'Demo',
+                ],
+                'Mail' => [
+                    'testOnly' => true,
+                    'message_log' => $this->getEmailLogPath(),
+                    'message_log_format' => $this->getEmailLogFormat(),
+                ],
+                'MultiAuth' => [
+                    'method_order' => 'Database',
+                ],
+            ],
+            'MultiBackend' => [
+                'General' => [
+                    'default_driver' => 'norecovery',
+                ],
+                'Drivers' => [
+                    'norecovery' => 'Demo',
+                    'recovery' => 'Demo',
+                ],
+                'Login' => [
+                    'default_driver' => 'norecovery',
+                    'drivers' => [
+                        'norecovery',
+                        'recovery',
+                    ],
+                ],
+            ],
+            'Demo' => $this->getDemoIniOverrides() + [
+                'PasswordRecovery' => [
+                    'enabled' => true,
+                ],
+            ],
+            'Demo:norecovery' => $this->getDemoIniOverrides(),
+            'Demo:recovery' => $this->getDemoIniOverrides() + [
+                'PasswordRecovery' => [
+                    'enabled' => true,
+                ],
+            ],
+        ];
+        if ($multiBackend) {
+            $configs['config']['Authentication']['method'] = $choiceAuth ? 'ChoiceAuth' : 'MultiILS';
+            // Use MultiAuth as default as it does not support password recovery:
+            $configs['config']['ChoiceAuth']['choice_order'] = 'MultiAuth,MultiILS';
+            $configs['config']['Catalog']['driver'] = 'MultiBackend';
+        } else {
+            $configs['config']['Authentication']['method'] = $choiceAuth ? 'ChoiceAuth' : 'ILS';
+            // Use MultiAuth as default as it does not support password recovery:
+            $configs['config']['ChoiceAuth']['choice_order'] = 'MultiAuth,ILS';
+        }
+
+        $this->changeConfigs($configs);
+
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl());
+        $page = $session->getPage();
+        $this->resetEmailLog();
+
+        // Open login dialog:
+        $this->clickCss($page, '#loginOptions a');
+
+        if ($multiBackend) {
+            // Check that there's no visible recovery link for the default target:
+            $this->findCss($page, '.modal-body #login_MultiILS_username');
+            $this->assertEqualsWithTimeout(
+                'btn btn-link recover-account-link hidden',
+                function () use ($page) {
+                    return $page->find('css', '.modal-body .recover-account-link')?->getAttribute('class');
+                }
+            );
+
+            // Switch to demo2 and check that there's now a visible recovery link:
+            $this->clickCss($page, '.modal-body #login_MultiILS_target option', null, 1);
+            $this->assertEqualsWithTimeout(
+                'btn btn-link recover-account-link',
+                function () use ($page) {
+                    return $page->find('css', '.modal-body .recover-account-link')?->getAttribute('class');
+                }
+            );
+        }
+
+        // Start recovery:
+        $this->clickCss($page, '.modal-body .recover-account-link');
+
+        // Missing username:
+        $this->findCssAndSetValue($page, '#recovery_username', '');
+        $this->clickCss($page, '.modal-body input[type="submit"]');
+        $this->waitForPageLoad($page);
+        $this->assertEqualsWithTimeout(
+            'Username cannot be blank',
+            fn () => $this->findCssAndGetText($page, '.alert-danger')
+        );
+
+        // Missing email address:
+        $this->findCssAndSetValue($page, '#recovery_username', 'nonexistent');
+        $this->findCssAndSetValue($page, '#recovery_email', '');
+        $this->clickCss($page, '.modal-body input[type="submit"]');
+        $this->assertEqualsWithTimeout(
+            'Email address missing.',
+            fn () => $this->findCssAndGetText($page, '.alert-danger')
+        );
+
+        // Invalid username:
+        $this->findCssAndSetValue($page, '#recovery_username', 'nonexistent');
+        $this->findCssAndSetValue($page, '#recovery_email', 'vufind@localhost');
+        $this->clickCss($page, '.modal-body input[type="submit"]');
+        $this->assertEqualsWithTimeout(
+            'We could not find your account',
+            fn () => $this->findCssAndGetText($page, '.alert-danger')
+        );
+
+        // Correct information:
+        $this->findCssAndSetValue($page, '#recovery_username', 'catuser');
+        $this->findCssAndSetValue($page, '#recovery_email', 'vufind@localhost');
+        $this->clickCss($page, '.modal-body input[type="submit"]');
+        $this->waitForPageLoad($page);
+        $this->assertEqualsWithTimeout(
+            'Password recovery instructions have been sent to the email address registered with this account.',
+            fn () => $this->findCssAndGetText($page, '.alert-success')
+        );
+
+        // Extract URL from email:
+        $email = $this->getLoggedEmail()->getBody()->getBody();
+        preg_match('/You can reset your password at this URL: <(http.*)>/', $email, $matches);
+        $this->assertArrayHasKey(
+            1,
+            $matches,
+            "No recovery link in email: $email"
+        );
+        $link = $matches[1];
+
+        // Reset the password:
+        $session->visit($link);
+        $this->assertEquals('catuser', $this->findCssAndGetText($page, '.form-control-static'));
+        $this->findCssAndSetValue($page, '#password', 'recovered');
+        $this->findCssAndSetValue($page, '#password2', 'recovered');
+        $this->clickCss($page, '.form-new-password .btn-primary');
+        $this->assertEquals(
+            'Your password has successfully been changed',
+            $this->findCssAndGetText($page, '.alert-success')
+        );
+
+        $this->resetEmailLog();
     }
 
     /**

@@ -1,3 +1,0 @@
-<?php
-$searchRoute = $this->searchOptions($this->driver->getSearchBackendIdentifier())->getSearchAction();
-echo $this->url($searchRoute, [], ['query' => ['type' => 'Publisher', 'lookfor' => $this->lookfor]]);

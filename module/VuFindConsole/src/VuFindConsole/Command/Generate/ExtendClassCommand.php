@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -29,6 +29,7 @@
 
 namespace VuFindConsole\Command\Generate;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -43,15 +44,12 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'generate/extendclass',
+    description: 'Subclass generator'
+)]
 class ExtendClassCommand extends AbstractContainerAwareCommand
 {
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'generate/extendclass';
-
     /**
      * Configure the command.
      *
@@ -60,7 +58,6 @@ class ExtendClassCommand extends AbstractContainerAwareCommand
     protected function configure()
     {
         $this
-            ->setDescription('Subclass generator')
             ->setHelp('Subclasses a service, with lookup by class name.')
             ->addArgument(
                 'class_name',
@@ -86,9 +83,10 @@ class ExtendClassCommand extends AbstractContainerAwareCommand
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        $class = $input->getArgument('class_name');
+        // Normalize class name to exclude leading slashes; a FQCN doesn't need them:
+        $class = ltrim($input->getArgument('class_name'), '\\');
         $target = $input->getArgument('target_module');
         $extendFactory = $input->getOption('extendfactory');
 
@@ -102,9 +100,9 @@ class ExtendClassCommand extends AbstractContainerAwareCommand
             );
         } catch (\Exception $e) {
             $output->writeln($e->getMessage());
-            return 1;
+            return self::FAILURE;
         }
 
-        return 0;
+        return self::SUCCESS;
     }
 }

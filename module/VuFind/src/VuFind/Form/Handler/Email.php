@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Form
@@ -31,10 +31,11 @@ declare(strict_types=1);
 
 namespace VuFind\Form\Handler;
 
-use Laminas\Config\Config;
-use Laminas\Log\LoggerAwareInterface;
-use Laminas\Mail\Address;
 use Laminas\View\Renderer\RendererInterface;
+use Psr\Log\LoggerAwareInterface;
+use Symfony\Component\Mime\Address;
+use VuFind\Config\Config;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Mail as MailException;
 use VuFind\Form\Form;
 use VuFind\Log\LoggerAwareTrait;
@@ -75,7 +76,7 @@ class Email implements HandlerInterface, LoggerAwareInterface
     protected $mailer;
 
     /**
-     * Contructor
+     * Constructor
      *
      * @param RendererInterface $viewRenderer View renderer
      * @param Config            $config       Main config
@@ -96,17 +97,18 @@ class Email implements HandlerInterface, LoggerAwareInterface
      *
      * @param \VuFind\Form\Form                     $form   Submitted form
      * @param \Laminas\Mvc\Controller\Plugin\Params $params Request params
-     * @param ?\VuFind\Db\Row\User                  $user   Authenticated user
+     * @param ?UserEntityInterface                  $user   Authenticated user
      *
      * @return bool
      */
     public function handle(
         \VuFind\Form\Form $form,
         \Laminas\Mvc\Controller\Plugin\Params $params,
-        ?\VuFind\Db\Row\User $user = null
+        ?UserEntityInterface $user = null
     ): bool {
-        $fields = $form->mapRequestParamsToFieldValues($params->fromPost());
-        $emailMessage = $this->viewRenderer->partial(
+        $postParams = $params->fromPost();
+        $fields = $form->mapRequestParamsToFieldValues($postParams);
+        $emailMessage = $this->viewRenderer->render(
             'Email/form.phtml',
             compact('fields')
         );
@@ -115,27 +117,29 @@ class Email implements HandlerInterface, LoggerAwareInterface
 
         $replyToName = $params->fromPost(
             'name',
-            $user ? trim($user->firstname . ' ' . $user->lastname) : null
+            $user ? trim($user->getFirstname() . ' ' . $user->getLastname()) : ''
         );
-        $replyToEmail = $params->fromPost(
-            'email',
-            $user ? $user->email : null
-        );
-        $recipients = $form->getRecipient($params->fromPost());
-        $emailSubject = $form->getEmailSubject($params->fromPost());
+        $replyToEmail = $params->fromPost('email', $user?->getEmail());
+        $recipients = $form->getRecipient($postParams);
+        $emailSubject = $form->getEmailSubject($postParams);
 
         $result = true;
         foreach ($recipients as $recipient) {
-            $success = $this->sendEmail(
-                $recipient['name'],
-                $recipient['email'],
-                $senderName,
-                $senderEmail,
-                $replyToName,
-                $replyToEmail,
-                $emailSubject,
-                $emailMessage
-            );
+            if ($recipient['email']) {
+                $success = $this->sendEmail(
+                    $recipient['name'] ?? '',
+                    $recipient['email'],
+                    $senderName,
+                    $senderEmail,
+                    $replyToName,
+                    $replyToEmail,
+                    $emailSubject,
+                    $emailMessage
+                );
+            } else {
+                $this->logError('Form recipient email missing; check recipient_email in config.ini.');
+                $success = false;
+            }
 
             $result = $result && $success;
         }
@@ -163,14 +167,14 @@ class Email implements HandlerInterface, LoggerAwareInterface
     /**
      * Send form data as email.
      *
-     * @param string $recipientName  Recipient name
-     * @param string $recipientEmail Recipient email
-     * @param string $senderName     Sender name
-     * @param string $senderEmail    Sender email
-     * @param string $replyToName    Reply-to name
-     * @param string $replyToEmail   Reply-to email
-     * @param string $emailSubject   Email subject
-     * @param string $emailMessage   Email message
+     * @param ?string $recipientName  Recipient name
+     * @param string  $recipientEmail Recipient email
+     * @param string  $senderName     Sender name
+     * @param string  $senderEmail    Sender email
+     * @param string  $replyToName    Reply-to name
+     * @param string  $replyToEmail   Reply-to email
+     * @param string  $emailSubject   Email subject
+     * @param string  $emailMessage   Email message
      *
      * @return bool
      */
@@ -186,13 +190,14 @@ class Email implements HandlerInterface, LoggerAwareInterface
     ): bool {
         try {
             $this->mailer->send(
-                new Address($recipientEmail, $recipientName),
+                new Address($recipientEmail, $recipientName ?? ''),
                 new Address($senderEmail, $senderName),
                 $emailSubject,
                 $emailMessage,
                 null,
                 !empty($replyToEmail)
-                    ? new Address($replyToEmail, $replyToName) : null
+                    ? new Address($replyToEmail, $replyToName) : null,
+                false
             );
             return true;
         } catch (MailException $e) {

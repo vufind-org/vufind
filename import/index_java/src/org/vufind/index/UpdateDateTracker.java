@@ -14,19 +14,27 @@ package org.vufind.index;
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  */
 
 import java.sql.*;
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDateTime;
 
+import org.apache.log4j.Logger;
+
 /**
  * Class for managing record update dates.
  */
 public class UpdateDateTracker
 {
+    private static Logger logger = Logger.getLogger(UpdateDateTracker.class);
+
+    private static final int BATCH_SIZE = 100;
+    private int insertBatchCount = 0;
+    private int updateBatchCount = 0;
+
     private Connection db;
     private String core;
     private String id;
@@ -48,7 +56,10 @@ public class UpdateDateTracker
             protected UpdateDateTracker initialValue()
             {
                 try {
-                    return new UpdateDateTracker(DatabaseManager.instance().getConnection());
+                    DatabaseManager dbm = DatabaseManager.instance();
+                    UpdateDateTracker udt = new UpdateDateTracker(dbm.getConnection());
+                    dbm.setUpdateDateTracker(udt);
+                    return udt;
                 } catch (SQLException e) {
                     throw new RuntimeException(e.getMessage());
                 }
@@ -58,6 +69,25 @@ public class UpdateDateTracker
     public static UpdateDateTracker instance()
     {
         return trackerCache.get();
+    }
+
+    private void possiblyExecuteBatch(boolean update, PreparedStatement statement, boolean force) throws SQLException
+    {
+        int count = update ? updateBatchCount : insertBatchCount;
+        if (count >= BATCH_SIZE || (count > 0 && force)) {
+            try {
+                statement.executeBatch();
+                db.commit();
+            } catch (SQLException ex) {
+                logger.error("SQLException in possiblyExecuteBatch(): " + ex.getMessage());
+                throw ex;
+            }
+            if (update) {
+                updateBatchCount = 0;
+            } else {
+                insertBatchCount = 0;
+            }
+        }
     }
 
     /* Private support method: create a row in the change_tracker table.
@@ -74,7 +104,9 @@ public class UpdateDateTracker
         insertSql.setTimestamp(3, firstIndexed);
         insertSql.setTimestamp(4, lastIndexed);
         insertSql.setTimestamp(5, lastRecordChange);
-        insertSql.executeUpdate();
+        insertSql.addBatch();
+        insertBatchCount++;
+        possiblyExecuteBatch(false, insertSql, false);
     }
 
     /* Private support method: read a row from the change_tracker table.
@@ -83,22 +115,17 @@ public class UpdateDateTracker
     {
         selectSql.setString(1, core);
         selectSql.setString(2, id);
-        ResultSet result = selectSql.executeQuery();
-
-        // No results?  Free resources and return false:
-        if (!result.first()) {
-            result.close();
-            return false;
+        try (ResultSet result = selectSql.executeQuery()) {
+            // No results?  Free resources and return false:
+            if (!result.first()) {
+                return false;
+            }
+            // If we got this far, we have results -- load them into the object:
+            firstIndexed = result.getTimestamp(1);
+            lastIndexed = result.getTimestamp(2);
+            lastRecordChange = result.getTimestamp(3);
+            deleted = result.getTimestamp(4);
         }
-
-        // If we got this far, we have results -- load them into the object:
-        firstIndexed = result.getTimestamp(1);
-        lastIndexed = result.getTimestamp(2);
-        lastRecordChange = result.getTimestamp(3);
-        deleted = result.getTimestamp(4);
-
-        // Free resources and report success:
-        result.close();
         return true;
     }
 
@@ -122,7 +149,9 @@ public class UpdateDateTracker
         updateSql.setNull(4, java.sql.Types.NULL);
         updateSql.setString(5, core);
         updateSql.setString(6, id);
-        updateSql.executeUpdate();
+        updateSql.addBatch();
+        updateBatchCount++;
+        possiblyExecuteBatch(true, updateSql, false);
     }
 
     /* Constructor:
@@ -130,6 +159,7 @@ public class UpdateDateTracker
     public UpdateDateTracker(Connection dbConnection) throws SQLException
     {
         db = dbConnection;
+        db.setAutoCommit(false);
         insertSql = db.prepareStatement(
             "INSERT INTO change_tracker(core, id, first_indexed, last_indexed, last_record_change) " +
             "VALUES(?, ?, ?, ?, ?);");
@@ -142,14 +172,16 @@ public class UpdateDateTracker
             "WHERE core = ? AND id = ?;");
     }
 
-    /* Finalizer
-     */
-    protected void finalize() throws SQLException, Throwable
-    {
-        insertSql.close();
-        selectSql.close();
-        updateSql.close();
-        super.finalize();
+    void shutdown() {
+        try {
+            possiblyExecuteBatch(false, insertSql, true);
+            possiblyExecuteBatch(true, updateSql, true);
+            insertSql.close();
+            selectSql.close();
+            updateSql.close();
+        } catch (SQLException ex) {
+            logger.error("SQLException in shutdown hook: " + ex.getMessage());
+        }
     }
 
     /* Get the first indexed date (IMPORTANT: index() must be called before this method)

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  EBSCO
@@ -61,8 +61,7 @@ class QueryAdapter extends \VuFind\Search\QueryAdapter
         callable $translate,
         callable $showName
     ) {
-        $output = '';
-        //There should only ever be 1 group with EDS queries.
+        // There should only ever be 1 group with EDS queries.
         $all = [];
         foreach ($query->getQueries() as $search) {
             if ($search instanceof QueryGroup) {
@@ -86,8 +85,6 @@ class QueryAdapter extends \VuFind\Search\QueryAdapter
                 throw new \Exception('Unexpected ' . $search::class);
             }
         }
-        $output = '(' . implode(' ', $all) . ')';
-
-        return $output;
+        return '(' . implode(' ', $all) . ')';
     }
 }

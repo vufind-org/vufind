@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Generic base class for Solr commands.
+ * Console command: populate hierarchy tree cache.
  *
  * PHP version 8
  *
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -29,6 +29,7 @@
 
 namespace VuFindConsole\Command\Util;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -39,7 +40,7 @@ use VuFind\Search\Results\PluginManager;
 use function count;
 
 /**
- * Generic base class for Solr commands.
+ * Console command: populate hierarchy tree cache.
  *
  * @category VuFind
  * @package  Console
@@ -47,15 +48,12 @@ use function count;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'util/createHierarchyTrees',
+    description: 'Cache populator for hierarchies'
+)]
 class CreateHierarchyTreesCommand extends Command
 {
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'util/createHierarchyTrees';
-
     /**
      * Record loader
      *
@@ -93,7 +91,6 @@ class CreateHierarchyTreesCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('Cache populator for hierarchies')
             ->setHelp('Populates the hierarchy tree cache.')
             ->addArgument(
                 'backend',
@@ -112,7 +109,7 @@ class CreateHierarchyTreesCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $backendId = $input->getArgument('backend');
         $hierarchies = $this->resultsManager->get($backendId)
@@ -145,6 +142,6 @@ class CreateHierarchyTreesCommand extends Command
         }
         $output->writeln(count($list) . ' files');
 
-        return 0;
+        return self::SUCCESS;
     }
 }

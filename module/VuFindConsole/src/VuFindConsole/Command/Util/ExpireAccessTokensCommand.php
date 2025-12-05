@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -31,6 +31,8 @@
 
 namespace VuFindConsole\Command\Util;
 
+use Symfony\Component\Console\Attribute\AsCommand;
+
 /**
  * Console command: expire access tokens.
  *
@@ -41,6 +43,9 @@ namespace VuFindConsole\Command\Util;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'util/expire_access_tokens'
+)]
 class ExpireAccessTokensCommand extends AbstractExpireCommand
 {
     /**
@@ -56,11 +61,4 @@ class ExpireAccessTokensCommand extends AbstractExpireCommand
      * @var string
      */
     protected $rowLabel = 'access tokens';
-
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'util/expire_access_tokens';
 }

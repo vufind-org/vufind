@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -43,6 +43,7 @@ use VuFind\Form\Handler\Email;
  */
 class EmailTest extends \PHPUnit\Framework\TestCase
 {
+    use \VuFindTest\Feature\WithConsecutiveTrait;
     use \VuFindTest\Feature\ReflectionTrait;
 
     /**
@@ -83,6 +84,63 @@ class EmailTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test user object handling.
+     *
+     * @return void
+     */
+    public function testExtractDataFromUserObject(): void
+    {
+        $handler = $this->getHandler();
+        $form = $this->createMock(Form::class);
+        $form->expects($this->once())->method('getRecipient')->willReturn([]);
+        $user = $this->createMock(\VuFind\Db\Entity\UserEntityInterface::class);
+        $user->expects($this->once())->method('getFirstname')->willReturn('First');
+        $user->expects($this->once())->method('getLastname')->willReturn('Last');
+        $user->expects($this->once())->method('getEmail')->willReturn('foo@example.com');
+        $params = $this->createMock(\Laminas\Mvc\Controller\Plugin\Params::class);
+        $this->expectConsecutiveCalls(
+            $params,
+            'fromPost',
+            [
+                [null],
+                ['name', 'First Last'],
+                ['email', 'foo@example.com'],
+            ],
+            [
+                [], 'First Last', 'foo@example.com',
+            ]
+        );
+        $this->assertTrue($handler->handle($form, $params, $user));
+    }
+
+    /**
+     * Test absent user object handling.
+     *
+     * @return void
+     */
+    public function testHandleMissingUserObject(): void
+    {
+        $handler = $this->getHandler();
+        $form = $this->createMock(Form::class);
+        $form->expects($this->once())->method('getRecipient')->willReturn([]);
+        $user = null;
+        $params = $this->createMock(\Laminas\Mvc\Controller\Plugin\Params::class);
+        $this->expectConsecutiveCalls(
+            $params,
+            'fromPost',
+            [
+                [null],
+                ['name', null],
+                ['email', null],
+            ],
+            [
+                [], null, null,
+            ]
+        );
+        $this->assertTrue($handler->handle($form, $params, $user));
+    }
+
+    /**
      * Get a handler configured for testing.
      *
      * @param array $config Configuration array
@@ -93,7 +151,7 @@ class EmailTest extends \PHPUnit\Framework\TestCase
     {
         return new Email(
             $this->createMock(\Laminas\View\Renderer\RendererInterface::class),
-            new \Laminas\Config\Config($config),
+            new \VuFind\Config\Config($config),
             $this->createMock(\VuFind\Mailer\Mailer::class)
         );
     }

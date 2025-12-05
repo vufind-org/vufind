@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Connection
@@ -30,7 +30,6 @@
 namespace VuFindSearch\Backend\EIT;
 
 use Laminas\Http\Client;
-use Laminas\Http\Request;
 use VuFindSearch\Backend\Exception\HttpErrorException;
 use VuFindSearch\ParamBag;
 
@@ -45,7 +44,7 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:architecture Wiki
  */
-class Connector implements \Laminas\Log\LoggerAwareInterface
+class Connector implements \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
@@ -136,7 +135,7 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      *
      * @param \Laminas\Http\Response $result The response to check.
      *
-     * @throws BackendException
+     * @throws \VuFindSearch\Backend\Exception\BackendException
      * @return void
      */
     public function checkForHttpError($result)
@@ -150,13 +149,13 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
      * Make an API call
      *
      * @param string $method GET or POST
-     * @param array  $params Parameters to send
+     * @param ?array $params Parameters to send
      *
      * @return \SimpleXMLElement
      */
     protected function call($method = 'GET', $params = null)
     {
-        $queryString = null;
+        $queryString = '';
         if ($params) {
             $query = [];
             foreach ($params as $function => $value) {
@@ -179,30 +178,29 @@ class Connector implements \Laminas\Log\LoggerAwareInterface
             $dblist .= '&db=' . $db;
         }
 
-        $this->debug(
-            'Connect: ' . print_r($this->base . '?' . $queryString . $dblist, true)
-        );
+        $url = $this->base . '?' . $queryString . $dblist;
+        $this->debug('Connect: ' . $url);
 
         // Send Request
         $this->client->resetParameters();
-        $this->client->setUri($this->base . '?' . $queryString . $dblist);
+        $this->client->setUri($url);
         $result = $this->client->setMethod($method)->send();
         $body = $result->getBody();
         $xml = simplexml_load_string($body);
-        $this->debug(print_r($xml, true));
+        $this->debug($this->varDump($xml));
         return $body;
     }
 
     /**
      * Retrieve a specific record.
      *
-     * @param string   $id     Record ID to retrieve
-     * @param ParamBag $params Parameters
+     * @param string    $id     Record ID to retrieve
+     * @param ?ParamBag $params Parameters
      *
      * @throws \Exception
      * @return array
      */
-    public function getRecord($id, ParamBag $params = null)
+    public function getRecord($id, ?ParamBag $params = null)
     {
         $query = 'AN ' . $id;
         $params = $params ?: new ParamBag();

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  CSV
@@ -30,6 +30,7 @@
 namespace VuFind\CSV;
 
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFind\Service\GetServiceTrait;
 use VuFindSearch\Backend\Solr\Document\RawJSONDocument;
 
 use function count;
@@ -45,12 +46,7 @@ use function count;
  */
 class Importer
 {
-    /**
-     * Service locator
-     *
-     * @var ServiceLocatorInterface
-     */
-    protected $serviceLocator;
+    use GetServiceTrait;
 
     /**
      * Base path for loading .ini files
@@ -97,7 +93,7 @@ class Importer
         $encoding = $config->getEncoding();
         $data = [];
         $output = '';
-        while ($line = fgetcsv($in)) {
+        while ($line = fgetcsv($in, escape: '\\')) {
             $data[] = $this->collectValuesFromLine(
                 $this->adjustEncoding($line, $encoding),
                 $config
@@ -162,7 +158,7 @@ class Importer
         if ($testMode) {
             return $json;
         }
-        $solr = $this->serviceLocator->get(\VuFind\Solr\Writer::class);
+        $solr = $this->getService(\VuFind\Solr\Writer::class);
         $solr->save($index, new RawJSONDocument($json), 'update');
         return ''; // no output when not in test mode!
     }
@@ -181,14 +177,14 @@ class Importer
         switch (strtolower(trim($mode))) {
             case 'fields':
                 // Load configuration from the header row:
-                $row = fgetcsv($in);
+                $row = fgetcsv($in, escape: '\\');
                 foreach ($row as $i => $field) {
                     $config->configureColumn($i, ['field' => $field]);
                 }
                 break;
             case 'skip':
                 //  Just skip a row:
-                fgetcsv($in);
+                fgetcsv($in, escape: '\\');
                 break;
             case 'none':
             default:
@@ -209,7 +205,7 @@ class Importer
     protected function getConfiguration(string $iniFile, $in): ImporterConfig
     {
         // Load properties file:
-        $resolver = $this->serviceLocator->get(\VuFind\Config\PathResolver::class);
+        $resolver = $this->getService(\VuFind\Config\PathResolver::class);
         $ini = $resolver->getConfigPath($iniFile, $this->configBaseDir);
         if (!file_exists($ini)) {
             throw new \Exception("Cannot load .ini file: {$ini}.");
@@ -250,6 +246,38 @@ class Importer
     }
 
     /**
+     * Inject dependencies into the callback, if necessary.
+     *
+     * @param string $callable Callback function
+     *
+     * @return void
+     */
+    protected function injectCallbackDependencies(string $callable): void
+    {
+        // Use a static property to keep track of which static classes
+        // have already had dependencies injected.
+        static $alreadyInjected = [];
+
+        // $callable is one of two formats: "function" or "class::method".
+        // We only want to proceed if we have a class name.
+        $parts = explode('::', $callable);
+        if (count($parts) < 2) {
+            return;
+        }
+        $class = $parts[0];
+
+        // If we haven't already injected dependencies, do it now! This makes
+        // it possible to use callbacks from the XSLT importer
+        // (e.g. \VuFind\XSLT\Import\VuFind::harvestWithParser)
+        if (!isset($alreadyInjected[$class])) {
+            if (method_exists($class, 'setServiceLocator')) {
+                $class::setServiceLocator($this->serviceLocator);
+            }
+            $alreadyInjected[$class] = true;
+        }
+    }
+
+    /**
      * Apply a single callback to a single value.
      *
      * @param string $callback    Callback string from config
@@ -265,6 +293,7 @@ class Importer
     ): array {
         preg_match('/([^(]+)(\(.*\))?/', $callback, $matches);
         $callable = $matches[1];
+        $this->injectCallbackDependencies($callable);
         $arglist = array_map(
             'trim',
             explode(

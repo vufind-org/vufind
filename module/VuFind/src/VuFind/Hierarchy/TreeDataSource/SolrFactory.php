@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  HierarchyTree_DataSource
@@ -69,21 +69,16 @@ class SolrFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if ($options !== null) {
             throw new \Exception('Unexpected options sent to factory!');
         }
         $cacheDir = $container->get(\VuFind\Cache\Manager::class)
             ->getCacheDir(false);
-        $hierarchyFilters = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('HierarchyDefault');
-        $filters = isset($hierarchyFilters->HierarchyTree->filterQueries)
-          ? $hierarchyFilters->HierarchyTree->filterQueries->toArray()
-          : [];
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $batchSize = $config->Index->cursor_batch_size ?? 1000;
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
+        $filters = $configManager->getConfigArray('HierarchyDefault')['HierarchyTree']['filterQueries'] ?? [];
+        $batchSize = $configManager->getConfigArray('config')['Index']['cursor_batch_size'] ?? 1000;
         $searchService = $container->get(\VuFindSearch\Service::class);
         $formatterManager = $container
             ->get(\VuFind\Hierarchy\TreeDataFormatter\PluginManager::class);

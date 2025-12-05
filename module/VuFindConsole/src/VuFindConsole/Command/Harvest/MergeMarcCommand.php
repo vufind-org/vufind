@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -31,6 +31,7 @@
 namespace VuFindConsole\Command\Harvest;
 
 use SimpleXMLElement;
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -46,19 +47,16 @@ use Symfony\Component\Console\Output\OutputInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'harvest/merge-marc',
+    description: 'MARC merge tool'
+)]
 class MergeMarcCommand extends Command
 {
     /**
      * XML namespace for MARC21.
      */
     public const MARC21_NAMESPACE = 'http://www.loc.gov/MARC21/slim';
-
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'harvest/merge-marc';
 
     /**
      * Configure the command.
@@ -68,7 +66,6 @@ class MergeMarcCommand extends Command
     protected function configure()
     {
         $this
-            ->setDescription('MARC merge tool')
             ->setHelp(
                 'Merges harvested MARCXML files into a single <collection>; '
                 . 'writes to stdout.'
@@ -205,7 +202,7 @@ class MergeMarcCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $dir = rtrim($input->getArgument('directory'), '/');
 
@@ -213,7 +210,7 @@ class MergeMarcCommand extends Command
             $fileList = $this->findXmlFiles($dir);
         } catch (\Exception $e) {
             $output->writeln($e->getMessage());
-            return 1;
+            return self::FAILURE;
         }
 
         $output->writeln(
@@ -225,6 +222,6 @@ class MergeMarcCommand extends Command
             $this->outputRecordsFromFile($filePath, $output);
         }
         $output->writeln('</marc:collection>');
-        return 0;
+        return self::SUCCESS;
     }
 }

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,7 +29,7 @@
 
 namespace VuFindTest\Search\Blender;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\Search\Blender\Options;
 use VuFind\Search\Blender\Params;
 use VuFind\Search\Blender\Results;
@@ -37,6 +37,7 @@ use VuFind\Search\Solr\HierarchicalFacetHelper;
 use VuFindSearch\Backend\Blender\Response\Json\RecordCollection;
 use VuFindSearch\Command\CommandInterface;
 use VuFindSearch\Command\SearchCommand;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
  * Blender Results Tests
@@ -50,6 +51,7 @@ use VuFindSearch\Command\SearchCommand;
 class ResultsTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\ReflectionTrait;
+    use ConfigRelatedServicesTrait;
 
     /**
      * Test performing a search
@@ -70,23 +72,22 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
             return $command;
         };
 
-        $solrConfigMgr = $this->createMock(\VuFind\Config\PluginManager::class);
-        $configMgr = $this->getConfigManager();
+        $mockConfigManager = $this->getMockConfigManager(['Primo' => []]);
 
         $paramsClasses = [
             new \VuFind\Search\Solr\Params(
-                new \VuFind\Search\Solr\Options($solrConfigMgr),
-                $solrConfigMgr
+                new \VuFind\Search\Solr\Options($mockConfigManager),
+                $mockConfigManager
             ),
             new \VuFind\Search\Primo\Params(
-                new \VuFind\Search\Primo\Options($configMgr),
-                $configMgr
+                new \VuFind\Search\Primo\Options($mockConfigManager),
+                $mockConfigManager
             ),
         ];
 
         $params = new Params(
-            new Options($configMgr),
-            $configMgr,
+            new Options($mockConfigManager),
+            $mockConfigManager,
             new HierarchicalFacetHelper(),
             $paramsClasses,
             new Config([]),
@@ -96,7 +97,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $searchService->expects($this->once())
             ->method('invoke')
-            ->will($this->returnCallback($callback));
+            ->willReturnCallback($callback);
         $recordLoader = $this->getMockBuilder(\VuFind\Record\Loader::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -106,31 +107,5 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(20, $results->getResultTotal());
         $this->assertEquals([], $results->getResults());
         $this->assertEquals(['Error Message'], $results->getErrors());
-    }
-
-    /**
-     * Get mock config manager
-     *
-     * @return object
-     */
-    protected function getConfigManager()
-    {
-        $configs = [
-            'Primo' => new Config([]),
-        ];
-
-        $callback = function (string $configName) use ($configs) {
-            return $configs[$configName] ?? null;
-        };
-
-        $configManager = $this->getMockBuilder(\VuFind\Config\PluginManager::class)
-                ->disableOriginalConstructor()
-                ->getMock();
-        $configManager
-            ->expects($this->any())
-            ->method('get')
-            ->will($this->returnCallback($callback));
-
-        return $configManager;
     }
 }

@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -33,6 +33,7 @@ namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
 use Behat\Mink\Session;
+use VuFindTest\Feature\CacheManagementTrait;
 use VuFindTest\Feature\SearchFacetFilterTrait;
 
 /**
@@ -47,6 +48,7 @@ use VuFindTest\Feature\SearchFacetFilterTrait;
  */
 class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
 {
+    use CacheManagementTrait;
     use SearchFacetFilterTrait;
 
     /**
@@ -201,6 +203,38 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test that the advanced search breadcrumb is operational.
+     *
+     * @return void
+     */
+    public function testAdvancedSearchBreadcrumb()
+    {
+        $session = $this->getMinkSession();
+        $page = $this->goToAdvancedSearch($session);
+
+        // Check breadcrumb without link
+        $this->assertEquals('Search', $this->findCssAndGetHtml($page, '.breadcrumb-item'));
+
+        // Enter and submit search
+        $this->findCssAndSetValue($page, '#search_lookfor0_0', 'miller');
+        $this->findCss($page, '[type=submit]')->press();
+
+        // Check for proper search
+        $this->assertEquals(
+            '(All Fields:miller)',
+            $this->findCssAndGetHtml($page, '.adv_search_terms strong')
+        );
+
+        // Test breadcrumb link
+        $this->editAdvancedSearch($page);
+        $this->clickCss($page, '.breadcrumb-item a');
+        $this->assertEquals(
+            '(All Fields:miller)',
+            $this->findCssAndGetHtml($page, '.adv_search_terms strong')
+        );
+    }
+
+    /**
      * Test that the advanced search form works correctly with a NOT group combined
      * with another group.
      *
@@ -277,16 +311,16 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->goToAdvancedSearch($session);
         // By default, everything is sorted alphabetically:
         $this->assertEquals(
-            'Article Book Book Chapter Conference Proceeding eBook Electronic Journal Microfilm Serial',
+            'Article Book Book Chapter Conference Proceeding eBook Electronic Journal Manuscript Microfilm',
             $this->findCssAndGetText($page, '#limit_format')
         );
         // Change the language:
         $this->clickCss($page, '.language.dropdown');
-        $this->clickCss($page, '.language.dropdown li:not(.active) a');
+        $this->clickCss($page, '.language.dropdown li a:not(.active)');
         $this->waitForPageLoad($page);
         // Still sorted alphabetically, even though in a different language:
         $this->assertEquals(
-            'Artikel Buch Buchkapitel E-Book Elektronisch Mikrofilm Schriftenreihe Tagungsbericht Zeitschrift',
+            'Artikel Buch Buchkapitel E-Book Elektronisch Manuskript Mikrofilm Tagungsbericht Zeitschrift',
             $this->findCssAndGetText($page, '#limit_format')
         );
     }
@@ -313,42 +347,112 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->goToAdvancedSearch($session);
         // By default, everything is sorted alphabetically:
         $this->assertEquals(
-            'Book eBook Article Book Chapter Conference Proceeding Electronic Journal Microfilm Serial',
+            'Book eBook Article Book Chapter Conference Proceeding Electronic Journal Manuscript Microfilm',
             $this->findCssAndGetText($page, '#limit_format')
         );
         // Change the language:
         $this->clickCss($page, '.language.dropdown');
-        $this->clickCss($page, '.language.dropdown li:not(.active) a');
+        $this->clickCss($page, '.language.dropdown li a:not(.active)');
         $this->waitForPageLoad($page);
         // Still sorted alphabetically, even though in a different language:
         $this->assertEquals(
-            'Buch E-Book Artikel Buchkapitel Elektronisch Mikrofilm Schriftenreihe Tagungsbericht Zeitschrift',
+            'Buch E-Book Artikel Buchkapitel Elektronisch Manuskript Mikrofilm Tagungsbericht Zeitschrift',
             $this->findCssAndGetText($page, '#limit_format')
         );
     }
 
     /**
+     * Data provider for testHierarchicalFacetsFilters
+     *
+     * @return array
+     */
+    public static function hierarchicalFacetFiltersProvider(): array
+    {
+        return [
+            'default sort' => [
+                null,
+                null,
+                'top',
+            ],
+            'top level alphabetical' => [
+                'top',
+                'all',
+                'top',
+            ],
+            'all alphabetical' => [
+                'all',
+                'top',
+                'all',
+            ],
+            'count' => [
+                'count',
+                'all',
+                'count',
+            ],
+            'default sort (inherited)' => [
+                null,
+                'top',
+                'top',
+            ],
+            'top level alphabetical (inherited)' => [
+                null,
+                'top',
+                'top',
+            ],
+            'all alphabetical (inherited)' => [
+                null,
+                'all',
+                'all',
+            ],
+            'count (inherited)' => [
+                null,
+                'count',
+                'count',
+            ],
+        ];
+    }
+
+    /**
      * Test that hierarchical facet filters work properly.
+     *
+     * @param ?string $sort         Sort option
+     * @param ?string $defaultSort  Default sort option
+     * @param string  $expectedSort Expected sort order of options
      *
      * @return void
      */
-    public function testHierarchicalFacetsFilters(): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('hierarchicalFacetFiltersProvider')]
+    public function testHierarchicalFacetsFilters(?string $sort, ?string $defaultSort, string $expectedSort): void
     {
-        $this->changeConfigs(
-            [
-                'facets' => [
-                    'Results' => [
-                        'hierarchical_facet_str_mv' => 'hierarchy',
-                    ],
-                    'SpecialFacets' => [
-                        'hierarchical[]' => 'hierarchical_facet_str_mv',
-                    ],
-                    'Advanced' => [
-                        'hierarchical_facet_str_mv' => 'Hierarchy',
-                    ],
+        $config = [
+            'facets' => [
+                'Results' => [
+                    'hierarchical_facet_str_mv' => 'hierarchy',
                 ],
-            ]
-        );
+                'SpecialFacets' => [
+                    'hierarchical[]' => 'hierarchical_facet_str_mv',
+                ],
+                'Advanced' => [
+                    'hierarchical_facet_str_mv' => 'Hierarchy',
+                ],
+                'Advanced_Settings' => [
+                    'translated_facets[]' => 'hierarchical_facet_str_mv:Facets',
+                ],
+            ],
+        ];
+
+        if (null !== $sort) {
+            $config['facets']['Advanced_Settings']['hierarchicalFacetSortOptions']['hierarchical_facet_str_mv'] = $sort;
+        }
+        if (null !== $defaultSort) {
+            $config['facets']['SpecialFacets']['hierarchicalFacetSortOptions']['hierarchical_facet_str_mv']
+                = $defaultSort;
+        }
+        $this->changeConfigs($config + $this->getCacheClearPermissionConfig());
+
+        // Clear object cache to ensure clean state:
+        $this->clearObjectCache();
+
         $session = $this->getMinkSession();
         $page = $this->goToAdvancedSearch($session);
 
@@ -358,35 +462,54 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
         foreach ($filter->findAll('css', 'option') as $option) {
             $options[$option->getValue()] = $option->getHtml();
         }
-        $expected = [
-            '~hierarchical_facet_str_mv:"0/level1a/"' => 'level1a',
-            '~hierarchical_facet_str_mv:"1/level1a/level2a/"' => '&nbsp;&nbsp;&nbsp;&nbsp;level2a',
-            '~hierarchical_facet_str_mv:"2/level1a/level2a/level3a/"'
-                => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;level3a',
-            '~hierarchical_facet_str_mv:"2/level1a/level2a/level3b/"'
-                => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;level3b',
-            '~hierarchical_facet_str_mv:"2/level1a/level2a/level3d/"'
-                => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;level3d',
-            '~hierarchical_facet_str_mv:"1/level1a/level2b/"' => '&nbsp;&nbsp;&nbsp;&nbsp;level2b',
-            '~hierarchical_facet_str_mv:"2/level1a/level2b/level3c/"'
-                => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;level3c',
-            '~hierarchical_facet_str_mv:"2/level1a/level2b/level3e/"'
-                => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;level3e',
-            '~hierarchical_facet_str_mv:"0/level1z/"' => 'level1z',
-            '~hierarchical_facet_str_mv:"1/level1z/level2y/"' => '&nbsp;&nbsp;&nbsp;&nbsp;level2y',
-            '~hierarchical_facet_str_mv:"2/level1z/level2y/level3g/"'
-                => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;level3g',
-            '~hierarchical_facet_str_mv:"1/level1z/level2z/"' => '&nbsp;&nbsp;&nbsp;&nbsp;level2z',
-            '~hierarchical_facet_str_mv:"2/level1z/level2z/level3z/"'
-                => '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;level3z',
-        ];
-
-        $this->assertEquals($expected, $options);
+        $expectedOptions = $this->getExpectedHierarchicalFacetOptions($expectedSort);
+        $this->assertSame($expectedOptions, $options);
 
         // Select second options, do a search and verify that the filter is active:
         $this->clickCss($page, '#limit_hierarchical_facet_str_mv option', null, 1);
         $this->clickCss($page, '.btn.btn-primary');
         $this->waitForPageLoad($page);
-        $this->assertAppliedFilter($page, 'level1a/level2a');
+        $expectedValue = $this->getExpectedHierarchicalFacetFilterText($expectedSort, 1);
+        $this->assertAppliedFilter($page, 0, 'hierarchy', $expectedValue);
+    }
+
+    /**
+     * Test that checkbox facets work on the advanced search screen.
+     *
+     * @return void
+     */
+    public function testAdvancedCheckboxes(): void
+    {
+        // Activate checkboxes on advanced search:
+        $this->changeConfigs(
+            [
+                'facets' => [
+                    'Advanced_Settings' => [
+                        'special_facets' => 'checkboxes,illustrated,daterange',
+                    ],
+                    'CheckboxFacets' => [
+                        'id:testbug2' => 'The Test Record',
+                    ],
+                ],
+            ]
+        );
+        $session = $this->getMinkSession();
+        $page = $this->goToAdvancedSearch($session);
+
+        // Confirm expected label text:
+        $checkboxSelector = '.checkbox-filters .checkbox label';
+        $this->assertEquals('The Test Record', $this->findCssAndGetText($page, $checkboxSelector));
+
+        // Select checkbox and submit search:
+        $this->clickCss($page, $checkboxSelector);
+        $this->clickCss($page, '.adv-submit .btn-primary');
+        $this->waitForPageLoad($page);
+
+        // Confirm expected result -- just the record specified by the checkbox filter:
+        $this->assertEquals('Showing 1 - 1 results of 1', $this->findCssAndGetText($page, '.js-search-stats'));
+        $this->assertStringStartsWith(
+            'La congiura dei Principi Napoletani 1701',
+            $this->findCssAndGetText($page, '.result-body .title')
+        );
     }
 }

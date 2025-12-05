@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Theme
@@ -30,6 +30,7 @@
 namespace VuFindTheme;
 
 use Laminas\Cache\Storage\StorageInterface;
+use Webmozart\Glob\Glob;
 
 use function is_array;
 use function strlen;
@@ -188,6 +189,7 @@ class ThemeInfo
     {
         // Load theme configuration...
         $this->allThemeInfo[$theme] = include $this->getThemeConfig($theme);
+        $this->allThemeInfo[$theme]['themeName'] = $theme;
         // ..and if there are mixins, load those too!
         if (isset($this->allThemeInfo[$theme]['mixins'])) {
             foreach ($this->allThemeInfo[$theme]['mixins'] as $mix) {
@@ -354,7 +356,7 @@ class ThemeInfo
             $themePath = "$basePath/$theme/";
             foreach ($allPaths as $currentPath) {
                 $path = $themePath . $currentPath;
-                foreach (glob($path) as $file) {
+                foreach (Glob::glob($path) as $file) {
                     if (filetype($file) === 'dir') {
                         continue;
                     }

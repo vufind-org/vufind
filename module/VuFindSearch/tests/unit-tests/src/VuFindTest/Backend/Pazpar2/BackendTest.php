@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -74,10 +74,10 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $conn = $this->getConnectorMock(['search', 'show', 'stat']);
         $conn->expects($this->once())
             ->method('search')
-            ->will($this->returnValue($this->loadResponse('pp2search')));
+            ->willReturn($this->loadResponse('pp2search'));
         $conn->expects($this->once())
             ->method('show')
-            ->will($this->returnValue($this->loadResponse('pp2show')));
+            ->willReturn($this->loadResponse('pp2show'));
         $conn->expects($this->exactly(2))
             ->method('stat')
             ->willReturnOnConsecutiveCalls(

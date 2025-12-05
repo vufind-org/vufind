@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -236,6 +236,17 @@ class UrlQueryHelper
     }
 
     /**
+     * Disable hidden filters
+     *
+     * @return UrlQueryHelper
+     */
+    public function disableHiddenFilters()
+    {
+        unset($this->urlParams['hiddenFilters']);
+        return $this;
+    }
+
+    /**
      * Control query suppression
      *
      * @param bool $suppress Should we suppress queries?
@@ -299,6 +310,25 @@ class UrlQueryHelper
     }
 
     /**
+     * Format a set of facet parameters into a filter string.
+     *
+     * @param string $field    Facet field
+     * @param string $value    Facet value
+     * @param string $operator Facet type to add (AND, OR, NOT)
+     *
+     * @return string
+     */
+    public function formatFilterString(string $field, string $value, string $operator = 'AND'): string
+    {
+        $prefix = match ($operator) {
+            'NOT' => '-',
+            'OR'  => '~',
+            default => '',
+        };
+        return $prefix . $field . ':"' . $value . '"';
+    }
+
+    /**
      * Add a facet to the parameters.
      *
      * @param string $field    Facet field
@@ -310,8 +340,7 @@ class UrlQueryHelper
     public function addFacet($field, $value, $operator = 'AND')
     {
         // Facets are just a special case of filters:
-        $prefix = ($operator == 'NOT') ? '-' : ($operator == 'OR' ? '~' : '');
-        return $this->addFilter($prefix . $field . ':"' . $value . '"');
+        return $this->addFilter($this->formatFilterString($field, $value, $operator));
     }
 
     /**
@@ -340,7 +369,7 @@ class UrlQueryHelper
     /**
      * Remove all filters.
      *
-     * @return string
+     * @return UrlQueryHelper
      */
     public function removeAllFilters()
     {
@@ -354,7 +383,7 @@ class UrlQueryHelper
     /**
      * Reset default filter state.
      *
-     * @return string
+     * @return UrlQueryHelper
      */
     public function resetDefaultFilters()
     {
@@ -474,7 +503,7 @@ class UrlQueryHelper
      *
      * @param string $filter Filter to add
      *
-     * @return string
+     * @return UrlQueryHelper
      */
     public function removeFilter($filter)
     {
@@ -488,7 +517,7 @@ class UrlQueryHelper
      *
      * @param string $p New page parameter (null for NO page parameter)
      *
-     * @return string
+     * @return UrlQueryHelper
      */
     public function setPage($p)
     {
@@ -501,7 +530,7 @@ class UrlQueryHelper
      *
      * @param string $s New sort parameter (null for NO sort parameter)
      *
-     * @return string
+     * @return UrlQueryHelper
      */
     public function setSort($s)
     {
@@ -519,7 +548,7 @@ class UrlQueryHelper
      *
      * @param string $handler new Handler.
      *
-     * @return string
+     * @return UrlQueryHelper
      */
     public function setHandler($handler)
     {
@@ -540,7 +569,7 @@ class UrlQueryHelper
      *
      * @param string $v New sort parameter (null for NO view parameter)
      *
-     * @return string
+     * @return UrlQueryHelper
      */
     public function setViewParam($v)
     {
@@ -556,7 +585,7 @@ class UrlQueryHelper
      *
      * @param string $l New limit parameter (null for NO limit parameter)
      *
-     * @return string
+     * @return UrlQueryHelper
      */
     public function setLimit($l)
     {
@@ -569,12 +598,28 @@ class UrlQueryHelper
     }
 
     /**
+     * Return HTTP parameters to render the current page with a different jumpto
+     * parameter.
+     *
+     * @param null|false|int $jumpto If results page is skipped when a search has only one hit
+     *
+     * @return UrlQueryHelper
+     */
+    public function setJumpto(null|false|int $jumpto): UrlQueryHelper
+    {
+        return $this->updateQueryString(
+            'jumpto',
+            $jumpto
+        );
+    }
+
+    /**
      * Return HTTP parameters to render the current page with a different set
      * of search terms.
      *
      * @param string $lookfor New search terms
      *
-     * @return string
+     * @return UrlQueryHelper
      */
     public function setSearchTerms($lookfor)
     {
@@ -664,7 +709,7 @@ class UrlQueryHelper
      *                          for no default).
      * @param bool   $clearPage Should we clear the page number, if any?
      *
-     * @return string
+     * @return UrlQueryHelper
      */
     protected function updateQueryString(
         $field,
@@ -673,7 +718,7 @@ class UrlQueryHelper
         $clearPage = false
     ) {
         $params = $this->urlParams;
-        if (null === $value || $value == $default) {
+        if (null === $value || $value === $default) {
             unset($params[$field]);
         } else {
             $params[$field] = $value;

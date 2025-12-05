@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -48,8 +48,10 @@ use VuFind\Search\UrlQueryHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SearchTabs extends \Laminas\View\Helper\AbstractHelper
+class SearchTabs extends \Laminas\View\Helper\AbstractHelper implements \Psr\Log\LoggerAwareInterface
 {
+    use \VuFind\Log\LoggerAwareTrait;
+
     /**
      * Search manager
      *
@@ -84,6 +86,13 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
      * @var array
      */
     protected $cachedHiddenFilterParams = [];
+
+    /**
+     * Should we force getCurrentHiddenFilterParams() to return an empty string?
+     *
+     * @var bool
+     */
+    protected $currentHiddenFilterParamsDisabled = false;
 
     /**
      * Constructor
@@ -133,28 +142,48 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
             $class = $this->helper->extractClassName($key);
             $filters = isset($allFilters[$key]) ? (array)$allFilters[$key] : [];
             $selected = $class == $activeSearchClass && $this->helper->filtersMatch($class, $hiddenFilters, $filters);
-            if ($type == 'basic') {
-                if (!isset($activeOptions)) {
-                    $activeOptions
-                        = $this->results->get($activeSearchClass)->getOptions();
+            try {
+                if ($type == 'basic') {
+                    if (!isset($activeOptions)) {
+                        $activeOptions
+                            = $this->results->get($activeSearchClass)->getOptions();
+                    }
+                    $url = $this->remapBasicSearch(
+                        $activeOptions,
+                        $class,
+                        $query,
+                        $handler,
+                        $filters,
+                    );
+                } elseif ($type == 'advanced') {
+                    $url = $this->getAdvancedTabUrl(
+                        $class,
+                        $filters,
+                    );
+                } else {
+                    $url = $this->getHomeTabUrl(
+                        $class,
+                        $filters,
+                    );
                 }
-                $url = $this->remapBasicSearch(
-                    $activeOptions,
-                    $class,
-                    $query,
-                    $handler,
-                    $filters,
+            } catch (\Exception $e) {
+                // Log the error and just don't add tabs that we couldn't get the data for
+                $baseMsg = "Could not add tab for {$key}.";
+                $shortDetails = $e->getMessage();
+                $fullDetails = (string)$e;
+                $this->logError(
+                    $baseMsg,
+                    [
+                        'details' => [
+                            1 => "$baseMsg $shortDetails",
+                            2 => "$baseMsg $shortDetails",
+                            3 => "$baseMsg $shortDetails",
+                            4 => "$baseMsg $fullDetails",
+                            5 => "$baseMsg $fullDetails",
+                        ],
+                    ]
                 );
-            } elseif ($type == 'advanced') {
-                $url = $this->getAdvancedTabUrl(
-                    $class,
-                    $filters,
-                );
-            } else {
-                $url = $this->getHomeTabUrl(
-                    $class,
-                    $filters,
-                );
+                continue;
             }
             $tab = [
                 'id' => $key,
@@ -219,10 +248,8 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
      * Get current hidden filters as a string suitable for search URLs
      *
      * @param string $searchClassId            Active search class
-     * @param bool   $ignoreHiddenFilterMemory Whether to ignore hidden filters in
-     * search memory
-     * @param string $prepend                  String to prepend to the hidden
-     * filters if they're not empty
+     * @param bool   $ignoreHiddenFilterMemory Whether to ignore hidden filters in search memory
+     * @param string $prepend                  String to prepend to the hidden filters if they're not empty
      *
      * @return string
      */
@@ -231,6 +258,9 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
         $ignoreHiddenFilterMemory = false,
         $prepend = '&amp;'
     ) {
+        if ($this->currentHiddenFilterParamsDisabled) {
+            return '';
+        }
         if (!isset($this->cachedHiddenFilterParams[$searchClassId])) {
             $view = $this->getView();
             $hiddenFilters = $this->getHiddenFilters(
@@ -263,7 +293,10 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
                 $this->cachedHiddenFilterParams[$searchClassId] = '';
             }
         }
-        return $prepend . $this->cachedHiddenFilterParams[$searchClassId];
+        if ('' !== ($filters = $this->cachedHiddenFilterParams[$searchClassId])) {
+            return $prepend . $filters;
+        }
+        return '';
     }
 
     /**
@@ -369,5 +402,16 @@ class SearchTabs extends \Laminas\View\Helper\AbstractHelper
             );
         }
         return '';
+    }
+
+    /**
+     * Force getCurrentHiddenFilterParams() to return an empty string (used in contexts like
+     * New Items where we don't want to persist hidden filters through links).
+     *
+     * @return void
+     */
+    public function disableCurrentHiddenFilterParams(): void
+    {
+        $this->currentHiddenFilterParamsDisabled = true;
     }
 }

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Session_Handlers
@@ -65,25 +65,29 @@ class RedisFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
 
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config')->Session ?? null;
-        return new $requestedName($this->getConnection($config), $config);
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)
+            ->getConfigObject('config')->Session ?? null;
+        $service = new $requestedName($this->getConnection($config), $config);
+        $service->setDbServiceManager(
+            $container->get(\VuFind\Db\Service\PluginManager::class)
+        );
+        return $service;
     }
 
     /**
      * Given a configuration, build the client object.
      *
-     * @param \Laminas\Config\Config $config Session configuration
+     * @param \VuFind\Config\Config $config Session configuration
      *
      * @return \Credis_Client
      */
-    protected function getConnection(\Laminas\Config\Config $config)
+    protected function getConnection(\VuFind\Config\Config $config)
     {
         // Set defaults if nothing set in config file.
         $host = $config->redis_host ?? 'localhost';

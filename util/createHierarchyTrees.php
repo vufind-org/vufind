@@ -1,6 +1,6 @@
 <?php
 /**
- * Create all the hierarchy files which are used for looking up hierarchichal trees.
+ * Create all the hierarchy files which are used for looking up hierarchical trees.
  * This script will search the Solr index and create the files needed so they don't
  * need to be built at runtime. If this script is run after every index, the caching
  * time for hierarchy trees can be set to -1 so that trees are always assumed to be
@@ -22,8 +22,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Utilities

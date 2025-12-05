@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Recommendations
@@ -29,10 +29,11 @@
 
 namespace VuFind\Recommend;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\Connection\ExternalVuFind as Connection;
 
 use function intval;
+use function is_callable;
 
 /**
  * ConsortialVuFind Recommendations Module
@@ -48,7 +49,7 @@ use function intval;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-class ConsortialVuFind implements RecommendInterface, \Laminas\Log\LoggerAwareInterface
+class ConsortialVuFind implements RecommendInterface, \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
@@ -111,9 +112,9 @@ class ConsortialVuFind implements RecommendInterface, \Laminas\Log\LoggerAwareIn
     /**
      * Query string from the original search results
      *
-     * @var string
+     * @var ?string
      */
-    protected $queryString;
+    protected $queryString = null;
 
     /**
      * Constructor
@@ -198,7 +199,10 @@ class ConsortialVuFind implements RecommendInterface, \Laminas\Log\LoggerAwareIn
      */
     public function process($results)
     {
-        $this->queryString = $results->getParams()->getQuery()->getString();
+        $query = $results->getParams()->getQuery();
+        if (is_callable([$query, 'getString'])) {
+            $this->queryString = $query->getString();
+        }
     }
 
     /**
@@ -208,7 +212,7 @@ class ConsortialVuFind implements RecommendInterface, \Laminas\Log\LoggerAwareIn
      */
     public function getResults()
     {
-        if (!$this->hasMinimumConfig) {
+        if (!$this->hasMinimumConfig || !$this->queryString) {
             return [];
         }
 

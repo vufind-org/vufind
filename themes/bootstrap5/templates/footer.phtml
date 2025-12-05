@@ -1,0 +1,41 @@
+<footer class="hidden-print">
+  <div class="footer-container">
+    <div class="footer-column">
+      <?php $this->slot('footer-left')->start(); ?>
+        <h2><?=$this->transEsc('footer_header_search_options')?></h2>
+        <ul>
+          <li><a href="<?=$this->url('search-history')?>"><?=$this->transEsc('Search History')?></a></li>
+          <li><a href="<?=$this->url('search-advanced')?>"><?=$this->transEsc('Advanced Search')?></a></li>
+        </ul>
+      <?=$this->slot('footer-left')->end(); ?>
+    </div>
+    <div class="footer-column">
+      <?php $this->slot('footer-center')->start(); ?>
+        <h2><?=$this->transEsc('footer_header_find_more')?></h2>
+        <ul>
+          <li><a href="<?=$this->url('browse-home')?>"><?=$this->transEsc('Browse the Catalog')?></a></li>
+          <li><a href="<?=$this->url('alphabrowse-home')?>"><?=$this->transEsc('Browse Alphabetically')?></a></li>
+          <li><a href="<?=$this->url('channels-home')?>"><?=$this->transEsc('channel_explore')?></a></li>
+          <li><a href="<?=$this->url('search-reserves')?>"><?=$this->transEsc('Course Reserves')?></a></li>
+          <li><a href="<?=$this->url('search-newitem')?>"><?=$this->transEsc('New Items')?></a></li>
+        </ul>
+      <?=$this->slot('footer-center')->end(); ?>
+    </div>
+    <div class="footer-column">
+      <?php $this->slot('footer-right')->start(); ?>
+        <h2><?=$this->transEsc('footer_header_need_help')?></h2>
+        <ul>
+          <li><a href="<?=$this->url('help', ['topic' => 'search'])?>" data-lightbox class="help-link"><?=$this->transEsc('Search Tips')?></a></li>
+          <li><a href="<?=$this->url('content-page', ['page' => 'asklibrary']) ?>"><?=$this->transEsc('Ask a Librarian')?></a></li>
+          <li><a href="<?=$this->url('content-page', ['page' => 'faq']) ?>"><?=$this->transEsc('FAQs')?></a></li>
+          <?php if ($this->cookieConsent()->isEnabled()): ?>
+            <li><a href="#" data-cc="show-preferencesModal" aria-haspopup="dialog"><?=$this->transEsc('Cookie Settings')?></a></li>
+          <?php endif; ?>
+        </ul>
+      <?=$this->slot('footer-right')->end(); ?>
+    </div>
+  </div>
+  <div class="poweredby">
+    <?=$this->layout()->poweredBy ?>
+  </div>
+</footer>

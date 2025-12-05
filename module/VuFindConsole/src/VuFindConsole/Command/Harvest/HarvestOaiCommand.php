@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -29,6 +29,7 @@
 
 namespace VuFindConsole\Command\Harvest;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use VuFind\Config\PathResolver;
@@ -43,44 +44,33 @@ use VuFindHarvest\OaiPmh\HarvesterFactory;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'harvest/harvest_oai',
+    description: 'OAI-PMH harvester'
+)]
 class HarvestOaiCommand extends \VuFindHarvest\OaiPmh\HarvesterCommand
 {
     /**
-     * The name of the command
-     *
-     * @var string
-     */
-    protected static $defaultName = 'harvest/harvest_oai';
-
-    /**
-     * Config file path resolver
-     *
-     * @var PathResolver
-     */
-    protected $pathResolver;
-
-    /**
      * Constructor
      *
-     * @param Client           $client       HTTP client (omit for default)
-     * @param string           $harvestRoot  Root directory for harvesting (omit for
+     * @param PathResolver      $pathResolver Config file path resolver
+     * @param Client            $client       HTTP client (omit for default)
+     * @param string            $harvestRoot  Root directory for harvesting (omit for
      * default)
-     * @param HarvesterFactory $factory      Harvester factory (omit for default)
-     * @param bool             $silent       Should we suppress output?
-     * @param string|null      $name         The name of the command; passing null
+     * @param ?HarvesterFactory $factory      Harvester factory (omit for default)
+     * @param bool              $silent       Should we suppress output?
+     * @param string|null       $name         The name of the command; passing null
      * means it must be set in configure()
-     * @param PathResolver     $pathResolver Config file path resolver
      */
     public function __construct(
+        protected PathResolver $pathResolver,
         $client = null,
         $harvestRoot = null,
-        HarvesterFactory $factory = null,
+        ?HarvesterFactory $factory = null,
         $silent = false,
         $name = null,
-        PathResolver $pathResolver = null
     ) {
         parent::__construct($client, $harvestRoot, $factory, $silent, $name);
-        $this->pathResolver = $pathResolver;
     }
 
     /**
@@ -115,15 +105,13 @@ class HarvestOaiCommand extends \VuFindHarvest\OaiPmh\HarvesterCommand
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $this->checkLocalSetting($output);
 
         // Add the default --ini setting if missing:
         if (!$input->getOption('ini')) {
-            $ini = $this->pathResolver
-                ? $this->pathResolver->getConfigPath('oai.ini', 'harvest')
-                : \VuFind\Config\Locator::getConfigPath('oai.ini', 'harvest');
+            $ini = $this->pathResolver->getConfigPath('oai.ini', 'harvest');
             $input->setOption('ini', $ini);
         }
         return parent::execute($input, $output);

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -34,6 +34,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\ConfigManagerInterface;
 
 /**
  * Generic factory for search params objects.
@@ -63,7 +64,7 @@ class ParamsFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         // Replace trailing "Params" with "Options" to get the options service:
         $optionsService = preg_replace('/Params$/', 'Options', $requestedName);
@@ -79,11 +80,11 @@ class ParamsFactory implements FactoryInterface
         }
         $optionsObj = $container->get(\VuFind\Search\Options\PluginManager::class)
             ->get($optionsService);
-        $configLoader = $container->get(\VuFind\Config\PluginManager::class);
+        $configManager = $container->get(ConfigManagerInterface::class);
         // Clone the options instance in case caller modifies it:
         return new $requestedName(
             clone $optionsObj,
-            $configLoader,
+            $configManager,
             ...($options ?: [])
         );
     }

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -36,6 +36,7 @@ use Behat\Mink\Exception\UnsupportedDriverActionException;
 use InvalidArgumentException;
 
 use function count;
+use function in_array;
 
 /**
  * Mink favorites test class.
@@ -157,6 +158,18 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $recordURL = $this->stripHash($this->getCurrentUrlWithoutSid());
         $this->clickCss($page, '.savedLists a');
         $this->waitForPageLoad($page);
+        // Did tags show up as expected?
+        $tags = [
+            $this->findCssAndGetText($page, '.last a'),
+            $this->findCssAndGetText($page, '.last a', index: 1),
+            $this->findCssAndGetText($page, '.last a', index: 2),
+        ];
+        // The order of tags may differ by database platform, but as long as they
+        // all show up, it is okay:
+        foreach (['test1', 'test2', 'test 3'] as $tag) {
+            $this->assertTrue(in_array($tag, $tags));
+        }
+        // Now make sure link circles back to record:
         $this->clickCss($page, '.resultItemLine1 a');
         $this->waitForPageLoad($page);
         $this->assertEquals(
@@ -170,10 +183,9 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      * Test adding a record to favorites (from the record page) using an existing
      * account that is not yet logged in.
      *
-     * @depends testAddRecordToFavoritesNewAccount
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddRecordToFavoritesNewAccount')]
     public function testAddRecordToFavoritesLogin(): void
     {
         $page = $this->gotoRecord();
@@ -220,10 +232,9 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      * Test adding a record to favorites (from the record page) using an existing
      * account that is already logged in.
      *
-     * @depends testAddRecordToFavoritesNewAccount
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddRecordToFavoritesNewAccount')]
     public function testAddRecordToFavoritesLoggedIn(): void
     {
         $page = $this->gotoRecord();
@@ -245,10 +256,9 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      * Test adding a record to favorites (from the search results) while creating a
      * new account.
      *
-     * @depends testAddRecordToFavoritesNewAccount
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddRecordToFavoritesNewAccount')]
     public function testAddSearchItemToFavoritesNewAccount(): void
     {
         $page = $this->gotoSearch('id:"017791359-1"');
@@ -320,10 +330,9 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      * Test adding a record to favorites (from the search results) using an existing
      * account that is not yet logged in.
      *
-     * @depends testAddSearchItemToFavoritesNewAccount
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddSearchItemToFavoritesNewAccount')]
     public function testAddSearchItemToFavoritesLogin(): void
     {
         $page = $this->gotoSearch();
@@ -365,10 +374,9 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      * Test adding a record to favorites (from the search results) using an existing
      * account that is already logged in.
      *
-     * @depends testAddSearchItemToFavoritesLogin
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddSearchItemToFavoritesLogin')]
     public function testAddSearchItemToFavoritesLoggedIn(): void
     {
         $page = $this->gotoSearch();
@@ -425,6 +433,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddSearchItemToFavoritesLoggedIn')]
     public function testListSorting(): void
     {
         $session = $this->getMinkSession();
@@ -445,15 +454,67 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
             $page,
             ['Dewey browse test', 'Fake Record 1 with multiple relators/']
         );
+        $this->findCssAndSetValue($page, '#sort_options_1', 'last_saved', verifyValue: false);
+        $this->waitForPageLoad($page);
+        $this->assertFavoriteTitleOrder(
+            $page,
+            ['Fake Record 1 with multiple relators/', 'Dewey browse test']
+        );
+        $this->findCssAndSetValue($page, '#sort_options_1', 'last_saved DESC', verifyValue: false);
+        $this->waitForPageLoad($page);
+        $this->assertFavoriteTitleOrder(
+            $page,
+            ['Dewey browse test', 'Fake Record 1 with multiple relators/']
+        );
+    }
+
+    /**
+     * Test that we can facet filters by tag.
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddSearchItemToFavoritesLoggedIn')]
+    public function testFavoriteFaceting(): void
+    {
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/MyResearch/Favorites');
+        $page = $session->getPage();
+        $this->fillInLoginForm($page, 'username2', 'test', false);
+        $this->submitLoginForm($page, false);
+        $this->waitForPageLoad($page);
+
+        // Make sure we have a facet list:
+        $facetLinks = $page->findAll('css', 'nav[aria-labelledby="acc-menu-favs-header"] a');
+        $linkToClick = null;
+        $allText = [];
+        foreach ($facetLinks as $link) {
+            $allText[] = $link->getText();
+            if ($link->getText() === 'test 3 1') {
+                $linkToClick = $link;
+            }
+        }
+        // Facet order may vary by database engine, but let's make sure all the values are there:
+        $this->assertCount(3, $allText);
+        $expectedLinks = [
+            'test 3 1',
+            'test1 1',
+            'test2 1',
+        ];
+        $this->assertEmpty(array_diff($expectedLinks, $allText));
+
+        // Now click on one and confirm that it filters the list down to just one item:
+        $this->assertEquals('test 3 1', $linkToClick?->getText());
+        $linkToClick->click();
+        $this->waitForPageLoad($page);
+        $this->assertFavoriteTitleOrder($page, ['Fake Record 1 with multiple relators/']);
     }
 
     /**
      * Test that lists can be tagged when the optional setting is activated.
      *
-     * @depends testAddSearchItemToFavoritesNewAccount
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddSearchItemToFavoritesNewAccount')]
     public function testTaggedList(): void
     {
         $this->changeConfigs(
@@ -492,9 +553,11 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Login and go to account home
      *
+     * @param string $username The username to log in as (default = "username1").
+     *
      * @return DocumentElement
      */
-    protected function gotoUserAccount(): DocumentElement
+    protected function gotoUserAccount(string $username = 'username1'): DocumentElement
     {
         // Go home
         $session = $this->getMinkSession();
@@ -503,7 +566,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $page = $session->getPage();
         // Login
         $this->clickCss($page, '#loginOptions a');
-        $this->fillInLoginForm($page, 'username1', 'test');
+        $this->fillInLoginForm($page, $username, 'test');
         $this->submitLoginForm($page);
         $this->waitForPageLoad($page);
         // Go to saved lists
@@ -564,10 +627,9 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that the email control works.
      *
-     * @depends testAddRecordToFavoritesNewAccount
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddRecordToFavoritesNewAccount')]
     public function testBulkEmail(): void
     {
         $page = $this->setupBulkTest();
@@ -594,10 +656,9 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that the export control works.
      *
-     * @depends testAddRecordToFavoritesNewAccount
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddRecordToFavoritesNewAccount')]
     public function testBulkExport(): void
     {
         $page = $this->setupBulkTest();
@@ -616,7 +677,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $select->selectOption('EndNote');
 
         // Do the export:
-        $submit = $this->findCss($page, '.modal-body input[name=submit]');
+        $submit = $this->findCss($page, '.modal-body input[name=submitButton]');
         $submit->click();
         $this->assertEquals('Download File', $this->findCssAndGetText($page, '.modal-body .alert .text-center .btn'));
     }
@@ -624,10 +685,9 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that the print control works.
      *
-     * @depends testAddRecordToFavoritesNewAccount
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddRecordToFavoritesNewAccount')]
     public function testBulkPrint(): void
     {
         $page = $this->setupBulkTest();
@@ -654,11 +714,10 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that it is possible to email a public list.
      *
-     * @depends testAddRecordToFavoritesNewAccount
-     * @depends testAddSearchItemToFavoritesNewAccount
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddRecordToFavoritesNewAccount')]
+    #[\PHPUnit\Framework\Attributes\Depends('testAddSearchItemToFavoritesNewAccount')]
     public function testEmailPublicList(): void
     {
         $page = $this->setupBulkTest();
@@ -669,7 +728,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $button = $this->findAndAssertLink($page, 'Edit List');
         $button->click();
         $this->clickCss($page, '#list_public_1'); // radio button
-        $this->clickCss($page, 'input[name="submit"]'); // submit button
+        $this->clickCss($page, 'input[name="submitButton"]'); // submit button
 
         // Now log out:
         $this->clickCss($page, '.logoutOptions a.logout');
@@ -694,6 +753,33 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
             'Your item(s) were emailed',
             $this->findCssAndGetText($page, '.modal .alert-success')
         );
+    }
+
+    /**
+     * Test that a public list can be displayed as a channel.
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testEmailPublicList')]
+    public function testPublicListChannel(): void
+    {
+        $this->changeConfigs(
+            [
+                'channels' => [
+                    'General' => [
+                        'cache_home_channels' => false,
+                    ],
+                    'source.Solr' => [
+                        'home' => ['listitems'],
+                    ],
+                ],
+            ]
+        );
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Channels');
+        $page = $session->getPage();
+        $this->assertEquals('Test List', $this->findCss($page, '.channel-title')->getText());
+        $this->assertEquals('Dewey browse test', $this->findCss($page, '.channel-item-title')->getText());
     }
 
     /**
@@ -758,12 +844,10 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool   $caseSensitive Use case sensitive tags?
      * @param bool   $matchExpected Do we expect the list to show up in channel?
      *
-     * @depends testEmailPublicList
-     *
-     * @dataProvider getListTagData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testEmailPublicList')]
+    #[\PHPUnit\Framework\Attributes\DataProvider('getListTagData')]
     public function testListTaggingToDisplayChannel(
         string $listTags,
         array $channelConfig,
@@ -796,27 +880,26 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $button = $this->findAndAssertLink($page, 'Edit List');
         $button->click();
         $this->findCssAndSetValue($page, '#list_tags', $listTags);
-        $this->clickCss($page, 'input[name="submit"]'); // submit button
+        $this->clickCss($page, 'input[name="submitButton"]'); // submit button
 
         // Now go to the channel page, where the tagged public list should appear:
         $this->getMinkSession()->visit($this->getVuFindUrl() . '/Channels');
         $this->waitForPageLoad($page);
         if ($matchExpected) {
-            $this->assertEquals('Test List', $this->findCssAndGetText($page, '.channel-title h2'));
-            $this->assertCount(1, $page->findAll('css', '.channel-record'));
+            $this->assertEquals('Test List', $this->findCssAndGetText($page, 'h2.channel-title'));
+            $this->assertCount(1, $page->findAll('css', 'li.channel-item'));
         } else {
-            $this->unfindCss($page, '.channel-title h2');
+            $this->unfindCss($page, 'h2.channel-title');
         }
     }
 
     /**
      * Test that public list indicator appears as expected.
      *
-     * @depends testEmailPublicList
-     * @depends testAddRecordToFavoritesLogin
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testEmailPublicList')]
+    #[\PHPUnit\Framework\Attributes\Depends('testAddRecordToFavoritesLogin')]
     public function testPublicListIndicator(): void
     {
         $page = $this->goToUserAccount();
@@ -852,12 +935,46 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test that the bulk delete control works.
-     *
-     * @depends testAddRecordToFavoritesNewAccount
+     * Test that individual favorite items can be deleted.
      *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddSearchItemToFavoritesNewAccount')]
+    public function testDeleteSingleFavoriteItem(): void
+    {
+        $page = $this->gotoUserAccount('username2');
+
+        // Get the initial count of items
+        $initialItems = $page->findAll('css', '.result');
+        $initialCount = count($initialItems);
+        $this->assertGreaterThan(0, $initialCount, 'Should have at least one item to delete');
+
+        // Find the first delete button dropdown and click it
+        $this->clickCss($page, '.vc-confirm-button .dropdown-toggle');
+
+        // Wait for dropdown to appear and click the "Yes" confirmation
+        $this->waitForPageLoad($page);
+        $this->clickCss($page, '.vc-confirm-button .dropdown-menu .dropdown-item');
+
+        // Wait for the page to reload after deletion
+        $this->waitForPageLoad($page);
+
+        // Verify that the item count has decreased by one
+        $remainingItems = $page->findAll('css', '.result');
+        $remainingCount = count($remainingItems);
+        $this->assertEquals(
+            $initialCount - 1,
+            $remainingCount,
+            'Item count should decrease by one after deletion'
+        );
+    }
+
+    /**
+     * Test that the bulk delete control works.
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddRecordToFavoritesNewAccount')]
     public function testBulkDelete(): void
     {
         $page = $this->setupBulkTest();
@@ -872,11 +989,11 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $button->click();
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         // Check for confirmation message
+        $this->waitForLightboxHidden();
         $this->assertEquals(
             'Your saved item(s) were deleted.',
-            $this->findCssAndGetText($page, '.modal .alert-success')
+            $this->findCssAndGetText($page, '.alert-success')
         );
-        $this->closeLightbox($page);
         $this->unFindCss($page, '.result');
     }
 

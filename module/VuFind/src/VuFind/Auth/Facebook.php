@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -30,6 +30,7 @@
 
 namespace VuFind\Auth;
 
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
 
 /**
@@ -97,7 +98,7 @@ class Facebook extends AbstractBase implements
      * account credentials.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     public function authenticate($request)
     {
@@ -115,19 +116,20 @@ class Facebook extends AbstractBase implements
         }
 
         // If we made it this far, we should log in the user!
-        $user = $this->getUserTable()->getByUsername($details->id);
+        $userService = $this->getUserService();
+        $user = $this->getOrCreateUserByUsername($details->id);
         if (isset($details->first_name)) {
-            $user->firstname = $details->first_name;
+            $user->setFirstname($details->first_name);
         }
         if (isset($details->last_name)) {
-            $user->lastname = $details->last_name;
+            $user->setLastname($details->last_name);
         }
         if (isset($details->email)) {
-            $user->updateEmail($details->email);
+            $userService->updateUserEmail($user, $details->email);
         }
 
         // Save and return the user object:
-        $user->save();
+        $userService->persistEntity($user);
         return $user;
     }
 
@@ -138,9 +140,9 @@ class Facebook extends AbstractBase implements
      * @param string $target Full URL where external authentication method should
      * send user after login (some drivers may override this).
      *
-     * @return bool|string
+     * @return ?string
      */
-    public function getSessionInitiator($target)
+    public function getSessionInitiator(string $target): ?string
     {
         $base = 'https://www.facebook.com/dialog/oauth';
         // Adding the auth_method setting makes it possible to handle logins when
@@ -179,7 +181,7 @@ class Facebook extends AbstractBase implements
      *
      * @param string $accessToken Access token
      *
-     * @return array
+     * @return object
      */
     protected function getDetailsFromAccessToken($accessToken)
     {

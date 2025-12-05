@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -113,10 +113,9 @@ class ExtendedIniNormalizerTest extends \PHPUnit\Framework\TestCase
      *
      * @param string $value Value to test
      *
-     * @dataProvider escapingProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('escapingProvider')]
     public function testEscaping(string $value): void
     {
         $reader = new ExtendedIniReader();
@@ -125,6 +124,21 @@ class ExtendedIniNormalizerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(
             "$value\n",
             $normalizer->formatAsString($reader->getTextDomain([$value]))
+        );
+    }
+
+    /**
+     * Test key normalization.
+     *
+     * @return void
+     */
+    public function testKeyNormalization(): void
+    {
+        $reader = new ExtendedIniReader();
+        $normalizer = new ExtendedIniNormalizer();
+        $this->assertEquals(
+            "_21_21_21_21 = \"bar\"\n_28_29_3F_21 = \"foo\"\n",
+            $normalizer->formatAsString($reader->getTextDomain(['()?! = foo', '!!!! = bar']))
         );
     }
 

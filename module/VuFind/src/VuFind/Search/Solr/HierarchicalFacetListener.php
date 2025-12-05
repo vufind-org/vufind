@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -35,6 +35,7 @@ use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\I18n\TranslatableString;
+use VuFind\Service\GetServiceTrait;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Service;
 
@@ -53,19 +54,14 @@ use function is_array;
  */
 class HierarchicalFacetListener
 {
+    use GetServiceTrait;
+
     /**
      * Backend.
      *
      * @var BackendInterface
      */
     protected $backend;
-
-    /**
-     * Service container.
-     *
-     * @var ServiceLocatorInterface
-     */
-    protected $serviceLocator;
 
     /**
      * Facet configuration.
@@ -126,10 +122,9 @@ class HierarchicalFacetListener
         $this->backend = $backend;
         $this->serviceLocator = $serviceLocator;
 
-        $config = $this->serviceLocator->get(\VuFind\Config\PluginManager::class);
-        $this->facetConfig = $config->get($facetConfig);
-        $this->facetHelper = $this->serviceLocator
-            ->get(\VuFind\Search\Solr\HierarchicalFacetHelper::class);
+        $this->facetConfig = $this->getService(\VuFind\Config\ConfigManagerInterface::class)
+            ->getConfigObject($facetConfig);
+        $this->facetHelper = $this->getService(\VuFind\Search\Solr\HierarchicalFacetHelper::class);
 
         $specialFacets = $this->facetConfig->SpecialFacets;
         $this->displayStyles
@@ -163,7 +158,7 @@ class HierarchicalFacetListener
         SharedEventManagerInterface $manager
     ) {
         $manager->attach(
-            'VuFind\Search',
+            Service::class,
             Service::EVENT_POST,
             [$this, 'onSearchPost']
         );
@@ -184,10 +179,7 @@ class HierarchicalFacetListener
             return $event;
         }
         $context = $command->getContext();
-        if (
-            $context == 'search' || $context == 'retrieve'
-            || $context == 'retrieveBatch' || $context == 'similar'
-        ) {
+        if (in_array($context, ['search', 'retrieve', 'retrieveBatch', 'similar'])) {
             $this->processHierarchicalFacets($event);
         }
         return $event;

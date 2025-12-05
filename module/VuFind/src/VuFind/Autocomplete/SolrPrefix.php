@@ -17,14 +17,14 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Autocomplete
  * @author   Vaclav Rosecky <vaclav.rosecky@mzk.cz>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:autosuggesters Wiki
+ * @link     https://vufind.org/wiki/development:plugins:autosuggesters Wiki
  */
 
 namespace VuFind\Autocomplete;
@@ -122,8 +122,7 @@ class SolrPrefix implements AutocompleteInterface
         $results = [];
         try {
             $params = $this->searchObject->getParams();
-            $rawQuery = $this->autocompleteField . ':(' .
-                $this->mungeQuery($query) . ')';
+            $rawQuery = $this->autocompleteField . ':(' . $this->mungeQuery($query) . ')';
             $params->setBasicSearch($rawQuery);
             $params->addFacet($this->facetField);
             $params->setLimit(0);
@@ -172,7 +171,10 @@ class SolrPrefix implements AutocompleteInterface
      */
     public function setConfig($params)
     {
-        [$this->autocompleteField, $this->facetField] = explode(':', $params, 2);
+        [$this->autocompleteField, $this->facetField, $limit] = explode(':', $params . '::');
+        if ($limit && ctype_digit($limit)) {
+            $this->limit = $limit;
+        }
         $this->initSearchObject();
     }
 
@@ -197,7 +199,5 @@ class SolrPrefix implements AutocompleteInterface
     {
         // Build a new search object:
         $this->searchObject = $this->resultsManager->get($this->searchClassId);
-        $this->searchObject->getOptions()->spellcheckEnabled(false);
-        $this->searchObject->getOptions()->disableHighlighting();
     }
 }

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -71,7 +71,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     protected $wsPickUpLocations;
 
     /**
-     * Defaut pickup location for holds
+     * Default pickup location for holds
      *
      * @var string
      */
@@ -123,11 +123,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      */
     public function getConfig($function, $params = [])
     {
-        if (isset($this->config[$function])) {
-            $functionConfig = $this->config[$function];
-        } else {
-            $functionConfig = false;
-        }
+        $functionConfig = $this->config[$function] ?? false;
         return $functionConfig;
     }
 
@@ -168,13 +164,9 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
     {
         $renewData = [];
 
-        $renewData['renewable'] = ($requested == 0) ? true : false;
+        $renewData['renewable'] = $requested == 0;
 
-        if (!$renewData['renewable']) {
-            $renewData['message'] = 'renew_item_requested';
-        } else {
-            $renewData['message'] = false;
-        }
+        $renewData['message'] = !$renewData['renewable'] ? 'renew_item_requested' : false;
 
         return $renewData;
     }
@@ -561,7 +553,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
      * @param string $session        A valid Horizon session key
      * @param array  $requestDetails An array of request details
      *
-     * @return array  An array witk keys indicating the a success (boolean),
+     * @return array  An array with keys indicating the success (boolean),
      * status (string) and sysMessage (string) if available
      */
     protected function placeRequest($session, $requestDetails)
@@ -676,7 +668,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
                 }
             }
 
-            // Go through the submited bib ids and look for a match
+            // Go through the submitted bib ids and look for a match
             foreach ($data as $values) {
                 $itemID = $values['item_id'];
                 // If the bib id is matched, the cancel must have failed
@@ -689,7 +681,7 @@ class HorizonXMLAPI extends Horizon implements \VuFindHttp\HttpServiceAwareInter
                         'success' => true, 'status' => 'hold_cancel_success',
 
                     ];
-                    $count = $count + 1;
+                    $count += 1;
                 }
             }
         } else {

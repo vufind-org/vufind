@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -31,9 +31,9 @@
 
 namespace VuFind\ILS\Driver;
 
-use Laminas\Log\LoggerAwareInterface;
 use PDO;
 use PDOException;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 use VuFindHttp\HttpServiceAwareInterface;
@@ -164,7 +164,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     protected $showPermanentLocation;
 
     /**
-     * Should we show homebranchinstead of holdingbranch
+     * Should we show homebranch instead of holdingbranch
      *
      * @var bool
      */
@@ -284,7 +284,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
             $this->db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             //Return result set like mysql_fetch_assoc()
             $this->db->setAttribute(PDO::ATTR_DEFAULT_FETCH_MODE, PDO::FETCH_ASSOC);
-            // set communication enoding to utf8
+            // set communication encoding to utf8
             $this->db->exec('SET NAMES utf8');
 
             // Drop the ONLY_FULL_GROUP_BY entry from sql_mode as it breaks this
@@ -568,7 +568,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     /**
      * Get Pick Up Locations
      *
-     * This is responsible for gettting a list of valid library locations for
+     * This is responsible for getting a list of valid library locations for
      * holds / recall retrieval
      *
      * @param array $patron      Patron information returned by the patronLogin
@@ -720,7 +720,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
             ];
         }
 
-        $this->debug('patron: ' . print_r($patron, true));
+        $this->debug('patron: ' . $this->varDump($patron));
         $this->debug('patron_id: ' . $patron_id);
         $this->debug('request_location: ' . $request_location);
         $this->debug('item_id: ' . $item_id);
@@ -814,7 +814,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      * record.
      *
      * @param string $id      The record id to retrieve the holdings for
-     * @param array  $patron  Patron data
+     * @param ?array $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
      * @throws DateException
@@ -825,7 +825,7 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null, array $options = [])
+    public function getHolding($id, ?array $patron = null, array $options = [])
     {
         $this->debug(
             "Function getHolding($id, "
@@ -959,11 +959,9 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
 
             $duedate_formatted = $this->displayDate($duedate);
 
-            if ($rowItem['HLDBRNCH'] == null && $rowItem['HOMEBRANCH'] == null) {
-                $loc = 'Unknown';
-            } else {
-                $loc = $rowItem['LOCATION'];
-            }
+            $loc = $rowItem['HLDBRNCH'] == null && $rowItem['HOMEBRANCH'] == null
+                ? 'Unknown'
+                : $rowItem['LOCATION'];
 
             if ($this->showHomebranch) {
                 $branch = $rowItem['HOMEBRANCH'] ?? $rowItem['HLDBRNCH'] ?? '';
@@ -989,13 +987,6 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
                 ($rowItem['TRANSFERFROM'] != null)
                 && ($rowItem['TRANSFERTO'] != null)
             ) {
-                $branchSqlStmt->execute([':branch' => $rowItem['TRANSFERFROM']]);
-                $rowFrom = $branchSqlStmt->fetch();
-                $transferfrom = $rowFrom
-                    ? $rowFrom['BNAME'] : $rowItem['TRANSFERFROM'];
-                $branchSqlStmt->execute([':branch' => $rowItem['TRANSFERTO']]);
-                $rowTo = $branchSqlStmt->fetch();
-                $transferto = $rowTo ? $rowTo['BNAME'] : $rowItem['TRANSFERTO'];
                 $status = 'In transit between library locations';
                 $available = false;
                 $onTransfer = true;
@@ -1037,8 +1028,6 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
                 'frameworkcode' => $rowItem['DOCTYPE'],
             ];
         }
-
-        //file_put_contents('holding.txt', print_r($holding,TRUE), FILE_APPEND);
 
         $this->debug(
             'Processing finished, rows processed: '
@@ -1388,7 +1377,6 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
     public function getMyProfile($patron)
     {
         $id = $patron['id'];
-        $profile = [];
 
         $rsp = $this->makeRequest(
             "GetPatronInfo&patron_id=$id" . '&show_contact=1'
@@ -1398,16 +1386,15 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
         $this->debug('Cardnumber: ' . $rsp->{'cardnumber'});
 
         if ($rsp->{'code'} != 'PatronNotFound') {
-            $profile = [
-                'firstname' => $this->getField($rsp->{'firstname'}),
-                'lastname'  => $this->getField($rsp->{'surname'}),
-                'address1'  => $this->getField($rsp->{'address'}),
-                'address2'  => $this->getField($rsp->{'address2'}),
-                'zip'       => $this->getField($rsp->{'zipcode'}),
-                'phone'     => $this->getField($rsp->{'phone'}),
-                'group'     => $this->getField($rsp->{'categorycode'}),
-            ];
-            return $profile;
+            return $this->createProfileArray(
+                firstname: $this->getField($rsp->{'firstname'}),
+                lastname: $this->getField($rsp->{'surname'}),
+                address1: $this->getField($rsp->{'address'}),
+                address2: $this->getField($rsp->{'address2'}),
+                zip: $this->getField($rsp->{'zipcode'}),
+                phone: $this->getField($rsp->{'phone'}),
+                group: $this->getField($rsp->{'categorycode'}),
+            );
         } else {
             $this->debug('Error Message: ' . $rsp->{'message'});
             return null;
@@ -1925,11 +1912,11 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
      */
     public function patronLogin($username, $password)
     {
-        $request = 'LookupPatron' . '&id=' . urlencode($username)
+        $request = 'LookupPatron&id=' . urlencode($username)
             . '&id_type=userid';
 
         if ($this->validatePasswords) {
-            $request = 'AuthenticatePatron' . '&username='
+            $request = 'AuthenticatePatron&username='
                 . urlencode($username) . '&password=' . $password;
         }
 
@@ -1939,25 +1926,20 @@ class KohaILSDI extends AbstractBase implements HttpServiceAwareInterface, Logge
         $this->debug('Code: ' . $idObj->{'code'});
         $this->debug('ID: ' . $idObj->{'id'});
 
-        $id = $this->getField($idObj->{'id'}, 0);
-        if ($id) {
+        if ($id = $this->getField($idObj->{'id'}, 0)) {
             $rsp = $this->makeRequest(
                 "GetPatronInfo&patron_id=$id&show_contact=1"
             );
-            $profile = [
-                'id'           => $this->getField($idObj->{'id'}),
-                'firstname'    => $this->getField($rsp->{'firstname'}),
-                'lastname'     => $this->getField($rsp->{'surname'}),
-                'cat_username' => $username,
-                'cat_password' => $password,
-                'email'        => $this->getField($rsp->{'email'}),
-                'major'        => null,
-                'college'      => null,
-            ];
-            return $profile;
-        } else {
-            return null;
+            return $this->createPatronArray(
+                id: $this->getField($idObj->{'id'}),
+                firstname: $this->getField($rsp->{'firstname'}),
+                lastname: $this->getField($rsp->{'surname'}),
+                cat_username: $username,
+                cat_password: $password,
+                email: $this->getField($rsp->{'email'}),
+            );
         }
+        return null;
     }
 
     /**

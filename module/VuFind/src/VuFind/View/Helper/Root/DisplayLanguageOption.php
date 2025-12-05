@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -29,7 +29,7 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\I18n\Translator\TranslatorInterface;
+use Laminas\Translator\TranslatorInterface;
 
 /**
  * DisplayLanguageOption view helper
@@ -43,20 +43,12 @@ use Laminas\I18n\Translator\TranslatorInterface;
 class DisplayLanguageOption extends \Laminas\View\Helper\AbstractHelper
 {
     /**
-     * Translator (or null if unavailable)
-     *
-     * @var TranslatorInterface
-     */
-    protected $translator = null;
-
-    /**
      * Constructor
      *
-     * @param TranslatorInterface $translator Main VuFind translator
+     * @param TranslatorInterface $translator Translator
      */
-    public function __construct(TranslatorInterface $translator)
+    public function __construct(protected TranslatorInterface $translator)
     {
-        $this->translator = $translator;
     }
 
     /**

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -32,6 +32,9 @@ namespace VuFindTest\Unit;
 use Laminas\Http\Request;
 use Laminas\Mvc\Controller\Plugin\Params;
 use Laminas\Stdlib\Parameters;
+use PHPUnit\Framework\MockObject\MockObject;
+use VuFind\Auth\Manager as AuthManager;
+use VuFind\Db\Entity\UserEntityInterface;
 
 /**
  * Base class for AjaxHandler tests.
@@ -64,28 +67,28 @@ abstract class AjaxHandlerTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Create mock user object.
      *
-     * @return \VuFind\Db\Row\User
+     * @return MockObject&UserEntityInterface
      */
-    protected function getMockUser()
+    protected function getMockUser(): MockObject&UserEntityInterface
     {
-        return $this->container->get(\VuFind\Db\Row\User::class);
+        return $this->container->get(UserEntityInterface::class);
     }
 
     /**
-     * Get an auth manager with a value set for isLoggedIn.
+     * Get an auth manager with a value set for getUserObject.
      *
-     * @param \VuFind\Db\Row\User $user Return value for isLoggedIn()
+     * @param ?UserEntityInterface $user Return value for getUserObject()
      *
-     * @return \VuFind\Auth\Manager
+     * @return MockObject&AuthManager
      */
-    protected function getMockAuthManager($user)
+    protected function getMockAuthManager(?UserEntityInterface $user = null): MockObject&AuthManager
     {
         $authManager = $this->container->createMock(
             \VuFind\Auth\Manager::class,
-            ['isLoggedIn', 'loginEnabled']
+            ['getUserObject', 'loginEnabled']
         );
-        $authManager->expects($this->any())->method('isLoggedIn')
-            ->will($this->returnValue($user));
+        $authManager->expects($this->any())->method('getUserObject')
+            ->willReturn($user);
         $authManager->expects($this->any())->method('loginEnabled')
             ->willReturn(true);
         return $authManager;
@@ -94,23 +97,24 @@ abstract class AjaxHandlerTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Build a Params helper for testing.
      *
-     * @param array $get  GET parameters
-     * @param array $post POST parameters
+     * @param array  $get     GET parameters
+     * @param array  $post    POST parameters
+     * @param string $content Body content
      *
      * @return Params
      */
-    protected function getParamsHelper($get = [], $post = [])
+    protected function getParamsHelper(array $get = [], array $post = [], string $content = ''): Params
     {
         $params = new Params();
         $request = new Request();
         $request->setQuery(new Parameters($get));
         $request->setPost(new Parameters($post));
+        $request->setContent($content);
         $controller = $this->container->createMock(
-            'Laminas\Mvc\Controller\AbstractActionController',
+            \Laminas\Mvc\Controller\AbstractActionController::class,
             ['getRequest']
         );
-        $controller->expects($this->any())->method('getRequest')
-            ->will($this->returnValue($request));
+        $controller->expects($this->any())->method('getRequest')->willReturn($request);
         $params->setController($controller);
         return $params;
     }

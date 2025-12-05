@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -46,31 +46,27 @@ use VStelmakh\UrlHighlight\UrlHighlight;
 class Linkify extends AbstractHelper
 {
     /**
-     * Url highlighter
-     *
-     * @var UrlHighlight
-     */
-    protected $urlHighlight;
-
-    /**
      * Constructor
      *
-     * @param UrlHighlight $urlHighlight Url highlighter
+     * @param UrlHighlight $urlHighlight            Url highlighter
+     * @param UrlHighlight $urlHighlightExceptEmail Url highlighter that ignores email addresses
      */
-    public function __construct(UrlHighlight $urlHighlight)
+    public function __construct(protected UrlHighlight $urlHighlight, protected UrlHighlight $urlHighlightExceptEmail)
     {
-        $this->urlHighlight = $urlHighlight;
     }
 
     /**
      * Replace urls and emails by html tags
      *
-     * @param string $string String to linkify (must be HTML-escaped)
+     * @param string $string       String to linkify (must be HTML-escaped)
+     * @param bool   $includeEmail If email addresses should also be linkified
      *
      * @return string
      */
-    public function __invoke(string $string): string
+    public function __invoke(string $string, bool $includeEmail = true): string
     {
-        return $this->urlHighlight->highlightUrls($string);
+        return $includeEmail
+            ? $this->urlHighlight->highlightUrls($string)
+            : $this->urlHighlightExceptEmail->highlightUrls($string);
     }
 }

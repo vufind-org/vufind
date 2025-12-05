@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -121,6 +121,106 @@ trait DemoDriverTestTrait
     }
 
     /**
+     * Get fine JSON for Demo.ini.
+     *
+     * @param string $bibId Bibliographic record ID to create fake item info for.
+     *
+     * @return string
+     */
+    protected function getFakeFines(string $bibId): string
+    {
+        $checkoutDate = strtotime('now -30 days');
+        $returnDate = strtotime('now -2 days');
+        $dueDate = strtotime('now -5 days');
+        return json_encode([
+            [
+                'amount' => 123,
+                'balance' => 123,
+                'checkout' => date('Y-m-d', $checkoutDate),
+                'createdate' => date('Y-m-d', $returnDate),
+                'duedate' => date('Y-m-d', $dueDate),
+                'description' => 'Overdue fee',
+                'id' => $bibId,
+            ],
+        ]);
+    }
+
+    /**
+     * Get hold JSON for Demo.ini.
+     *
+     * @param string $bibId  Bibliographic record ID to create fake item info for.
+     * @param string $bibId2 Second bibliographic record ID to create fake item info for.
+     *
+     * @return array
+     */
+    protected function getFakeHolds(string $bibId, string $bibId2)
+    {
+        $createDate = strtotime('now -30 days');
+        $expireDate = strtotime('now +1 year');
+        return json_encode([
+            [
+                'reqnum' => 1,
+                'location' => 'Main Library',
+                'create' => date('Y-m-d', $createDate),
+                'expire' => date('Y-m-d', $expireDate),
+                'id' => $bibId,
+                'available' => true,
+                'in_transit' => false,
+            ],
+            [
+                'reqnum' => 2,
+                'item_id' => 1,
+                'location' => 'Main Library',
+                'create' => date('Y-m-d', $createDate),
+                'expire' => date('Y-m-d', $expireDate),
+                'id' => $bibId2,
+                'available' => false,
+                'in_transit' => true,
+            ],
+            [
+                'reqnum' => 3,
+                'item_id' => 3,
+                'location' => 'Main Library',
+                'create' => date('Y-m-d', $createDate),
+                'expire' => date('Y-m-d', $expireDate),
+                'id' => $bibId2,
+                'available' => false,
+                'in_transit' => true,
+            ],
+            [
+                'reqnum' => 4,
+                'item_id' => 7,
+                'location' => 'Main Library',
+                'create' => date('Y-m-d', $createDate),
+                'expire' => date('Y-m-d', $expireDate),
+                'id' => $bibId2,
+                'available' => false,
+                'in_transit' => false,
+            ],
+            [
+                'reqnum' => 5,
+                'item_id' => 17,
+                'location' => 'Main Library',
+                'create' => date('Y-m-d', $createDate),
+                'expire' => date('Y-m-d', $expireDate),
+                'id' => $bibId2,
+                'available' => false,
+                'in_transit' => false,
+            ],
+            [
+                'reqnum' => 6,
+                'item_id' => 27,
+                'location' => 'Main Library',
+                'create' => date('Y-m-d', $createDate),
+                'expire' => date('Y-m-d', $expireDate),
+                'id' => $bibId2,
+                'available' => false,
+                'in_transit' => false,
+            ],
+        ]);
+    }
+
+    /**
      * Get Demo.ini override settings for testing ILS functions.
      *
      * @param string $bibId  Bibliographic record ID to create fake item info for.
@@ -136,13 +236,17 @@ trait DemoDriverTestTrait
         return [
             'Records' => [
                 'transactions' => $this->getFakeTransactions($bibId),
-                'historicTransactions'
-                    => $this->getFakeHistoricTransactions($bibId, $bibId2),
+                'historicTransactions' => $this->getFakeHistoricTransactions($bibId, $bibId2),
+                'fines' => $this->getFakeFines($bibId),
+                'holds' => $this->getFakeHolds($bibId, $bibId2),
+                'new_items' => [$bibId, $bibId2],
+                'recently_returned' => [$bibId, $bibId2],
             ],
             'Failure_Probabilities' => [
                 'cancelHolds' => 0,
                 'cancelILLRequests' => 0,
                 'cancelStorageRetrievalRequests' => 0,
+                'changePassword' => 0,
                 'checkILLRequestIsValid' => 0,
                 'checkRenewBlock' => 0,
                 'checkRequestIsValid' => 0,
@@ -150,13 +254,16 @@ trait DemoDriverTestTrait
                 'getAccountBlocks' => 0,
                 'getDefaultRequestGroup' => 0,
                 'getHoldDefaultRequiredDate' => 0,
+                'getPasswordRecoveryData' => 0,
                 'getRequestBlocks' => 0,
                 'placeHold' => 0,
                 'placeILLRequest' => 0,
                 'placeStorageRetrievalRequest' => 0,
                 'renewMyItems' => 0,
+                'resetPassword' => 0,
                 'updateHolds' => 0,
                 'purgeTransactionHistory' => 0,
+                'registerPayment' => 0,
             ],
             'StaticHoldings' => [
                 $bibId => json_encode([$this->getFakeItem()]),

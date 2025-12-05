@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -86,14 +86,14 @@ class TemplatePath extends \Laminas\View\Helper\AbstractHelper
      * @param string $targetTheme template to pull the template from
      *
      * @return string path, null if image not found
-     * @throws Exception if no file exists at path
+     * @throws \Exception if no file exists at path
      */
     public function __invoke($template, $targetTheme)
     {
         $path = $this->pathPre . $targetTheme . $this->pathPost . $template;
         if (!file_exists($path)) {
             throw new \Exception(
-                'template not found in ' . $targetTheme . ': ' . $template
+                'Template not found in ' . $targetTheme . ': ' . $template
             );
         }
         return $path;

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -31,6 +31,7 @@ namespace VuFind\ILS\Driver;
 
 use PDO;
 use PDOException;
+use VuFind\Date\DateException;
 use VuFind\Exception\ILS as ILSException;
 
 use function count;
@@ -88,10 +89,10 @@ class NewGenLib extends AbstractBase
      * record.
      *
      * @param string $RecordID The record id to retrieve the holdings for
-     * @param array  $patron   Patron data
+     * @param ?array $patron   Patron data
      * @param array  $options  Extra options (not currently used)
      *
-     * @throws VuFind\Date\DateException
+     * @throws DateException
      * @throws ILSException
      * @return array           On success, an associative array with the following
      * keys: id, availability (boolean), status, location, reserve, callnumber,
@@ -99,7 +100,7 @@ class NewGenLib extends AbstractBase
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($RecordID, array $patron = null, array $options = [])
+    public function getHolding($RecordID, ?array $patron = null, array $options = [])
     {
         $holding = $this->getItemStatus($RecordID);
         for ($i = 0; $i < count($holding); $i++) {
@@ -137,7 +138,7 @@ class NewGenLib extends AbstractBase
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException
+     * @throws DateException
      * @throws ILSException
      * @return mixed        Array of the patron's fines on success.
      */
@@ -205,7 +206,7 @@ class NewGenLib extends AbstractBase
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException
+     * @throws DateException
      * @throws ILSException
      * @return array        Array of the patron's holds on success.
      */
@@ -305,7 +306,6 @@ class NewGenLib extends AbstractBase
      */
     public function getMyProfile($patron)
     {
-        $profile = null;
         $catusr = $patron['cat_username'];
         $catpswd = $patron['cat_password'];
         $sql = 'select p.patron_id as patron_id,p.user_password as ' .
@@ -320,19 +320,18 @@ class NewGenLib extends AbstractBase
             $this->throwAsIlsException($e);
         }
         while ($row = $sqlStmt->fetch(PDO::FETCH_ASSOC)) {
-            if ($catusr != $row['patron_id'] || $catpswd != $row['user_password']) {
-                return null;
-            } else {
-                $profile = ['firstname' => $row['fname'],
-                    'lastname' => $row['lname'],
-                    'address1' => $row['address1'],
-                    'address2' => $row['address2'],
-                    'zip' => $row['pin'],
-                    'phone' => $row['phone1'],
-                    'group' => null];
+            if ($catusr === $row['patron_id'] && $catpswd === $row['user_password']) {
+                return $this->createProfileArray(
+                    firstname: $row['fname'],
+                    lastname: $row['lname'],
+                    address1: $row['address1'],
+                    address2: $row['address2'],
+                    zip: $row['pin'],
+                    phone: $row['phone1'],
+                );
             }
         }
-        return $profile;
+        return null;
     }
 
     /**
@@ -343,7 +342,7 @@ class NewGenLib extends AbstractBase
      *
      * @param array $patron The patron array from patronLogin
      *
-     * @throws VuFind\Date\DateException
+     * @throws DateException
      * @throws ILSException
      * @return array        Array of the patron's transactions on success.
      */
@@ -471,16 +470,14 @@ class NewGenLib extends AbstractBase
         if (!$row) {
             return null;
         }
-        return [
-            'id' => $row['patron_id'],
-            'firstname' => $row['fname'],
-            'lastname' => $row['lname'],
-            'cat_username' => $username,
-            'cat_password' => $password,
-            'email' => $row['email'],
-            'major' => null,
-            'college' => null,
-        ];
+        return $this->createPatronArray(
+            id: $row['patron_id'],
+            firstname: $row['fname'],
+            lastname: $row['lname'],
+            cat_username: $username,
+            cat_password: $password,
+            email: $row['email'],
+        );
     }
 
     /**

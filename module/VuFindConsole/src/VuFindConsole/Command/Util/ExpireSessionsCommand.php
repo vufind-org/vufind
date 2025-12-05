@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -29,6 +29,8 @@
 
 namespace VuFindConsole\Command\Util;
 
+use Symfony\Component\Console\Attribute\AsCommand;
+
 /**
  * Console command: expire sessions.
  *
@@ -38,19 +40,23 @@ namespace VuFindConsole\Command\Util;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'util/expire_sessions'
+)]
 class ExpireSessionsCommand extends AbstractExpireCommand
 {
     /**
-     * Minimum legal age of rows to delete.
+     * Minimum legal age (in days) of rows to delete or null if age isn't applicable.
      *
-     * @var int
+     * @var int|float|null
      */
     protected $minAge = 0.1;
 
     /**
-     * Default age of rows to delete. $minAge is used $defaultAge is null.
+     * Default age of rows (in days) to delete. $minAge is used if $defaultAge is
+     * null.
      *
-     * @var int
+     * @var int|float|null
      */
     protected $defaultAge = 2;
 
@@ -67,11 +73,4 @@ class ExpireSessionsCommand extends AbstractExpireCommand
      * @var string
      */
     protected $rowLabel = 'sessions';
-
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'util/expire_sessions';
 }

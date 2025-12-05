@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -32,9 +32,11 @@ namespace VuFindSearch\Backend\EDS;
 
 use Exception;
 use Laminas\Cache\Storage\StorageInterface as CacheAdapter;
-use Laminas\Config\Config;
 use Laminas\Session\Container as SessionContainer;
+use VuFind\Config\Config;
+use VuFind\Config\Feature\SecretTrait;
 use VuFindSearch\Backend\AbstractBackend;
+use VuFindSearch\Backend\EDS\Response\RecordCollection;
 use VuFindSearch\Backend\Exception\BackendException;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\AbstractQuery;
@@ -54,6 +56,8 @@ use function in_array;
  */
 class Backend extends AbstractBackend
 {
+    use SecretTrait;
+
     /**
      * Client user to make the actually requests to the EdsApi
      *
@@ -147,13 +151,20 @@ class Backend extends AbstractBackend
     protected $backendType = null;
 
     /**
+     * Validation config
+     *
+     * @var array
+     */
+    protected $validationConfig = [];
+
+    /**
      * Constructor.
      *
      * @param Connector                        $client  EdsApi client to use
      * @param RecordCollectionFactoryInterface $factory Record collection factory
      * @param CacheAdapter                     $cache   Object cache
      * @param SessionContainer                 $session Session container
-     * @param Config                           $config  Object representing EDS.ini
+     * @param ?Config                          $config  Object representing EDS.ini
      * @param bool                             $isGuest Is the current user a guest?
      */
     public function __construct(
@@ -161,7 +172,7 @@ class Backend extends AbstractBackend
         RecordCollectionFactoryInterface $factory,
         CacheAdapter $cache,
         SessionContainer $session,
-        Config $config = null,
+        ?Config $config = null,
         $isGuest = true
     ) {
         // Save dependencies/incoming parameters:
@@ -173,10 +184,11 @@ class Backend extends AbstractBackend
 
         // Extract key values from configuration:
         $this->userName = $config->EBSCO_Account->user_name ?? null;
-        $this->password = $config->EBSCO_Account->password ?? null;
+        $this->password = $this->getSecretFromConfig($config->EBSCO_Account, 'password');
         $this->ipAuth = $config->EBSCO_Account->ip_auth ?? false;
         $this->profile = $config->EBSCO_Account->profile ?? null;
         $this->orgId = $config->EBSCO_Account->organization_id ?? null;
+        $this->validationConfig = $config->Validation?->toArray() ?? [];
 
         // Save default profile value, since profile property may be overridden:
         $this->defaultProfile = $this->profile;
@@ -188,7 +200,7 @@ class Backend extends AbstractBackend
      * @param AbstractQuery $query  Search query
      * @param int           $offset Search offset
      * @param int           $limit  Search limit
-     * @param ParamBag      $params Search backend parameters
+     * @param ?ParamBag     $params Search backend parameters
      *
      * @return \VuFindSearch\Response\RecordCollectionInterface
      **/
@@ -196,7 +208,7 @@ class Backend extends AbstractBackend
         AbstractQuery $query,
         $offset,
         $limit,
-        ParamBag $params = null
+        ?ParamBag $params = null
     ) {
         // process EDS API communication tokens.
         $authenticationToken = $this->getAuthenticationToken();
@@ -224,6 +236,11 @@ class Backend extends AbstractBackend
         $baseParams->set('pageNumber', $page);
 
         $searchModel = $this->paramBagToEBSCOSearchModel($baseParams);
+        if (!$searchModel->isValid()) {
+            // This may happen in the context of a blended search,
+            // when the database is valid for another backend.
+            return $this->createRecordCollection([]);
+        }
         $qs = $searchModel->convertToQueryString();
         $this->debug("Search Model query string: $qs");
         try {
@@ -273,8 +290,9 @@ class Backend extends AbstractBackend
                         $e
                     );
                 default:
-                    $response = [];
-                    break;
+                    $errorMessage = "Unhandled EDS API error {$e->getApiErrorCode()} : {$e->getMessage()}";
+                    $this->logError($errorMessage);
+                    throw new BackendException($errorMessage, $e->getCode(), $e);
             }
         } catch (Exception $e) {
             $this->debug('Exception found: ' . $e->getMessage());
@@ -282,18 +300,77 @@ class Backend extends AbstractBackend
         }
         $collection = $this->createRecordCollection($response);
         $this->injectSourceIdentifier($collection);
+        if ($this->isGuest && $collection instanceof RecordCollection) {
+            $collection->setRestrictedView(true);
+        }
         return $collection;
+    }
+
+    /**
+     * Support method for retrieve(): do the actual EBSCO lookup.
+     *
+     * @param string    $id                  Document identifier
+     * @param string    $authenticationToken Authentication token
+     * @param string    $sessionToken        Session token
+     * @param ?ParamBag $params              Search backend parameters
+     *
+     * @return array
+     * @throws BackendException
+     * @throws ApiException
+     */
+    protected function performEbscoRetrieval(
+        string $id,
+        string $authenticationToken,
+        string $sessionToken,
+        ?ParamBag $params
+    ): array {
+        if ('EDS' === $this->backendType) {
+            $parts = explode(',', $id, 2);
+            if (!isset($parts[1])) {
+                throw new BackendException(
+                    'Retrieval id is not in the correct format.'
+                );
+            }
+            [$dbId, $an] = $parts;
+            $hlTerms = $params?->get('highlightterms') ?? null;
+            $extras = [];
+            if (
+                null !== $params
+                && ($eBookFormat = $params->get('ebookpreferredformat'))
+            ) {
+                $extras['ebookpreferredformat'] = $eBookFormat;
+            }
+            return $this->client->retrieveEdsItem(
+                $an,
+                $dbId,
+                $authenticationToken,
+                $sessionToken,
+                $hlTerms,
+                $extras
+            );
+        } elseif ('EPF' === $this->backendType) {
+            $pubId = $id;
+            return $this->client->retrieveEpfItem(
+                $pubId,
+                $authenticationToken,
+                $sessionToken
+            );
+        } else {
+            throw new BackendException(
+                'Unknown backendType: ' . $this->backendType
+            );
+        }
     }
 
     /**
      * Retrieve a single document.
      *
-     * @param string   $id     Document identifier
-     * @param ParamBag $params Search backend parameters
+     * @param string    $id     Document identifier
+     * @param ?ParamBag $params Search backend parameters
      *
      * @return \VuFindSearch\Response\RecordCollectionInterface
      */
-    public function retrieve($id, ParamBag $params = null)
+    public function retrieve($id, ?ParamBag $params = null)
     {
         $an = $dbId = $authenticationToken = $sessionToken = $hlTerms = null;
         try {
@@ -304,44 +381,7 @@ class Backend extends AbstractBackend
                 $this->profile = $overrideProfile;
             }
             $sessionToken = $this->getSessionToken();
-
-            if ('EDS' === $this->backendType) {
-                $parts = explode(',', $id, 2);
-                if (!isset($parts[1])) {
-                    throw new BackendException(
-                        'Retrieval id is not in the correct format.'
-                    );
-                }
-                [$dbId, $an] = $parts;
-                $hlTerms = (null !== $params)
-                    ? $params->get('highlightterms') : null;
-                $extras = [];
-                if (
-                    null !== $params
-                    && ($eBookFormat = $params->get('ebookpreferredformat'))
-                ) {
-                    $extras['ebookpreferredformat'] = $eBookFormat;
-                }
-                $response = $this->client->retrieveEdsItem(
-                    $an,
-                    $dbId,
-                    $authenticationToken,
-                    $sessionToken,
-                    $hlTerms,
-                    $extras
-                );
-            } elseif ('EPF' === $this->backendType) {
-                $pubId = $id;
-                $response = $this->client->retrieveEpfItem(
-                    $pubId,
-                    $authenticationToken,
-                    $sessionToken
-                );
-            } else {
-                throw new BackendException(
-                    'Unknown backendType: ' . $this->backendType
-                );
-            }
+            $response = $this->performEbscoRetrieval($id, $authenticationToken, $sessionToken, $params);
         } catch (ApiException $e) {
             // Error codes can be reviewed at
             // https://connect.ebsco.com/s/article
@@ -360,13 +400,7 @@ class Backend extends AbstractBackend
                         } else {
                             $sessionToken = $this->getSessionToken(true);
                         }
-                        $response = $this->client->retrieve(
-                            $an,
-                            $dbId,
-                            $authenticationToken,
-                            $sessionToken,
-                            $hlTerms
-                        );
+                        $response = $this->performEbscoRetrieval($id, $authenticationToken, $sessionToken, $params);
                     } catch (Exception $e) {
                         throw new BackendException(
                             $e->getMessage(),
@@ -414,7 +448,11 @@ class Backend extends AbstractBackend
             $options[$key] = in_array($key, $arraySettings)
                 ? $param : $param[0];
         }
-        return new SearchRequestModel($options);
+        $model = new SearchRequestModel($options, $this->validationConfig);
+        if ($this->logger) {
+            $model->setLogger($this->logger);
+        }
+        return $model;
     }
 
     /**
@@ -488,7 +526,7 @@ class Backend extends AbstractBackend
      * Obtain the authentication to use with the EDS API from cache if it exists. If
      * not, then generate a new one.
      *
-     * @param bool $isInvalid whether or not the the current token is invalid
+     * @param bool $isInvalid whether or not the current token is invalid
      *
      * @return string
      */
@@ -539,7 +577,7 @@ class Backend extends AbstractBackend
      * Obtain the autocomplete authentication to use with the EDS API from cache
      * if it exists. If not, then generate a new set.
      *
-     * @param bool $isInvalid whether or not the the current autocomplete data
+     * @param bool $isInvalid whether or not the current autocomplete data
      * is invalid and should be regenerated
      *
      * @return array autocomplete data
@@ -587,20 +625,6 @@ class Backend extends AbstractBackend
             }
         }
         return $autocompleteData;
-    }
-
-    /**
-     * Print a message.
-     *
-     * @param string $msg Message to print
-     *
-     * @return void
-     *
-     * @deprecated Use $this->debug directly.
-     */
-    protected function debugPrint($msg)
-    {
-        $this->debug($msg);
     }
 
     /**
@@ -657,7 +681,7 @@ class Backend extends AbstractBackend
      * Obtain the session to use with the EDS API from cache if it exists. If not,
      * then generate a new one.
      *
-     * @param bool   $isGuest Whether or not this sesssion will be a guest session
+     * @param bool   $isGuest Whether or not this session will be a guest session
      * @param string $profile Authentication to use for generating a new session
      * if necessary
      *
@@ -770,7 +794,7 @@ class Backend extends AbstractBackend
     /**
      * Set the EBSCO backend type. Backend/EDS is used for both EDS and EPF.
      *
-     * @param str $backendType 'EDS' or 'EPF'
+     * @param string $backendType 'EDS' or 'EPF'
      *
      * @return void
      */

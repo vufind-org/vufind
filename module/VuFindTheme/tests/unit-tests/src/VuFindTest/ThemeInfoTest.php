@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -110,7 +110,9 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
         $ti = $this->getThemeInfo();
         $ti->setTheme('child');
         $expectedChild = include "{$this->fixturePath}/child/theme.config.php";
+        $expectedChild['themeName'] = 'child';
         $expectedParent = include "{$this->fixturePath}/parent/theme.config.php";
+        $expectedParent['themeName'] = 'parent';
         $this->assertEquals('parent', $expectedChild['extends']);
         $this->assertEquals(false, $expectedParent['extends']);
         $this->assertEquals(
@@ -129,10 +131,12 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
         $ti = $this->getThemeInfo();
         $ti->setTheme('mixin_user');
         $expectedChild = include "{$this->fixturePath}/child/theme.config.php";
+        $expectedChild['themeName'] = 'child';
         $expectedParent = include "{$this->fixturePath}/parent/theme.config.php";
+        $expectedParent['themeName'] = 'parent';
         $expectedMixin = include "{$this->fixturePath}/mixin/mixin.config.php";
-        $expectedMixinUser
-            = include "{$this->fixturePath}/mixin_user/theme.config.php";
+        $expectedMixinUser = include "{$this->fixturePath}/mixin_user/theme.config.php";
+        $expectedMixinUser['themeName'] = 'mixin_user';
         $this->assertEquals('parent', $expectedChild['extends']);
         $this->assertEquals(false, $expectedParent['extends']);
         $this->assertEquals(
@@ -307,7 +311,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
         $config = $ti->getMergedConfig();
         $this->assertEquals('HTML5', $config['doctype']);
         $this->assertEqualsCanonicalizing(
-            ['doctype', 'extends', 'js', 'helpers'],
+            ['doctype', 'extends', 'js', 'helpers', 'themeName'],
             array_keys($config)
         );
     }
@@ -318,10 +322,9 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
      * @param array $test     Test data
      * @param array $expected Expected response
      *
-     * @dataProvider mergeEdgeCasesProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('mergeEdgeCasesProvider')]
     public function testMergeWithoutOverrideEdgeCases($test, $expected)
     {
         $ti = $this->getThemeInfo();

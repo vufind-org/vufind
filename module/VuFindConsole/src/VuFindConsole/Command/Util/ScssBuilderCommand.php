@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -29,8 +29,10 @@
 
 namespace VuFindConsole\Command\Util;
 
+use Symfony\Component\Console\Attribute\AsCommand;
+use Symfony\Component\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use VuFindTheme\ScssCompiler;
 
 /**
  * Console command: build CSS from SCSS.
@@ -41,31 +43,25 @@ use VuFindTheme\ScssCompiler;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class ScssBuilderCommand extends AbstractCssBuilderCommand
+#[AsCommand(
+    name: 'util/scssBuilder',
+    description: 'SCSS compiler (no longer supported)'
+)]
+class ScssBuilderCommand extends Command
 {
     /**
-     * The name of the command (the part after "public/index.php")
+     * Run the command.
      *
-     * @var string
-     */
-    protected static $defaultName = 'util/scssBuilder';
-
-    /**
-     * Name of precompiler format
-     *
-     * @var string
-     */
-    protected $format = 'SCSS';
-
-    /**
-     * Build the LESS compiler.
-     *
+     * @param InputInterface  $input  Input object
      * @param OutputInterface $output Output object
      *
-     * @return ScssCompiler
+     * @return int 0 for success
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function getCompiler(OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
-        return new ScssCompiler($output);
+        $output->writeln('<error>This utility is no longer supported. Please use `npm run build:css` instead.</error>');
+        return self::FAILURE;
     }
 }

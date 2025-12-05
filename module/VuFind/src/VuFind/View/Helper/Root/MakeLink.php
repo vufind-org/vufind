@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -91,7 +91,7 @@ class MakeLink extends \Laminas\View\Helper\AbstractHelper
      * - escapeContent: Default true, set to false to skip escaping (like for HTML).
      *
      * @param string       $contents Link contents (must be properly-formed HTML)
-     * @param string       $href     Link destination (null to skip)
+     * @param ?string      $href     Link destination (null to skip)
      * @param string|array $attrs    Link attributes (class name / associative array)
      * @param array        $options  Additional options
      *
@@ -99,7 +99,7 @@ class MakeLink extends \Laminas\View\Helper\AbstractHelper
      */
     public function __invoke(
         string $contents,
-        string $href = null,
+        ?string $href = null,
         $attrs = [],
         $options = []
     ) {

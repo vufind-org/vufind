@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  CAPTCHA
@@ -50,7 +50,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $aliases = [
         'demo' => Demo::class,
         'dumb' => Dumb::class,
-        'figlet' => Figlet::class,
         'image' => Image::class,
         'interval' => Interval::class,
         'recaptcha' => ReCaptcha::class,
@@ -64,7 +63,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $factories = [
         Demo::class => InvokableFactory::class,
         Dumb::class => DumbFactory::class,
-        Figlet::class => FigletFactory::class,
         Image::class => ImageFactory::class,
         Interval::class => IntervalFactory::class,
         ReCaptcha::class => ReCaptchaFactory::class,

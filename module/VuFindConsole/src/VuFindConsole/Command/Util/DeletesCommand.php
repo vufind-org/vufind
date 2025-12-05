@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -29,6 +29,7 @@
 
 namespace VuFindConsole\Command\Util;
 
+use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Formatter\OutputFormatter;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -48,15 +49,12 @@ use function strlen;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
+#[AsCommand(
+    name: 'util/deletes',
+    description: 'Tool for deleting Solr records'
+)]
 class DeletesCommand extends AbstractSolrCommand
 {
-    /**
-     * The name of the command (the part after "public/index.php")
-     *
-     * @var string
-     */
-    protected static $defaultName = 'util/deletes';
-
     /**
      * Configure the command.
      *
@@ -65,7 +63,6 @@ class DeletesCommand extends AbstractSolrCommand
     protected function configure()
     {
         $this
-            ->setDescription('Tool for deleting Solr records')
             ->setHelp('Deletes a set of records from the Solr index.')
             ->addArgument(
                 'filename',
@@ -127,7 +124,7 @@ class DeletesCommand extends AbstractSolrCommand
     ): array {
         $ids = [];
         // MARC file mode:
-        $messageCallback = function (string $msg, int $level) use ($output) {
+        $messageCallback = function (string $msg, int $level) use ($output): void {
             if ($output->isVerbose() || $level !== E_NOTICE) {
                 $output->writeln(
                     '<comment>' . OutputFormatter::escape($msg) . '</comment>'
@@ -161,7 +158,7 @@ class DeletesCommand extends AbstractSolrCommand
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $filename = $input->getArgument('filename');
         $mode = $input->getArgument('format');
@@ -171,7 +168,7 @@ class DeletesCommand extends AbstractSolrCommand
         // File doesn't exist?
         if (!file_exists($filename)) {
             $output->writeln("Cannot find file: {$filename}");
-            return 1;
+            return self::FAILURE;
         }
 
         $output->writeln(
@@ -206,6 +203,6 @@ class DeletesCommand extends AbstractSolrCommand
             $output->writeln('Nothing to delete.');
         }
 
-        return 0;
+        return self::SUCCESS;
     }
 }

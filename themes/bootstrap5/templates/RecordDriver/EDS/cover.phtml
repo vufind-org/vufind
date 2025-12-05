@@ -1,0 +1,24 @@
+<?php
+  // we don't want to link the icons ($cover === false) (it looks weird)
+  $includeLinkInMarkup = $this->link && $cover !== false;
+?>
+<?php if ($includeLinkInMarkup): ?>
+  <a href="<?=$this->escapeHtmlAttr($this->link)?>" class="record-cover-link">
+<?php else: ?>
+  <div aria-hidden="true">
+<?php endif; ?>
+<?php /* Display thumbnail if appropriate: */ ?>
+<?php if ($cover): ?>
+  <img src="<?=$this->escapeHtmlAttr($cover); ?>" <?php if ($linkPreview): ?>data-linkpreview="true" <?php endif; ?>class="recordcover" alt="<?=$this->transEscAttr('Cover Image') ?>">
+<?php elseif ($cover === false): ?>
+  <span class="recordcover pt-icon pt-<?=$this->driver->getPubTypeId()?>"></span>
+  <div><?=$this->driver->getPubType()?></div>
+<?php else: ?>
+  <div class="ajaxcover">
+    <div class="spinner"><?=$this->icon('spinner') ?> <?=$this->translate('loading_ellipsis')?></div>
+    <div class="cover-container">
+      <img <?php if ($linkPreview): ?>data-linkpreview="true" <?php endif; ?>data-context="<?=$this->escapeHtmlAttr($this->context)?>" data-recordsource="<?=$this->escapeHtmlAttr($driver->getSourceIdentifier())?>" data-recordid="<?=$this->escapeHtmlAttr($driver->getUniqueID())?>" data-coversize="<?=$this->escapeHtmlAttr($size)?>" class="recordcover ajax" alt="<?=$this->transEscAttr('Cover Image') ?>">
+    </div>
+  </div>
+<?php endif; ?>
+<?php if ($includeLinkInMarkup): ?></a><?php else: ?></div><?php endif; ?>
