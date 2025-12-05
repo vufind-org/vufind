@@ -58,7 +58,7 @@ class McpController extends AbstractBase
      */
     public function __construct(ServiceLocatorInterface $sm, protected Server $server)
     {
-        return parent::__construct($sm);
+        parent::__construct($sm);
     }
 
     /**
