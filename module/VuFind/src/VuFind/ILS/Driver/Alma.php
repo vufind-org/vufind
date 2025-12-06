@@ -1767,11 +1767,13 @@ class Alma extends AbstractBase implements
     protected function getStatusesForInventoryTypes($ids, $types)
     {
         $results = [];
+        // Alma only accepts numeric IDs.
+        $numericIds = array_filter($ids, 'is_numeric');
         $params = [
-            'mms_id' => implode(',', $ids),
+            'mms_id' => implode(',', $numericIds),
             'expand' => implode(',', $types),
         ];
-        if ($bibs = $this->makeRequest('/bibs', $params)) {
+        if (!empty($numericIds) && $bibs = $this->makeRequest('/bibs', $params)) {
             foreach ($bibs as $bib) {
                 $marc = new MarcReader($bib->record->asXML());
                 $status = [];
