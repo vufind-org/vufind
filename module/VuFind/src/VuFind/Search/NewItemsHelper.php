@@ -62,7 +62,8 @@ class NewItemsHelper
      *
      * @param \VuFind\Search\Solr\Params $params Solr parameters
      * @param int                        $range  Range setting (max age in days)
-     * @param string                     $dept   Department setting
+     * @param ?string                    $dept   Department setting (corresponds with fund ID
+     * in ILS driver -- set to null to skip filtering by this criterion)
      * @param FlashMessenger             $flash  Flash messenger
      *
      * @return array
@@ -70,7 +71,7 @@ class NewItemsHelper
     public function getBibIDsFromCatalog(
         \VuFind\Search\Solr\Params $params,
         int $range,
-        string $dept,
+        ?string $dept,
         FlashMessenger $flash
     ): array {
         // The code always pulls in enough catalog results to get a fixed number

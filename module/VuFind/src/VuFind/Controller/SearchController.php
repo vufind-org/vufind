@@ -267,7 +267,7 @@ class SearchController extends AbstractSolrSearch
     {
         // Retrieve new item list:
         $range = intval($this->params()->fromQuery('range', 0));
-        $dept = $this->params()->fromQuery('department', '');
+        $dept = $this->params()->fromQuery('department');
 
         // Validate the range parameter -- it should not exceed the greatest
         // configured value:
