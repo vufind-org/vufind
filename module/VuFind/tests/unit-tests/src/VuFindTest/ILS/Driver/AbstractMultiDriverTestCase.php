@@ -304,9 +304,7 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
                 ->getMock();
         }
         if ($methods && in_array('init', $methods)) {
-            $mock->expects($this->any())
-                ->method('init')
-                ->willReturn(null);
+            $mock->method('init')->willReturn(null);
         }
         $mock->setConfig(['dummy_config' => true]);
         return $mock;

@@ -215,10 +215,7 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
         $filters = null
     ) {
         $mockRequest = $this->createMock(\Laminas\Http\Request::class);
-        $mockRequest->expects($this->any())
-            ->method('getQuery')
-            ->with($this->equalTo('hiddenFilters'))
-            ->willReturn($filters);
+        $mockRequest->method('getQuery')->with($this->equalTo('hiddenFilters'))->willReturn($filters);
 
         $configManager = $this->createMock(ConfigManagerInterface::class);
 
@@ -226,8 +223,7 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()->getMock();
         $mockSolr = $this->getMockBuilder(\VuFind\Search\Solr\Results::class)
             ->disableOriginalConstructor()->getMock();
-        $mockSolr->expects($this->any())
-            ->method('getParams')
+        $mockSolr->method('getParams')
             ->willReturn(
                 new \VuFind\Search\Solr\Params($mockSolrOptions, $configManager)
             );
@@ -236,15 +232,13 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()->getMock();
         $mockPrimo = $this->getMockBuilder(\VuFind\Search\Primo\Results::class)
             ->disableOriginalConstructor()->getMock();
-        $mockPrimo->expects($this->any())
-            ->method('getParams')
+        $mockPrimo->method('getParams')
             ->willReturn(
                 new \VuFind\Search\Primo\Params($mockPrimoOptions, $configManager)
             );
 
         $mockResults = $this->createMock(\VuFind\Search\Results\PluginManager::class);
-        $mockResults->expects($this->any())
-            ->method('get')
+        $mockResults->method('get')
             ->willReturnCallback(
                 function ($backend) use ($mockSolr, $mockPrimo) {
                     switch ($backend) {

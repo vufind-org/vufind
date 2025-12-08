@@ -170,7 +170,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
     protected function getMockILSAuthenticator(): ILSAuthenticator
     {
         $mock = $this->createMock(ILSAuthenticator::class);
-        $mock->expects($this->any())->method('getCatPasswordForUser')->willReturnCallback(
+        $mock->method('getCatPasswordForUser')->willReturnCallback(
             function ($user) {
                 return $user->getRawCatPassword();
             }
@@ -224,13 +224,13 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
     protected function getMockUser(): UserEntityInterface
     {
         $user = $this->createMock(UserEntityInterface::class);
-        $user->expects($this->any())->method('getId')->willReturn(2);
-        $user->expects($this->any())->method('getFirstname')->willReturn('Lib');
-        $user->expects($this->any())->method('getLastname')->willReturn('Rarian');
-        $user->expects($this->any())->method('getLastLanguage')->willReturn('en-gb');
-        $user->expects($this->any())->method('getEmail')->willReturn('Lib.Rarian@library.not');
-        $user->expects($this->any())->method('getCatUsername')->willReturn('user');
-        $user->expects($this->any())->method('getRawCatPassword')->willReturn('pass');
+        $user->method('getId')->willReturn(2);
+        $user->method('getFirstname')->willReturn('Lib');
+        $user->method('getLastname')->willReturn('Rarian');
+        $user->method('getLastLanguage')->willReturn('en-gb');
+        $user->method('getEmail')->willReturn('Lib.Rarian@library.not');
+        $user->method('getCatUsername')->willReturn('user');
+        $user->method('getRawCatPassword')->willReturn('pass');
         return $user;
     }
 
@@ -243,7 +243,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
     {
         $user = $this->getMockUser();
         $userService = $this->createMock(UserServiceInterface::class);
-        $userService->expects($this->any())->method('getUserByField')
+        $userService->method('getUserByField')
             ->willReturnMap(
                 [
                     ['id', 1, null],
@@ -305,7 +305,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
                 ->willReturn(true);
         }
 
-        $ils->expects($this->any())->method('__call')->willReturnCallback(
+        $ils->method('__call')->willReturnCallback(
             function ($method, $args) use ($patron, $profile, $blocks) {
                 switch ($method) {
                     case 'patronLogin':

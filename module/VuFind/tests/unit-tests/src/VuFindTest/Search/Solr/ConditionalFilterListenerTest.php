@@ -239,7 +239,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
         $mockAuth = $this->getMockBuilder(\Lmc\Rbac\Mvc\Service\AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockAuth->expects($this->any())->method('isGranted')
+        $mockAuth->method('isGranted')
             ->with($this->equalTo('conditionalFilter.sample'))
             ->willReturn(true);
         $listener->setAuthorizationService($mockAuth);
@@ -274,7 +274,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
         $mockAuth = $this->getMockBuilder(\Lmc\Rbac\Mvc\Service\AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockAuth->expects($this->any())->method('isGranted')
+        $mockAuth->method('isGranted')
             ->with($this->equalTo('conditionalFilter.sample'))
             ->willReturn(false);
         $listener->setAuthorizationService($mockAuth);
@@ -303,7 +303,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
         $mockAuth = $this->getMockBuilder(\Lmc\Rbac\Mvc\Service\AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockAuth->expects($this->any())->method('isGranted')
+        $mockAuth->method('isGranted')
             ->with($this->equalTo('conditionalFilter.sample'))
             ->willReturn(false);
         $listener->setAuthorizationService($mockAuth);
@@ -338,7 +338,7 @@ class ConditionalFilterListenerTest extends \PHPUnit\Framework\TestCase
         $mockAuth = $this->getMockBuilder(\Lmc\Rbac\Mvc\Service\AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockAuth->expects($this->any())->method('isGranted')
+        $mockAuth->method('isGranted')
             ->with($this->equalTo('conditionalFilter.sample'))
             ->willReturn(true);
         $listener->setAuthorizationService($mockAuth);

@@ -189,8 +189,7 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
     {
         $request = $this->getMockBuilder(\Laminas\Http\PhpEnvironment\Request::class)
             ->onlyMethods(['getQuery'])->getMock();
-        $request->expects($this->any())->method('getQuery')
-            ->willReturn(new \Laminas\Stdlib\Parameters());
+        $request->method('getQuery')->willReturn(new \Laminas\Stdlib\Parameters());
 
         $url = new \VuFind\View\Helper\Root\Url($request);
 

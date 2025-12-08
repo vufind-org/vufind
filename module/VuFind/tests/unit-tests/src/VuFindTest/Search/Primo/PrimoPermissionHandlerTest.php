@@ -186,7 +186,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
         $mockAuth = $this->getMockBuilder(AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockAuth->expects($this->any())->method('isGranted')
+        $mockAuth->method('isGranted')
             ->with($this->equalTo('primo.MEMBER'))
             ->willReturn(true);
         $handler->setAuthorizationService($mockAuth);
@@ -207,7 +207,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
         $mockAuth = $this->getMockBuilder(AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockAuth->expects($this->any())->method('isGranted')
+        $mockAuth->method('isGranted')
             ->with(
                 $this->logicalOr(
                     $this->equalTo('primo.MEMBER'),
@@ -246,7 +246,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
         $mockAuth = $this->getMockBuilder(AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockAuth->expects($this->any())->method('isGranted')
+        $mockAuth->method('isGranted')
             ->with(
                 $this->logicalOr(
                     $this->equalTo('primo.MEMBER'),
@@ -273,7 +273,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
         $mockAuth = $this->getMockBuilder(AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockAuth->expects($this->any())->method('isGranted')
+        $mockAuth->method('isGranted')
             ->with(
                 $this->logicalOr(
                     $this->equalTo('primo.MEMBER'),
@@ -300,7 +300,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
         $mockAuth = $this->getMockBuilder(AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockAuth->expects($this->any())->method('isGranted')
+        $mockAuth->method('isGranted')
             ->with(
                 $this->logicalOr(
                     $this->equalTo('primo.MEMBER'),
@@ -327,7 +327,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
         $mockAuth = $this->getMockBuilder(AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockAuth->expects($this->any())->method('isGranted')
+        $mockAuth->method('isGranted')
             ->with(
                 $this->logicalOr(
                     $this->equalTo('primo.MEMBER'),
@@ -355,8 +355,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
         $mockAuth = $this->getMockBuilder(AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockAuth->expects($this->any())->method('isGranted')
-            ->willReturn(false);
+        $mockAuth->method('isGranted')->willReturn(false);
         $handler->setAuthorizationService($mockAuth);
 
         $this->assertEquals(false, $handler->getInstCode());
@@ -378,7 +377,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
         $mockAuth = $this->getMockBuilder(AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockAuth->expects($this->any())->method('isGranted')
+        $mockAuth->method('isGranted')
             ->with(
                 $this->logicalOr(
                     $this->equalTo('primo.MEMBER'),
@@ -405,7 +404,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
         $mockAuth = $this->getMockBuilder(AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockAuth->expects($this->any())->method('isGranted')
+        $mockAuth->method('isGranted')
             ->with(
                 $this->logicalOr(
                     $this->equalTo('primo.MEMBER'),
@@ -432,7 +431,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
         $mockAuth = $this->getMockBuilder(AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockAuth->expects($this->any())->method('isGranted')
+        $mockAuth->method('isGranted')
             ->with($this->equalTo('primo.MEMBER'))
             ->willReturn(true);
         $handler->setAuthorizationService($mockAuth);
@@ -453,7 +452,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
         $mockAuth = $this->getMockBuilder(AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockAuth->expects($this->any())->method('isGranted')
+        $mockAuth->method('isGranted')
             ->with($this->equalTo('primo.MEMBER'))
             ->willReturn(false);
         $handler->setAuthorizationService($mockAuth);
@@ -472,7 +471,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
         $mockAuth = $this->getMockBuilder(AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockAuth->expects($this->any())->method('isGranted')
+        $mockAuth->method('isGranted')
             ->with(
                 $this->logicalOr(
                     $this->equalTo('primo.MEMBER'),
@@ -499,7 +498,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
         $mockAuth = $this->getMockBuilder(AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockAuth->expects($this->any())->method('isGranted')
+        $mockAuth->method('isGranted')
             ->with(
                 $this->logicalOr(
                     $this->equalTo('primo.MEMBER'),
@@ -530,7 +529,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
         $mockAuth = $this->getMockBuilder(AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockAuth->expects($this->any())->method('isGranted')
+        $mockAuth->method('isGranted')
             ->with(
                 $this->logicalOr(
                     $this->equalTo('primo.MEMBER'),
@@ -559,7 +558,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
         $mockAuth = $this->getMockBuilder(AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockAuth->expects($this->any())->method('isGranted')
+        $mockAuth->method('isGranted')
             ->with(
                 $this->logicalOr(
                     $this->equalTo('primo.MEMBER'),
@@ -586,7 +585,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
         $mockAuth = $this->getMockBuilder(AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockAuth->expects($this->any())->method('isGranted')
+        $mockAuth->method('isGranted')
             ->with(
                 $this->logicalOr(
                     $this->equalTo('primo.MEMBER'),
@@ -613,7 +612,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
         $mockAuth = $this->getMockBuilder(AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockAuth->expects($this->any())->method('isGranted')
+        $mockAuth->method('isGranted')
             ->with(
                 $this->logicalOr(
                     $this->equalTo('primo.MEMBER'),
@@ -644,7 +643,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
         $mockAuth = $this->getMockBuilder(AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockAuth->expects($this->any())->method('isGranted')
+        $mockAuth->method('isGranted')
             ->with(
                 $this->logicalOr(
                     $this->equalTo('primo.defaultRule'),
@@ -675,7 +674,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
         $mockAuth = $this->getMockBuilder(AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockAuth->expects($this->any())->method('isGranted')
+        $mockAuth->method('isGranted')
             ->with(
                 $this->logicalOr(
                     $this->equalTo('primo.defaultRule'),
@@ -704,7 +703,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
         $mockAuth = $this->getMockBuilder(AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockAuth->expects($this->any())->method('isGranted')
+        $mockAuth->method('isGranted')
             ->with(
                 $this->logicalOr(
                     $this->equalTo('primo.defaultRule'),
@@ -733,7 +732,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
         $mockAuth = $this->getMockBuilder(AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockAuth->expects($this->any())->method('isGranted')
+        $mockAuth->method('isGranted')
             ->with(
                 $this->logicalOr(
                     $this->equalTo('primo.defaultRule'),
@@ -768,7 +767,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
         $mockAuth = $this->getMockBuilder(AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockAuth->expects($this->any())->method('isGranted')
+        $mockAuth->method('isGranted')
             ->with(
                 $this->logicalOr(
                     $this->equalTo('primo.isAtMEMBER'),
@@ -800,7 +799,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
         $mockAuth = $this->getMockBuilder(AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockAuth->expects($this->any())->method('isGranted')
+        $mockAuth->method('isGranted')
             ->with(
                 $this->logicalOr(
                     $this->equalTo('primo.isAtMEMBER'),
@@ -830,7 +829,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
         $mockAuth = $this->getMockBuilder(AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockAuth->expects($this->any())->method('isGranted')
+        $mockAuth->method('isGranted')
             ->with(
                 $this->logicalOr(
                     $this->equalTo('primo.isAtMEMBER'),
@@ -862,7 +861,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
         $mockAuth = $this->getMockBuilder(AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockAuth->expects($this->any())->method('isGranted')
+        $mockAuth->method('isGranted')
             ->willReturn(false);
         $handler->setAuthorizationService($mockAuth);
 
@@ -882,7 +881,7 @@ class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
         $mockAuth = $this->getMockBuilder(AuthorizationService::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockAuth->expects($this->any())->method('isGranted')
+        $mockAuth->method('isGranted')
             ->willReturn(false);
         $handler->setAuthorizationService($mockAuth);
 

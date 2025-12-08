@@ -67,8 +67,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->onlyMethods(['getActionRouteDetails'])
             ->getMock();
-        $mock->expects($this->any())->method('getActionRouteDetails')
-            ->willReturn(['route' => 'home', 'params' => []]);
+        $mock->method('getActionRouteDetails')->willReturn(['route' => 'home', 'params' => []]);
         return $mock;
     }
 
@@ -277,10 +276,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             $contextSpec = $specs->getDefaults($context);
             $specs->setDefaults($context, array_merge($additionalContextSpec, $contextSpec));
         }
-        $specManager->expects($this->any())
-            ->method('get')
-            ->with($this->isType('string'))
-            ->willReturn($specs);
+        $specManager->method('get')->with($this->isType('string'))->willReturn($specs);
         $container->set(
             \VuFind\RecordDataFormatter\Specs\PluginManager::class,
             $specManager

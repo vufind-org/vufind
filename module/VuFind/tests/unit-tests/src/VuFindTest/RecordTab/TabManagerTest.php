@@ -109,13 +109,10 @@ class TabManagerTest extends \PHPUnit\Framework\TestCase
     protected function getMockRecordTabPluginManager(): MockObject&RecordTabPluginManager
     {
         $mockTab = $this->createMock(\VuFind\RecordTab\StaffViewArray::class);
-        $mockTab->expects($this->any())->method('isActive')
-            ->willReturn(true);
+        $mockTab->method('isActive')->willReturn(true);
         $pm = $this->createMock(\VuFind\RecordTab\PluginManager::class);
-        $pm->expects($this->any())->method('has')
-            ->willReturn(true);
-        $pm->expects($this->any())->method('get')
-            ->willReturn($mockTab);
+        $pm->method('has')->willReturn(true);
+        $pm->method('get')->willReturn($mockTab);
         return $pm;
     }
 
