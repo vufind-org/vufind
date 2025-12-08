@@ -37,6 +37,7 @@ use VuFind\Search\ReservesHelper;
 
 use function array_slice;
 use function count;
+use function intval;
 
 /**
  * Redirects the user to the appropriate default VuFind action.
