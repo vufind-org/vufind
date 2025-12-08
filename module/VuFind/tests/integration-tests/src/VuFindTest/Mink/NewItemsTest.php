@@ -85,8 +85,8 @@ class NewItemsTest extends \VuFindTest\Integration\MinkTestCase
             [
                 'config' => [
                     'Catalog' => [
-                        'driver' => 'Demo'
-                    ]
+                        'driver' => 'Demo',
+                    ],
                 ],
                 'Demo' => $this->getDemoIniOverrides(...$expectedIds),
                 'searches' => [
