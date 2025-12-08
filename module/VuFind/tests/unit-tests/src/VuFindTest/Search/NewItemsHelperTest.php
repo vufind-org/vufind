@@ -41,7 +41,7 @@ use VuFind\Search\NewItemsHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class NewItemsTest extends \PHPUnit\Framework\TestCase
+class NewItemsHelperTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Get a NewItemsHelper instance for testing.
@@ -243,8 +243,7 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockParams($idLimit = 1024)
     {
-        $params = $this->getMockBuilder(\VuFind\Search\Solr\Params::class)
-            ->disableOriginalConstructor()->getMock();
+        $params = $this->createMock(\VuFind\Search\Solr\Params::class);
         $params->expects($this->once())->method('getLimit')
             ->willReturn(20);
         $params->expects($this->once())->method('getQueryIDLimit')
