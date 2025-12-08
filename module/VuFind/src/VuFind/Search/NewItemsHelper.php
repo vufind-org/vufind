@@ -35,7 +35,6 @@ use VuFind\ILS\Connection;
 use function array_slice;
 use function count;
 use function intval;
-use function is_string;
 
 /**
  * Helper to perform new items-related actions
