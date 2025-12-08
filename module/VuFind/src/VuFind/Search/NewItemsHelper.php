@@ -140,17 +140,7 @@ class NewItemsHelper
      */
     public function getHiddenFilters(): array
     {
-        if (! isset($this->config['filter'])) {
-            return [];
-        }
-        if (is_string($this->config['filter'])) {
-            return [$this->config['filter']];
-        }
-        $hiddenFilters = [];
-        foreach ($this->config['filter'] as $current) {
-            $hiddenFilters[] = $current;
-        }
-        return $hiddenFilters;
+        return (array)($this->config['filter'] ?? []);
     }
 
     /**

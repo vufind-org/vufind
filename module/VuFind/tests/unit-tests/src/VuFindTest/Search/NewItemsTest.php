@@ -51,7 +51,7 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
      *
      * @return NewItemsHelper
      */
-    protected function getMockHelper(array $config = [], ?Connection $connection = null): NewItemsHelper
+    protected function getNewItemsHelper(array $config = [], ?Connection $connection = null): NewItemsHelper
     {
         return new NewItemsHelper($config, $connection ?? $this->createMock(Connection::class));
     }
@@ -64,7 +64,7 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
     public function testGetBibIDsFromCatalog()
     {
         $flash = $this->createMock(\Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger::class);
-        $newItems = $this->getMockHelper(['result_pages' => 10], $this->getMockCatalog());
+        $newItems = $this->getNewItemsHelper(['result_pages' => 10], $this->getMockCatalog());
         $bibs = $newItems->getBibIDsFromCatalog(
             $this->getMockParams(),
             10,
@@ -84,7 +84,7 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
         $flash = $this->createMock(\Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger::class);
         $flash->expects($this->once())->method('addMessage')
             ->with($this->equalTo('too_many_new_items'), $this->equalTo('info'));
-        $newItems = $this->getMockHelper(['result_pages' => 10], $this->getMockCatalog());
+        $newItems = $this->getNewItemsHelper(['result_pages' => 10], $this->getMockCatalog());
         $bibs = $newItems->getBibIDsFromCatalog(
             $this->getMockParams(1),
             10,
@@ -109,7 +109,7 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
                 fn ($method) => $method === 'getFunds' ? ['a', 'b', 'c'] : null
             );
 
-        $newItems = $this->getMockHelper([], $catalog);
+        $newItems = $this->getNewItemsHelper([], $catalog);
         $this->assertEquals(['a', 'b', 'c'], $newItems->getFundList());
     }
 
@@ -120,7 +120,7 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetFundListWithoutILS()
     {
-        $newItems = $this->getMockHelper(['method' => 'solr']);
+        $newItems = $this->getNewItemsHelper(['method' => 'solr']);
         $this->assertEquals([], $newItems->getFundList());
     }
 
@@ -131,7 +131,7 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetSingleHiddenFilter()
     {
-        $newItems = $this->getMockHelper(['filter' => 'a:b']);
+        $newItems = $this->getNewItemsHelper(['filter' => 'a:b']);
         $this->assertEquals(['a:b'], $newItems->getHiddenFilters());
     }
 
@@ -142,7 +142,7 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetMultipleHiddenFilters()
     {
-        $newItems = $this->getMockHelper(['filter' => ['a:b', 'b:c']]);
+        $newItems = $this->getNewItemsHelper(['filter' => ['a:b', 'b:c']]);
         $this->assertEquals(['a:b', 'b:c'], $newItems->getHiddenFilters());
     }
 
@@ -153,7 +153,7 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
      */
     public function testDefaults()
     {
-        $newItems = $this->getMockHelper([]);
+        $newItems = $this->getNewItemsHelper([]);
         $this->assertEquals([], $newItems->getHiddenFilters());
         $this->assertEquals('ils', $newItems->getMethod());
         $this->assertEquals(30, $newItems->getMaxAge());
@@ -168,7 +168,7 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
      */
     public function testCustomRanges()
     {
-        $newItems = $this->getMockHelper(['ranges' => '10,150,300']);
+        $newItems = $this->getNewItemsHelper(['ranges' => '10,150,300']);
         $this->assertEquals([10, 150, 300], $newItems->getRanges());
     }
 
@@ -179,7 +179,7 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
      */
     public function testCustomResultPages()
     {
-        $newItems = $this->getMockHelper(['result_pages' => '2']);
+        $newItems = $this->getNewItemsHelper(['result_pages' => '2']);
         $this->assertEquals(2, $newItems->getResultPages());
     }
 
@@ -190,7 +190,7 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
      */
     public function testIllegalResultPages()
     {
-        $newItems = $this->getMockHelper(['result_pages' => '-2']);
+        $newItems = $this->getNewItemsHelper(['result_pages' => '-2']);
         // expect a default of 10 if a bad value was passed in
         $this->assertEquals(10, $newItems->getResultPages());
     }
@@ -204,7 +204,7 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
     {
         $range = 30;
         $expected = 'first_indexed:[NOW-' . $range . 'DAY TO NOW]';
-        $newItems = $this->getMockHelper([]);
+        $newItems = $this->getNewItemsHelper([]);
         $this->assertEquals($expected, $newItems->getSolrFilter($range));
     }
 

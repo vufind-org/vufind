@@ -68,9 +68,9 @@ class NewItemsHelperFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $search
-            = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('searches');
-        $config = $search->NewItem ?? new \VuFind\Config\Config([]);
-        return new $requestedName($config);
+        $search = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('searches');
+        $config = $search['NewItem'] ?? [];
+        $catalog = $container->get(\VuFind\ILS\Connection::class);
+        return new $requestedName($config, $catalog);
     }
 }
