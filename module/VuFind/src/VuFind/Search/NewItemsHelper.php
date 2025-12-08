@@ -61,7 +61,7 @@ class NewItemsHelper
      * Figure out which bib IDs to load from the ILS.
      *
      * @param \VuFind\Search\Solr\Params $params Solr parameters
-     * @param string                     $range  Range setting
+     * @param int                        $range  Range setting (max age in days)
      * @param string                     $dept   Department setting
      * @param FlashMessenger             $flash  Flash messenger
      *
@@ -69,7 +69,7 @@ class NewItemsHelper
      */
     public function getBibIDsFromCatalog(
         \VuFind\Search\Solr\Params $params,
-        string $range,
+        int $range,
         string $dept,
         FlashMessenger $flash
     ): array {
