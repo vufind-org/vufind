@@ -867,10 +867,10 @@ class PAIA extends DAIA
     /**
      * This method queries the ILS for new items
      *
-     * @param string $page    page number of results to retrieve (counting starts @1)
-     * @param string $limit   the size of each page of results to retrieve
-     * @param string $daysOld the maximum age of records to retrieve in days (max 30)
-     * @param string $fundID  optional fund ID to use for limiting results
+     * @param string  $page    page number of results to retrieve (counting starts @1)
+     * @param string  $limit   the size of each page of results to retrieve
+     * @param string  $daysOld the maximum age of records to retrieve in days (max 30)
+     * @param ?string $fundID  optional fund ID to use for limiting results
      *
      * @return array An associative array with two keys: 'count' (the number of items
      * in the 'results' array) and 'results' (an array of associative arrays, each
