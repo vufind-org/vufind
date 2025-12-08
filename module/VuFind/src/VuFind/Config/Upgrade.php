@@ -1108,6 +1108,30 @@ class Upgrade implements LoggerAwareInterface
     }
 
     /**
+     * Update RecordTabs settings.
+     *
+     * @return void
+     */
+    protected function upgradeRecordTabsSettings(): void
+    {
+        $this->applyOldSettings('RecordTabs');
+        $config = & $this->newConfigs['RecordTabs'];
+
+        $holdingsScripts = $config['TabScripts']['Holdings'] ?? [];
+        if (!in_array('record_holdings.js', $holdingsScripts)) {
+            $holdingsScripts[] = 'record_holdings.js';
+            $config['TabScripts']['Holdings'] = $holdingsScripts;
+        }
+        $userCommentsScripts = $config['TabScripts']['UserComments'] ?? [];
+        if (!in_array('record_comments.js', $userCommentsScripts)) {
+            $userCommentsScripts[] = 'record_comments.js';
+            $config['TabScripts']['UserComments'] = $userCommentsScripts;
+        }
+
+        $this->saveModifiedConfig('RecordTabs');
+    }
+
+    /**
      * Upgrade shard settings (they have moved to a different config file, so
      * this is handled as a separate method so that all affected settings are
      * addressed in one place.
