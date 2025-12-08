@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Factory for IlsRecords controller plugin.
+ * Factory for Reserves helper.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2019.
+ * Copyright (C) Villanova University 2019-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,30 +21,31 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Controller_Plugins
+ * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
 
-namespace VuFind\Controller\Plugin;
+namespace VuFind\Search;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\ILS\Connection;
 
 /**
- * Factory for IlsRecords controller plugin.
+ * Factory for Reserves helper.
  *
  * @category VuFind
- * @package  Controller_Plugins
+ * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-class IlsRecordsFactory implements FactoryInterface
+class ReservesHelperFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -68,9 +69,9 @@ class IlsRecordsFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        return new $requestedName(
-            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config'),
-            $container->get(\VuFind\Record\Loader::class)
-        );
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
+        $useIndex = $config['Reserves']['search_enabled'] ?? false;
+        $ss = $useIndex ? $container->get(\VuFindSearch\Service::class) : null;
+        return new $requestedName($useIndex, $ss, $container->get(Connection::class));
     }
 }
