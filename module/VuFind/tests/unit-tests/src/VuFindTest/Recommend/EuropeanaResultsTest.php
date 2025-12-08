@@ -139,8 +139,7 @@ class EuropeanaResultsTest extends \PHPUnit\Framework\TestCase
         }
         $results = $this->getMockBuilder(\VuFind\Search\Solr\Results::class)
             ->disableOriginalConstructor()->getMock();
-        $results->expects($this->any())->method('getParams')
-            ->willReturn($params);
+        $results->method('getParams')->willReturn($params);
         return $results;
     }
 
@@ -158,8 +157,7 @@ class EuropeanaResultsTest extends \PHPUnit\Framework\TestCase
         }
         $params = $this->getMockBuilder(\VuFind\Search\Solr\Params::class)
             ->disableOriginalConstructor()->getMock();
-        $params->expects($this->any())->method('getQuery')
-            ->willReturn($query);
+        $params->method('getQuery')->willReturn($query);
         return $params;
     }
 }

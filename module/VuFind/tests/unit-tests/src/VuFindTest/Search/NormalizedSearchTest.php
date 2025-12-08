@@ -68,9 +68,7 @@ class NormalizedSearchTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->onlyMethods(array_diff($allMethods, ['getUrlQuery', 'getUrlQueryHelperFactory', 'minify', 'deminify']))
             ->getMock();
-        $results->expects($this->any())
-            ->method('getParams')
-            ->willReturn($this->getSolrParams());
+        $results->method('getParams')->willReturn($this->getSolrParams());
         return $results;
     }
 
@@ -85,9 +83,7 @@ class NormalizedSearchTest extends \PHPUnit\Framework\TestCase
     {
         $finalResults = $results ?? $this->getResults();
         $manager = $this->getResultsManager();
-        $manager->expects($this->any())
-            ->method('get')->with($this->equalTo('Solr'))
-            ->willReturn($finalResults);
+        $manager->method('get')->with($this->equalTo('Solr'))->willReturn($finalResults);
         return new NormalizedSearch($manager, $finalResults);
     }
 

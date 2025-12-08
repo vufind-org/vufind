@@ -216,14 +216,11 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
         $helper = new \VuFindSearch\Backend\Solr\LuceneSyntaxHelper($csBools, $csRanges);
         $queryBuilder = $this->getMockBuilder(\VuFindSearch\Backend\Solr\QueryBuilder::class)
             ->disableOriginalConstructor()->getMock();
-        $queryBuilder->expects($this->any())->method('getLuceneHelper')
-            ->willReturn($helper);
+        $queryBuilder->method('getLuceneHelper')->willReturn($helper);
         $backend = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
             ->disableOriginalConstructor()->getMock();
-        $backend->expects($this->any())->method('getIdentifier')
-            ->willReturn('Solr');
-        $backend->expects($this->any())->method('getQueryBuilder')
-            ->willReturn($queryBuilder);
+        $backend->method('getIdentifier')->willReturn('Solr');
+        $backend->method('getQueryBuilder')->willReturn($queryBuilder);
         $container = new \VuFindTest\Container\MockContainer($this);
         $container->set('Solr', $backend);
         return new BackendManager($container);
@@ -242,8 +239,7 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
         $params = $this->getMockParams($query, $type);
         $results = $this->getMockBuilder(\VuFind\Search\Solr\Results::class)
             ->disableOriginalConstructor()->getMock();
-        $results->expects($this->any())->method('getParams')
-            ->willReturn($params);
+        $results->method('getParams')->willReturn($params);
         return $results;
     }
 
@@ -259,10 +255,8 @@ class SwitchQueryTest extends \PHPUnit\Framework\TestCase
     {
         $params = $this->getMockBuilder(\VuFind\Search\Solr\Params::class)
             ->disableOriginalConstructor()->getMock();
-        $params->expects($this->any())->method('getDisplayQuery')
-            ->willReturn($query);
-        $params->expects($this->any())->method('getSearchType')
-            ->willReturn($type);
+        $params->method('getDisplayQuery')->willReturn($query);
+        $params->method('getSearchType')->willReturn($type);
         return $params;
     }
 }

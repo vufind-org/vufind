@@ -81,9 +81,7 @@ class ParentTemplateTest extends \PHPUnit\Framework\TestCase
         }
         $return->rewind();
 
-        $stackMock->expects($this->any())
-            ->method('getPaths')
-            ->willReturn($return);
+        $stackMock->method('getPaths')->willReturn($return);
 
         // Make helper
         return new ParentTemplate($stackMock);

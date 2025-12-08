@@ -184,8 +184,7 @@ class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
         $tree->expects($this->once())->method('getJSON')
             ->with($this->equalTo('recordid'), $this->equalTo(['refresh' => true]));
         $driver = $this->getMockHierarchyDriver();
-        $driver->expects($this->any())->method('getTreeSource')
-            ->willReturn($tree);
+        $driver->method('getTreeSource')->willReturn($tree);
         $loader = $this->getMockRecordLoader($this->getMockRecord($driver));
         $command = $this->getCommand($loader);
         $commandTester = new CommandTester($command);

@@ -121,12 +121,8 @@ class GeniePlusTest extends \VuFindTest\Unit\ILSDriverTestCase
         $response = $this->getMockBuilder(Response::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $response->expects($this->any())
-            ->method('getBody')
-            ->willReturn($body);
-        $response->expects($this->any())
-            ->method('getStatusCode')
-            ->willReturn($status);
+        $response->method('getBody')->willReturn($body);
+        $response->method('getStatusCode')->willReturn($status);
         return $response;
     }
 
