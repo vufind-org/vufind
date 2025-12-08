@@ -449,6 +449,9 @@ function applyRecordTabHash(scrollToTabs) {
   // Open tab in url hash
   if (initiallyActiveTab && (newTab.length <= 1 || newTab === '#tabnav')) {
     initiallyActiveTab.click();
+    if (newTab === '#tabnav') {
+      initiallyActiveTab.focus();
+    }
   } else if (newTab.length > 1 && '#' + activeTab !== newTab) {
     const tabLink = document.querySelector('.record-tabs .' + newTab.substring(1) + ' a');
     if (tabLink) {
@@ -485,51 +488,57 @@ function recordDocReady() {
 
   handleAjaxTabLinks();
   document.querySelectorAll('.record-tabs .nav-tabs a')
-    .forEach((tab) => tab.addEventListener('click', (event) => {
-      const li = tab.parentNode;
-      // Do nothing if the tab is already active:
-      if (tab.classList.contains('active')) {
-        event.preventDefault();
-        return;
-      }
-      const tabId = li.dataset.tab;
-      const top = tab.closest('.record-tabs');
-      if (!top) return;
-      // if we're flagged to skip AJAX for this tab, we need special behavior:
-      if (li.classList.contains('noajax')) {
-        // if this was the initially active tab, we have moved away from it and
-        // now need to return -- just switch it back on.
-        if (li.classList.contains('initiallyActive')) {
-          $(tab).tab('show');
-          top.querySelectorAll('.tab-pane.active').forEach(e => e.classList.remove('active'));
-          top.querySelectorAll('.' + tabId + '-tab').forEach(e => e.classList.add('active'));
-          addTabToURL('tabnav');
+    .forEach((tab) => {
+      const tabEventHandler = (event) => {
+        const li = tab.parentNode;
+        const tabId = li.dataset.tab;
+        const top = tab.closest('.record-tabs');
+        if (!top) return;
+        const targetPane = top.querySelector('.tab-pane.' + tabId + '-tab');
+        // Only trigger show on already active tabs to set up all attributes required for keyboard controls:
+        if (tab.classList.contains('active') && targetPane && targetPane.classList.contains('active')) {
           event.preventDefault();
+          $(tab).tab('show');
+          return;
         }
-        // otherwise, we need to let the browser follow the link:
-        return;
-      }
-      event.preventDefault();
-      top.querySelectorAll('.tab-pane.active').forEach((e) => e.classList.remove('active'));
-      $(tab).tab('show');
-      const tabById = top.querySelector('.' + tabId + '-tab');
-      if (tabById) {
-        tabById.classList.add('active');
-        if (li.classList.contains('initiallyActive')) {
-          removeHashFromLocation();
+        // if we're flagged to skip AJAX for this tab, we need special behavior:
+        if (li.classList.contains('noajax')) {
+          // if this was the initially active tab, we have moved away from it and
+          // now need to return -- just switch it back on.
+          if (li.classList.contains('initiallyActive')) {
+            $(tab).tab('show');
+            top.querySelectorAll('.tab-pane.active').forEach(e => e.classList.remove('active'));
+            top.querySelectorAll('.' + tabId + '-tab').forEach(e => e.classList.add('active'));
+            addTabToURL('tabnav');
+            event.preventDefault();
+          }
+          // otherwise, we need to let the browser follow the link:
+          return;
+        }
+        event.preventDefault();
+        top.querySelectorAll('.tab-pane.active').forEach((e) => e.classList.remove('active'));
+        $(tab).tab('show');
+        const tabById = top.querySelector('.' + tabId + '-tab');
+        if (tabById) {
+          tabById.classList.add('active');
+          if (li.classList.contains('initiallyActive')) {
+            removeHashFromLocation();
+          } else {
+            addTabToURL(tabId);
+          }
         } else {
-          addTabToURL(tabId);
+          const newTab = getNewRecordTab(tabId);
+          newTab.classList.add('active');
+          const tabContent = top.querySelector('.tab-content');
+          if (tabContent) {
+            tabContent.append(newTab);
+          }
+          ajaxLoadTab(newTab, tabId, !li.classList.contains('initiallyActive'));
         }
-      } else {
-        const newTab = getNewRecordTab(tabId);
-        newTab.classList.add('active');
-        const tabContent = top.querySelector('.tab-content');
-        if (tabContent) {
-          tabContent.append(newTab);
-        }
-        ajaxLoadTab(newTab, tabId, !li.classList.contains('initiallyActive'));
-      }
-    }));
+      };
+      tab.addEventListener('click', tabEventHandler);
+      tab.addEventListener('focus', tabEventHandler);
+    });
 
   document.querySelectorAll('[data-background]').forEach((el) => {
     backgroundLoadTab(el.dataset.tab);
