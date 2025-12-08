@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -41,6 +41,7 @@ use function call_user_func;
 use function floatval;
 use function in_array;
 use function intval;
+use function is_callable;
 use function is_string;
 use function strlen;
 
@@ -178,7 +179,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function getTestName(): string
     {
-        return $this::class . '::' . $this->name();
+        return $this::class . '::' . $this->nameWithDataSet();
     }
 
     /**
@@ -877,6 +878,8 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * @param string  $selector CSS selector
      *
      * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function checkFieldIsValid(Element $page, string $selector): void
     {
@@ -894,6 +897,8 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
      * @param string  $selector CSS selector
      *
      * @return void
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function checkFieldIsInvalid(Element $page, string $selector): void
     {
@@ -1142,7 +1147,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     {
         $this->assertEquals(
             $title,
-            $page->find('css', '#lightbox-title')->getText()
+            $this->findCss($page, '#lightbox-title')->getText()
         );
     }
 
@@ -1226,6 +1231,14 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             return;
         }
 
+        $page ??= $this->session->getPage();
+        // Don't validate Whoops error pages:
+        if (str_contains($page->getOuterHtml(), '<div class="Whoops container')) {
+            return;
+        }
+
+        $this->waitForPageLoad($page);
+
         $http = new \VuFindHttp\HttpService();
         $client = $http->createClient(
             $nuAddress,
@@ -1237,8 +1250,6 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
                 'out' => 'json',
             ]
         );
-        $page ??= $this->session->getPage();
-        $this->waitForPageLoad($page);
         $client->setFileUpload(
             $this->session->getCurrentUrl(),
             'file',
@@ -1421,6 +1432,10 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
 
         $this->stopMinkSession();
         $this->restoreConfigs();
+
+        if (($this->hasLiveDatabaseTrait ?? false) && is_callable([$this, 'tearDownLiveDatabaseContainer'])) {
+            $this->tearDownLiveDatabaseContainer();
+        }
 
         if (null !== $htmlValidationException) {
             throw $htmlValidationException;

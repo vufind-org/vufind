@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -103,12 +103,9 @@ class UserService extends AbstractDbService implements
      */
     public function deleteUser(UserEntityInterface|int $userOrId): void
     {
-        $userId = $userOrId instanceof UserEntityInterface ? $userOrId->getId() : $userOrId;
-        $dql = 'DELETE FROM ' . UserEntityInterface::class . ' u'
-            . ' WHERE u.id = :id';
-        $query = $this->entityManager->createQuery($dql);
-        $query->setParameter('id', $userId);
-        $query->execute();
+        if ($user = $this->getDoctrineReference(UserEntityInterface::class, $userOrId)) {
+            $this->deleteEntity($user);
+        }
     }
 
     /**
@@ -120,13 +117,7 @@ class UserService extends AbstractDbService implements
      */
     public function getUserById(int $id): ?UserEntityInterface
     {
-        $dql = 'SELECT u '
-                . 'FROM ' . UserEntityInterface::class . ' u '
-                . 'WHERE u.id = :id';
-        $query = $this->entityManager->createQuery($dql);
-        $query->setParameter('id', $id);
-        $result = $query->getOneOrNullResult();
-        return $result;
+        return $this->entityManager->find(UserEntityInterface::class, $id);
     }
 
     /**
@@ -163,8 +154,7 @@ class UserService extends AbstractDbService implements
             $parameters = compact('fieldValue');
             $query = $this->entityManager->createQuery($dql);
             $query->setParameters($parameters);
-            $result = current($query->getResult());
-            return $result ?: null;
+            return $query->getOneOrNullResult();
         }
         throw new \InvalidArgumentException('Field name must be id, username, email or cat_id');
     }

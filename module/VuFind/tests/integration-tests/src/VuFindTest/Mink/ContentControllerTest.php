@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -61,10 +61,9 @@ class ContentControllerTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @param string $basePath Base path of content route
      *
-     * @dataProvider basePathProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('basePathProvider')]
     public function testMarkdownContentRendering(string $basePath): void
     {
         // Switch to the example theme, because that's where a Markdown example lives:
@@ -165,10 +164,9 @@ class ContentControllerTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $expected Expected heading
      * @param string $pageType Page type (html, md or error)
      *
-     * @dataProvider requestPathProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('requestPathProvider')]
     public function testDirectoryHandling(string $language, string $path, string $expected, string $pageType): void
     {
         // Switch to the minktest theme:

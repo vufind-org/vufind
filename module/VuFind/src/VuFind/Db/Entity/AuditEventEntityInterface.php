@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -49,7 +49,7 @@ interface AuditEventEntityInterface extends EntityInterface
      *
      * @return DateTime
      */
-    public function getDate(): Datetime;
+    public function getDate(): DateTime;
 
     /**
      * Set date.
@@ -107,6 +107,22 @@ interface AuditEventEntityInterface extends EntityInterface
      * @return static
      */
     public function setUser(?UserEntityInterface $user): static;
+
+    /**
+     * Get payment.
+     *
+     * @return ?PaymentEntityInterface
+     */
+    public function getPayment(): ?PaymentEntityInterface;
+
+    /**
+     * Set payment.
+     *
+     * @param ?PaymentEntityInterface $payment Payment
+     *
+     * @return static
+     */
+    public function setPayment(?PaymentEntityInterface $payment): static;
 
     /**
      * Get username.
@@ -198,16 +214,16 @@ interface AuditEventEntityInterface extends EntityInterface
     /**
      * Get additional data.
      *
-     * @return ?string
+     * @return ?array
      */
-    public function getData(): ?string;
+    public function getData(): ?array;
 
     /**
      * Set additional data.
      *
-     * @param ?string $data Data
+     * @param ?array $data Data
      *
      * @return static
      */
-    public function setData(?string $data): static;
+    public function setData(?array $data): static;
 }

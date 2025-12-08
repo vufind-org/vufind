@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Channels
@@ -51,6 +51,7 @@ use function count;
 class ListItems extends AbstractChannelProvider
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
+    use BatchTrait;
 
     /**
      * IDs of lists to display
@@ -124,6 +125,8 @@ class ListItems extends AbstractChannelProvider
         $this->displayPublicLists = isset($options['displayPublicLists'])
             ? (bool)$options['displayPublicLists'] : true;
         $this->initialListsToDisplay = $options['initialListsToDisplay'] ?? 2;
+
+        $this->setBatchSizeFromOptions($options);
     }
 
     /**
@@ -275,7 +278,7 @@ class ListItems extends AbstractChannelProvider
         $retVal['contents'] = $this->summarizeRecordDrivers($results->getResults());
         $retVal['links'][] = [
             'label' => 'channel_search',
-            'icon' => 'fa-list',
+            'icon' => 'search',
             'url' => $this->url->fromRoute('userList', ['id' => $list->getId()]),
         ];
         return $retVal;

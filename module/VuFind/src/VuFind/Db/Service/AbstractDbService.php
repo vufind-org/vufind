@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -81,6 +81,21 @@ abstract class AbstractDbService implements DbServiceInterface
     public function persistEntity(EntityInterface $entity): void
     {
         $this->persistenceManager->persistEntity($entity);
+    }
+
+    /**
+     * Detach an entity.
+     *
+     * Makes the Entity Manager stop tracking the entity. This can save memory and work, but also helps when the target
+     * entity of this entity with "ON DELETE SET NULL" is going to be deleted.
+     *
+     * @param EntityInterface $entity Entity to detach.
+     *
+     * @return void
+     */
+    public function detachEntity(EntityInterface $entity): void
+    {
+        $this->entityManager->detach($entity);
     }
 
     /**

@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -58,7 +58,7 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:ils_drivers Wiki
  */
-class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas\Log\LoggerAwareInterface
+class Voyager extends AbstractBase implements TranslatorAwareInterface, \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
     use \VuFind\Log\LoggerAwareTrait {
@@ -1732,7 +1732,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
      */
     protected function processMyHoldsData($sqlRow)
     {
-        $available = ($sqlRow['HOLD_RECALL_STATUS'] == 2) ? true : false;
+        $available = $sqlRow['HOLD_RECALL_STATUS'] == 2;
         $expireDate = $this->translate('Unknown');
         // Convert Voyager Format to display format
         if (!empty($sqlRow['EXPIRE_DATE'])) {
@@ -1925,7 +1925,7 @@ class Voyager extends AbstractBase implements TranslatorAwareInterface, \Laminas
      */
     protected function processMyStorageRetrievalRequestsData($sqlRow)
     {
-        $available = ($sqlRow['STATUS'] == 4) ? true : false;
+        $available = $sqlRow['STATUS'] == 4;
         $expireDate = '';
         $processedDate = '';
         $statusDate = '';

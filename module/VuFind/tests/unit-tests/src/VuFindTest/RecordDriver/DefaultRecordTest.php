@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -338,7 +338,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
         $mock->setRawData($fields);
         $mock->expects($this->any())
             ->method('getBookOpenUrlParams')
-            ->will($this->returnValue($openUrlParams));
+            ->willReturn($openUrlParams);
 
         $this->assertEquals($openUrl, $mock->getOpenUrl());
     }
@@ -542,10 +542,9 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
      * @param string $mode          Retrieval mode
      * @param bool   $filterInvalid Should we filter invalid ISBNs?
      *
-     * @dataProvider getCleanISBNsProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getCleanISBNsProvider')]
     public function testGetCleanISBNs($result, $mode, $filterInvalid)
     {
         $this->assertEquals($result, $this->getDriver()->getCleanISBNs($mode, $filterInvalid));

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -31,7 +31,6 @@ namespace VuFind\Controller;
 
 use Laminas\Http\Exception\InvalidArgumentException;
 use Laminas\Http\Response;
-use Laminas\Log\LoggerAwareInterface;
 use Laminas\Mvc\Exception\DomainException;
 use Laminas\Psr7Bridge\Psr7Response;
 use Laminas\Psr7Bridge\Psr7ServerRequest;
@@ -39,6 +38,7 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 use Laminas\Session\Container as SessionContainer;
 use League\OAuth2\Server\Exception\OAuthServerException;
 use OpenIDConnectServer\ClaimExtractor;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Config\PathResolver;
 use VuFind\Db\Service\AccessTokenServiceInterface;
 use VuFind\Exception\BadRequest as BadRequestException;
@@ -176,7 +176,7 @@ class OAuth2Controller extends AbstractBase implements LoggerAwareInterface
         if ($allowedScopes = $clientConfig['allowedScopes'] ?? null) {
             $scopes = $authRequest->getScopes();
             array_map(
-                function ($scope) use ($allowedScopes) {
+                function ($scope) use ($allowedScopes): void {
                     if (!in_array($scope->getIdentifier(), $allowedScopes)) {
                         $scope->setHidden(true);
                     }

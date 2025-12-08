@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  API_Formatter
@@ -76,14 +76,14 @@ class FacetFormatter extends BaseFormatter
      * @param array $facet   Facet
      * @param array $filters Facet filters
      *
-     * @return boolean
+     * @return bool
      */
     protected function matchFacetItem($facet, $filters)
     {
         $discard = true;
         array_walk_recursive(
             $facet,
-            function ($item, $key) use (&$discard, $filters) {
+            function ($item, $key) use (&$discard, $filters): void {
                 if ($discard && $key == 'value') {
                     foreach ($filters as $filter) {
                         $pattern = '/' . addcslashes($filter, '/') . '/';

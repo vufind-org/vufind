@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -31,7 +31,7 @@ namespace VuFind\Db\Service;
 
 use DateTime;
 use VuFind\Db\Entity\AccessTokenEntityInterface;
-use VuFind\Db\Entity\User;
+use VuFind\Db\Entity\UserEntityInterface;
 
 /**
  * Database service for access tokens.
@@ -101,7 +101,7 @@ class AccessTokenService extends AbstractDbService implements
     {
         $type = 'openid_nonce';
         $token = $this->getByIdAndType((string)$userId, $type);
-        $token->setUser($this->entityManager->getReference(User::class, $userId));
+        $token->setUser($this->getDoctrineReference(UserEntityInterface::class, $userId));
         $token->setData($nonce);
         $this->persistEntity($token);
     }
@@ -118,6 +118,19 @@ class AccessTokenService extends AbstractDbService implements
         $type = 'openid_nonce';
         $token = $this->getByIdAndType((string)$userId, $type, false);
         return $token?->getData();
+    }
+
+    /**
+     * Delete an access token.
+     *
+     * @param AccessTokenEntityInterface $accessToken AccessToken object to delete
+     *
+     * @return void
+     */
+    public function deleteAccessToken(AccessTokenEntityInterface $accessToken): void
+    {
+        $this->entityManager->remove($accessToken);
+        $this->entityManager->flush();
     }
 
     /**

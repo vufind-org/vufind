@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -49,6 +49,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         AccessTokenEntityInterface::class => AccessToken::class,
+        ApiKeyEntityInterface::class => ApiKey::class,
         AuthHashEntityInterface::class => AuthHash::class,
         ChangeTrackerEntityInterface::class => ChangeTracker::class,
         CommentsEntityInterface::class => Comments::class,
@@ -57,6 +58,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         FeedbackEntityInterface::class => Feedback::class,
         LoginTokenEntityInterface::class => LoginToken::class,
         OaiResumptionEntityInterface::class => OaiResumption::class,
+        PaymentEntityInterface::class => Payment::class,
+        PaymentFeeEntityInterface::class => PaymentFee::class,
         RatingsEntityInterface::class => Ratings::class,
         RecordEntityInterface::class => Record::class,
         ResourceEntityInterface::class => Resource::class,
@@ -78,6 +81,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $factories = [
         AccessToken::class => InvokableFactory::class,
+        ApiKey::class => InvokableFactory::class,
         AuthHash::class => InvokableFactory::class,
         ChangeTracker::class => InvokableFactory::class,
         Comments::class => InvokableFactory::class,
@@ -86,6 +90,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Feedback::class => InvokableFactory::class,
         LoginToken::class => InvokableFactory::class,
         OaiResumption::class => InvokableFactory::class,
+        Payment::class => InvokableFactory::class,
+        PaymentFee::class => InvokableFactory::class,
         Ratings::class => InvokableFactory::class,
         Record::class => InvokableFactory::class,
         Resource::class => InvokableFactory::class,

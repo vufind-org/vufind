@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -62,14 +62,14 @@ class SearchCommandTest extends TestCase
             ->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
             ->disableOriginalConstructor()->getMock();
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue($backendId));
+            ->willReturn($backendId);
         $backend->expects($this->once())->method('search')
             ->with(
                 $this->equalTo($query),
                 $this->equalTo(0),
                 $this->equalTo(1),
                 $this->equalTo($params)
-            )->will($this->returnValue('result'));  // not a realistic value!
+            )->willReturn('result');  // not a realistic value!
         $command = $this->getCommand();
         $this->assertEquals('result', $command->execute($backend)->getResult());
     }
@@ -183,9 +183,9 @@ class SearchCommandTest extends TestCase
             ->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
             ->disableOriginalConstructor()->getMock();
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue($backendId));
+            ->willReturn($backendId);
         $backend->expects($this->once())->method('getExtraRequestDetails')
-            ->will($this->returnValue(['foo' => 'bar']));
+            ->willReturn(['foo' => 'bar']);
         $command = $this->getCommand();
         $this->assertEqualsCanonicalizing(['foo' => 'bar'], $command->execute($backend)->getExtraRequestDetails());
     }

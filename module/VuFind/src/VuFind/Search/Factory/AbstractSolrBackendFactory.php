@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -71,9 +71,16 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     use SharedListenersTrait;
 
     /**
+     * Configuration key for HTTP settings in the index configuration array.
+     *
+     * @var string
+     */
+    public const HTTP_CONFIG_KEY = '_http_';
+
+    /**
      * Logger.
      *
-     * @var \Laminas\Log\LoggerInterface
+     * @var \Psr\Log\LoggerInterface
      */
     protected \Laminas\Log\LoggerInterface $logger;
 
@@ -223,10 +230,14 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     protected function getMergedIndexConfig(): array
     {
         if (null === $this->mergedIndexConfig) {
-            $this->mergedIndexConfig = [];
+            $this->mergedIndexConfig = [
+                static::HTTP_CONFIG_KEY => [],
+            ];
             foreach ($this->getPrioritizedConfigsForIndexSettings() as $configName) {
                 $config = $this->configManager->getConfigArray($configName);
                 $this->mergedIndexConfig += $config['Index'] ?? [];
+                // Include settings from IndexHttp section in _http:
+                $this->mergedIndexConfig[static::HTTP_CONFIG_KEY] += $config['IndexHttp'] ?? [];
             }
         }
         return $this->mergedIndexConfig;
@@ -242,6 +253,8 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
     {
         $configList = $this->getPrioritizedConfigsForIndexSettings();
         $configArray = $this->configManager->getConfigArray($configList[0]);
+        // Include settings from IndexHttp section:
+        $configArray['Index'][static::HTTP_CONFIG_KEY] = $configArray['IndexHttp'] ?? [];
         return $configArray['Index'] ?? [];
     }
 
@@ -520,7 +533,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
      */
     protected function getHttpOptions(string $url): array
     {
-        return [];
+        return $this->getIndexConfig(static::HTTP_CONFIG_KEY, []);
     }
 
     /**

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Content
@@ -34,8 +34,6 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
-
-use function strlen;
 
 /**
  * Generic Syndetics content plugin factory.
@@ -71,17 +69,7 @@ class AbstractSyndeticsFactory implements FactoryInterface
             throw new \Exception('Unexpected options sent to factory!');
         }
         $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
-
-        // Special case: if the class name ends in Plus, we need to strip off
-        // the "Plus" and instead configure the base Syndetics class into "plus"
-        // mode.
-        $plus = str_ends_with($requestedName, 'Plus');
-        $className = $plus
-            ? substr($requestedName, 0, strlen($requestedName) - 4) : $requestedName;
-
-        return new $className(
-            $config['Syndetics']['use_ssl'] ?? false,
-            $plus,
+        return new $requestedName(
             $config['Syndetics']['timeout'] ?? 10
         );
     }

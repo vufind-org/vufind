@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -125,9 +125,9 @@ trait DemoDriverTestTrait
      *
      * @param string $bibId Bibliographic record ID to create fake item info for.
      *
-     * @return array
+     * @return string
      */
-    protected function getFakeFines(string $bibId)
+    protected function getFakeFines(string $bibId): string
     {
         $checkoutDate = strtotime('now -30 days');
         $returnDate = strtotime('now -2 days');
@@ -239,11 +239,14 @@ trait DemoDriverTestTrait
                 'historicTransactions' => $this->getFakeHistoricTransactions($bibId, $bibId2),
                 'fines' => $this->getFakeFines($bibId),
                 'holds' => $this->getFakeHolds($bibId, $bibId2),
+                'new_items' => [$bibId, $bibId2],
+                'recently_returned' => [$bibId, $bibId2],
             ],
             'Failure_Probabilities' => [
                 'cancelHolds' => 0,
                 'cancelILLRequests' => 0,
                 'cancelStorageRetrievalRequests' => 0,
+                'changePassword' => 0,
                 'checkILLRequestIsValid' => 0,
                 'checkRenewBlock' => 0,
                 'checkRequestIsValid' => 0,
@@ -260,6 +263,7 @@ trait DemoDriverTestTrait
                 'resetPassword' => 0,
                 'updateHolds' => 0,
                 'purgeTransactionHistory' => 0,
+                'registerPayment' => 0,
             ],
             'StaticHoldings' => [
                 $bibId => json_encode([$this->getFakeItem()]),

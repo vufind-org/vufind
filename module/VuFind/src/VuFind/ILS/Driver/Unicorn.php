@@ -15,8 +15,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -151,11 +151,7 @@ class Unicorn extends AbstractBase implements
      */
     public function getConfig($function, $params = [])
     {
-        if (isset($this->config[$function])) {
-            $functionConfig = $this->config[$function];
-        } else {
-            $functionConfig = false;
-        }
+        $functionConfig = $this->config[$function] ?? false;
         return $functionConfig;
     }
 
@@ -579,7 +575,7 @@ class Unicorn extends AbstractBase implements
             zip: $zip,
             phone: $phone,
             group: $profile,
-            home_library: (string)$library,
+            home_library: $library,
             nonDefaultFields: [
                 'email' => $email,
                 'library' => $library, // Leave library for legacy support
@@ -679,7 +675,7 @@ class Unicorn extends AbstractBase implements
             $items[] = [
                 'id' => $catkey,
                 'reqnum' => $holdkey,
-                'available' => ($available == 'Y') ? true : false,
+                'available' => $available == 'Y',
                 'expire' => $this->formatDateTime($date_expires),
                 'create' => $this->formatDateTime($date_created),
                 'type' => $type,

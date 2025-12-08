@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -31,6 +31,7 @@ namespace VuFind\Db\Entity;
 
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
+use VuFind\Db\Feature\DateTimeTrait;
 
 /**
  * Entity model for feedback table
@@ -50,6 +51,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity]
 class Feedback implements FeedbackEntityInterface
 {
+    use DateTimeTrait;
+
     /**
      * Unique ID.
      *
@@ -140,8 +143,8 @@ class Feedback implements FeedbackEntityInterface
     public function __construct()
     {
         // Set the default value as a DateTime object
-        $this->created = new Datetime();
-        $this->updated = new Datetime();
+        $this->created = new DateTime();
+        $this->updated = new DateTime();
     }
 
     /**
@@ -243,7 +246,8 @@ class Feedback implements FeedbackEntityInterface
      */
     public function getCreated(): DateTime
     {
-        return $this->created;
+        // Return to a clone to avoid indirect modification of the entity:
+        return $this->getDateTimeClone($this->created);
     }
 
     /**

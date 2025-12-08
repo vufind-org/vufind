@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Config
@@ -30,7 +30,7 @@
 
 namespace VuFind\Config;
 
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use VuFind\Config\Location\ConfigDirectory;
 use VuFind\Config\Location\ConfigLocationInterface;
 use VuFind\Exception\FileAccess as FileAccessException;
@@ -167,7 +167,7 @@ class Upgrade implements LoggerAwareInterface
         $this->saveModifiedConfig('permissions', $this->permissionsModified);
 
         // Make sure to update any remaining configurations that were not explicitly updated above.
-        foreach ($this->newConfigs as $configName => $newConfig) {
+        foreach (array_keys($this->newConfigs) as $configName) {
             if (!in_array($configName, $this->writtenConfig)) {
                 $this->applyOldSettings($configName);
                 $this->saveModifiedConfig($configName);
@@ -222,11 +222,9 @@ class Upgrade implements LoggerAwareInterface
         foreach ($custom_ini as $k => $v) {
             // Make a recursive call if we need to merge array values into an
             // existing key... otherwise just drop the value in place.
-            if (is_array($v) && isset($config_ini[$k])) {
-                $config_ini[$k] = self::iniMerge($config_ini[$k], $custom_ini[$k]);
-            } else {
-                $config_ini[$k] = $v;
-            }
+            $config_ini[$k] = is_array($v) && isset($config_ini[$k])
+                ? self::iniMerge($config_ini[$k], $custom_ini[$k])
+                : $v;
         }
         return $config_ini;
     }
@@ -421,22 +419,23 @@ class Upgrade implements LoggerAwareInterface
     }
 
     /**
-     * Add warnings if Amazon problems were found.
+     * Add warnings if obsolete cover/review problems were found.
      *
-     * @param array $config Configuration to check
+     * @param array  $config Configuration to check
+     * @param string $site   Site name to check
      *
      * @return void
      */
-    protected function checkAmazonConfig(array $config): void
+    protected function checkObsoleteCoverOrReviewConfig(array $config, string $site): void
     {
         // Warn the user if they have Amazon enabled but do not have the appropriate
         // credentials set up.
-        $hasAmazonReview = stristr($config['Content']['reviews'] ?? '', 'amazon');
-        $hasAmazonCover = stristr($config['Content']['coverimages'] ?? '', 'amazon');
-        if ($hasAmazonReview || $hasAmazonCover) {
+        $hasBadReview = stristr($config['Content']['reviews'] ?? '', $site);
+        $hasBadCover = stristr($config['Content']['coverimages'] ?? '', $site);
+        if ($hasBadReview || $hasBadCover) {
             $this->addWarning(
-                'WARNING: You have Amazon content enabled, but VuFind no longer '
-                . 'supports it. You should remove Amazon references from config.ini.'
+                'WARNING: You have ' . $site . ' content enabled, but VuFind no longer '
+                . 'supports it. You should remove ' . $site . ' references from config.ini.'
             );
         }
     }
@@ -467,7 +466,14 @@ class Upgrade implements LoggerAwareInterface
         }
 
         // Warn the user about Amazon configuration issues:
-        $this->checkAmazonConfig($newConfig);
+        $this->checkObsoleteCoverOrReviewConfig($newConfig, 'Amazon');
+
+        // Warn the user about BookSite configuration issues:
+        $this->checkObsoleteCoverOrReviewConfig($newConfig, 'Booksite');
+        if (isset($newConfig['Booksite'])) {
+            unset($newConfig['Booksite']);
+            $this->addWarning('The [Booksite] section of config.ini is no longer supported.');
+        }
 
         // Warn the user if they have enabled a deprecated Google API:
         if (isset($newConfig['GoogleSearch'])) {
@@ -487,17 +493,6 @@ class Upgrade implements LoggerAwareInterface
                 'Google Maps is no longer a supported Content/recordMap option;'
                 . ' please review your config.ini.'
             );
-        }
-        if (isset($newConfig['GoogleAnalytics']['apiKey'])) {
-            if (
-                !isset($newConfig['GoogleAnalytics']['universal'])
-                || !$newConfig['GoogleAnalytics']['universal']
-            ) {
-                $this->addWarning(
-                    'The [GoogleAnalytics] universal setting is off. See config.ini '
-                    . 'for important information on how to upgrade your Analytics.'
-                );
-            }
         }
 
         // Upgrade CAPTCHA Options
@@ -559,7 +554,7 @@ class Upgrade implements LoggerAwareInterface
         unset($newConfig['Index']['local']);
 
         // Warn the user if they are using an unsupported theme:
-        $this->checkTheme('theme', 'bootprint3');
+        $this->checkTheme('theme', 'sandal5');
         $this->checkTheme('mobile_theme', null);
 
         // Translate legacy auth settings:
@@ -600,10 +595,16 @@ class Upgrade implements LoggerAwareInterface
 
         // Update Syndetics config:
         if (isset($newConfig['Syndetics']['url'])) {
-            $newConfig['Syndetics']['use_ssl']
-                = (!str_contains($newConfig['Syndetics']['url'], 'https://'))
-                ? '' : 1;
             unset($newConfig['Syndetics']['url']);
+        }
+        if (isset($newConfig['Syndetics']['use_ssl'])) {
+            unset($newConfig['Syndetics']['use_ssl']);
+        }
+        if (isset($newConfig['Syndetics']['plus'])) {
+            unset($newConfig['Syndetics']['plus']);
+        }
+        if (isset($newConfig['Syndetics']['plus_id'])) {
+            unset($newConfig['Syndetics']['plus_id']);
         }
 
         // Convert spellchecker 'simple' option
@@ -631,6 +632,24 @@ class Upgrade implements LoggerAwareInterface
                 $newConfig['CacheConfigName_searchspecs']['disabled'] = true;
             }
             unset($this->newConfigs['searches']['Cache']);
+        }
+
+        // Update LDAP settings (replace deprecated host/port with uri):
+        $ldapHost = $newConfig['LDAP']['host'] ?? null;
+        $ldapPort = $newConfig['LDAP']['port'] ?? null;
+        if ($ldapHost || $ldapPort) {
+            if (!isset($newConfig['LDAP']['uri'])) {
+                if ($ldapHost && (str_starts_with($ldapHost, 'ldap://') || str_starts_with($ldapHost, 'ldaps://'))) {
+                    // Note that ldap_connect ignores the port setting when the first argument is a URI, so it is
+                    // intentional that we ignore the port setting this case.
+                    $newConfig['LDAP']['uri'] = $ldapHost;
+                } else {
+                    // If the host setting is not a URI, convert it into one:
+                    $newConfig['LDAP']['uri'] = 'ldap://' . ($ldapHost ?? 'localhost') . ':' . ($ldapPort ?? '389');
+                }
+            }
+            unset($newConfig['LDAP']['host']);
+            unset($newConfig['LDAP']['port']);
         }
 
         // Translate obsolete permission settings:
@@ -831,16 +850,93 @@ class Upgrade implements LoggerAwareInterface
         // we want to retain the old installation's search and facet settings
         // exactly as-is
         $this->applyOldSettings($configName);
+        $this->applyOldSettings('RecordDataFormatter/' . $configName);
 
         // Fix default view settings in case they use the old style:
-        $newConfig = & $this->newConfigs[$configName]['General'];
+        $newBaseConfig = & $this->newConfigs[$configName];
+        $newRecordDataFormatterConfig = & $this->newConfigs['RecordDataFormatter/' . $configName];
+        $recordDataFormatterConfigModified = false;
 
-        if (!str_contains($newConfig['default_view'], '_')) {
-            $newConfig['default_view'] = 'list_' . $newConfig['default_view'];
+        if (!str_contains($newBaseConfig['General']['default_view'], '_')) {
+            $newBaseConfig['General']['default_view'] = 'list_' . $newBaseConfig['General']['default_view'];
         }
+
+        // Move several settings to RecordDataFormatter/EDS
+        foreach ($newBaseConfig['ItemCoreFilter']['excludeLabel'] ?? [] as $label) {
+            $this->setEbscoItemFilter($newRecordDataFormatterConfig, 'CoreItems', 'Label', $label);
+            $recordDataFormatterConfigModified = true;
+        }
+        foreach ($newBaseConfig['ItemCoreFilter']['excludeGroup'] ?? [] as $group) {
+            $this->setEbscoItemFilter($newRecordDataFormatterConfig, 'CoreItems', 'Group', $group);
+            $recordDataFormatterConfigModified = true;
+        }
+        unset($newBaseConfig['ItemCoreFilter']);
+
+        foreach ($newBaseConfig['ItemResultListFilter']['excludeLabel'] ?? [] as $label) {
+            $this->setEbscoItemFilter($newRecordDataFormatterConfig, 'ResultListItems', 'Label', $label);
+            $recordDataFormatterConfigModified = true;
+        }
+        foreach ($newBaseConfig['ItemResultListFilter']['excludeGroup'] ?? [] as $group) {
+            $this->setEbscoItemFilter($newRecordDataFormatterConfig, 'ResultListItems', 'Group', $group);
+            $recordDataFormatterConfigModified = true;
+        }
+        unset($newBaseConfig['ItemResultListFilter']);
+
+        if (
+            isset($newBaseConfig['AuthorDisplay']['DetailPageFormat'])
+            && $newBaseConfig['AuthorDisplay']['DetailPageFormat'] === 'Short'
+        ) {
+            $this->setEbscoItemFilter($newRecordDataFormatterConfig, 'CoreItems', 'Group', 'AuInfo');
+            $newRecordDataFormatterConfig['CoreItems']['extraLineOptions'][] = 'CoreAuthors';
+            $newRecordDataFormatterConfig['CoreAuthors']['multiAltDataMethod'] =
+                'getPrimaryAuthorsWithHighlighting';
+            $newRecordDataFormatterConfig['CoreAuthors']['limit'] =
+                $newBaseConfig['AuthorDisplay']['ShortAuthorLimit'] ?? 3;
+            $recordDataFormatterConfigModified = true;
+        }
+
+        if (
+            isset($newBaseConfig['AuthorDisplay']['ResultListFormat'])
+        ) {
+            if ($newBaseConfig['AuthorDisplay']['ResultListFormat'] === 'Short') {
+                $newRecordDataFormatterConfig['ResultListAuthors']['limit']
+                    = $newBaseConfig['AuthorDisplay']['ShortAuthorLimit'] ?? 3;
+            } else {
+                unset($newRecordDataFormatterConfig['ResultListAuthors']['limit']);
+                unset($newRecordDataFormatterConfig['ResultListAuthors']['multiAltDataMethod']);
+            }
+            $recordDataFormatterConfigModified = true;
+        }
+        unset($newBaseConfig['AuthorDisplay']);
 
         // save the configuration
         $this->saveModifiedConfig($configName);
+        $this->saveModifiedConfig('RecordDataFormatter/' . $configName, $recordDataFormatterConfigModified);
+    }
+
+    /**
+     * Set EBSCO item filter.
+     *
+     * @param array  $newRecordDataFormatterConfig New RecordDataFormatter config
+     * @param string $section                      Section to change
+     * @param string $lineIdentifierKey            Identifier key to filter
+     * @param string $lineIdentifierValue          Identifier value to filter
+     *
+     * @return void
+     */
+    protected function setEbscoItemFilter(
+        array &$newRecordDataFormatterConfig,
+        string $section,
+        string $lineIdentifierKey,
+        string $lineIdentifierValue
+    ): void {
+        $filterSection = "{$section}_Filter_{$lineIdentifierKey}_$lineIdentifierValue";
+        $newRecordDataFormatterConfig[$section]['extraLineOptions'][] = $filterSection;
+        $newRecordDataFormatterConfig[$filterSection] = [
+            'lineIdentifierKey' => $lineIdentifierKey,
+            'lineIdentifierValue' => $lineIdentifierValue,
+            'multiEnabled' => false,
+        ];
     }
 
     /**

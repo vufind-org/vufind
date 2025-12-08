@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -84,9 +84,8 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
      * @param bool $expectedResult Expected return value from isActive
      *
      * @return void
-     *
-     * @dataProvider isActiveProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('isActiveProvider')]
     public function testIsActive(int $childCount, bool $expectedResult): void
     {
         $searchObj = $this->getService();
@@ -96,7 +95,7 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $recordDriver->expects($this->any())->method('tryMethod')
             ->with($this->equalTo('getChildRecordCount'))
-            ->will($this->returnValue($childCount));
+            ->willReturn($childCount);
         $obj->setRecordDriver($recordDriver);
         $this->assertSame($expectedResult, $obj->isActive());
     }
@@ -118,14 +117,14 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->getMock();
         $recordDriver->expects($this->any())->method('getUniqueID')
-            ->will($this->returnValue('foo'));
+            ->willReturn('foo');
         $recordDriver->expects($this->any())->method('getSourceIdentifier')
-            ->will($this->returnValue('bar'));
+            ->willReturn('bar');
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
             ->disableOriginalConstructor()
             ->getMock();
         $commandObj->expects($this->once())->method('getResult')
-            ->will($this->returnValue($rci));
+            ->willReturn($rci);
         $checkCommand = function ($command) {
             return $command::class === \VuFindSearch\Command\SearchCommand::class
                 && $command->getTargetIdentifier() === 'bar'
@@ -139,7 +138,7 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
         };
         $service->expects($this->once())->method('invoke')
             ->with($this->callback($checkCommand))
-            ->will($this->returnValue($commandObj));
+            ->willReturn($commandObj);
         $obj = new ComponentParts($service);
         $obj->setRecordDriver($recordDriver);
         $this->assertEquals($rci, $obj->getResults());

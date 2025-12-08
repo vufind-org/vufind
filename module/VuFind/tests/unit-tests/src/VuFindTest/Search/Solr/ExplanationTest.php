@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -792,16 +792,16 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['getResult'])
-            ->getMockForAbstractClass();
+            ->onlyMethods(['getResult', 'execute'])
+            ->getMock();
         $commandObj->expects($this->once())->method('getResult')
-            ->will($this->returnValue($result));
+            ->willReturn($result);
         $checkCommand = function ($command) {
             return $command::class === \VuFindSearch\Backend\Solr\Command\RawJsonSearchCommand::class;
         };
         $searchService->expects($this->once())->method('invoke')
             ->with($this->callback($checkCommand))
-            ->will($this->returnValue($commandObj));
+            ->willReturn($commandObj);
         return new Explanation(
             $paramsObj,
             $searchService,

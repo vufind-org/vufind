@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Db
@@ -30,9 +30,11 @@
 namespace VuFind\Db;
 
 use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\Events;
 use DoctrineModule\Service\AbstractFactory;
 use DoctrineORMModule\Options\EntityManager as DoctrineORMModuleEntityManager;
 use Psr\Container\ContainerInterface;
+use VuFind\Db\Mapping\ClassMetadataMappingsInterface;
 
 use function assert;
 
@@ -63,6 +65,8 @@ class EntityManagerFactory extends AbstractFactory
      * @throws ServiceNotCreatedException if an exception is raised when
      * creating a service.
      * @throws ContainerException&\Throwable if any other error occurs
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function __invoke(ContainerInterface $container, $requestedName, array|null $options = null)
     {
@@ -70,23 +74,23 @@ class EntityManagerFactory extends AbstractFactory
         assert($options instanceof DoctrineORMModuleEntityManager);
         $connection = $container->get($options->getConnection());
         $config = $container->get($options->getConfiguration());
+        $entityPluginManager = $container->get(\VuFind\Db\Entity\PluginManager::class);
 
-        // Do not use the standard entity resolver and configuration since
-        // the mappings already exist in the plugin manager.
-        $pm = $container->get(\VuFind\Db\Entity\PluginManager::class);
+        $entityManager = new EntityManager($connection, $config, $connection->getEventManager());
 
-        $evm  = $connection->getEventManager();
-        $rtel = new \Doctrine\ORM\Tools\ResolveTargetEntityListener();
-
-        foreach ($pm->getAliases() as $interface => $class) {
-            // Adds a target-entity class
-            $rtel->addResolveTargetEntity($interface, $class, []);
+        // Add entity mappings to class metadata factory:
+        $metadataFactory = $entityManager->getMetadataFactory();
+        if ($metadataFactory instanceof ClassMetadataMappingsInterface) {
+            $metadataFactory->setAliases($entityPluginManager->getAliases());
         }
 
-        // Add the ResolveTargetEntityListener
-        $evm->addEventSubscriber($rtel);
+        // Add LoadClassMetadataListener:
+        $entityManager->getEventManager()->addEventListener(
+            Events::loadClassMetadata,
+            new LoadClassMetadataListener($entityManager, $entityPluginManager->getAliases())
+        );
 
-        return new EntityManager($connection, $config, $evm);
+        return $entityManager;
     }
 
     /**

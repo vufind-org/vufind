@@ -19,9 +19,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301
- * USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  DigitalContent
@@ -68,8 +67,7 @@ class FakeOverdriveConnector extends OverdriveConnector
      *
      * Returns the currently logged in user or false if the user is not
      *
-     * @return array|boolean  an array of user info from the ILSAuthenticator
-     *                        or false if user is not logged in.
+     * @return array|bool an array of user info from the ILSAuthenticator or false if user is not logged in.
      */
     public function getUser()
     {

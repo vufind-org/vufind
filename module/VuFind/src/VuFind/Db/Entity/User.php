@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -34,7 +34,7 @@ use Doctrine\ORM\Mapping as ORM;
 use VuFind\Db\Feature\DateTimeTrait;
 
 /**
- * User
+ * Entity model for user table
  *
  * @category VuFind
  * @package  Database
@@ -708,7 +708,8 @@ class User implements UserEntityInterface
      */
     public function getCreated(): DateTime
     {
-        return $this->created;
+        // Return to a clone to avoid indirect modification of the entity:
+        return $this->getDateTimeClone($this->created);
     }
 
     /**
@@ -737,7 +738,7 @@ class User implements UserEntityInterface
     /**
      * Get the list of roles of this identity
      *
-     * @return string[]|\Rbac\Role\RoleInterface[]
+     * @return string[]|\Laminas\Permissions\Rbac\RoleInterface[]
      */
     public function getRoles(): iterable
     {

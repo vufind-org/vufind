@@ -6,6 +6,9 @@
     }
     $this->breadcrumbs()->add(...$this->recordLinker()->getBreadcrumbParams($this->driver))
       ->add($this->translate('request_place_text'), active: true);
+
+    $enumchronRaw = $this->gatheredDetails['requestedItem']['enumchron'] ?? '';
+    $enumchron = $enumchronRaw !== '' ? " ($enumchronRaw)" : '';
 ?>
 <?=$this->component('page-title', ['title' => $this->translate('request_place_text'), 'headTitle' => $this->translate('request_place_text') . ': ' . $this->driver->getBreadcrumb()]);?>
 <?php if ($this->helpTextHtml): ?>
@@ -15,7 +18,7 @@
 <form class="form-record-hold" method="post" name="placeHold" data-clear-account-cache="holds">
   <?=$this->flashmessages()?>
   <label class="form-label"><?=$this->transEsc('Title')?></label>
-  <p class="form-control-static"><?=$this->driver->getBreadcrumb() ?></p>
+  <p class="form-control-static"><?=$this->escapeHtml($this->driver->getBreadcrumb() . $enumchron) ?></p>
   <?php if (in_array('comments', $this->extraHoldFields)): ?>
     <div class="form-group hold-comment">
       <label class="form-label"><?=$this->transEsc('Comments')?>:</label>

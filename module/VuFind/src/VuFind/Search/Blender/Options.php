@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Blender
@@ -45,14 +45,44 @@ use VuFind\Config\ConfigManagerInterface;
 class Options extends \VuFind\Search\Solr\Options
 {
     /**
+     * Configuration file to read search settings from
+     *
+     * Note that any change to this must be made before calling the constructor of this class.
+     *
+     * @var string
+     */
+    protected $searchIni = 'Blender';
+
+    /**
+     * Configuration file to read facet settings from
+     *
+     * Note that any change to this must be made before calling the constructor of this class.
+     *
+     * @var string
+     */
+    protected $facetsIni = 'Blender';
+
+    /**
+     * The route name for the search results action.
+     *
+     * @var string
+     */
+    protected $searchAction = 'blender-results';
+
+    /**
+     * The route name for the advanced search action.
+     *
+     * @var string
+     */
+    protected $advancedSearchAction = 'blender-advanced';
+
+    /**
      * Constructor
      *
      * @param ConfigManagerInterface $configManager Config manager
      */
     public function __construct(ConfigManagerInterface $configManager)
     {
-        $this->facetsIni = $this->searchIni = 'Blender';
-
         // Override the default result limit with a value that we can always support:
         $this->defaultResultLimit = 400;
 
@@ -69,7 +99,7 @@ class Options extends \VuFind\Search\Solr\Options
      */
     public function getSearchAction(): string
     {
-        return 'blender-results';
+        return $this->searchAction;
     }
 
     /**
@@ -80,7 +110,7 @@ class Options extends \VuFind\Search\Solr\Options
      */
     public function getAdvancedSearchAction(): string|bool
     {
-        return $this->advancedHandlers ? 'blender-advanced' : false;
+        return $this->advancedHandlers ? $this->advancedSearchAction : false;
     }
 
     /**

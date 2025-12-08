@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Base
@@ -79,6 +79,8 @@ class Options extends \VuFind\Search\Base\Options
      * @param ?string $handler Name of handler for which to load specific settings.
      *
      * @return array associative: location (top/side/etc.) => search settings
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getRecommendationSettings(?string $handler = null): array
     {
@@ -119,7 +121,7 @@ class Options extends \VuFind\Search\Base\Options
     public function supportsCart(): bool
     {
         // Cart is supported if any of the tabs support cart:
-        foreach ($this->getTabConfig() as $current => $settings) {
+        foreach (array_keys($this->getTabConfig()) as $current) {
             [$searchClassId] = explode(':', $current);
             $currentOptions = $this->optionsManager->get($searchClassId);
             if ($currentOptions->supportsCart()) {

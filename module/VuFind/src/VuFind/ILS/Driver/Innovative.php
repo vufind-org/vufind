@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -197,11 +197,7 @@ class Innovative extends AbstractBase implements
                     }
                     // Does column hold reserves information?
                     if (stripos($keys[$i], (string)$reserves_col_name) > -1) {
-                        if (stripos($cols[$i], (string)$reserves_key_name) > -1) {
-                            $ret[$count - 2]['reserve'] = 'Y';
-                        } else {
-                            $ret[$count - 2]['reserve'] = 'N';
-                        }
+                        $ret[$count - 2]['reserve'] = stripos($cols[$i], (string)$reserves_key_name) > -1 ? 'Y' : 'N';
                     }
                     // Does column hold call numbers?
                     if (stripos($keys[$i], (string)$call_col_name) > -1) {

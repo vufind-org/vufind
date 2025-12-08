@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -419,10 +419,9 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
      * @param ?string $defaultSort  Default sort option
      * @param string  $expectedSort Expected sort order of options
      *
-     * @dataProvider hierarchicalFacetFiltersProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('hierarchicalFacetFiltersProvider')]
     public function testHierarchicalFacetsFilters(?string $sort, ?string $defaultSort, string $expectedSort): void
     {
         $config = [

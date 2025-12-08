@@ -19,8 +19,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  EBSCO
@@ -106,15 +106,10 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
      */
     protected function filterRequiresFacetOperator(string $field): bool
     {
-        if (
-            str_starts_with($field, 'LIMIT') ||
-            str_starts_with($field, 'EXPAND') ||
-            str_starts_with($field, 'SEARCHMODE') ||
-            str_starts_with($field, 'PublicationDate')
-        ) {
-            return false;
-        }
-        return true;
+        return !(str_starts_with($field, 'LIMIT')
+            || str_starts_with($field, 'EXPAND')
+            || str_starts_with($field, 'SEARCHMODE')
+            || str_starts_with($field, 'PublicationDate'));
     }
 
     /**

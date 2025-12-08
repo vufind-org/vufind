@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
@@ -34,7 +34,7 @@ use Doctrine\ORM\Mapping as ORM;
 use VuFind\Db\Feature\DateTimeTrait;
 
 /**
- * UserList
+ * Entity model for user_list table
  *
  * @category VuFind
  * @package  Database
@@ -99,6 +99,20 @@ class UserList implements UserListEntityInterface
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: false, onDelete: 'CASCADE')]
     #[ORM\ManyToOne(targetEntity: UserEntityInterface::class)]
     protected UserEntityInterface $user;
+
+    /**
+     * Type of the list.
+     *
+     * @var string
+     */
+    #[ORM\Column(
+        name: 'type',
+        type: 'string',
+        length: 200,
+        nullable: false,
+        options: ['default' => self::TYPE_DEFAULT]
+    )]
+    protected string $type = self::TYPE_DEFAULT;
 
     /**
      * Constructor.
@@ -166,6 +180,29 @@ class UserList implements UserListEntityInterface
     }
 
     /**
+     * Get list type
+     *
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    /**
+     * Set list type
+     *
+     * @param string $type Type of the user list
+     *
+     * @return static
+     */
+    public function setType(string $type): static
+    {
+        $this->type = $type;
+        return $this;
+    }
+
+    /**
      * Set created date.
      *
      * @param DateTime $dateTime Created date
@@ -185,7 +222,8 @@ class UserList implements UserListEntityInterface
      */
     public function getCreated(): DateTime
     {
-        return $this->created;
+        // Return to a clone to avoid indirect modification of the entity:
+        return $this->getDateTimeClone($this->created);
     }
 
     /**

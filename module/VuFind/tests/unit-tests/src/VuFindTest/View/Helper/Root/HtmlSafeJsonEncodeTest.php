@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -70,7 +70,7 @@ class HtmlSafeJsonEncodeTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()->getMock();
         $escapeHtmlAttr->expects($this->once())->method('__invoke')
             ->with($this->equalTo('1'))
-            ->will($this->returnValue('1'));
+            ->willReturn('1');
         $this->assertEquals('1', ($this->getHelper(compact('escapeHtmlAttr')))(1));
     }
 
@@ -98,9 +98,8 @@ class HtmlSafeJsonEncodeTest extends \PHPUnit\Framework\TestCase
      * @param string $expectedOutput Expected output
      *
      * @return void
-     *
-     * @dataProvider getJsonTests
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getJsonTests')]
     public function testCoreEncoding($input, string $expectedOutput): void
     {
         $this->assertEquals($expectedOutput, ($this->getHelper())($input, null));

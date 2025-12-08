@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Feed_Plugins
@@ -75,10 +75,10 @@ class Feed extends AbstractRenderer
      *
      * @return void
      */
-    // @codingStandardsIgnoreStart
+    // phpcs:disable
     protected function _appendNamespaces()
     {
-        // @codingStandardsIgnoreEnd
+        // phpcs:enable
         // (We have to ignore coding standards here because the method name has
         // to have an underscore for compatibility w/ parent class)
         $this->getRootElement()->setAttribute(

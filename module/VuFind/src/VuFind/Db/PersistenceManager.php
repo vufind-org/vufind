@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Db
@@ -86,19 +86,6 @@ class PersistenceManager implements DbServiceAwareInterface
     }
 
     /**
-     * Does the provided exception indicate that a duplicate key value has been
-     * created?
-     *
-     * @param \Exception $e Exception to check
-     *
-     * @return bool
-     */
-    protected function exceptionIndicatesDuplicateKey(\Exception $e): bool
-    {
-        return strstr($e->getMessage(), 'Duplicate entry') !== false;
-    }
-
-    /**
      * Delete an entity.
      *
      * @param EntityInterface $entity Entity to persist.
@@ -109,5 +96,48 @@ class PersistenceManager implements DbServiceAwareInterface
     {
         $this->entityManager->remove($entity);
         $this->entityManager->flush();
+    }
+
+    /**
+     * Flush any changes to managed entities.
+     *
+     * @return void
+     */
+    public function flushEntities(): void
+    {
+        try {
+            $this->entityManager->flush();
+        } catch (\Doctrine\DBAL\Exception\UniqueConstraintViolationException $e) {
+            throw $this->exceptionIndicatesDuplicateKey($e)
+                ? new DuplicateKeyException($e->getMessage(), $e->getCode(), $e)
+                : $e;
+        }
+    }
+
+    /**
+     * Detach an entity from being managed.
+     *
+     * Allows entities to become unmanaged so that they don't pile up in the EntityManager during batch processing.
+     *
+     * @param EntityInterface $entity Entity to detach.
+     *
+     * @return void
+     */
+    public function detachEntity(EntityInterface $entity): void
+    {
+        $this->entityManager->detach($entity);
+    }
+
+    /**
+     * Does the provided exception indicate that a duplicate key value has been
+     * created?
+     *
+     * @param \Exception $e Exception to check
+     *
+     * @return bool
+     */
+    protected function exceptionIndicatesDuplicateKey(\Exception $e): bool
+    {
+        return strstr($e->getMessage(), 'Duplicate entry') !== false;
     }
 }

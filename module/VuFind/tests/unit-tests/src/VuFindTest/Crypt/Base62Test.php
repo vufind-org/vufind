@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -48,10 +48,9 @@ class Base62Test extends \PHPUnit\Framework\TestCase
      * @param string $input    Input
      * @param string $expected Expected output
      *
-     * @dataProvider exampleProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('exampleProvider')]
     public function testEncode($input, $expected)
     {
         $base62 = new Base62();
@@ -64,10 +63,9 @@ class Base62Test extends \PHPUnit\Framework\TestCase
      * @param string $expected Expected output
      * @param string $input    Input
      *
-     * @dataProvider exampleProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('exampleProvider')]
     public function testDecode($expected, $input)
     {
         $base62 = new Base62();

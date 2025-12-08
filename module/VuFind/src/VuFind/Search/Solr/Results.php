@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Solr
@@ -160,7 +160,7 @@ class Results extends \VuFind\Search\Base\Results
     }
 
     /**
-     * Get the scores of the results
+     * Get an array of the record ID mapped to its score, or to null if it has no score.
      *
      * @return array
      */
@@ -169,9 +169,7 @@ class Results extends \VuFind\Search\Base\Results
         $scoreMap = [];
         foreach ($this->results as $record) {
             $data = $record->getRawData();
-            if ($data['score'] ?? false) {
-                $scoreMap[$record->getUniqueId()] = $data['score'];
-            }
+            $scoreMap[$record->getUniqueId()] = $data['score'] ?? null;
         }
         return $scoreMap;
     }

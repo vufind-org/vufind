@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Channels
@@ -54,13 +54,7 @@ use function is_object;
 class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
-
-    /**
-     * Number of results to include in each channel.
-     *
-     * @var int
-     */
-    protected $channelSize;
+    use BatchTrait;
 
     /**
      * Maximum number of records to examine for similar results.
@@ -147,12 +141,12 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
      */
     public function setOptions(array $options)
     {
-        $this->channelSize = $options['channelSize'] ?? 20;
         $this->maxRecordsToExamine = $options['maxRecordsToExamine'] ?? 2;
         $this->browseIndex = $options['browseIndex'] ?? 'lcc';
         $this->solrField = $options['solrField'] ?? 'callnumber-raw';
         $this->rowsBefore = $options['rows_before'] ?? 10;
         $this->source = $options['source'] ?? 'Solr';
+        $this->setBatchSizeFromOptions($options);
     }
 
     /**
@@ -282,6 +276,7 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
             ),
             'providerId' => $this->providerId,
             'links' => [],
+            'limit' => $this->batchSize,
         ];
         $raw = $driver->getRawData();
         $from = isset($raw[$this->solrField]) ? (array)$raw[$this->solrField] : null;
@@ -298,7 +293,7 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
                 // If we got this far, we can safely assume that $from[0] is set
                 $from[0],
                 0,
-                $this->channelSize,
+                $this->batchSize,
                 new ParamBag(['extras' => 'title:author:isbn:id']),
                 -$this->rowsBefore
             );
@@ -307,20 +302,20 @@ class AlphaBrowse extends AbstractChannelProvider implements TranslatorAwareInte
             $route = $this->recordRouter->getRouteDetails($driver);
             $retVal['links'][] = [
                 'label' => 'View Record',
-                'icon' => 'fa-file-text-o',
+                'icon' => 'format-default',
                 'url' => $this->url
                     ->fromRoute($route['route'], $route['params']),
             ];
             $retVal['links'][] = [
                 'label' => 'channel_expand',
-                'icon' => 'fa-search-plus',
+                'icon' => 'ui-add',
                 'url' => $this->url->fromRoute('channels-record')
                     . '?id=' . urlencode($driver->getUniqueID())
                     . '&source=' . urlencode($driver->getSourceIdentifier()),
             ];
             $retVal['links'][] = [
                 'label' => 'channel_browse',
-                'icon' => 'fa-list',
+                'icon' => 'list',
                 'url' => $this->url->fromRoute('alphabrowse-home')
                     . '?source=' . urlencode($this->browseIndex)
                     . '&from=' . $from[0],

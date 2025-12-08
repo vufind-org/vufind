@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -415,7 +415,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                 ->getMock();
             $mock->expects($this->any())->method('get')
                 ->with($this->equalTo('FeedbackForms.yaml'))
-                ->will($this->returnValue($config));
+                ->willReturn($config);
             $this->mockTestFormYamlReader = $mock;
         }
         return $this->mockTestFormYamlReader;
@@ -824,9 +824,8 @@ class FormTest extends \PHPUnit\Framework\TestCase
      * @param string $expectedSubject String to be expected.
      *
      * @return void
-     *
-     * @dataProvider getEmailSubjectsData
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getEmailSubjectsData')]
     public function testEmailSubjects(
         string $formToTest,
         string $expectedSubject
@@ -872,9 +871,8 @@ class FormTest extends \PHPUnit\Framework\TestCase
      * @param string $expected Expected value
      *
      * @return void
-     *
-     * @dataProvider getFormActionRouteData
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getFormActionRouteData')]
     public function testFormActionRoute(string $id, string $expected): void
     {
         $form = $this->getMockTestForm($id);

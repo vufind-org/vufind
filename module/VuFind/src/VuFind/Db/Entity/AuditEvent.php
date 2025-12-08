@@ -17,14 +17,14 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Database
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org   Main Site
  */
 
 namespace VuFind\Db\Entity;
@@ -44,10 +44,11 @@ use function is_string;
  * @package  Database
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org   Main Site
+ * @link     https://vufind.org   Main Site
  */
 #[ORM\Table(name: 'audit_event')]
 #[ORM\Index(name: 'audit_event_user_id_idx', columns: ['user_id'])]
+#[ORM\Index(name: 'audit_event_payment_id_idx', columns: ['payment_id'])]
 #[ORM\Entity]
 class AuditEvent implements AuditEventEntityInterface
 {
@@ -90,11 +91,20 @@ class AuditEvent implements AuditEventEntityInterface
     /**
      * User.
      *
-     * @var UserEntityInterface
+     * @var ?UserEntityInterface
      */
     #[ORM\JoinColumn(name: 'user_id', referencedColumnName: 'id', nullable: true, onDelete: 'SET NULL')]
     #[ORM\ManyToOne(targetEntity: UserEntityInterface::class)]
     protected ?UserEntityInterface $user = null;
+
+    /**
+     * Payment.
+     *
+     * @var ?Payment
+     */
+    #[ORM\JoinColumn(name: 'payment_id', referencedColumnName: 'id', nullable: true, onDelete: 'CASCADE')]
+    #[ORM\ManyToOne(targetEntity: \VuFind\Db\Entity\Payment::class)]
+    protected ?PaymentEntityInterface $payment = null;
 
     /**
      * Session ID.
@@ -147,10 +157,10 @@ class AuditEvent implements AuditEventEntityInterface
     /**
      * Additional data (JSON).
      *
-     * @var ?string
+     * @var ?array
      */
     #[ORM\Column(name: 'data', type: 'json', nullable: true)]
-    protected ?string $data = null;
+    protected ?array $data = null;
 
     /**
      * Constructor
@@ -166,9 +176,10 @@ class AuditEvent implements AuditEventEntityInterface
      *
      * @return DateTime
      */
-    public function getDate(): Datetime
+    public function getDate(): DateTime
     {
-        return $this->date;
+        // Return to a clone to avoid indirect modification of the entity:
+        return $this->getDateTimeClone($this->date);
     }
 
     /**
@@ -253,6 +264,29 @@ class AuditEvent implements AuditEventEntityInterface
         $this->user = $user?->getId() ? $user : null;
         // Set username always:
         $this->username = $user?->getUsername();
+        return $this;
+    }
+
+    /**
+     * Get payment.
+     *
+     * @return ?PaymentEntityInterface
+     */
+    public function getPayment(): ?PaymentEntityInterface
+    {
+        return $this->payment;
+    }
+
+    /**
+     * Set payment.
+     *
+     * @param ?PaymentEntityInterface $payment Payment
+     *
+     * @return static
+     */
+    public function setPayment(?PaymentEntityInterface $payment): static
+    {
+        $this->payment = $payment;
         return $this;
     }
 
@@ -384,9 +418,9 @@ class AuditEvent implements AuditEventEntityInterface
     /**
      * Get additional data.
      *
-     * @return ?string
+     * @return ?array
      */
-    public function getData(): ?string
+    public function getData(): ?array
     {
         return $this->data;
     }
@@ -394,11 +428,11 @@ class AuditEvent implements AuditEventEntityInterface
     /**
      * Set additional data.
      *
-     * @param ?string $data Data
+     * @param ?array $data Data
      *
      * @return static
      */
-    public function setData(?string $data): static
+    public function setData(?array $data): static
     {
         $this->data = $data;
         return $this;

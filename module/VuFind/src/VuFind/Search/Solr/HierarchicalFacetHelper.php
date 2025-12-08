@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -157,6 +157,10 @@ class HierarchicalFacetHelper implements
             // Different level?
             if ($a['level'] != $b['level']) {
                 return $a['level'] <=> $b['level'];
+            }
+            // Exclude first
+            if ($a['isExcluded'] != $b['isExcluded']) {
+                return $a['isExcluded'] ? -1 : 1;
             }
             // Sort by display text:
             if (($sort === static::SORT_ALL || ($a['level'] == 0 && $sort === static::SORT_TOP))) {
@@ -445,7 +449,7 @@ class HierarchicalFacetHelper implements
         foreach ($list as &$item) {
             $item['hasAppliedChildren'] = !empty($item['children'])
                 && $this->updateAppliedChildrenStatus($item['children']);
-            if ($item['isApplied'] || $item['hasAppliedChildren']) {
+            if ($item['isApplied'] || $item['isExcluded'] || $item['hasAppliedChildren']) {
                 $result = true;
             }
         }

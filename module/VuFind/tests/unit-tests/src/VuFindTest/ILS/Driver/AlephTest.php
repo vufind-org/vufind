@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -219,9 +219,9 @@ class AlephTest extends \VuFindTest\Unit\ILSDriverTestCase
      * @param bool   $xserver_enabled Use xserver
      * @param array  $expected        Expected results for the test
      *
-     * @return       void
-     * @dataProvider getTestGetMyProfileData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestGetMyProfileData')]
     public function testGetMyProfile(string $fixture, bool $xserver_enabled, array $expected): void
     {
         $mockRequest = $xserver_enabled ? 'doXRequest' : 'doRestDLFRequest';

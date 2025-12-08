@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -261,7 +261,11 @@ final class AuditEventsTest extends \VuFindTest\Integration\MinkTestCase
 
         $eventData = array_map(
             function ($event) {
-                $data = preg_replace('/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/', '<datetime>', $event->getData());
+                $data = preg_replace(
+                    '/\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/',
+                    '<datetime>',
+                    json_encode($event->getData())
+                );
                 $data = preg_replace('/"user_id":\d+/', '"user_id":<userid>', $data);
                 return [
                     $event->getType(),
