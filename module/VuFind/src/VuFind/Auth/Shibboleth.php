@@ -79,7 +79,7 @@ class Shibboleth extends AbstractBase
     /**
      * Read attributes from headers instead of environment variables
      *
-     * @var boolean
+     * @var bool
      */
     protected $useHeaders = false;
 
