@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2024.
+ * Copyright (C) Villanova University 2024-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -30,7 +30,7 @@
 namespace VuFindTest\ChannelProvider;
 
 use VuFind\ChannelProvider\NewSearchItems;
-use VuFind\Controller\Plugin\NewItems;
+use VuFind\Search\NewItemsHelper;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
 use VuFindTest\RecordDriver\TestHarness;
@@ -84,10 +84,10 @@ class NewSearchItemsTest extends \PHPUnit\Framework\TestCase
         $params = $this->getConfiguredParamsMock($query, $paramBag);
         $search = $this->createMock(\VuFindSearch\Service::class);
         $paramManager = $this->createMock(\VuFind\Search\Params\PluginManager::class);
-        $newItemsHelper = $this->createMock(NewItems::class);
+        $newItemsHelper = $this->createMock(NewItemsHelper::class);
         $newItemsHelper->expects($this->once())->method('getSolrFilter')->with(30)->willReturn('foo-filter');
         $options = ['mode' => 'notRetain'];
-        $newSearchItems =  new NewSearchItems($search, $paramManager, $newItemsHelper, $options);
+        $newSearchItems = new NewSearchItems($search, $paramManager, $newItemsHelper, $options);
         $paramManager->expects($this->once())->method('get')
             ->with($this->equalTo('Solr'))
             ->willReturn($params);

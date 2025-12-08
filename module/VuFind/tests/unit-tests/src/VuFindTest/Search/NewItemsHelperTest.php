@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -27,10 +27,10 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 
-namespace VuFindTest\Controller\Plugin;
+namespace VuFindTest\Search;
 
-use VuFind\Config\Config;
-use VuFind\Controller\Plugin\NewItems;
+use VuFind\ILS\Connection;
+use VuFind\Search\NewItemsHelper;
 
 /**
  * New items controller plugin tests.
@@ -41,8 +41,21 @@ use VuFind\Controller\Plugin\NewItems;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class NewItemsTest extends \PHPUnit\Framework\TestCase
+class NewItemsHelperTest extends \PHPUnit\Framework\TestCase
 {
+    /**
+     * Get a NewItemsHelper instance for testing.
+     *
+     * @param array           $config     Configuration array
+     * @param Connection|null $connection ILS connection
+     *
+     * @return NewItemsHelper
+     */
+    protected function getNewItemsHelper(array $config = [], ?Connection $connection = null): NewItemsHelper
+    {
+        return new NewItemsHelper($config, $connection ?? $this->createMock(Connection::class));
+    }
+
     /**
      * Test ILS bib ID retrieval.
      *
@@ -51,10 +64,8 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
     public function testGetBibIDsFromCatalog()
     {
         $flash = $this->createMock(\Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger::class);
-        $config = new Config(['result_pages' => 10]);
-        $newItems = new NewItems($config);
+        $newItems = $this->getNewItemsHelper(['result_pages' => 10], $this->getMockCatalog());
         $bibs = $newItems->getBibIDsFromCatalog(
-            $this->getMockCatalog(),
             $this->getMockParams(),
             10,
             'a',
@@ -73,10 +84,8 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
         $flash = $this->createMock(\Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger::class);
         $flash->expects($this->once())->method('addMessage')
             ->with($this->equalTo('too_many_new_items'), $this->equalTo('info'));
-        $config = new Config(['result_pages' => 10]);
-        $newItems = new NewItems($config);
+        $newItems = $this->getNewItemsHelper(['result_pages' => 10], $this->getMockCatalog());
         $bibs = $newItems->getBibIDsFromCatalog(
-            $this->getMockCatalog(),
             $this->getMockParams(1),
             10,
             'a',
@@ -92,19 +101,15 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetFundList()
     {
-        $catalog = $this->createMock(\VuFind\ILS\Connection::class);
+        $catalog = $this->createMock(Connection::class);
         $catalog->expects($this->once())->method('checkCapability')
             ->with($this->equalTo('getFunds'))->willReturn(true);
         $catalog->expects($this->once())->method('__call')
             ->willReturnCallback(
                 fn ($method) => $method === 'getFunds' ? ['a', 'b', 'c'] : null
             );
-        $controller = $this->getMockBuilder(\VuFind\Controller\SearchController::class)
-            ->disableOriginalConstructor()->getMock();
-        $controller->expects($this->once())->method('getILS')
-            ->willReturn($catalog);
-        $newItems = new NewItems(new Config([]));
-        $newItems->setController($controller);
+
+        $newItems = $this->getNewItemsHelper([], $catalog);
         $this->assertEquals(['a', 'b', 'c'], $newItems->getFundList());
     }
 
@@ -115,7 +120,7 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetFundListWithoutILS()
     {
-        $newItems = new NewItems(new Config(['method' => 'solr']));
+        $newItems = $this->getNewItemsHelper(['method' => 'solr']);
         $this->assertEquals([], $newItems->getFundList());
     }
 
@@ -126,8 +131,7 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetSingleHiddenFilter()
     {
-        $config = new Config(['filter' => 'a:b']);
-        $newItems = new NewItems($config);
+        $newItems = $this->getNewItemsHelper(['filter' => 'a:b']);
         $this->assertEquals(['a:b'], $newItems->getHiddenFilters());
     }
 
@@ -138,8 +142,7 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetMultipleHiddenFilters()
     {
-        $config = new Config(['filter' => ['a:b', 'b:c']]);
-        $newItems = new NewItems($config);
+        $newItems = $this->getNewItemsHelper(['filter' => ['a:b', 'b:c']]);
         $this->assertEquals(['a:b', 'b:c'], $newItems->getHiddenFilters());
     }
 
@@ -150,8 +153,7 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
      */
     public function testDefaults()
     {
-        $config = new Config([]);
-        $newItems = new NewItems($config);
+        $newItems = $this->getNewItemsHelper([]);
         $this->assertEquals([], $newItems->getHiddenFilters());
         $this->assertEquals('ils', $newItems->getMethod());
         $this->assertEquals(30, $newItems->getMaxAge());
@@ -166,8 +168,7 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
      */
     public function testCustomRanges()
     {
-        $config = new Config(['ranges' => '10,150,300']);
-        $newItems = new NewItems($config);
+        $newItems = $this->getNewItemsHelper(['ranges' => '10,150,300']);
         $this->assertEquals([10, 150, 300], $newItems->getRanges());
     }
 
@@ -178,8 +179,7 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
      */
     public function testCustomResultPages()
     {
-        $config = new Config(['result_pages' => '2']);
-        $newItems = new NewItems($config);
+        $newItems = $this->getNewItemsHelper(['result_pages' => '2']);
         $this->assertEquals(2, $newItems->getResultPages());
     }
 
@@ -190,8 +190,7 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
      */
     public function testIllegalResultPages()
     {
-        $config = new Config(['result_pages' => '-2']);
-        $newItems = new NewItems($config);
+        $newItems = $this->getNewItemsHelper(['result_pages' => '-2']);
         // expect a default of 10 if a bad value was passed in
         $this->assertEquals(10, $newItems->getResultPages());
     }
@@ -205,34 +204,33 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
     {
         $range = 30;
         $expected = 'first_indexed:[NOW-' . $range . 'DAY TO NOW]';
-        $newItems = new NewItems(new Config([]));
+        $newItems = $this->getNewItemsHelper([]);
         $this->assertEquals($expected, $newItems->getSolrFilter($range));
     }
 
     /**
      * Get a mock catalog object (for use in getBibIDs tests).
      *
-     * @return \VuFind\ILS\Connection
+     * @return Connection
      */
-    protected function getMockCatalog(): \VuFind\ILS\Connection
+    protected function getMockCatalog(): Connection
     {
-        $catalog = $this->createMock(\VuFind\ILS\Connection::class);
+        $catalog = $this->createMock(Connection::class);
 
         $catalog->expects($this->once())->method('__call')
-        ->willReturnCallback(
-            function ($method, $args) {
-                if ($method !== 'getNewItems') {
-                    return null;
+            ->willReturnCallback(
+                function ($method, $args) {
+                    if ($method !== 'getNewItems') {
+                        return null;
+                    }
+                    $this->assertEquals(1, $args[0]);
+                    $this->assertEquals(200, $args[1]);
+                    $this->assertEquals(10, $args[2]);
+                    $this->assertEquals('a', $args[3]);
+
+                    return ['results' => [['id' => 1], ['id' => 2]]];
                 }
-
-                $this->assertEquals(1, $args[0]);
-                $this->assertEquals(200, $args[1]);
-                $this->assertEquals(10, $args[2]);
-                $this->assertEquals('a', $args[3]);
-
-                return ['results' => [['id' => 1], ['id' => 2]]];
-            }
-        );
+            );
         return $catalog;
     }
 
@@ -245,8 +243,7 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockParams($idLimit = 1024)
     {
-        $params = $this->getMockBuilder(\VuFind\Search\Solr\Params::class)
-            ->disableOriginalConstructor()->getMock();
+        $params = $this->createMock(\VuFind\Search\Solr\Params::class);
         $params->expects($this->once())->method('getLimit')
             ->willReturn(20);
         $params->expects($this->once())->method('getQueryIDLimit')
