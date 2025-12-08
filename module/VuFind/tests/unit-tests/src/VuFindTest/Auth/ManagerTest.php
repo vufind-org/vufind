@@ -573,9 +573,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         );
         $loginTokenManager = $this->createMock(\VuFind\Auth\LoginTokenManager::class);
         $ils = $this->createMock(\VuFind\ILS\Connection::class);
-        $ils
-            ->method('loginIsHidden')
-            ->willReturn(false);
+        $ils->method('loginIsHidden')->willReturn(false);
         $viewRenderer = $this->createMock(\Laminas\View\Renderer\RendererInterface::class);
         return new Manager(
             $config,
