@@ -68,7 +68,7 @@ class AdminMenu extends AbstractMenu
     public function getSectionContext(): array
     {
         $context = parent::getSectionContext();
-        $context['items'] = $this->getMenu()['Admin']['MenuItems'];
+        $context['items'] = $this->getMenu()['Admin']['MenuItems'] ?? [];
         return $context;
     }
 

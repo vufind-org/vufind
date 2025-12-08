@@ -42,14 +42,13 @@ use VuFind\Config\Feature\ConfigSettingPropertiesInterface;
  */
 interface SectionServiceInterface
 {
-    public const DEFAULT_CONFIG_FILE = 'Sections.yaml';
+    public const DEFAULT_CONFIG_FILE = 'Sections';
 
     /**
      * Get section.
      *
      * @param string       $key    Section key in configuration
-     * @param array|string $config Configuration or configuration file name
-     *                             (optional)
+     * @param array|string $config Configuration or configuration file name (optional)
      *
      * @return ?SectionInterface
      */
@@ -67,8 +66,7 @@ interface SectionServiceInterface
      * @param SectionInterface $section    Section
      * @param ?array           $settings   Settings to localize (optional)
      * @param string           $contextKey Key identifying the context (optional)
-     * @param bool             $useFirst   Use first array item if item matching
-     *                                     locale(s) was not found (optional)
+     * @param bool             $useFirst   Use first array item if item matching locale(s) was not found (optional)
      *
      * @return array
      */

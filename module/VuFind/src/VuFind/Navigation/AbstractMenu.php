@@ -99,6 +99,9 @@ abstract class AbstractMenu extends AbstractBase implements NavigationInterface
     /**
      * Set section service.
      *
+     * This method must be called after constructing the object. This
+     * requirement will be removed in VuFind version 12.
+     *
      * @param SectionServiceInterface $sectionService Section service
      *
      * @return static
@@ -112,8 +115,9 @@ abstract class AbstractMenu extends AbstractBase implements NavigationInterface
     /**
      * Localize section configuration.
      *
-     * Navigation items do not localize the configuration when it is set due to
-     * backward compatibility.
+     * This method should be called after setting the section service and if
+     * setting the configuration outside the constructor. This requirement will
+     * be removed in VuFind version 12.
      *
      * @return static
      */

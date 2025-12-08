@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Trait implementing SettingPropertiesInterface
+ * Trait implementing ConfigSettingPropertiesInterface
  *
  * PHP version 8
  *
@@ -29,6 +29,7 @@
 
 namespace VuFind\Config\Feature;
 
+use Exception;
 use VuFind\Exception\BadConfig;
 
 use function array_key_exists;
@@ -36,7 +37,7 @@ use function in_array;
 use function is_array;
 
 /**
- * Trait implementing SettingPropertiesInterface
+ * Trait implementing ConfigSettingPropertiesInterface
  *
  * @category VuFind
  * @package  Config
@@ -49,27 +50,36 @@ trait ConfigSettingPropertiesTrait
     /**
      * Required and conditionally required settings.
      *
-     * @var array
+     * @var array<string>
      */
     protected array $requiredSettings = [self::DEFAULT_CONTEXT => []];
 
     /**
      * Localizable settings.
      *
-     * @var array
+     * @var array<string>
      */
     protected array $localizableSettings = [self::DEFAULT_CONTEXT => []];
 
     /**
-     * Return required and conditionally required settings.
+     * Return required and conditionally required settings in the specified
+     * context.
+     *
+     * The setting keys returned by this method need to be individually checked
+     * using ConfigSettingPropertiesInterface::isRequiredSetting() to determine
+     * if they are actually required when evaluated in their context.
      *
      * @param string $contextKey Key identifying the context (optional)
      *
-     * @return array
+     * @return array<string> Required and conditionally required settings
+     * (setting keys) in the specified context.
      */
     public function getRequiredSettings(
         string $contextKey = self::DEFAULT_CONTEXT
     ): array {
+        if (!array_key_exists($contextKey, $this->requiredSettings)) {
+            throw new Exception('Unknown context key: ' . $contextKey);
+        }
         return $this->requiredSettings[$contextKey];
     }
 
@@ -80,11 +90,13 @@ trait ConfigSettingPropertiesTrait
      * conditionally required setting is required. If context is omitted returns
      * true for both required and conditionally required settings.
      *
-     * @param string $setting    Setting
-     * @param array  $context    Settings to be used in evaluation (optional)
-     * @param string $contextKey Key identifying the context (optional)
+     * @param string               $setting    Setting key
+     * @param array<string, mixed> $context    Setting keys and values to be used in evaluation (optional)
+     * @param string               $contextKey Key identifying the context (optional)
      *
      * @return bool
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function isRequiredSetting(
         string $setting,
@@ -98,20 +110,27 @@ trait ConfigSettingPropertiesTrait
     /**
      * Return settings that may be localized.
      *
+     * Localizable settings have localized values in configuration.
+     *
      * @param string $contextKey Key identifying the context (optional)
      *
-     * @return array
+     * @return array<string>
      */
     public function getLocalizableSettings(
         string $contextKey = self::DEFAULT_CONTEXT
     ): array {
+        if (!array_key_exists($contextKey, $this->localizableSettings)) {
+            throw new Exception('Unknown context key: ' . $contextKey);
+        }
         return $this->localizableSettings[$contextKey];
     }
 
     /**
      * Is the setting localizable?
      *
-     * @param string $setting    Setting
+     * A localizable setting has localized values in configuration.
+     *
+     * @param string $setting    Setting key
      * @param string $contextKey Key identifying the context (optional)
      *
      * @return bool
@@ -126,8 +145,8 @@ trait ConfigSettingPropertiesTrait
     /**
      * Validate settings.
      *
-     * @param array  $settings   Settings
-     * @param string $contextKey Key identifying the context (optional)
+     * @param array<string, mixed> $settings   Setting keys and values
+     * @param string               $contextKey Key identifying the context (optional)
      *
      * @return array
      * @throws BadConfig
@@ -152,14 +171,14 @@ trait ConfigSettingPropertiesTrait
     /**
      * Localize the settings if possible.
      *
-     * @param array  $settings        Settings to localize
-     * @param string $userLocale      User locale
-     * @param array  $fallbackLocales Fallback locale(s) (optional)
-     * @param string $contextKey      Key identifying the context (optional)
-     * @param bool   $useFirst        Use first array item if item matching
-     *                                locale(s) was not found (optional)
+     * @param array<string, mixed> $settings        Setting keys and values to localize
+     * @param string               $userLocale      User locale
+     * @param array                $fallbackLocales Fallback locale(s) (optional)
+     * @param string               $contextKey      Key identifying the context (optional)
+     * @param bool                 $useFirst        Use first array item if item matching locale(s) was not found
+     *                                              (optional)
      *
-     * @return array
+     * @return array<string, string>
      */
     public function localizeSettings(
         array $settings,
@@ -185,24 +204,25 @@ trait ConfigSettingPropertiesTrait
     /**
      * Localize the setting if possible.
      *
-     * @param string       $key             Key
-     * @param string|array $value           Value
-     * @param string       $userLocale      User locale
-     * @param array        $fallbackLocales Fallback locale(s) (optional)
-     * @param string       $contextKey      Key identifying the context (optional)
-     * @param bool         $useFirst        Use first array item if item matching
-     *                                      locale(s) was not found (optional)
+     * @param string $key             Key
+     * @param mixed  $value           Value
+     * @param string $userLocale      User locale
+     * @param array  $fallbackLocales Fallback locale(s) (optional)
+     * @param string $contextKey      Key identifying the context (optional)
+     * @param bool   $useFirst        Use first array item if item matching locale(s) was not found (optional)
      *
      * @return array|string
      */
     public function localizeSetting(
         string $key,
-        string|array $value,
+        mixed $value,
         string $userLocale,
         array $fallbackLocales = [],
         string $contextKey = self::DEFAULT_CONTEXT,
         bool $useFirst = true
     ): array|string {
+        // Default implementation expects the localized values to be in an array
+        // keyed by locale code.
         if (!$this->isLocalizableSetting($key, $contextKey) || !is_array($value)) {
             return $value;
         }
@@ -217,8 +237,8 @@ trait ConfigSettingPropertiesTrait
     /**
      * Add required settings.
      *
-     * @param array  $settings   Settings to add
-     * @param string $contextKey Key identifying the context (optional)
+     * @param array<string> $settings   Setting keys to add
+     * @param string        $contextKey Key identifying the context (optional)
      *
      * @return void
      */
@@ -226,17 +246,17 @@ trait ConfigSettingPropertiesTrait
         array $settings,
         string $contextKey = self::DEFAULT_CONTEXT,
     ): void {
-        $this->requiredSettings[$contextKey] = array_merge(
+        $this->requiredSettings[$contextKey] = array_unique(array_merge(
             $this->requiredSettings[$contextKey] ?? [],
             $settings
-        );
+        ));
     }
 
     /**
      * Add localizable settings.
      *
-     * @param array  $settings   Settings to add
-     * @param string $contextKey Key identifying the context (optional)
+     * @param array<string> $settings   Setting keys to add
+     * @param string        $contextKey Key identifying the context (optional)
      *
      * @return void
      */
@@ -244,9 +264,9 @@ trait ConfigSettingPropertiesTrait
         array $settings,
         string $contextKey = self::DEFAULT_CONTEXT,
     ): void {
-        $this->localizableSettings[$contextKey] = array_merge(
+        $this->localizableSettings[$contextKey] = array_unique(array_merge(
             $this->localizableSettings[$contextKey] ?? [],
             $settings
-        );
+        ));
     }
 }

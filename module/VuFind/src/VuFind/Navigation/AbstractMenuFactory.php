@@ -76,9 +76,12 @@ class AbstractMenuFactory implements FactoryInterface
             $yamlReader->get(reset($options)),
             ...array_slice($options, 1)
         );
+
+        // These will be added to the constructor in VuFind version 12.
         $sectionService = $container->get(\VuFind\Section\SectionServiceInterface::class);
         $menu->setSectionService($sectionService);
         $menu->localizeSectionConfig();
+
         return $menu;
     }
 }

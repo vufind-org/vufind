@@ -152,7 +152,7 @@ class SectionService implements SectionServiceInterface
      */
     protected function getConfigFromFile(string $file = self::DEFAULT_CONFIG_FILE): array
     {
-        $config = $this->yamlReader->get($file);
+        $config = $this->yamlReader->get($file . '.yaml');
         if (empty($config)) {
             throw new ConfigException(
                 'Configuration file not found or empty: ' . $file

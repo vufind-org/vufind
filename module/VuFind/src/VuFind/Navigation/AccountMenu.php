@@ -110,9 +110,9 @@ class AccountMenu extends AbstractMenu
      * conditionally required setting is required. If context is omitted returns
      * true for both required and conditionally required settings.
      *
-     * @param string $setting    Setting
-     * @param array  $context    Settings to be used in evaluation (optional)
-     * @param string $contextKey Key identifying the context (optional)
+     * @param string               $setting    Setting key
+     * @param array<string, mixed> $context    Setting keys and values to be used in evaluation (optional)
+     * @param string               $contextKey Key identifying the context (optional)
      *
      * @return bool
      */
@@ -146,7 +146,7 @@ class AccountMenu extends AbstractMenu
     {
         $context = parent::getSectionContext();
         // set items for legacy backward compatibility, might be removed in future releases
-        $context['items'] = $this->getMenu()['Account']['MenuItems'];
+        $context['items'] = $this->getMenu()['Account']['MenuItems'] ?? [];
         return $context;
     }
 

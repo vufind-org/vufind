@@ -42,15 +42,24 @@ interface ConfigSettingPropertiesInterface
 {
     /**
      * Default context key.
+     *
+     * Contexts other than the default context are implementation
+     * (configuration) specific.
      */
     public const DEFAULT_CONTEXT = '__default';
 
     /**
-     * Return required and conditionally required settings.
+     * Return required and conditionally required settings in the specified
+     * context.
+     *
+     * The setting keys returned by this method need to be individually checked
+     * using ConfigSettingPropertiesInterface::isRequiredSetting() to determine
+     * if they are actually required when evaluated in their context.
      *
      * @param string $contextKey Key identifying the context (optional)
      *
-     * @return array
+     * @return array<string> Required and conditionally required settings
+     * (setting keys) in the specified context.
      */
     public function getRequiredSettings(
         string $contextKey = self::DEFAULT_CONTEXT
@@ -63,9 +72,9 @@ interface ConfigSettingPropertiesInterface
      * conditionally required setting is required. If context is omitted returns
      * true for both required and conditionally required settings.
      *
-     * @param string $setting    Setting
-     * @param array  $context    Settings to be used in evaluation (optional)
-     * @param string $contextKey Key identifying the context (optional)
+     * @param string               $setting    Setting key
+     * @param array<string, mixed> $context    Setting keys and values to be used in evaluation (optional)
+     * @param string               $contextKey Key identifying the context (optional)
      *
      * @return bool
      */
@@ -78,9 +87,11 @@ interface ConfigSettingPropertiesInterface
     /**
      * Return settings that may be localized.
      *
+     * Localizable settings have localized values in configuration.
+     *
      * @param string $contextKey Key identifying the context (optional)
      *
-     * @return array
+     * @return array<string>
      */
     public function getLocalizableSettings(
         string $contextKey = self::DEFAULT_CONTEXT
@@ -89,7 +100,9 @@ interface ConfigSettingPropertiesInterface
     /**
      * Is the setting localizable?
      *
-     * @param string $setting    Setting
+     * A localizable setting has localized values in configuration.
+     *
+     * @param string $setting    Setting key
      * @param string $contextKey Key identifying the context (optional)
      *
      * @return bool

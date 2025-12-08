@@ -45,7 +45,7 @@ trait SectionTrait
     use ConfigSettingPropertiesTrait;
 
     /**
-     * Section key.
+     * Section key in configuration.
      *
      * @var string
      */

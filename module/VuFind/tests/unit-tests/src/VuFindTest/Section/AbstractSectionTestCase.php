@@ -128,6 +128,7 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
             ? $container->get(NavigationPluginManager::class)
             : $container->get(SectionPluginManager::class);
         if ($plugin instanceof AbstractMenu) {
+            // These will be added to the constructor in VuFind version 12.
             $sectionService = $container->get(SectionServiceInterface::class);
             $plugin->setSectionService($sectionService);
             $plugin->localizeSectionConfig();
