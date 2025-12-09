@@ -43,8 +43,6 @@ use VuFind\Record\Loader;
 use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\Missing as MissingRecord;
 
-use function assert;
-
 /**
  * Command for updating metadata in the resource table.
  *
