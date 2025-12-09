@@ -153,7 +153,7 @@ class RecordFormatter extends BaseFormatter
         return $urlHelper->getUrl($record);
     }
 
-     /**
+    /**
      * Get absolute link to record page
      *
      * @param \VuFind\RecordDriver\AbstractBase $record Record driver
