@@ -608,7 +608,7 @@ public class FormatCalculator
             if (desc.equals("computer program")) {
                 return List.of(); // rely on getFormatFromRecordType(), 008/26 is more precise
             }
-            if ((desc.equals("two-dimensional moving image") || code.equals("tdi")) && source.equals("rdacontent")) {
+            if (desc.equals("two-dimensional moving image") || (source.equals("rdacontent") && code.equals("tdi"))) {
                 formats.add("Video");
                 if (isOnline) {
                     formats.add("VideoOnline");
@@ -616,7 +616,7 @@ public class FormatCalculator
             }
             boolean computerOrCartographicDS = desc.equals("computer dataset") || desc.equals("cartographic dataset");
             boolean crdOrCod = code.equals("crd") || code.equals("cod");
-            if (source.equals("rdacontent") && (computerOrCartographicDS || crdOrCod)) {
+            if (computerOrCartographicDS || (source.equals("rdacontent") && crdOrCod)) {
                 formats.add("DataSet");
             }
         }
