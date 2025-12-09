@@ -76,7 +76,7 @@ class HoldingsILS extends AbstractBase
      * @param bool               $getThisEnabled  Whether GetThis is enabled in the config
      */
     public function __construct(
-        protected ContainerInterface $serviceLocator,
+        protected ContainerInterface &$serviceLocator,
         protected ?Connection $catalog = null,
         string $template = null,
         protected string|false $hideWhenEmpty = false,
