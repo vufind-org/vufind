@@ -34,7 +34,6 @@ use VuFind\Http\ServerUrlHelper;
 use VuFind\I18n\TranslatableString;
 use VuFindApi\Controller\ApiException;
 
-use function in_array;
 use function is_object;
 
 /**

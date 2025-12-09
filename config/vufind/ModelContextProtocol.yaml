@@ -2,6 +2,13 @@ General:
 
   enabled: true
 
+ResourceTemplates:
+
+  getRecord:
+    class: VuFindApi\Mcp\Capabilities
+    function: getRecord
+    uriTemplate: 'catalog://record/{recordId}'
+
 Tools:
 
   searchRecordsAnyType:

@@ -152,14 +152,13 @@ class Capabilities
     }
 
     /**
-     * Retrieve a record by record ID.
+     * Retrieve a record by record ID. Uri and other parameters are defined in config.
      *
      * @param string $recordId The record ID
      *
      * @return array The record
      */
     #[McpResourceTemplate(
-        uriTemplate: 'catalog://record/{recordId}',
         name: 'getRecord',
         description: 'Get a catalog record by its ID.',
         mimeType: 'application/json'

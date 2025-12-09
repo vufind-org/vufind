@@ -93,8 +93,29 @@ class ServerProvider
             ->setServerInfo(name: 'VuFind Server', version: '0.0.1', description: 'The library catalog')
             ->setSession(new FileSessionStore(LOCAL_CACHE_DIR . '/mcp/session'))
             ->setContainer($container);
+        $this->addResourceTemplates($builder);
         $this->addTools($builder);
         $this->server = $builder->build();
+    }
+
+    /**
+     * Add resource templates from config to the Server Builder.
+     *
+     * @param Builder $builder The server builder
+     *
+     * @return void
+     */
+    protected function addResourceTemplates(Builder $builder)
+    {
+        foreach (($this->config['ResourceTemplates'] ?? []) as $name => $resourceTemplate) {
+            $className = $resourceTemplate['class'];
+            $functionName = $resourceTemplate['function'];
+            $uriTemplate = $resourceTemplate['uriTemplate'];
+            $builder->addResourceTemplate(
+                [$className, $functionName],
+                uriTemplate: $uriTemplate,
+            );
+        }
     }
 
     /**
