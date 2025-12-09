@@ -121,6 +121,8 @@ class UpdateResourceMetadataCommandTest extends \PHPUnit\Framework\TestCase
 
         $persistenceManager = $this->createMock(PersistenceManager::class);
         $persistenceManager->expects($this->once())
+            ->method('flushEntities');
+        $persistenceManager->expects($this->once())
             ->method('clearAllEntities');
 
         $command = new UpdateResourceMetadataCommand(
