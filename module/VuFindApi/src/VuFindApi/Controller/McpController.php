@@ -32,6 +32,7 @@ namespace VuFindApi\Controller;
 use Laminas\Diactoros\ServerRequestFactory;
 use Laminas\Psr7Bridge\Psr7Response;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use Mcp\Exception\ServiceNotFoundException;
 use Mcp\Server;
 use Mcp\Server\Transport\StreamableHttpTransport;
 use Psr\Http\Message\ResponseInterface;
@@ -48,15 +49,17 @@ use VuFind\Controller\AbstractBase;
  */
 class McpController extends AbstractBase
 {
+    use ApiTrait;
+
     // protected $accessPermission = 'access.mcp';
 
     /**
      * Constructor
      *
      * @param ServiceLocatorInterface $sm     Service manager
-     * @param Server                  $server MCP Server
+     * @param ?Server                 $server MCP Server
      */
-    public function __construct(ServiceLocatorInterface $sm, protected Server $server)
+    public function __construct(ServiceLocatorInterface $sm, protected ?Server $server)
     {
         parent::__construct($sm);
     }
@@ -68,6 +71,12 @@ class McpController extends AbstractBase
      */
     public function mcpAction()
     {
+        $this->determineOutputMode();
+
+        if (!$this->server) {
+            throw new ServiceNotFoundException('This MCP server is not enabled.');
+        }
+
         // Adapting: https://github.com/modelcontextprotocol/php-sdk/blob/main/docs/transports.md
         // and https://github.com/vufind-org/vufind/pull/4672/files#diff-89cf777c1454a4e7f97e51f800ca68001e874a555cb19ec27135779b76ccd8f4
 

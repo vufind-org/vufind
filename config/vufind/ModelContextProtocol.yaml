@@ -1,0 +1,54 @@
+General:
+
+  enabled: true
+
+Tools:
+
+  searchRecordsAnyType:
+    description: Search library catalog records of all content types by keywords.
+    class: VuFindApi\Mcp\Capabilities
+    function: searchRecords
+    inputSchema: 
+      type: object
+      properties:
+        keywords:
+          type: string
+          description: Keywords to search for
+      required:
+        - keywords
+
+  searchRecordsByContentType:
+    description: Search library catalog records for a specific content type by keywords.
+    class: VuFindApi\Mcp\Capabilities
+    function: searchRecords
+    inputSchema: 
+      type: object
+      properties:
+        keywords:
+          type: string
+          description: Keywords to search for
+        contentType:
+          type: string
+          description: A type of library content
+          enum:
+            - books
+            - ebooks
+            - videos
+      required:
+        - keywords
+        - contentType
+
+ContentTypes:
+  books:
+    filter: (format:"Print Book" OR format:eBook OR format:"Streaming Audio" OR format:Serial)
+  ebooks: 
+    filter: format:eBook
+  videos:
+    filter: (format:DVD OR format:VHS OR format:"Blu-ray Disc" OR format:Filmstrip OR format:"Streaming Video")
+
+ResponseFields:
+  - recordPage
+  - title
+  - authors
+  - publicationDates
+  - formats

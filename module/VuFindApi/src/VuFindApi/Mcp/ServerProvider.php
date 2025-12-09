@@ -32,7 +32,9 @@ namespace VuFindApi\Mcp;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Mcp\Capability\Registry\Container;
 use Mcp\Server;
+use Mcp\Server\Builder;
 use Mcp\Server\Session\FileSessionStore;
+use VuFind\Config\YamlReader;
 
 /**
  * ServerProvider for Model Context Protocol (MCP)
@@ -51,15 +53,33 @@ class ServerProvider
     private Server $server;
 
     /**
+     * Config name
+     */
+    private string $configName = 'ModelContextProtocol';
+
+    /**
+     * Config array
+     */
+    protected array $config;
+
+    /**
      * Constructor
      *
      * @param ServiceLocatorInterface $serviceLocator Service locator
      */
     public function __construct(protected ServiceLocatorInterface $serviceLocator)
     {
+        $yamlReader = $serviceLocator->get(YamlReader::class);
+        $this->config = $yamlReader->get($this->configName . '.yaml');
+
+        if (!($this->config['General']['enabled'] ?? false)) {
+            return;
+        }
+
         $container = new Container();
         foreach (
             [
+            \VuFind\Config\YamlReader::class,
             \VuFind\Record\Loader::class,
             \VuFindApi\Formatter\RecordFormatter::class,
             \VuFind\Search\SearchRunner::class,
@@ -69,21 +89,44 @@ class ServerProvider
             $container->set($class, $serviceLocator->get($class));
         }
 
-        $this->server = Server::builder()
+        $builder = Server::builder()
             ->setServerInfo(name: 'VuFind Server', version: '0.0.1', description: 'The library catalog')
-            ->setDiscovery(__DIR__, ['../Mcp'])
             ->setSession(new FileSessionStore(LOCAL_CACHE_DIR . '/mcp/session'))
-            ->setContainer($container)
-            ->build();
+            ->setContainer($container);
+        $this->addTools($builder);
+        $this->server = $builder->build();
     }
 
     /**
-     * Return the MCP Server instance.
+     * Add tools from config to the Server Builder.
      *
-     * @return Server
+     * @param Builder $builder The server builder
+     *
+     * @return void
      */
-    public function getServer()
+    protected function addTools(Builder $builder)
     {
-        return $this->server;
+        foreach (($this->config['Tools'] ?? []) as $name => $tool) {
+            $description = $tool['description'];
+            $className = $tool['class'];
+            $functionName = $tool['function'];
+            $inputSchema = $tool['inputSchema'];
+            $builder->addTool(
+                [$className, $functionName],
+                name: $name,
+                description: $description,
+                inputSchema: $inputSchema
+            );
+        }
+    }
+
+    /**
+     * Return the MCP Server instance, or null if the server is not enabled.
+     *
+     * @return ?Server
+     */
+    public function getServer(): ?Server
+    {
+        return $this->server ?? null;
     }
 }

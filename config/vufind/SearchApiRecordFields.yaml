@@ -303,6 +303,10 @@ recordPageAbsoluteLink:
   vufind.method: "Formatter::getRecordPageAbsoluteLink"
   description: Link to the record page from external sites with an absolute link
   type: string
+recordPageFullUrl:
+  vufind.method: "Formatter::getRecordPageFullUrl"
+  description: Link to the record page from external sites with a fully qualified URL
+  type: string
 relationshipNotes:
   vufind.method: getRelationshipNotes
   description: Notes describing relationships to other items

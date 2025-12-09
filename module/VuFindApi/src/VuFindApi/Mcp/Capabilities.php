@@ -35,6 +35,7 @@ use Mcp\Capability\Attribute\McpTool;
 use Mcp\Exception\InvalidArgumentException;
 use Mcp\Exception\ResourceNotFoundException;
 use Mcp\Exception\ResourceReadException;
+use VuFind\Config\YamlReader;
 use VuFind\Record\Loader;
 use VuFind\Search\SearchRunner;
 use VuFindApi\Formatter\RecordFormatter;
@@ -58,25 +59,40 @@ class Capabilities
     /**
      * Record fields to return
      */
-    protected array $recordFields = ['title', 'authors', 'publicationDates'];
+    protected array $responseFields = ['recordPageFullUrl', 'title', 'authors'];
 
     /**
      * Limit for searches
      */
-    protected $limit = 50;
+    protected int $limit = 50;
+
+    /**
+     * Config filename
+     */
+    protected string $configName = 'ModelContextProtocol';
+
+    /**
+     * Config for MCP
+     */
+    protected array $config;
 
     /**
      * Constructor
      *
+     * @param YamlReader      $yamlReader      YAML reader
      * @param Loader          $recordLoader    Record loader
      * @param RecordFormatter $recordFormatter Record formatter
      * @param SearchRunner    $searchRunner    Search runner
      */
     public function __construct(
+        protected YamlReader $yamlReader,
         protected Loader $recordLoader,
         protected RecordFormatter $recordFormatter,
         protected SearchRunner $searchRunner
     ) {
+        $this->config = $this->yamlReader->get($this->configName . '.yaml');
+
+        $this->responseFields = $this->config['ResponseFields'] ?? $this->responseFields;
     }
 
     /**
@@ -94,21 +110,23 @@ class Capabilities
     }
 
     /**
-     * Search records by keywords
+     * Search records by keywords and content type. Input schema and response fields are defined
+     * in config file.
      *
-     * @param string $keywords Keywords to search for
+     * @param string  $keywords    Keywords to search for
+     * @param ?string $contentType A content type from the resources defined in the schema.
      *
      * @return array The records found for this search
      */
-    #[McpTool(
-        name: 'searchRecords',
-        description: 'Search library catalog records (books, videos and more) by keywords.'
-    )]
-    public function searchRecords($keywords)
+    public function searchRecords(string $keywords, ?string $contentType = null): array
     {
         $limit = $this->limit;
+        $rawRequest = ['lookfor' => urldecode($keywords)];
+        if ($filter = $this->config['ContentTypes'][$contentType]['filter'] ?? null) {
+            $rawRequest['filter'] = $filter;
+        }
         $results = $this->searchRunner->run(
-            ['lookfor' => urldecode($keywords)],
+            $rawRequest,
             $this->searchClassId,
             function (
                 $runner,
@@ -125,9 +143,10 @@ class Capabilities
         if ($results instanceof \VuFind\Search\EmptySet\Results) {
             throw new ResourceNotFoundException('No records found');
         }
+
         $records = $this->recordFormatter->format(
             $results->getResults(),
-            $this->recordFields
+            $this->responseFields
         );
         return $records;
     }
@@ -157,7 +176,7 @@ class Capabilities
             throw new ResourceReadException(message: "Record not found for ID: {$recordId}", previous: $e);
         }
 
-        $formattedRecord = $this->recordFormatter->format([$record], $this->recordFields)[0];
+        $formattedRecord = $this->recordFormatter->format([$record], $this->responseFields)[0];
         return $formattedRecord;
     }
 }
