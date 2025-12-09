@@ -105,8 +105,6 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockGenerator()
     {
-        return $this->getMockBuilder(ThemeGenerator::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(ThemeGenerator::class);
     }
 }

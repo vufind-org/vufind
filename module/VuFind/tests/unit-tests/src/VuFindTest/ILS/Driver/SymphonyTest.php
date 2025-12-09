@@ -56,8 +56,7 @@ class SymphonyTest extends \PHPUnit\Framework\TestCase
      */
     public function setUp(): void
     {
-        $loader = $this->getMockBuilder(\VuFind\Record\Loader::class)
-            ->disableOriginalConstructor()->getMock();
+        $loader = $this->createMock(\VuFind\Record\Loader::class);
 
         $this->driver = new Symphony($loader);
     }

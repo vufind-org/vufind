@@ -85,8 +85,7 @@ class RecordFormatterTest extends \PHPUnit\Framework\TestCase
         $hm->setService('translate', new \VuFind\View\Helper\Root\Translate());
         $mockRecordLinker
             = $container->get(\VuFind\View\Helper\Root\RecordLinker::class);
-        $mockRecordLinker->expects($this->any())->method('getUrl')
-            ->willReturn('/vufind/Record/12345');
+        $mockRecordLinker->method('getUrl')->willReturn('/vufind/Record/12345');
         $hm->setService('recordLinker', $mockRecordLinker);
         return $hm;
     }

@@ -50,9 +50,7 @@ class LookupIssnsCommandTest extends TestCase
      */
     public function testSupportedBackend(): void
     {
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\BrowZine\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\BrowZine\Backend::class);
         $backend->expects($this->once())->method('getIdentifier')
             ->willReturn('BrowZine');
         $backend->expects($this->once())->method('lookupIssns')

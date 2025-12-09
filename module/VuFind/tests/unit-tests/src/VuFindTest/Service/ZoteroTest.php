@@ -250,9 +250,7 @@ class ZoteroTest extends \PHPUnit\Framework\TestCase
     protected function getUser(): MockObject&User
     {
         $user = $this->createMock(User::class);
-        $user->expects($this->any())
-            ->method('getId')
-            ->willReturn(123);
+        $user->method('getId')->willReturn(123);
         return $user;
     }
 }

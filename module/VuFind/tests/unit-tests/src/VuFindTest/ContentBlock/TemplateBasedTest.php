@@ -55,9 +55,7 @@ class TemplateBasedTest extends \PHPUnit\Framework\TestCase
             'path' => '/path/to/foo.phtml',
             'relativePath' => 'to/foo.phtml',
         ];
-        $locator = $this->getMockBuilder(\VuFind\Content\PageLocator::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $locator = $this->createMock(\VuFind\Content\PageLocator::class);
         $locator->expects($this->once())->method('determineTemplateAndRenderer')
             ->with($this->equalTo('templates/ContentBlock/TemplateBased/'), $this->equalTo('foo'))
             ->willReturn($details);
@@ -83,9 +81,7 @@ class TemplateBasedTest extends \PHPUnit\Framework\TestCase
             'path' => '/path/to/customBasePath/bar.phtml',
             'relativePath' => 'customBasePath/bar.phtml',
         ];
-        $locator = $this->getMockBuilder(\VuFind\Content\PageLocator::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $locator = $this->createMock(\VuFind\Content\PageLocator::class);
         $locator->expects($this->once())->method('determineTemplateAndRenderer')
             ->with(
                 $this->equalTo('templates/customBasePath/'),
@@ -113,9 +109,7 @@ class TemplateBasedTest extends \PHPUnit\Framework\TestCase
             'path' => '/path/to/foo_en.phtml',
             'relativePath' => 'to/foo_en.phtml',
         ];
-        $locator = $this->getMockBuilder(\VuFind\Content\PageLocator::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $locator = $this->createMock(\VuFind\Content\PageLocator::class);
         $locator->expects($this->once())->method('determineTemplateAndRenderer')
             ->with($this->equalTo('templates/ContentBlock/TemplateBased/'), $this->equalTo('foo'))
             ->willReturn($details);
@@ -142,9 +136,7 @@ class TemplateBasedTest extends \PHPUnit\Framework\TestCase
             'path' => $file,
             'relativePath' => 'page-locator-test/page4.md',
         ];
-        $locator = $this->getMockBuilder(\VuFind\Content\PageLocator::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $locator = $this->createMock(\VuFind\Content\PageLocator::class);
         $locator->expects($this->once())->method('determineTemplateAndRenderer')
             ->with($this->equalTo('templates/ContentBlock/TemplateBased/'), $this->equalTo($file))
             ->willReturn($details);
