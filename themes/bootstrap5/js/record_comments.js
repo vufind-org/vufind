@@ -185,6 +185,7 @@ VuFind.register('recordComments', function RecordComments() {
    * Initialize record comments.
    */
   function init() {
+    updateContainer({container: document});
     VuFind.listen('record-tab-init', updateContainer);
   }
 
