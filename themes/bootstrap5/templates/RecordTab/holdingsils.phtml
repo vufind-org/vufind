@@ -60,7 +60,7 @@
     <?php endif; ?>
   <?php endif; ?>
 <?php endif; ?>
-<?php if ($this->ils()->getHoldsMode() == 'driver' && empty($holdings['holdings']) && $displayNoPhysHolWarn): ?>
+<?php if (empty($holdings['holdings']) && $displayNoPhysHolWarn): ?>
   <div class="alert alert-warning">
     <?=$this->transEsc('no_holdings_found')?>
   </div>
