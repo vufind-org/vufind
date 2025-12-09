@@ -79,8 +79,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
      */
     public function testDisabled()
     {
-        $mockManager
-            = $this->createMock(\VuFind\Search\Results\PluginManager::class);
+        $mockManager = $this->createMock(\VuFind\Search\Results\PluginManager::class);
         $mockMemory = $this->createMock(\VuFind\Search\Memory::class);
         $plugin = new ResultScroller(
             new Container('test'),
