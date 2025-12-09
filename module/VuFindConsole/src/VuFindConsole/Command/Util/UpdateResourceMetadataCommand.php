@@ -143,8 +143,6 @@ class UpdateResourceMetadataCommand extends Command
                 $lastId = $resource->getId();
                 $recordId = $resource->getRecordId();
                 $source = $resource->getSource();
-                $driverRecordId = $driver->getUniqueID();
-                assert($recordId == $driverRecordId);
                 if ($output->isVerbose()) {
                     $output->writeln("Checking record {$source}:{$recordId}");
                 }
@@ -162,6 +160,7 @@ class UpdateResourceMetadataCommand extends Command
                 } else {
                     $this->resourcePopulator->assignMetadata($resource, $driver);
                     $resource->setUpdated(new DateTime());
+                    $driverRecordId = $driver->getUniqueID();
                     if ($recordId != $driverRecordId) {
                         $resource->setRecordId($driverRecordId);
                         ++$redirected;
