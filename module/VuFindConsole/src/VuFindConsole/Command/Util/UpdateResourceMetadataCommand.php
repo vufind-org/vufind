@@ -161,7 +161,7 @@ class UpdateResourceMetadataCommand extends Command
                 } else {
                     $this->resourcePopulator->assignMetadata($resource, $driver);
                     $resource->setUpdated(new DateTime());
-                    $driverRecordId = $driver->getUniqueId();
+                    $driverRecordId = $driver->getUniqueID();
                     if ($recordId != $driverRecordId) {
                         $resource->setRecordId($driverRecordId);
                         ++$redirected;
