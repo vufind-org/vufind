@@ -40,7 +40,7 @@ use VuFind\Recommend\SummonBestBets;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class SummonBestBetsTest extends \PHPUnit\Framework\TestCase
+final class SummonBestBetsTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test getting best bets results.

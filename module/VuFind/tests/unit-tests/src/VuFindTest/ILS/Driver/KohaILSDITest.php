@@ -42,7 +42,7 @@ use VuFind\ILS\Driver\KohaILSDI;
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://knihovny.cz Main Page
  */
-class KohaILSDITest extends \VuFindTest\Unit\ILSDriverTestCase
+final class KohaILSDITest extends \VuFindTest\Unit\ILSDriverTestCase
 {
     /**
      * Standard setup method.

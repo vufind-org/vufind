@@ -41,7 +41,7 @@ use VuFind\Search\SearchNormalizer;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class SearchNormalizerTest extends \PHPUnit\Framework\TestCase
+final class SearchNormalizerTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\SolrSearchObjectTrait;
 

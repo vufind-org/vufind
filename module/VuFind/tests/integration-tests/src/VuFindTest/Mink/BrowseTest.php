@@ -40,7 +40,7 @@ use Behat\Mink\Element\DocumentElement;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class BrowseTest extends \VuFindTest\Integration\MinkTestCase
+final class BrowseTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
      * Configuration to turn on all browse options:

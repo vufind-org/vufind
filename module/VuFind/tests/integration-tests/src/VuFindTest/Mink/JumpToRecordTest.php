@@ -38,7 +38,7 @@ namespace VuFindTest\Mink;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class JumpToRecordTest extends \VuFindTest\Integration\MinkTestCase
+final class JumpToRecordTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
      * Test that we can jump to the first record in a single-record result set.

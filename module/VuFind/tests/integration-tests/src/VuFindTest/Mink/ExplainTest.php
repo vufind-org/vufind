@@ -40,7 +40,7 @@ use function count;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class ExplainTest extends \VuFindTest\Integration\MinkTestCase
+final class ExplainTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
      * Set up a test by enabling explain.

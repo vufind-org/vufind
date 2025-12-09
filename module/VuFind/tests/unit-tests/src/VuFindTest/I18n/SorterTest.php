@@ -42,7 +42,7 @@ use VuFind\I18n\Sorter;
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class SorterTest extends \PHPUnit\Framework\TestCase
+final class SorterTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Data Provider for compare tests

@@ -41,7 +41,7 @@ use VuFindApi\Formatter\RecordFormatter;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class RecordFormatterTest extends \PHPUnit\Framework\TestCase
+final class RecordFormatterTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Get default configuration to use in tests when no overrides are specified.

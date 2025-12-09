@@ -40,7 +40,7 @@ use VuFind\Config\Config;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ConfigTest extends \PHPUnit\Framework\TestCase
+final class ConfigTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Config object to test

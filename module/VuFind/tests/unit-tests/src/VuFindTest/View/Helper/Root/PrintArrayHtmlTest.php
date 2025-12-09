@@ -43,7 +43,7 @@ use function call_user_func;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class PrintArrayHtmlTest extends AbstractMakeTagTestCase
+final class PrintArrayHtmlTest extends AbstractMakeTagTestCase
 {
     use \VuFindTest\Feature\ViewTrait;
 

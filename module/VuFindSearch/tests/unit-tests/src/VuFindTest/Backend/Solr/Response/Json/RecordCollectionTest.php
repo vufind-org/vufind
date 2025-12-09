@@ -45,7 +45,7 @@ use function in_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class RecordCollectionTest extends TestCase
+final class RecordCollectionTest extends TestCase
 {
     /**
      * Test that the object returns appropriate defaults for missing elements.

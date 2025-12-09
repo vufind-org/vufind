@@ -38,7 +38,7 @@ namespace VuFindTest\Mink;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class NextPrevNavTest extends \VuFindTest\Integration\MinkTestCase
+final class NextPrevNavTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
      * If next_prev_navigation and first_last_navigation are set to true

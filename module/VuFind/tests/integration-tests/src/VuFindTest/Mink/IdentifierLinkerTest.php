@@ -38,7 +38,7 @@ namespace VuFindTest\Mink;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class IdentifierLinkerTest extends \VuFindTest\Integration\MinkTestCase
+final class IdentifierLinkerTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
      * Test identifier linker also works if first used on second page loaded via JS.

@@ -38,7 +38,7 @@ namespace VuFindTest\ContentBlock;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class RecommendTest extends \PHPUnit\Framework\TestCase
+final class RecommendTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test the normal workflow of the block.

@@ -42,7 +42,7 @@ use VuFind\Controller\InstallController;
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class InstallControllerTest extends \PHPUnit\Framework\TestCase
+final class InstallControllerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test getMinimalPhpVersion with actual composer.json file

@@ -40,7 +40,7 @@ use VuFind\Recommend\SwitchType;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class SwitchTypeTest extends \PHPUnit\Framework\TestCase
+final class SwitchTypeTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Data provider for testGetNewHandlerName.

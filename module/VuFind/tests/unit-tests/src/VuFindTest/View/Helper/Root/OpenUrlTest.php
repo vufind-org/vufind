@@ -43,7 +43,7 @@ use VuFind\View\Helper\Root\OpenUrl;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class OpenUrlTest extends \PHPUnit\Framework\TestCase
+final class OpenUrlTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
     use \VuFindTest\Feature\ViewTrait;

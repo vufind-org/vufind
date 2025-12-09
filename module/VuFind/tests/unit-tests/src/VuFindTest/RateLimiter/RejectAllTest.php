@@ -41,7 +41,7 @@ use VuFind\RateLimiter\RejectAll;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class RejectAllTest extends \PHPUnit\Framework\TestCase
+final class RejectAllTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test that using reserve() throws an exception.

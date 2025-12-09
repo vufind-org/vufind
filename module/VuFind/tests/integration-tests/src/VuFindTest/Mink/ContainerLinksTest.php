@@ -40,7 +40,7 @@ use Behat\Mink\Element\Element;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/indexing:hierarchies_and_collections Hierarchies and Collections
  */
-class ContainerLinksTest extends \VuFindTest\Integration\MinkTestCase
+final class ContainerLinksTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
      * Go to a collection page.

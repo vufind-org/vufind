@@ -43,7 +43,7 @@ use VuFindSearch\Query\Query;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class GetIdsCommandTest extends TestCase
+final class GetIdsCommandTest extends TestCase
 {
     /**
      * Test GetIds with GetIdsInterface

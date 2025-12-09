@@ -44,7 +44,7 @@ use VuFindHttp\HttpService;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class TurnstileTest extends \PHPUnit\Framework\TestCase
+final class TurnstileTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test reporting if a Turnstile challenge is allowed based

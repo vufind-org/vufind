@@ -50,7 +50,7 @@ use function array_key_exists;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class NotifyCommandTest extends \PHPUnit\Framework\TestCase
+final class NotifyCommandTest extends \PHPUnit\Framework\TestCase
 {
     use ConfigRelatedServicesTrait;
 

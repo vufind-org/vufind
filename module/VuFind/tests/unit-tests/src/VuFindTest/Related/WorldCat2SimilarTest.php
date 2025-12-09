@@ -43,7 +43,7 @@ use VuFindSearch\ParamBag;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class WorldCat2SimilarTest extends \PHPUnit\Framework\TestCase
+final class WorldCat2SimilarTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Create a mock record driver object.

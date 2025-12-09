@@ -42,7 +42,7 @@ use PHPUnit\Framework\ExpectationFailedException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class BadStringsTest extends \PHPUnit\Framework\TestCase
+final class BadStringsTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * List of bad strings to check for. Will be matched as plain text unless they

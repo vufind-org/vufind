@@ -43,7 +43,7 @@ use VuFind\Search\EDS\Results;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class DatabasesTest extends \PHPUnit\Framework\TestCase
+final class DatabasesTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test forgetting the Databases config section.

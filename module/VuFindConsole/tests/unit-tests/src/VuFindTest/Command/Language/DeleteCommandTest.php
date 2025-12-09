@@ -44,7 +44,7 @@ use VuFindConsole\Command\Language\DeleteCommand;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class DeleteCommandTest extends \PHPUnit\Framework\TestCase
+final class DeleteCommandTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
 

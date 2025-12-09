@@ -46,7 +46,7 @@ use VuFindConsole\Command\Util\PurgeCachedRecordCommand;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class PurgeCachedRecordCommandTest extends \PHPUnit\Framework\TestCase
+final class PurgeCachedRecordCommandTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Data provider for testBasicOperation

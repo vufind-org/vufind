@@ -43,7 +43,7 @@ use VuFind\Log\Handler\Office365Handler;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class Office365Test extends \PHPUnit\Framework\TestCase
+final class Office365Test extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test handler functionality

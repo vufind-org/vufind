@@ -40,7 +40,7 @@ use VuFindConsole\Command\Util\ExpireSessionsCommand;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ExpireSessionsCommandTest extends AbstractExpireCommandTest
+final class ExpireSessionsCommandTest extends AbstractExpireCommandTest
 {
     /**
      * Name of class being tested

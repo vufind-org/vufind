@@ -38,7 +38,7 @@ namespace VuFindTest\Mink;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class AuthorControllerTest extends \VuFindTest\Integration\MinkTestCase
+final class AuthorControllerTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
      * Standard setup method that runs before each test.

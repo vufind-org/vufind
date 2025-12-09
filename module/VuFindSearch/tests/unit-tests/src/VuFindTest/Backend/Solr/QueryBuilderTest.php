@@ -43,7 +43,7 @@ use VuFindSearch\Query\QueryGroup;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class QueryBuilderTest extends \PHPUnit\Framework\TestCase
+final class QueryBuilderTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test normalization of unusual queries.

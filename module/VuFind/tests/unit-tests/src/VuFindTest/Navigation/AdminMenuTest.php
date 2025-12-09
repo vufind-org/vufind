@@ -40,7 +40,7 @@ use VuFind\Navigation\AdminMenu;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class AdminMenuTest extends \PHPUnit\Framework\TestCase
+final class AdminMenuTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test that the menu is the default menu if configuration is missing.

@@ -40,7 +40,7 @@ use VuFindTest\Integration\ConfigTestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ConfigManagerIntegrationTest extends ConfigTestCase
+final class ConfigManagerIntegrationTest extends ConfigTestCase
 {
     /**
      * Test simple caching.

@@ -47,7 +47,7 @@ use VuFind\Auth\OpenIDConnect;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class OpenIDConnectTest extends \PHPUnit\Framework\TestCase
+final class OpenIDConnectTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\ReflectionTrait;
     use \VuFindTest\Feature\FixtureTrait;

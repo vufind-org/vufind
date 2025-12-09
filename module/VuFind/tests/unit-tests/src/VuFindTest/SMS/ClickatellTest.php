@@ -42,7 +42,7 @@ use function function_exists;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class ClickatellTest extends \PHPUnit\Framework\TestCase
+final class ClickatellTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Expected base URL in tests.

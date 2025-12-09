@@ -43,7 +43,7 @@ use VuFindSearch\Backend\Solr\Document\UpdateDocument;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class UpdateDocumentTest extends TestCase
+final class UpdateDocumentTest extends TestCase
 {
     /**
      * Test creation of XML document.

@@ -45,7 +45,7 @@ use VuFind\Date\Converter as DateConverter;
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class HoldsTest extends \PHPUnit\Framework\TestCase
+final class HoldsTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Mock container

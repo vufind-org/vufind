@@ -41,7 +41,7 @@ use VuFindConsole\Command\Util\OptimizeCommand;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class OptimizeCommandTest extends \PHPUnit\Framework\TestCase
+final class OptimizeCommandTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test success with all options set.

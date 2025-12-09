@@ -46,7 +46,7 @@ use VuFind\Http\PhpEnvironment\Request;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
+final class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test validation of empty create request.

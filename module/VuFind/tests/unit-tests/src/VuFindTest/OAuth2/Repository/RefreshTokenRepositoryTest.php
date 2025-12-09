@@ -40,7 +40,7 @@ use VuFind\OAuth2\Entity\ScopeEntity;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class RefreshTokenRepositoryTest extends AbstractTokenRepositoryTestCase
+final class RefreshTokenRepositoryTest extends AbstractTokenRepositoryTestCase
 {
     /**
      * Test refresh token repository

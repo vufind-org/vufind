@@ -52,7 +52,7 @@ use VuFind\Exception\LoginToken as LoginTokenException;
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
+final class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test login exception

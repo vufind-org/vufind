@@ -38,7 +38,7 @@ namespace VuFindTest\OAuth2\Repository;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class AuthCodeRepositoryTest extends AbstractTokenRepositoryTestCase
+final class AuthCodeRepositoryTest extends AbstractTokenRepositoryTestCase
 {
     /**
      * Test auth code repository

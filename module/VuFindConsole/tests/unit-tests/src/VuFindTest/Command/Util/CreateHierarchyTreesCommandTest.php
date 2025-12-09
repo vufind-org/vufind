@@ -46,7 +46,7 @@ use VuFindConsole\Command\Util\CreateHierarchyTreesCommand;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
+final class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Get mock hierarchy driver

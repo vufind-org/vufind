@@ -42,7 +42,7 @@ use VuFind\Service\ReCaptcha;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ReCaptchaTest extends \PHPUnit\Framework\TestCase
+final class ReCaptchaTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Get constructor parameters to set up a test service.

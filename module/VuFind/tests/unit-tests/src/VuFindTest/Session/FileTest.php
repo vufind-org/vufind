@@ -42,7 +42,7 @@ use function function_exists;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class FileTest extends \VuFindTest\Unit\SessionHandlerTestCase
+final class FileTest extends \VuFindTest\Unit\SessionHandlerTestCase
 {
     /**
      * Path to session files

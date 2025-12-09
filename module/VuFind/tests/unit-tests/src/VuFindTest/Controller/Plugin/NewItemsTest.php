@@ -41,7 +41,7 @@ use VuFind\Controller\Plugin\NewItems;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class NewItemsTest extends \PHPUnit\Framework\TestCase
+final class NewItemsTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test ILS bib ID retrieval.

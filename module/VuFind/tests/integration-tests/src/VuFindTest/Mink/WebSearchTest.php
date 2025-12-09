@@ -42,7 +42,7 @@ use function intval;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class WebSearchTest extends \VuFindTest\Integration\MinkTestCase
+final class WebSearchTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
      * Data provider for testWebSearch()

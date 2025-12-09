@@ -41,7 +41,7 @@ use VuFindConsole\Command\Util\CommitCommand;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class CommitCommandTest extends \PHPUnit\Framework\TestCase
+final class CommitCommandTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test success with all options set.

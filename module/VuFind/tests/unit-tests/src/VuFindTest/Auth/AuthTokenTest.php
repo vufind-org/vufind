@@ -42,7 +42,7 @@ use VuFind\Auth\AuthToken;
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class AuthTokenTest extends \PHPUnit\Framework\TestCase
+final class AuthTokenTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test getting a header value

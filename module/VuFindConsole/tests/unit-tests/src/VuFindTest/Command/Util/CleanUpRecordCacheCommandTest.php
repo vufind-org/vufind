@@ -42,7 +42,7 @@ use VuFindConsole\Command\Util\CleanUpRecordCacheCommand;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class CleanUpRecordCacheCommandTest extends \PHPUnit\Framework\TestCase
+final class CleanUpRecordCacheCommandTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test that the cache clear action is delegated properly.

@@ -47,7 +47,7 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class AssetManagerTest extends \PHPUnit\Framework\TestCase
+final class AssetManagerTest extends \PHPUnit\Framework\TestCase
 {
     use ViewTrait;
 

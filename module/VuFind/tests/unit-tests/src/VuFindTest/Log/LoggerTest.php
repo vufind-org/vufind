@@ -43,7 +43,7 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class LoggerTest extends \PHPUnit\Framework\TestCase
+final class LoggerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test logException()

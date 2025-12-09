@@ -41,7 +41,7 @@ use VuFindConsole\Command\Util\ScssBuilderCommand;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ScssBuilderCommandTest extends \PHPUnit\Framework\TestCase
+final class ScssBuilderCommandTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test that the command delegates proper behavior.

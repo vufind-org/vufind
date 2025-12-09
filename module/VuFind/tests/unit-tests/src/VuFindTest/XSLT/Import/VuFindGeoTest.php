@@ -40,7 +40,7 @@ use VuFind\XSLT\Import\VuFindGeo;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class VuFindGeoTest extends \PHPUnit\Framework\TestCase
+final class VuFindGeoTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test basic data extraction using valid values.

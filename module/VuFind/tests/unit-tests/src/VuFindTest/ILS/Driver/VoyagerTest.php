@@ -42,7 +42,7 @@ use VuFind\ILS\Driver\Voyager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class VoyagerTest extends \VuFindTest\Unit\ILSDriverTestCase
+final class VoyagerTest extends \VuFindTest\Unit\ILSDriverTestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
     use \VuFindTest\Feature\ReflectionTrait;

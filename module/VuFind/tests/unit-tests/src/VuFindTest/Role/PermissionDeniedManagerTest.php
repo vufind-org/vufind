@@ -40,7 +40,7 @@ use VuFind\Role\PermissionDeniedManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class PermissionDeniedManagerTest extends \PHPUnit\Framework\TestCase
+final class PermissionDeniedManagerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Sample configuration with various config options.

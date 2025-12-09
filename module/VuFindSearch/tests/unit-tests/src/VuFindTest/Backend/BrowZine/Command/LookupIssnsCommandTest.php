@@ -41,7 +41,7 @@ use VuFindSearch\Backend\BrowZine\Command\LookupIssnsCommand;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class LookupIssnsCommandTest extends TestCase
+final class LookupIssnsCommandTest extends TestCase
 {
     /**
      * Test that a supported backend behaves as expected.

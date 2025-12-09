@@ -44,7 +44,7 @@ use VuFind\ILS\Driver\DAIA;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
+final class DAIATest extends \VuFindTest\Unit\ILSDriverTestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
 

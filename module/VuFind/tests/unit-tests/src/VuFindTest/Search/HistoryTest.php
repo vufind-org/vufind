@@ -42,7 +42,7 @@ use VuFind\Search\Results\PluginManager as ResultsManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class HistoryTest extends \PHPUnit\Framework\TestCase
+final class HistoryTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test that we get no schedule options when scheduled search is disabled

@@ -41,7 +41,7 @@ use VuFindSearch\ParamBag;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class ParamBagTest extends TestCase
+final class ParamBagTest extends TestCase
 {
     /**
      * Test "contains"

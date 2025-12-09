@@ -42,7 +42,7 @@ use VuFindSearch\Query\Query;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class RawJsonSearchCommandTest extends TestCase
+final class RawJsonSearchCommandTest extends TestCase
 {
     /**
      * Test that an error is thrown for unsupported backends.

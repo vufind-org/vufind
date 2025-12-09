@@ -40,7 +40,7 @@ use Behat\Mink\Element\Element;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class LinkResolverTest extends \VuFindTest\Integration\MinkTestCase
+final class LinkResolverTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
      * Get config.ini override settings for testing ILS functions.

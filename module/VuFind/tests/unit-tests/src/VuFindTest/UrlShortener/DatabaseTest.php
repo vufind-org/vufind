@@ -49,7 +49,7 @@ use VuFind\UrlShortener\Database;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class DatabaseTest extends TestCase
+final class DatabaseTest extends TestCase
 {
     /**
      * Get the object to test.

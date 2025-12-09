@@ -46,7 +46,7 @@ use VuFindTest\Feature\SearchFacetFilterTrait;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
+final class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
 {
     use CacheManagementTrait;
     use SearchFacetFilterTrait;

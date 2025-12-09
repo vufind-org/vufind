@@ -45,7 +45,7 @@ use function in_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class DevtoolsControllerTest extends \PHPUnit\Framework\TestCase
+final class DevtoolsControllerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test language action.

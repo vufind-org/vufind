@@ -40,7 +40,7 @@ use VuFind\UrlShortener\None;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class NoneTest extends \PHPUnit\Framework\TestCase
+final class NoneTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test that the shortener does nothing.

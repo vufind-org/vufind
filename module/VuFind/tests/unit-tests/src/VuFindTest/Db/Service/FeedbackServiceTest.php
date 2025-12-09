@@ -44,7 +44,7 @@ use VuFind\Db\Service\FeedbackService;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class FeedbackServiceTest extends \PHPUnit\Framework\TestCase
+final class FeedbackServiceTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test creating a feedback entity.

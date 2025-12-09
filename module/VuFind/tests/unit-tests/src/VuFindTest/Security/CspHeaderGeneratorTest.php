@@ -40,7 +40,7 @@ use VuFind\Security\CspHeaderGenerator;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class CspHeaderGeneratorTest extends \PHPUnit\Framework\TestCase
+final class CspHeaderGeneratorTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
 

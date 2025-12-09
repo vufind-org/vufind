@@ -41,7 +41,7 @@ use VuFind\View\Helper\Root\Truncate;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class TruncateTest extends \PHPUnit\Framework\TestCase
+final class TruncateTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Data provider for testTruncate

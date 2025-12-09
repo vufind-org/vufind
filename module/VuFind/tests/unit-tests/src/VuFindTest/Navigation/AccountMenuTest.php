@@ -46,7 +46,7 @@ use VuFind\Navigation\AccountMenu;
  *           License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class AccountMenuTest extends \PHPUnit\Framework\TestCase
+final class AccountMenuTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test that the menu is the default menu if configuration is missing.

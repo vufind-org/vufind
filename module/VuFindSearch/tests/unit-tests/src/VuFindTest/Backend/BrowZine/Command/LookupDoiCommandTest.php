@@ -41,7 +41,7 @@ use VuFindSearch\Backend\BrowZine\Command\LookupDoiCommand;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class LookupDoiCommandTest extends TestCase
+final class LookupDoiCommandTest extends TestCase
 {
     /**
      * Test that a supported backend behaves as expected.

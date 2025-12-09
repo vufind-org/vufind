@@ -43,7 +43,7 @@ use VuFindSearch\Backend\Solr\Document\DeleteDocument;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class DeleteDocumentTest extends TestCase
+final class DeleteDocumentTest extends TestCase
 {
     /**
      * Test creation of XML document.

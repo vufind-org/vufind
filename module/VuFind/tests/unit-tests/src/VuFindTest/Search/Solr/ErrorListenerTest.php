@@ -44,7 +44,7 @@ use VuFindSearch\Backend\Exception\HttpErrorException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class ErrorListenerTest extends TestCase
+final class ErrorListenerTest extends TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
     use \VuFindTest\Feature\MockSearchCommandTrait;

@@ -41,7 +41,7 @@ use VuFind\Search\Solr\SpellingProcessor;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
+final class SpellingProcessorTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
     use \VuFindTest\Feature\ReflectionTrait;

@@ -44,7 +44,7 @@ use VuFindTheme\ThemeInfo;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class RouterTest extends \PHPUnit\Framework\TestCase
+final class RouterTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Theme to use for testing purposes.

@@ -44,7 +44,7 @@ use VuFind\Log\Handler\PostHandler;
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 
-class PostTest extends \PHPUnit\Framework\TestCase
+final class PostTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test handler functionality

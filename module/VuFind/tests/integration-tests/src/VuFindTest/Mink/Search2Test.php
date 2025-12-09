@@ -38,7 +38,7 @@ namespace VuFindTest\Mink;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Search2Test extends \VuFindTest\Integration\MinkTestCase
+final class Search2Test extends \VuFindTest\Integration\MinkTestCase
 {
     /**
      * Test that out of range search results page detection redirects to the right place.

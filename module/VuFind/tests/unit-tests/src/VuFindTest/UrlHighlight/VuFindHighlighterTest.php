@@ -43,7 +43,7 @@ use VuFind\View\Helper\Root\ProxyUrl;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class VuFindHighlighterTest extends \PHPUnit\Framework\TestCase
+final class VuFindHighlighterTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Mock proxy object

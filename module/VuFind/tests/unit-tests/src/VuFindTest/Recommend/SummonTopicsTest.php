@@ -40,7 +40,7 @@ use VuFind\Recommend\SummonTopics;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class SummonTopicsTest extends \PHPUnit\Framework\TestCase
+final class SummonTopicsTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test getting topic results.

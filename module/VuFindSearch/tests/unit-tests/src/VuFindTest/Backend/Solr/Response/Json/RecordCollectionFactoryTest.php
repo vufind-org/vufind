@@ -41,7 +41,7 @@ use VuFindSearch\Backend\Solr\Response\Json\RecordCollectionFactory;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class RecordCollectionFactoryTest extends TestCase
+final class RecordCollectionFactoryTest extends TestCase
 {
     /**
      * Test that the factory creates a collection.

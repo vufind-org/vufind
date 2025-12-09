@@ -42,7 +42,7 @@ use VuFind\ILS\Driver\VoyagerRestful;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class VoyagerRestfulTest extends \VuFindTest\Unit\ILSDriverTestCase
+final class VoyagerRestfulTest extends \VuFindTest\Unit\ILSDriverTestCase
 {
     /**
      * Default configuration for driver

@@ -41,7 +41,7 @@ namespace VuFindTest\Captcha;
 #[\PHPUnit\Framework\Attributes\RequiresPhpExtension('gd')]
 #[\PHPUnit\Framework\Attributes\RequiresFunction('imagepng')]
 #[\PHPUnit\Framework\Attributes\RequiresFunction('imageftbbox')]
-class IntervalTest extends \PHPUnit\Framework\TestCase
+final class IntervalTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test Interval captchas

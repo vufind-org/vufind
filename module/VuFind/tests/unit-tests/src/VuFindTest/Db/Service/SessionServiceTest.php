@@ -47,7 +47,7 @@ use VuFind\Db\Service\SessionService;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class SessionServiceTest extends \PHPUnit\Framework\TestCase
+final class SessionServiceTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Mock entity plugin manager.

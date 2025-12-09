@@ -48,7 +48,7 @@ use VuFindTest\Feature\WithConsecutiveTrait;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class UpdateResourceMetadataCommandTest extends \PHPUnit\Framework\TestCase
+final class UpdateResourceMetadataCommandTest extends \PHPUnit\Framework\TestCase
 {
     use WithConsecutiveTrait;
 

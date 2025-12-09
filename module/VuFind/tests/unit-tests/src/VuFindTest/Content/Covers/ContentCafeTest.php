@@ -42,7 +42,7 @@ use VuFindCode\ISBN;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class ContentCafeTest extends \PHPUnit\Framework\TestCase
+final class ContentCafeTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test cover loading

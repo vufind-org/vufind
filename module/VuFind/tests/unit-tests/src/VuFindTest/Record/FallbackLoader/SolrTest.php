@@ -43,7 +43,7 @@ use VuFind\Record\RecordIdUpdater;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class SolrTest extends \PHPUnit\Framework\TestCase
+final class SolrTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test that the fallback loader works when enabled (default settings).

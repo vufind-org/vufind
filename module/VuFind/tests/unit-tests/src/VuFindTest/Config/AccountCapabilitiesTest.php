@@ -42,7 +42,7 @@ use VuFind\Config\Config;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class AccountCapabilitiesTest extends \PHPUnit\Framework\TestCase
+final class AccountCapabilitiesTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Get an AccountCapabilities object to test.

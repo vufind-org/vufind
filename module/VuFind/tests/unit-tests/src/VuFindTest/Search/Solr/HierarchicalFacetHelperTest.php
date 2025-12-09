@@ -44,7 +44,7 @@ use VuFind\Search\Solr\HierarchicalFacetHelper;
  * @link     https://vufind.org Main Site
  * @todo     Test buildFacetArray using url helper
  */
-class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
+final class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test input data.

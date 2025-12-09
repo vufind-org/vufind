@@ -42,7 +42,7 @@ use VuFindSearch\Backend\Solr\Document\CommitDocument;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class WriteDocumentCommandTest extends TestCase
+final class WriteDocumentCommandTest extends TestCase
 {
     /**
      * Test that an error is thrown for unsupported backends.

@@ -44,7 +44,7 @@ use VuFind\Db\LoadClassMetadataListener;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class LoadClassMetadataListenerTest extends \PHPUnit\Framework\TestCase
+final class LoadClassMetadataListenerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Simplest test: the listener should not take any action on a base entity class.

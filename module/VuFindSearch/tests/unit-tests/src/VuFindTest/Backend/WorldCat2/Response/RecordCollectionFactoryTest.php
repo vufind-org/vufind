@@ -40,7 +40,7 @@ use VuFindSearch\Backend\WorldCat2\Response\RecordCollectionFactory;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class RecordCollectionFactoryTest extends \PHPUnit\Framework\TestCase
+final class RecordCollectionFactoryTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test bad callback.

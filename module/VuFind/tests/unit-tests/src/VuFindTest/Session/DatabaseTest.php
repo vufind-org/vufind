@@ -43,7 +43,7 @@ use VuFind\Session\Database;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class DatabaseTest extends \VuFindTest\Unit\SessionHandlerTestCase
+final class DatabaseTest extends \VuFindTest\Unit\SessionHandlerTestCase
 {
     /**
      * Test reading a session from the database.

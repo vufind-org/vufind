@@ -43,7 +43,7 @@ use function func_get_args;
 #[\PHPUnit\Framework\Attributes\RequiresPhpExtension('gd')]
 #[\PHPUnit\Framework\Attributes\RequiresFunction('imagepng')]
 #[\PHPUnit\Framework\Attributes\RequiresFunction('imageftbbox')]
-class ImageFactoryTest extends \PHPUnit\Framework\TestCase
+final class ImageFactoryTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test that the factory behaves correctly.

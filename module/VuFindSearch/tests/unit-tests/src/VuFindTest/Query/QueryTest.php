@@ -41,7 +41,7 @@ use VuFindSearch\Query\Query;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class QueryTest extends TestCase
+final class QueryTest extends TestCase
 {
     /**
      * Test containsTerm() method

@@ -7,6 +7,7 @@ use Rector\Config\RectorConfig;
 use Rector\PHPUnit\Set\PHPUnitSetList;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\RemoveExpectAnyFromMockRector;
 use Rector\PHPUnit\PHPUnit60\Rector\MethodCall\GetMockBuilderGetMockToCreateMockRector;
+use Rector\Privatization\Rector\Class_\FinalizeTestCaseClassRector;
 
 return RectorConfig::configure()
     ->withCache(
@@ -23,7 +24,10 @@ return RectorConfig::configure()
     ])
     ->withRules([
         RemoveExpectAnyFromMockRector::class,
-        GetMockBuilderGetMockToCreateMockRector::class
+        GetMockBuilderGetMockToCreateMockRector::class,
+        FinalizeTestCaseClassRector::class => [
+            __DIR__ . '/../module/VuFindConsole/tests/unit-tests/src/VuFindTest/Command/Util/AbstractExpireCommandTest.php',
+        ],
     ])
     ->withTypeCoverageLevel(0)
     ->withDeadCodeLevel(6)

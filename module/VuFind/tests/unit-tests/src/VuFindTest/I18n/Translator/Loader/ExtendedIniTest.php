@@ -41,7 +41,7 @@ use VuFind\I18n\Translator\Loader\ExtendedIni;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ExtendedIniTest extends \PHPUnit\Framework\TestCase
+final class ExtendedIniTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
 

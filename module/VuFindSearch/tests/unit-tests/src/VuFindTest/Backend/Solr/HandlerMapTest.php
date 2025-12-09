@@ -41,7 +41,7 @@ use VuFindSearch\Backend\Solr\HandlerMap;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class HandlerMapTest extends TestCase
+final class HandlerMapTest extends TestCase
 {
     /**
      * Test exception on duplicate fallback handler.

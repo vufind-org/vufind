@@ -46,7 +46,7 @@ use VuFindSearch\ParamBag;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class ConnectorTest extends \PHPUnit\Framework\TestCase
+final class ConnectorTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Get a mock HTTP client.

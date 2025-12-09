@@ -42,7 +42,7 @@ use VuFindTest\Integration\ConfigTestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ConfigWritingTest extends ConfigTestCase
+final class ConfigWritingTest extends ConfigTestCase
 {
     /**
      * Upgrade test provider.

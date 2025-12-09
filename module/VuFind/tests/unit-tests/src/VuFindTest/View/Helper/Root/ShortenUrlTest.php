@@ -43,7 +43,7 @@ use VuFind\View\Helper\Root\ShortenUrlFactory;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ShortenUrlTest extends \PHPUnit\Framework\TestCase
+final class ShortenUrlTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test that helper proxies to appropriate service.

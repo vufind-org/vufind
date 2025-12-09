@@ -47,7 +47,7 @@ use VuFind\Form\Handler\Database;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class DatabaseTest extends \PHPUnit\Framework\TestCase
+final class DatabaseTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Get a mock feedback object configured for tests.

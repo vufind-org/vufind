@@ -42,7 +42,7 @@ use VuFind\Role\PermissionProvider\ServerParam;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ServerParamTest extends \PHPUnit\Framework\TestCase
+final class ServerParamTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test single option with matching string

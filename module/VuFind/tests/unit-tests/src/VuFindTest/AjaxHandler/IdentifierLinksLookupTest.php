@@ -46,7 +46,7 @@ use function func_get_args;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
+final class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
 {
     use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 

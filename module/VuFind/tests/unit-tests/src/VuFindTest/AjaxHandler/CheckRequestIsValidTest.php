@@ -45,7 +45,7 @@ use VuFind\ILS\Connection;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTestCase
+final class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTestCase
 {
     /**
      * Set up a CheckRequestIsValid handler for testing.

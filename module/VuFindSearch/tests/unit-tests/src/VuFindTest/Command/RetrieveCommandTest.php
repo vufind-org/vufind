@@ -42,7 +42,7 @@ use VuFindSearch\ParamBag;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class RetrieveCommandTest extends TestCase
+final class RetrieveCommandTest extends TestCase
 {
     /**
      * Test that a supported backed behaves as expected

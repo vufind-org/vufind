@@ -41,7 +41,7 @@ use VuFindSearch\Backend\EDS\Command\AutocompleteCommand;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class AutocompleteCommandTest extends TestCase
+final class AutocompleteCommandTest extends TestCase
 {
     /**
      * Test that the command works as expected

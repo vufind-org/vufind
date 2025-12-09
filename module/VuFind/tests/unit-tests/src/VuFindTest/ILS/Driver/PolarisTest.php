@@ -40,7 +40,7 @@ use VuFind\ILS\Driver\Polaris;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class PolarisTest extends \VuFindTest\Unit\ILSDriverTestCase
+final class PolarisTest extends \VuFindTest\Unit\ILSDriverTestCase
 {
     /**
      * Standard setup method.

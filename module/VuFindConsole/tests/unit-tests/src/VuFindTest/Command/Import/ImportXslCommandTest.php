@@ -42,7 +42,7 @@ use VuFindConsole\Command\Import\ImportXslCommand;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ImportXslCommandTest extends \PHPUnit\Framework\TestCase
+final class ImportXslCommandTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test that missing parameters yield an error message.

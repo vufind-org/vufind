@@ -41,7 +41,7 @@ use VuFind\Search\Primo\PrimoPermissionHandler;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
+final class PrimoPermissionHandlerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Backend.

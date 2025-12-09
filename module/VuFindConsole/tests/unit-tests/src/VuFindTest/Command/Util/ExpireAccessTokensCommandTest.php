@@ -40,7 +40,7 @@ use VuFindConsole\Command\Util\ExpireAccessTokensCommand;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ExpireAccessTokensCommandTest extends AbstractExpireCommandTest
+final class ExpireAccessTokensCommandTest extends AbstractExpireCommandTest
 {
     /**
      * Name of class being tested

@@ -40,7 +40,7 @@ use VuFindSearch\Backend\Solr\Record\SerializableRecord;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class SerializableRecordTest extends \PHPUnit\Framework\TestCase
+final class SerializableRecordTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test field retrieval

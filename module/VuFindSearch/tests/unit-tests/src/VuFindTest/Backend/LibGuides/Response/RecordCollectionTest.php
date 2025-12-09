@@ -41,7 +41,7 @@ use VuFindSearch\Backend\LibGuides\Response\RecordCollection;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class RecordCollectionTest extends TestCase
+final class RecordCollectionTest extends TestCase
 {
     /**
      * Test defaults when given empty data.

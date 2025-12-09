@@ -50,7 +50,7 @@ use function is_object;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class UserListServiceTest extends \PHPUnit\Framework\TestCase
+final class UserListServiceTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Get user list service

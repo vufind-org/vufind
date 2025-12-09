@@ -40,7 +40,7 @@ use VuFind\XSLT\Import\VuFindWorkKeys;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class VuFindWorkKeysTest extends \PHPUnit\Framework\TestCase
+final class VuFindWorkKeysTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test the work keys helper with an include regex.

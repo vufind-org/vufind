@@ -40,7 +40,7 @@ use VuFind\Route\RouteGenerator;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class RouteGeneratorTest extends \PHPUnit\Framework\TestCase
+final class RouteGeneratorTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test addDynamicRoutes()

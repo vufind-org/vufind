@@ -45,7 +45,7 @@ use VuFindTest\Feature\FixtureTrait;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class SierraRestTest extends \VuFindTest\Unit\ILSDriverTestCase
+final class SierraRestTest extends \VuFindTest\Unit\ILSDriverTestCase
 {
     use \VuFindTest\Feature\ReflectionTrait;
     use FixtureTrait;

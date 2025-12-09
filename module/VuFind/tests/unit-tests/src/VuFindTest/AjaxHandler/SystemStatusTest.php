@@ -41,7 +41,7 @@ use VuFind\AjaxHandler\SystemStatus;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class SystemStatusTest extends \PHPUnit\Framework\TestCase
+final class SystemStatusTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test the AJAX handler's "health check file" response

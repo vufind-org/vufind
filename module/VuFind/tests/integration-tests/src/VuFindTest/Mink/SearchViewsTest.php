@@ -38,7 +38,7 @@ namespace VuFindTest\Mink;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class SearchViewsTest extends \VuFindTest\Integration\MinkTestCase
+final class SearchViewsTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
      * Test that AJAX availability status is working in grid view.

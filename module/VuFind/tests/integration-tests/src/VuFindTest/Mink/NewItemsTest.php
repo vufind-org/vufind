@@ -40,7 +40,7 @@ use Behat\Mink\Element\Element;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class NewItemsTest extends \VuFindTest\Integration\MinkTestCase
+final class NewItemsTest extends \VuFindTest\Integration\MinkTestCase
 {
     /**
      * Submit a new item search and return the resulting page object.

@@ -38,7 +38,7 @@ namespace VuFindTest\Log;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class VarDumperTraitTest extends \PHPUnit\Framework\TestCase
+final class VarDumperTraitTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFind\Log\VarDumperTrait;
 

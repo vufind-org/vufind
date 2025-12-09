@@ -47,7 +47,7 @@ use VuFindSearch\Backend\Solr\HandlerMap;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class ConnectorTest extends TestCase
+final class ConnectorTest extends TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
     use \VuFindTest\Feature\WithConsecutiveTrait;

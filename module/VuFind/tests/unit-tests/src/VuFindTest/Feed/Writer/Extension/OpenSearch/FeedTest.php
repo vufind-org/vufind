@@ -40,7 +40,7 @@ use VuFind\Feed\Writer\Extension\OpenSearch\Feed;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class FeedTest extends \PHPUnit\Framework\TestCase
+final class FeedTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test illegal feed type.

@@ -40,7 +40,7 @@ use VuFind\ILS\Driver\Horizon;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class HorizonTest extends \VuFindTest\Unit\ILSDriverTestCase
+final class HorizonTest extends \VuFindTest\Unit\ILSDriverTestCase
 {
     /**
      * Standard setup method.

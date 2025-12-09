@@ -41,7 +41,7 @@ use VuFind\ILS\Logic\AvailabilityStatusInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
+final class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
 {
     use \VuFindTest\Feature\DemoDriverTestTrait;
 

@@ -40,7 +40,7 @@ use VuFindTheme\ResourceContainer;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
+final class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test CSS add/remove using strings.

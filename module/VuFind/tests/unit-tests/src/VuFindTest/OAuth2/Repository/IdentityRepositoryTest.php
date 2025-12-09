@@ -49,7 +49,7 @@ use VuFind\OAuth2\Repository\IdentityRepository;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
+final class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
 {
     /**
      * OAuth2 configuration

@@ -46,7 +46,7 @@ use VuFindSearch\Backend\Primo\RestConnector;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class RestConnectorTest extends TestCase
+final class RestConnectorTest extends TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
 

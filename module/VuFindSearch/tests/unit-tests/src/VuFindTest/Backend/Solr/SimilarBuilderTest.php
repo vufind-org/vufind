@@ -43,7 +43,7 @@ use VuFindSearch\Backend\Solr\SimilarBuilder;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class SimilarBuilderTest extends \PHPUnit\Framework\TestCase
+final class SimilarBuilderTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test builder with default params.

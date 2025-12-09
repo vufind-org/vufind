@@ -41,7 +41,7 @@ use VuFind\View\Helper\Root\AlphaBrowse;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
+final class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Get mock URL helper.

@@ -41,7 +41,7 @@ use VuFindSearch\Command\GetQueryBuilderCommand;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class GetQueryBuilderCommandTest extends TestCase
+final class GetQueryBuilderCommandTest extends TestCase
 {
     /**
      * Test that an error is thrown for mismatched backend IDs.

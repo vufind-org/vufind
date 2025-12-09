@@ -42,7 +42,7 @@ use function count;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class OaiTest extends \VuFindTest\Integration\MinkTestCase
+final class OaiTest extends \VuFindTest\Integration\MinkTestCase
 {
     use \VuFindTest\Feature\HttpRequestTrait;
 

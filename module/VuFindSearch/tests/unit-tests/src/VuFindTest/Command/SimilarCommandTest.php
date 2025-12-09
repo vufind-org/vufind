@@ -43,7 +43,7 @@ use VuFindSearch\ParamBag;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class SimilarCommandTest extends TestCase
+final class SimilarCommandTest extends TestCase
 {
     /**
      * Test that the command works as expected

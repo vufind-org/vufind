@@ -42,7 +42,7 @@ use VuFind\Search\Primo\Params;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class ParamsTest extends \PHPUnit\Framework\TestCase
+final class ParamsTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test facet value normalization

@@ -40,7 +40,7 @@ use VuFind\Role\PermissionManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class PermissionManagerTest extends \PHPUnit\Framework\TestCase
+final class PermissionManagerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Sample configuration with various config options.

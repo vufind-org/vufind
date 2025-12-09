@@ -40,7 +40,7 @@ use VuFind\Service\Feature\RetryTrait;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class RetryTraitTest extends \PHPUnit\Framework\TestCase
+final class RetryTraitTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Get a test harness for the trait.

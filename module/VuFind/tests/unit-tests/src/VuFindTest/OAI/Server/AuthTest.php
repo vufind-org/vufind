@@ -41,7 +41,7 @@ use VuFind\OAI\Server\Auth;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development
  */
-class AuthTest extends \PHPUnit\Framework\TestCase
+final class AuthTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test an empty input.

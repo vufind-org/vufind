@@ -44,7 +44,7 @@ use VuFind\ILS\Driver\PAIA;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
+final class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
 

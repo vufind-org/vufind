@@ -46,7 +46,7 @@ use VuFind\RecordDriver\EPF;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class EPFTest extends \PHPUnit\Framework\TestCase
+final class EPFTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test getThumbnail for a record.

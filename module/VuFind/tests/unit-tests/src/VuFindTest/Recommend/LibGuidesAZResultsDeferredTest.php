@@ -40,7 +40,7 @@ namespace VuFindTest\Recommend;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class LibGuidesAZResultsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTestCase
+final class LibGuidesAZResultsDeferredTest extends \VuFindTest\Unit\RecommendDeferredTestCase
 {
     /**
      * Test standard operation

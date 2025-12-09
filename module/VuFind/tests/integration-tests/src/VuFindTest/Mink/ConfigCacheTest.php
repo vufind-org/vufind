@@ -40,7 +40,7 @@ use VuFindTest\Feature\CacheManagementTrait;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class ConfigCacheTest extends \VuFindTest\Integration\MinkTestCase
+final class ConfigCacheTest extends \VuFindTest\Integration\MinkTestCase
 {
     use CacheManagementTrait;
 

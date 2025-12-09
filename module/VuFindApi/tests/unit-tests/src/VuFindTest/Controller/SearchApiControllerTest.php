@@ -59,7 +59,7 @@ use VuFindTest\Container\MockContainer;
  * @license  https://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
+final class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Data provider for testApiKeys functions

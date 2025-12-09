@@ -47,7 +47,7 @@ use VuFindTest\Feature\SearchSortTrait;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
+final class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 {
     use RetryClickTrait;
     use SearchLimitTrait;

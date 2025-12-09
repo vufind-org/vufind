@@ -46,7 +46,7 @@ use VuFind\ILS\Driver\Aleph;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class AlephTest extends \VuFindTest\Unit\ILSDriverTestCase
+final class AlephTest extends \VuFindTest\Unit\ILSDriverTestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
 

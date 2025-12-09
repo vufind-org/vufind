@@ -40,7 +40,7 @@ use VuFind\Content\Covers\Koha;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class KohaTest extends \PHPUnit\Framework\TestCase
+final class KohaTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Data provider for testValidCoverLoading

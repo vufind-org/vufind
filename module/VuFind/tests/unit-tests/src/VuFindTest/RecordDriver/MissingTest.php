@@ -45,7 +45,7 @@ use VuFind\RecordDriver\Missing;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class MissingTest extends \PHPUnit\Framework\TestCase
+final class MissingTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test that the missing driver leverages ILS details when available to populate

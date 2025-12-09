@@ -41,7 +41,7 @@ use VuFindSearch\Backend\Solr\SearchHandler;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class SearchHandlerTest extends TestCase
+final class SearchHandlerTest extends TestCase
 {
     /**
      * Test creating simple dismax query.

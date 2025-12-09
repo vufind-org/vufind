@@ -47,7 +47,7 @@ use function func_get_args;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class LocaleDetectorFactoryTest extends \PHPUnit\Framework\TestCase
+final class LocaleDetectorFactoryTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\ReflectionTrait;
 

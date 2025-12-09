@@ -41,7 +41,7 @@ use VuFindSearch\Response\SimpleRecord;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class SimpleRecordTest extends TestCase
+final class SimpleRecordTest extends TestCase
 {
     /**
      * Test for expected default source ID.

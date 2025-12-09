@@ -41,7 +41,7 @@ use VuFindSearch\Backend\Solr\Document\RawCSVDocument;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class RawCSVDocumentTest extends TestCase
+final class RawCSVDocumentTest extends TestCase
 {
     /**
      * Test creation of CSV document.

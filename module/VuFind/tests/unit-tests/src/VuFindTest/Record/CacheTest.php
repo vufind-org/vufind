@@ -49,7 +49,7 @@ use function in_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class CacheTest extends \PHPUnit\Framework\TestCase
+final class CacheTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Set of test records.

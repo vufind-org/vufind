@@ -44,7 +44,7 @@ use VuFind\I18n\Locale\LocaleSettings;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class LocaleSettingsTest extends \PHPUnit\Framework\TestCase
+final class LocaleSettingsTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Confirm that an exception is thrown if no language is specified.

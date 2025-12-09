@@ -42,7 +42,7 @@ use VuFind\Db\Entity\UserEntityInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class UserTest extends \PHPUnit\Framework\TestCase
+final class UserTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Current test user

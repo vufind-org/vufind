@@ -42,7 +42,7 @@ use VuFindCode\ISBN;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class OrbTest extends \PHPUnit\Framework\TestCase
+final class OrbTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\ConfigRelatedServicesTrait;
     use \VuFindTest\Feature\FixtureTrait;

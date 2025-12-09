@@ -41,7 +41,7 @@ use VuFind\View\Helper\Root\HelpText;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class HelpTextTest extends \PHPUnit\Framework\TestCase
+final class HelpTextTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Get a mock Content helper which will return a specific value and set a

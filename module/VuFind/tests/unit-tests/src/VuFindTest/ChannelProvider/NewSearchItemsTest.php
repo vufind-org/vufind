@@ -44,7 +44,7 @@ use VuFindTest\RecordDriver\TestHarness;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class NewSearchItemsTest extends \PHPUnit\Framework\TestCase
+final class NewSearchItemsTest extends \PHPUnit\Framework\TestCase
 {
     /**
      * Test deriving channel information from a record driver object.
