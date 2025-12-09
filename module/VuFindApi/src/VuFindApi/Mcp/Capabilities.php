@@ -159,6 +159,7 @@ class Capabilities
      * @return array The record
      */
     #[McpResourceTemplate(
+        uriTemplate: 'catalog://record/{recordId}',
         name: 'getRecord',
         description: 'Get a catalog record by its ID.',
         mimeType: 'application/json'
