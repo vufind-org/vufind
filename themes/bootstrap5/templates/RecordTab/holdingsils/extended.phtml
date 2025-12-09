@@ -4,11 +4,12 @@
     $checkStorageRetrievalRequest = $holding['checkStorageRetrievalRequest'] ?? false;
     $checkILLRequest = $holding['checkILLRequest'] ?? false;
     $availabilityStatus = $holding['availability'];
-    $getThisEnabled = isset($this->getThis) && $this->getThis->areItemsSupported([$holding]);
+    $getThisLoader = $tab->getGetThisLoader();
+    $getThisEnabled = $getThisLoader !== null && $getThisLoader->areItemsSupported([$holding]);
     if ($getThisEnabled) {
-        $this->getThis->setItems([$holding]);
-        $this->getThis->setRecord($this->record($this->driver));
-        $isOnlineResource = $this->getThis->isOnlineResource($holding['item_id'] ?? null);
+        $getThisLoader->setItems([$holding]);
+        $getThisLoader->setRecord($this->record($this->driver));
+        $isOnlineResource = $getThisLoader->isOnlineResource($holding['item_id'] ?? null);
         $getThisURI = $this->escapeHtmlAttr($this->url(
             'record-getthis',
             ['id' => $holding['id']],

@@ -808,7 +808,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     {
         $session = $this->getSession($patron['id'] ?? null);
 
-        if (!$this->config['Holdings']['NoRandomHoldings'] ?? true) {
+        if ($this->config['Holdings']['generateRandomHoldings'] ?? true) {
             $i = isset($session->statuses[$id])
                 ? count($session->statuses[$id]) + 1 : 1;
             $holding = array_merge($this->getRandomHolding($id, $i, $patron), $holding);

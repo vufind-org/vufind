@@ -74,10 +74,13 @@ class HoldingsILSFactory implements \Laminas\ServiceManager\Factory\FactoryInter
         // object:
         $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         $catalog = $container->get(\VuFind\ILS\Connection::class);
+        $getThisEnabled = ($config['Record']['getThisEnabled'] ?? null) == true;
         return new $requestedName(
+            $container,
             $catalog,
             (string)($config['Site']['holdingsTemplate'] ?? 'standard'),
-            (string)($config['Site']['hideHoldingsTabWhenEmpty'] ?? false)
+            (string)($config['Site']['hideHoldingsTabWhenEmpty'] ?? false),
+            $getThisEnabled
         );
     }
 }

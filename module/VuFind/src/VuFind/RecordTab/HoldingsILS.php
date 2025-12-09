@@ -29,8 +29,11 @@
 
 namespace VuFind\RecordTab;
 
+use Psr\Container\ContainerInterface;
+use VuFind\GetThis\GetThisLoader;
 use VuFind\ILS\Connection;
 
+use VuFind\Service\GetServiceTrait;
 use function strlen;
 
 /**
@@ -44,12 +47,7 @@ use function strlen;
  */
 class HoldingsILS extends AbstractBase
 {
-    /**
-     * ILS connection (or null if not applicable)
-     *
-     * @var Connection
-     */
-    protected $catalog;
+    use GetServiceTrait;
 
     /**
      * Name of template to use for rendering holdings.
@@ -59,28 +57,32 @@ class HoldingsILS extends AbstractBase
     protected $template;
 
     /**
-     * Whether the holdings tab should be hidden when empty or not.
+     * GetThisLoader object if enabled in the config
      *
-     * @var bool
+     * @var ?GetThisLoader
      */
-    protected $hideWhenEmpty;
+     protected ?GetThisLoader $getThisLoader;
 
     /**
      * Constructor
      *
-     * @param ?Connection $catalog       ILS connection to use to check for holdings before displaying the tab;
-     * may be set to null if no check is needed.
-     * @param ?string     $template      Holdings template to use
-     * @param bool        $hideWhenEmpty Whether the holdings tab should be hidden when empty or not
+     * @param ContainerInterface $serviceLocator  Service manager
+     * @param ?Connection        $catalog         ILS connection to use to check for holdings before
+     *                                            displaying the tab; may be set to null if no check is
+     *                                            needed.
+     * @param ?string            $template        Holdings template to use
+     * @param string|false       $hideWhenEmpty   Whether the holdings tab should be hidden when empty or
+     *                                            not
+     * @param bool               $getThisEnabled  Whether GetThis is enabled in the config
      */
     public function __construct(
-        ?Connection $catalog = null,
-        $template = null,
-        $hideWhenEmpty = false
+        protected ContainerInterface $serviceLocator,
+        protected ?Connection $catalog = null,
+        string $template = null,
+        protected string|false $hideWhenEmpty = false,
+        protected bool $getThisEnabled = false
     ) {
-        $this->catalog = $catalog;
         $this->template = $template ?? 'standard';
-        $this->hideWhenEmpty = $hideWhenEmpty;
     }
 
     /**
@@ -216,5 +218,19 @@ class HoldingsILS extends AbstractBase
             ->setPageRange(10);
 
         return $paginator;
+    }
+
+    /**
+     * Getter for GetThisLoader
+     *
+     * @return ?GetThisLoader
+     */
+    public function getGetThisLoader(): ?GetThisLoader
+    {
+        if (!isset($this->getThisLoader)) {
+            $this->getThisLoader = $this->getThisEnabled ?
+                $this->serviceLocator->get(GetThisLoader::class) : null;
+        }
+        return $this->getThisLoader;
     }
 }

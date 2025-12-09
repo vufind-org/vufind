@@ -163,7 +163,7 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
             ],
             'Demo' => [
                 'StaticHoldings' => [],
-                'Holdings' => ['NoRandomHoldings' => true],
+                'Holdings' => ['generateRandomHoldings' => false],
             ],
         ];
 
