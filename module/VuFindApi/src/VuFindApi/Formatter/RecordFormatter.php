@@ -141,7 +141,7 @@ class RecordFormatter extends BaseFormatter
     }
 
     /**
-     * Get (relative) link to record page
+     * Get relative link to record page
      *
      * @param \VuFind\RecordDriver\AbstractBase $record Record driver
      *
@@ -151,6 +151,21 @@ class RecordFormatter extends BaseFormatter
     {
         $urlHelper = $this->helperManager->get('recordLinker');
         return $urlHelper->getUrl($record);
+    }
+
+     /**
+     * Get absolute link to record page
+     *
+     * @param \VuFind\RecordDriver\AbstractBase $record Record driver
+     *
+     * @return string
+     */
+    protected function getRecordPageAbsoluteLink($record)
+    {
+        $recordPage = $this->getRecordPage($record);
+        $protocol = $_SERVER['PROTOCOL'] = ($_SERVER['HTTPS'] ?? false) ? 'https' : 'http';
+        $host = $_SERVER['HTTP_HOST'];
+        return $protocol . '://' . $host . $recordPage;
     }
 
     /**

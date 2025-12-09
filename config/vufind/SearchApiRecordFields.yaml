@@ -294,6 +294,10 @@ recordPage:
   vufind.method: "Formatter::getRecordPage"
   description: Link to the record page in the UI
   type: string
+recordPageAbsoluteLink:
+  vufind.method: "Formatter::getRecordPageAbsoluteLink"
+  description: Link to the record page from external sites with an absolute link
+  type: string
 relationshipNotes:
   vufind.method: getRelationshipNotes
   description: Notes describing relationships to other items
