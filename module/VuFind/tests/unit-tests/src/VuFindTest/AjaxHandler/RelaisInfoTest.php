@@ -98,9 +98,7 @@ class RelaisInfoTest extends \PHPUnit\Framework\TestCase
         $relais->expects($this->once())->method('authenticatePatron')
             ->with('user', true)
             ->willReturn($response);
-        $relais->expects($this->any())->method('search')
-            ->with('oclcnum', 1234)
-            ->willReturn('search-result');
+        $relais->method('search')->with('oclcnum', 1234)->willReturn('search-result');
         $handler = new RelaisInfo(
             $this->createMock(\VuFind\Session\Settings::class),
             $relais,

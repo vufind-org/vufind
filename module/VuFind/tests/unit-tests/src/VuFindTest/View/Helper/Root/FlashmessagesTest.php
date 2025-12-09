@@ -226,14 +226,8 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
 
         $mockMessenger = $this->getMockBuilder(FlashMessenger::class)
             ->getMock();
-        $mockMessenger->expects($this->any())
-            ->method('getMessages')
-            ->with($this->isType('string'))
-            ->willReturnCallback($getMessages);
-        $mockMessenger->expects($this->any())
-            ->method('getCurrentMessages')
-            ->with($this->isType('string'))
-            ->willReturn([]);
+        $mockMessenger->method('getMessages')->with($this->isType('string'))->willReturnCallback($getMessages);
+        $mockMessenger->method('getCurrentMessages')->with($this->isType('string'))->willReturn([]);
 
         $fm = new Flashmessages($mockMessenger);
 

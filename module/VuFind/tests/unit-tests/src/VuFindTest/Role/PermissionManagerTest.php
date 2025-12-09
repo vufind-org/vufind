@@ -120,7 +120,7 @@ class PermissionManagerTest extends \PHPUnit\Framework\TestCase
     {
         $pm = new PermissionManager($this->permissionConfig);
         $mockAuth = $this->createMock(\Lmc\Rbac\Mvc\Service\AuthorizationService::class);
-        $mockAuth->expects($this->any())->method('isGranted')->willReturn(true);
+        $mockAuth->method('isGranted')->willReturn(true);
         $pm->setAuthorizationService($mockAuth);
 
         $this->assertEquals(true, $pm->isAuthorized('permission.everyone'));
@@ -135,7 +135,7 @@ class PermissionManagerTest extends \PHPUnit\Framework\TestCase
     {
         $pm = new PermissionManager($this->permissionConfig);
         $mockAuth = $this->createMock(\Lmc\Rbac\Mvc\Service\AuthorizationService::class);
-        $mockAuth->expects($this->any())->method('isGranted')->willReturn(false);
+        $mockAuth->method('isGranted')->willReturn(false);
         $pm->setAuthorizationService($mockAuth);
 
         $this->assertEquals(false, $pm->isAuthorized('permission.nobody'));

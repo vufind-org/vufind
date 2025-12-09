@@ -77,9 +77,7 @@ class TemplatePathTest extends \PHPUnit\Framework\TestCase
         $return->push("{$this->fixturePath}/asdf/templates/");
         $return->rewind();
 
-        $stackMock->expects($this->any())
-            ->method('getPaths')
-            ->willReturn($return);
+        $stackMock->method('getPaths')->willReturn($return);
 
         // Make helper
         return new TemplatePath($stackMock);

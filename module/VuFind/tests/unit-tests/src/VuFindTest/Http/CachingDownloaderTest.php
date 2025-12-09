@@ -82,7 +82,7 @@ class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
         $service = $this->createMock(GuzzleService::class);
 
         $stream = $this->createMock(StreamInterface::class);
-        $stream->expects($this->any())->method('getContents')->willReturn($testBody);
+        $stream->method('getContents')->willReturn($testBody);
         $stream->expects($this->once())->method('rewind');
 
         $response = $this->createMock(ResponseInterface::class);

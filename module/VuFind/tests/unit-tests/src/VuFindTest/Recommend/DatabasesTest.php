@@ -200,7 +200,7 @@ class DatabasesTest extends \PHPUnit\Framework\TestCase
         string $queryString = 'History'
     ): MockObject&Databases {
         $configManager = $this->createMock(\VuFind\Config\ConfigManagerInterface::class);
-        $configManager->expects($this->any())->method('getConfigArray')
+        $configManager->method('getConfigArray')
             ->willReturn($configData);
 
         $libGuidesGetter = function () {

@@ -180,7 +180,7 @@ class VirtuaTest extends \PHPUnit\Framework\TestCase
     {
         $db = $this->getMockBuilder(Oracle::class)->onlyMethods(['simpleSelect'])
             ->disableOriginalConstructor()->getMock();
-        $db->expects($this->any())->method('simpleSelect')->willReturn($profiles);
+        $db->method('simpleSelect')->willReturn($profiles);
         $result = $this->createConnector(db: $db)->getMyProfile(['id' => '1111']);
         $this->assertEquals($expected, $result);
     }

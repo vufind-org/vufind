@@ -446,9 +446,7 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         )->disableOriginalConstructor()->getMock();
         $mockMemory = $this->getMockBuilder(\VuFind\Search\Memory::class)
             ->disableOriginalConstructor()->getMock();
-        $mockMemory->expects($this->any())
-            ->method('getLastSearchId')
-            ->willReturn(-123);
+        $mockMemory->method('getLastSearchId')->willReturn(-123);
         $params = [
             new Container('test'),
             $mockManager,

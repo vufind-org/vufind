@@ -58,7 +58,7 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
     {
         $backend = $this->getMockBuilder(Backend::class)
             ->disableOriginalConstructor()->getMock();
-        $backend->expects($this->any())->method('getIdentifier')->willReturn($id);
+        $backend->method('getIdentifier')->willReturn($id);
         return $backend;
     }
 
@@ -88,22 +88,20 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
         $facets = $this->getFacets();
         $result = $this->getMockBuilder(RecordCollection::class)
             ->disableOriginalConstructor()->getMock();
-        $result->expects($this->any())->method('getFacets')
+        $result->method('getFacets')
             ->willReturnCallback(
                 function () use (&$facets) {
                     return $facets;
                 }
             );
-        $result->expects($this->any())->method('setFacets')
+        $result->method('setFacets')
             ->willReturnCallback(
                 function ($new) use (&$facets): void {
                     $facets = $new;
                 }
             );
-        $result->expects($this->any())->method('getQueryFacets')
-            ->willReturn([]);
-        $result->expects($this->any())->method('getPivotFacets')
-            ->willReturn([]);
+        $result->method('getQueryFacets')->willReturn([]);
+        $result->method('getPivotFacets')->willReturn([]);
         return $result;
     }
 

@@ -105,7 +105,7 @@ class FollowupTest extends \PHPUnit\Framework\TestCase
     ): \VuFind\Controller\AbstractBase {
         $controller = $this->getMockBuilder(\VuFind\Controller\AbstractBase::class)
             ->disableOriginalConstructor()->getMock();
-        $controller->expects($this->any())->method('getServerUrl')->willReturn($url);
+        $controller->method('getServerUrl')->willReturn($url);
         return $controller;
     }
 }

@@ -229,8 +229,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->onlyMethods(['storedCatalogLogin'])
             ->getMock();
-        $mock->expects($this->any())->method('storedCatalogLogin')
-            ->willReturn($patron);
+        $mock->method('storedCatalogLogin')->willReturn($patron);
         $mock->setDbServiceManager(new MockDbServicePluginManager($this));
         return $mock;
     }
@@ -260,15 +259,9 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
             ->setConstructorArgs([$configManager, $ilsAuth, $driverManager])
             ->onlyMethods($onlyMethods)
             ->getMock();
-        $driver->expects($this->any())
-            ->method('getLoginDrivers')
-            ->willReturn(['ils1']);
-        $driver->expects($this->any())
-            ->method('supportsMethod')
-            ->willReturn(true);
-        $driver->expects($this->any())
-            ->method('getConfig')
-            ->willReturn(new \VuFind\Config\Config([]));
+        $driver->method('getLoginDrivers')->willReturn(['ils1']);
+        $driver->method('supportsMethod')->willReturn(true);
+        $driver->method('getConfig')->willReturn(new \VuFind\Config\Config([]));
 
         return $driver;
     }
@@ -304,11 +297,8 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
         $mockAuthenticator = $this->getMockILSAuthenticator($patron);
         $mockUser ??= $this->getMockUser();
         $mockUserService = $this->createMock(UserServiceInterface::class);
-        $mockUserService->expects($this->any())
-            ->method('getUserByUsername')
-            ->willReturn($mockUser);
-        $mockUserService->expects($this->any())
-            ->method('updateUserEmail')
+        $mockUserService->method('getUserByUsername')->willReturn($mockUser);
+        $mockUserService->method('updateUserEmail')
             ->willReturnCallback(
                 function ($mockUser, $email): void {
                     $mockUser->setEmail($email);
