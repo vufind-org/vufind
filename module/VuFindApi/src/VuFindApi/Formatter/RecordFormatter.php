@@ -163,7 +163,7 @@ class RecordFormatter extends BaseFormatter
     protected function getRecordPageAbsoluteLink($record)
     {
         $recordPage = $this->getRecordPage($record);
-        $protocol = $_SERVER['PROTOCOL'] = ($_SERVER['HTTPS'] ?? false) ? 'https' : 'http';
+        $protocol = ($_SERVER['HTTPS'] ?? false) ? 'https' : 'http';
         $host = $_SERVER['HTTP_HOST'];
         return $protocol . '://' . $host . $recordPage;
     }
