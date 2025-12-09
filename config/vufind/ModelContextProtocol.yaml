@@ -47,7 +47,7 @@ ContentTypes:
     filter: (format:DVD OR format:VHS OR format:"Blu-ray Disc" OR format:Filmstrip OR format:"Streaming Video")
 
 ResponseFields:
-  - recordPage
+  - recordPageFullUrl
   - title
   - authors
   - publicationDates
