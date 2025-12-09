@@ -109,7 +109,7 @@ class HoldingsWorldCat2Test extends \PHPUnit\Framework\TestCase
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $commandObj->expects($this->any())->method('getResult')->willReturn(true);
+        $commandObj->method('getResult')->willReturn(true);
         $checkCommand = function ($command) {
             $this->assertEquals($command::class, \VuFindSearch\Backend\WorldCat2\Command\GetHoldingsCommand::class);
             $expectedParams = new ParamBag(
@@ -122,7 +122,7 @@ class HoldingsWorldCat2Test extends \PHPUnit\Framework\TestCase
             $this->assertEquals('WorldCat2', $command->getTargetIdentifier());
             return true;
         };
-        $searchObj->expects($this->any())->method('invoke')
+        $searchObj->method('invoke')
             ->with($this->callback($checkCommand))
             ->willReturn($commandObj);
         $this->assertTrue($obj->getHoldings());

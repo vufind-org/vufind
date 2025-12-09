@@ -93,7 +93,7 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
         $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\DefaultRecord::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $recordDriver->expects($this->any())->method('tryMethod')
+        $recordDriver->method('tryMethod')
             ->with($this->equalTo('getChildRecordCount'))
             ->willReturn($childCount);
         $obj->setRecordDriver($recordDriver);
@@ -116,10 +116,8 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
         $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\DefaultRecord::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $recordDriver->expects($this->any())->method('getUniqueID')
-            ->willReturn('foo');
-        $recordDriver->expects($this->any())->method('getSourceIdentifier')
-            ->willReturn('bar');
+        $recordDriver->method('getUniqueID')->willReturn('foo');
+        $recordDriver->method('getSourceIdentifier')->willReturn('bar');
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
             ->disableOriginalConstructor()
             ->getMock();

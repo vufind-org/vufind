@@ -122,9 +122,9 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
             ->onlyMethods(['createQuery','persist','flush'])
             ->getMock();
         $query = $this->createMock(\Doctrine\ORM\Query::class);
-        $entityManager->expects($this->any())->method('createQuery')->willReturn($query);
-        $entityManager->expects($this->any())->method('persist');
-        $entityManager->expects($this->any())->method('flush');
+        $entityManager->method('createQuery')->willReturn($query);
+        $entityManager->method('persist');
+        $entityManager->method('flush');
         return $entityManager;
     }
 
@@ -139,7 +139,7 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
     {
         $pluginManager = $this->createMock(\VuFind\Db\Entity\PluginManager::class);
         if ($setExpectation) {
-            $pluginManager->expects($this->any())->method('get')
+            $pluginManager->method('get')
                 ->with($this->equalTo(AccessToken::class))
                 ->willReturn(new AccessToken());
         }
@@ -244,7 +244,7 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
                     compact('id', 'type', 'revoked', 'user_id')
                 ) : null;
         };
-        $accessTokenService->expects($this->any())
+        $accessTokenService
             ->method('getByIdAndType')
             ->willReturnCallback($getByIdAndTypeCallback);
         $persistEntityCallback = function (AccessTokenEntityInterface $entity): void {
@@ -261,7 +261,7 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
             }
             $this->accessTokenTable[] = $data;
         };
-        $accessTokenService->expects($this->any())
+        $accessTokenService
             ->method('persistEntity')
             ->willReturnCallback($persistEntityCallback);
 
@@ -273,7 +273,7 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
             }
             return null;
         };
-        $accessTokenService->expects($this->any())
+        $accessTokenService
             ->method('getNonce')
             ->willReturnCallback($getNonceCallback);
 
@@ -291,7 +291,7 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
             }
             $this->accessTokenTable[] = $data;
         };
-        $accessTokenService->expects($this->any())
+        $accessTokenService
             ->method('storeNonce')
             ->willReturnCallback($storeNonceCallback);
         return $accessTokenService;
@@ -309,10 +309,10 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
     {
         $mockUser = $this->createMock(UserEntityInterface::class);
         if ($id !== null) {
-            $mockUser->expects($this->any())
+            $mockUser
                 ->method('getId')
                 ->willReturn($id);
-            $mockUser->expects($this->any())
+            $mockUser
                 ->method('getUsername')
                 ->willReturn($username);
         }
@@ -327,7 +327,7 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
     protected function getMockUserService(): UserServiceInterface&MockObject
     {
         $mockUserService = $this->createMock(UserServiceInterface::class);
-        $mockUserService->expects($this->any())
+        $mockUserService
             ->method('getUserByField')
             ->willReturnCallback(function (string $fieldName, $fieldValue) {
                 $this->assertEquals('id', $fieldName);

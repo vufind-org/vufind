@@ -280,9 +280,7 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
         $resultsPM = $this->getMockBuilder(ResultsPluginManager::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $resultsPM->expects($this->any())
-            ->method('get')
-            ->willReturn($solr);
+        $resultsPM->method('get')->willReturn($solr);
 
         $request = Request::fromString('GET / HTTP/1.1');
         if ($filters) {
@@ -327,12 +325,8 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
         $solrOptions = $this->getMockBuilder(\VuFind\Search\Solr\Options::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $solrOptions->expects($this->any())
-            ->method('getSearchClassId')
-            ->willReturn('Solr');
-        $solrOptions->expects($this->any())
-            ->method('getDefaultLimit')
-            ->willReturn(20);
+        $solrOptions->method('getSearchClassId')->willReturn('Solr');
+        $solrOptions->method('getDefaultLimit')->willReturn(20);
         $configManager = $this->createMock(ConfigManagerInterface::class);
         return new \VuFind\Search\Solr\Params($solrOptions, $configManager);
     }

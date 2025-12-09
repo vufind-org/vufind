@@ -165,8 +165,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
         $mockPmd = $this->getMockBuilder(\VuFind\Role\PermissionDeniedManager::class)
             ->setConstructorArgs([$this->permissionDeniedConfig])
             ->getMock();
-        $mockPmd->expects($this->any())->method('getDeniedTemplateBehavior')
-            ->willReturn($config['deniedTemplateBehavior']);
+        $mockPmd->method('getDeniedTemplateBehavior')->willReturn($config['deniedTemplateBehavior']);
         return $mockPmd;
     }
 
@@ -182,10 +181,8 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
         $mockPm = $this->getMockBuilder(\VuFind\Role\PermissionManager::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockPm->expects($this->any())->method('isAuthorized')
-            ->willReturn($isAuthorized);
-        $mockPm->expects($this->any())->method('permissionRuleExists')
-            ->willReturn(true);
+        $mockPm->method('isAuthorized')->willReturn($isAuthorized);
+        $mockPm->method('permissionRuleExists')->willReturn(true);
 
         return $mockPm;
     }

@@ -99,7 +99,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $mockChoice = $this->getMockBuilder(\VuFind\Auth\ChoiceAuth::class)
             ->disableOriginalConstructor()
             ->getMock();
-        $mockChoice->expects($this->any())->method('getSelectableAuthOptions')->willReturn(false);
+        $mockChoice->method('getSelectableAuthOptions')->willReturn(false);
         $pm->setService('ChoiceAuth2', $mockChoice);
         $config = ['Authentication' => ['method' => 'ChoiceAuth2']];
         $manager = $this->getManager($config, null, null, $pm);
@@ -305,7 +305,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         // Less common case -- yes:
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
-        $db->expects($this->any())->method('supportsPasswordChange')->willReturn(true);
+        $db->method('supportsPasswordChange')->willReturn(true);
         $config = ['Authentication' => ['change_password' => true]];
         $this->assertTrue($this->getManager($config, null, null, $pm)->supportsPasswordChange());
         $config = ['Authentication' => ['change_password' => false]];
@@ -573,9 +573,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         );
         $loginTokenManager = $this->createMock(\VuFind\Auth\LoginTokenManager::class);
         $ils = $this->createMock(\VuFind\ILS\Connection::class);
-        $ils->expects($this->any())
-            ->method('loginIsHidden')
-            ->willReturn(false);
+        $ils->method('loginIsHidden')->willReturn(false);
         $viewRenderer = $this->createMock(\Laminas\View\Renderer\RendererInterface::class);
         return new Manager(
             $config,
@@ -611,10 +609,10 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     {
         $pm = new PluginManager(new \VuFindTest\Container\MockContainer($this));
         $mockChoice = $this->createMock(\VuFind\Auth\ChoiceAuth::class);
-        $mockChoice->expects($this->any())
+        $mockChoice
             ->method('getSelectableAuthOptions')->willReturn(['Database', 'Shibboleth']);
         $mockDb = $this->createMock(\VuFind\Auth\Database::class);
-        $mockDb->expects($this->any())->method('needsCsrfCheck')
+        $mockDb->method('needsCsrfCheck')
             ->willReturn(true);
         $mockMulti = $this->createMock(\VuFind\Auth\MultiILS::class);
         $mockShib = $this->createMock(\VuFind\Auth\Shibboleth::class);
@@ -646,9 +644,9 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     {
         $mock = $this->createMock(Request::class);
         $post = new \Laminas\Stdlib\Parameters();
-        $mock->expects($this->any())->method('getPost')->willReturn($post);
+        $mock->method('getPost')->willReturn($post);
         $get = new \Laminas\Stdlib\Parameters();
-        $mock->expects($this->any())->method('getQuery')->willReturn($get);
+        $mock->method('getQuery')->willReturn($get);
         return $mock;
     }
 }

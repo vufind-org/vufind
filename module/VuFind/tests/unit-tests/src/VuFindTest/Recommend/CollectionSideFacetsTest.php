@@ -94,8 +94,7 @@ class CollectionSideFacetsTest extends \PHPUnit\Framework\TestCase
         }
         $params = $this->getMockBuilder(\VuFind\Search\Solr\Params::class)
             ->disableOriginalConstructor()->getMock();
-        $params->expects($this->any())->method('getQuery')
-            ->willReturn($query);
+        $params->method('getQuery')->willReturn($query);
         return $params;
     }
 }

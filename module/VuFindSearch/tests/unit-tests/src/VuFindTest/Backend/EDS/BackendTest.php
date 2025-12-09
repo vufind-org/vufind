@@ -75,9 +75,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $autocompleteData = [
             'custid' => 'foo', 'url' => 'http://foo', 'token' => 'auth1234',
         ];
-        $back->expects($this->any())
-            ->method('getAutocompleteData')
-            ->willReturn($autocompleteData);
+        $back->method('getAutocompleteData')->willReturn($autocompleteData);
 
         $coll = $back->autocomplete('bla', 'rawdata');
         // check count
@@ -108,12 +106,8 @@ class BackendTest extends \PHPUnit\Framework\TestCase
             ['getAuthenticationToken', 'getSessionToken']
         );
         $back->setBackendType('EDS');
-        $back->expects($this->any())
-            ->method('getAuthenticationToken')
-            ->willReturn('auth1234');
-        $back->expects($this->any())
-            ->method('getSessionToken')
-            ->willReturn('sess1234');
+        $back->method('getAuthenticationToken')->willReturn('auth1234');
+        $back->method('getSessionToken')->willReturn('sess1234');
         $back->setIdentifier('test');
 
         $coll = $back->retrieve('bwh,201407212251PR.NEWS.USPR.MM73898');
@@ -145,12 +139,8 @@ class BackendTest extends \PHPUnit\Framework\TestCase
             ['getAuthenticationToken', 'getSessionToken']
         );
         $back->setBackendType('EPF');
-        $back->expects($this->any())
-            ->method('getAuthenticationToken')
-            ->willReturn('auth1234');
-        $back->expects($this->any())
-            ->method('getSessionToken')
-            ->willReturn('sess1234');
+        $back->method('getAuthenticationToken')->willReturn('auth1234');
+        $back->method('getSessionToken')->willReturn('sess1234');
         $back->setIdentifier('test');
 
         $coll = $back->retrieve('edp297646');
@@ -181,12 +171,8 @@ class BackendTest extends \PHPUnit\Framework\TestCase
             [],
             ['getAuthenticationToken', 'getSessionToken']
         );
-        $back->expects($this->any())
-            ->method('getAuthenticationToken')
-            ->willReturn('auth1234');
-        $back->expects($this->any())
-            ->method('getSessionToken')
-            ->willReturn('sess1234');
+        $back->method('getAuthenticationToken')->willReturn('auth1234');
+        $back->method('getSessionToken')->willReturn('sess1234');
         $back->setIdentifier('test');
 
         $coll = $back->search(new Query('foobar'), 0, 3);

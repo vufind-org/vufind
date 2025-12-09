@@ -56,12 +56,8 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
         $record = new \VuFind\Marc\MarcReader($this->getFixture($fixture));
         $obj = $this->getMockBuilder(SolrMarc::class)
             ->onlyMethods(['getMarcReader', 'getUniqueId'])->getMock();
-        $obj->expects($this->any())
-            ->method('getMarcReader')
-            ->willReturn($record);
-        $obj->expects($this->any())
-            ->method('getUniqueId')
-            ->willReturn('123');
+        $obj->method('getMarcReader')->willReturn($record);
+        $obj->method('getUniqueId')->willReturn('123');
         return $obj;
     }
 

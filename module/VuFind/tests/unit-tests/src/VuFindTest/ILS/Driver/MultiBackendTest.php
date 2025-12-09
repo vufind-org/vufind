@@ -2552,25 +2552,21 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
             ->disableOriginalConstructor()
             ->getMock();
         if ($userSource) {
-            $mockAuth->expects($this->any())
-                ->method('storedCatalogLogin')
+            $mockAuth->method('storedCatalogLogin')
                 ->willReturn(
                     $this->getPatron('username', $userSource)
                 );
-            $mockAuth->expects($this->any())
-                ->method('getStoredCatalogCredentials')
+            $mockAuth->method('getStoredCatalogCredentials')
                 ->willReturn(
                     $this->getPatron('username', $userSource)
                 );
         } elseif (null === $userSource) {
             $e = new ILSException('Simulated exception from ILSAuthenticator');
-            $mockAuth->expects($this->any())
-                ->method('storedCatalogLogin')
+            $mockAuth->method('storedCatalogLogin')
                 ->willThrowException(
                     $e
                 );
-            $mockAuth->expects($this->any())
-                ->method('getStoredCatalogCredentials')
+            $mockAuth->method('getStoredCatalogCredentials')
                 ->willThrowException(
                     $e
                 );

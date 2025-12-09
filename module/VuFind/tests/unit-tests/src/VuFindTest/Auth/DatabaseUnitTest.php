@@ -541,7 +541,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
         $post = new Parameters($post);
         $request = $this->getMockBuilder(Request::class)
             ->onlyMethods(['getPost'])->getMock();
-        $request->expects($this->any())->method('getPost')->willReturn($post);
+        $request->method('getPost')->willReturn($post);
         return $request;
     }
 
@@ -556,7 +556,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
     {
         $serviceManager = $this->getMockBuilder(\VuFind\Db\Service\PluginManager::class)
             ->disableOriginalConstructor()->onlyMethods(['get'])->getMock();
-        $serviceManager->expects($this->any())->method('get')
+        $serviceManager->method('get')
             ->with($this->equalTo(UserServiceInterface::class))
             ->willReturn($service);
 
