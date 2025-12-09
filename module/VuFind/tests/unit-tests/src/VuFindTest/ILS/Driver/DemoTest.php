@@ -56,8 +56,7 @@ class DemoTest extends \PHPUnit\Framework\TestCase
      */
     public function setUp(): void
     {
-        $session = $this->getMockBuilder(\Laminas\Session\Container::class)
-            ->disableOriginalConstructor()->getMock();
+        $session = $this->createMock(\Laminas\Session\Container::class);
         $this->driver = new Demo(
             new \VuFind\Date\Converter(),
             $this->createMock(\VuFindSearch\Service::class),

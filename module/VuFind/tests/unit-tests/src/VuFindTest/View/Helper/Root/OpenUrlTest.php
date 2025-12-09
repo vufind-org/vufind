@@ -234,8 +234,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockContext()
     {
-        return $this->getMockBuilder(\VuFind\View\Helper\Root\Context::class)
-            ->disableOriginalConstructor()->getMock();
+        return $this->createMock(\VuFind\View\Helper\Root\Context::class);
     }
 
     /**
@@ -254,8 +253,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
         $formats = ['ElectronicArticle', 'Article'],
         $issn = '1234-5678'
     ) {
-        $driver = $this->getMockBuilder($class)
-            ->disableOriginalConstructor()->getMock();
+        $driver = $this->createMock($class);
         $driver->method('getOpenUrl')->willReturn($openUrl);
         $driver->method('getCleanISSN')->willReturn($issn);
         $driver->method('getFormats')->willReturn($formats);
@@ -279,8 +277,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
         if (null === $mockContext) {
             $mockContext = $this->getMockContext();
         }
-        $mockPm = $this->getMockBuilder(\VuFind\Resolver\Driver\PluginManager::class)
-            ->disableOriginalConstructor()->getMock();
+        $mockPm = $this->createMock(\VuFind\Resolver\Driver\PluginManager::class);
         $openUrl = new OpenUrl($mockContext, $rules, $mockPm, new Config($config));
         $openUrl->setView($this->getPhpRenderer());
         return $openUrl;

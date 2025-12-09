@@ -50,8 +50,7 @@ class MapSelectionTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockSearchService(): Service
     {
-        return $this->getMockBuilder(Service::class)
-            ->disableOriginalConstructor()->getMock();
+        return $this->createMock(Service::class);
     }
 
     /**

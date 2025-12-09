@@ -601,9 +601,7 @@ class BackendTest extends TestCase
         $edsParams = new ParamBag();
         $collection = new \VuFindSearch\Backend\EDS\Response\RecordCollection([]);
 
-        $eds = $this->getMockBuilder(\VuFindSearch\Backend\EDS\Backend::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $eds = $this->createMock(\VuFindSearch\Backend\EDS\Backend::class);
         $this->expectConsecutiveCalls(
             $eds,
             'search',
@@ -1016,9 +1014,7 @@ class BackendTest extends TestCase
      */
     protected function getBackendForFacetsAndErrors($facets, $errors)
     {
-        $collection = $this->getMockBuilder(SolrRecordCollection::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $collection = $this->createMock(SolrRecordCollection::class);
         $collection->expects($this->once())
             ->method('getErrors')
             ->willReturn($errors);
@@ -1026,9 +1022,7 @@ class BackendTest extends TestCase
             ->method('getRecords')
             ->willReturn([]);
         $collection->method('getFacets')->willReturn($facets);
-        $backend = $this->getMockBuilder(\VuFindSearch\Backend\EDS\Backend::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\EDS\Backend::class);
         $backend->expects($this->once())
             ->method('search')
             ->willReturn($collection);
@@ -1236,8 +1230,7 @@ class BackendTest extends TestCase
         $connector->method('call')->willReturnCallback($callback);
 
         $cache = $this->createMock(\Laminas\Cache\Storage\StorageInterface::class);
-        $container = $this->getMockBuilder(\Laminas\Session\Container::class)
-            ->disableOriginalConstructor()->getMock();
+        $container = $this->createMock(\Laminas\Session\Container::class);
         $params = [
             $connector,
             $this->getEDSRecordCollectionFactory(),

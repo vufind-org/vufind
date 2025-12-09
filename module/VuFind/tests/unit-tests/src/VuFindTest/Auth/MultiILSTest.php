@@ -248,9 +248,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
         $onlyMethods[] = 'getConfig';
         $onlyMethods[] = 'patronLogin';
         $configManager = $this->container->get(\VuFind\Config\ConfigManagerInterface::class);
-        $ilsAuth = $this->getMockBuilder(\VuFind\Auth\ILSAuthenticator::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $ilsAuth = $this->createMock(\VuFind\Auth\ILSAuthenticator::class);
         $driverManager
             = $this->getMockBuilder(\VuFind\ILS\Driver\PluginManager::class)
             ->setConstructorArgs([$this->container])

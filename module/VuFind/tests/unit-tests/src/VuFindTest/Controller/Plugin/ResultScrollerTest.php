@@ -79,11 +79,8 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
      */
     public function testDisabled()
     {
-        $mockManager
-            = $this->getMockBuilder(\VuFind\Search\Results\PluginManager::class)
-            ->disableOriginalConstructor()->getMock();
-        $mockMemory = $this->getMockBuilder(\VuFind\Search\Memory::class)
-            ->disableOriginalConstructor()->getMock();
+        $mockManager = $this->createMock(\VuFind\Search\Results\PluginManager::class);
+        $mockMemory = $this->createMock(\VuFind\Search\Memory::class);
         $plugin = new ResultScroller(
             new Container('test'),
             $mockManager,
@@ -419,10 +416,8 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         if (null !== $sort) {
             $params->setSort($sort, true);
         }
-        $ss = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->disableOriginalConstructor()->getMock();
-        $rl = $this->getMockBuilder(\VuFind\Record\Loader::class)
-            ->disableOriginalConstructor()->getMock();
+        $ss = $this->createMock(\VuFindSearch\Service::class);
+        $rl = $this->createMock(\VuFind\Record\Loader::class);
         $results = new \VuFindTest\Search\TestHarness\Results(
             $params,
             $ss,
@@ -441,11 +436,8 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockResultScroller($results): ResultScroller
     {
-        $mockManager = $this->getMockBuilder(
-            \VuFind\Search\Results\PluginManager::class
-        )->disableOriginalConstructor()->getMock();
-        $mockMemory = $this->getMockBuilder(\VuFind\Search\Memory::class)
-            ->disableOriginalConstructor()->getMock();
+        $mockManager = $this->createMock(\VuFind\Search\Results\PluginManager::class);
+        $mockMemory = $this->createMock(\VuFind\Search\Memory::class);
         $mockMemory->method('getLastSearchId')->willReturn(-123);
         $params = [
             new Container('test'),

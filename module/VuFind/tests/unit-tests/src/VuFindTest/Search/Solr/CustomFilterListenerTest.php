@@ -56,8 +56,7 @@ class CustomFilterListenerTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockBackend(string $id = 'Solr'): Backend
     {
-        $backend = $this->getMockBuilder(Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(Backend::class);
         $backend->method('getIdentifier')->willReturn($id);
         return $backend;
     }

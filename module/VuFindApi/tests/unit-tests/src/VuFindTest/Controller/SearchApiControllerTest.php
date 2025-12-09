@@ -222,7 +222,7 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
                 'title' => 'hai!',
             ],
         ]);
-        $configManager = $this->getMockBuilder(ConfigManager::class)->disableOriginalConstructor()->getMock();
+        $configManager = $this->createMock(ConfigManager::class);
         $configManager->method('getConfigArray')->willReturn($config);
 
         $container = new MockContainer($this);

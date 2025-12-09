@@ -96,9 +96,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
 
         // Advanced case -- ChoiceAuth's getSelectableAuthOptions returns false.
         $pm = $this->getMockPluginManager();
-        $mockChoice = $this->getMockBuilder(\VuFind\Auth\ChoiceAuth::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $mockChoice = $this->createMock(\VuFind\Auth\ChoiceAuth::class);
         $mockChoice->method('getSelectableAuthOptions')->willReturn(false);
         $pm->setService('ChoiceAuth2', $mockChoice);
         $config = ['Authentication' => ['method' => 'ChoiceAuth2']];

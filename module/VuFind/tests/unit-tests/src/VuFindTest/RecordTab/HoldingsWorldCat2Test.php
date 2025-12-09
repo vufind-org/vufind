@@ -106,9 +106,7 @@ class HoldingsWorldCat2Test extends \PHPUnit\Framework\TestCase
         };
         $recordDriver->method('tryMethod')->willReturnCallback($callback);
         $obj->setRecordDriver($recordDriver);
-        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
         $commandObj->method('getResult')->willReturn(true);
         $checkCommand = function ($command) {
             $this->assertEquals($command::class, \VuFindSearch\Backend\WorldCat2\Command\GetHoldingsCommand::class);

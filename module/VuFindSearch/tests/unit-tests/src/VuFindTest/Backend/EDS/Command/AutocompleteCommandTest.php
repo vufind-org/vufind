@@ -51,9 +51,7 @@ class AutocompleteCommandTest extends TestCase
     public function testCommand(): void
     {
         $backendId = 'bar';
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\EDS\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\EDS\Backend::class);
         $backend->expects($this->once())->method('getIdentifier')
             ->willReturn($backendId);
         $backend->expects($this->once())->method('autocomplete')

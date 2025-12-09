@@ -70,8 +70,7 @@ class TemplatePathTest extends \PHPUnit\Framework\TestCase
     protected function getHelper()
     {
         // Get mock TemplateStack
-        $stackMock = $this->getMockBuilder(\Laminas\View\Resolver\TemplatePathStack::class)
-            ->disableOriginalConstructor()->getMock();
+        $stackMock = $this->createMock(\Laminas\View\Resolver\TemplatePathStack::class);
 
         $return = new \SplStack();
         $return->push("{$this->fixturePath}/asdf/templates/");

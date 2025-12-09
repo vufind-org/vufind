@@ -278,8 +278,7 @@ class ConnectorTest extends TestCase
         $this->response
             = $this->getFixture('solr/response/single-record', 'VuFindSearch');
 
-        $httpService = $this->getMockBuilder(\VuFindHttp\HttpService::class)
-            ->getMock();
+        $httpService = $this->createMock(\VuFindHttp\HttpService::class);
         $httpService->expects($this->once())
             ->method('createClient')
             ->with('http://localhost/select?q=id%3A%221%22')

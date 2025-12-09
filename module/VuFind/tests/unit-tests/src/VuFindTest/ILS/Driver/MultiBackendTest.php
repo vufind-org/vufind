@@ -587,8 +587,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
                 $exception
             );
 
-        $sm = $this->getMockBuilder(\VuFind\ILS\Driver\PluginManager::class)
-            ->disableOriginalConstructor()->getMock();
+        $sm = $this->createMock(\VuFind\ILS\Driver\PluginManager::class);
         $sm->expects($this->exactly(2))
             ->method('get')
             ->with(
@@ -627,8 +626,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
         $return = $driver->getStatuses($ids);
         $this->assertEquals($expectedReturn, $return);
 
-        $sm = $this->getMockBuilder(\VuFind\ILS\Driver\PluginManager::class)
-            ->disableOriginalConstructor()->getMock();
+        $sm = $this->createMock(\VuFind\ILS\Driver\PluginManager::class);
         $sm->expects($this->exactly(2))
             ->method('get')
             ->with(
@@ -2548,9 +2546,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      */
     protected function getMockILSAuthenticator($userSource = '')
     {
-        $mockAuth = $this->getMockBuilder(\VuFind\Auth\ILSAuthenticator::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $mockAuth = $this->createMock(\VuFind\Auth\ILSAuthenticator::class);
         if ($userSource) {
             $mockAuth->method('storedCatalogLogin')
                 ->willReturn(

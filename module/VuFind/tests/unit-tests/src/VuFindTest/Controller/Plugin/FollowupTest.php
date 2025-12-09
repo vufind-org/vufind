@@ -103,8 +103,7 @@ class FollowupTest extends \PHPUnit\Framework\TestCase
     protected function getMockController(
         $url = 'http://localhost/default-url'
     ): \VuFind\Controller\AbstractBase {
-        $controller = $this->getMockBuilder(\VuFind\Controller\AbstractBase::class)
-            ->disableOriginalConstructor()->getMock();
+        $controller = $this->createMock(\VuFind\Controller\AbstractBase::class);
         $controller->method('getServerUrl')->willReturn($url);
         return $controller;
     }

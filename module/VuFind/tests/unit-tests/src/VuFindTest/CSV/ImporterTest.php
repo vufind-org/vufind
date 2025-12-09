@@ -249,8 +249,7 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
      */
     public function testImportInLiveMode(): void
     {
-        $mockWriter = $this->getMockBuilder(\VuFind\Solr\Writer::class)
-            ->disableOriginalConstructor()->getMock();
+        $mockWriter = $this->createMock(\VuFind\Solr\Writer::class);
         $mockWriter->expects($this->once())->method('save')->with(
             $this->equalTo('Solr'),
             $this->callback(
@@ -284,8 +283,7 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
      */
     public function testImportInSmallBatches(): void
     {
-        $mockWriter = $this->getMockBuilder(\VuFind\Solr\Writer::class)
-            ->disableOriginalConstructor()->getMock();
+        $mockWriter = $this->createMock(\VuFind\Solr\Writer::class);
         $mockWriter->expects($this->exactly(3))->method('save')->with(
             $this->equalTo('Solr'),
             $this->callback(
