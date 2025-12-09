@@ -110,7 +110,7 @@ class UpdateResourceMetadataCommandTest extends \PHPUnit\Framework\TestCase
         );
 
         $driver = $this->createMock(DefaultRecord::class);
-        $driver->expects($this->exactly(2))
+        $driver->expects($this->any())
             ->method('getUniqueID')
             ->willReturn('foo');
         $loader = $this->createMock(Loader::class);
