@@ -651,7 +651,6 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockOptions(): \PHPUnit\Framework\MockObject\MockObject
     {
-        return $this->getMockBuilder(\VuFind\Search\Base\Options::class)
-            ->disableOriginalConstructor()->getMock();
+        return $this->createMock(\VuFind\Search\Base\Options::class);
     }
 }

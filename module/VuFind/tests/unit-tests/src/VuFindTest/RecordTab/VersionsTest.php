@@ -105,9 +105,7 @@ class VersionsTest extends \PHPUnit\Framework\TestCase
         $som->method('get')->with($this->equalTo('foo'))->willReturn($optionsMock);
         $optionsMock->expects($this->once())->method('getVersionsAction')
             ->willReturn($versionAction);
-        $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $recordDriver = $this->createMock(\VuFind\RecordDriver\SolrDefault::class);
         $recordDriver->expects($this->once())->method('getSourceIdentifier')
             ->willReturn('foo');
         $recordDriver->method('tryMethod')

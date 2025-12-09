@@ -312,8 +312,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
             $cache = $this->createMock(\Laminas\Cache\Storage\StorageInterface::class);
         }
         if (null === $container) {
-            $container = $this->getMockBuilder(\Laminas\Session\Container::class)
-                ->disableOriginalConstructor()->getMock();
+            $container = $this->createMock(\Laminas\Session\Container::class);
         }
         if (null === $mock) {
             return new Backend($connector, $factory, $cache, $container, new \VuFind\Config\Config($settings));

@@ -263,8 +263,7 @@ class SolrOverdriveTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockConnector(string $config = '{}'): OverdriveConnector
     {
-        $connector = $this->getMockBuilder(OverdriveConnector::class)
-            ->disableOriginalConstructor()->getMock();
+        $connector = $this->createMock(OverdriveConnector::class);
         $connector->method('getConfig')->willReturn(json_decode($config));
         return $connector;
     }

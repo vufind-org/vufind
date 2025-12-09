@@ -117,8 +117,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             'searchOptions' => new \VuFind\View\Helper\Root\SearchOptions(
                 new \VuFind\Search\Options\PluginManager($container)
             ),
-            'searchTabs' => $this->getMockBuilder(\VuFind\View\Helper\Root\SearchTabs::class)
-                ->disableOriginalConstructor()->getMock(),
+            'searchTabs' => $this->createMock(\VuFind\View\Helper\Root\SearchTabs::class),
             'transEsc' => new \VuFind\View\Helper\Root\TransEsc(),
             'translate' => new \VuFind\View\Helper\Root\Translate(),
             'usertags' => new \VuFind\View\Helper\Root\UserTags(),

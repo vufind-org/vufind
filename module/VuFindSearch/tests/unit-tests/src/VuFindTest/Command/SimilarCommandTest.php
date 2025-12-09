@@ -157,8 +157,7 @@ class SimilarCommandTest extends TestCase
      */
     public function getBackend()
     {
-        $backend = $this->getMockBuilder(Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(Backend::class);
         return $backend;
     }
 }

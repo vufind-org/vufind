@@ -6,6 +6,7 @@ use Rector\Caching\ValueObject\Storage\FileCacheStorage;
 use Rector\Config\RectorConfig;
 use Rector\PHPUnit\Set\PHPUnitSetList;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\RemoveExpectAnyFromMockRector;
+use Rector\PHPUnit\PHPUnit60\Rector\MethodCall\GetMockBuilderGetMockToCreateMockRector;
 
 return RectorConfig::configure()
     ->withCache(
@@ -22,6 +23,7 @@ return RectorConfig::configure()
     ])
     ->withRules([
         RemoveExpectAnyFromMockRector::class,
+        GetMockBuilderGetMockToCreateMockRector::class
     ])
     ->withTypeCoverageLevel(0)
     ->withDeadCodeLevel(6)

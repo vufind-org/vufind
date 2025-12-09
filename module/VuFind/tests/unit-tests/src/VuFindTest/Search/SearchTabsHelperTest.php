@@ -219,19 +219,15 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
 
         $configManager = $this->createMock(ConfigManagerInterface::class);
 
-        $mockSolrOptions = $this->getMockBuilder(\VuFind\Search\Solr\Options::class)
-            ->disableOriginalConstructor()->getMock();
-        $mockSolr = $this->getMockBuilder(\VuFind\Search\Solr\Results::class)
-            ->disableOriginalConstructor()->getMock();
+        $mockSolrOptions = $this->createMock(\VuFind\Search\Solr\Options::class);
+        $mockSolr = $this->createMock(\VuFind\Search\Solr\Results::class);
         $mockSolr->method('getParams')
             ->willReturn(
                 new \VuFind\Search\Solr\Params($mockSolrOptions, $configManager)
             );
 
-        $mockPrimoOptions = $this->getMockBuilder(\VuFind\Search\Primo\Options::class)
-            ->disableOriginalConstructor()->getMock();
-        $mockPrimo = $this->getMockBuilder(\VuFind\Search\Primo\Results::class)
-            ->disableOriginalConstructor()->getMock();
+        $mockPrimoOptions = $this->createMock(\VuFind\Search\Primo\Options::class);
+        $mockPrimo = $this->createMock(\VuFind\Search\Primo\Results::class);
         $mockPrimo->method('getParams')
             ->willReturn(
                 new \VuFind\Search\Primo\Params($mockPrimoOptions, $configManager)

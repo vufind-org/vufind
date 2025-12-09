@@ -49,21 +49,13 @@ class CollectionHierarchyTreeTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetActiveRecord(): void
     {
-        $conf = $this->getMockBuilder(\VuFind\Config\Config::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $load = $this->getMockBuilder(\VuFind\Record\Loader::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $request = $this->getMockBuilder(\Laminas\Http\Request::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $conf = $this->createMock(\VuFind\Config\Config::class);
+        $load = $this->createMock(\VuFind\Record\Loader::class);
+        $request = $this->createMock(\Laminas\Http\Request::class);
         $request->expects($this->once())->method('getQuery')
             ->with($this->equalTo('recordID'), $this->equalTo(false))
             ->willReturn('foo');
-        $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\AbstractBase::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $recordDriver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
         $load->expects($this->once())->method('load')
             ->with($this->equalTo('foo'))
             ->willReturn($recordDriver);
@@ -79,15 +71,9 @@ class CollectionHierarchyTreeTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetActiveRecordWithEmptyId(): void
     {
-        $conf = $this->getMockBuilder(\VuFind\Config\Config::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $load = $this->getMockBuilder(\VuFind\Record\Loader::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $request = $this->getMockBuilder(\Laminas\Http\Request::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $conf = $this->createMock(\VuFind\Config\Config::class);
+        $load = $this->createMock(\VuFind\Record\Loader::class);
+        $request = $this->createMock(\Laminas\Http\Request::class);
         $request->expects($this->once())->method('getQuery')
             ->with($this->equalTo('recordID'), $this->equalTo(false))
             ->willReturn(null);
