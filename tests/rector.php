@@ -25,6 +25,9 @@ return RectorConfig::configure()
     ->withRules([
         RemoveExpectAnyFromMockRector::class,
         GetMockBuilderGetMockToCreateMockRector::class,
+        FinalizeTestCaseClassRector::class
+    ])
+    ->withSkip([
         FinalizeTestCaseClassRector::class => [
             __DIR__ . '/../module/VuFindConsole/tests/unit-tests/src/VuFindTest/Command/Util/AbstractExpireCommandTest.php',
         ],
