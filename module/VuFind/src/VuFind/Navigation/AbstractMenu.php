@@ -29,6 +29,7 @@
 
 namespace VuFind\Navigation;
 
+use Exception;
 use VuFind\Exception\BadConfig;
 use VuFind\Section\AbstractBase;
 use VuFind\Section\SectionServiceInterface;
@@ -97,6 +98,22 @@ abstract class AbstractMenu extends AbstractBase implements NavigationInterface
     }
 
     /**
+     * Get section service.
+     *
+     * @return SectionServiceInterface
+     * @throws Exception if section service has not been set
+     */
+    public function getSectionService(): SectionServiceInterface
+    {
+        // Section service must be set after constructing the object. This
+        // requirement will be removed in VuFind version 12.
+        if (!isset($this->sectionService)) {
+            throw new Exception('Section service not set');
+        }
+        return $this->sectionService;
+    }
+
+    /**
      * Set section service.
      *
      * This method must be called after constructing the object. This
@@ -123,17 +140,17 @@ abstract class AbstractMenu extends AbstractBase implements NavigationInterface
      */
     public function localizeSectionConfig(): static
     {
-        $config = $this->sectionService->localizeSettings($this);
+        $config = $this->getSectionService()->localizeSettings($this);
         foreach ($config as $group => $settings) {
             $config[$group]
-                = $this->sectionService->localizeSettings(
+                = $this->getSectionService()->localizeSettings(
                     $this,
                     $settings,
                     self::GROUP_CONTEXT
                 );
             foreach ($settings['MenuItems'] ?? [] as $i => $menuItem) {
                 $config[$group]['MenuItems'][$i]
-                    = $this->sectionService->localizeSettings(
+                    = $this->getSectionService()->localizeSettings(
                         $this,
                         $menuItem,
                         self::ITEM_CONTEXT
