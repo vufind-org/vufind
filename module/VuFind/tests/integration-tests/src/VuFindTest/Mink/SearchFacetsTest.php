@@ -148,19 +148,30 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Helper function for facets lists
      *
-     * @param Element $page            Mink page object
-     * @param int     $limit           Configured lightbox length
-     * @param bool    $exclusionActive Is facet exclusion on?
+     * @param Element $page              Mink page object
+     * @param int     $limit             Configured lightbox length
+     * @param bool    $exclusionActive   Is facet exclusion on?
+     * @param bool    $expectMultiSelect Do we expect multi-facet select controls to be active?
      *
      * @return void
      */
-    protected function facetListProcedure(Element $page, int $limit, bool $exclusionActive = false): void
-    {
+    protected function facetListProcedure(
+        Element $page,
+        int $limit,
+        bool $exclusionActive = false,
+        bool $expectMultiSelect = false
+    ): void {
         $this->waitForPageLoad($page);
         $this->assertFullListFacetCount($page, 'count', $limit, $exclusionActive);
         // more
         $this->clickCss($page, '#modal .js-facet-next-page');
         $this->waitForPageLoad($page);
+        // Verify whether multi-select facet controls are visible/invisible as expected:
+        if ($expectMultiSelect) {
+            $this->findCss($page, '.multi-filters-selection');
+        } else {
+            $this->unfindCss($page, '.multi-filters-selection');
+        }
         $this->assertFullListFacetCount($page, 'count', $limit * 2, $exclusionActive);
 
         $excludeControl = $exclusionActive ? 'Exclude matching results ' : '';
