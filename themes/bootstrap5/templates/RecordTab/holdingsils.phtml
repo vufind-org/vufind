@@ -23,7 +23,7 @@
     // Set page title.
     $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcrumb());
     // Check if a warning box should be displayed if there are no physical holdings
-    $noIlsHoldingsWarningConfig = $this->config()->get('config')->Catalog->display_no_physical_holdings_warning ?? null;
+    $noIlsHoldingsWarningConfig = $this->config()->get('config')->Catalog->display_no_ils_holdings_warning ?? null;
     $hasExternalLinks = !empty($urls) || $openUrlActive || $identifierLinksHtml;
     $showNoIlsHoldingsWarning = ($noIlsHoldingsWarningConfig == 'always' || ($noIlsHoldingsWarningConfig == 'not_online' && !$hasExternalLinks));
 ?>
