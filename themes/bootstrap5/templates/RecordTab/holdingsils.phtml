@@ -24,10 +24,8 @@
     $this->headTitle($this->translate('Holdings') . ': ' . $this->driver->getBreadcrumb());
     // Check if a warning box should be displayed if there are no physical holdings
     $displayNoPhysHolWarnConf = $this->config()->get('config')->Catalog->display_no_physical_holdings_warning ?? null;
-    $displayNoPhysHolWarn = false;
-    if ($displayNoPhysHolWarnConf == 'always' || ($displayNoPhysHolWarnConf == 'not_online' && (empty($urls) && !$openUrlActive && !$identifierLinksHtml))) {
-      $displayNoPhysHolWarn = true;
-    }
+    $hasExternalLinks = !empty($urls) || $openUrlActive || $identifierLinksHtml;
+    $displayNoPhysHolWarn = ($displayNoPhysHolWarnConf == 'always' || ($displayNoPhysHolWarnConf == 'not_online' && !$hasExternalLinks));
 ?>
 
 <?=$this->context($this)->renderInContext('librarycards/selectcard.phtml', compact('user')); ?>
