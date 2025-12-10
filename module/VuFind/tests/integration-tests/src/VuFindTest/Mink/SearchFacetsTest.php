@@ -146,6 +146,24 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Assert whether or not multi-facet select is expected in the facet list.
+     *
+     * @param Element $element Element containing facet list
+     * @param bool    $active  Do we expect multi-select controls?
+     *
+     * @throws \Exception
+     * @return void
+     */
+    protected function assertMultiSelectActiveInFacetList(Element $element, bool $active): void
+    {
+        $this->unfindCss($element, '.loading-spinner');
+        $checkMethod = $active ? 'findCss' : 'unfindCss';
+        $this->$checkMethod($element, '.multi-filters-selection');
+        $this->$checkMethod($element, '.js-full-facet-list.multi-facet-selection-active');
+        $this->$checkMethod($element, '.js-apply-multi-facets-selection');
+    }
+
+    /**
      * Helper function for facets lists
      *
      * @param Element $page              Mink page object
@@ -167,11 +185,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#modal .js-facet-next-page');
         $this->waitForPageLoad($page);
         // Verify whether multi-select facet controls are visible/invisible as expected:
-        if ($expectMultiSelect) {
-            $this->findCss($page, '.multi-filters-selection');
-        } else {
-            $this->unfindCss($page, '.multi-filters-selection');
-        }
+        $this->assertMultiSelectActiveInFacetList($page, $expectMultiSelect);
         $this->assertFullListFacetCount($page, 'count', $limit * 2, $exclusionActive);
 
         $excludeControl = $exclusionActive ? 'Exclude matching results ' : '';
@@ -717,14 +731,10 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, '#modal .js-user-selection-multi-filters');
         // Check for multi-filter controls:
         $this->activateMultiFilterSelection($modal);
-        $this->unfindCss($modal, '.loading-spinner');
-        $this->findCss($modal, '.js-full-facet-list.multi-facet-selection-active');
-        $this->findCss($modal, '.js-apply-multi-facets-selection');
+        $this->assertMultiSelectActiveInFacetList($modal, true);
         // Change order and check for multi-filter controls:
         $this->clickCss($modal, '[data-sort="index"]');
-        $this->unfindCss($modal, '.loading-spinner');
-        $this->findCss($modal, '.js-full-facet-list.multi-facet-selection-active');
-        $this->findCss($modal, '.js-apply-multi-facets-selection');
+        $this->assertMultiSelectActiveInFacetList($modal, true);
         // Load more:
         $this->clickCss($modal, '.js-facet-next-page');
         $this->waitForPageLoad($page);
