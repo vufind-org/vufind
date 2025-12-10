@@ -67,6 +67,36 @@ class LibGuidesTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test loading AZ.
+     *
+     * @return void
+     */
+    public function testGetAz()
+    {
+        $config = $this->getConfig();
+        $client = $this->getClient('az');
+        $libGuides = new LibGuides($config, $client);
+
+        $response = $libGuides->getAz();
+        $this->assertCount(4, $response);
+    }
+
+    /**
+     * Test loading AZ, not excluding hidden databases
+     *
+     * @return void
+     */
+    public function testGetAzAllowHidden()
+    {
+        $config = $this->getConfig();
+        $client = $this->getClient('az');
+        $libGuides = new LibGuides($config, $client);
+
+        $response = $libGuides->getAz(excludeHidden: false);
+        $this->assertCount(5, $response);
+    }
+
+    /**
      * Create a fake LibGuidesAPI.ini config.
      *
      * @return Config The fake config
