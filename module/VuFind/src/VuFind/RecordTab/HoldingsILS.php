@@ -29,11 +29,9 @@
 
 namespace VuFind\RecordTab;
 
-use Psr\Container\ContainerInterface;
 use VuFind\GetThis\GetThisLoader;
 use VuFind\ILS\Connection;
 
-use VuFind\Service\GetServiceTrait;
 use function strlen;
 
 /**
@@ -57,13 +55,13 @@ class HoldingsILS extends AbstractBase
     /**
      * Constructor
      *
-     * @param ?Connection        $catalog         ILS connection to use to check for holdings before
+     * @param ?Connection    $catalog             ILS connection to use to check for holdings before
      *                                            displaying the tab; may be set to null if no check is
      *                                            needed.
-     * @param ?string            $template        Holdings template to use
-     * @param string|false       $hideWhenEmpty   Whether the holdings tab should be hidden when empty or
+     * @param ?string        $template            Holdings template to use
+     * @param string|false   $hideWhenEmpty       Whether the holdings tab should be hidden when empty or
      *                                            not
-     * @param ?GetThisLoader $getThisLoader        GetThis if enabled in the config
+     * @param ?GetThisLoader $getThisLoader       GetThis if enabled in the config
      */
     public function __construct(
         protected ?Connection $catalog = null,
