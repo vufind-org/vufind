@@ -34,6 +34,8 @@ namespace VuFind\Connection;
 use Exception;
 use Psr\Log\LoggerAwareInterface;
 
+use function is_array;
+
 /**
  * LibGuides API connection class.
  *
@@ -159,7 +161,7 @@ class LibGuides implements
             return null;
         }
 
-        if ($excludeHidden) {
+        if ($excludeHidden && is_array($result)) {
             $result = array_filter($result, fn ($database) => $database?->enable_hidden != 1);
         }
 
