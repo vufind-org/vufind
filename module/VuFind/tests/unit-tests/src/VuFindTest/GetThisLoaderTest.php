@@ -82,7 +82,7 @@ class GetThisLoaderTest extends TestCase
         $regexConfig = $this->yamlReader->get('Regex.yaml');
         $regexConfig['LOCATION_EXCLUSIVE'][] = '/OUR CAMPUS/i';
         $translator = $this->createMock(Translate::class);
-        $translator->expects($this->any())->method('translate')->willReturnCallback(fn ($p) => $p);
+        $translator->method('translate')->willReturnCallback(fn ($p) => $p);
         $this->getThis = new GetThisLoader(
             $this->config,
             new Regex($regexConfig),
@@ -579,43 +579,40 @@ class GetThisLoaderTest extends TestCase
             ['item_id' => 1],
         ]);
         $driver = $this->getMockRecordDriver();
-        $driver->expects($this->any())->method('getRealTimeHoldings')
-            ->willReturn([]);
+        $driver->method('getRealTimeHoldings')->willReturn([]);
         $this->setProperty($this->getThis, 'record', $driver);
         $this->assertEquals('', $this->getThis->getLink());
 
         $driver = $this->getMockRecordDriver();
-        $driver->expects($this->any())->method('getRealTimeHoldings')
-            ->willReturn(['holdings' => [123]]);
+        $driver->method('getRealTimeHoldings')->willReturn(['holdings' => [123]]);
         $this->setProperty($this->getThis, 'record', $driver);
         $this->assertEquals('', $this->getThis->getLink());
 
         $driver = $this->getMockRecordDriver();
-        $driver->expects($this->any())->method('getRealTimeHoldings')
-            ->willReturn([
-                'holdings' => [
-                    [
-                        'items' => [
-                            [
-                                'item_id' => 2,
-                                'link' => '',
-                            ],
-                            [
-                                'item_id' => 3,
-                                'link' => 'https://what_another_great_link.com',
-                            ],
+        $driver->method('getRealTimeHoldings')->willReturn([
+            'holdings' => [
+                [
+                    'items' => [
+                        [
+                            'item_id' => 2,
+                            'link' => '',
                         ],
-                    ],
-                    [
-                        'items' => [
-                            [
-                                'item_id' => 1,
-                                'link' => 'https://what_a_great_link.com',
-                            ],
+                        [
+                            'item_id' => 3,
+                            'link' => 'https://what_another_great_link.com',
                         ],
                     ],
                 ],
-            ]);
+                [
+                    'items' => [
+                        [
+                            'item_id' => 1,
+                            'link' => 'https://what_a_great_link.com',
+                        ],
+                    ],
+                ],
+            ],
+        ]);
         $this->setProperty($this->getThis, 'record', $driver);
         $this->assertEquals('https://what_a_great_link.com', $this->getThis->getLink());
         $this->assertEquals('https://what_another_great_link.com', $this->getThis->getLink(3));
@@ -717,8 +714,7 @@ class GetThisLoaderTest extends TestCase
     public function testGetSummary()
     {
         $driver = $this->getMockRecordDriver();
-        $driver->expects($this->any())->method('getSummary')
-            ->willReturnOnConsecutiveCalls([], ['sum1'], ['sum1', 'sum2']);
+        $driver->method('getSummary')->willReturnOnConsecutiveCalls([], ['sum1'], ['sum1', 'sum2']);
         $this->setProperty($this->getThis, 'record', $driver);
 
         $this->assertEquals('', $this->getThis->getSummary());
@@ -765,8 +761,7 @@ class GetThisLoaderTest extends TestCase
     public function testIsSerial()
     {
         $driver = $this->getMockRecordDriver();
-        $driver->expects($this->any())->method('getFormats')
-            ->willReturnOnConsecutiveCalls(
+        $driver->method('getFormats')->willReturnOnConsecutiveCalls(
                 [],
                 ['serial1'],
                 ['not a s.e.r.i.a.l.', 'another_serial'],
@@ -921,13 +916,13 @@ class GetThisLoaderTest extends TestCase
         $regex = $this->createMock(Regex::class);
 
         $translator = $this->createMock(Translate::class);
-        $translator->expects($this->any())->method('translate')->willReturnCallback(fn ($p) => $p);
+        $translator->method('translate')->willReturnCallback(fn ($p) => $p);
 
         $viewHelperManager = $this->createMock(HelperPluginManager::class);
         $viewHelperManager->expects($this->once())->method('get')->willReturn($translator);
 
         $container = $this->createMock(MockContainer::class);
-        $container->expects($this->any())->method('get')->willReturnMap([
+        $container->method('get')->willReturnMap([
             [Regex::class, $regex],
             [YamlReader::class, $yaml],
             ['ViewHelperManager', $viewHelperManager],
