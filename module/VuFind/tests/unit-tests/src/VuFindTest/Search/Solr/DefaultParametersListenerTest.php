@@ -53,8 +53,7 @@ class DefaultParametersListenerTest extends \PHPUnit\Framework\TestCase
      */
     public function testAttach()
     {
-        $backend = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\Solr\Backend::class);
         $listener = new DefaultParametersListener($backend, ['foo' => 'bar']);
         $mock = $this->createMock(\Laminas\EventManager\SharedEventManagerInterface::class);
         $mock->expects($this->once())->method('attach')->with(
@@ -80,8 +79,7 @@ class DefaultParametersListenerTest extends \PHPUnit\Framework\TestCase
             ]
         );
 
-        $backend = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\Solr\Backend::class);
         $listener = new DefaultParametersListener(
             $backend,
             [
@@ -143,8 +141,7 @@ class DefaultParametersListenerTest extends \PHPUnit\Framework\TestCase
             ]
         );
 
-        $backend = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\Solr\Backend::class);
         $listener = new DefaultParametersListener(
             $backend,
             [

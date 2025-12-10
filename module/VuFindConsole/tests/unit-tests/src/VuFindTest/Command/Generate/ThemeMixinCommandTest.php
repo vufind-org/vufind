@@ -97,8 +97,6 @@ class ThemeMixinCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockGenerator()
     {
-        return $this->getMockBuilder(MixinGenerator::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(MixinGenerator::class);
     }
 }

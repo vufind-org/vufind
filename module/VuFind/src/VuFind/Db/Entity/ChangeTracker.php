@@ -31,6 +31,7 @@ namespace VuFind\Db\Entity;
 
 use DateTime;
 use Doctrine\ORM\Mapping as ORM;
+use VuFind\Db\Feature\DateTimeTrait;
 
 /**
  * Entity model for change_tracker table
@@ -46,6 +47,8 @@ use Doctrine\ORM\Mapping as ORM;
 #[ORM\Entity]
 class ChangeTracker implements ChangeTrackerEntityInterface
 {
+    use DateTimeTrait;
+
     /**
      * Solr core containing record.
      *
@@ -162,7 +165,8 @@ class ChangeTracker implements ChangeTrackerEntityInterface
      */
     public function getFirstIndexed(): ?DateTime
     {
-        return $this->firstIndexed;
+        // Return to a clone to avoid indirect modification of the entity:
+        return $this->getDateTimeClone($this->firstIndexed);
     }
 
     /**
@@ -185,7 +189,8 @@ class ChangeTracker implements ChangeTrackerEntityInterface
      */
     public function getLastIndexed(): ?DateTime
     {
-        return $this->lastIndexed;
+        // Return to a clone to avoid indirect modification of the entity:
+        return $this->getDateTimeClone($this->lastIndexed);
     }
 
     /**

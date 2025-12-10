@@ -603,61 +603,75 @@ class Folio extends AbstractAPI implements
     /**
      * Support method for getHoldings() -- retrieve items by holding ids (including bound-with items)
      *
-     * @param string[] $holdingIds the FOLIO holdings ids
+     * @param string[] $holdingsIds the FOLIO holdings ids
      *
      * @return object[] The items, with an additional queryHoldingsRecordId property with the matching holdings id
      * @throws ILSException if there is an issue with the FOLIO response
      */
-    protected function getItemsByHoldingIds(array $holdingIds)
+    protected function getItemsByHoldingIds(array $holdingsIds)
     {
-        if (count($holdingIds) == 0) {
+        if (count($holdingsIds) == 0) {
             return [];
         }
         $items = [];
         $folioItemSort = $this->config['Holdings']['folio_sort'] ?? '';
-        $querySuffix = !empty($folioItemSort) ? ' sortby ' . $folioItemSort : '';
-        if (count($holdingIds) == 1) {
+        $querySuffix = empty($folioItemSort) ? '' : ' sortby ' . $folioItemSort;
+        if (count($holdingsIds) == 1) {
             // /inventory/items-by-holdings-id returns bound-with items too (but it only takes one holdingsRecordId)
             foreach (
                 $this->getByBatch(
-                    $holdingIds,
+                    $holdingsIds,
                     'holdingsRecordId',
                     'items',
                     '/inventory/items-by-holdings-id',
                     $querySuffix
                 ) as $item
             ) {
-                $item->queryHoldingsRecordId = $holdingIds[0];
+                $item->queryHoldingsRecordId = $holdingsIds[0];
                 $items[] = $item;
             }
             return $items;
         }
-        // /inventory/items does not return bound-with items, we have to retrieve them afterwards
+        // Retrieve the item records
+        $holdingsItemIds = [];
+        foreach ($holdingsIds as $holdingsId) {
+            $holdingsItemIds[$holdingsId] = [];
+        }
         foreach (
             $this->getByBatch(
-                $holdingIds,
+                $holdingsIds,
                 'holdingsRecordId',
                 'items',
                 '/inventory/items',
                 $querySuffix
             ) as $item
         ) {
-            $item->queryHoldingsRecordId = $item->holdingsRecordId;
+            $holdingsId = $item->holdingsRecordId;
+            $item->queryHoldingsRecordId = $holdingsId;
+            $holdingsItemIds[$holdingsId][] = $item->id;
             $items[] = $item;
         }
+        // Retrieve the related bound-with items
+        // Duplicate items are avoided for each holdings
         $boundWithItemIds = [];
         $itemIdToHoldingsRecordId = [];
         foreach (
             $this->getByBatch(
-                $holdingIds,
+                $holdingsIds,
                 'holdingsRecordId',
                 'boundWithParts',
                 '/inventory-storage/bound-with-parts',
                 $querySuffix
             ) as $boundWithPart
         ) {
-            $boundWithItemIds[] = $boundWithPart->itemId;
-            $itemIdToHoldingsRecordId[$boundWithPart->itemId] = $boundWithPart->holdingsRecordId;
+            $itemId = $boundWithPart->itemId;
+            $holdingsId = $boundWithPart->holdingsRecordId;
+            if (in_array($itemId, $holdingsItemIds[$holdingsId])) {
+                continue;
+            }
+            $holdingsItemIds[$holdingsId][] = $itemId;
+            $boundWithItemIds[] = $itemId;
+            $itemIdToHoldingsRecordId[$itemId] = $holdingsId;
         }
         foreach (
             $this->getByBatch(
@@ -3015,10 +3029,10 @@ class Folio extends AbstractAPI implements
      *
      * Retrieve the IDs of items recently added to the catalog.
      *
-     * @param int $page    Page number of results to retrieve (counting starts at 1)
-     * @param int $limit   The size of each page of results to retrieve
-     * @param int $daysOld The maximum age of records to retrieve in days (max. 30)
-     * @param int $fundId  optional fund ID to use for limiting results (use a value
+     * @param int     $page    Page number of results to retrieve (counting starts at 1)
+     * @param int     $limit   The size of each page of results to retrieve
+     * @param int     $daysOld The maximum age of records to retrieve in days (max. 30)
+     * @param ?string $fundId  optional fund ID to use for limiting results (use a value
      * returned by getFunds, or exclude for no limit); note that "fund" may be a
      * misnomer - if funds are not an appropriate way to limit your new item
      * results, you can return a different set of values from getFunds. The
