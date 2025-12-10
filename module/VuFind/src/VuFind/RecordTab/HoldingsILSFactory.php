@@ -33,6 +33,7 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\GetThis\GetThisLoader;
 
 /**
  * Factory for building the HoldingsILS tab.
@@ -75,12 +76,12 @@ class HoldingsILSFactory implements \Laminas\ServiceManager\Factory\FactoryInter
         $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
         $catalog = $container->get(\VuFind\ILS\Connection::class);
         $getThisEnabled = ($config['Record']['getThisEnabled'] ?? null) == true;
+        $getThisLoader = $getThisEnabled ? $container->get(GetThisLoader::class) : null;
         return new $requestedName(
-            $container,
             $catalog,
             (string)($config['Site']['holdingsTemplate'] ?? 'standard'),
             (string)($config['Site']['hideHoldingsTabWhenEmpty'] ?? false),
-            $getThisEnabled
+            $getThisLoader
         );
     }
 }

@@ -47,8 +47,6 @@ use function strlen;
  */
 class HoldingsILS extends AbstractBase
 {
-    use GetServiceTrait;
-
     /**
      * Name of template to use for rendering holdings.
      *
@@ -57,30 +55,21 @@ class HoldingsILS extends AbstractBase
     protected $template;
 
     /**
-     * GetThisLoader object if enabled in the config
-     *
-     * @var ?GetThisLoader
-     */
-     protected ?GetThisLoader $getThisLoader;
-
-    /**
      * Constructor
      *
-     * @param ContainerInterface $serviceLocator  Service manager
      * @param ?Connection        $catalog         ILS connection to use to check for holdings before
      *                                            displaying the tab; may be set to null if no check is
      *                                            needed.
      * @param ?string            $template        Holdings template to use
      * @param string|false       $hideWhenEmpty   Whether the holdings tab should be hidden when empty or
      *                                            not
-     * @param bool               $getThisEnabled  Whether GetThis is enabled in the config
+     * @param ?GetThisLoader $getThisLoader        GetThis if enabled in the config
      */
     public function __construct(
-        protected ContainerInterface &$serviceLocator,
         protected ?Connection $catalog = null,
         string $template = null,
         protected string|false $hideWhenEmpty = false,
-        protected bool $getThisEnabled = false
+        protected ?GetThisLoader $getThisLoader = null
     ) {
         $this->template = $template ?? 'standard';
     }
@@ -227,10 +216,6 @@ class HoldingsILS extends AbstractBase
      */
     public function getGetThisLoader(): ?GetThisLoader
     {
-        if (!isset($this->getThisLoader)) {
-            $this->getThisLoader = $this->getThisEnabled ?
-                $this->serviceLocator->get(GetThisLoader::class) : null;
-        }
         return $this->getThisLoader;
     }
 }
