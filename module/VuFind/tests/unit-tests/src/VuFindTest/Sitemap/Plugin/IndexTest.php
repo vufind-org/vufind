@@ -100,7 +100,6 @@ class IndexTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockIdFetcher(): AbstractIdFetcher
     {
-        return $this->getMockBuilder(AbstractIdFetcher::class)
-            ->disableOriginalConstructor()->getMock();
+        return $this->createMock(AbstractIdFetcher::class);
     }
 }

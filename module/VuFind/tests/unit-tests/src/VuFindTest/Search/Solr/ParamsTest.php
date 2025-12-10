@@ -190,9 +190,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         string $tieBreaker,
         string $expectedResult
     ): void {
-        $options = $this->getMockBuilder(\VuFind\Search\Solr\Options::class)
-                ->disableOriginalConstructor()
-                ->getMock();
+        $options = $this->createMock(\VuFind\Search\Solr\Options::class);
         $options->expects($this->once())->method('getSortTieBreaker')
                 ->willReturn($tieBreaker);
         $params = $this->getParams($options);

@@ -102,7 +102,7 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
      *
      * @param string $field Filter field name
      *
-     * @return boolean
+     * @return bool
      */
     protected function filterRequiresFacetOperator($field)
     {

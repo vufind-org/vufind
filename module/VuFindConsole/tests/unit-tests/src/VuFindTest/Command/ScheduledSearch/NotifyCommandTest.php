@@ -155,8 +155,8 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     public function testNotificationsWithUnsupportedBackend(): void
     {
         $resultsCallback = function ($results): void {
-            $results->expects($this->any())->method('getBackendId')->willReturn('unsupported');
-            $results->expects($this->any())->method('getSearchId')->willReturn(1);
+            $results->method('getBackendId')->willReturn('unsupported');
+            $results->method('getSearchId')->willReturn(1);
         };
         $command = $this->getCommand(
             [
@@ -186,10 +186,10 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     public function testNotificationsWithNoSearchResults(): void
     {
         $optionsCallback = function ($options): void {
-            $options->expects($this->any())->method('supportsScheduledSearch')->willReturn(true);
+            $options->method('supportsScheduledSearch')->willReturn(true);
         };
         $resultsCallback = function ($results): void {
-            $results->expects($this->any())->method('getSearchId')->willReturn(1);
+            $results->method('getSearchId')->willReturn(1);
         };
         $command = $this->getCommand(
             [
@@ -219,11 +219,11 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     public function testNotificationsWithNoNewSearchResults(): void
     {
         $optionsCallback = function ($options): void {
-            $options->expects($this->any())->method('supportsScheduledSearch')->willReturn(true);
+            $options->method('supportsScheduledSearch')->willReturn(true);
         };
         $resultsCallback = function ($results): void {
-            $results->expects($this->any())->method('getSearchId')->willReturn(1);
-            $results->expects($this->any())->method('getResults')->willReturn($this->getMockSearchResultsSet());
+            $results->method('getSearchId')->willReturn(1);
+            $results->method('getResults')->willReturn($this->getMockSearchResultsSet());
         };
         $command = $this->getCommand(
             [
@@ -254,10 +254,10 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     public function testNotificationsWithNewSearchResults(): void
     {
         $optionsCallback = function ($options): void {
-            $options->expects($this->any())->method('supportsScheduledSearch')->willReturn(true);
+            $options->method('supportsScheduledSearch')->willReturn(true);
         };
         $paramsCallback = function ($params): void {
-            $params->expects($this->any())->method('getCheckboxFacets')->willReturn([]);
+            $params->method('getCheckboxFacets')->willReturn([]);
         };
         $date = date('Y-m-d H:i:s');
         $expectedDate = str_replace(' ', 'T', $date) . 'Z';
@@ -268,8 +268,8 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $resultsCallback = function ($results) use ($record): void {
-            $results->expects($this->any())->method('getSearchId')->willReturn(1);
-            $results->expects($this->any())->method('getResults')->willReturn($this->getMockSearchResultsSet($record));
+            $results->method('getSearchId')->willReturn(1);
+            $results->method('getResults')->willReturn($this->getMockSearchResultsSet($record));
         };
         $message = 'sample message';
         $expectedViewParams = [
@@ -421,9 +421,9 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
             $paramsCallback($params);
         }
         $results = $this->container->createMock(\VuFind\Search\Solr\Results::class);
-        $results->expects($this->any())->method('getOptions')->willReturn($options);
-        $results->expects($this->any())->method('getUrlQuery')->willReturn($urlQuery);
-        $results->expects($this->any())->method('getParams')->willReturn($params);
+        $results->method('getOptions')->willReturn($options);
+        $results->method('getUrlQuery')->willReturn($urlQuery);
+        $results->method('getParams')->willReturn($params);
         if ($resultsCallback) {
             $resultsCallback($results);
         }
@@ -445,7 +445,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         ?callable $resultsCallback = null
     ): MockObject&\VuFind\Search\Minified {
         $search = $this->container->createMock(\VuFind\Search\Minified::class);
-        $search->expects($this->any())->method('deminify')
+        $search->method('deminify')
             ->with($this->equalTo($this->getMockResultsManager()))
             ->willReturn(
                 $this->getMockSearchResults(

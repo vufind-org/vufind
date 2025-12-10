@@ -58,12 +58,8 @@ class BokinfoTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockRequest(): Request
     {
-        $request = $this->getMockBuilder(Request::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $headers = $this->getMockBuilder(Headers::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $request = $this->createMock(Request::class);
+        $headers = $this->createMock(Headers::class);
         $request->expects($this->once())->method('getHeaders')
             ->willReturn($headers);
         $headers->expects($this->once())->method('addHeaderLine')
@@ -81,9 +77,7 @@ class BokinfoTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockResponse(): Response
     {
-        return $this->getMockBuilder(Response::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(Response::class);
     }
 
     /**
@@ -93,9 +87,7 @@ class BokinfoTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockClient(): Client
     {
-        $client = $this->getMockBuilder(Client::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $client = $this->createMock(Client::class);
         $client->expects($this->once())->method('setOptions')
             ->with($this->equalTo(['useragent' => 'VuFind', 'keepalive' => true]));
         return $client;
@@ -108,9 +100,7 @@ class BokinfoTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockService(): HttpService
     {
-        $service = $this->getMockBuilder(HttpService::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $service = $this->createMock(HttpService::class);
         $url1 = 'https://api.bokinfo.se/book/get/9789129697285';
         $url2 = 'https://fake-url';
         $client1 = $this->getMockClient();

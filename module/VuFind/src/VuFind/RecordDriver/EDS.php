@@ -1089,6 +1089,8 @@ class EDS extends DefaultRecord
         $pubType = $this->getPubType();
         switch (strtolower($pubType)) {
             case 'academic journal':
+            case 'conference':
+            case 'news':
             case 'periodical':
             case 'report':
                 // Add "article" format for better OpenURL generation

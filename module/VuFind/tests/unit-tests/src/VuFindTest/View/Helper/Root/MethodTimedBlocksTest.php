@@ -147,12 +147,8 @@ class MethodTimedBlocksTest extends \PHPUnit\Framework\TestCase
         );
 
         $connection = $this->createMock(Connection::class);
-        $connection->expects($this->any())
-            ->method('getMethodTimedBlocks')
-            ->willReturn($timedBlocks);
-        $connection->expects($this->any())
-            ->method('getMethodBlock')
-            ->willReturn($blocked ? $timedBlocks : []);
+        $connection->method('getMethodTimedBlocks')->willReturn($timedBlocks);
+        $connection->method('getMethodBlock')->willReturn($blocked ? $timedBlocks : []);
         $ils = new Ils($connection);
         $dateTime = new DateTime(new Converter());
         return compact('transEsc', 'translate', 'ils', 'dateTime');

@@ -65,9 +65,7 @@ class SyndeticsTest extends \PHPUnit\Framework\TestCase
             'use_syndetics_cover_image_fallback' => $useSyndeticsCoverImageFallback,
         ]));
         if ($fixtureFile) {
-            $mockDownloader = $this->getMockBuilder(CachingDownloader::class)
-                ->disableOriginalConstructor()
-                ->getMock();
+            $mockDownloader = $this->createMock(CachingDownloader::class);
             $fixture = $this->getFixture($fixtureFile);
             $mockDownloader->expects($this->once())->method('download')
                 ->with($this->equalTo("https://secure.syndetics.com/index.aspx?client=test&isbn=$isbn/index.xml"))

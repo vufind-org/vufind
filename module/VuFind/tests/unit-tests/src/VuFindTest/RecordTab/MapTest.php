@@ -123,9 +123,7 @@ class MapTest extends \PHPUnit\Framework\TestCase
     public function testIsActive(): void
     {
         $obj = $this->getMap();
-        $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $recordDriver = $this->createMock(\VuFind\RecordDriver\SolrDefault::class);
         $recordDriver->expects($this->exactly(2))->method('tryMethod')
             ->with($this->equalTo('getGeoLocation'))
             ->willReturnOnConsecutiveCalls('555', null);
@@ -143,9 +141,7 @@ class MapTest extends \PHPUnit\Framework\TestCase
     {
         $obj = $this->getMap();
         $coordinates = ['00 00 56 56', '45 56 87 89'];
-        $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $recordDriver = $this->createMock(\VuFind\RecordDriver\SolrDefault::class);
         $recordDriver->expects($this->once())->method('tryMethod')
             ->with($this->equalTo('getDisplayCoordinates'))
             ->willReturn($coordinates);
@@ -163,9 +159,7 @@ class MapTest extends \PHPUnit\Framework\TestCase
     {
         $obj = $this->getMap();
         $coordinates = ['ENVELOPE(25.8,43.9,5.0,4.6)'];
-        $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $recordDriver = $this->createMock(\VuFind\RecordDriver\SolrDefault::class);
         $recordDriver->expects($this->once())->method('tryMethod')
             ->with($this->equalTo('getGeoLocation'))
             ->willReturn($coordinates);
@@ -184,9 +178,7 @@ class MapTest extends \PHPUnit\Framework\TestCase
         $obj = $this->getMap();
         $coordinates = ['ENVELOPE(25.8,43.9,5.0,4.6)'];
         $displayCoord = ['45 56 87 89'];
-        $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $recordDriver = $this->createMock(\VuFind\RecordDriver\SolrDefault::class);
         $this->expectConsecutiveCalls(
             $recordDriver,
             'tryMethod',

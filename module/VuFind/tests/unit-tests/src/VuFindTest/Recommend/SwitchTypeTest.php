@@ -98,12 +98,8 @@ class SwitchTypeTest extends \PHPUnit\Framework\TestCase
         $obj = new SwitchType();
         $obj->setConfig($settings);
 
-        $results = $this->getMockBuilder(\VuFind\Search\Base\Results::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $parms = $this->getMockBuilder(\VuFind\Search\Base\Params::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $results = $this->createMock(\VuFind\Search\Base\Results::class);
+        $parms = $this->createMock(\VuFind\Search\Base\Params::class);
         $results->expects($this->once())->method('getParams')
             ->willReturn($parms);
         $parms->expects($this->once())->method('getSearchHandler')
@@ -121,12 +117,8 @@ class SwitchTypeTest extends \PHPUnit\Framework\TestCase
     {
         $obj = new SwitchType();
         $obj->setConfig('foo');
-        $results = $this->getMockBuilder(\VuFind\Search\Base\Results::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $parms = $this->getMockBuilder(\VuFind\Search\Base\Params::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $results = $this->createMock(\VuFind\Search\Base\Results::class);
+        $parms = $this->createMock(\VuFind\Search\Base\Params::class);
         $results->expects($this->once())->method('getParams')
             ->willReturn($parms);
         $parms->expects($this->once())->method('getSearchHandler')

@@ -88,8 +88,7 @@ class FilterFieldConversionListenerTest extends \PHPUnit\Framework\TestCase
             ['foo' => 'bar', 'baz' => 'boo']
         );
 
-        $backend = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\Solr\Backend::class);
         $command = $this->getMockSearchCommand($params);
         $event = new Event(
             Service::EVENT_PRE,

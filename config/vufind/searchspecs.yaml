@@ -227,13 +227,21 @@
 #
 # "@parent_yaml": "/path/to/my/file.yaml"
 #
-# Only sections not found in this file will be loaded in from the parent file.
+# If @parent_yaml cannot be accessed as an absolute path, it will also be tried
+# relative to the path of the file defining it.
+
+# You can also use "@parent_config_name" instead, to use another configuration as
+# parent. The whole configuration directory stack will be searched for this configuration
+# instead of just using a specific file. For example:
+#
+# "@parent_config_name": "myconfig"
+#
+# Only one of the parent directives can be used at a time.
+#
+# In both cases, only sections not found in this file will be loaded in from the parent file.
 # In some complex scenarios, this can be a useful way of sharing settings
 # between multiple configured VuFind instances. You can create a chain of parent
 # files if necessary.
-#
-# If @parent_yaml cannot be accessed as an absolute path, it will also be tried
-# relative to the path of the file defining it.
 #
 #-----------------------------------------------------------------------------------
 

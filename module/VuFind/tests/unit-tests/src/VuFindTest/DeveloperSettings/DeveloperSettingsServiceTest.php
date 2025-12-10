@@ -96,7 +96,7 @@ class DeveloperSettingsServiceTest extends \PHPUnit\Framework\TestCase
     {
         $mockObject = $this->createMock($name);
         foreach ($methodsAndReturns as $method => $return) {
-            $mockObject->expects($this->any())->method($method)->willReturn($return);
+            $mockObject->method($method)->willReturn($return);
         }
         return $mockObject;
     }

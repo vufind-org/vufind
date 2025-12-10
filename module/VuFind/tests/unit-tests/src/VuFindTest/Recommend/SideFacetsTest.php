@@ -201,7 +201,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
             'numeric' => ['[1 TO 9]'],
         ];
         $results = $this->getMockResults();
-        $results->getParams()->expects($this->any())->method('getRawFilters')
+        $results->getParams()->method('getRawFilters')
             ->willReturn($filters);
         $sf = $this->getSideFacets($configManager, $results);
         $expected = [
@@ -394,15 +394,11 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
             $params = $this->getMockParams();
         }
         $options = $this->createMock(\VuFind\Search\Solr\Options::class);
-        $params->expects($this->any())->method('getOptions')
-            ->willReturn($options);
+        $params->method('getOptions')->willReturn($options);
 
-        $results = $this->getMockBuilder(\VuFind\Search\Solr\Results::class)
-            ->disableOriginalConstructor()->getMock();
-        $results->expects($this->any())->method('getParams')
-            ->willReturn($params);
-        $results->expects($this->any())->method('getOptions')
-            ->willReturn($options);
+        $results = $this->createMock(\VuFind\Search\Solr\Results::class);
+        $results->method('getParams')->willReturn($params);
+        $results->method('getOptions')->willReturn($options);
         return $results;
     }
 
@@ -418,10 +414,8 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
         if (null === $query) {
             $query = new \VuFindSearch\Query\Query('foo', 'bar');
         }
-        $params = $this->getMockBuilder(\VuFind\Search\Solr\Params::class)
-            ->disableOriginalConstructor()->getMock();
-        $params->expects($this->any())->method('getQuery')
-            ->willReturn($query);
+        $params = $this->createMock(\VuFind\Search\Solr\Params::class);
+        $params->method('getQuery')->willReturn($query);
         return $params;
     }
 }
