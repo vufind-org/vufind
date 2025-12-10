@@ -56,8 +56,7 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockBackend(string $id = 'Solr'): Backend
     {
-        $backend = $this->getMockBuilder(Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(Backend::class);
         $backend->method('getIdentifier')->willReturn($id);
         return $backend;
     }
@@ -86,8 +85,7 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
     protected function getMockResult(): RecordCollection
     {
         $facets = $this->getFacets();
-        $result = $this->getMockBuilder(RecordCollection::class)
-            ->disableOriginalConstructor()->getMock();
+        $result = $this->createMock(RecordCollection::class);
         $result->method('getFacets')
             ->willReturnCallback(
                 function () use (&$facets) {

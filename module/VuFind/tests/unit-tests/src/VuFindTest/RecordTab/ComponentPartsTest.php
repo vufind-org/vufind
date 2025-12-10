@@ -90,9 +90,7 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
     {
         $searchObj = $this->getService();
         $obj = new ComponentParts($searchObj);
-        $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\DefaultRecord::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $recordDriver = $this->createMock(\VuFind\RecordDriver\DefaultRecord::class);
         $recordDriver->method('tryMethod')
             ->with($this->equalTo('getChildRecordCount'))
             ->willReturn($childCount);
@@ -107,20 +105,12 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetResults(): void
     {
-        $service = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $rci = $this->getMockBuilder(
-            \VuFindSearch\Response\RecordCollectionInterface::class
-        )->disableOriginalConstructor()->getMock();
-        $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\DefaultRecord::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $service = $this->createMock(\VuFindSearch\Service::class);
+        $rci = $this->createMock(\VuFindSearch\Response\RecordCollectionInterface::class);
+        $recordDriver = $this->createMock(\VuFind\RecordDriver\DefaultRecord::class);
         $recordDriver->method('getUniqueID')->willReturn('foo');
         $recordDriver->method('getSourceIdentifier')->willReturn('bar');
-        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
         $commandObj->expects($this->once())->method('getResult')
             ->willReturn($rci);
         $checkCommand = function ($command) {
@@ -149,9 +139,7 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
      */
     public function getService()
     {
-        $searchObj = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $searchObj = $this->createMock(\VuFindSearch\Service::class);
         return $searchObj;
     }
 }

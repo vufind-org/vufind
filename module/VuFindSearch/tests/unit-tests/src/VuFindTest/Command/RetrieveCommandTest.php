@@ -53,10 +53,8 @@ class RetrieveCommandTest extends TestCase
     {
         $params = new ParamBag(['foo' => 'bar']);
         $backendId = 'bar';
-        $backend = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
-            ->disableOriginalConstructor()->getMock();
-        $result = $this->getMockBuilder(\VuFindSearch\Response\RecordCollectionInterface::class)
-            ->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\Solr\Backend::class);
+        $result = $this->createMock(\VuFindSearch\Response\RecordCollectionInterface::class);
         $command = new RetrieveCommand($backendId, 'id', $params);
         $backend->expects($this->once())->method('getIdentifier')
             ->willReturn($backendId);

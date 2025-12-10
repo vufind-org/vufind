@@ -51,9 +51,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
      */
     public function testDynamicCheckboxes()
     {
-        $options = $this->getMockBuilder(Options::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $options = $this->createMock(Options::class);
         $limiters = [
             ['selectedvalue' => 'limitervalue', 'description' => 'limiter'],
         ];

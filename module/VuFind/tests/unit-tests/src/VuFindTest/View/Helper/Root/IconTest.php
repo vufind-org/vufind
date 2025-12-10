@@ -104,8 +104,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockImageLink(string $expected): ImageLink
     {
-        $mock = $this->getMockBuilder(ImageLink::class)
-            ->disableOriginalConstructor()->getMock();
+        $mock = $this->createMock(ImageLink::class);
         $mock->expects($this->once())->method('__invoke')
             ->with($this->equalTo($expected))
             ->willReturn(basename($expected));
@@ -299,7 +298,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
         // the first call to getItem returns null, then it expects a call
         // to setItem, and then the second call to getItem will return an
         // expected value.
-        $cache = $this->getMockBuilder(StorageInterface::class)->getMock();
+        $cache = $this->createMock(StorageInterface::class);
         $cache->expects($this->exactly(2))->method('getItem')
             ->with($this->equalTo($key))
             ->willReturnOnConsecutiveCalls(null, $expected);

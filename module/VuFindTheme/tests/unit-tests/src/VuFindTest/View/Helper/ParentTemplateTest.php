@@ -72,8 +72,7 @@ class ParentTemplateTest extends \PHPUnit\Framework\TestCase
     protected function getHelper($stack)
     {
         // Get mock TemplateStack
-        $stackMock = $this->getMockBuilder(\Laminas\View\Resolver\TemplatePathStack::class)
-            ->disableOriginalConstructor()->getMock();
+        $stackMock = $this->createMock(\Laminas\View\Resolver\TemplatePathStack::class);
 
         $return = new \SplStack();
         foreach ($stack as $layer) {

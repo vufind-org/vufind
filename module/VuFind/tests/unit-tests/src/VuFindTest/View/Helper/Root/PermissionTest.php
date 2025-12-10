@@ -178,9 +178,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockPm($isAuthorized = false)
     {
-        $mockPm = $this->getMockBuilder(\VuFind\Role\PermissionManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $mockPm = $this->createMock(\VuFind\Role\PermissionManager::class);
         $mockPm->method('isAuthorized')->willReturn($isAuthorized);
         $mockPm->method('permissionRuleExists')->willReturn(true);
 
@@ -194,8 +192,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockContext()
     {
-        return $this->getMockBuilder(\VuFind\View\Helper\Root\Context::class)
-            ->disableOriginalConstructor()->getMock();
+        return $this->createMock(\VuFind\View\Helper\Root\Context::class);
     }
 
     /**

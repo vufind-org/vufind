@@ -224,8 +224,7 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
             return $messages[$ns] ?? [];
         };
 
-        $mockMessenger = $this->getMockBuilder(FlashMessenger::class)
-            ->getMock();
+        $mockMessenger = $this->createMock(FlashMessenger::class);
         $mockMessenger->method('getMessages')->with($this->isType('string'))->willReturnCallback($getMessages);
         $mockMessenger->method('getCurrentMessages')->with($this->isType('string'))->willReturn([]);
 

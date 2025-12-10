@@ -91,8 +91,7 @@ class LocaleDetectorFactoryTest extends \PHPUnit\Framework\TestCase
      */
     public function testStrategyListWithBrowserDetection(): void
     {
-        $mockSettings = $this->getMockBuilder(LocaleSettings::class)
-            ->disableOriginalConstructor()->getMock();
+        $mockSettings = $this->createMock(LocaleSettings::class);
         $mockSettings->expects($this->once())
             ->method('browserLanguageDetectionEnabled')
             ->willReturn(true);
@@ -115,8 +114,7 @@ class LocaleDetectorFactoryTest extends \PHPUnit\Framework\TestCase
      */
     public function testStrategyListWithoutBrowserDetection(): void
     {
-        $mockSettings = $this->getMockBuilder(LocaleSettings::class)
-            ->disableOriginalConstructor()->getMock();
+        $mockSettings = $this->createMock(LocaleSettings::class);
         $mockSettings->expects($this->once())
             ->method('browserLanguageDetectionEnabled')
             ->willReturn(false);

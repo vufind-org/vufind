@@ -55,9 +55,7 @@ class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockHierarchyDriver()
     {
-        return $this->getMockBuilder(HierarchyDriver::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(HierarchyDriver::class);
     }
 
     /**
@@ -67,9 +65,7 @@ class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockTreeSource()
     {
-        return $this->getMockBuilder(TreeSource::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(TreeSource::class);
     }
 
     /**
@@ -100,9 +96,7 @@ class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockRecordLoader($record = null)
     {
-        $loader = $this->getMockBuilder(Loader::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $loader = $this->createMock(Loader::class);
         $loader->expects($this->once())->method('load')
             ->with($this->equalTo('recordid'), $this->equalTo('foo'))
             ->willReturn($record ?? $this->getMockRecord());
@@ -116,9 +110,7 @@ class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockResults()
     {
-        $results = $this->getMockBuilder(Results::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $results = $this->createMock(Results::class);
         $output = [
             'hierarchy_top_id' => [
                 'data' => [
@@ -146,9 +138,7 @@ class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockResultsManager($results = null)
     {
-        $manager = $this->getMockBuilder(PluginManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $manager = $this->createMock(PluginManager::class);
         $manager->expects($this->once())->method('get')
             ->with($this->equalTo('foo'))
             ->willReturn($results ?? $this->getMockResults());

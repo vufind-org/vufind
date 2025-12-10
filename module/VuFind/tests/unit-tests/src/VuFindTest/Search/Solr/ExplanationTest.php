@@ -787,9 +787,7 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
             new Options($mockConfig),
             $mockConfig
         );
-        $searchService = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $searchService = $this->createMock(\VuFindSearch\Service::class);
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['getResult', 'execute'])
