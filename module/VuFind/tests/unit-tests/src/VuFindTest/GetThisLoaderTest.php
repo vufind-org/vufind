@@ -82,7 +82,7 @@ class GetThisLoaderTest extends TestCase
         $regexConfig = $this->yamlReader->get('Regex.yaml');
         $regexConfig['LOCATION_EXCLUSIVE'][] = '/OUR CAMPUS/i';
         $translator = $this->createMock(Translate::class);
-        $translator->method('translate')->willReturnCallback(fn ($p) => $p);
+        $translator->method('translate')->willReturnCallback(fn($p) => $p);
         $this->getThis = new GetThisLoader(
             $this->config,
             new Regex($regexConfig),
@@ -762,12 +762,12 @@ class GetThisLoaderTest extends TestCase
     {
         $driver = $this->getMockRecordDriver();
         $driver->method('getFormats')->willReturnOnConsecutiveCalls(
-                [],
-                ['serial1'],
-                ['not a s.e.r.i.a.l.', 'another_serial'],
-                ['still not'],
-                ['neither', 'and finally not'],
-            );
+            [],
+            ['serial1'],
+            ['not a s.e.r.i.a.l.', 'another_serial'],
+            ['still not'],
+            ['neither', 'and finally not'],
+        );
         $this->setProperty($this->getThis, 'record', $driver);
 
         $this->assertFalse($this->getThis->isSerial());
