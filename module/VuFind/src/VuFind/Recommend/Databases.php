@@ -146,6 +146,18 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
     protected $linkToAllDatabases = false;
 
     /**
+     * Group results into separate arrays for template use: results based
+     * on the search query, or the results, or specific result types
+     * (below).
+     */
+    protected $useGroupedResults = false;
+
+    /**
+     * Database types to highlight in separate groupings.
+     */
+    protected $typeGroups = [];
+
+    /**
      * Constructor
      *
      * @param \VuFind\Config\ConfigManagerInterface $configManager   Config Manager
@@ -217,6 +229,9 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
             $this->linkToAllDatabases = $databasesConfig['linkToAllDatabases']
                 ?? $this->linkToAllDatabases;
         }
+
+        $this->useGroupedResults = $databasesConfig['useGroupedResults'] ?? $this->useGroupedResults;
+        $this->typeGroups = $databasesConfig['typeGroups'] ?? $this->typeGroups;
     }
 
     /**
@@ -254,35 +269,97 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
     }
 
     /**
-     * Get terms related to the query.
+     * Get results related to the query.  They may be grouped or ungrouped based on
+     * useGroupedResults().
      *
      * @return array
      */
     public function getResults()
     {
-        if (count($this->resultFacet) < 1) {
-            $this->logError('At least one facet key is required.');
-            return [];
+        if ($this->useGroupedResults()) {
+            return $this->getGroupedResults();
+        } else {
+            return $this->getUngroupedResults();
         }
+    }
 
-        $resultDatabasesTopFacet = array_shift($this->resultFacet);
-        try {
-            $resultDatabases =
-                $this->results->getFacetList([$resultDatabasesTopFacet => null])[$resultDatabasesTopFacet];
-            while (count($this->resultFacet) && $resultDatabases) {
-                $resultDatabases = $resultDatabases[array_shift($this->resultFacet)];
+    /**
+     * Return whether or not grouped results are enabled in config.
+     *
+     * @return bool
+     */
+    public function useGroupedResults()
+    {
+        return $this->useGroupedResults;
+    }
+
+    /**
+     * Get an array of groups of results.  There is a group of results related to
+     * the query, and a group related to the search results.  There may be additional
+     * groups of search result databases within configured database types.
+     *
+     * Note that grouped results will be returned regardless of useGroupedResults().
+     *
+     * @return array
+     */
+    public function getGroupedResults()
+    {
+        $groupedResults = [];
+
+        if ($resultsFromSearchQuery = $this->getResultsFromSearchQuery()) {
+            $groupedResults['query'] = $resultsFromSearchQuery;
+        }
+        foreach ($this->typeGroups as $typeGroup) {
+            if ($resultsFromType = $this->getResultsFromSearchResultFacets($typeGroup)) {
+                $groupedResults['type_' . $typeGroup] = $resultsFromType;
             }
-        } catch (\Exception $ex) {
-            $this->logError('Error using configured facets to find list of result databases.');
-            return [];
         }
-        $nameToDatabase = $this->getDatabases();
+        if ($resultsFromSearchResult = $this->getResultsFromSearchResultFacets()) {
+            $groupedResults['results'] = $resultsFromSearchResult;
+        }
 
+        return $groupedResults;
+    }
+
+    /**
+     * Get a single list of databases related to both the query and the search results.
+     *
+     * Note that ungrouped results will be returned regardless of useGroupedResults().
+     *
+     * @return array
+     */
+    public function getUngroupedResults()
+    {
         // Array of url => [name, url].  Key by URL so that the same database (under alternate
         // names) is not duplicated.
         $databases = [];
 
         // Add databases from search query
+        if ($this->useQuery) {
+            $databases = $this->getResultsFromSearchQuery();
+            if (count($databases) >= $this->limit) {
+                return $databases;
+            }
+        }
+
+        // Add databases from result facets
+        $databases = array_merge(
+            $databases,
+            $this->getResultsFromSearchResultFacets()
+        );
+
+        return $databases;
+    }
+
+    /**
+     * Get a list of databases related to the query.
+     *
+     * @return array
+     */
+    public function getResultsFromSearchQuery()
+    {
+        $nameToDatabase = $this->getDatabases();
+        $databases = [];
         if ($this->useQuery) {
             $queryObject = $this->results->getParams()->getQuery();
             $query = is_callable([$queryObject, 'getString'])
@@ -304,8 +381,39 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
                 }
             }
         }
+        return $databases;
+    }
 
-        // Add databases from result facets
+    /**
+     * Get a list of databases related to the search results.
+     *
+     * @param ?string $databaseType When provided, return only databases that match
+     * the given type.
+     *
+     * @return array
+     */
+    public function getResultsFromSearchResultFacets($databaseType = null)
+    {
+        $resultFacet = $this->resultFacet;
+        if (count($resultFacet) < 1) {
+            $this->logError('At least one facet key is required.');
+            return [];
+        }
+
+        $resultDatabasesTopFacet = array_shift($resultFacet);
+        try {
+            $resultDatabases =
+                $this->results->getFacetList([$resultDatabasesTopFacet => null])[$resultDatabasesTopFacet];
+            while (count($resultFacet) && $resultDatabases) {
+                $resultDatabases = $resultDatabases[array_shift($resultFacet)];
+            }
+        } catch (\Exception $ex) {
+            $this->logError('Error using configured facets to find list of result databases.');
+            return [];
+        }
+
+        $nameToDatabase = $this->getDatabases();
+        $databases = [];
         foreach ($resultDatabases as $resultDatabase) {
             try {
                 $name = $resultDatabase[$this->resultFacetNameKey];
@@ -315,13 +423,15 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
             }
             $databaseInfo = $nameToDatabase[$name] ?? null;
             if ($databaseInfo) {
+                if ($databaseType && !$this->databaseMatchesType($databaseInfo, $databaseType)) {
+                    continue;
+                }
                 $databases[$databaseInfo['url']] = $databaseInfo;
             }
             if (count($databases) >= $this->limit) {
                 return $databases;
             }
         }
-
         return $databases;
     }
 
@@ -340,6 +450,32 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
             $str = preg_replace($this->useQueryReplacePattern, '', $str);
         }
         return $str;
+    }
+
+    /**
+     * Return true if the given database info indicates that the database
+     * belongs to the given type. Or if the type begins with '-', then
+     * returns true if the given database info does *not* include that type.
+     *
+     * @param array  $databaseInfo The database info from LibGuides and/or config
+     * @param string $type         The database type
+     *
+     * @return bool
+     */
+    protected function databaseMatchesType($databaseInfo, $type)
+    {
+        $resultOnMatch = true;
+        if (str_starts_with($type, '-')) {
+            $type = substr($type, 1);
+            $resultOnMatch = false;
+        }
+        foreach (($databaseInfo['az_types'] ?? []) as $databaseType) {
+            $normalizedDatabaseTypeName = preg_replace('/[\s\&]/', '_', $databaseType->name);
+            if ($type == $normalizedDatabaseTypeName) {
+                return $resultOnMatch;
+            }
+        }
+        return !$resultOnMatch;
     }
 
     /**
@@ -369,7 +505,8 @@ class Databases implements RecommendInterface, \Psr\Log\LoggerAwareInterface
         $nameToDatabase = $this->getCachedData('libGuidesAZ-nameToDatabase');
         if (empty($nameToDatabase)) {
             $libGuides = ($this->libGuidesGetter)();
-            $databases = $libGuides->getAZ();
+            $includeTypes = !empty($this->typeGroups);
+            $databases = $libGuides->getAZ($includeTypes);
 
             $nameToDatabase = [];
             foreach ($databases as $database) {
