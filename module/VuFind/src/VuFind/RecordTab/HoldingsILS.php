@@ -33,6 +33,7 @@ use Closure;
 use VuFind\GetThis\GetThisLoader;
 use VuFind\ILS\Connection;
 
+use function call_user_func;
 use function strlen;
 
 /**
