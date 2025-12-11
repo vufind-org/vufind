@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Record Formatter factory.
+ * Server URL Helper factory.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2018.
+ * Copyright (C) Villanova University 2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,13 +21,13 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  API_Formatter
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Http
+ * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFindApi\Formatter;
+namespace VuFind\Http;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -36,23 +36,16 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Record Formatter factory.
+ * Server URL Helper factory.
  *
  * @category VuFind
- * @package  API_Formatter
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Http
+ * @author   Mario Trojan <mario.trojan@uni-tuebingen.de>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class RecordFormatterFactory implements FactoryInterface
+class ServerUrlHelperFactory implements FactoryInterface
 {
-    /**
-     * Record fields configuration file name
-     *
-     * @var string
-     */
-    protected $configFile = 'SearchApiRecordFields.yaml';
-
     /**
      * Create an object
      *
@@ -76,10 +69,8 @@ class RecordFormatterFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
 
-        $recordFields = $container->get(\VuFind\Config\YamlReader::class)
-            ->get($this->configFile);
-        $helperManager = $container->get('ViewHelperManager');
-        $serverUrlHelper = $container->get('VuFind\Http\ServerUrlHelper');
-        return new $requestedName($recordFields, $helperManager, $serverUrlHelper);
+        return new $requestedName(
+            $container->get('ViewRenderer')
+        );
     }
 }

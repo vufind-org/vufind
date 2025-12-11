@@ -499,6 +499,7 @@ $config = [
             'VuFind\Http\CachingDownloader' => 'VuFind\Http\CachingDownloaderFactory',
             'VuFind\Http\GuzzleService' => 'VuFind\Http\GuzzleServiceFactory',
             'VuFind\Http\PhpEnvironment\Request' => 'Laminas\ServiceManager\Factory\InvokableFactory',
+            'VuFind\Http\ServerUrlHelper' => 'VuFind\Http\ServerUrlHelperFactory',
             'VuFind\I18n\Locale\LocaleSettings' => 'VuFind\Service\ServiceWithConfigIniFactory',
             'VuFind\I18n\Sorter' => 'VuFind\I18n\SorterFactory',
             'VuFind\IdentifierLinker\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',

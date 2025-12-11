@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Formatter;
 
+use VuFind\Http\ServerUrlHelper;
 use VuFind\I18n\TranslatableString;
 use VuFindApi\Formatter\RecordFormatter;
 
@@ -91,17 +92,30 @@ class RecordFormatterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Get a mock ServerUrlHelper
+     *
+     * @return ServerUrlHelper
+     */
+    protected function getServerUrlHelper(): ServerUrlHelper
+    {
+        $container = new \VuFindTest\Container\MockContainer($this);
+        $mockServerUrlHelper = $container->get(\VuFind\Http\ServerUrlHelper::class);
+        return $mockServerUrlHelper;
+    }
+
+    /**
      * Get a formatter to test with.
      *
      * @param array $defs Configuration for formatter
      *
      * @return RecordFormatter
      */
-    protected function getFormatter($defs = null)
+    protected function getFormatter(?array $defs = null): RecordFormatter
     {
         return new RecordFormatter(
             $defs ?: $this->getDefaultDefs(),
-            $this->getHelperPluginManager()
+            $this->getHelperPluginManager(),
+            $this->getServerUrlHelper()
         );
     }
 

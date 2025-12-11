@@ -30,6 +30,7 @@
 namespace VuFindApi\Formatter;
 
 use Laminas\View\HelperPluginManager;
+use VuFind\Http\ServerUrlHelper;
 use VuFind\I18n\TranslatableString;
 
 use function is_object;
@@ -46,31 +47,17 @@ use function is_object;
 class RecordFormatter extends BaseFormatter
 {
     /**
-     * Record field definitions
-     *
-     * @var array
-     */
-    protected $recordFields;
-
-    /**
-     * View helper plugin manager
-     *
-     * @var HelperPluginManager
-     */
-    protected $helperManager;
-
-    /**
      * Constructor
      *
-     * @param array               $recordFields  Record field definitions
-     * @param HelperPluginManager $helperManager View helper plugin manager
+     * @param array               $recordFields    Record field definitions
+     * @param HelperPluginManager $helperManager   View helper plugin manager
+     * @param ServerUrlHelper     $serverUrlHelper Server URL helper
      */
     public function __construct(
-        $recordFields,
-        HelperPluginManager $helperManager
+        protected array $recordFields,
+        protected HelperPluginManager $helperManager,
+        protected ServerUrlHelper $serverUrlHelper
     ) {
-        $this->recordFields = $recordFields;
-        $this->helperManager = $helperManager;
     }
 
     /**
@@ -163,9 +150,8 @@ class RecordFormatter extends BaseFormatter
     protected function getRecordPageAbsoluteLink($record)
     {
         $recordPage = $this->getRecordPage($record);
-        $protocol = ($_SERVER['HTTPS'] ?? false) ? 'https' : 'http';
-        $host = $_SERVER['HTTP_HOST'];
-        return $protocol . '://' . $host . $recordPage;
+        $serverUrl = $this->serverUrlHelper->getServerUrl($recordPage);
+        return $serverUrl;
     }
 
     /**
