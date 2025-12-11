@@ -232,12 +232,10 @@ class ChoiceAuthTest extends \PHPUnit\Framework\TestCase
             ->onlyMethods(['__get', '__isset', '__set', '__unset'])
             ->disableOriginalConstructor()->getMock();
         if ($method) {
-            $mock->expects($this->any())
-                ->method('__isset')
+            $mock->method('__isset')
                 ->with($this->equalTo('auth_method'))
                 ->willReturn(true);
-            $mock->expects($this->any())
-                ->method('__get')
+            $mock->method('__get')
                 ->with($this->equalTo('auth_method'))
                 ->willReturn($method);
         }

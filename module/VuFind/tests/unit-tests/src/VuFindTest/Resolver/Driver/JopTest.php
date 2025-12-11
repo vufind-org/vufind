@@ -228,9 +228,7 @@ class JopTest extends \PHPUnit\Framework\TestCase
         $client = new \Laminas\Http\Client();
         $client->setAdapter($adapter);
 
-        $ipReader = $this->getMockBuilder(\VuFind\Net\UserIpReader::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $ipReader = $this->createMock(\VuFind\Net\UserIpReader::class);
         $ipReader->expects($this->once())->method('getUserIp')
             ->willReturn($ipAddr);
         $conn = new Jop($this->openUrlConfig['OpenURL']['url'], $client, $ipReader);

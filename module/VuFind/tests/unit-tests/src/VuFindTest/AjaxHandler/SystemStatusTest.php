@@ -142,9 +142,8 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockRequestParams(array $requestParams = []): Params
     {
-        $params = $this->getMockBuilder(Params::class)->getMock();
-        $params->expects($this->any())
-            ->method('fromQuery')
+        $params = $this->createMock(Params::class);
+        $params->method('fromQuery')
             ->willReturnCallback(
                 function ($param, $default = null) use ($requestParams) {
                     return $requestParams[$param] ?? $default;

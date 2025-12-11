@@ -84,7 +84,7 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
     {
         $entityManager = $this->createMock(EntityManager::class);
         $queryObject = $this->createMock(Query::class);
-        $queryObject->expects($this->any())->method('getSingleColumnResult')->willReturn([]);
+        $queryObject->method('getSingleColumnResult')->willReturn([]);
         $queryObject->expects($this->once())->method('setParameters')->willReturnCallback(
             function ($params) use ($expected): void {
                 $params = array_map(
@@ -94,7 +94,7 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
                 $this->assertEquals($expected['params'], $params);
             }
         );
-        $queryObject->expects($this->any())->method('getResult')->willReturn([]);
+        $queryObject->method('getResult')->willReturn([]);
         $entityManager->expects($this->once())->method('createQuery')->willReturnCallback(
             function ($dql) use ($expected, $queryObject) {
                 // Assert that all the set parameters have been added to the dql properly in form of :param
@@ -258,7 +258,7 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
         } else {
             $referenceId = $params[0];
         }
-        $mockUser->expects($this->any())->method('getId')->willReturn($referenceId);
+        $mockUser->method('getId')->willReturn($referenceId);
         $service = $this->getService($this->getEntityManager($expected));
         $service->expects($this->once())->method('getDoctrineReference')->willReturnCallback(
             function ($className, $userOrId) use ($referenceId, $mockUser) {
@@ -473,7 +473,7 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
             } else {
                 $referenceId = $params[2];
             }
-            $mockUser->expects($this->any())->method('getId')->willReturn($referenceId);
+            $mockUser->method('getId')->willReturn($referenceId);
 
             $service->expects($this->once())->method('getDoctrineReference')->willReturnCallback(
                 function ($className, $userOrId) use ($referenceId, $mockUser) {

@@ -423,7 +423,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
         // the first call to getItem returns null, then it expects a call
         // to setItem, and then the second call to getItem will return an
         // expected value.
-        $cache = $this->getMockBuilder(StorageInterface::class)->getMock();
+        $cache = $this->createMock(StorageInterface::class);
         $cache->expects($this->exactly(2))->method('getItem')
             ->with($this->equalTo($key))
             ->willReturnOnConsecutiveCalls(null, $expected);

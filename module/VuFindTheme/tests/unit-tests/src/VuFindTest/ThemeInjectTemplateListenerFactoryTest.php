@@ -64,8 +64,7 @@ class ThemeInjectTemplateListenerFactoryTest extends TestCase
         ];
         $container->set('config', $testConfig);
         $modules = ['Laminas\Foo', 'LaminasBar', 'VuFind\Foo', 'VuFind'];
-        $mockModuleManager = $this->getMockBuilder(ModuleManager::class)
-            ->disableOriginalConstructor()->getMock();
+        $mockModuleManager = $this->createMock(ModuleManager::class);
         $mockModuleManager->expects($this->once())->method('getModules')
             ->willReturn($modules);
         $container->set('ModuleManager', $mockModuleManager);

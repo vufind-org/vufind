@@ -115,6 +115,18 @@ class PersistenceManager implements DbServiceAwareInterface
     }
 
     /**
+     * Clear all entities from EntityManager.
+     *
+     * Allows all managed entities to be detached so that they don't pile up during batch processing.
+     *
+     * @return void
+     */
+    public function clearAllEntities(): void
+    {
+        $this->entityManager->clear();
+    }
+
+    /**
      * Detach an entity from being managed.
      *
      * Allows entities to become unmanaged so that they don't pile up in the EntityManager during batch processing.

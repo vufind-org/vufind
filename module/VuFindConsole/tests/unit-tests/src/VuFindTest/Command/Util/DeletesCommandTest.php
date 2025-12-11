@@ -52,9 +52,7 @@ class DeletesCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockWriter()
     {
-        return $this->getMockBuilder(\VuFind\Solr\Writer::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(\VuFind\Solr\Writer::class);
     }
 
     /**
