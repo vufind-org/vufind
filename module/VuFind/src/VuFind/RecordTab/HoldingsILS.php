@@ -29,6 +29,7 @@
 
 namespace VuFind\RecordTab;
 
+use Closure;
 use VuFind\GetThis\GetThisLoader;
 use VuFind\ILS\Connection;
 
@@ -53,21 +54,29 @@ class HoldingsILS extends AbstractBase
     protected $template;
 
     /**
+     * GetThis if enabled in the config
+     *
+     * @var ?GetThisLoader
+     */
+    protected $getThisLoader;
+
+    /**
      * Constructor
      *
-     * @param ?Connection    $catalog       ILS connection to use to check for holdings before
-     *                                      displaying the tab; may be set to null if no check is
-     *                                      needed.
-     * @param ?string        $template      Holdings template to use
-     * @param string|false   $hideWhenEmpty Whether the holdings tab should be hidden when empty or
-     *                                      not
-     * @param ?GetThisLoader $getThisLoader GetThis if enabled in the config
+     * @param ?Connection  $catalog             ILS connection to use to check for holdings before
+     *                                          displaying the tab; may be set to null if no check is
+     *                                          needed.
+     * @param ?string      $template            Holdings template to use
+     * @param string|false $hideWhenEmpty       Whether the holdings tab should be hidden when empty or
+     *                                          not
+     * @param ?Closure     $getThisLoaderGetter Closure to get the getThisLoader if enabled in the config
+     *                                          And prevent loading it if not necessary
      */
     public function __construct(
         protected ?Connection $catalog = null,
         string $template = null,
         protected string|false $hideWhenEmpty = false,
-        protected ?GetThisLoader $getThisLoader = null
+        protected ?Closure $getThisLoaderGetter = null
     ) {
         $this->template = $template ?? 'standard';
     }
@@ -185,13 +194,13 @@ class HoldingsILS extends AbstractBase
      * @param int $page           Currently selected page of the items paginator
      * @param int $itemLimit      Max. no of items per page
      *
-     * @return \Laminas\Paginator\Paginator
+     * @return ?\Laminas\Paginator\Paginator
      */
     public function getPaginator($totalItemCount, $page, $itemLimit)
     {
         // Return if a paginator is not needed or not supported ($itemLimit = null)
         if (!$itemLimit || $totalItemCount <= $itemLimit) {
-            return;
+            return null;
         }
 
         // Create the paginator
@@ -214,6 +223,13 @@ class HoldingsILS extends AbstractBase
      */
     public function getGetThisLoader(): ?GetThisLoader
     {
+        if (!isset($this->getThisLoader)) {
+            if (isset($this->getThisLoaderGetter)) {
+                $this->getThisLoader = call_user_func($this->getThisLoaderGetter);
+            } else {
+                $this->getThisLoader = null;
+            }
+        }
         return $this->getThisLoader;
     }
 }
