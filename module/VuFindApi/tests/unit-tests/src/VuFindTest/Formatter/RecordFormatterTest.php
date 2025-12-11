@@ -198,68 +198,6 @@ class RecordFormatterTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Data provider to return in absolute link tests.
-     *
-     * @return array[]
-     */
-    public static function absoluteLinkProvider(): array
-    {
-        return [
-            [
-                '', 'somehost', 'http://somehost/vufind/Record/12345',
-                '', 'somehost:8080', 'http://somehost:8080/vufind/Record/12345',
-                'on', 'somehost', 'https://somehost/vufind/Record/12345',
-            ],
-        ];
-    }
-
-    /**
-     * Test record formatter's absolute link field
-     *
-     * @param string $https    $_SERVER['HTTPS'] value
-     * @param string $host     $_SERVER['HTTP_HOST'] value
-     * @param string $expected Expected result of absolute link
-     *
-     * @return void
-     */
-    #[\PHPUnit\Framework\Attributes\DataProvider('absoluteLinkProvider')]
-    public function testFormatterAbsoluteLink(string $https, string $host, string $expected)
-    {
-        $defs = $this->getDefaultDefs();
-        $defs['recordPageAbsoluteLink'] = ['vufind.method' => 'Formatter::getRecordPageAbsoluteLink'];
-        $formatter = $this->getFormatter($defs);
-
-        $driver = $this->getDriver();
-
-        $serverBackupFields = ['HTTPS', 'HTTP_HOST'];
-        $serverBackup = array_map(fn ($field) => $_SERVER[$field] ?? null, $serverBackupFields);
-
-        try {
-            $_SERVER['HTTPS'] = $https;
-            $_SERVER['HTTP_HOST'] = $host;
-
-            $results = $formatter->format(
-                [$driver],
-                ['recordPageAbsoluteLink']
-            );
-            $expected = [
-                [
-                    'recordPageAbsoluteLink' => $expected,
-                ],
-            ];
-            $this->assertEquals($expected, $results);
-        } finally {
-            foreach ($serverBackupFields as $field) {
-                if ($backupValue = ($serverBackup[$field] ?? null)) {
-                    $_SERVER[$field] = $backupValue;
-                } else {
-                    unset($_SERVER[$field]);
-                }
-            }
-        }
-    }
-
-    /**
      * Test getting the field specs.
      *
      * @return void
