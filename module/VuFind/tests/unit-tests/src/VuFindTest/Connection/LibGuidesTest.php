@@ -71,7 +71,7 @@ class LibGuidesTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetAz()
+    public function testGetAz(): void
     {
         $config = $this->getConfig();
         $client = $this->getClient('az');
