@@ -74,9 +74,9 @@ class LibGuidesTest extends \PHPUnit\Framework\TestCase
     public static function getAzProvider(): array
     {
         return [
-            [ true, 4 ],
-            [ false, 5 ],
-            [ null, 4 ],
+            'exclude hidden (explicitly)' => [ true, 4 ],
+            'do not exclude hidden' => [ false, 5 ],
+            'exclude hidden (by default)' => [ null, 4 ],
         ];
     }
 
