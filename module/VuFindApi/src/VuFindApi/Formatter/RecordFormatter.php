@@ -150,8 +150,7 @@ class RecordFormatter extends BaseFormatter
     protected function getRecordPageAbsoluteLink($record)
     {
         $recordPage = $this->getRecordPage($record);
-        $serverUrl = $this->serverUrlHelper->getServerUrl($recordPage);
-        return $serverUrl;
+        return $this->serverUrlHelper->getServerUrl($recordPage);
     }
 
     /**
