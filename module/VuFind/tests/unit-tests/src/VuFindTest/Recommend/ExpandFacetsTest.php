@@ -134,10 +134,8 @@ class ExpandFacetsTest extends \PHPUnit\Framework\TestCase
         if (null === $params) {
             $params = $this->getMockParams();
         }
-        $results = $this->getMockBuilder(\VuFind\Search\Solr\Results::class)
-            ->disableOriginalConstructor()->getMock();
-        $results->expects($this->any())->method('getParams')
-            ->willReturn($params);
+        $results = $this->createMock(\VuFind\Search\Solr\Results::class);
+        $results->method('getParams')->willReturn($params);
         return $results;
     }
 
@@ -153,10 +151,8 @@ class ExpandFacetsTest extends \PHPUnit\Framework\TestCase
         if (null === $query) {
             $query = new \VuFindSearch\Query\Query('foo', 'bar');
         }
-        $params = $this->getMockBuilder(\VuFind\Search\Solr\Params::class)
-            ->disableOriginalConstructor()->getMock();
-        $params->expects($this->any())->method('getQuery')
-            ->willReturn($query);
+        $params = $this->createMock(\VuFind\Search\Solr\Params::class);
+        $params->method('getQuery')->willReturn($query);
         return $params;
     }
 }

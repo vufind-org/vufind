@@ -321,8 +321,8 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
     protected function getDriver(string $id = 'test', string $source = 'Solr'): MockObject&RecordDriver
     {
         $driver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
-        $driver->expects($this->any())->method('getUniqueId')->willReturn($id);
-        $driver->expects($this->any())->method('getSourceIdentifier')->willReturn($source);
+        $driver->method('getUniqueId')->willReturn($id);
+        $driver->method('getSourceIdentifier')->willReturn($source);
         return $driver;
     }
 
@@ -392,8 +392,8 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
     protected function getCollection(array $records): MockObject&RecordCollectionInterface
     {
         $collection = $this->createMock(RecordCollectionInterface::class);
-        $collection->expects($this->any())->method('getRecords')->willReturn($records);
-        $collection->expects($this->any())->method('count')->willReturn(count($records));
+        $collection->method('getRecords')->willReturn($records);
+        $collection->method('count')->willReturn(count($records));
         return $collection;
     }
 }

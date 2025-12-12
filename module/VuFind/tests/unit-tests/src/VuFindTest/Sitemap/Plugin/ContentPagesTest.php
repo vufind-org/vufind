@@ -164,8 +164,7 @@ class ContentPagesTest extends \PHPUnit\Framework\TestCase
             $this->assertEquals(['name'], array_keys($options));
             return $options['name'] . '/' . $params['page'];
         };
-        $router->expects($this->any())->method('assemble')
-            ->willReturnCallback($callback);
+        $router->method('assemble')->willReturnCallback($callback);
         return $router;
     }
 

@@ -659,7 +659,7 @@ class PAIATest extends \VuFindTest\Unit\ILSDriverTestCase
             ->setConstructorArgs([$dateConverter, $sessionManager])
             ->onlyMethods(['getScope'])
             ->getMock();
-        $conn->expects($this->any())->method('getScope')
+        $conn->method('getScope')
             ->willReturn(
                 [
                 'write_items',

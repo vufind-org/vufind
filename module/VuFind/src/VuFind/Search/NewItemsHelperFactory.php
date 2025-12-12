@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Factory for IlsRecords controller plugin.
+ * Factory for NewItemsHelper.
  *
  * PHP version 8
  *
@@ -21,13 +21,13 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Controller_Plugins
+ * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
 
-namespace VuFind\Controller\Plugin;
+namespace VuFind\Search;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -36,15 +36,15 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for IlsRecords controller plugin.
+ * Factory for NewItemsHelper.
  *
  * @category VuFind
- * @package  Controller_Plugins
+ * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-class IlsRecordsFactory implements FactoryInterface
+class NewItemsHelperFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -68,9 +68,9 @@ class IlsRecordsFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        return new $requestedName(
-            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config'),
-            $container->get(\VuFind\Record\Loader::class)
-        );
+        $search = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('searches');
+        $config = $search['NewItem'] ?? [];
+        $catalog = $container->get(\VuFind\ILS\Connection::class);
+        return new $requestedName($config, $catalog);
     }
 }

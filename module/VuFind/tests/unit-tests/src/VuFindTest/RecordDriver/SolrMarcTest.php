@@ -378,9 +378,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
         $record = new \VuFind\Marc\MarcReader($xml);
         $obj = $this->getMockBuilder(\VuFind\RecordDriver\SolrMarc::class)
             ->onlyMethods(['getMarcReader'])->getMock();
-        $obj->expects($this->any())
-            ->method('getMarcReader')
-            ->willReturn($record);
+        $obj->method('getMarcReader')->willReturn($record);
 
         $reflection = new \ReflectionObject($obj);
 

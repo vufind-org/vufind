@@ -52,9 +52,7 @@ class AlphabeticBrowseCommandTest extends TestCase
     {
         $params = new \VuFindSearch\ParamBag([]);
         $backendId = 'bar';
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\Solr\Backend::class);
         $backend->expects($this->once())->method('getIdentifier')
             ->willReturn($backendId);
         $backend->expects($this->once())->method('alphabeticBrowse')

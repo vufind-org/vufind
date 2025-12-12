@@ -1,11 +1,11 @@
 <?php
 
 /**
- * VuFind Action Helper - New Items Support Methods
+ * VuFind Helper - New Items Support Methods
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,70 +21,65 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Controller_Plugins
+ * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
 
-namespace VuFind\Controller\Plugin;
+namespace VuFind\Search;
 
-use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 use Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger;
-use VuFind\Config\Config;
+use VuFind\ILS\Connection;
 
 use function array_slice;
 use function count;
 use function intval;
-use function is_string;
 
 /**
- * Action helper to perform new items-related actions
+ * Helper to perform new items-related actions
  *
  * @category VuFind
- * @package  Controller_Plugins
+ * @package  Search
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class NewItems extends AbstractPlugin
+class NewItemsHelper
 {
-    /**
-     * Configuration
-     *
-     * @var Config
-     */
-    protected $config;
-
     /**
      * Constructor
      *
-     * @param Config $config Configuration
+     * @param array      $config  Configuration
+     * @param Connection $catalog ILS connection
      */
-    public function __construct(Config $config)
+    public function __construct(protected array $config, protected Connection $catalog)
     {
-        $this->config = $config;
     }
 
     /**
      * Figure out which bib IDs to load from the ILS.
      *
-     * @param \VuFind\ILS\Connection     $catalog ILS connection
-     * @param \VuFind\Search\Solr\Params $params  Solr parameters
-     * @param string                     $range   Range setting
-     * @param string                     $dept    Department setting
-     * @param FlashMessenger             $flash   Flash messenger
+     * @param \VuFind\Search\Solr\Params $params Solr parameters
+     * @param int                        $range  Range setting (max age in days)
+     * @param ?string                    $dept   Department setting (corresponds with fund ID
+     * in ILS driver -- set to null to skip filtering by this criterion)
+     * @param FlashMessenger             $flash  Flash messenger
      *
      * @return array
      */
-    public function getBibIDsFromCatalog($catalog, $params, $range, $dept, $flash)
-    {
+    public function getBibIDsFromCatalog(
+        \VuFind\Search\Solr\Params $params,
+        int $range,
+        ?string $dept,
+        FlashMessenger $flash
+    ): array {
         // The code always pulls in enough catalog results to get a fixed number
         // of pages worth of Solr results. Note that if the Solr index is out of
         // sync with the ILS, we may see fewer results than expected.
         $resultPages = $this->getResultPages();
         $perPage = $params->getLimit();
-        $newItems = $catalog->getNewItems(1, $perPage * $resultPages, $range, $dept);
+        $newItems = $this->catalog->getNewItems(1, $perPage * $resultPages, $range, $dept);
 
         // Build a list of unique IDs
         $bibIDs = [];
@@ -111,7 +106,7 @@ class NewItems extends AbstractPlugin
      */
     public function getDefaultSort(): ?string
     {
-        return $this->config->default_sort ?? null;
+        return $this->config['default_sort'] ?? null;
     }
 
     /**
@@ -121,7 +116,7 @@ class NewItems extends AbstractPlugin
      */
     public function includeFacets(): bool
     {
-        return $this->config->include_facets ?? false;
+        return $this->config['include_facets'] ?? false;
     }
 
     /**
@@ -129,12 +124,11 @@ class NewItems extends AbstractPlugin
      *
      * @return array
      */
-    public function getFundList()
+    public function getFundList(): array
     {
         if ($this->getMethod() == 'ils') {
-            $catalog = $this->getController()->getILS();
-            return $catalog->checkCapability('getFunds')
-                ? $catalog->getFunds() : [];
+            return $this->catalog->checkCapability('getFunds')
+                ? $this->catalog->getFunds() : [];
         }
         return [];
     }
@@ -144,19 +138,9 @@ class NewItems extends AbstractPlugin
      *
      * @return array
      */
-    public function getHiddenFilters()
+    public function getHiddenFilters(): array
     {
-        if (!isset($this->config->filter)) {
-            return [];
-        }
-        if (is_string($this->config->filter)) {
-            return [$this->config->filter];
-        }
-        $hiddenFilters = [];
-        foreach ($this->config->filter as $current) {
-            $hiddenFilters[] = $current;
-        }
-        return $hiddenFilters;
+        return (array)($this->config['filter'] ?? []);
     }
 
     /**
@@ -164,7 +148,7 @@ class NewItems extends AbstractPlugin
      *
      * @return int
      */
-    public function getMaxAge()
+    public function getMaxAge(): int
     {
         return max($this->getRanges());
     }
@@ -174,9 +158,9 @@ class NewItems extends AbstractPlugin
      *
      * @return string
      */
-    public function getMethod()
+    public function getMethod(): string
     {
-        return $this->config->method ?? 'ils';
+        return $this->config['method'] ?? 'ils';
     }
 
     /**
@@ -184,13 +168,13 @@ class NewItems extends AbstractPlugin
      *
      * @return array
      */
-    public function getRanges()
+    public function getRanges(): array
     {
         // Find out if there are user configured range options; if not,
         // default to the standard 1/5/30 days:
         $ranges = [];
-        if (isset($this->config->ranges)) {
-            $tmp = explode(',', $this->config->ranges);
+        if (isset($this->config['ranges'])) {
+            $tmp = explode(',', $this->config['ranges']);
             foreach ($tmp as $range) {
                 $range = intval($range);
                 if ($range > 0) {
@@ -209,10 +193,10 @@ class NewItems extends AbstractPlugin
      *
      * @return int
      */
-    public function getResultPages()
+    public function getResultPages(): int
     {
-        if (isset($this->config->result_pages)) {
-            $resultPages = intval($this->config->result_pages);
+        if (isset($this->config['result_pages'])) {
+            $resultPages = intval($this->config['result_pages']);
             if ($resultPages < 1) {
                 $resultPages = 10;
             }
@@ -229,7 +213,7 @@ class NewItems extends AbstractPlugin
      *
      * @return string
      */
-    public function getSolrFilter($range)
+    public function getSolrFilter(int $range): string
     {
         return 'first_indexed:[NOW-' . $range . 'DAY TO NOW]';
     }

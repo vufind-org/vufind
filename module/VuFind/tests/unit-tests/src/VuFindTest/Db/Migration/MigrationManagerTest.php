@@ -109,7 +109,7 @@ class MigrationManagerTest extends \PHPUnit\Framework\TestCase
             fn ($version) => array_map(fn ($file) => "$version/$file.sql", $testData[$version])
         );
         $manager = $this->getMockMigrationManager(['getAppliedMigrations'], loader: $loader);
-        $manager->expects($this->any())->method('getAppliedMigrations')->willReturn([]);
+        $manager->method('getAppliedMigrations')->willReturn([]);
         $this->assertEquals(
             [
                 '/fake/path/9.0/001-bar.sql',
