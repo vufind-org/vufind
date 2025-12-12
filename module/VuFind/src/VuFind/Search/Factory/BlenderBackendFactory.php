@@ -109,7 +109,9 @@ class BlenderBackendFactory implements FactoryInterface
             $backends[$backendId] = $backendManager->get($backendId);
         }
         // Legacy code may already include the '.yaml' extension; ignore it for safety:
-        $blenderMappings = $yamlReader->get(str_ends_with($this->mappingsConfig, '.yaml') ? $this->mappingsConfig : $this->mappingsConfig . '.yaml');
+        $blenderMappings = $yamlReader->get(str_ends_with($this->mappingsConfig, '.yaml')
+            ? $this->mappingsConfig
+            : $this->mappingsConfig . '.yaml');
         $backend = new Backend(
             $backends,
             $blenderConfig,
