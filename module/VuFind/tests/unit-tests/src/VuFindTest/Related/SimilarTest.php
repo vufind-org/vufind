@@ -56,9 +56,7 @@ class SimilarTest extends \PHPUnit\Framework\TestCase
             ->getMock();
         $driver->expects($this->once())->method('getUniqueId')->willReturn('fakeid');
 
-        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
         $commandObj->expects($this->once())->method('getResult')
             ->willReturn(['fakeresponse']);
         $checkCommand = function ($command) {

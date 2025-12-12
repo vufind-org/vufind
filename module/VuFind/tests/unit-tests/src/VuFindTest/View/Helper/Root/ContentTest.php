@@ -62,8 +62,7 @@ class ContentTest extends \PHPUnit\Framework\TestCase
         array $context = ['bar' => 'baz'],
         ?string $pattern = null
     ): void {
-        $mockTemplateBased = $this->getMockBuilder(TemplateBased::class)
-            ->disableOriginalConstructor()->getMock();
+        $mockTemplateBased = $this->createMock(TemplateBased::class);
         $contentBlockContext = ['context' => 'fakeContext'];
         $mockTemplateBased->expects($this->once())->method('getContext')
             ->with(
@@ -71,8 +70,7 @@ class ContentTest extends \PHPUnit\Framework\TestCase
                 $this->equalTo($pageName),
                 $this->equalTo($pattern)
             )->willReturn($contentBlockContext);
-        $mockContext = $this->getMockBuilder(Context::class)
-            ->disableOriginalConstructor()->getMock();
+        $mockContext = $this->createMock(Context::class);
         $mockContext->expects($this->once())->method('renderInContext')
             ->with(
                 $this->equalTo('ContentBlock/TemplateBased.phtml'),

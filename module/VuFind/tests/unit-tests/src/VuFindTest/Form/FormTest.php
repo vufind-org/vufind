@@ -413,7 +413,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                 ->disableOriginalConstructor()
                 ->onlyMethods(['get'])
                 ->getMock();
-            $mock->expects($this->any())->method('get')
+            $mock->method('get')
                 ->with($this->equalTo('FeedbackForms.yaml'))
                 ->willReturn($config);
             $this->mockTestFormYamlReader = $mock;

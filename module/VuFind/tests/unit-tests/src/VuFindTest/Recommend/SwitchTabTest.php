@@ -192,9 +192,7 @@ class SwitchTabTest extends \PHPUnit\Framework\TestCase
     public function testProcess(): void
     {
         $obj = new SwitchTab();
-        $results = $this->getMockBuilder(\VuFind\Search\Base\Results::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $results = $this->createMock(\VuFind\Search\Base\Results::class);
         $this->assertNull($obj->process($results));
     }
 }

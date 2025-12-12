@@ -269,20 +269,12 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
         array $tabFilterConfig = [],
         int $tabFilterConfigCalls = 0
     ): SearchTabs {
-        $searchService = $this->getMockBuilder(SearchService::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $recordLoader = $this->getMockBuilder(Loader::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $searchService = $this->createMock(SearchService::class);
+        $recordLoader = $this->createMock(Loader::class);
         $solr = new Results($this->getSolrParams(), $searchService, $recordLoader);
 
-        $resultsPM = $this->getMockBuilder(ResultsPluginManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $resultsPM->expects($this->any())
-            ->method('get')
-            ->willReturn($solr);
+        $resultsPM = $this->createMock(ResultsPluginManager::class);
+        $resultsPM->method('get')->willReturn($solr);
 
         $request = Request::fromString('GET / HTTP/1.1');
         if ($filters) {
@@ -293,9 +285,7 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
             $request->getQuery()->hiddenFilters = $queryFilters;
         }
 
-        $url = $this->getMockBuilder(Url::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $url = $this->createMock(Url::class);
         $searchTabsHelper = new SearchTabsHelper(
             $resultsPM,
             $tabConfig,
@@ -305,9 +295,7 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
                 'Solr:filtered' => 'logged-in',
             ]
         );
-        $searchMemory = $this->getMockBuilder(SearchMemory::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $searchMemory = $this->createMock(SearchMemory::class);
         $searchMemory->expects($this->exactly($lastFiltersCalls))
             ->method('getLastHiddenFilters')
             ->willReturn($lastFilters);
@@ -324,15 +312,9 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
      */
     protected function getSolrParams(): Params
     {
-        $solrOptions = $this->getMockBuilder(\VuFind\Search\Solr\Options::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $solrOptions->expects($this->any())
-            ->method('getSearchClassId')
-            ->willReturn('Solr');
-        $solrOptions->expects($this->any())
-            ->method('getDefaultLimit')
-            ->willReturn(20);
+        $solrOptions = $this->createMock(\VuFind\Search\Solr\Options::class);
+        $solrOptions->method('getSearchClassId')->willReturn('Solr');
+        $solrOptions->method('getDefaultLimit')->willReturn(20);
         $configManager = $this->createMock(ConfigManagerInterface::class);
         return new \VuFind\Search\Solr\Params($solrOptions, $configManager);
     }

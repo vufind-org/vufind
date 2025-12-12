@@ -64,9 +64,7 @@ class YamlReaderTest extends \PHPUnit\Framework\TestCase
             ->willReturn(null);
         $cache->expects($this->once())->method('setItem')
             ->with($this->matchesRegularExpression('/\d+/'), $this->equalTo($yamlData));
-        $manager = $this->getMockBuilder(\VuFind\Cache\Manager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $manager = $this->createMock(\VuFind\Cache\Manager::class);
         $manager->expects($this->once())->method('getCache')
             ->with($this->equalTo('yaml'))
             ->willReturn($cache);
@@ -95,9 +93,7 @@ class YamlReaderTest extends \PHPUnit\Framework\TestCase
         $cache->expects($this->once())->method('getItem')
             ->willReturn($yamlData);
         $cache->expects($this->never())->method('setItem');
-        $manager = $this->getMockBuilder(\VuFind\Cache\Manager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $manager = $this->createMock(\VuFind\Cache\Manager::class);
         $manager->expects($this->once())->method('getCache')
             ->with($this->equalTo('yaml'))
             ->willReturn($cache);
@@ -124,9 +120,7 @@ class YamlReaderTest extends \PHPUnit\Framework\TestCase
         $cache->expects($this->exactly(2))->method('getItem')
             ->willReturn($yamlData);
         $cache->expects($this->never())->method('setItem');
-        $manager = $this->getMockBuilder(\VuFind\Cache\Manager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $manager = $this->createMock(\VuFind\Cache\Manager::class);
         $manager->expects($this->exactly(2))->method('getCache')
             ->with($this->equalTo('yaml'))
             ->willReturn($cache);

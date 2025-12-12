@@ -16,6 +16,7 @@
   // Load Javascript only if list view parameter is NOT full:
   if ($this->params->getOptions()->getListViewOption() != 'full') {
     $this->assetManager()->appendScriptLink('record.js');
+    $this->assetManager()->appendScriptLink('channels.js');
     $this->assetManager()->appendScriptLink('embedded_record.js');
   }
 

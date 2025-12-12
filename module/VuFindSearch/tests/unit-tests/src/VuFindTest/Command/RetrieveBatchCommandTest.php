@@ -56,8 +56,7 @@ class RetrieveBatchCommandTest extends TestCase
         $params = new ParamBag(['foo' => 'bar']);
         $backendId = 'bar';
         $ids = ['id1', 'id2'];
-        $backend = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\Solr\Backend::class);
         $command = new RetrieveBatchCommand($backendId, $ids, $params);
         $backend->expects($this->once())->method('getIdentifier')
             ->willReturn($backendId);
@@ -80,12 +79,9 @@ class RetrieveBatchCommandTest extends TestCase
         $backendId = 'bar';
         $ids = ['id1', 'id2'];
         $command = new RetrieveBatchCommand($backendId, $ids, $params);
-        $backend = $this->getMockBuilder(\VuFindSearch\Backend\BackendInterface::class)
-            ->disableOriginalConstructor()->getMock();
-        $rci = $this->getMockBuilder(\VuFindSearch\Response\RecordCollectionInterface::class)
-            ->disableOriginalConstructor()->getMock();
-        $record = $this->getMockBuilder(\VuFindSearch\Response\RecordInterface::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\BackendInterface::class);
+        $rci = $this->createMock(\VuFindSearch\Response\RecordCollectionInterface::class);
+        $record = $this->createMock(\VuFindSearch\Response\RecordInterface::class);
         $this->expectConsecutiveCalls(
             $backend,
             'retrieve',

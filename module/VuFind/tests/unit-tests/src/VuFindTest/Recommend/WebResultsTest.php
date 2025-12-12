@@ -55,9 +55,7 @@ class WebResultsTest extends \PHPUnit\Framework\TestCase
         $class = new \ReflectionClass(WebResults::class);
         $method = $class->getMethod('getSearchClassId');
         $method->setAccessible(true);
-        $runner = $this->getMockBuilder(\VuFind\Search\SearchRunner::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $runner = $this->createMock(\VuFind\Search\SearchRunner::class);
         $obj = new WebResults($runner, $this->getMockConfigManager());
 
         $this->assertSame('SolrWeb', $method->invoke($obj));

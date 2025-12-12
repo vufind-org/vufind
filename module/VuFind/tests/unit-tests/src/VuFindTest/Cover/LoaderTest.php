@@ -184,7 +184,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
             $theme = new ThemeInfo($this->getThemeDir(), $this->testTheme);
         }
         if (null === $httpService) {
-            $httpService = $this->getMockBuilder(\VuFindHttp\HttpService::class)->getMock();
+            $httpService = $this->createMock(\VuFindHttp\HttpService::class);
         }
         if ($mock) {
             $mock = array_unique(array_merge($mock, ['debug']));

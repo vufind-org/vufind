@@ -57,8 +57,7 @@ class RandomCommandTest extends TestCase
         $query = new Query('foo');
         $params = new ParamBag(['foo' => 'bar']);
         $backendId = 'bar';
-        $backend = $this->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\Solr\Backend::class);
         $command = new RandomCommand($backendId, $query, 10, $params);
         $backend->expects($this->once())->method('getIdentifier')
             ->willReturn($backendId);
@@ -81,11 +80,9 @@ class RandomCommandTest extends TestCase
         $query = new Query('foo');
         $params = new ParamBag(['foo' => 'bar']);
         $backendId = 'bar';
-        $backend = $this->getMockBuilder(\VuFindSearch\Backend\BackendInterface::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\BackendInterface::class);
         $command = new RandomCommand($backendId, $query, 10, $params);
-        $rci = $this->getMockBuilder(\VuFindSearch\Response\RecordCollectionInterface::class)
-            ->getMock();
+        $rci = $this->createMock(\VuFindSearch\Response\RecordCollectionInterface::class);
         $rci->expects($this->once())->method('getTotal')
             ->willReturn(0);
         $backend->expects($this->once())->method('search')
@@ -108,8 +105,7 @@ class RandomCommandTest extends TestCase
         $query = new Query('foo');
         $params = new ParamBag(['foo' => 'bar']);
         $backendId = 'bar';
-        $backend = $this->getMockBuilder(\VuFindSearch\Backend\BackendInterface::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\BackendInterface::class);
         $command = new RandomCommand($backendId, $query, 10, $params);
         $rci = $this->getMockBuilder(\VuFindSearch\Response\AbstractRecordCollection::class)
             ->onlyMethods([
@@ -156,11 +152,9 @@ class RandomCommandTest extends TestCase
         $params = new ParamBag(['foo' => 'bar']);
         $backendId = 'bar';
         $limit = 10;
-        $backend = $this->getMockBuilder(\VuFindSearch\Backend\BackendInterface::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\BackendInterface::class);
         $command = new RandomCommand($backendId, $query, 10, $params);
-        $rci = $this->getMockBuilder(\VuFindSearch\Response\RecordCollectionInterface::class)
-            ->getMock();
+        $rci = $this->createMock(\VuFindSearch\Response\RecordCollectionInterface::class);
         $rci->expects($this->once())->method('getTotal')
             ->willReturn(20);
         $inputs = [[$query, '0', '0', $params]];
@@ -170,8 +164,7 @@ class RandomCommandTest extends TestCase
             $outputs[] = $rci;
         }
         $this->expectConsecutiveCalls($backend, 'search', $inputs, $outputs);
-        $record = $this->getMockBuilder(\VuFindSearch\Response\RecordInterface::class)
-            ->disableOriginalConstructor()->getMock();
+        $record = $this->createMock(\VuFindSearch\Response\RecordInterface::class);
         $rci->expects($this->exactly(9))->method('first')->willReturn($record);
         $rci->expects($this->exactly(9))->method('add')->with($this->equalTo($record));
         $this->assertEquals($rci, $command->execute($backend)->getResult());

@@ -138,7 +138,7 @@ class RouterTest extends \PHPUnit\Framework\TestCase
             $theme = new ThemeInfo($this->getThemeDir(), $this->testTheme);
         }
         if (null === $httpService) {
-            $httpService = $this->getMockBuilder(\VuFindHttp\HttpService::class)->getMock();
+            $httpService = $this->createMock(\VuFindHttp\HttpService::class);
         }
         if ($mock) {
             return $this->getMockBuilder(__NAMESPACE__ . '\MockLoader')
