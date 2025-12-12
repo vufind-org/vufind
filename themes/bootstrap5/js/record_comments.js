@@ -113,7 +113,10 @@ VuFind.register('recordComments', function RecordComments() {
           loadingSpinner.classList.add('hidden');
           return;
         }
-        let tab = form.closest('.tab-pane');
+        let tab = form.closest('.list-tab-content');
+        if (!tab) {
+          tab = form.closest('.tab-pane');
+        }
         if (tab) {
           _refreshCommentList(tab, id, recordSource);
         }

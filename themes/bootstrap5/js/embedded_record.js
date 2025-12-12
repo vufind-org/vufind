@@ -43,6 +43,82 @@ VuFind.register('embedded', function embedded() {
   }
 
   /**
+   * Load the content for a specific record tab via AJAX.
+   * @param {string}  tabId    The ID of the tab to load.
+   * @param {boolean} [_click] Whether to trigger a click on the tab after loading (default = false).
+   * @returns {boolean} Returns false if the tab redirects to a new page, otherwise true.
+   */
+  function ajaxLoadTab(tabId, _click) {
+    let click = _click || false;
+    let tab = document.getElementById(tabId);
+    if (!tab) {
+      return true;
+    }
+    let result = tab.closest('.result');
+    if (!result) {
+      return true;
+    }
+    let idElement = result.querySelector('.hiddenId');
+    let sourceElement = result.querySelector('.hiddenSource');
+    if (!idElement || !sourceElement) {
+      return true;
+    }
+    let id = idElement.value;
+    let source = sourceElement.value;
+    if (tab.parentElement.classList.contains('noajax')) {
+      let link = tab.querySelector('a');
+      if (link) {
+        window.location.href = link.dataset.href;
+      }
+      return false;
+    }
+    let urlRoot;
+    if (source === VuFind.defaultSearchBackend) {
+      urlRoot = 'Record';
+    } else {
+      urlRoot = source.charAt(0).toUpperCase() + source.slice(1).toLowerCase() + 'Record';
+    }
+    if (!tab.classList.contains('loaded')) {
+      let content = document.getElementById(tabId + '-content');
+      if (!content) {
+        return true;
+      }
+      VuFind.setInnerHtml(content, VuFind.loading());
+      let tabType = tabId.split('_')[0];
+      fetch(
+        VuFind.path + '/' + urlRoot + '/' + encodeURIComponent(id) + '/AjaxTab',
+        {
+          method: 'POST',
+          body: new URLSearchParams({ tab: tabType })
+        }
+      ).then(response => response.text())
+        .then((data) => {
+          let html = data.trim();
+          let content = document.getElementById(tabId + '-content');
+          if (!content) {
+            return;
+          }
+          if (html.length > 0) {
+            VuFind.setInnerHtml(content, VuFind.updateCspNonce(html));
+            VuFind.emit('record-tab-init', {container: content});
+          } else {
+            VuFind.setInnerHtml(content, VuFind.translate('collection_empty'));
+          }
+          let tab = document.getElementById(tabId);
+          if (!tab) {
+            return;
+          }
+          tab.classList.add('loaded');
+        }
+      );
+    }
+    if (click && !tab.parentElement.classList.contains('default')) {
+      tab.click();
+    }
+    return true;
+  }
+
+  /**
    * Toggle the embedded detailed view of a record.
    * @param {HTMLElement} link The link element.
    * @param {string} [tabId] The ID of the tab to open (default = first available tab).
@@ -117,15 +193,41 @@ VuFind.register('embedded', function embedded() {
             // Load first tab
             if (tabId) {
               let tabElement = longNode.querySelector('#' + tabId);
+              tabElement.click();
               if (tabElement && !tabElement.classList.contains('active')) {
                 bootstrap.Tab.getOrCreateInstance(tabElement).show();
               }
             }
 
-            longNode.querySelectorAll('.nav-link').forEach((tabButton) => tabButton.addEventListener(
-              'show.bs.tab',
-              () => addToStorage(divID, tabButton.id)
-            ));
+            if (viewType === 'tabs') {
+              longNode.querySelectorAll('.nav-link').forEach((tabButton) => tabButton.addEventListener(
+                'show.bs.tab',
+                () => addToStorage(divID, tabButton.id)
+              ));
+            } else {
+              if (tabId) {
+                document.getElementById(tabId).click();
+                ajaxLoadTab(tabId, true);
+              } else {
+                let firstTab = longNode.querySelector('.list-tab-toggle.active');
+                if (!firstTab) {
+                  firstTab = longNode.querySelector('.list-tab-toggle');
+                }
+                if (firstTab) {
+                  ajaxLoadTab(firstTab.id, true);
+                }
+              }
+
+              longNode.querySelectorAll('.list-tab-toggle').forEach((toggle) => toggle.addEventListener('click', function embeddedTabLoad() {
+                if (!toggle.parentElement.classList.contains('noajax')) {
+                  addToStorage(divID, toggle.id);
+                }
+                return ajaxLoadTab(toggle.id);
+              }));
+              longNode.querySelectorAll('[data-background]').forEach(function setupEmbeddedBackgroundTabs(el) {
+                ajaxLoadTab(el.id, false);
+              });
+            }
 
             // Add events to record toolbar
             VuFind.lightbox.bind(longNode);
