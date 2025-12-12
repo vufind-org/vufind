@@ -67,33 +67,37 @@ class LibGuidesTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test loading AZ.
+     * GetAZ test provider.
      *
-     * @return void
+     * @return array[]
      */
-    public function testGetAz(): void
+    public static function getAzProvider(): array
     {
-        $config = $this->getConfig();
-        $client = $this->getClient('az');
-        $libGuides = new LibGuides($config, $client);
-
-        $response = $libGuides->getAz();
-        $this->assertCount(4, $response);
+        return [
+            [ true, 4 ],
+            [ false, 5 ],
+            [ null, 4 ],
+        ];
     }
 
     /**
-     * Test loading AZ, not excluding hidden databases
+     * Test loading AZ.
+     *
+     * @param ?bool $excludeHidden Whether to exclude hidden databases
+     * @param int   $expectedCount Expected result count
      *
      * @return void
      */
-    public function testGetAzAllowHidden(): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('getAzProvider')]
+    public function testGetAz(?bool $excludeHidden, int $expectedCount): void
     {
         $config = $this->getConfig();
         $client = $this->getClient('az');
         $libGuides = new LibGuides($config, $client);
 
-        $response = $libGuides->getAz(excludeHidden: false);
-        $this->assertCount(5, $response);
+        $params = $excludeHidden === null ? [] : [$excludeHidden];
+        $response = $libGuides->getAz(...$params);
+        $this->assertCount($expectedCount, $response);
     }
 
     /**
