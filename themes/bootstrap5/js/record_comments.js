@@ -191,7 +191,6 @@ VuFind.register('recordComments', function RecordComments() {
 
   return {
     init,
-    registerAjaxCommentRecord,
     addRecordRating
   };
 });
