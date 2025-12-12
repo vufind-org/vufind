@@ -87,6 +87,70 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test that we can add a comment from tab mode.
+     *
+     * @return void
+     */
+    public function testCommentsInTabMode()
+    {
+        // Change the theme:
+        $this->changeConfigs(
+            ['searches' => ['List' => ['view' => 'tabs']]]
+        );
+        $page = $this->gotoRecord();
+
+        // Open the user comments tab and confirm that login is required:
+        $this->clickCss($page, '#usercomments_cd588d8723d65ca0ce9439e79755fa0a');
+        $this->assertSame(
+            'You must be logged in first',
+            $this->findCssAndGetText($page, '.comment-form .btn-primary')
+        );
+        // Make an account
+        $this->clickCss($page, '.comment-form .btn-primary');
+        $this->clickCss($page, '.modal-body .createAccountLink');
+        $this->fillInAccountForm($page, ['username' => 'commenter', 'email' => 'commenter@ignore.com']);
+        $this->clickCss($page, '.modal-body .btn.btn-primary');
+        $this->waitForPageLoad($page);
+        // Save comment
+        $this->findCssAndSetValue($page, 'form.comment-form [name="comment"]', 'one');
+        $this->clickCss($page, 'form.comment-form .btn-primary');
+        $this->assertEquals('one', $this->findCssAndGetText($page, '.comment-text'));
+    }
+
+    /**
+     * Test that we can add a comment from accordion mode.
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\Depends('testCommentsInTabMode')]
+    public function testCommentsInAccordionMode()
+    {
+        // Change the theme:
+        $this->changeConfigs(
+            ['searches' => ['List' => ['view' => 'accordion']]]
+        );
+
+        $page = $this->gotoRecord();
+
+        // Open the comments tab:
+        $this->clickCss($page, '#usercomments_cd588d8723d65ca0ce9439e79755fa0a');
+        $this->assertSame(
+            'You must be logged in first',
+            $this->findCssAndGetText($page, '.comment-form .btn-primary')
+        );
+        // Log in:
+        $this->clickCss($page, '.comment-form .btn-primary');
+        $this->fillInLoginForm($page, 'commenter', 'test');
+        $this->submitLoginForm($page);
+        // Add comment
+        $this->findCssAndSetValue($page, 'form.comment-form [name="comment"]', 'two');
+        $this->clickCss($page, 'form.comment-form .btn-primary');
+        // Confirm comments exist:
+        $this->assertEquals('one', $this->findCssAndGetText($page, '.comment-text'));
+        $this->assertEquals('two', $this->findCssAndGetText($page, '.comment-text', index: 1));
+    }
+
+    /**
      * Test that we can save a favorite from tab mode.
      *
      * @return void
@@ -224,6 +288,6 @@ final class ListViewsTest extends \VuFindTest\Integration\MinkTestCase
      */
     public static function tearDownAfterClass(): void
     {
-        static::removeUsers(['username1']);
+        static::removeUsers(['commenter', 'username1']);
     }
 }
