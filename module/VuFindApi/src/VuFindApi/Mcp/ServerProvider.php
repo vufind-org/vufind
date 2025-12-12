@@ -105,7 +105,7 @@ class ServerProvider
      *
      * @return void
      */
-    protected function addResourceTemplates(Builder $builder)
+    protected function addResourceTemplates(Builder $builder): void
     {
         foreach (($this->config['ResourceTemplates'] ?? []) as $resourceTemplate) {
             $className = $resourceTemplate['class'];
@@ -125,7 +125,7 @@ class ServerProvider
      *
      * @return void
      */
-    protected function addTools(Builder $builder)
+    protected function addTools(Builder $builder): void
     {
         foreach (($this->config['Tools'] ?? []) as $name => $tool) {
             $description = $tool['description'];
