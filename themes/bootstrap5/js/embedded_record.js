@@ -94,23 +94,14 @@ VuFind.register('embedded', function embedded() {
       ).then(response => response.text())
         .then((data) => {
           let html = data.trim();
-          let content = document.getElementById(tabId + '-content');
-          if (!content) {
-            return;
-          }
           if (html.length > 0) {
             VuFind.setInnerHtml(content, VuFind.updateCspNonce(html));
             VuFind.emit('record-tab-init', {container: content});
           } else {
             VuFind.setInnerHtml(content, VuFind.translate('collection_empty'));
           }
-          let tab = document.getElementById(tabId);
-          if (!tab) {
-            return;
-          }
           tab.classList.add('loaded');
-        }
-      );
+        });
     }
     if (click && !tab.parentElement.classList.contains('default')) {
       tab.click();
