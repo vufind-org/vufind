@@ -31,7 +31,6 @@
 namespace VuFind\Http;
 
 use Closure;
-use Laminas\View\Renderer\PhpRenderer;
 
 /**
  * Server URL Helper class.  Wrapper around Laminas ServerUrlHelper.
@@ -46,20 +45,14 @@ use Laminas\View\Renderer\PhpRenderer;
 class ServerUrlHelper
 {
     /**
-     * Server URL helper
-     */
-    protected Closure $serverUrlHelper;
-
-    /**
      * Constructor.
      *
-     * @param PhpRenderer $viewRenderer View renderer
+     * @param Closure $serverUrlHelper Server URL helper function
      *
      * @return void
      */
-    public function __construct(PhpRenderer $viewRenderer)
+    public function __construct(protected Closure $serverUrlHelper)
     {
-        $this->serverUrlHelper = Closure::fromCallable($viewRenderer->plugin('serverurl'));
     }
 
     /**

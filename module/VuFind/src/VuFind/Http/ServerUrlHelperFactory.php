@@ -29,6 +29,7 @@
 
 namespace VuFind\Http;
 
+use Closure;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
@@ -69,8 +70,9 @@ class ServerUrlHelperFactory implements FactoryInterface
             throw new \Exception('Unexpected options passed to factory.');
         }
 
+        $viewRenderer = $container->get('ViewRenderer');
         return new $requestedName(
-            $container->get('ViewRenderer')
+            Closure::fromCallable($viewRenderer->plugin('serverurl'))
         );
     }
 }
