@@ -107,7 +107,7 @@ class ServerProvider
      */
     protected function addResourceTemplates(Builder $builder)
     {
-        foreach (($this->config['ResourceTemplates'] ?? []) as $name => $resourceTemplate) {
+        foreach (($this->config['ResourceTemplates'] ?? []) as $resourceTemplate) {
             $className = $resourceTemplate['class'];
             $functionName = $resourceTemplate['function'];
             $uriTemplate = $resourceTemplate['uriTemplate'];
