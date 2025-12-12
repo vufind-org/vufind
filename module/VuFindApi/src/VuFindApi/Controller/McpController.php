@@ -30,9 +30,12 @@
 namespace VuFindApi\Controller;
 
 use Laminas\Diactoros\ServerRequestFactory;
+use Laminas\Http\Header\ContentType;
+use Laminas\Http\Response;
 use Laminas\Psr7Bridge\Psr7Response;
 use Laminas\ServiceManager\ServiceLocatorInterface;
 use Mcp\Exception\ServiceNotFoundException;
+use Mcp\Schema\JsonRpc\Error;
 use Mcp\Server;
 use Mcp\Server\Transport\StreamableHttpTransport;
 use Psr\Http\Message\ResponseInterface;
@@ -49,9 +52,20 @@ use VuFind\Controller\AbstractBase;
  */
 class McpController extends AbstractBase
 {
-    use ApiTrait;
+    /**
+     * Permission required for all MCP endpoints
+     *
+     * @var string
+     */
+    protected $baseAccessPermission = 'access.mcp';
 
-    // protected $accessPermission = 'access.mcp';
+    /**
+     * JSON schema response code to represent an authorization error. This
+     * is not defined by any standard, except that the 32xxx range is app-specific.
+     *
+     * @var int
+     */
+    protected int $AUTH_ERROR = -32003;
 
     /**
      * Constructor
@@ -71,10 +85,16 @@ class McpController extends AbstractBase
      */
     public function mcpAction()
     {
-        $this->determineOutputMode();
-
         if (!$this->server) {
             throw new ServiceNotFoundException('This MCP server is not enabled.');
+        }
+
+        // $content = json_decode($this->params()->getController()->getRequest()->getContent(), true);
+        // $mcpMethod = $content['method'] ?? '';
+        $mcpMethod = null;
+        if ($this->isAccessDenied($mcpMethod)) {
+            $messageId = $content['messageId'] ?? '';
+            return $this->outputAuthError($messageId);
         }
 
         // Adapting: https://github.com/modelcontextprotocol/php-sdk/blob/main/docs/transports.md
@@ -95,5 +115,40 @@ class McpController extends AbstractBase
             return Psr7Response::toLaminas($psrResponse);
         }
         throw new \Exception('Unexpected state reached.');
+    }
+
+    /**
+     * Check whether access is denied based on the MCP method.
+     *
+     * @param string $mcpMethod MCP method
+     *
+     * @return bool
+     */
+    protected function isAccessDenied($mcpMethod): bool
+    {
+        $auth = $this->getService(\Lmc\Rbac\Mvc\Service\AuthorizationService::class);
+        return $mcpMethod
+            ? !$auth->isGranted($this->baseAccessPermission . '.' . $mcpMethod)
+            : !$auth->isGranted($this->baseAccessPermission);
+    }
+
+    /**
+     * Output an authorization error.
+     *
+     * @param string $messageId The MCP message Id.
+     *
+     * @return Response
+     */
+    protected function outputAuthError(string $messageId): Response
+    {
+        $error = new Error($messageId, $this->AUTH_ERROR, 'Access denied');
+        $response = $this->getResponse();
+        $response->setStatusCode(403);
+        $contentTypeHeader = new ContentType();
+        $contentTypeHeader->setMediaType('application/json');
+        $headers = $response->getHeaders();
+        $headers->addHeader($contentTypeHeader);
+        $response->setContent(json_encode($error->jsonSerialize()));
+        return $response;
     }
 }
