@@ -244,10 +244,8 @@ class RouterTest extends \PHPUnit\Framework\TestCase
     protected function getDriver($id = 'test', $source = 'Solr')
     {
         $driver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
-        $driver->expects($this->any())->method('getUniqueId')
-            ->willReturn($id);
-        $driver->expects($this->any())->method('getSourceIdentifier')
-            ->willReturn($source);
+        $driver->method('getUniqueId')->willReturn($id);
+        $driver->method('getSourceIdentifier')->willReturn($source);
         return $driver;
     }
 

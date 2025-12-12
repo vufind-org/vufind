@@ -139,8 +139,7 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         ];
 
         $mockRenderer = $this->container->createMock(PhpRenderer::class);
-        $mockRenderer->expects($this->any())
-            ->method('plugin')
+        $mockRenderer->method('plugin')
             ->willReturnCallback(
                 function ($plugin) use ($plugins) {
                     return $plugins[$plugin] ?? null;
@@ -148,8 +147,7 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
             );
         // JSON encode parameters to the render method so that it returns a string
         // that we can make assertions about in our tests.
-        $mockRenderer->expects($this->any())
-            ->method('render')
+        $mockRenderer->method('render')
             ->willReturnCallback(
                 function () {
                     return json_encode(func_get_args());

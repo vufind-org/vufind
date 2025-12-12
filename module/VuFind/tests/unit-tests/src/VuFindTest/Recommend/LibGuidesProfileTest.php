@@ -230,8 +230,7 @@ class LibGuidesProfileTest extends \PHPUnit\Framework\TestCase
             $queryParams,
             $this->createStub(\VuFindSearch\Service::class),
             $this->createMock(\VuFind\Record\Loader::class),
-            null,
-            $facets
+            facets: $facets
         );
         return $queryResults;
     }

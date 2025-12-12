@@ -49,7 +49,7 @@
       <button type="submit" disabled style="display: none" aria-hidden="true"></button>
     </div>
   </form>
-  <?php if ($this->multiFacetsSelection): ?>
+  <?php if (($this->multiFacetsSelection ?? 'false') !== 'false'): ?>
     <?=$this->render('Recommend/SideFacets/multiFacetsSelection.phtml') ?>
   <?php endif; ?>
 

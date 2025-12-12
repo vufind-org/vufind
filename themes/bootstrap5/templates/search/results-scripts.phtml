@@ -11,6 +11,8 @@ if (($this->listViewOption ?? 'full') !== 'full') {
     $this->assetManager()->appendScriptLink('record.js');
     $this->assetManager()->appendScriptLink('record_tabs.js');
     $this->assetManager()->appendScriptLink('channels.js');
+    $this->assetManager()->appendScriptLink('record_holdings.js');
+    $this->assetManager()->appendScriptLink('record_comments.js');
     $this->assetManager()->appendScriptLink('embedded_record.js');
 }
 if ($this->jsResults ?? false) {

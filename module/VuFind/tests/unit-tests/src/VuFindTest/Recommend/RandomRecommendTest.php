@@ -145,8 +145,7 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
      */
     public function testCanInitialise()
     {
-        $service = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->disableOriginalConstructor()->getMock();
+        $service = $this->createMock(\VuFindSearch\Service::class);
         $paramManager = $this->createMock(\VuFind\Search\Params\PluginManager::class);
         $recommend = new Random($service, $paramManager);
 
@@ -156,9 +155,7 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
         $params->setBasicSearch($query->getString(), $query->getHandler());
         $request = $this->createMock(\Laminas\Stdlib\Parameters::class);
 
-        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
         $commandObj->expects($this->once())->method('getResult')
             ->willReturn($this->createMock(\VuFindSearch\Response\RecordCollectionInterface::class));
 
@@ -187,10 +184,8 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
      */
     public function testCanInitialiseInDisregardMode()
     {
-        $service = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->disableOriginalConstructor()->getMock();
-        $paramManager = $this->getMockBuilder(\VuFind\Search\Params\PluginManager::class)
-            ->disableOriginalConstructor()->getMock();
+        $service = $this->createMock(\VuFindSearch\Service::class);
+        $paramManager = $this->createMock(\VuFind\Search\Params\PluginManager::class);
         $recommend = new Random($service, $paramManager);
 
         $params = $this->getSolrParams();
@@ -204,9 +199,7 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
         $params->setBasicSearch($query->getString(), $query->getHandler());
         $request = $this->createMock(\Laminas\Stdlib\Parameters::class);
 
-        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
         $commandObj->expects($this->once())->method('getResult')
             ->willReturn($this->createMock(\VuFindSearch\Response\RecordCollectionInterface::class));
 
@@ -237,8 +230,7 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
      */
     protected function getConfiguredModule($recConfig): Random
     {
-        $service = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->disableOriginalConstructor()->getMock();
+        $service = $this->createMock(\VuFindSearch\Service::class);
         $paramManager = $this->createMock(\VuFind\Search\Params\PluginManager::class);
         $recommend = new Random($service, $paramManager);
         $records = ['1', '2', '3', '4', '5'];
@@ -250,14 +242,11 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
         $params->setBasicSearch($query->getString(), $query->getHandler());
         $request = $this->createMock(\Laminas\Stdlib\Parameters::class);
 
-        $results = $this->getMockBuilder(\VuFindSearch\Response\RecordCollectionInterface::class)
-            ->getMock();
+        $results = $this->createMock(\VuFindSearch\Response\RecordCollectionInterface::class);
         $results->expects($this->once())->method('getRecords')
             ->willReturn($records);
 
-        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
         $commandObj->expects($this->once())->method('getResult')
             ->willReturn($results);
 
