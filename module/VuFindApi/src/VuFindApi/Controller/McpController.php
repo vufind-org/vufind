@@ -93,7 +93,8 @@ class McpController extends AbstractBase
         // $mcpMethod = $content['method'] ?? '';
         $mcpMethod = null;
         if ($this->isAccessDenied($mcpMethod)) {
-            $messageId = $content['messageId'] ?? '';
+            // $messageId = $content['messageId'] ?? '';
+            $messageId = '';
             return $this->outputAuthError($messageId);
         }
 
