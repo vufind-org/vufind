@@ -177,6 +177,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
                     ],
                 ],
                 'Blender' => $this->getBlenderIniOverrides(),
+                'Blender2' => $this->getBlenderIniOverrides(),
             ],
             ['Blender']
         );
@@ -250,7 +251,6 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->changeConfigs(
             [
                 'Blender' => $this->getBlenderIniOverrides(),
-                'Blender2' => $this->getBlenderIniOverrides(),
             ],
             ['Blender']
         );
