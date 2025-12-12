@@ -1,4 +1,4 @@
-/*global registerAjaxCommentRecord, VuFind */
+/*global VuFind */
 VuFind.register('embedded', function embedded() {
   var _STORAGEKEY = 'vufind_search_open';
   var _SEPARATOR = ':::';
@@ -174,12 +174,6 @@ VuFind.register('embedded', function embedded() {
               }
               return ajaxLoadTab(this.id);
             });
-            longNode.find('[id^=usercomment]').find('input[type=submit]').off("click").on(
-              "click",
-              function embeddedComments() {
-                return registerAjaxCommentRecord(longNode);
-              }
-            );
             longNode.find('[data-background]').each(function setupEmbeddedBackgroundTabs(index, el) {
               ajaxLoadTab(el.id, false);
             });
