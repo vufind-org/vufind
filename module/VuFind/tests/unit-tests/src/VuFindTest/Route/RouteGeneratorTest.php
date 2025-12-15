@@ -319,7 +319,7 @@ class RouteGeneratorTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
         ];
-        
+
         $this->assertSame(
             ['router' => ['routes' => $expected]],
             $config
