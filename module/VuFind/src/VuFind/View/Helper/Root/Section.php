@@ -35,6 +35,7 @@ use VuFind\Section\SectionServiceInterface;
 
 use function call_user_func_array;
 use function is_callable;
+use function is_string;
 
 /**
  * Section view helper
@@ -87,23 +88,28 @@ class Section extends AbstractHelper
     /**
      * Store a section object and return this object.
      *
-     * @param string       $key      Section key in configuration
-     * @param array|string $config   Configuration or configuration file name (optional)
+     * @param string       $key      Section key
+     * @param array|string $config   Configuration or configuration path (optional)
      * @param ?string      $template File name of template used to render section (optional)
      *
      * @return static
      */
     public function __invoke(
         string $key,
-        array|string $config = SectionServiceInterface::DEFAULT_CONFIG_FILE,
+        array|string $config = SectionServiceInterface::DEFAULT_CONFIG_PATH,
         ?string $template = null
     ): static {
         // Always call section service as the configuration might be different.
+        if (is_string($config)) {
+            $config = $this->sectionService->getSectionConfig($key, $config);
+        }
         $this->section = $this->sectionService->getSection($key, $config);
+
         if (null === $template) {
             $template = $this->defaultTemplateDir . '/' . $key . '.phtml';
         }
         $this->template = $template;
+
         return $this;
     }
 
@@ -127,8 +133,7 @@ class Section extends AbstractHelper
     /**
      * Render a section.
      *
-     * @param array $context Additional context to be merged with section
-     *                       context (optional)
+     * @param array $context Additional context to be merged with section context (optional)
      *
      * @return string
      */

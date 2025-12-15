@@ -46,6 +46,55 @@ use VuFind\Section\SectionServiceInterface;
 class SectionServiceTest extends AbstractSectionTestCase
 {
     /**
+     * Data provider for testGetSectionConfiguration.
+     *
+     * @return array
+     */
+    public static function getSectionConfigurationProvider(): array
+    {
+        return [
+            // Missing section key from default configuration.
+            [
+                'MissingSectionKey',
+                SectionServiceInterface::DEFAULT_CONFIG_PATH,
+                BadConfig::class,
+                'Section not found: MissingSectionKey',
+            ],
+            // Missing configuration.
+            [
+                'MissingConfiguration',
+                'MissingConfiguration',
+                ConfigException::class,
+                'Configuration path not found or empty: MissingConfiguration',
+            ],
+        ];
+    }
+
+    /**
+     * Test getting section configuration.
+     *
+     * @param string  $key                    Section key in configuration
+     * @param string  $configPath             Configuration path
+     * @param string  $expectedExceptionClass Expected exception class
+     * @param ?string $expectedExceptionMsg   Expected exception message
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getSectionConfigurationProvider')]
+    public function testGetSectionConfiguration(
+        string $key,
+        string $configPath,
+        string $expectedExceptionClass,
+        ?string $expectedExceptionMsg = null
+    ) {
+        $this->expectException($expectedExceptionClass);
+        if ($expectedExceptionMsg) {
+            $this->expectExceptionMessage($expectedExceptionMsg);
+        }
+        $this->getSectionService()->getSectionConfig($key, $configPath);
+    }
+
+    /**
      * Data provider for testSectionConfiguration.
      *
      * @return array
@@ -53,20 +102,6 @@ class SectionServiceTest extends AbstractSectionTestCase
     public static function sectionConfigurationProvider(): array
     {
         return [
-            // Missing section key from default configuration file.
-            [
-                'MissingSectionKey',
-                SectionServiceInterface::DEFAULT_CONFIG_FILE,
-                BadConfig::class,
-                'Section not found: MissingSectionKey',
-            ],
-            // Missing configuration file.
-            [
-                'MissingConfigurationFile',
-                'MissingConfigurationFile.yaml',
-                ConfigException::class,
-                'Configuration file not found or empty: MissingConfigurationFile.yaml',
-            ],
             // Missing section type.
             [
                 'MissingSectionType',
@@ -96,18 +131,17 @@ class SectionServiceTest extends AbstractSectionTestCase
     /**
      * Test section configuration.
      *
-     * @param string       $key                    Section key in configuration
-     * @param array|string $config                 Section configuration or
-     *                                             configuration file name
-     * @param string       $expectedExceptionClass Expected exception class
-     * @param ?string      $expectedExceptionMsg   Expected exception message
+     * @param string  $key                    Section key
+     * @param array   $config                 Configuration
+     * @param string  $expectedExceptionClass Expected exception class
+     * @param ?string $expectedExceptionMsg   Expected exception message
      *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('sectionConfigurationProvider')]
     public function testSectionConfiguration(
         string $key,
-        array|string $config,
+        array $config,
         string $expectedExceptionClass,
         ?string $expectedExceptionMsg = null
     ) {

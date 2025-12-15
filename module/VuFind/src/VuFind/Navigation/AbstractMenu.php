@@ -140,21 +140,20 @@ abstract class AbstractMenu extends AbstractBase implements NavigationInterface
      */
     public function localizeSectionConfig(): static
     {
-        $config = $this->getSectionService()->localizeSettings($this);
+        $sectionService = $this->getSectionService();
+        $config = $sectionService->localizeSettings($this);
         foreach ($config as $group => $settings) {
-            $config[$group]
-                = $this->getSectionService()->localizeSettings(
-                    $this,
-                    $settings,
-                    self::GROUP_CONTEXT
-                );
+            $config[$group] = $sectionService->localizeSettings(
+                $this,
+                $settings,
+                self::GROUP_CONTEXT
+            );
             foreach ($settings['MenuItems'] ?? [] as $i => $menuItem) {
-                $config[$group]['MenuItems'][$i]
-                    = $this->getSectionService()->localizeSettings(
-                        $this,
-                        $menuItem,
-                        self::ITEM_CONTEXT
-                    );
+                $config[$group]['MenuItems'][$i] = $sectionService->localizeSettings(
+                    $this,
+                    $menuItem,
+                    self::ITEM_CONTEXT
+                );
             }
         }
         $this->setSectionConfig($config);

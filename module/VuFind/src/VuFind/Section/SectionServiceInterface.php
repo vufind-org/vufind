@@ -42,26 +42,42 @@ use VuFind\Config\Feature\ConfigSettingPropertiesInterface;
  */
 interface SectionServiceInterface
 {
-    public const DEFAULT_CONFIG_FILE = 'Sections';
+    public const DEFAULT_CONFIG_PATH = 'Sections';
+
+    /**
+     * Get section configuration.
+     *
+     * @param string $key        Section key in configuration
+     * @param string $configPath Configuration path (optional)
+     *
+     * @return array
+     */
+    public function getSectionConfig(
+        string $key,
+        string $configPath = self::DEFAULT_CONFIG_PATH
+    ): array;
 
     /**
      * Get section.
      *
-     * @param string       $key    Section key in configuration
-     * @param array|string $config Configuration or configuration file name (optional)
+     * If configuration is not provided, calls SectionServiceInterface::getSectionConfig()
+     * to get the configuration.
      *
-     * @return ?SectionInterface
+     * @param string $key    Section key
+     * @param ?array $config Configuration (optional)
+     *
+     * @return SectionInterface
      */
     public function getSection(
         string $key,
-        array|string $config = self::DEFAULT_CONFIG_FILE
-    ): ?SectionInterface;
+        ?array $config = null
+    ): SectionInterface;
 
     /**
      * Localize settings of the provided section.
      *
-     * If settings are not provided, calls SectionInterface::getConfig() to get
-     * the configuration to be localized.
+     * If settings are not provided, calls SectionInterface::getSectionConfig()
+     * to get the settings to be localized.
      *
      * @param SectionInterface $section    Section
      * @param ?array           $settings   Settings to localize (optional)

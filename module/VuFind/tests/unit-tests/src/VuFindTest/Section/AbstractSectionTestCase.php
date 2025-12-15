@@ -38,8 +38,8 @@ use VuFind\Navigation\AbstractMenu;
 use VuFind\Navigation\AccountMenu;
 use VuFind\Navigation\AdminMenu;
 use VuFind\Navigation\NavigationInterface;
-use VuFind\Navigation\PluginManager as NavigationPluginManager;
-use VuFind\Section\PluginManager as SectionPluginManager;
+use VuFind\Navigation\PluginManager as NavigationManager;
+use VuFind\Section\PluginManager as SectionManager;
 use VuFind\Section\SectionInterface;
 use VuFind\Section\SectionService;
 use VuFind\Section\SectionServiceInterface;
@@ -81,14 +81,14 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
     protected function addSectionRelatedServicesToContainer(MockContainer $container)
     {
         $container->set(YamlReader::class, new YAMLReader($this->getPathResolver()));
-        $sectionPm = new SectionPluginManager($container);
-        $container->set(SectionPluginManager::class, $sectionPm);
-        $navigationPm = new NavigationPluginManager($container);
-        $container->set(NavigationPluginManager::class, $navigationPm);
+        $sectionManager = new SectionManager($container);
+        $container->set(SectionManager::class, $sectionManager);
+        $navigationManager = new NavigationManager($container);
+        $container->set(NavigationManager::class, $navigationManager);
         $service = new SectionService(
             $container->get(YamlReader::class),
-            $sectionPm,
-            $navigationPm,
+            $sectionManager,
+            $navigationManager,
             'en',
             ['en', 'fi']
         );
@@ -125,8 +125,8 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
     ): MockContainer {
         $container ??= $this->getContainerWithSectionRelatedServices();
         $pluginManager = $plugin instanceof NavigationInterface
-            ? $container->get(NavigationPluginManager::class)
-            : $container->get(SectionPluginManager::class);
+            ? $container->get(NavigationManager::class)
+            : $container->get(SectionManager::class);
         if ($plugin instanceof AbstractMenu) {
             // These will be added to the constructor in VuFind version 12.
             $sectionService = $container->get(SectionServiceInterface::class);
