@@ -169,7 +169,7 @@ class SessionServiceTest extends \PHPUnit\Framework\TestCase
         $pluginManager = $this->getPluginManager();
         $persistenceManager = $this->getPersistenceManager(1);
         $session->expects($this->once())->method('setSessionId')
-            ->with($this->equalTo('1'))
+            ->with('1')
             ->willReturn($session);
         $session->expects($this->once())->method('setCreated')
             ->with($this->anything())

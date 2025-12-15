@@ -66,15 +66,15 @@ class ContentTest extends \PHPUnit\Framework\TestCase
         $contentBlockContext = ['context' => 'fakeContext'];
         $mockTemplateBased->expects($this->once())->method('getContext')
             ->with(
-                $this->equalTo($expectedPathPrefix),
-                $this->equalTo($pageName),
-                $this->equalTo($pattern)
+                $expectedPathPrefix,
+                $pageName,
+                $pattern
             )->willReturn($contentBlockContext);
         $mockContext = $this->createMock(Context::class);
         $mockContext->expects($this->once())->method('renderInContext')
             ->with(
-                $this->equalTo('ContentBlock/TemplateBased.phtml'),
-                $this->equalTo($context + $contentBlockContext)
+                'ContentBlock/TemplateBased.phtml',
+                $context + $contentBlockContext
             )->willReturn('rendered-content');
         $content = new Content($mockTemplateBased, $mockContext);
         // Confirm that expected content was rendered:

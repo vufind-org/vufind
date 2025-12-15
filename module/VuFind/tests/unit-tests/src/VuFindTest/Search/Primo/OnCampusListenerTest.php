@@ -94,9 +94,9 @@ class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
         $listener = new InjectOnCampusListener();
         $mock = $this->createMock(\Laminas\EventManager\SharedEventManagerInterface::class);
         $mock->expects($this->once())->method('attach')->with(
-            $this->equalTo(\VuFindSearch\Service::class),
-            $this->equalTo('pre'),
-            $this->equalTo([$listener, 'onSearchPre'])
+            \VuFindSearch\Service::class,
+            'pre',
+            [$listener, 'onSearchPre']
         );
         $listener->attach($mock);
     }
@@ -112,9 +112,9 @@ class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
         $listener = new InjectOnCampusListener($mockPermController);
         $mock = $this->createMock(\Laminas\EventManager\SharedEventManagerInterface::class);
         $mock->expects($this->once())->method('attach')->with(
-            $this->equalTo(\VuFindSearch\Service::class),
-            $this->equalTo('pre'),
-            $this->equalTo([$listener, 'onSearchPre'])
+            \VuFindSearch\Service::class,
+            'pre',
+            [$listener, 'onSearchPre']
         );
         $listener->attach($mock);
     }

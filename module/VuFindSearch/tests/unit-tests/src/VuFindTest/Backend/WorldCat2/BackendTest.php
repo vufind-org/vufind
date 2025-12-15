@@ -60,7 +60,7 @@ class BackendTest extends TestCase
         $conn = $this->createMock(Connector::class);
         $conn->expects($this->once())
             ->method('getHoldings')
-            ->with($this->equalTo($params))
+            ->with($params)
             ->willReturn($mockResponse);
 
         $back = new Backend($conn);
@@ -83,7 +83,7 @@ class BackendTest extends TestCase
         $conn = $this->createMock(Connector::class);
         $conn->expects($this->once())
             ->method('getRecord')
-            ->with($this->equalTo('foobar'))
+            ->with('foobar')
             ->willReturn($mockResponse);
 
         $back = new Backend($conn);

@@ -101,7 +101,7 @@ class DeletesCommandTest extends \PHPUnit\Framework\TestCase
     {
         $writer = $this->getMockWriter();
         $writer->expects($this->once())->method('deleteRecords')
-            ->with($this->equalTo('Solr'), $this->equalTo(['rec1', 'rec2', 'rec3']));
+            ->with('Solr', ['rec1', 'rec2', 'rec3']);
         $command = new DeletesCommand($writer);
         $commandTester = new CommandTester($command);
         $fixture = $this->getFixtureDir('VuFindConsole') . 'deletes';
@@ -124,7 +124,7 @@ class DeletesCommandTest extends \PHPUnit\Framework\TestCase
     {
         $writer = $this->getMockWriter();
         $writer->expects($this->once())->method('deleteRecords')
-            ->with($this->equalTo('Solr'), $this->equalTo(['x.rec1', 'x.rec2', 'x.rec3']));
+            ->with('Solr', ['x.rec1', 'x.rec2', 'x.rec3']);
         $command = new DeletesCommand($writer);
         $commandTester = new CommandTester($command);
         $fixture = $this->getFixtureDir('VuFindConsole') . 'deletes';
@@ -148,7 +148,7 @@ class DeletesCommandTest extends \PHPUnit\Framework\TestCase
     {
         $writer = $this->getMockWriter();
         $writer->expects($this->once())->method('deleteRecords')
-            ->with($this->equalTo('foo'), $this->equalTo(['testbug2']));
+            ->with('foo', ['testbug2']);
         $command = new DeletesCommand($writer);
         $commandTester = new CommandTester($command);
         $fixture = __DIR__ . '/../../../../../../../../tests/data/testbug2.mrc';

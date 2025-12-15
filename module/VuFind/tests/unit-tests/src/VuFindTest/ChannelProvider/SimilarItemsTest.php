@@ -158,7 +158,7 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
         $collection = $this->createMock(\VuFindSearch\Response\RecordCollectionInterface::class);
         $recordDriver = $this->getDriver();
         $router->expects($this->once())->method('getTabRouteDetails')
-            ->with($this->equalTo($recordDriver))
+            ->with($recordDriver)
             ->willReturn('foo_Route');
 
         $arguments = ['foo_Id', $params];
@@ -220,7 +220,7 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
         ]];
         $routeDetails = ['route' => 'test_route', 'params' => ['id' => 'route_id']];
         $router->expects($this->once())->method('getRouteDetails')
-            ->with($this->equalTo($recordDriver))
+            ->with($recordDriver)
             ->willReturn($routeDetails);
         $this->expectConsecutiveCalls(
             $url,

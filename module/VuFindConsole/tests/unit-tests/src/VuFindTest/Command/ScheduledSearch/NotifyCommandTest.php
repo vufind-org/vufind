@@ -296,14 +296,14 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         $mailer = $this->container->createMock(\VuFind\Mailer\Mailer::class);
         $mailer->expects($this->once())->method('send')
             ->with(
-                $this->equalTo('fake@myuniversity.edu'),
-                $this->equalTo('admin@myuniversity.edu'),
-                $this->equalTo('My Site: translated text'),
-                $this->equalTo($message)
+                'fake@myuniversity.edu',
+                'admin@myuniversity.edu',
+                'My Site: translated text',
+                $message
             );
         $translator = $this->container->createMock(\Laminas\Mvc\I18n\Translator::class);
         $translator->expects($this->once())->method('translate')
-            ->with($this->equalTo('Scheduled Alert Results'))
+            ->with('Scheduled Alert Results')
             ->willReturn('translated text');
         $command = $this->getCommand(
             [
@@ -446,7 +446,7 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
     ): MockObject&\VuFind\Search\Minified {
         $search = $this->container->createMock(\VuFind\Search\Minified::class);
         $search->method('deminify')
-            ->with($this->equalTo($this->getMockResultsManager()))
+            ->with($this->getMockResultsManager())
             ->willReturn(
                 $this->getMockSearchResults(
                     $optionsCallback,

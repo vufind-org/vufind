@@ -557,7 +557,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
         $serviceManager = $this->getMockBuilder(\VuFind\Db\Service\PluginManager::class)
             ->disableOriginalConstructor()->onlyMethods(['get'])->getMock();
         $serviceManager->method('get')
-            ->with($this->equalTo(UserServiceInterface::class))
+            ->with(UserServiceInterface::class)
             ->willReturn($service);
 
         $db = new Database();

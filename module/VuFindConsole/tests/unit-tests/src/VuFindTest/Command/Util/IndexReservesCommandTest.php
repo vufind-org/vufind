@@ -103,15 +103,15 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
             };
             $writer->expects($this->once())->method('save')
                 ->with(
-                    $this->equalTo('SolrReserves'),
+                    'SolrReserves',
                     $this->callback($updateValidator)
                 );
             $writer->expects($this->once())->method('deleteAll')
-                ->with($this->equalTo('SolrReserves'));
+                ->with('SolrReserves');
             $writer->expects($this->once())->method('commit')
-                ->with($this->equalTo('SolrReserves'));
+                ->with('SolrReserves');
             $writer->expects($this->once())->method('optimize')
-                ->with($this->equalTo('SolrReserves'));
+                ->with('SolrReserves');
         }
         $command = $this->getCommand($writer, $ils);
         $commandTester = new CommandTester($command);
@@ -204,7 +204,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
     {
         $writer = $this->getMockSolrWriter();
         $writer->expects($this->once())->method('deleteAll')
-            ->with($this->equalTo('SolrReserves'));
+            ->with('SolrReserves');
         $that = $this;
         $updateValidator = function ($update) use ($that) {
             $expectedXml = "<?xml version=\"1.0\"?>\n"
@@ -245,13 +245,13 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
         };
         $writer->expects($this->once())->method('save')
             ->with(
-                $this->equalTo('SolrReserves'),
+                'SolrReserves',
                 $this->callback($updateValidator)
             );
         $writer->expects($this->once())->method('commit')
-            ->with($this->equalTo('SolrReserves'));
+            ->with('SolrReserves');
         $writer->expects($this->once())->method('optimize')
-            ->with($this->equalTo('SolrReserves'));
+            ->with('SolrReserves');
         $command = $this->getCommand($writer);
         $commandTester = new CommandTester($command);
         $fixture1 = $this->getFixtureDir('VuFindConsole') . 'reserves/fixture1';

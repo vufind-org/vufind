@@ -101,7 +101,7 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
         $pluginManager = $this->createMock(PluginManager::class);
         if ($setExpectation) {
             $pluginManager->expects($this->once())->method('get')
-                ->with($this->equalTo(OaiResumptionEntityInterface::class))
+                ->with(OaiResumptionEntityInterface::class)
                 ->willReturn(new OaiResumption());
         }
         return $pluginManager;
@@ -181,7 +181,7 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
 
         $query = $this->createMock(\Doctrine\ORM\AbstractQuery::class);
         $entityManager->expects($this->once())->method('createQuery')
-            ->with($this->equalTo($queryStmt))
+            ->with($queryStmt)
             ->willReturn($query);
         $oaiResumption = $this->createMock(\VuFind\Db\Entity\OaiResumption::class);
         $query->expects($this->once())->method('getOneOrNullResult')

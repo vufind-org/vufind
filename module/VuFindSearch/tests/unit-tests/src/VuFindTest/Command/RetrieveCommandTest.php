@@ -60,8 +60,8 @@ class RetrieveCommandTest extends TestCase
             ->willReturn($backendId);
         $backend->expects($this->once())->method('retrieve')
             ->with(
-                $this->equalTo('id'),
-                $this->equalTo($params)
+                'id',
+                $params
             )->willReturn($result);
         $this->assertEquals($result, $command->execute($backend)->getResult());
     }

@@ -57,7 +57,7 @@ class TemplateBasedTest extends \PHPUnit\Framework\TestCase
         ];
         $locator = $this->createMock(\VuFind\Content\PageLocator::class);
         $locator->expects($this->once())->method('determineTemplateAndRenderer')
-            ->with($this->equalTo('templates/ContentBlock/TemplateBased/'), $this->equalTo('foo'))
+            ->with('templates/ContentBlock/TemplateBased/', 'foo')
             ->willReturn($details);
         $block = new \VuFind\ContentBlock\TemplateBased($locator);
         $block->setConfig('foo');
@@ -84,9 +84,9 @@ class TemplateBasedTest extends \PHPUnit\Framework\TestCase
         $locator = $this->createMock(\VuFind\Content\PageLocator::class);
         $locator->expects($this->once())->method('determineTemplateAndRenderer')
             ->with(
-                $this->equalTo('templates/customBasePath/'),
-                $this->equalTo('bar'),
-                $this->equalTo('%pathPrefix%/%pageName%')
+                'templates/customBasePath/',
+                'bar',
+                '%pathPrefix%/%pageName%'
             )->willReturn($details);
         $block = new \VuFind\ContentBlock\TemplateBased($locator);
         $block->setConfig('foo');
@@ -111,7 +111,7 @@ class TemplateBasedTest extends \PHPUnit\Framework\TestCase
         ];
         $locator = $this->createMock(\VuFind\Content\PageLocator::class);
         $locator->expects($this->once())->method('determineTemplateAndRenderer')
-            ->with($this->equalTo('templates/ContentBlock/TemplateBased/'), $this->equalTo('foo'))
+            ->with('templates/ContentBlock/TemplateBased/', 'foo')
             ->willReturn($details);
         $block = new \VuFind\ContentBlock\TemplateBased($locator);
         $block->setConfig('foo');
@@ -138,7 +138,7 @@ class TemplateBasedTest extends \PHPUnit\Framework\TestCase
         ];
         $locator = $this->createMock(\VuFind\Content\PageLocator::class);
         $locator->expects($this->once())->method('determineTemplateAndRenderer')
-            ->with($this->equalTo('templates/ContentBlock/TemplateBased/'), $this->equalTo($file))
+            ->with('templates/ContentBlock/TemplateBased/', $file)
             ->willReturn($details);
         $block = new \VuFind\ContentBlock\TemplateBased($locator);
         $block->setConfig($file);

@@ -88,7 +88,7 @@ class RandomTest extends \PHPUnit\Framework\TestCase
         $options = ['mode' => 'notRetain'];
         $random =  new Random($search, $paramManager, $options);
         $paramManager->expects($this->once())->method('get')
-            ->with($this->equalTo('Solr'))
+            ->with('Solr')
             ->willReturn($params);
         $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
         $rci = $this->createMock(\VuFindSearch\Response\RecordCollectionInterface::class);
@@ -131,7 +131,7 @@ class RandomTest extends \PHPUnit\Framework\TestCase
     {
         $coverRouter = $this->createMock(\VuFind\Cover\Router::class);
         $coverRouter->expects($this->once())->method('getUrl')
-            ->with($this->equalTo($recordDriver), $this->equalTo('medium'))
+            ->with($recordDriver, 'medium')
             ->willReturn('foo_Thumbnail');
         return $coverRouter;
     }
@@ -148,7 +148,7 @@ class RandomTest extends \PHPUnit\Framework\TestCase
     {
         $recordRouter = $this->createMock(\VuFind\Record\Router::class);
         $recordRouter->expects($this->once())->method('getTabRouteDetails')
-            ->with($this->equalTo($recordDriver))
+            ->with($recordDriver)
             ->willReturn('foo_Route');
         return $recordRouter;
     }

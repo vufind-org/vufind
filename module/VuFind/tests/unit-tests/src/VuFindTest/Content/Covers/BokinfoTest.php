@@ -64,8 +64,8 @@ class BokinfoTest extends \PHPUnit\Framework\TestCase
             ->willReturn($headers);
         $headers->expects($this->once())->method('addHeaderLine')
             ->with(
-                $this->equalTo('Ocp-Apim-Subscription-Key'),
-                $this->equalTo('mykey')
+                'Ocp-Apim-Subscription-Key',
+                'mykey'
             );
         return $request;
     }
@@ -89,7 +89,7 @@ class BokinfoTest extends \PHPUnit\Framework\TestCase
     {
         $client = $this->createMock(Client::class);
         $client->expects($this->once())->method('setOptions')
-            ->with($this->equalTo(['useragent' => 'VuFind', 'keepalive' => true]));
+            ->with(['useragent' => 'VuFind', 'keepalive' => true]);
         return $client;
     }
 

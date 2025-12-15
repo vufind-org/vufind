@@ -64,7 +64,7 @@ class ILSAuthenticatorTest extends \PHPUnit\Framework\TestCase
         $user = $this->getMockUser();
         $manager = $this->getMockManager(['getUserObject', 'updateSession']);
         $manager->method('getUserObject')->willReturn($user);
-        $manager->expects($this->once())->method('updateSession')->with($this->equalTo($user));
+        $manager->expects($this->once())->method('updateSession')->with($user);
         $details = ['foo' => 'bar'];
         $connection = $this->getMockConnection();
         $this->addPatronLoginToMock($connection, $details);

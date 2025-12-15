@@ -414,7 +414,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
                 ->onlyMethods(['get'])
                 ->getMock();
             $mock->method('get')
-                ->with($this->equalTo('FeedbackForms.yaml'))
+                ->with('FeedbackForms.yaml')
                 ->willReturn($config);
             $this->mockTestFormYamlReader = $mock;
         }

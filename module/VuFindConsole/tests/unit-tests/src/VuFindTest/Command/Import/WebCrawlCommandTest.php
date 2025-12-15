@@ -112,18 +112,18 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
         $importer = $this->getMockImporter();
         $importer->expects($this->once())->method('save')
             ->with(
-                $this->equalTo($fixture2),
-                $this->equalTo('sitemap.properties'),
-                $this->equalTo('SolrWeb'),
-                $this->equalTo(false)
+                $fixture2,
+                'sitemap.properties',
+                'SolrWeb',
+                false
             )->willReturn('<result />');
         $solr = $this->getMockSolrWriter();
         $solr->expects($this->once())->method('deleteByQuery')
-            ->with($this->equalTo('SolrWeb'));
+            ->with('SolrWeb');
         $solr->expects($this->once())->method('commit')
-            ->with($this->equalTo('SolrWeb'));
+            ->with('SolrWeb');
         $solr->expects($this->once())->method('optimize')
-            ->with($this->equalTo('SolrWeb'));
+            ->with('SolrWeb');
         $config = new Config(
             [
                 'Cache' => ['transform_cache_dir' => $cache ? $cacheDir : null],
@@ -162,11 +162,11 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
         $solr = $this->getMockSolrWriter();
         $solr->expects($this->once())->method('save')->with('SolrWeb', new RawXMLDocument('<sample />'));
         $solr->expects($this->once())->method('deleteByQuery')
-            ->with($this->equalTo('SolrWeb'));
+            ->with('SolrWeb');
         $solr->expects($this->once())->method('commit')
-            ->with($this->equalTo('SolrWeb'));
+            ->with('SolrWeb');
         $solr->expects($this->once())->method('optimize')
-            ->with($this->equalTo('SolrWeb'));
+            ->with('SolrWeb');
         $config = new Config(
             [
                 'Cache' => ['transform_cache_dir' => $cacheDir],
