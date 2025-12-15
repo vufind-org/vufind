@@ -300,7 +300,7 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
           },
           dataType: 'json',
           success: function autocompleteJSON(json) {
-            const regex = new RegExp(query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), "ig");
+            const regex = new RegExp(query.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&'), "ig");
             const highlighted = json.data.suggestions.map(
               (item) => ({
                 text: item.replaceAll("&", "&amp;")
