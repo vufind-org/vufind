@@ -135,7 +135,7 @@ class NormalizedSearchTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetUrl(): void
     {
-        $this->assertEquals('?', $this->getNormalizedSearch()->getUrl());
+        $this->assertSame('?', $this->getNormalizedSearch()->getUrl());
     }
 
     /**

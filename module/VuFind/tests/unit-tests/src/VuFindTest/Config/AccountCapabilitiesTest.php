@@ -88,7 +88,7 @@ class AccountCapabilitiesTest extends \PHPUnit\Framework\TestCase
     public function testGetEmailActionSettings(array $mailConfig, string $expected): void
     {
         $capabilities = $this->getCapabilities(['Mail' => $mailConfig]);
-        $this->assertEquals($expected, $capabilities->getEmailActionSetting());
+        $this->assertSame($expected, $capabilities->getEmailActionSetting());
     }
 
     /**
@@ -124,6 +124,6 @@ class AccountCapabilitiesTest extends \PHPUnit\Framework\TestCase
         $auth = $this->createMock(Manager::class);
         $auth->method('loginEnabled')->willReturn($loginEnabled);
         $capabilities = $this->getCapabilities($config, $auth);
-        $this->assertEquals($expected, $capabilities->isEmailActionAvailable());
+        $this->assertSame($expected, $capabilities->isEmailActionAvailable());
     }
 }

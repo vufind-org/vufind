@@ -362,7 +362,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
             $this->retryClickWithResizedWindow($session, $page, $buttonSelector);
             [, $params] = explode('?', $session->getCurrentUrl());
         }
-        $this->assertEquals(
+        $this->assertSame(
             'print=true&id[]=Solr|testsample1&id[]=Solr|testsample2',
             str_replace(['%5B', '%5D', '%7C'], ['[', ']', '|'], $params)
         );

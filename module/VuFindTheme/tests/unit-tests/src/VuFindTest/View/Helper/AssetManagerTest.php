@@ -153,19 +153,19 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
         $manager->appendScriptString('foo')
             ->appendScriptLink('foo.js')
             ->prependScriptString('bar', ['attr'], options: ['allow_arbitrary_attributes' => true]);
-        $this->assertEquals("bar/attr/1\nfoo//0\nfoo.js//0", trim($manager->outputHeaderAssets()));
+        $this->assertSame("bar/attr/1\nfoo//0\nfoo.js//0", trim($manager->outputHeaderAssets()));
         $manager->forcePrependScriptLink('bar.js')
             ->forcePrependScriptLink('foo.js', ['attr1'], options: ['allow_arbitrary_attributes' => true]);
-        $this->assertEquals("foo.js/attr1/1\nbar.js//0\nbar/attr/1\nfoo//0", trim($manager->outputHeaderAssets()));
+        $this->assertSame("foo.js/attr1/1\nbar.js//0\nbar/attr/1\nfoo//0", trim($manager->outputHeaderAssets()));
         $manager->appendScriptString('foot1', position: 'footer')
             ->prependScriptString('foot0', position: 'footer')
             ->appendScriptLink('foot.js', position: 'footer')
             ->forcePrependScriptLink('pre-foot.js', position: 'footer');
-        $this->assertEquals("pre-foot.js//0\nfoot0//0\nfoot1//0\nfoot.js//0", trim($manager->outputFooterAssets()));
+        $this->assertSame("pre-foot.js//0\nfoot0//0\nfoot1//0\nfoot.js//0", trim($manager->outputFooterAssets()));
         $manager->clearScriptList()
             ->appendScriptString('xyzzy', ['foo'], options: ['allow_arbitrary_attributes' => true]);
-        $this->assertEquals('xyzzy/foo/1', trim($manager->outputHeaderAssets()));
-        $this->assertEquals('', trim($manager->outputFooterAssets()));
+        $this->assertSame('xyzzy/foo/1', trim($manager->outputHeaderAssets()));
+        $this->assertSame('', trim($manager->outputFooterAssets()));
     }
 
     /**
@@ -250,12 +250,12 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
         $manager->appendStyleString('foo')
             ->appendStyleLink('foo.css')
             ->forcePrependStyleLink('bar.css');
-        $this->assertEquals("bar.css/screen//\nfoo.css/screen//\nfoo/", trim($manager->outputHeaderAssets()));
+        $this->assertSame("bar.css/screen//\nfoo.css/screen//\nfoo/", trim($manager->outputHeaderAssets()));
         $manager->clearStyleList()
             ->appendStyleLink('xyzzy.css', 'print', 'cond', ['a', 'b'])
             ->appendStyleString('baz', ['c', 'd'])
             ->forcePrependStyleLink('pre.css', 'odd', 'oop', ['z']);
-        $this->assertEquals(
+        $this->assertSame(
             "pre.css/odd/oop/z\nxyzzy.css/print/cond/a|b\nbaz/c|d",
             trim($manager->outputHeaderAssets())
         );

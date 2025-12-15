@@ -121,7 +121,7 @@ class RetrieveBatchCommandTest extends TestCase
         $backendId = 'bar';
         $ids = ['id1', 'id2'];
         $command = new RetrieveBatchCommand($backendId, $ids);
-        $this->assertEquals(
+        $this->assertSame(
             $ids,
             $command->getRecordIdentifiers()
         );

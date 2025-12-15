@@ -89,8 +89,8 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
         $expected = "Processing 0 searches\nDone processing searches\n";
-        $this->assertEquals($expected, $commandTester->getDisplay());
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame($expected, $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -115,8 +115,8 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester->execute([]);
         $expected = "Processing 1 searches\n"
             . "ERROR: Search 1: unknown schedule: 7\nDone processing searches\n";
-        $this->assertEquals($expected, $commandTester->getDisplay());
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame($expected, $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -142,8 +142,8 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         $expected = "Processing 1 searches\n"
             . "  Bypassing search 1: previous execution too recent (Weekly, $lastDate)\n"
             . "Done processing searches\n";
-        $this->assertEquals($expected, $commandTester->getDisplay());
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame($expected, $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -173,8 +173,8 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         $expected = "Processing 1 searches\n"
             . "ERROR: Unsupported search backend unsupported for search 1\n"
             . "Done processing searches\n";
-        $this->assertEquals($expected, $commandTester->getDisplay());
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame($expected, $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -206,8 +206,8 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         $expected = "Processing 1 searches\n"
             . "  No results found for search 1\n"
             . "Done processing searches\n";
-        $this->assertEquals($expected, $commandTester->getDisplay());
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame($expected, $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -241,8 +241,8 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         $expected = "Processing 1 searches\n"
             . "  No new results for search (1): $zeroDate < 2000-01-01T00:00:00Z\n"
             . "Done processing searches\n";
-        $this->assertEquals($expected, $commandTester->getDisplay());
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame($expected, $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -323,8 +323,8 @@ class NotifyCommandTest extends \PHPUnit\Framework\TestCase
         $expected = "Processing 1 searches\n"
             . "  New results for search (1): $expectedDate >= 2000-01-01T00:00:00Z\n"
             . "Done processing searches\n";
-        $this->assertEquals($expected, $commandTester->getDisplay());
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame($expected, $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**

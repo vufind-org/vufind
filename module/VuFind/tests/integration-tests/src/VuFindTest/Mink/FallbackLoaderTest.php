@@ -104,7 +104,7 @@ final class FallbackLoaderTest extends \VuFindTest\Integration\MinkTestCase
             $this->waitForPageLoad($page);
             $this->findCssAndSetValue($page, '#list_title', $newListName);
             $this->clickCss($page, '.modal-body .btn.btn-primary');
-            $this->assertEquals(
+            $this->assertSame(
                 $newListName,
                 trim($this->findCssAndGetHtml($page, '#save_list option[selected]'))
             );

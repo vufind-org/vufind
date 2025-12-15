@@ -79,11 +79,11 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
         $command = new ThemeCommand($compiler);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['source' => 'theme']);
-        $this->assertEquals(
+        $this->assertSame(
             "Success.\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -110,11 +110,11 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
                 'target' => 'compiled_theme',
             ]
         );
-        $this->assertEquals(
+        $this->assertSame(
             "Error!\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertSame(1, $commandTester->getStatusCode());
     }
 
     /**
@@ -140,11 +140,11 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
                 '--force' => true,
             ]
         );
-        $this->assertEquals(
+        $this->assertSame(
             "Success.\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**

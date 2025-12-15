@@ -194,7 +194,7 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
     public function testPublicLists($params, $expected): void
     {
         $result = $this->getService($this->getEntityManager($expected))->getPublicLists(...$params);
-        $this->assertEquals([], $result);
+        $this->assertSame([], $result);
     }
 
     /**
@@ -268,7 +268,7 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
             }
         );
         $result = $service->getUserListsAndCountsByUser(...$params);
-        $this->assertEquals([], $result);
+        $this->assertSame([], $result);
     }
 
     /**
@@ -386,7 +386,7 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
         $service = $this->getService($this->getEntityManager($expected), ['getDoctrineReference', 'getUserListsById']);
         $service->expects($this->once())->method('getUserListsById')->willReturn([]);
         $result = $service->getUserListsByTagAndId(...$params);
-        $this->assertEquals([], $result);
+        $this->assertSame([], $result);
     }
 
     /**
@@ -485,6 +485,6 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
         }
 
         $result = $service->getListsContainingRecord(...$params);
-        $this->assertEquals([], $result);
+        $this->assertSame([], $result);
     }
 }

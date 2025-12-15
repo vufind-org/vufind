@@ -330,7 +330,7 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
         $mockUserService
             ->method('getUserByField')
             ->willReturnCallback(function (string $fieldName, $fieldValue) {
-                $this->assertEquals('id', $fieldName);
+                $this->assertSame('id', $fieldName);
                 return $this->createMockUserEntity($fieldValue, 'test');
             });
 

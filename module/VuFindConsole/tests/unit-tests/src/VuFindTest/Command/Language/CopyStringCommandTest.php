@@ -122,11 +122,11 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
         $command = $this->getSuccessfulMockCommand();
         $commandTester = new CommandTester($command);
         $commandTester->execute(['source' => 'foo::bar', 'target' => 'foo::xyzzy']);
-        $this->assertEquals(
+        $this->assertSame(
             "Processing en.ini...\nProcessing en.ini...\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -145,11 +145,11 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
                 '--replace' => 'baz/transformed',
             ]
         );
-        $this->assertEquals(
+        $this->assertSame(
             "Processing en.ini...\nProcessing en.ini...\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -169,11 +169,11 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
                 '--replaceDelimiter' => '|',
             ]
         );
-        $this->assertEquals(
+        $this->assertSame(
             "Processing en.ini...\nProcessing en.ini...\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -188,11 +188,11 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester->execute(
             ['source' => 'doesnotexist::bar', 'target' => 'foo::xyzzy']
         );
-        $this->assertEquals(
+        $this->assertSame(
             "Could not open directory {$this->languageFixtureDir}/doesnotexist\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertSame(1, $commandTester->getStatusCode());
     }
 
     /**

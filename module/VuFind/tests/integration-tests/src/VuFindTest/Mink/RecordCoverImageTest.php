@@ -174,7 +174,7 @@ class RecordCoverImageTest extends \VuFindTest\Integration\MinkTestCase
         $backlinkSelector = 'p.cover-source';
         if ($expectedBacklink) {
             // Normalize whitespace to simplify comparison:
-            $this->assertEquals(
+            $this->assertSame(
                 str_replace(' ', '', $expectedBacklink),
                 str_replace(' ', '', $this->findCssAndGetText($page, $backlinkSelector))
             );
@@ -206,6 +206,6 @@ class RecordCoverImageTest extends \VuFindTest\Integration\MinkTestCase
         $expectedQuery = explode('&', $expectedImageParts[1] ?? '');
         sort($expectedQuery);
         sort($imageSrcQuery);
-        $this->assertEquals(implode('', $expectedQuery), (implode('', $imageSrcQuery)));
+        $this->assertSame(implode('', $expectedQuery), (implode('', $imageSrcQuery)));
     }
 }

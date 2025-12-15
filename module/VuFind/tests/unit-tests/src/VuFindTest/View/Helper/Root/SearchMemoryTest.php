@@ -157,7 +157,7 @@ class SearchMemoryTest extends \PHPUnit\Framework\TestCase
         $memory->expects($this->once())->method('getLastSearch')->willReturn($results);
         $helper = $this->getSearchMemoryViewHelper($memory);
         $helper->setView($this->getConfiguredView($results->getParams()));
-        $this->assertEquals('/foo/bar', $helper->getLastSearchUrl());
+        $this->assertSame('/foo/bar', $helper->getLastSearchUrl());
     }
 
     /**

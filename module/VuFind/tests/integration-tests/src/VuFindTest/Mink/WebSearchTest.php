@@ -84,7 +84,7 @@ class WebSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
 
         // Confirm the result count:
-        $this->assertEquals(
+        $this->assertSame(
             $expectedCount,
             intval($this->findCssAndGetText($page, '.js-search-stats strong', index: 1))
         );

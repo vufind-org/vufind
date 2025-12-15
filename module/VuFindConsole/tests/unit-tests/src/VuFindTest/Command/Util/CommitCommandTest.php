@@ -56,7 +56,7 @@ class CommitCommandTest extends \PHPUnit\Framework\TestCase
         $command = new CommitCommand($writer);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['core' => 'foo']);
-        $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals('', $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
+        $this->assertSame('', $commandTester->getDisplay());
     }
 }

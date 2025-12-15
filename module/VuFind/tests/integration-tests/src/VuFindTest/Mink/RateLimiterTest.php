@@ -217,7 +217,7 @@ class RateLimiterTest extends \VuFindTest\Integration\MinkTestCase
             $headerLimit = $headers->get('X-RateLimit-Limit')->getFieldValue();
             $this->assertEquals($limit, $headerLimit);
             if (null !== $current) {
-                $this->assertEquals($current, $limit - $headerRemaining);
+                $this->assertSame($current, $limit - $headerRemaining);
             }
         }
     }

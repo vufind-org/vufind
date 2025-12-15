@@ -128,7 +128,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         $expectedLinkText = implode("\n", array_map($expectedCallback, $expected));
 
         // Compare the expected and actual strings:
-        $this->assertEquals($expectedLinkText, $linkText);
+        $this->assertSame($expectedLinkText, $linkText);
     }
 
     /**

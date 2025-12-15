@@ -57,7 +57,7 @@ class DatabaseTest extends \VuFindTest\Unit\SessionHandlerTestCase
         $session->expects($this->once())->method('readSession')
             ->with($this->equalTo('foo'), $this->equalTo(3600))
             ->willReturn('bar');
-        $this->assertEquals('bar', $handler->read('foo'));
+        $this->assertSame('bar', $handler->read('foo'));
     }
 
     /**
@@ -72,7 +72,7 @@ class DatabaseTest extends \VuFindTest\Unit\SessionHandlerTestCase
         $session->expects($this->once())->method('readSession')
             ->with($this->equalTo('foo'), $this->equalTo(1000))
             ->willReturn('bar');
-        $this->assertEquals('bar', $handler->read('foo'));
+        $this->assertSame('bar', $handler->read('foo'));
     }
 
     /**
@@ -87,7 +87,7 @@ class DatabaseTest extends \VuFindTest\Unit\SessionHandlerTestCase
         $session->expects($this->once())->method('garbageCollect')
             ->with($this->equalTo(3600))
             ->willReturn(150);
-        $this->assertEquals(150, $handler->gc(3600));
+        $this->assertSame(150, $handler->gc(3600));
     }
 
     /**

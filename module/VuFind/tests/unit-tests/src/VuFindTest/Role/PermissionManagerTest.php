@@ -69,7 +69,7 @@ class PermissionManagerTest extends \PHPUnit\Framework\TestCase
     public function testGetAllConfiguredPermissions(): void
     {
         $pm = new PermissionManager($this->permissionConfig);
-        $this->assertEquals(
+        $this->assertSame(
             ['everyone', 'nobody', 'everyoneArray', 'everyoneArray2'],
             $pm->getAllConfiguredPermissions()
         );

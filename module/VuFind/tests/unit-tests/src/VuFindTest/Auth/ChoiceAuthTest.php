@@ -167,7 +167,7 @@ class ChoiceAuthTest extends \PHPUnit\Framework\TestCase
             ->with($this->equalTo('http://foo'))
             ->willReturn('http://bar');
         $ca = $this->getChoiceAuth($pm, $session);
-        $this->assertEquals('http://bar', $ca->getLogoutRedirectUrl('http://foo'));
+        $this->assertSame('http://bar', $ca->getLogoutRedirectUrl('http://foo'));
     }
 
     /**

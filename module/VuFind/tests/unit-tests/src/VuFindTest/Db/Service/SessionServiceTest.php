@@ -196,7 +196,7 @@ class SessionServiceTest extends \PHPUnit\Framework\TestCase
         $session->expects($this->once())->method('getData')
             ->willReturn('foo');
         $service = $this->getService($entityManager, $pluginManager, $persistenceManager);
-        $this->assertEquals('foo', $service->readSession('1', 10000000));
+        $this->assertSame('foo', $service->readSession('1', 10000000));
     }
 
     /**
@@ -307,6 +307,6 @@ class SessionServiceTest extends \PHPUnit\Framework\TestCase
         $entityManager->expects($this->once())->method('createQueryBuilder')
             ->willReturn($queryBuilder);
         $service = $this->getService($entityManager, $pluginManager, $persistenceManager);
-        $this->assertEquals(5, $service->garbageCollect(10000));
+        $this->assertSame(5, $service->garbageCollect(10000));
     }
 }

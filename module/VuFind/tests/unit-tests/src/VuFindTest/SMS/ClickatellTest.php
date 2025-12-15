@@ -107,7 +107,7 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
         try {
             $obj->text('Clickatell', '1234567890', 'test@example.com', 'hello');
         } catch (\VuFind\Exception\SMS $e) {
-            $this->assertEquals('sms_failure', $e->getDisplayMessage());
+            $this->assertSame('sms_failure', $e->getDisplayMessage());
         }
     }
 

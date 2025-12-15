@@ -108,7 +108,7 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
         $container = new ResourceContainer();
         $container->addCss(['a', 'b', 'c']);
         $container->addCss(['file' => 'b', 'disabled' => true]);
-        $this->assertEquals(
+        $this->assertSame(
             [
                 ['file' => 'a'],
                 ['file' => 'c'],
@@ -185,7 +185,7 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
                 'position' => 'header',
             ],
         ];
-        $this->assertEquals(
+        $this->assertSame(
             $expectedHeaderResult,
             array_values($container->getJs('header'))
         );
@@ -193,7 +193,7 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
         $expectedFooterResult = [
             ['file' => 'df', 'position' => 'footer'],
         ];
-        $this->assertEquals(
+        $this->assertSame(
             $expectedFooterResult,
             array_values($container->getJs('footer'))
         );
@@ -209,7 +209,7 @@ class ThemeResourceContainerTest extends \PHPUnit\Framework\TestCase
         $container = new ResourceContainer();
         $container->addJs(['a', 'b', 'c']);
         $container->addJs(['file' => 'b', 'disabled' => true]);
-        $this->assertEquals(
+        $this->assertSame(
             [
                 ['file' => 'a', 'position' => 'header'],
                 ['file' => 'c', 'position' => 'header'],

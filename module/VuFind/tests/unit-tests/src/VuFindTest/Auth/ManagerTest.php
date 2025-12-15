@@ -61,7 +61,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
      */
     public function testDefaultConfig(): void
     {
-        $this->assertEquals('Database', $this->getManager()->getAuthMethod());
+        $this->assertSame('Database', $this->getManager()->getAuthMethod());
     }
 
     /**
@@ -76,7 +76,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $db->expects($this->once())->method('getSessionInitiator')
             ->with($this->equalTo('foo'))->willReturn('bar');
         $manager = $this->getManager([], null, null, $pm);
-        $this->assertEquals('bar', $manager->getSessionInitiator('foo'));
+        $this->assertSame('bar', $manager->getSessionInitiator('foo'));
     }
 
     /**
@@ -87,12 +87,12 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     public function testGetSelectableAuthOptions(): void
     {
         // Simple case -- default Database helper.
-        $this->assertEquals(['Database'], $this->getManager()->getSelectableAuthOptions());
+        $this->assertSame(['Database'], $this->getManager()->getSelectableAuthOptions());
 
         // Advanced case -- ChoiceAuth.
         $config = ['Authentication' => ['method' => 'ChoiceAuth']];
         $manager = $this->getManager($config);
-        $this->assertEquals(['Database', 'Shibboleth'], $manager->getSelectableAuthOptions());
+        $this->assertSame(['Database', 'Shibboleth'], $manager->getSelectableAuthOptions());
 
         // Advanced case -- ChoiceAuth's getSelectableAuthOptions returns false.
         $pm = $this->getMockPluginManager();
@@ -101,7 +101,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $pm->setService('ChoiceAuth2', $mockChoice);
         $config = ['Authentication' => ['method' => 'ChoiceAuth2']];
         $manager = $this->getManager($config, null, null, $pm);
-        $this->assertEquals(['ChoiceAuth2'], $manager->getSelectableAuthOptions());
+        $this->assertSame(['ChoiceAuth2'], $manager->getSelectableAuthOptions());
     }
 
     /**
@@ -116,7 +116,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $multi = $pm->get('MultiILS');
         $multi->expects($this->once())->method('getLoginTargets')->willReturn($targets);
         $config = ['Authentication' => ['method' => 'MultiILS']];
-        $this->assertEquals($targets, $this->getManager($config, null, null, $pm)->getLoginTargets());
+        $this->assertSame($targets, $this->getManager($config, null, null, $pm)->getLoginTargets());
     }
 
     /**
@@ -131,7 +131,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $multi = $pm->get('MultiILS');
         $multi->expects($this->once())->method('getDefaultLoginTarget')->willReturn($target);
         $config = ['Authentication' => ['method' => 'MultiILS']];
-        $this->assertEquals($target, $this->getManager($config, null, null, $pm)->getDefaultLoginTarget());
+        $this->assertSame($target, $this->getManager($config, null, null, $pm)->getDefaultLoginTarget());
     }
 
     /**
@@ -146,7 +146,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $db->expects($this->once())->method('getLogoutRedirectUrl')
             ->with($this->equalTo('http://foo/bar'))->willReturn('http://baz');
         $manager = $this->getManager([], null, null, $pm);
-        $this->assertEquals('http://baz', $manager->getLogoutRedirectUrl('http://foo/bar'));
+        $this->assertSame('http://baz', $manager->getLogoutRedirectUrl('http://foo/bar'));
     }
 
     /**
@@ -211,11 +211,11 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     {
         $config = ['Authentication' => ['method' => 'ChoiceAuth']];
         $manager = $this->getManager($config);
-        $this->assertEquals('ChoiceAuth', $manager->getAuthMethod());
+        $this->assertSame('ChoiceAuth', $manager->getAuthMethod());
         // The default mock object in this test is configured to allow a
         // switch from ChoiceAuth --> Database
         $manager->setAuthMethod('Database');
-        $this->assertEquals('Database', $manager->getAuthMethod());
+        $this->assertSame('Database', $manager->getAuthMethod());
     }
 
     /**
@@ -230,7 +230,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
 
         $config = ['Authentication' => ['method' => 'ChoiceAuth']];
         $manager = $this->getManager($config);
-        $this->assertEquals('ChoiceAuth', $manager->getAuthMethod());
+        $this->assertSame('ChoiceAuth', $manager->getAuthMethod());
         // The default mock object in this test is NOT configured to allow a
         // switch from ChoiceAuth --> MultiILS
         $manager->setAuthMethod('MultiILS');
