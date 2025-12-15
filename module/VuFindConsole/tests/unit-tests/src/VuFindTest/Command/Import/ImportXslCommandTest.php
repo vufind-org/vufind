@@ -74,10 +74,10 @@ class ImportXslCommandTest extends \PHPUnit\Framework\TestCase
         $importer = $this->getMockImporter();
         $importer->expects($this->once())->method('save')
             ->with(
-                $this->equalTo('foo.xml'),
-                $this->equalTo('bar.properties'),
-                $this->equalTo('Solr'),
-                $this->equalTo(false)
+                'foo.xml',
+                'bar.properties',
+                'Solr',
+                false
             );
         $command = new ImportXslCommand($importer);
         $commandTester = new CommandTester($command);
@@ -105,10 +105,10 @@ class ImportXslCommandTest extends \PHPUnit\Framework\TestCase
         $importer = $this->getMockImporter();
         $importer->expects($this->once())->method('save')
             ->with(
-                $this->equalTo('foo.xml'),
-                $this->equalTo('bar.properties'),
-                $this->equalTo('SolrTest'),
-                $this->equalTo(true)
+                'foo.xml',
+                'bar.properties',
+                'SolrTest',
+                true
             )->willThrowException($e);
         $command = new ImportXslCommand($importer);
         $commandTester = new CommandTester($command);

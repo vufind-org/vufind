@@ -160,7 +160,7 @@ abstract class AbstractExpireCommandTestCase extends \PHPUnit\Framework\TestCase
         $date = new DateTime();
         $service = $this->createMock($this->validServiceClass);
         $service->expects($this->once())->method('deleteExpired')
-            ->with($this->equalTo($date))
+            ->with($date)
             ->willReturn(0);
         $command = $this->getCommand($service, $date);
         $commandTester = new CommandTester($command);

@@ -128,10 +128,10 @@ class ConnectorTest extends TestCase
         // The client will be reset before it is given the expected mime type:
         $this->expectConsecutiveCalls($client, 'setEncType', [['application/x-www-form-urlencoded'], ['text/csv']]);
         $client->expects($this->once())->method('setRawBody')
-            ->with($this->equalTo($csvData));
+            ->with($csvData);
         $conn = $this->getConnectorMock(['send'], $client);
         $conn->expects($this->once())->method('send')
-            ->with($this->equalTo($client));
+            ->with($client);
         $csv = new \VuFindSearch\Backend\Solr\Document\RawCSVDocument($csvData);
         $conn->write($csv, 'csv');
     }
@@ -158,10 +158,10 @@ class ConnectorTest extends TestCase
             ]
         );
         $client->expects($this->once())->method('setRawBody')
-            ->with($this->equalTo($jsonData));
+            ->with($jsonData);
         $conn = $this->getConnectorMock(['send'], $client);
         $conn->expects($this->once())->method('send')
-            ->with($this->equalTo($client));
+            ->with($client);
         $json = new \VuFindSearch\Backend\Solr\Document\RawJSONDocument($jsonData);
         $conn->write($json, 'json');
     }

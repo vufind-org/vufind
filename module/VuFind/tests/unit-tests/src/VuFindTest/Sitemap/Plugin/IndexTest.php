@@ -70,7 +70,7 @@ class IndexTest extends \PHPUnit\Framework\TestCase
         $fetcher->expects($this->once())->method('getInitialOffset')
             ->willReturn('*');
         $fetcher->expects($this->once())->method('setupBackend')
-            ->with($this->equalTo($backendId));
+            ->with($backendId);
         $this->expectConsecutiveCalls(
             $fetcher,
             'getIdsFromBackend',

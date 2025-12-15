@@ -301,11 +301,11 @@ class ExportTest extends \PHPUnit\Framework\TestCase
     {
         $url = $this->createMock(\Laminas\View\Helper\Url::class);
         $url->expects($this->once())->method('__invoke')
-            ->with($this->equalTo('cart-doexport'))
+            ->with('cart-doexport')
             ->willReturn('/cart/doExport');
         $serverUrl = $this->createMock(\Laminas\View\Helper\ServerUrl::class);
         $serverUrl->expects($this->once())->method('__invoke')
-            ->with($this->equalTo('/cart/doExport'))
+            ->with('/cart/doExport')
             ->willReturn('http://localhost/cart/doExport');
         $renderer = $this->createMock(PhpRenderer::class);
         $this->expectConsecutiveCalls($renderer, 'plugin', [['serverurl'], ['url']], [$serverUrl, $url]);

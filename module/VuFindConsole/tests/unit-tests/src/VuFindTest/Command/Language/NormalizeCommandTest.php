@@ -92,7 +92,7 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
         $target = realpath($this->languageFixtureDir);
         $normalizer = $this->getMockNormalizer();
         $normalizer->expects($this->once())->method('normalizeDirectory')
-            ->with($this->equalTo($target));
+            ->with($target);
         $command = new NormalizeCommand($normalizer);
         $commandTester = new CommandTester($command);
         $commandTester->execute(compact('target'));
@@ -130,7 +130,7 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
         $target = realpath($this->languageFixtureDir) . '/foo/en.ini';
         $normalizer = $this->getMockNormalizer();
         $normalizer->expects($this->once())->method('normalizeFile')
-            ->with($this->equalTo($target));
+            ->with($target);
         $command = new NormalizeCommand($normalizer);
         $commandTester = new CommandTester($command);
         $commandTester->execute(compact('target'));

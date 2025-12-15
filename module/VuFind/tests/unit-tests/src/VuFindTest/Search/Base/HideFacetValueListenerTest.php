@@ -134,9 +134,9 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
         $listener = $this->getListener();
         $mock = $this->createMock(\Laminas\EventManager\SharedEventManagerInterface::class);
         $mock->expects($this->once())->method('attach')->with(
-            $this->equalTo(\VuFindSearch\Service::class),
-            $this->equalTo('post'),
-            $this->equalTo([$listener, 'onSearchPost'])
+            \VuFindSearch\Service::class,
+            'post',
+            [$listener, 'onSearchPost']
         );
         $listener->attach($mock);
     }

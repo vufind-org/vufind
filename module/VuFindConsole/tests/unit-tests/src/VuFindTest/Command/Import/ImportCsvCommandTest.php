@@ -74,10 +74,10 @@ class ImportCsvCommandTest extends \PHPUnit\Framework\TestCase
         $importer = $this->getMockImporter();
         $importer->expects($this->once())->method('save')
             ->with(
-                $this->equalTo('foo.csv'),
-                $this->equalTo('bar.ini'),
-                $this->equalTo('Solr'),
-                $this->equalTo(false)
+                'foo.csv',
+                'bar.ini',
+                'Solr',
+                false
             );
         $command = new ImportCsvCommand($importer);
         $commandTester = new CommandTester($command);
@@ -105,10 +105,10 @@ class ImportCsvCommandTest extends \PHPUnit\Framework\TestCase
         $importer = $this->getMockImporter();
         $importer->expects($this->once())->method('save')
             ->with(
-                $this->equalTo('foo.csv'),
-                $this->equalTo('bar.ini'),
-                $this->equalTo('SolrTest'),
-                $this->equalTo(true)
+                'foo.csv',
+                'bar.ini',
+                'SolrTest',
+                true
             )->willThrowException($e);
         $command = new ImportCsvCommand($importer);
         $commandTester = new CommandTester($command);

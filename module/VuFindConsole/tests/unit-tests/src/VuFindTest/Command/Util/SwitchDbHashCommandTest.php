@@ -419,7 +419,7 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         $cardService = $this->getMockCardService();
         $cardService->expects($this->once())->method('getAllRowsWithUsernames')->willReturn([$card]);
         $cardService->expects($this->once())->method('persistEntity')
-            ->with($this->equalTo($card));
+            ->with($card);
         $command = $this->getMockCommand([], $userService, $cardService);
         $command->expects($this->once())->method('getConfigWriter')->willReturn($writer);
         $commandTester = new CommandTester($command);

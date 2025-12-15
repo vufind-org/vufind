@@ -58,13 +58,13 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
             ->getMock();
         $memcache->expects($this->once())->method('setOption')
             ->with(
-                $this->equalTo(\Memcached::OPT_CONNECT_TIMEOUT),
-                $this->equalTo(1)
+                \Memcached::OPT_CONNECT_TIMEOUT,
+                1
             );
         $memcache->expects($this->once())->method('addServer')
             ->willReturn(true);
         $memcache->expects($this->once())->method('get')
-            ->with($this->equalTo('vufind_sessions/foo'))
+            ->with('vufind_sessions/foo')
             ->willReturn('bar');
         $config = [
             'memcache_client' => \Memcached::class,
@@ -88,19 +88,19 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
             ->getMock();
         $memcache->expects($this->once())->method('setOption')
             ->with(
-                $this->equalTo(\Memcached::OPT_CONNECT_TIMEOUT),
-                $this->equalTo(1)
+                \Memcached::OPT_CONNECT_TIMEOUT,
+                1
             );
         $memcache->expects($this->once())->method('addServer')
             ->with(
-                $this->equalTo('localhost'),
-                $this->equalTo(11211)
+                'localhost',
+                11211
             )->willReturn(true);
         $memcache->expects($this->once())->method('set')
             ->with(
-                $this->equalTo('vufind_sessions/foo'),
-                $this->equalTo('stuff'),
-                $this->equalTo(3600)
+                'vufind_sessions/foo',
+                'stuff',
+                3600
             )->willReturn(true);
         $config = [
             'memcache_client' => \Memcached::class,
@@ -124,19 +124,19 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
             ->getMock();
         $memcache->expects($this->once())->method('setOption')
             ->with(
-                $this->equalTo(\Memcached::OPT_CONNECT_TIMEOUT),
-                $this->equalTo(2)
+                \Memcached::OPT_CONNECT_TIMEOUT,
+                2
             );
         $memcache->expects($this->once())->method('addServer')
             ->with(
-                $this->equalTo('myhost'),
-                $this->equalTo(1234)
+                'myhost',
+                1234
             )->willReturn(true);
         $memcache->expects($this->once())->method('set')
             ->with(
-                $this->equalTo('vufind_sessions/foo'),
-                $this->equalTo('stuff'),
-                $this->equalTo(1000)
+                'vufind_sessions/foo',
+                'stuff',
+                1000
             )->willReturn(true);
         $config = [
             'lifetime' => 1000,
@@ -164,13 +164,13 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
             ->getMock();
         $memcache->expects($this->once())->method('setOption')
             ->with(
-                $this->equalTo(\Memcached::OPT_CONNECT_TIMEOUT),
-                $this->equalTo(1)
+                \Memcached::OPT_CONNECT_TIMEOUT,
+                1
             );
         $memcache->expects($this->once())->method('addServer')
             ->willReturn(true);
         $memcache->expects($this->once())->method('delete')
-            ->with($this->equalTo('vufind_sessions/foo'))
+            ->with('vufind_sessions/foo')
             ->willReturn(true);
         $config = [
             'memcache_client' => \Memcached::class,

@@ -581,7 +581,7 @@ class BackendTest extends TestCase
         $params = $this->getMockBuilder(\VuFindSearch\ParamBag::class)
             ->onlyMethods(['set'])->getMock();
         $params->expects($this->once())->method('set')
-            ->with($this->equalTo('sort'), $this->matchesRegularExpression('/[0-9]+_random asc/'));
+            ->with('sort', $this->matchesRegularExpression('/[0-9]+_random asc/'));
 
         // Test that random proxies search; stub out injectResponseWriter() to prevent it
         // from injecting unwanted extra parameters into $params:
@@ -611,8 +611,8 @@ class BackendTest extends TestCase
         $connector = $this->getConnectorMock(['getUrl', 'write'], $client);
         $connector->expects($this->once())->method('write')
             ->with(
-                $this->equalTo($doc),
-                $this->equalTo('update'),
+                $doc,
+                'update',
                 $this->isNull()
             )
             ->willReturnCallback(
@@ -687,7 +687,7 @@ class BackendTest extends TestCase
         $conn = $this->getConnectorMock(['query']);
         $e = new RemoteErrorException($msg, 400, new \Laminas\Http\Response());
         $conn->expects($this->once())->method('query')
-            ->with($this->equalTo('browse'))
+            ->with('browse')
             ->willThrowException($e);
         $back = new Backend($conn);
         $back->alphabeticBrowse('foo', 'bar', 1);

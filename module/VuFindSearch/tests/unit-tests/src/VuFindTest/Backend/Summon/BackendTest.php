@@ -197,7 +197,7 @@ class BackendTest extends TestCase
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
             ->method('query')
-            ->with($this->equalTo($expectedParams))
+            ->with($expectedParams)
             ->willReturn(['recordCount' => 0, 'documents' => []]);
         $back = new Backend($conn);
         $back->search(new Query('baz', 'boo'), 0, 10, $myParams);

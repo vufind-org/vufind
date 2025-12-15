@@ -61,10 +61,10 @@ class GetIdsCommandTest extends TestCase
             ->willReturn($backendId);
         $backend->expects($this->once())->method('getIds')
             ->with(
-                $this->equalTo($query),
-                $this->equalTo(0),
-                $this->equalTo(1),
-                $this->equalTo($params)
+                $query,
+                0,
+                1,
+                $params
             )->willReturn('result');
         $this->assertEquals('result', $command->execute($backend)->getResult());
     }
@@ -85,10 +85,10 @@ class GetIdsCommandTest extends TestCase
             ->willReturn($backendId);
         $backend->expects($this->once())->method('search')
             ->with(
-                $this->equalTo($query),
-                $this->equalTo(0),
-                $this->equalTo(1),
-                $this->equalTo($params)
+                $query,
+                0,
+                1,
+                $params
             )->willReturn('result');
         $this->assertEquals('result', $command->execute($backend)->getResult());
     }

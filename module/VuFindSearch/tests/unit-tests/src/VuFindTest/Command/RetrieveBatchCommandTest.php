@@ -62,8 +62,8 @@ class RetrieveBatchCommandTest extends TestCase
             ->willReturn($backendId);
         $backend->expects($this->once())->method('retrieveBatch')
             ->with(
-                $this->equalTo($ids),
-                $this->equalTo($params)
+                $ids,
+                $params
             )->willReturn('result');
         $this->assertEquals('result', $command->execute($backend)->getResult());
     }
@@ -89,7 +89,7 @@ class RetrieveBatchCommandTest extends TestCase
             $rci
         );
         $rci->expects($this->once())->method('first')->willReturn($record);
-        $rci->expects($this->once())->method('add')->with($this->equalTo($record));
+        $rci->expects($this->once())->method('add')->with($record);
         $this->assertEquals($rci, $command->execute($backend)->getResult());
     }
 

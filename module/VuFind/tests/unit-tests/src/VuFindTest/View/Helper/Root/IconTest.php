@@ -106,7 +106,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
     {
         $mock = $this->createMock(ImageLink::class);
         $mock->expects($this->once())->method('__invoke')
-            ->with($this->equalTo($expected))
+            ->with($expected)
             ->willReturn(basename($expected));
         return $mock;
     }
@@ -300,10 +300,10 @@ class IconTest extends \PHPUnit\Framework\TestCase
         // expected value.
         $cache = $this->createMock(StorageInterface::class);
         $cache->expects($this->exactly(2))->method('getItem')
-            ->with($this->equalTo($key))
+            ->with($key)
             ->willReturnOnConsecutiveCalls(null, $expected);
         $cache->expects($this->once())->method('setItem')
-            ->with($this->equalTo($key), $this->equalTo($expected));
+            ->with($key, $expected);
 
         // Invoke the helper twice to meet the expectations of the cache mock:
         $helper = $this->getIconHelper(null, $cache);

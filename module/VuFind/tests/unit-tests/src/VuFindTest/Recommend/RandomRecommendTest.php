@@ -191,7 +191,7 @@ class RandomRecommendTest extends \PHPUnit\Framework\TestCase
         $params = $this->getSolrParams();
 
         $paramManager->expects($this->once())->method('get')
-            ->with($this->equalTo('Solr'))
+            ->with('Solr')
             ->willReturn($params);
 
         // Use Solr since some Base components are abstract:

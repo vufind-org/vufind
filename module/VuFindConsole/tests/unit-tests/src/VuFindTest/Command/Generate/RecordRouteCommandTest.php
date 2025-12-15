@@ -83,21 +83,21 @@ class RecordRouteCommandTest extends \PHPUnit\Framework\TestCase
             ['getModuleConfigPath', 'backUpFile', 'writeModuleConfig']
         );
         $tools->expects($this->once())->method('getModuleConfigPath')
-            ->with($this->equalTo('xyzzy'))
+            ->with('xyzzy')
             ->willReturn($configFixturePath);
         $tools->expects($this->once())->method('backUpFile')
-            ->with($this->equalTo($configFixturePath));
+            ->with($configFixturePath);
         $tools->expects($this->once())->method('writeModuleConfig')
             ->with(
-                $this->equalTo($configFixturePath),
-                $this->equalTo($expectedConfig)
+                $configFixturePath,
+                $expectedConfig
             );
         $generator = $this->getMockRouteGenerator(['addRecordRoute']);
         $generator->expects($this->once())->method('addRecordRoute')
             ->with(
-                $this->equalTo($expectedConfig),
-                $this->equalTo('foo'),
-                $this->equalTo('bar')
+                $expectedConfig,
+                'foo',
+                'bar'
             );
         $command = new RecordRouteCommand($tools, $generator);
         $commandTester = new CommandTester($command);

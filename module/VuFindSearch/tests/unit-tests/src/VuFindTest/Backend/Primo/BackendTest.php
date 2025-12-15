@@ -196,9 +196,9 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $conn->expects($this->once())
             ->method('query')
             ->with(
-                $this->equalTo('inst-id'),
-                $this->equalTo($expectedParams['query']),
-                $this->equalTo($expectedParams)
+                'inst-id',
+                $expectedParams['query'],
+                $expectedParams
             )->willReturn(['recordCount' => 0, 'documents' => []]);
         $back = new Backend($conn);
         $back->search(new Query('baz'), 0, 10, $myParams);
@@ -290,9 +290,9 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $conn->expects($this->once())
             ->method('query')
             ->with(
-                $this->equalTo('inst-id'),
-                $this->equalTo($expectedParams['query']),
-                $this->equalTo($expectedParams)
+                'inst-id',
+                $expectedParams['query'],
+                $expectedParams
             )->willReturn(['recordCount' => 0, 'documents' => []]);
         $back = new Backend($conn);
         $back->search(new Query('foo'), 0, 10, $params);

@@ -94,7 +94,7 @@ class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
     {
         $ils = $this->getMockIlsConnection();
         $ils->expects($this->once())->method('__call')
-            ->with($this->equalTo('getSuppressedRecords'))
+            ->with('getSuppressedRecords')
             ->willReturn([]);
         $command = $this->getCommand(null, $ils);
         $commandTester = new CommandTester($command);
@@ -115,15 +115,15 @@ class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
     {
         $ils = $this->getMockIlsConnection();
         $ils->expects($this->once())->method('__call')
-            ->with($this->equalTo('getSuppressedRecords'))
+            ->with('getSuppressedRecords')
             ->willReturn([1, 2]);
         $solr = $this->getMockSolrWriter();
         $solr->expects($this->once())->method('deleteRecords')
-            ->with($this->equalTo('Solr'), $this->equalTo([1, 2]));
+            ->with('Solr', [1, 2]);
         $solr->expects($this->once())->method('commit')
-            ->with($this->equalTo('Solr'));
+            ->with('Solr');
         $solr->expects($this->once())->method('optimize')
-            ->with($this->equalTo('Solr'));
+            ->with('Solr');
         $command = $this->getCommand($solr, $ils);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
@@ -140,7 +140,7 @@ class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
     {
         $ils = $this->getMockIlsConnection();
         $ils->expects($this->once())->method('__call')
-            ->with($this->equalTo('getSuppressedAuthorityRecords'))
+            ->with('getSuppressedAuthorityRecords')
             ->willReturn([]);
         $command = $this->getCommand(null, $ils);
         $commandTester = new CommandTester($command);
@@ -161,11 +161,11 @@ class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
     {
         $ils = $this->getMockIlsConnection();
         $ils->expects($this->once())->method('__call')
-            ->with($this->equalTo('getSuppressedRecords'))
+            ->with('getSuppressedRecords')
             ->willReturn([1, 2]);
         $command = $this->getCommand(null, $ils);
         $command->expects($this->once())->method('writeToDisk')
-            ->with($this->equalTo('foo'), $this->equalTo("1\n2"))
+            ->with('foo', "1\n2")
             ->willReturn(true);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['--outfile' => 'foo']);
@@ -182,11 +182,11 @@ class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
     {
         $ils = $this->getMockIlsConnection();
         $ils->expects($this->once())->method('__call')
-            ->with($this->equalTo('getSuppressedRecords'))
+            ->with('getSuppressedRecords')
             ->willReturn([1, 2]);
         $command = $this->getCommand(null, $ils);
         $command->expects($this->once())->method('writeToDisk')
-            ->with($this->equalTo('foo'), $this->equalTo("1\n2"))
+            ->with('foo', "1\n2")
             ->willReturn(false);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['--outfile' => 'foo']);

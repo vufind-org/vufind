@@ -63,9 +63,9 @@ class RandomCommandTest extends TestCase
             ->willReturn($backendId);
         $backend->expects($this->once())->method('random')
             ->with(
-                $this->equalTo($query),
-                $this->equalTo(10),
-                $this->equalTo($params)
+                $query,
+                10,
+                $params
             )->willReturn('result');
         $this->assertEquals('result', $command->execute($backend)->getResult());
     }
@@ -87,10 +87,10 @@ class RandomCommandTest extends TestCase
             ->willReturn(0);
         $backend->expects($this->once())->method('search')
             ->with(
-                $this->equalTo($query),
-                $this->equalTo(0),
-                $this->equalTo(0),
-                $this->equalTo($params)
+                $query,
+                0,
+                0,
+                $params
             )->willReturn($rci);
         $this->assertEquals($rci, $command->execute($backend)->getResult());
     }
@@ -166,7 +166,7 @@ class RandomCommandTest extends TestCase
         $this->expectConsecutiveCalls($backend, 'search', $inputs, $outputs);
         $record = $this->createMock(\VuFindSearch\Response\RecordInterface::class);
         $rci->expects($this->exactly(9))->method('first')->willReturn($record);
-        $rci->expects($this->exactly(9))->method('add')->with($this->equalTo($record));
+        $rci->expects($this->exactly(9))->method('add')->with($record);
         $this->assertEquals($rci, $command->execute($backend)->getResult());
     }
 

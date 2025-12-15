@@ -109,12 +109,12 @@ class DeleteCommandTest extends \PHPUnit\Framework\TestCase
         $expectedPath = realpath($this->languageFixtureDir) . '/' . $domain . '/en.ini';
         $normalizer = $this->getMockNormalizer();
         $normalizer->expects($this->once())->method('normalizeFile')
-            ->with($this->equalTo($expectedPath));
+            ->with($expectedPath);
         $command = $this->getMockCommand($normalizer);
         $command->expects($this->once())->method('writeFileToDisk')
             ->with(
-                $this->equalTo($expectedPath),
-                $this->equalTo('')
+                $expectedPath,
+                ''
             );
         $commandTester = new CommandTester($command);
         $commandTester->execute(['target' => $domain . '::bar']);

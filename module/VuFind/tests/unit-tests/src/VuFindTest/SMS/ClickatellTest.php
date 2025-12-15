@@ -89,11 +89,11 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
         $expectedUri = $this->expectedBaseUri . '&to=1234567890&text=hello';
         $client->expects($this->once())
             ->method('setMethod')
-            ->with($this->equalTo('GET'))
+            ->with('GET')
             ->willReturn($client);
         $client->expects($this->once())
             ->method('setUri')
-            ->with($this->equalTo($expectedUri))
+            ->with($expectedUri)
             ->willReturn($client);
         $client->expects($this->once())
             ->method('send')
@@ -125,11 +125,11 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
         $response->setContent('ID:fake');
         $client->expects($this->once())
             ->method('setMethod')
-            ->with($this->equalTo('GET'))
+            ->with('GET')
             ->willReturn($client);
         $client->expects($this->once())
             ->method('setUri')
-            ->with($this->equalTo($expectedUri))
+            ->with($expectedUri)
             ->willReturn($client);
         $client->expects($this->once())->method('send')->willReturn($response);
         $obj = $this->getClickatell($client);
@@ -155,11 +155,11 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
         $response->setContent('badbadbad');
         $client->expects($this->once())
             ->method('setMethod')
-            ->with($this->equalTo('GET'))
+            ->with('GET')
             ->willReturn($client);
         $client->expects($this->once())
             ->method('setUri')
-            ->with($this->equalTo($expectedUri))
+            ->with($expectedUri)
             ->willReturn($client);
         $client->expects($this->once())
             ->method('send')
@@ -184,11 +184,11 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
         $response->setStatusCode(404);
         $client->expects($this->once())
             ->method('setMethod')
-            ->with($this->equalTo('GET'))
+            ->with('GET')
             ->willReturn($client);
         $client->expects($this->once())
             ->method('setUri')
-            ->with($this->equalTo($expectedUri))
+            ->with($expectedUri)
             ->willReturn($client);
         $client->expects($this->once())
             ->method('send')
@@ -211,11 +211,11 @@ class ClickatellTest extends \PHPUnit\Framework\TestCase
         $expectedUri = $this->expectedBaseUri . '&to=1234567890&text=hello';
         $client->expects($this->once())
             ->method('setMethod')
-            ->with($this->equalTo('GET'))
+            ->with('GET')
             ->willReturn($client);
         $client->expects($this->once())
             ->method('setUri')
-            ->with($this->equalTo($expectedUri))
+            ->with($expectedUri)
             ->willReturn($client);
         $client->expects($this->once())
             ->method('send')

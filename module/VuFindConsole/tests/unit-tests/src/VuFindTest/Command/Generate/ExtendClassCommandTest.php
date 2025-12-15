@@ -80,10 +80,10 @@ class ExtendClassCommandTest extends \PHPUnit\Framework\TestCase
         $tools->expects($this->once())->method('setOutputInterface');
         $tools->expects($this->once())->method('extendClass')
             ->with(
-                $this->equalTo($container),
-                $this->equalTo('Foo'),
-                $this->equalTo('Bar'),
-                $this->equalTo(null)
+                $container,
+                'Foo',
+                'Bar',
+                null
             );
         $command = new ExtendClassCommand($tools, $container);
         $commandTester = new CommandTester($command);
@@ -110,10 +110,10 @@ class ExtendClassCommandTest extends \PHPUnit\Framework\TestCase
         $tools->expects($this->once())->method('setOutputInterface');
         $tools->expects($this->once())->method('extendClass')
             ->with(
-                $this->equalTo($container),
-                $this->equalTo('Foo'),
-                $this->equalTo('Bar'),
-                $this->equalTo(true)
+                $container,
+                'Foo',
+                'Bar',
+                true
             );
         $command = new ExtendClassCommand($tools, $container);
         $commandTester = new CommandTester($command);
