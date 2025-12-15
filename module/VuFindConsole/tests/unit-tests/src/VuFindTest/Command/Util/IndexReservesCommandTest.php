@@ -154,7 +154,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
         $command = $this->getCommand();
         $commandTester = new CommandTester($command);
         $commandTester->execute(['--template' => '|']);
-        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertSame(1, $commandTester->getStatusCode());
         $this->assertStringContainsString(
             '-t (template) is meaningless without -f (filename)',
             $commandTester->getDisplay()
@@ -171,7 +171,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
         $command = $this->getCommand();
         $commandTester = new CommandTester($command);
         $commandTester->execute(['--delimiter' => '|']);
-        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertSame(1, $commandTester->getStatusCode());
         $this->assertStringContainsString(
             '-d (delimiter) is meaningless without -f (filename)',
             $commandTester->getDisplay()
@@ -188,7 +188,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
         $command = $this->getCommand();
         $commandTester = new CommandTester($command);
         $commandTester->execute(['--filename' => '/does/not/exist']);
-        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertSame(1, $commandTester->getStatusCode());
         $this->assertStringContainsString(
             'Could not open /does/not/exist!',
             $commandTester->getDisplay()
@@ -240,7 +240,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
                 . '<field name="department">dept3</field>'
                 . '</doc>'
                 . '</add>';
-            $that->assertEquals($expectedXml, trim($update->getContent()));
+            $that->assertSame($expectedXml, trim($update->getContent()));
             return true;
         };
         $writer->expects($this->once())->method('save')
@@ -263,7 +263,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
                 '--template' => 'BIB_ID,SKIP,COURSE,DEPARTMENT,INSTRUCTOR',
             ]
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
         $this->assertStringContainsString(
             'Successfully loaded 3 rows.',
             $commandTester->getDisplay()
@@ -529,7 +529,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
         $command = $this->getCommand($writer, $ils);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
-        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertSame(1, $commandTester->getStatusCode());
         $this->assertStringContainsString(
             $exception->getMessage(),
             $commandTester->getDisplay()

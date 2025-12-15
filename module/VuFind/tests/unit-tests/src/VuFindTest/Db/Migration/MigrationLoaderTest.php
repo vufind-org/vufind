@@ -73,7 +73,7 @@ class MigrationLoaderTest extends \PHPUnit\Framework\TestCase
     public function testGetMigrationDirForPlatform(string $platform, string $expectedDir): void
     {
         $loader = new MigrationLoader();
-        $this->assertEquals($expectedDir, $loader->getMigrationDirForPlatform($platform));
+        $this->assertSame($expectedDir, $loader->getMigrationDirForPlatform($platform));
     }
 
     /**
@@ -137,7 +137,7 @@ class MigrationLoaderTest extends \PHPUnit\Framework\TestCase
         $statement1 = "select * from table where field='has;semicolon';";
         $statement2 = 'drop table foo;';
         $sql = "$statement1\n$statement2\r$statement1     \n$statement2";
-        $this->assertEquals(
+        $this->assertSame(
             [$statement1, $statement2, $statement1, $statement2],
             array_map(
                 fn ($line) => "$line;", // restore semicolons for easier assertion

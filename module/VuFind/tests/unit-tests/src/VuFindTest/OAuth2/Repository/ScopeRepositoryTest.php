@@ -95,7 +95,7 @@ class ScopeRepositoryTest extends AbstractTokenRepositoryTestCase
         $this->assertEquals($ils, $scope->getILSNeeded());
 
         $scopes = ['openid', 'id', 'phone'];
-        $this->assertEquals(
+        $this->assertSame(
             $scopes,
             $repo->finalizeScopes($scopes, 'AuthCode', $this->createClientEntity())
         );

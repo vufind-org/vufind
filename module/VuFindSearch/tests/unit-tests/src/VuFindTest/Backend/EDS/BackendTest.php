@@ -81,7 +81,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         // check count
         $this->assertCount(10, $coll);
         foreach ($coll as $value) {
-            $this->assertEquals('bla', substr($value, 0, 3));
+            $this->assertSame('bla', substr($value, 0, 3));
         }
     }
 
@@ -196,7 +196,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $expected = ['Value' => 'News', 'Count' => '12055', 'AddAction' => 'addfacetfilter(SourceType:News)'];
         $this->assertEquals($expected, $rawFacets[0]['AvailableFacetValues'][0]);
         $facets = $coll->getFacets();
-        $this->assertEquals(count($facets), count($rawFacets));
+        $this->assertSame(count($facets), count($rawFacets));
         $this->assertEquals(
             [
                 'News' => 12055,

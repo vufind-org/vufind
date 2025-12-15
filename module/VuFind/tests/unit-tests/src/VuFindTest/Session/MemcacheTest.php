@@ -70,7 +70,7 @@ class MemcacheTest extends \VuFindTest\Unit\SessionHandlerTestCase
             'memcache_client' => \Memcached::class,
         ];
         $handler = $this->getHandler($config, $memcache);
-        $this->assertEquals('bar', $handler->read('foo'));
+        $this->assertSame('bar', $handler->read('foo'));
     }
 
     /**

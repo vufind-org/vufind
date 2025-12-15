@@ -69,7 +69,7 @@ class ThemeInjectTemplateListenerFactoryTest extends TestCase
             ->willReturn($modules);
         $container->set('ModuleManager', $mockModuleManager);
         $listener = $factory($container, InjectTemplateListener::class);
-        $this->assertEquals(
+        $this->assertSame(
             ['Extra/', 'VuFind/Foo/', 'VuFind/'],
             array_values($listener->getPrefixes())
         );

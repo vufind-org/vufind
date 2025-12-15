@@ -96,8 +96,8 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
         $command = new NormalizeCommand($normalizer);
         $commandTester = new CommandTester($command);
         $commandTester->execute(compact('target'));
-        $this->assertEquals('', $commandTester->getDisplay());
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame('', $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -134,8 +134,8 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
         $command = new NormalizeCommand($normalizer);
         $commandTester = new CommandTester($command);
         $commandTester->execute(compact('target'));
-        $this->assertEquals('', $commandTester->getDisplay());
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame('', $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -149,11 +149,11 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
         $command = new NormalizeCommand($this->getMockNormalizer());
         $commandTester = new CommandTester($command);
         $commandTester->execute(compact('target'));
-        $this->assertEquals(
+        $this->assertSame(
             "{$target} does not exist.\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertSame(1, $commandTester->getStatusCode());
     }
 
     /**

@@ -191,6 +191,6 @@ class RandomCommandTest extends TestCase
             $command->getArguments()
         );
         $this->assertEquals($query, $command->getQuery());
-        $this->assertEquals(10, $command->getLimit());
+        $this->assertSame(10, $command->getLimit());
     }
 }

@@ -82,7 +82,7 @@ class ContainerTest extends \PHPUnit\Framework\TestCase
     {
         // Test get/set of single value:
         $this->container->value = 'tmp';
-        $this->assertEquals('tmp', $this->container->value);
+        $this->assertSame('tmp', $this->container->value);
 
         // Test get/set of array:
         $this->container->testArray = [1, 2];

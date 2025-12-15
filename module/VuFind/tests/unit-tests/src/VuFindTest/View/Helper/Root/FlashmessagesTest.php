@@ -208,7 +208,7 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
     {
         $fm = $this->getFlashmessages($messages);
 
-        $this->assertEquals($expected, $fm());
+        $this->assertSame($expected, $fm());
     }
 
     /**

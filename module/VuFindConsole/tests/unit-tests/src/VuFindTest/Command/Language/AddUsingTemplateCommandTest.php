@@ -111,8 +111,8 @@ class AddUsingTemplateCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester->execute(
             ['template' => '||foo::bar||-||foo::bar||', 'target' => 'foo::xyzzy']
         );
-        $this->assertEquals("Processing en.ini...\n", $commandTester->getDisplay());
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame("Processing en.ini...\n", $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**

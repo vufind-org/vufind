@@ -61,7 +61,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
     {
         $helper = $this->getCookieConsent([]);
         $this->assertFalse($helper->isEnabled());
-        $this->assertEquals('', $helper->render());
+        $this->assertSame('', $helper->render());
         $this->assertEquals($helper, $helper());
     }
 
@@ -85,8 +85,8 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
             ->willReturn('rendered_template');
 
         $this->assertTrue($helper->isEnabled());
-        $this->assertEquals('rendered_template', $helper->render());
-        $this->assertEquals(
+        $this->assertSame('rendered_template', $helper->render());
+        $this->assertSame(
             ['matomo' => ['matomo']],
             $helper->getControlledVuFindServices()
         );
@@ -134,7 +134,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($helper->isCategoryAccepted('nonexistent'));
         $this->assertTrue($helper->isCategoryAccepted('essential'));
         $this->assertTrue($helper->isServiceAllowed('matomo'));
-        $this->assertEquals('rendered_template', $helper->render());
+        $this->assertSame('rendered_template', $helper->render());
     }
 
     /**

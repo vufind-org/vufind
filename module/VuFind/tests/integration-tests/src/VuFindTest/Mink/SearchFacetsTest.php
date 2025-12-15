@@ -104,7 +104,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             $resultCount = $facet['resultCount'];
             // Apply the facet (after making sure we picked the right link):
             $facetSelector = '#side-collapse-genre_facet a[data-title="' . $title . '"]';
-            $this->assertEquals(
+            $this->assertSame(
                 "$title $count results $count",
                 $this->getFacetTextByLinkSelector($page, $facetSelector)
             );
@@ -833,7 +833,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             return $parts[0];
         };
         $page = $this->performSearch('building:"hierarchy.mrc"');
-        $this->assertEquals(
+        $this->assertSame(
             'Showing 1 - 10 results of 10',
             $extractCount($this->findCssAndGetText($page, '.search-stats'))
         );
@@ -850,7 +850,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
             );
             $this->assertAppliedFilters($page, ['hierarchy:level1a/level2a']);
         }
-        $this->assertEquals(
+        $this->assertSame(
             'Showing 1 - 7 results of 7',
             $extractCount($this->findCssAndGetText($page, '.search-stats'))
         );
