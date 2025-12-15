@@ -49,33 +49,56 @@ final class PasswordAccessTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Get config.ini override settings for testing SSO login.
      *
+     * @param bool $hashedPassword If password is hashed in configuration
+     *
      * @return array
      */
-    public function getConfigIniOverrides(): array
+    public function getConfigIniOverrides(bool $hashedPassword = false): array
     {
+        $passwordAccessConfig = $hashedPassword ? [
+            'access_user_hashed' => [
+                'username' => password_hash('password', PASSWORD_DEFAULT),
+            ],
+        ] : [
+            'access_user' => [
+                'username' => 'password',
+            ],
+        ];
         return [
             'config' => [
                 'Authentication' => [
                     'method' => 'PasswordAccess',
                 ],
-                'PasswordAccess' => [
-                    'access_user' => [
-                        'username' => 'password',
-                    ],
-                ],
+                'PasswordAccess' => $passwordAccessConfig,
             ],
+        ];
+    }
+
+    /**
+     * Data provider for testLogin.
+     *
+     * @return array
+     */
+    public static function loginProvider(): array
+    {
+        return [
+            'unhashed password' => [false],
+            'hashed password' => [true],
         ];
     }
 
     /**
      * Test logging in with a password.
      *
+     * @param bool $hashedPassword If password is hashed in configuration
+     *
      * @return void
      */
-    public function testLogin(): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('loginProvider')]
+    public function testLogin(bool $hashedPassword): void
     {
         // Set up configs
-        $this->changeConfigs($this->getConfigIniOverrides());
+        $this->changeConfigs($this->getConfigIniOverrides($hashedPassword));
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl());
         $page = $session->getPage();
