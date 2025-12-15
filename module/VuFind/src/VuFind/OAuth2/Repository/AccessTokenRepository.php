@@ -58,7 +58,7 @@ class AccessTokenRepository extends AbstractTokenRepository implements AccessTok
      * @param UserServiceInterface        $userService        User service
      */
     public function __construct(
-        #[Autowire(container: \VuFind\Config\YamlReader::class, service: 'OAuth2Server.yaml')]
+        #[Autowire(config: 'OAuth2Server', configType: 'yaml')]
         array $oauth2Config,
         #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         AccessTokenServiceInterface $accessTokenService,

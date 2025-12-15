@@ -51,7 +51,7 @@ class ClientRepository implements ClientRepositoryInterface
      * @param array $oauth2Config OAuth2 configuration
      */
     public function __construct(
-        #[Autowire(container: \VuFind\Config\YamlReader::class, service: 'OAuth2Server.yaml')]
+        #[Autowire(config: 'OAuth2Server', configType: 'yaml')]
         protected array $oauth2Config
     ) {
     }

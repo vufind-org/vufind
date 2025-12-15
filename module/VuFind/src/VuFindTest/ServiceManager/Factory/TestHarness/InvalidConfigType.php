@@ -31,11 +31,7 @@ declare(strict_types=1);
 
 namespace VuFindTest\ServiceManager\Factory\TestHarness;
 
-use Laminas\View\HelperPluginManager;
-use VuFind\Auth\Manager;
-use VuFind\ILS\Connection;
 use VuFind\ServiceManager\Factory\Autowire;
-use VuFind\View\Helper\Root\Url;
 
 /**
  * Autowiring factory test class
@@ -46,36 +42,16 @@ use VuFind\View\Helper\Root\Url;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class AutowiredClass
+class InvalidConfigType
 {
     /**
      * Constructor
      *
-     * @param array      $config        Configuration
-     * @param array      $yamlConfig    YAML-based configuration
-     * @param Url        $url           URL helper
-     * @param Manager    $authManager   Authentication manager
-     * @param Connection $ilsConnection ILS Connection
+     * @param array $config Configuration
      */
     public function __construct(
-        #[Autowire(config: 'config')]
+        #[Autowire(config: 'config', configType: 'yummy')]
         protected array $config,
-        #[Autowire(config: 'config2', configType: 'yaml')]
-        protected array $yamlConfig,
-        #[Autowire(container: HelperPluginManager::class)]
-        protected Url $url,
-        protected Manager $authManager,
-        #[Autowire(service: Connection::class)]
-        protected $ilsConnection,
     ) {
-        if (!($ilsConnection instanceof Connection)) {
-            throw new \Exception('Invalid ILS Connection');
-        }
-        if (!isset($config['Foo'])) {
-            throw new \Exception('Invalid configuration');
-        }
-        if (!isset($yamlConfig['YAML'])) {
-            throw new \Exception('Invalid YAML configuration');
-        }
     }
 }

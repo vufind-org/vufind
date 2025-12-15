@@ -36,6 +36,7 @@ use ReflectionClass;
 use ReflectionNamedType;
 use ReflectionParameter;
 use VuFind\Config\ConfigManagerInterface;
+use VuFind\Config\YamlReader;
 
 /**
  * VuFind Autowiring Factory
@@ -54,6 +55,13 @@ class AutowiringFactory implements FactoryInterface
      * @var ?ConfigManagerInterface
      */
     protected ?ConfigManagerInterface $configManager = null;
+
+    /**
+     * YAML reader
+     *
+     * @var ?YamlReader
+     */
+    protected ?YamlReader $yamlReader = null;
 
     /**
      * Create a service for the specified name.
@@ -94,7 +102,7 @@ class AutowiringFactory implements FactoryInterface
             $attributes = $reflectionParameter->getAttributes(Autowire::class);
             $autowireArgs = ($attributes[0] ?? null)?->getArguments();
             if ($config = $autowireArgs['config'] ?? null) {
-                $params[] = $this->getConfigArray($container, $config);
+                $params[] = $this->getConfigArray($container, $autowireArgs, $config);
             } else {
                 $params[] = $this->resolveService($container, $autowireArgs, $reflectionParameter);
             }
@@ -105,15 +113,28 @@ class AutowiringFactory implements FactoryInterface
     /**
      * Get a configuration as an array.
      *
-     * @param ContainerInterface $container Service container
-     * @param string             $config    Configuration name
+     * @param ContainerInterface $container    Service container
+     * @param ?array             $autowireArgs Autowire attribute arguments
+     * @param string             $config       Configuration name
      *
      * @return array
      */
-    protected function getConfigArray(ContainerInterface $container, string $config): array
-    {
-        $this->configManager ??= $container->get(ConfigManagerInterface::class);
-        return $this->configManager->getConfigArray($config);
+    protected function getConfigArray(
+        ContainerInterface $container,
+        ?array $autowireArgs,
+        string $config
+    ): array {
+        $type = $autowireArgs['configType'] ?? 'ini';
+        switch ($type) {
+            case 'ini':
+                $this->configManager ??= $container->get(ConfigManagerInterface::class);
+                return $this->configManager->getConfigArray($config);
+            case 'yaml':
+                $this->yamlReader ??= $container->get(YamlReader::class);
+                return $this->yamlReader->get("$config.yaml");
+            default:
+                throw new LogicException("Invalid configType $type");
+        }
     }
 
     /**

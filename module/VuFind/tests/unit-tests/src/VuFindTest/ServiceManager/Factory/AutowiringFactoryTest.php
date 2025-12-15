@@ -36,6 +36,7 @@ use PHPUnit\Framework\Attributes\DataProvider;
 use Psr\Container\ContainerInterface;
 use VuFind\Auth\Manager as AuthManager;
 use VuFind\Config\ConfigManagerInterface;
+use VuFind\Config\YamlReader;
 use VuFind\ILS\Connection;
 use VuFind\ServiceManager\Factory\AutowiringFactory;
 use VuFind\View\Helper\Root\Url;
@@ -47,6 +48,7 @@ use VuFindTest\ServiceManager\Factory\TestHarness\AutowiredClassEmptyConstructor
 use VuFindTest\ServiceManager\Factory\TestHarness\AutowiredClassNoConstructor;
 use VuFindTest\ServiceManager\Factory\TestHarness\InvalidAutowiredClass;
 use VuFindTest\ServiceManager\Factory\TestHarness\InvalidAutowiredClass2;
+use VuFindTest\ServiceManager\Factory\TestHarness\InvalidConfigType;
 
 /**
  * AutowiringFactory Test Class
@@ -75,6 +77,7 @@ class AutowiringFactoryTest extends \PHPUnit\Framework\TestCase
             'invalid class' => [InvalidAutowiredClass::class, 'Unable to autowire parameter config of type array'],
             'second invalid class'
                 => [InvalidAutowiredClass2::class, 'Unable to resolve type of parameter ilsConnection'],
+            'invalid config type' => [InvalidConfigType::class, 'Invalid configType yummy'],
         ];
     }
 
@@ -121,6 +124,12 @@ class AutowiringFactoryTest extends \PHPUnit\Framework\TestCase
             ConfigManagerInterface::class,
             $this->getMockConfigManager(['config' => ['Foo' => 'bar']])
         );
+        $yamlReader = $this->createMock(YamlReader::class);
+        $yamlReader
+            ->method('get')
+            ->with('config2.yaml')
+            ->willReturn(['YAML' => ['foo' => 'bar']]);
+        $container->set(YamlReader::class, $yamlReader);
         $plugins = new MockViewHelperContainer($this);
         $plugins->set(Url::class, $this->createMock(Url::class));
         $container->set(HelperPluginManager::class, $plugins);
