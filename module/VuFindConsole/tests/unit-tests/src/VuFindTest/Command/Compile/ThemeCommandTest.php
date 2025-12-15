@@ -72,9 +72,9 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
         $compiler = $this->getMockCompiler(['compile']);
         $compiler->expects($this->once())->method('compile')
             ->with(
-                $this->equalTo('theme'),
-                $this->equalTo('theme_compiled'),
-                $this->equalTo(false)
+                'theme',
+                'theme_compiled',
+                false
             )->willReturn(true);
         $command = new ThemeCommand($compiler);
         $commandTester = new CommandTester($command);
@@ -96,9 +96,9 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
         $compiler = $this->getMockCompiler(['compile', 'getLastError']);
         $compiler->expects($this->once())->method('compile')
             ->with(
-                $this->equalTo('theme'),
-                $this->equalTo('compiled_theme'),
-                $this->equalTo(false)
+                'theme',
+                'compiled_theme',
+                false
             )->willReturn(false);
         $compiler->expects($this->once())->method('getLastError')
             ->willReturn('Error!');
@@ -127,9 +127,9 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
         $compiler = $this->getMockCompiler(['compile']);
         $compiler->expects($this->once())->method('compile')
             ->with(
-                $this->equalTo('theme'),
-                $this->equalTo('compiled_theme'),
-                $this->equalTo(true)
+                'theme',
+                'compiled_theme',
+                true
             )->willReturn(true);
         $command = new ThemeCommand($compiler);
         $commandTester = new CommandTester($command);

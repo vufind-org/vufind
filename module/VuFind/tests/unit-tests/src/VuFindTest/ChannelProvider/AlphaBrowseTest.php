@@ -223,12 +223,12 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
 
         $coverRouter = $this->createMock(\VuFind\Cover\Router::class);
         $coverRouter->expects($this->once())->method('getUrl')
-            ->with($this->equalTo($driver), $this->equalTo('medium'))
+            ->with($driver, 'medium')
             ->willReturn('foo_Thumbnail');
         $alpha->setCoverRouter($coverRouter);
         $routeDetails = ['route' => 'test_route', 'params' => ['id' => 'route_id']];
         $router->expects($this->once())->method('getRouteDetails')
-            ->with($this->equalTo($driver))
+            ->with($driver)
             ->willReturn($routeDetails);
         $this->expectConsecutiveCalls(
             $url,

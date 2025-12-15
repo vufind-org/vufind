@@ -78,13 +78,13 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
         if (isset($ids['doi'])) {
             $connector->expects($this->once())
                 ->method('lookupDoi')
-                ->with($this->equalTo($ids['doi']))
+                ->with($ids['doi'])
                 ->willReturn($response);
         }
         if (isset($ids['issn'])) {
             $connector->expects($this->once())
                 ->method('lookupIssns')
-                ->with($this->equalTo($ids['issn']))
+                ->with($ids['issn'])
                 ->willReturn($response);
         }
         return $connector;

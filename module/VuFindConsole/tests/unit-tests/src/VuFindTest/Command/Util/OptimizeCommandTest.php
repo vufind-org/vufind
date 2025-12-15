@@ -52,9 +52,9 @@ class OptimizeCommandTest extends \PHPUnit\Framework\TestCase
     {
         $writer = $this->createMock(\VuFind\Solr\Writer::class);
         $writer->expects($this->once())->method('commit')
-            ->with($this->equalTo('foo'));
+            ->with('foo');
         $writer->expects($this->once())->method('optimize')
-            ->with($this->equalTo('foo'));
+            ->with('foo');
         $command = new OptimizeCommand($writer);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['core' => 'foo']);

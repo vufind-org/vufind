@@ -108,13 +108,13 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
         $params = $results->getParams();
         $params->expects($this->once())->method('addFacet')
             ->with(
-                $this->equalTo('format'),
-                $this->equalTo('Format'),
-                $this->equalTo(true)
+                'format',
+                'Format',
+                true
             );
         $params->expects($this->once())
             ->method('addCheckboxFacet')
-            ->with($this->equalTo('filter'), $this->equalTo('description'));
+            ->with('filter', 'description');
         // test ~ checkbox flip function:
         $this->getSideFacets($configManager, $results, ':~Checkboxes');
     }
@@ -278,7 +278,7 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
         $results = $this->getMockResults();
         $params = $results->getParams();
         $params->expects($this->once())->method('getCheckboxFacets')
-            ->with($this->equalTo([]), $this->equalTo(true))
+            ->with([], true)
             ->willReturn([]);
         $params->expects($this->never())->method('addCheckboxFacet');
         $sf = $this->getSideFacets(null, $results);
@@ -308,10 +308,10 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
         $results = $this->getMockResults();
         $params = $results->getParams();
         $params->expects($this->once())->method('getCheckboxFacets')
-            ->with($this->equalTo(['foo']), $this->equalTo(true))
+            ->with(['foo'], true)
             ->willReturn($checkboxData);
         $params->expects($this->once())->method('addCheckboxFacet')
-            ->with($this->equalTo('foo'), $this->equalTo('bar'));
+            ->with('foo', 'bar');
         $sf = $this->getSideFacets($configManager, $results, ':Checkboxes');
         $expected = $checkboxData;
         $expected[0]['count'] = null;
@@ -341,10 +341,10 @@ class SideFacetsTest extends \PHPUnit\Framework\TestCase
         $results = $this->getMockResults();
         $params = $results->getParams();
         $params->expects($this->once())->method('getCheckboxFacets')
-            ->with($this->equalTo(['foo']), $this->equalTo(false))
+            ->with(['foo'], false)
             ->willReturn($checkboxData);
         $params->expects($this->once())->method('addCheckboxFacet')
-            ->with($this->equalTo('foo'), $this->equalTo('bar'));
+            ->with('foo', 'bar');
         $settings = 'Results:Checkboxes:facets:false';
         $sf = $this->getSideFacets($configManager, $results, $settings);
         $expected = $checkboxData;

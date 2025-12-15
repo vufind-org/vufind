@@ -57,12 +57,12 @@ class AlphabeticBrowseCommandTest extends TestCase
             ->willReturn($backendId);
         $backend->expects($this->once())->method('alphabeticBrowse')
             ->with(
-                $this->equalTo('source'),
-                $this->equalTo('from'),
-                $this->equalTo(0),
-                $this->equalTo(10),
-                $this->equalTo($params),
-                $this->equalTo(-1)
+                'source',
+                'from',
+                0,
+                10,
+                $params,
+                -1
             )->willReturn('result');  // not a realistic value!
         $command = new AlphabeticBrowseCommand(
             $backendId,

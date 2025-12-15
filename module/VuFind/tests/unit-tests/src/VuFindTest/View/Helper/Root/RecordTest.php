@@ -129,7 +129,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
             [false, true]
         );
         $record->getView()->expects($this->once())->method('render')
-            ->with($this->equalTo($tpl))
+            ->with($tpl)
             ->willReturn('success');
         $this->assertEquals('success', $record->getCollectionBriefRecord());
     }
@@ -155,10 +155,10 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     {
         $context = $this->getMockContext();
         $context->expects($this->once())->method('apply')
-            ->with($this->equalTo(['format' => 'foo']))
+            ->with(['format' => 'foo'])
             ->willReturn(['bar' => 'baz']);
         $context->expects($this->once())->method('restore')
-            ->with($this->equalTo(['bar' => 'baz']));
+            ->with(['bar' => 'baz']);
         $record = $this->getRecord(
             $this->loadRecordFixture('testbug1.json'),
             [],
@@ -240,10 +240,10 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         ];
         $context = $this->getMockContext();
         $context->expects($this->once())->method('apply')
-            ->with($this->equalTo($expected))
+            ->with($expected)
             ->willReturn(['bar' => 'baz']);
         $context->expects($this->once())->method('restore')
-            ->with($this->equalTo(['bar' => 'baz']));
+            ->with(['bar' => 'baz']);
         $record = $this->getRecord($driver, [], $context);
         $record->setDbServiceManager($serviceManager);
         // Because we are using a mock object, the first round of testing will
@@ -257,7 +257,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
             [false, true]
         );
         $record->getView()->expects($this->once())->method('render')
-            ->with($this->equalTo($tpl))
+            ->with($tpl)
             ->willReturn('success');
         $this->assertEquals('success', $record->getListEntry(null, $user, $recordNumber));
     }
@@ -295,10 +295,10 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $config = new \VuFind\Config\Config(['foo' => 'bar']);
         $context = $this->getMockContext();
         $context->expects($this->exactly(2))->method('apply')
-            ->with($this->equalTo(compact('driver', 'config')))
+            ->with(compact('driver', 'config'))
             ->willReturn(['bar' => 'baz']);
         $context->expects($this->exactly(2))->method('restore')
-            ->with($this->equalTo(['bar' => 'baz']));
+            ->with(['bar' => 'baz']);
         $record = $this->getRecord($driver, $config, $context);
         $record->getView()->resolver()->method('resolve')->willReturn(true);
         $tpl1 = 'RecordDriver/SolrMarc/previewdata.phtml';
@@ -362,7 +362,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
             ->with($this->callback($callback))
             ->willReturn(['bar' => 'baz']);
         $context->expects($this->once())->method('restore')
-            ->with($this->equalTo(['bar' => 'baz']));
+            ->with(['bar' => 'baz']);
         $record = $this->getRecord(
             $this->loadRecordFixture('testbug1.json'),
             [],
@@ -374,7 +374,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $container = $record->getView()->getHelperPluginManager();
         $container->get('searchTabs')->expects($this->once())
             ->method('getCurrentHiddenFilterParams')
-            ->with($this->equalTo('Solr'), $this->equalTo(false), $this->equalTo($expectedSeparator))
+            ->with('Solr', false, $expectedSeparator)
             ->willReturn($hiddenFilter);
         $this->setSuccessTemplate($record, 'RecordDriver/SolrMarc/link-bar.phtml', $linkUrl);
         $this->assertEquals($expected, $record->getLink('bar', 'foo'));
@@ -529,13 +529,13 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $driver = $this->loadRecordFixture('testbug1.json');
         $context = $this->getMockContext();
         $context->expects($this->once())->method('apply')
-            ->with($this->equalTo(compact('driver', 'tab')))
+            ->with(compact('driver', 'tab'))
             ->willReturn(['bar' => 'baz']);
         $context->expects($this->once())->method('restore')
-            ->with($this->equalTo(['bar' => 'baz']));
+            ->with(['bar' => 'baz']);
         $record = $this->getRecord($driver, [], $context);
         $record->getView()->expects($this->once())->method('render')
-            ->with($this->equalTo('RecordTab/description.phtml'))
+            ->with('RecordTab/description.phtml')
             ->willReturn('success');
         $this->assertEquals('success', $record->getTab($tab));
     }
@@ -570,10 +570,10 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         $driver = $this->loadRecordFixture('testbug1.json');
         $context = $this->getMockContext();
         $context->expects($this->once())->method('apply')
-            ->with($this->equalTo(['driver' => $driver, 'extra' => 'xyzzy']))
+            ->with(['driver' => $driver, 'extra' => 'xyzzy'])
             ->willReturn(['bar' => 'baz']);
         $context->expects($this->once())->method('restore')
-            ->with($this->equalTo(['bar' => 'baz']));
+            ->with(['bar' => 'baz']);
         $config = ['QRCode' => ['showInCore' => true]];
         $record = $this->getRecord($driver, $config, $context, 'qrcode-show');
         $this->setSuccessTemplate($record, 'RecordDriver/SolrMarc/core-qrcode.phtml', 'success', $this->any());
@@ -829,7 +829,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     {
         $url = $this->createMock(Url::class);
         $url->expects($this->once())->method('__invoke')
-            ->with($this->equalTo($expectedRoute))
+            ->with($expectedRoute)
             ->willReturn('http://foo/bar');
         return $url;
     }
@@ -894,10 +894,10 @@ class RecordTest extends \PHPUnit\Framework\TestCase
         ?object $matcher = null
     ) {
         $record->getView()->resolver()->expects($matcher ?? $this->once())->method('resolve')
-            ->with($this->equalTo($tpl))
+            ->with($tpl)
             ->willReturn(true);
         $record->getView()->expects($matcher ?? $this->once())->method('render')
-            ->with($this->equalTo($tpl))
+            ->with($tpl)
             ->willReturn($response);
     }
 
