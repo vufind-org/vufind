@@ -425,10 +425,10 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
         // expected value.
         $cache = $this->createMock(StorageInterface::class);
         $cache->expects($this->exactly(2))->method('getItem')
-            ->with($this->equalTo($key))
+            ->with($key)
             ->willReturnOnConsecutiveCalls(null, $expected);
         $cache->expects($this->once())->method('setItem')
-            ->with($this->equalTo($key), $this->equalTo($expected));
+            ->with($key, $expected);
 
         // Set cache
         $ti = $this->getThemeInfo();

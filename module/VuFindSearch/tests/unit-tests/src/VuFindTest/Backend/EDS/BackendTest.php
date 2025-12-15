@@ -61,7 +61,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
             . '&filters=%5B%7B%22name%22%3A%22custid%22%2C%22values%22%3A%5B%22foo%22%5D%7D%5D&term=bla';
         $conn->expects($this->once())
             ->method('call')
-            ->with($this->equalTo($expectedUri))
+            ->with($expectedUri)
             ->willReturn($this->loadResponse('autocomplete'));
 
         $back = $this->getBackend(
@@ -81,7 +81,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         // check count
         $this->assertCount(10, $coll);
         foreach ($coll as $value) {
-            $this->assertEquals('bla', substr($value, 0, 3));
+            $this->assertSame('bla', substr($value, 0, 3));
         }
     }
 
@@ -196,7 +196,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $expected = ['Value' => 'News', 'Count' => '12055', 'AddAction' => 'addfacetfilter(SourceType:News)'];
         $this->assertEquals($expected, $rawFacets[0]['AvailableFacetValues'][0]);
         $facets = $coll->getFacets();
-        $this->assertEquals(count($facets), count($rawFacets));
+        $this->assertSame(count($facets), count($rawFacets));
         $this->assertEquals(
             [
                 'News' => 12055,

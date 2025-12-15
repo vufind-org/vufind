@@ -100,11 +100,11 @@ class ZoteroTest extends \PHPUnit\Framework\TestCase
         $zotero = $this->getZoteroService(true);
         $user = $this->getUser();
         // First export goes to authorization:
-        $this->assertEquals('https://localhost/authorization', $zotero->export($user, 'https://localhost/callback'));
+        $this->assertSame('https://localhost/authorization', $zotero->export($user, 'https://localhost/callback'));
         // Emulate return from Zotero authorization:
-        $this->assertEquals(1, $zotero->handleAuthCallback($user, $this->oauthParams));
+        $this->assertSame(1, $zotero->handleAuthCallback($user, $this->oauthParams));
         // Subsequent call does export directly:
-        $this->assertEquals(1, $zotero->export($user, 'https://localhost/callback'));
+        $this->assertSame(1, $zotero->export($user, 'https://localhost/callback'));
     }
 
     /**
@@ -117,7 +117,7 @@ class ZoteroTest extends \PHPUnit\Framework\TestCase
         $zotero = $this->getZoteroService(false, true);
         $user = $this->getUser();
         // First export goes to authorization:
-        $this->assertEquals('https://localhost/authorization', $zotero->export($user, 'https://localhost/callback'));
+        $this->assertSame('https://localhost/authorization', $zotero->export($user, 'https://localhost/callback'));
         // Check that emulated return from Zotero authorization would throw:
         $this->expectExceptionMessage('An error has occurred');
         $zotero->handleAuthCallback($user, $this->oauthParams);
@@ -133,7 +133,7 @@ class ZoteroTest extends \PHPUnit\Framework\TestCase
         $zotero = $this->getZoteroService(false);
         $user = $this->getUser();
         // Check that emulated return from Zotero authorization would redirect to authorization again:
-        $this->assertEquals('https://localhost/authorization', $zotero->handleAuthCallback($user, $this->oauthParams));
+        $this->assertSame('https://localhost/authorization', $zotero->handleAuthCallback($user, $this->oauthParams));
     }
 
     /**

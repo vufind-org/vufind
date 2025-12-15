@@ -53,11 +53,11 @@ class CollectionHierarchyTreeTest extends \PHPUnit\Framework\TestCase
         $load = $this->createMock(\VuFind\Record\Loader::class);
         $request = $this->createMock(\Laminas\Http\Request::class);
         $request->expects($this->once())->method('getQuery')
-            ->with($this->equalTo('recordID'), $this->equalTo(false))
+            ->with('recordID', false)
             ->willReturn('foo');
         $recordDriver = $this->createMock(\VuFind\RecordDriver\AbstractBase::class);
         $load->expects($this->once())->method('load')
-            ->with($this->equalTo('foo'))
+            ->with('foo')
             ->willReturn($recordDriver);
         $obj = new CollectionHierarchyTree($conf, $load);
         $obj->setRequest($request);
@@ -75,7 +75,7 @@ class CollectionHierarchyTreeTest extends \PHPUnit\Framework\TestCase
         $load = $this->createMock(\VuFind\Record\Loader::class);
         $request = $this->createMock(\Laminas\Http\Request::class);
         $request->expects($this->once())->method('getQuery')
-            ->with($this->equalTo('recordID'), $this->equalTo(false))
+            ->with('recordID', false)
             ->willReturn(null);
         $load->expects($this->never())->method('load');
         $obj = new CollectionHierarchyTree($conf, $load);

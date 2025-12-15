@@ -353,7 +353,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals('B', $this->findCssAndGetValue($page, '#home_library'));
         $entityManager = $this->getLiveDatabaseContainer()->get(EntityManager::class);
         $entityManager->clear();
-        $this->assertEquals(
+        $this->assertSame(
             'B',
             $userService->getUserByUsername('username2')->getHomeLibrary()
         );

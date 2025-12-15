@@ -71,7 +71,7 @@ class WriteDocumentCommandTest extends TestCase
         $backend->expects($this->once())->method('getIdentifier')
             ->willReturn('Solr');
         $backend->expects($this->once())->method('writeDocument')
-            ->with($this->equalTo($doc), $this->equalTo(60), $this->equalTo('update'))
+            ->with($doc, 60, 'update')
             ->willReturn(['core' => 'biblio']);
         $command = new WriteDocumentCommand('Solr', $doc, 60);
         $this->assertEquals(

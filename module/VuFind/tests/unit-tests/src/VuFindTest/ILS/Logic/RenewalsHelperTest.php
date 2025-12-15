@@ -115,7 +115,7 @@ class RenewalsHelperTest extends TestCase
         $helper = new RenewalsHelper();
         $result = $helper->addRenewDetails($catalog, $ilsDetails, $renewStatus);
 
-        $this->assertEquals($ilsDetails, $result);
+        $this->assertSame($ilsDetails, $result);
         $this->assertArrayNotHasKey('renew_link', $result);
         $this->assertArrayNotHasKey('renew_details', $result);
     }
@@ -149,8 +149,8 @@ class RenewalsHelperTest extends TestCase
         $catalog->expects($this->once())
             ->method('__call')
             ->with(
-                $this->equalTo('renewMyItems'),
-                $this->equalTo([['details' => $idsToRenew, 'patron' => $patron]])
+                'renewMyItems',
+                [['details' => $idsToRenew, 'patron' => $patron]]
             )
             ->willReturn($renewalResult);
 
@@ -208,8 +208,8 @@ class RenewalsHelperTest extends TestCase
         $catalog->expects($this->once())
             ->method('__call')
             ->with(
-                $this->equalTo('renewMyItems'),
-                $this->equalTo([['details' => $idsToRenew, 'patron' => $patron]])
+                'renewMyItems',
+                [['details' => $idsToRenew, 'patron' => $patron]]
             )
             ->willReturn($renewalResult);
 

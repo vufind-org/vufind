@@ -149,7 +149,7 @@ class DbBuilderTest extends \PHPUnit\Framework\TestCase
         }
         $builder = new DbBuilder($factory, $this->createMock(MigrationLoader::class));
         $result = $builder->build('name', 'user', 'pass', $driver, returnSqlOnly: $sqlOnly, steps: ['pre']);
-        $this->assertEquals(implode("\n", $expectedCommands), trim($result));
+        $this->assertSame(implode("\n", $expectedCommands), trim($result));
     }
 
     /**
@@ -179,7 +179,7 @@ class DbBuilderTest extends \PHPUnit\Framework\TestCase
         $factory->expects($this->never())->method('getConnectionFromOptions');
         $builder = new DbBuilder($factory, $this->createMock(MigrationLoader::class));
         $result = $builder->build('name', 'user', 'pass', $driver, returnSqlOnly: true, steps: ['main']);
-        $this->assertEquals(trim(file_get_contents($expectedFile)), trim($result));
+        $this->assertSame(trim(file_get_contents($expectedFile)), trim($result));
     }
 
     /**
@@ -244,6 +244,6 @@ class DbBuilderTest extends \PHPUnit\Framework\TestCase
             ->willReturn(["$migrationSubdir/001-fake.sql", "$migrationSubdir/002-fake.sql"]);
         $builder = new DbBuilder($factory, $loader);
         $result = $builder->build('name', 'user', 'pass', $driver, returnSqlOnly: $sqlOnly, steps: ['post']);
-        $this->assertEquals(implode("\n", $expectedCommands), trim($result));
+        $this->assertSame(implode("\n", $expectedCommands), trim($result));
     }
 }

@@ -54,7 +54,7 @@ class LookupIssnsCommandTest extends TestCase
         $backend->expects($this->once())->method('getIdentifier')
             ->willReturn('BrowZine');
         $backend->expects($this->once())->method('lookupIssns')
-            ->with($this->equalTo(['1111-1111']))
+            ->with(['1111-1111'])
             ->willReturn('foo');
         $command = new LookupIssnsCommand('BrowZine', ['1111-1111']);
         $this->assertEquals('foo', $command->execute($backend)->getResult());

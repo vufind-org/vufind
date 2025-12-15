@@ -68,7 +68,7 @@ class SyndeticsTest extends \PHPUnit\Framework\TestCase
             $mockDownloader = $this->createMock(CachingDownloader::class);
             $fixture = $this->getFixture($fixtureFile);
             $mockDownloader->expects($this->once())->method('download')
-                ->with($this->equalTo("https://secure.syndetics.com/index.aspx?client=test&isbn=$isbn/index.xml"))
+                ->with("https://secure.syndetics.com/index.aspx?client=test&isbn=$isbn/index.xml")
                 ->willReturn($fixture);
             $loader->setCachingDownloader($mockDownloader);
         }

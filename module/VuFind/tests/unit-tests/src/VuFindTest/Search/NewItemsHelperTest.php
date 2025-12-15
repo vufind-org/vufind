@@ -71,7 +71,7 @@ class NewItemsHelperTest extends \PHPUnit\Framework\TestCase
             'a',
             $flash
         );
-        $this->assertEquals([1, 2], $bibs);
+        $this->assertSame([1, 2], $bibs);
     }
 
     /**
@@ -83,7 +83,7 @@ class NewItemsHelperTest extends \PHPUnit\Framework\TestCase
     {
         $flash = $this->createMock(\Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger::class);
         $flash->expects($this->once())->method('addMessage')
-            ->with($this->equalTo('too_many_new_items'), $this->equalTo('info'));
+            ->with('too_many_new_items', 'info');
         $newItems = $this->getNewItemsHelper(['result_pages' => 10], $this->getMockCatalog());
         $bibs = $newItems->getBibIDsFromCatalog(
             $this->getMockParams(1),
@@ -91,7 +91,7 @@ class NewItemsHelperTest extends \PHPUnit\Framework\TestCase
             'a',
             $flash
         );
-        $this->assertEquals([1], $bibs);
+        $this->assertSame([1], $bibs);
     }
 
     /**
@@ -103,14 +103,14 @@ class NewItemsHelperTest extends \PHPUnit\Framework\TestCase
     {
         $catalog = $this->createMock(Connection::class);
         $catalog->expects($this->once())->method('checkCapability')
-            ->with($this->equalTo('getFunds'))->willReturn(true);
+            ->with('getFunds')->willReturn(true);
         $catalog->expects($this->once())->method('__call')
             ->willReturnCallback(
                 fn ($method) => $method === 'getFunds' ? ['a', 'b', 'c'] : null
             );
 
         $newItems = $this->getNewItemsHelper([], $catalog);
-        $this->assertEquals(['a', 'b', 'c'], $newItems->getFundList());
+        $this->assertSame(['a', 'b', 'c'], $newItems->getFundList());
     }
 
     /**
@@ -121,7 +121,7 @@ class NewItemsHelperTest extends \PHPUnit\Framework\TestCase
     public function testGetFundListWithoutILS()
     {
         $newItems = $this->getNewItemsHelper(['method' => 'solr']);
-        $this->assertEquals([], $newItems->getFundList());
+        $this->assertSame([], $newItems->getFundList());
     }
 
     /**
@@ -132,7 +132,7 @@ class NewItemsHelperTest extends \PHPUnit\Framework\TestCase
     public function testGetSingleHiddenFilter()
     {
         $newItems = $this->getNewItemsHelper(['filter' => 'a:b']);
-        $this->assertEquals(['a:b'], $newItems->getHiddenFilters());
+        $this->assertSame(['a:b'], $newItems->getHiddenFilters());
     }
 
     /**
@@ -143,7 +143,7 @@ class NewItemsHelperTest extends \PHPUnit\Framework\TestCase
     public function testGetMultipleHiddenFilters()
     {
         $newItems = $this->getNewItemsHelper(['filter' => ['a:b', 'b:c']]);
-        $this->assertEquals(['a:b', 'b:c'], $newItems->getHiddenFilters());
+        $this->assertSame(['a:b', 'b:c'], $newItems->getHiddenFilters());
     }
 
     /**
@@ -154,11 +154,11 @@ class NewItemsHelperTest extends \PHPUnit\Framework\TestCase
     public function testDefaults()
     {
         $newItems = $this->getNewItemsHelper([]);
-        $this->assertEquals([], $newItems->getHiddenFilters());
-        $this->assertEquals('ils', $newItems->getMethod());
-        $this->assertEquals(30, $newItems->getMaxAge());
-        $this->assertEquals([1, 5, 30], $newItems->getRanges());
-        $this->assertEquals(10, $newItems->getResultPages());
+        $this->assertSame([], $newItems->getHiddenFilters());
+        $this->assertSame('ils', $newItems->getMethod());
+        $this->assertSame(30, $newItems->getMaxAge());
+        $this->assertSame([1, 5, 30], $newItems->getRanges());
+        $this->assertSame(10, $newItems->getResultPages());
     }
 
     /**
@@ -169,7 +169,7 @@ class NewItemsHelperTest extends \PHPUnit\Framework\TestCase
     public function testCustomRanges()
     {
         $newItems = $this->getNewItemsHelper(['ranges' => '10,150,300']);
-        $this->assertEquals([10, 150, 300], $newItems->getRanges());
+        $this->assertSame([10, 150, 300], $newItems->getRanges());
     }
 
     /**
@@ -180,7 +180,7 @@ class NewItemsHelperTest extends \PHPUnit\Framework\TestCase
     public function testCustomResultPages()
     {
         $newItems = $this->getNewItemsHelper(['result_pages' => '2']);
-        $this->assertEquals(2, $newItems->getResultPages());
+        $this->assertSame(2, $newItems->getResultPages());
     }
 
     /**
@@ -192,7 +192,7 @@ class NewItemsHelperTest extends \PHPUnit\Framework\TestCase
     {
         $newItems = $this->getNewItemsHelper(['result_pages' => '-2']);
         // expect a default of 10 if a bad value was passed in
-        $this->assertEquals(10, $newItems->getResultPages());
+        $this->assertSame(10, $newItems->getResultPages());
     }
 
     /**
@@ -205,7 +205,7 @@ class NewItemsHelperTest extends \PHPUnit\Framework\TestCase
         $range = 30;
         $expected = 'first_indexed:[NOW-' . $range . 'DAY TO NOW]';
         $newItems = $this->getNewItemsHelper([]);
-        $this->assertEquals($expected, $newItems->getSolrFilter($range));
+        $this->assertSame($expected, $newItems->getSolrFilter($range));
     }
 
     /**

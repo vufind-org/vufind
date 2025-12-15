@@ -71,7 +71,7 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
         $results = $this->createMock(\VuFind\Search\Solr\Results::class);
         $e = new \Exception('kaboom');
         $results->expects($this->once())->method('performAndProcessSearch')->willThrowException($e);
-        $resultsManager->expects($this->once())->method('get')->with($this->equalTo('Solr'))->willReturn($results);
+        $resultsManager->expects($this->once())->method('get')->with('Solr')->willReturn($results);
         $params = $this->createMock(\VuFind\Search\Solr\Params::class);
         $results->expects($this->once())->method('getParams')->willReturn($params);
         $config = new \VuFind\Config\Config([]);
@@ -95,7 +95,7 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
         $resultsManager = $this->createMock(\VuFind\Search\Results\PluginManager::class);
         $results = $this->createMock(\VuFind\Search\Solr\Results::class);
         $results->expects($this->exactly(2))->method('performAndProcessSearch');
-        $resultsManager->expects($this->exactly(2))->method('get')->with($this->equalTo('Solr'))->willReturn($results);
+        $resultsManager->expects($this->exactly(2))->method('get')->with('Solr')->willReturn($results);
         $params = $this->createMock(\VuFind\Search\Solr\Params::class);
         $results->expects($this->exactly(2))->method('getParams')->willReturn($params);
         $config = new \VuFind\Config\Config([]);
@@ -122,7 +122,7 @@ class SystemStatusTest extends \PHPUnit\Framework\TestCase
         $resultsManager = $this->createMock(\VuFind\Search\Results\PluginManager::class);
         $results = $this->createMock(\VuFind\Search\Solr\Results::class);
         $results->expects($this->once())->method('performAndProcessSearch');
-        $resultsManager->expects($this->once())->method('get')->with($this->equalTo('Solr'))->willReturn($results);
+        $resultsManager->expects($this->once())->method('get')->with('Solr')->willReturn($results);
         $params = $this->createMock(\VuFind\Search\Solr\Params::class);
         $results->expects($this->once())->method('getParams')->willReturn($params);
         $config = new \VuFind\Config\Config([]);

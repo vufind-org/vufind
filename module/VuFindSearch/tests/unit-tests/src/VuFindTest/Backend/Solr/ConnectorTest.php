@@ -70,7 +70,7 @@ class ConnectorTest extends TestCase
         $resp = $conn->retrieve('id');
         $this->assertIsString($resp);
         json_decode($resp, true);
-        $this->assertEquals(\JSON_ERROR_NONE, json_last_error());
+        $this->assertSame(\JSON_ERROR_NONE, json_last_error());
     }
 
     /**
@@ -128,10 +128,10 @@ class ConnectorTest extends TestCase
         // The client will be reset before it is given the expected mime type:
         $this->expectConsecutiveCalls($client, 'setEncType', [['application/x-www-form-urlencoded'], ['text/csv']]);
         $client->expects($this->once())->method('setRawBody')
-            ->with($this->equalTo($csvData));
+            ->with($csvData);
         $conn = $this->getConnectorMock(['send'], $client);
         $conn->expects($this->once())->method('send')
-            ->with($this->equalTo($client));
+            ->with($client);
         $csv = new \VuFindSearch\Backend\Solr\Document\RawCSVDocument($csvData);
         $conn->write($csv, 'csv');
     }
@@ -158,10 +158,10 @@ class ConnectorTest extends TestCase
             ]
         );
         $client->expects($this->once())->method('setRawBody')
-            ->with($this->equalTo($jsonData));
+            ->with($jsonData);
         $conn = $this->getConnectorMock(['send'], $client);
         $conn->expects($this->once())->method('send')
-            ->with($this->equalTo($client));
+            ->with($client);
         $json = new \VuFindSearch\Backend\Solr\Document\RawJSONDocument($jsonData);
         $conn->write($json, 'json');
     }
@@ -253,13 +253,13 @@ class ConnectorTest extends TestCase
         $resp = $conn->callWithHttpOptions([], 'retrieve', 'id');
         $this->assertIsString($resp);
         json_decode($resp, true);
-        $this->assertEquals(\JSON_ERROR_NONE, json_last_error());
+        $this->assertSame(\JSON_ERROR_NONE, json_last_error());
 
         // Normal request with options:
         $resp = $conn->callWithHttpOptions(['timeout' => 60], 'retrieve', 'id');
         $this->assertIsString($resp);
         json_decode($resp, true);
-        $this->assertEquals(\JSON_ERROR_NONE, json_last_error());
+        $this->assertSame(\JSON_ERROR_NONE, json_last_error());
 
         // Try to call a protected method:
         $this->expectException(

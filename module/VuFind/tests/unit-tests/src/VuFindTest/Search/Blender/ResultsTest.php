@@ -101,8 +101,8 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         $results = new Results($params, $searchService, $recordLoader);
         $results->performAndProcessSearch();
 
-        $this->assertEquals(20, $results->getResultTotal());
-        $this->assertEquals([], $results->getResults());
-        $this->assertEquals(['Error Message'], $results->getErrors());
+        $this->assertSame(20, $results->getResultTotal());
+        $this->assertSame([], $results->getResults());
+        $this->assertSame(['Error Message'], $results->getErrors());
     }
 }

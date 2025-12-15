@@ -81,7 +81,7 @@ class SummonTopicsTest extends \PHPUnit\Framework\TestCase
         $parms->expects($this->once())->method('getOptions')
             ->willReturn($options);
         $options->expects($this->once())->method('setMaxTopicRecommendations')
-            ->with($this->equalTo(1));
+            ->with(1);
         $pm = $this->createMock(\VuFind\Search\Results\PluginManager::class);
         $obj = new SummonTopics($pm);
         $this->assertNull($obj->init($parms, $request));
@@ -104,7 +104,7 @@ class SummonTopicsTest extends \PHPUnit\Framework\TestCase
         $results->expects($this->once())->method('getParams')
             ->willReturn($parms);
         $parms->expects($this->once())->method('setBasicSearch')
-            ->with($this->anything(), $this->equalTo('AllFields'));
+            ->with($this->anything(), 'AllFields');
         $options = $this->getMockBuilder(\VuFind\Search\Summon\Options::class)
             ->disableOriginalConstructor()
             ->onlyMethods(['getSearchAction', 'setMaxTopicRecommendations'])
@@ -112,7 +112,7 @@ class SummonTopicsTest extends \PHPUnit\Framework\TestCase
         $results->expects($this->once())->method('getOptions')
             ->willReturn($options);
         $options->expects($this->once())->method('setMaxTopicRecommendations')
-            ->with($this->equalTo(1));
+            ->with(1);
         $this->assertNull($method->invokeArgs($obj, [$results]));
     }
 }

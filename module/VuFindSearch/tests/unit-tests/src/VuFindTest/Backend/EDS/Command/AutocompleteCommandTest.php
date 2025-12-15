@@ -56,8 +56,8 @@ class AutocompleteCommandTest extends TestCase
             ->willReturn($backendId);
         $backend->expects($this->once())->method('autocomplete')
             ->with(
-                $this->equalTo('foo'),
-                $this->equalTo('bar')
+                'foo',
+                'bar'
             )->willReturn('result');  // not a realistic value!
         $command = new AutocompleteCommand($backendId, 'foo', 'bar');
         $this->assertEquals('result', $command->execute($backend)->getResult());

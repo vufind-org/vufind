@@ -92,7 +92,7 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
         $obj = new ComponentParts($searchObj);
         $recordDriver = $this->createMock(\VuFind\RecordDriver\DefaultRecord::class);
         $recordDriver->method('tryMethod')
-            ->with($this->equalTo('getChildRecordCount'))
+            ->with('getChildRecordCount')
             ->willReturn($childCount);
         $obj->setRecordDriver($recordDriver);
         $this->assertSame($expectedResult, $obj->isActive());

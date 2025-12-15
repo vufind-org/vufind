@@ -92,10 +92,10 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
         $this->assertEquals('test', $rec->getSourceIdentifier());
-        $this->assertEquals('content: author test title test medium book', (string)$rec->getXML()->recid);
+        $this->assertSame('content: author test title test medium book', (string)$rec->getXML()->recid);
         $recs = $coll->getRecords();
         $this->assertEquals('test', $recs[19]->getSourceIdentifier());
-        $this->assertEquals(
+        $this->assertSame(
             'content: author navalani k author gidwani n n title a practical guide to colon classification medium book',
             (string)$recs[19]->getXML()->recid
         );

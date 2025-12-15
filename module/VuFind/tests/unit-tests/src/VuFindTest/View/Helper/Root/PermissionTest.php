@@ -147,7 +147,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
         $helper = new Permission($this->getMockPm(false), $mockPmd);
         $helper->setView($this->getMockView());
 
-        $this->assertEquals(
+        $this->assertSame(
             '<span class="label label-success">Available</span>',
             trim($helper->getAlternateContent('permissionDeniedTemplate'))
         );

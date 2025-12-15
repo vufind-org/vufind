@@ -133,8 +133,8 @@ class UpdateResourceMetadataCommandTest extends \PHPUnit\Framework\TestCase
         );
         $commandTester = new CommandTester($command);
         $commandTester->execute($commandParams);
-        $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals(
+        $this->assertSame(0, $commandTester->getStatusCode());
+        $this->assertSame(
             "Updating resource metadata\n1 records updated (0 redirects), 0 records missing\n"
             . "Resource metadata update completed\n",
             $commandTester->getDisplay()

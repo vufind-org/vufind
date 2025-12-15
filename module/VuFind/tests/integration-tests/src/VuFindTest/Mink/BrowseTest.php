@@ -195,10 +195,10 @@ class BrowseTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->goToBrowse();
         $page->clickLink('Call Number');
         $values = array_map(fn ($item) => $item->getText(), $page->findAll('css', '#list3 .browse-item'));
-        $this->assertEquals(['H - Social Science 1', 'P - Language and Literature 7'], $values);
+        $this->assertSame(['H - Social Science 1', 'P - Language and Literature 7'], $values);
         $page->clickLink($values[0]);
         $values2 = array_map(fn ($item) => $item->getText(), $page->findAll('css', '#list4 .browse-item'));
-        $this->assertEquals(['HG - Finance 1'], $values2);
+        $this->assertSame(['HG - Finance 1'], $values2);
         $page->clickLink($values2[0]);
         // We should now be on search results with a filter applied:
         $this->assertEquals('HG - Finance', $this->findCssAndGetText($page, '.filter-value .text'));
@@ -226,14 +226,14 @@ class BrowseTest extends \VuFindTest\Integration\MinkTestCase
         $page->clickLink('Call Number');
         $page->clickLink('100 - Philosophy & psychology 1');
         $values = array_map(fn ($item) => $item->getText(), $page->findAll('css', '#list3 .browse-item'));
-        $this->assertEquals(['120 - Epistemology, causation, humankind 1', 'View Records'], $values);
+        $this->assertSame(['120 - Epistemology, causation, humankind 1', 'View Records'], $values);
         $page->clickLink($values[1]);
         // We should now be on search results with a filter applied:
         $values2 = array_map(
             fn ($item) => $item->getText(),
             $page->findAll('css', '.active-filters--uncollapsible .filter-value .text')
         );
-        $this->assertEquals(
+        $this->assertSame(
             [
                 '120 - Epistemology, causation, humankind',
                 '100 - Philosophy & psychology',
@@ -265,17 +265,17 @@ class BrowseTest extends \VuFindTest\Integration\MinkTestCase
         $page->clickLink('Call Number');
         $page->clickLink('100 - Philosophy & psychology 1');
         $values = array_map(fn ($item) => $item->getText(), $page->findAll('css', '#list3 .browse-item'));
-        $this->assertEquals(['120 - Epistemology, causation, humankind 1', 'View Records'], $values);
+        $this->assertSame(['120 - Epistemology, causation, humankind 1', 'View Records'], $values);
         $page->clickLink($values[0]);
         $values2 = array_map(fn ($item) => $item->getText(), $page->findAll('css', '#list4 .browse-item'));
-        $this->assertEquals(['123 - Determinism and indeterminism 1'], $values2);
+        $this->assertSame(['123 - Determinism and indeterminism 1'], $values2);
         $page->clickLink($values2[0]);
         // We should now be on search results with a filter applied:
         $values3 = array_map(
             fn ($item) => $item->getText(),
             $page->findAll('css', '.active-filters--uncollapsible .filter-value .text')
         );
-        $this->assertEquals(
+        $this->assertSame(
             [
                 '120 - Epistemology, causation, humankind',
                 '100 - Philosophy & psychology',
@@ -318,7 +318,7 @@ class BrowseTest extends \VuFindTest\Integration\MinkTestCase
         $page->clickLink('Author');
         $page->clickLink('By Alphabetical');
         $page->clickLink('A');
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'Author, Primary 1795 - 1881 11',
                 'Author, Secondary 1875 - 1950 11',
@@ -369,9 +369,9 @@ class BrowseTest extends \VuFindTest\Integration\MinkTestCase
             'Labor unions 1',
             'View Records',
         ];
-        $this->assertEquals($expected, $values);
+        $this->assertSame($expected, $values);
         $page->clickLink('Labor unions 1');
-        $this->assertEquals(
+        $this->assertSame(
             ['The Study and Scor_ng of Dots.and-Dashes:Colons 1', 'Weird IDs 1'],
             array_map(fn ($item) => $item->getText(), $page->findAll('css', '#list4 .browse-item'))
         );
@@ -380,6 +380,6 @@ class BrowseTest extends \VuFindTest\Integration\MinkTestCase
             fn ($item) => $item->getText(),
             $page->findAll('css', '.active-filters--uncollapsible .filter-value .text')
         );
-        $this->assertEquals(['Labor unions', 'Weird IDs'], $filters);
+        $this->assertSame(['Labor unions', 'Weird IDs'], $filters);
     }
 }

@@ -125,7 +125,7 @@ class MapTest extends \PHPUnit\Framework\TestCase
         $obj = $this->getMap();
         $recordDriver = $this->createMock(\VuFind\RecordDriver\SolrDefault::class);
         $recordDriver->expects($this->exactly(2))->method('tryMethod')
-            ->with($this->equalTo('getGeoLocation'))
+            ->with('getGeoLocation')
             ->willReturnOnConsecutiveCalls('555', null);
         $obj->setRecordDriver($recordDriver);
         $this->assertTrue($obj->isActive());
@@ -143,7 +143,7 @@ class MapTest extends \PHPUnit\Framework\TestCase
         $coordinates = ['00 00 56 56', '45 56 87 89'];
         $recordDriver = $this->createMock(\VuFind\RecordDriver\SolrDefault::class);
         $recordDriver->expects($this->once())->method('tryMethod')
-            ->with($this->equalTo('getDisplayCoordinates'))
+            ->with('getDisplayCoordinates')
             ->willReturn($coordinates);
         $obj->setRecordDriver($recordDriver);
         $value = ['56 00', '89 87 45 56'];
@@ -161,7 +161,7 @@ class MapTest extends \PHPUnit\Framework\TestCase
         $coordinates = ['ENVELOPE(25.8,43.9,5.0,4.6)'];
         $recordDriver = $this->createMock(\VuFind\RecordDriver\SolrDefault::class);
         $recordDriver->expects($this->once())->method('tryMethod')
-            ->with($this->equalTo('getGeoLocation'))
+            ->with('getGeoLocation')
             ->willReturn($coordinates);
         $obj->setRecordDriver($recordDriver);
         $value = [[25.8,4.6,43.9,5.0]];
