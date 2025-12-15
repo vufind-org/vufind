@@ -167,7 +167,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.js-pay-selected');
         $this->assertLightboxTitle($page, 'Accept terms to continue payment');
         $this->clickCss($page, '#modal .btn.btn-primary');
-        $this->assertEquals(
+        $this->assertSame(
             'Pay Online',
             trim($this->findCss($page, '.js-pay-selected')->getValue())
         );
@@ -182,7 +182,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
             'Payment canceled',
             $this->findCssAndGetText($page, '.alert.alert-success')
         );
-        $this->assertEquals(
+        $this->assertSame(
             PaymentStatus::Canceled,
             $this->getPaymentByLocalIdentifier($localIdentifier)->getStatus()
         );
@@ -197,7 +197,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
             'Payment request failed',
             $this->findCssAndGetText($page, '.alert.alert-danger')
         );
-        $this->assertEquals(
+        $this->assertSame(
             PaymentStatus::PaymentFailed,
             $this->getPaymentByLocalIdentifier($localIdentifier)->getStatus()
         );
@@ -226,7 +226,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
             $this->unFindCss($page, '.last-payment-information');
         }
         $payment = $this->getPaymentByLocalIdentifier($localIdentifier);
-        $this->assertEquals(
+        $this->assertSame(
             PaymentStatus::Completed,
             $payment->getStatus()
         );
@@ -241,13 +241,13 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
         }
 
         // Verify database contents:
-        $this->assertEquals(
+        $this->assertSame(
             1500,
             $payment->getAmount()
         );
         $paymentFeeService = $this->getDbService(PaymentFeeServiceInterface::class);
         assert($paymentFeeService instanceof PaymentFeeServiceInterface);
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'demo1',
                 'demo2',
@@ -544,7 +544,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         $payment = $this->getPaymentByLocalIdentifier($localIdentifier);
-        $this->assertEquals(
+        $this->assertSame(
             PaymentStatus::RegistrationFailed,
             $payment->getStatus()
         );

@@ -93,7 +93,7 @@ class ExtendClassCommandTest extends \PHPUnit\Framework\TestCase
                 'target_module' => 'Bar',
             ]
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -124,7 +124,7 @@ class ExtendClassCommandTest extends \PHPUnit\Framework\TestCase
                 '--extendfactory' => true,
             ]
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -149,8 +149,8 @@ class ExtendClassCommandTest extends \PHPUnit\Framework\TestCase
                 'target_module' => 'Bar',
             ]
         );
-        $this->assertEquals("Foo!\n", $commandTester->getDisplay());
-        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertSame("Foo!\n", $commandTester->getDisplay());
+        $this->assertSame(1, $commandTester->getStatusCode());
     }
 
     /**

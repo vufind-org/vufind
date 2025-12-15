@@ -99,8 +99,8 @@ class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
         $command = $this->getCommand(null, $ils);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
-        $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals(
+        $this->assertSame(0, $commandTester->getStatusCode());
+        $this->assertSame(
             "No suppressed records to delete.\n",
             $commandTester->getDisplay()
         );
@@ -127,8 +127,8 @@ class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
         $command = $this->getCommand($solr, $ils);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
-        $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals('', $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
+        $this->assertSame('', $commandTester->getDisplay());
     }
 
     /**
@@ -145,8 +145,8 @@ class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
         $command = $this->getCommand(null, $ils);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['--authorities' => true]);
-        $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals(
+        $this->assertSame(0, $commandTester->getStatusCode());
+        $this->assertSame(
             "No suppressed records to delete.\n",
             $commandTester->getDisplay()
         );
@@ -169,8 +169,8 @@ class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
             ->willReturn(true);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['--outfile' => 'foo']);
-        $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals('', $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
+        $this->assertSame('', $commandTester->getDisplay());
     }
 
     /**
@@ -190,8 +190,8 @@ class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
             ->willReturn(false);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['--outfile' => 'foo']);
-        $this->assertEquals(1, $commandTester->getStatusCode());
-        $this->assertEquals(
+        $this->assertSame(1, $commandTester->getStatusCode());
+        $this->assertSame(
             "Problem writing to foo\n",
             $commandTester->getDisplay()
         );

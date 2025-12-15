@@ -70,7 +70,7 @@ class UrlQueryHelperTest extends \PHPUnit\Framework\TestCase
         // Test basic getters
         $helper = $this->getHelper();
         $this->assertEquals('?foo=bar&amp;lookfor=search', $helper->getParams());
-        $this->assertEquals('?foo=bar&amp;lookfor=search', (string)$helper);
+        $this->assertSame('?foo=bar&amp;lookfor=search', (string)$helper);
         $this->assertEquals(
             ['foo' => 'bar', 'lookfor' => 'search'],
             $helper->getParamArray()

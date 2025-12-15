@@ -109,7 +109,7 @@ class HoldingsWorldCat2Test extends \PHPUnit\Framework\TestCase
         $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
         $commandObj->method('getResult')->willReturn(true);
         $checkCommand = function ($command) {
-            $this->assertEquals($command::class, \VuFindSearch\Backend\WorldCat2\Command\GetHoldingsCommand::class);
+            $this->assertSame($command::class, \VuFindSearch\Backend\WorldCat2\Command\GetHoldingsCommand::class);
             $expectedParams = new ParamBag(
                 [
                     'oclcNumber' => 'bar',

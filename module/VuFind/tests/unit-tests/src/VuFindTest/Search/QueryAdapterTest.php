@@ -110,7 +110,7 @@ class QueryAdapterTest extends \PHPUnit\Framework\TestCase
         $callback = function ($carry, $item) {
             return $carry + (isset($item['o']) ? 1 : 0);
         };
-        $this->assertEquals(
+        $this->assertSame(
             count($minified[0]['g']),
             array_reduce($minified[0]['g'], $callback, 0)
         );

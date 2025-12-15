@@ -63,8 +63,8 @@ class SitemapCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester->execute(
             ['--baseurl' => 'http://foo', '--basesitemapurl' => 'http://bar']
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals(
+        $this->assertSame(0, $commandTester->getStatusCode());
+        $this->assertSame(
             "Sample warning\n",
             $commandTester->getDisplay()
         );

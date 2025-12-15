@@ -113,7 +113,7 @@ class MethodTimedBlocksTest extends \PHPUnit\Framework\TestCase
     {
         $helper = new MethodTimedBlocks();
         $helper->setView($this->getPhpRenderer($this->getViewHelpers($timedBlocks, $blocked)));
-        $this->assertEquals($expected, $helper('Renewals', $service));
+        $this->assertSame($expected, $helper('Renewals', $service));
     }
 
     /**

@@ -64,11 +64,11 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
         $command = new ThemeCommand($generator, $config);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
-        $this->assertEquals(
+        $this->assertSame(
             "\tNo theme name provided, using \"custom\"\n\tFinished.\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -94,8 +94,8 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
         $command = new ThemeCommand($generator, $config);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['name' => 'foo']);
-        $this->assertEquals("fake error\n", $commandTester->getDisplay());
-        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertSame("fake error\n", $commandTester->getDisplay());
+        $this->assertSame(1, $commandTester->getStatusCode());
     }
 
     /**

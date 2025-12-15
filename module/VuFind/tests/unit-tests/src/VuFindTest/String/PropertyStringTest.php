@@ -57,12 +57,12 @@ class PropertyStringTest extends \PHPUnit\Framework\TestCase
         $str['attr'] = 'bonus';
         $str['attr2'] = 'bonus2';
 
-        $this->assertEquals('Foo', (string)$str);
-        $this->assertEquals('Foo', $str->getString());
-        $this->assertEquals('<p>Foo</p>', $str->getHtml());
-        $this->assertEquals(['id_foo', 'id_bar'], $str->getIds());
-        $this->assertEquals('bonus', $str['attr']);
-        $this->assertEquals('bonus2', $str['attr2']);
+        $this->assertSame('Foo', (string)$str);
+        $this->assertSame('Foo', $str->getString());
+        $this->assertSame('<p>Foo</p>', $str->getHtml());
+        $this->assertSame(['id_foo', 'id_bar'], $str->getIds());
+        $this->assertSame('bonus', $str['attr']);
+        $this->assertSame('bonus2', $str['attr2']);
         $this->assertTrue(isset($str['attr']));
         $this->assertFalse(isset($str['nattr']));
 
@@ -71,7 +71,7 @@ class PropertyStringTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse(isset($str['attr']));
 
         $str->addId('id_baz');
-        $this->assertEquals(['id_foo', 'id_bar', 'id_baz'], $str->getIds());
+        $this->assertSame(['id_foo', 'id_bar', 'id_baz'], $str->getIds());
 
         $this->assertNull($str->isHtmlTrusted());
         $str->setHtmlTrusted(true);
@@ -144,8 +144,8 @@ class PropertyStringTest extends \PHPUnit\Framework\TestCase
         array $expectedAttrs
     ): void {
         $str = PropertyString::fromHtml($html, $attrs);
-        $this->assertEquals($expectedPlain, (string)$str);
-        $this->assertEquals($expectedHtml, $str->getHtml());
+        $this->assertSame($expectedPlain, (string)$str);
+        $this->assertSame($expectedHtml, $str->getHtml());
         foreach ($expectedAttrs as $key => $value) {
             $this->assertEquals($value, $str[$key]);
         }

@@ -131,7 +131,7 @@ class SolrTest extends \PHPUnit\Framework\TestCase
         $currentPageInfo = $solr->terms('id', 'test', 1)->getFieldTerms('id');
         $this->assertCount(1, $currentPageInfo);
         foreach ($currentPageInfo as $key => $value) {
-            $this->assertEquals('test', substr($key, 0, 4));
+            $this->assertSame('test', substr($key, 0, 4));
         }
     }
 }

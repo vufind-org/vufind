@@ -90,7 +90,7 @@ class ContentTest extends \PHPUnit\Framework\TestCase
             )
         );
         // Confirm pass-by-reference array was updated:
-        $this->assertEquals($contentBlockContext, $pageDetails);
+        $this->assertSame($contentBlockContext, $pageDetails);
     }
 
     /**

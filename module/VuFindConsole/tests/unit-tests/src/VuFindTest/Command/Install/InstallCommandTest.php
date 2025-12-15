@@ -162,11 +162,11 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
             VUFIND_HOME and VUFIND_LOCAL_DIR environment variables are set to
             $expectedBaseDir and $localFixtures respectively.
             TEXT;
-        $this->assertEquals(
+        $this->assertSame(
             $expectedOutput,
             trim($commandTester->getDisplay())
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -227,11 +227,11 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
             VUFIND_HOME and VUFIND_LOCAL_DIR environment variables are set to
             $expectedBaseDir and $localFixtures respectively.
             EXPECTED;
-        $this->assertEquals(
+        $this->assertSame(
             $expectedOutput,
             trim($commandTester->getDisplay())
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -253,11 +253,11 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
             VuFind® has been found in $expectedBaseDir.
             Solr port must be a number.
             EXPECTED;
-        $this->assertEquals(
+        $this->assertSame(
             $expectedOutput,
             trim($commandTester->getDisplay())
         );
-        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertSame(1, $commandTester->getStatusCode());
     }
 
     /**

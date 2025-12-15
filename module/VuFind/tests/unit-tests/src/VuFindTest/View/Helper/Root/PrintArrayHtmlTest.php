@@ -376,7 +376,7 @@ class PrintArrayHtmlTest extends AbstractMakeTagTestCase
     {
         $helper = $this->getHelper();
 
-        $this->assertEquals(
+        $this->assertSame(
             $expected,
             call_user_func([$helper, '__invoke'], $entry)
         );

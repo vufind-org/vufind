@@ -191,7 +191,7 @@ class SolrOverdriveTest extends \PHPUnit\Framework\TestCase
         $driver->setRawData(
             ['description' => '<tag>&#8217;&#8217;Summary.</tag>']
         );
-        $this->assertEquals(
+        $this->assertSame(
             ['Summary.'],
             array_values($driver->getSummary())
         );

@@ -137,7 +137,7 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
         } catch (\Throwable $t) {
             $errorMsg = $t->getMessage();
         }
-        $this->assertEquals('Call to a member function get() on null', $errorMsg);
+        $this->assertSame('Call to a member function get() on null', $errorMsg);
         $this->runTestModeTest(
             [
                 'ini' => 'test-injection.ini',
@@ -273,7 +273,7 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
             'Solr',
             false
         );
-        $this->assertEquals('', $result); // no output in non-test mode
+        $this->assertSame('', $result); // no output in non-test mode
     }
 
     /**
@@ -301,6 +301,6 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
             'Solr',
             false
         );
-        $this->assertEquals('', $result); // no output in non-test mode
+        $this->assertSame('', $result); // no output in non-test mode
     }
 }

@@ -229,11 +229,11 @@ class RecordCollectionTest extends TestCase
         for ($i = 0; $i < 4; $i++) {
             $coll->add($this->createMock(\VuFindSearch\Response\RecordInterface::class));
         }
-        $this->assertEquals(5, $coll->count());
+        $this->assertSame(5, $coll->count());
         $coll->add($record);
-        $this->assertEquals(5, $coll->count());
+        $this->assertSame(5, $coll->count());
         $coll->add($record, false);
-        $this->assertEquals(6, $coll->count());
+        $this->assertSame(6, $coll->count());
     }
 
     /**

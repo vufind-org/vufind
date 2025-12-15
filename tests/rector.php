@@ -7,6 +7,7 @@ use Rector\Config\RectorConfig;
 use Rector\PHPUnit\Set\PHPUnitSetList;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\RemoveExpectAnyFromMockRector;
 use Rector\PHPUnit\PHPUnit60\Rector\MethodCall\GetMockBuilderGetMockToCreateMockRector;
+use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertEqualsToSameRector;
 
 return RectorConfig::configure()
     ->withCache(
@@ -23,7 +24,8 @@ return RectorConfig::configure()
     ])
     ->withRules([
         RemoveExpectAnyFromMockRector::class,
-        GetMockBuilderGetMockToCreateMockRector::class
+        GetMockBuilderGetMockToCreateMockRector::class,
+        AssertEqualsToSameRector::class,
     ])
     ->withTypeCoverageLevel(0)
     ->withDeadCodeLevel(6)

@@ -61,11 +61,11 @@ class PathResolverTest extends \PHPUnit\Framework\TestCase
 
         $pathResolver = $this->getPathResolver();
 
-        $this->assertEquals(
+        $this->assertSame(
             $baseConfig,
             $pathResolver->getBaseConfigPath('config.ini')
         );
-        $this->assertEquals(
+        $this->assertSame(
             $localConfig,
             $pathResolver->getLocalConfigPath('config.ini', null, true)
         );
@@ -73,7 +73,7 @@ class PathResolverTest extends \PHPUnit\Framework\TestCase
             null,
             $pathResolver->getLocalConfigPath('non-existent-config.ini')
         );
-        $this->assertEquals(
+        $this->assertSame(
             file_exists($localConfig) ? $localConfig : $baseConfig,
             $pathResolver->getConfigPath('config.ini')
         );
@@ -123,7 +123,7 @@ class PathResolverTest extends \PHPUnit\Framework\TestCase
     {
         $fixtureDir = realpath($this->getFixtureDir() . 'configs/pathstack') . '/';
         $pathResolver = $this->getPathResolver(baseDir: $fixtureDir . 'base', localDir: $fixtureDir . 'primary');
-        $this->assertEquals(
+        $this->assertSame(
             $fixtureDir . $expectedFilePath,
             $pathResolver->getConfigPath($filename)
         );
