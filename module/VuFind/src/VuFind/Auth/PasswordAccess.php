@@ -79,9 +79,7 @@ class PasswordAccess extends AbstractBase
         $config = $this->getConfig()->toArray();
         $requestPassword = trim($request->getPost()->get('password', ''));
         foreach ($config['PasswordAccess']['access_user_hashed'] ?? [] as $username => $passwordHash) {
-            if (
-                password_verify($requestPassword, $passwordHash)
-            ) {
+            if (password_verify($requestPassword, $passwordHash)) {
                 return $this->getOrCreateUserByUsername($username);
             }
         }
