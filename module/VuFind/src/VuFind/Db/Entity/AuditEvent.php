@@ -157,10 +157,10 @@ class AuditEvent implements AuditEventEntityInterface
     /**
      * Additional data (JSON).
      *
-     * @var ?string
+     * @var ?array
      */
     #[ORM\Column(name: 'data', type: 'json', nullable: true)]
-    protected ?string $data = null;
+    protected ?array $data = null;
 
     /**
      * Constructor
@@ -178,7 +178,8 @@ class AuditEvent implements AuditEventEntityInterface
      */
     public function getDate(): DateTime
     {
-        return $this->date;
+        // Return to a clone to avoid indirect modification of the entity:
+        return $this->getDateTimeClone($this->date);
     }
 
     /**
@@ -417,9 +418,9 @@ class AuditEvent implements AuditEventEntityInterface
     /**
      * Get additional data.
      *
-     * @return ?string
+     * @return ?array
      */
-    public function getData(): ?string
+    public function getData(): ?array
     {
         return $this->data;
     }
@@ -427,11 +428,11 @@ class AuditEvent implements AuditEventEntityInterface
     /**
      * Set additional data.
      *
-     * @param ?string $data Data
+     * @param ?array $data Data
      *
      * @return static
      */
-    public function setData(?string $data): static
+    public function setData(?array $data): static
     {
         $this->data = $data;
         return $this;

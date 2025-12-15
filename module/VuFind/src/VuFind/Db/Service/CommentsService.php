@@ -163,7 +163,7 @@ class CommentsService extends AbstractDbService implements
     public function deleteByUser(UserEntityInterface|int $userOrId): void
     {
         $dql = 'DELETE FROM ' . CommentsEntityInterface::class . ' c '
-        . 'WHERE c.user = :user';
+            . 'WHERE c.user = :user';
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters(['user' => is_int($userOrId) ? $userOrId : $userOrId->getId()]);
         $query->execute();
@@ -181,8 +181,7 @@ class CommentsService extends AbstractDbService implements
             . 'COUNT(c.id) AS total '
             . 'FROM ' . CommentsEntityInterface::class . ' c';
         $query = $this->entityManager->createQuery($dql);
-        $stats = current($query->getResult());
-        return $stats;
+        return $query->getSingleResult();
     }
 
     /**
@@ -271,7 +270,7 @@ class CommentsService extends AbstractDbService implements
     public function deleteByIdsAndUserId(array $ids, int $userId): void
     {
         $dql = 'DELETE FROM ' . CommentsEntityInterface::class . ' c '
-         . 'WHERE c.user = :user AND c.id IN (:ids)';
+            . 'WHERE c.user = :user AND c.id IN (:ids)';
 
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters([

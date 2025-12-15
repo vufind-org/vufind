@@ -84,7 +84,7 @@ class PluginCommand extends AbstractContainerAwareCommand
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $class = $input->getArgument('class_name');
         $factory = $input->getArgument('factory');
@@ -94,8 +94,8 @@ class PluginCommand extends AbstractContainerAwareCommand
                 ->createPlugin($this->container, $class, $factory, $topLevel);
         } catch (\Exception $e) {
             $output->writeln($e->getMessage());
-            return 1;
+            return self::FAILURE;
         }
-        return 0;
+        return self::SUCCESS;
     }
 }

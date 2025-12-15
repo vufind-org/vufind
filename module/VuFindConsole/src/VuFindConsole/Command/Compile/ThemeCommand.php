@@ -106,19 +106,19 @@ class ThemeCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $source = $input->getArgument('source');
         $target = $input->getArgument('target');
         if (empty($target)) {
             $target = "{$source}_compiled";
         }
-        $force = $input->getOption('force') ? true : false;
+        $force = (bool)$input->getOption('force');
         if (!$this->compiler->compile($source, $target, $force)) {
             $output->writeln($this->compiler->getLastError());
-            return 1;
+            return self::FAILURE;
         }
         $output->writeln('Success.');
-        return 0;
+        return self::SUCCESS;
     }
 }

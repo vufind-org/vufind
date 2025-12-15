@@ -146,8 +146,7 @@ class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
     {
         $params   = new ParamBag([ ]);
         $mockPermController = $this->createMock(\VuFind\Search\Primo\PrimoPermissionHandler::class);
-        $mockPermController->expects($this->any())->method('hasPermission')
-            ->willReturn(true);
+        $mockPermController->method('hasPermission')->willReturn(true);
 
         $listener = new InjectOnCampusListener($mockPermController);
 
@@ -191,8 +190,7 @@ class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
     {
         $params   = new ParamBag([ ]);
         $mockPermController = $this->createMock(\VuFind\Search\Primo\PrimoPermissionHandler::class);
-        $mockPermController->expects($this->any())->method('hasPermission')
-            ->willReturn(true);
+        $mockPermController->method('hasPermission')->willReturn(true);
 
         $listener = new InjectOnCampusListener($mockPermController);
 
@@ -213,8 +211,7 @@ class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
     {
         $params   = new ParamBag([ ]);
         $mockPermController = $this->createMock(\VuFind\Search\Primo\PrimoPermissionHandler::class);
-        $mockPermController->expects($this->any())->method('hasPermission')
-            ->willReturn(false);
+        $mockPermController->method('hasPermission')->willReturn(false);
 
         $listener = new InjectOnCampusListener($mockPermController);
 

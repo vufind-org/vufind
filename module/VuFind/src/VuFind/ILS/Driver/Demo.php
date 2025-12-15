@@ -532,7 +532,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             'callnumber_prefix' => $this->getFakeCallNumPrefix(),
             'duedate'      => '',
             'is_holdable'  => true,
-            'addLink'      => $patron ? true : false,
+            'addLink'      => (bool)$patron,
             'level'        => 'copy',
             'storageRetrievalRequest' => 'auto',
             'addStorageRetrievalRequestLink' => $patron ? 'check' : false,
@@ -1132,6 +1132,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                     'U',
                     strtotime("now - $day_overdue days")
                 ),
+                'organization' => $this->getFakeLoc(),
             ];
 
             $fine['payableOnline'] = $this->fineIsPayable($fine);
@@ -1870,10 +1871,10 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * Retrieve the IDs of items recently added to the catalog.
      *
-     * @param int $page    Page number of results to retrieve (counting starts at 1)
-     * @param int $limit   The size of each page of results to retrieve
-     * @param int $daysOld The maximum age of records to retrieve in days (max. 30)
-     * @param int $fundId  optional fund ID to use for limiting results (use a value
+     * @param int     $page    Page number of results to retrieve (counting starts at 1)
+     * @param int     $limit   The size of each page of results to retrieve
+     * @param int     $daysOld The maximum age of records to retrieve in days (max. 30)
+     * @param ?string $fundId  optional fund ID to use for limiting results (use a value
      * returned by getFunds, or exclude for no limit); note that "fund" may be a
      * misnomer - if funds are not an appropriate way to limit your new item
      * results, you can return a different set of values from getFunds. The

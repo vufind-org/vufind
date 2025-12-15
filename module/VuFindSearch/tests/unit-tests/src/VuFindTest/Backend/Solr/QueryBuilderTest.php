@@ -86,7 +86,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
             ['NOT', 'not'],                      // freestanding operator
             ['*bad', 'bad'],                     // leading wildcard
             ['?bad', 'bad'],                     // leading wildcard
-            ["\xE2\x80\x9Ca\xE2\x80\x9D", '"a"'],// fancy quotes
+            ["\xE2\x80\x9Ca\xE2\x80\x9D", "\xE2\x80\x9Ca\xE2\x80\x9D"],// no fancy quotes normalization, see VUFIND-1808
             // improperly escaped floating braces/brackets:
             ['a:{a TO b} [ }', 'a:{a TO b} \[ \}'],
             // properly escaped floating braces/brackets:
@@ -599,7 +599,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     {
         return [
             'Single value, no extra params' => [
-                null,
+                'globalExtraParams' => null,
                 'expected1' => [
                     'bf' => ['a:filter'],
                     'bq' => null,

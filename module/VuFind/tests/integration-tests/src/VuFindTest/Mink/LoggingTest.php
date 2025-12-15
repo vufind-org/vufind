@@ -80,6 +80,21 @@ final class LoggingTest extends MinkTestCase
                 'minEmails'          => 2,
                 'description'         => 'Should log critical errors when Solr connection fails',
             ],
+            'psr_debug_error_and_alert_logging' => [
+                'emailConfig'        => 'alerts@myuniversity.edu:DEBUG-5,CRITICAL-5',
+                'expectedPatterns'   => [
+                    self::CRITICAL_LEVEL_REGEX,
+                    '/404 Not Found/',
+                    '/RequestErrorException/',
+                    '/VuFindSearch\\\\Backend\\\\Exception/',
+                    '/Search\/Results.*lookfor.*test/',
+                    self::DEBUG_LEVEL_REGEX,
+                ],
+                'unexpectedPatterns' => [
+                ],
+                'minEmails'          => 2,
+                'description'         => 'Should log critical errors when Solr connection fails',
+            ],
             'error_and_alert_logging_only' => [
                 'emailConfig'        => 'alerts@myuniversity.edu:alert-5,error-5',
                 'expectedPatterns'   => [
@@ -98,6 +113,17 @@ final class LoggingTest extends MinkTestCase
             ],
             'debug_logging_only'      => [
                 'emailConfig'        => 'debug@myuniversity.edu:debug-5',
+                'expectedPatterns'   => [
+                    self::DEBUG_LEVEL_REGEX,
+                ],
+                'unexpectedPatterns' => [
+                    self::CRITICAL_LEVEL_REGEX,
+                ],
+                'minEmails'          => 1,
+                'description'         => 'Should capture debug messages when debug logging is enabled',
+            ],
+            'psr_debug_logging_only'      => [
+                'emailConfig'        => 'debug@myuniversity.edu:DEBUG-5',
                 'expectedPatterns'   => [
                     self::DEBUG_LEVEL_REGEX,
                 ],
@@ -186,6 +212,22 @@ final class LoggingTest extends MinkTestCase
                 ],
                 'minEmails'          => 1,
                 'description'         => 'Should provide maximum detail at level 5',
+            ],
+            'invalid_priority_logs_everything' => [
+                'emailConfig'        => 'alerts@myuniversity.edu:foo-5',
+                'expectedPatterns'   => [
+                    self::CRITICAL_LEVEL_REGEX,
+                    '/404 Not Found/',
+                    '/RequestErrorException/',
+                    '/VuFindSearch\\\\Backend\\\\Exception/',
+                    '/Search\/Results.*lookfor.*test/',
+                    self::DEBUG_LEVEL_REGEX,
+                    '/Invalid priority/',
+                ],
+                'unexpectedPatterns' => [
+                ],
+                'minEmails'          => 1,
+                'description'         => 'Should log everything with invalid configuration',
             ],
         ];
     }

@@ -43,8 +43,6 @@ use VuFind\Record\Loader;
 use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\Missing as MissingRecord;
 
-use function assert;
-
 /**
  * Command for updating metadata in the resource table.
  *
@@ -119,7 +117,7 @@ class UpdateResourceMetadataCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $batch = $input->getOption('batch');
         $minAge = $input->getOption('min-age');
@@ -143,7 +141,6 @@ class UpdateResourceMetadataCommand extends Command
                 $lastId = $resource->getId();
                 $recordId = $resource->getRecordId();
                 $source = $resource->getSource();
-                assert($recordId == $driver->getUniqueID());
                 if ($output->isVerbose()) {
                     $output->writeln("Checking record {$source}:{$recordId}");
                 }
@@ -161,7 +158,7 @@ class UpdateResourceMetadataCommand extends Command
                 } else {
                     $this->resourcePopulator->assignMetadata($resource, $driver);
                     $resource->setUpdated(new DateTime());
-                    $driverRecordId = $driver->getUniqueId();
+                    $driverRecordId = $driver->getUniqueID();
                     if ($recordId != $driverRecordId) {
                         $resource->setRecordId($driverRecordId);
                         ++$redirected;
@@ -170,13 +167,13 @@ class UpdateResourceMetadataCommand extends Command
                 }
             }
             $this->persistenceManager->flushEntities();
-            array_walk($resources, [$this->persistenceManager, 'detachEntity']);
+            $this->persistenceManager->clearAllEntities();
             $output->writeln(
                 "<info>$updated records updated ($redirected redirects), $missing records missing</info>"
             );
         }
 
         $output->writeln('<info>Resource metadata update completed</info>');
-        return Command::SUCCESS;
+        return self::SUCCESS;
     }
 }

@@ -152,7 +152,7 @@ trait ApiTrait
      *
      * @param string $permission Permission to check
      *
-     * @return \Laminas\Http\Response|boolean
+     * @return \Laminas\Http\Response|bool
      */
     protected function isAccessDenied($permission)
     {

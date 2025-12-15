@@ -247,23 +247,23 @@ class ImportLokaliseCommand extends AbstractCommand
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $source = $input->getArgument('source');
         $target = $input->getArgument('target');
 
         if (!is_dir($source)) {
             $output->writeln("{$source} does not exist or is not a directory.");
-            return 1;
+            return self::FAILURE;
         }
         if (!is_dir($target)) {
             $output->writeln("{$target} does not exist or is not a directory.");
-            return 1;
+            return self::FAILURE;
         }
         $sourceFiles = $this->collectSourceFiles($source);
         $targetFiles = $this->matchTargetFiles($source, $target, $sourceFiles);
         array_map([$this, 'importStrings'], $sourceFiles, $targetFiles, array_fill(0, count($sourceFiles), $output));
         $output->writeln('Import complete.');
-        return 0;
+        return self::SUCCESS;
     }
 }

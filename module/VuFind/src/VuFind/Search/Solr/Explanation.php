@@ -441,11 +441,7 @@ class Explanation extends \VuFind\Search\Base\Explanation
         ) {
             // parse explaining element
             $currentValue = $value * $modifier;
-            if ($this->baseScore > 0) {
-                $percentage = 100 * $currentValue / $this->baseScore;
-            } else {
-                $percentage = 0;
-            }
+            $percentage = $this->baseScore > 0 ? 100 * $currentValue / $this->baseScore : 0;
 
             // get fieldModifier and remove unused higher level lines
             $fieldModifier = null;

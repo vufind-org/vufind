@@ -57,7 +57,7 @@ class SimpleXML
             ? $child->asXML() : $child;
 
         // strip off xml header
-        $mark = strpos($xml, '?' . '>');
+        $mark = strpos($xml, '?>');
         if ($mark > 0 && $mark < 40) {
             $xml = substr($xml, $mark + 2);
         }

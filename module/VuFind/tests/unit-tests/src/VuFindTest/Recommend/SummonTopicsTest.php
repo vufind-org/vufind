@@ -49,16 +49,10 @@ class SummonTopicsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetResults(): void
     {
-        $pm = $this->getMockBuilder(\VuFind\Search\Results\PluginManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $pm = $this->createMock(\VuFind\Search\Results\PluginManager::class);
         $obj = new SummonTopics($pm);
-        $results = $this->getMockBuilder(\VuFind\Search\Summon\Results::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $parms = $this->getMockBuilder(\VuFind\Search\Base\Params::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $results = $this->createMock(\VuFind\Search\Summon\Results::class);
+        $parms = $this->createMock(\VuFind\Search\Base\Params::class);
         $results->expects($this->once())->method('getParams')
             ->willReturn($parms);
         $parms->expects($this->once())->method('getSearchClassId')
@@ -76,16 +70,11 @@ class SummonTopicsTest extends \PHPUnit\Framework\TestCase
      */
     public function testInit(): void
     {
-        $parms = $this->getMockBuilder(\VuFind\Search\Base\Params::class)
+        $parms = $this->createMock(\VuFind\Search\Base\Params::class);
+        $request = $this->createMock(\Laminas\Stdlib\Parameters::class);
+        $options = $this->getMockBuilder(\VuFind\Search\Summon\Options::class)
             ->disableOriginalConstructor()
-            ->getMock();
-        $request = $this->getMockBuilder(\Laminas\Stdlib\Parameters::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $options = $this->getMockBuilder(\VuFind\Search\Base\Options::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['getSearchAction'])
-            ->addMethods(['setMaxTopicRecommendations'])
+            ->onlyMethods(['getSearchAction', 'setMaxTopicRecommendations'])
             ->getMock();
         $parms->expects($this->once())->method('getSearchClassId')
             ->willReturn('Summon');
@@ -93,9 +82,7 @@ class SummonTopicsTest extends \PHPUnit\Framework\TestCase
             ->willReturn($options);
         $options->expects($this->once())->method('setMaxTopicRecommendations')
             ->with($this->equalTo(1));
-        $pm = $this->getMockBuilder(\VuFind\Search\Results\PluginManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $pm = $this->createMock(\VuFind\Search\Results\PluginManager::class);
         $obj = new SummonTopics($pm);
         $this->assertNull($obj->init($parms, $request));
     }
@@ -110,24 +97,17 @@ class SummonTopicsTest extends \PHPUnit\Framework\TestCase
         $class = new \ReflectionClass(SummonTopics::class);
         $method = $class->getMethod('configureSummonResults');
         $method->setAccessible(true);
-        $pm = $this->getMockBuilder(\VuFind\Search\Results\PluginManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $parms = $this->getMockBuilder(\VuFind\Search\Base\Params::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $pm = $this->createMock(\VuFind\Search\Results\PluginManager::class);
+        $parms = $this->createMock(\VuFind\Search\Base\Params::class);
         $obj = new SummonTopics($pm);
-        $results = $this->getMockBuilder(\VuFind\Search\Summon\Results::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $results = $this->createMock(\VuFind\Search\Summon\Results::class);
         $results->expects($this->once())->method('getParams')
             ->willReturn($parms);
         $parms->expects($this->once())->method('setBasicSearch')
             ->with($this->anything(), $this->equalTo('AllFields'));
-        $options = $this->getMockBuilder(\VuFind\Search\Base\Options::class)
+        $options = $this->getMockBuilder(\VuFind\Search\Summon\Options::class)
             ->disableOriginalConstructor()
-            ->addMethods(['setMaxTopicRecommendations'])
-            ->onlyMethods(['getSearchAction'])
+            ->onlyMethods(['getSearchAction', 'setMaxTopicRecommendations'])
             ->getMock();
         $results->expects($this->once())->method('getOptions')
             ->willReturn($options);

@@ -254,11 +254,7 @@ class DeduplicationListener
                     }
                 }
                 if (!isset($localPriority)) {
-                    if (isset($sourcePriority[$source])) {
-                        $localPriority = $sourcePriority[$source];
-                    } else {
-                        $localPriority = ++$undefPriority;
-                    }
+                    $localPriority = $sourcePriority[$source] ?? ++$undefPriority;
                 }
                 if ($localPriority < $priority) {
                     $dedupId = $localId;

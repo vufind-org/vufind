@@ -68,12 +68,18 @@ class MetadataTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMetaHelper()
     {
-        $mock = $this->getMockBuilder(HeadMeta::class)
-            ->disableOriginalConstructor()
-            ->addMethods(['appendName'])    // mocking __call
-            ->getMock();
-        $mock->expects($this->once())->method('appendName')
-            ->with($this->equalTo('prism.title'), $this->equalTo('Fake Title'));
+        $mock = $this->createMock(HeadMeta::class);
+        $mock->expects($this->once())->method('__call')
+            ->willReturnCallback(
+                function ($method, $args) use ($mock) {
+                    if ($method === 'appendName') {
+                        $this->assertEquals('prism.title', $args[0]);
+                        $this->assertEquals('Fake Title', $args[1]);
+                        return $mock;
+                    }
+                    return null;
+                }
+            );
         return $mock;
     }
 

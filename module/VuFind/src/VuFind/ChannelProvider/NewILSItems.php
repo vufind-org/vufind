@@ -55,8 +55,7 @@ class NewILSItems extends AbstractILSChannelProvider
     protected function getIlsResponse()
     {
         if ($this->ils->checkCapability('getNewItems')) {
-            $response = $this->ils
-                ->getNewItems(1, $this->channelSize, $this->maxAge);
+            $response = $this->ils->getNewItems(1, $this->batchSize, $this->maxAge);
             return $response['results'] ?? [];
         }
         return [];

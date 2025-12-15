@@ -325,7 +325,7 @@ class GetItemStatuses extends AbstractBase implements
             'id' => $record[0]['id'],
             'availability' => $combinedAvailability->availabilityAsString(),
             'availability_message' => $availabilityMessage,
-            'location' => htmlentities(implode(",\t", $location), ENT_COMPAT, 'UTF-8'),
+            'location' => implode(",\t", $location),
             'locationList' => false,
             'reserve' => $reserve ? 'true' : 'false',
             'reserve_message'
@@ -370,11 +370,7 @@ class GetItemStatuses extends AbstractBase implements
 
             $locationInfo = [
                 'availability' => $locationStatus['availability'],
-                'location' => htmlentities(
-                    $this->translateWithPrefix('location_', $location),
-                    ENT_COMPAT,
-                    'UTF-8'
-                ),
+                'location' => $this->translateWithPrefix('location_', $location),
                 'callnumberHtml' =>
                     $this->renderCallnumbers($callnumberSetting, $locationCallnumbers),
             ];
@@ -571,7 +567,7 @@ class GetItemStatuses extends AbstractBase implements
         foreach ($missingIds as $missingId => $recordNumber) {
             $availabilityStatus = $this->availabilityStatusManager->createAvailabilityStatus(false);
             $statuses[] = [
-                'id'                   => (string)$missingId,
+                'id'                   => (string)$missingId, // array_flip may have converted to int
                 'availability'         => 'false',
                 'availability_message' => $this->getAvailabilityMessage($availabilityStatus),
                 'location'             => $this->translate('Unknown'),

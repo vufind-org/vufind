@@ -57,9 +57,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockIlsConnection()
     {
-        return $this->getMockBuilder(Connection::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(Connection::class);
     }
 
     /**
@@ -127,9 +125,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockSolrWriter()
     {
-        return $this->getMockBuilder(Writer::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(Writer::class);
     }
 
     /**

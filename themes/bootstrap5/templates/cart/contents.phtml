@@ -1,14 +1,12 @@
 <?php $records = $this->cart()->getRecordDetails(); ?>
 <?php if (!empty($records)): ?>
-  <ul class="list-unstyled">
+  <ul class="cart-list">
   <?php foreach ($records as $i => $record): ?>
-    <li>
-      <div class="checkbox">
-        <label>
-          <?=$this->record($record)->getCheckbox('cart')?>
-          <a title="<?=$this->transEscAttr('View Record')?>" href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($record))?>" data-lightbox-ignore><?=$this->escapeHtml($record->getBreadcrumb())?></a>
-        </label>
-      </div>
+    <li class="cart-item">
+      <label>
+        <?=$this->record($record)->getCheckbox('cart')?>
+        <a href="<?=$this->escapeHtmlAttr($this->recordLinker()->getUrl($record))?>" data-lightbox-ignore><?=$this->escapeHtml($record->getBreadcrumb())?></a>
+      </label>
     </li>
   <?php endforeach; ?>
   </ul>

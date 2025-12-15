@@ -52,9 +52,7 @@ class WriteDocumentCommandTest extends TestCase
     public function testUnsupportedBackend(): void
     {
         $command = new WriteDocumentCommand('foo', new CommitDocument());
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\BrowZine\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\BrowZine\Backend::class);
         $backend->expects($this->once())->method('getIdentifier')
             ->willReturn('foo');
         $this->expectExceptionMessage('foo does not support writeDocument()');
@@ -69,9 +67,7 @@ class WriteDocumentCommandTest extends TestCase
     public function testSupportedBackend(): void
     {
         $doc = new CommitDocument();
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\Solr\Backend::class);
         $backend->expects($this->once())->method('getIdentifier')
             ->willReturn('Solr');
         $backend->expects($this->once())->method('writeDocument')

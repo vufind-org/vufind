@@ -92,14 +92,14 @@ class Icon extends AbstractHelper
     /**
      * Are we in right to left text mode?
      *
-     * @var boolean
+     * @var bool
      */
     protected $rtl;
 
     /**
      * Prevent extra work by only appending the stylesheet once
      *
-     * @var boolean
+     * @var bool
      */
     protected $styleAppended = false;
 

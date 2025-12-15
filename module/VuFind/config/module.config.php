@@ -509,7 +509,7 @@ $config = [
             'VuFind\ILS\Logic\TitleHolds' => 'VuFind\ILS\Logic\LogicFactory',
             'VuFind\ILS\HoldSettings' => 'VuFind\ILS\HoldSettingsFactory',
             'VuFind\Log\Logger' => 'VuFind\Log\LoggerFactory',
-            'VuFind\Mailer\Mailer' => 'VuFind\Mailer\Factory',
+            'VuFind\Mailer\Mailer' => 'VuFind\Mailer\MailerFactory',
             'VuFind\MetadataVocabulary\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Navigation\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Net\IpAddressUtils' => 'Laminas\ServiceManager\Factory\InvokableFactory',
@@ -676,6 +676,7 @@ $config = [
                 'metadata_cache' => $doctrineCacheType,
                 'hydration_cache' => $doctrineCacheType,
                 'proxy_dir' => LOCAL_CACHE_DIR . (PHP_SAPI == 'cli' ? '/cli' : '') . '/doctrine-proxies',
+                'class_metadata_factory_name' => \VuFind\Db\Mapping\ClassMetadataFactory::class,
             ],
         ],
         'driver' => [

@@ -202,7 +202,7 @@ class MergeMarcCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $dir = rtrim($input->getArgument('directory'), '/');
 
@@ -210,7 +210,7 @@ class MergeMarcCommand extends Command
             $fileList = $this->findXmlFiles($dir);
         } catch (\Exception $e) {
             $output->writeln($e->getMessage());
-            return 1;
+            return self::FAILURE;
         }
 
         $output->writeln(
@@ -222,6 +222,6 @@ class MergeMarcCommand extends Command
             $this->outputRecordsFromFile($filePath, $output);
         }
         $output->writeln('</marc:collection>');
-        return 0;
+        return self::SUCCESS;
     }
 }

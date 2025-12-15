@@ -299,15 +299,11 @@ class ExportTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetBulkUrl(): void
     {
-        $url = $this->getMockBuilder(\Laminas\View\Helper\Url::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $url = $this->createMock(\Laminas\View\Helper\Url::class);
         $url->expects($this->once())->method('__invoke')
             ->with($this->equalTo('cart-doexport'))
             ->willReturn('/cart/doExport');
-        $serverUrl = $this->getMockBuilder(\Laminas\View\Helper\ServerUrl::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $serverUrl = $this->createMock(\Laminas\View\Helper\ServerUrl::class);
         $serverUrl->expects($this->once())->method('__invoke')
             ->with($this->equalTo('/cart/doExport'))
             ->willReturn('http://localhost/cart/doExport');

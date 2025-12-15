@@ -226,27 +226,35 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Data provider for testSyndetics.
+     *
+     * @return array
+     */
+    public static function syndeticsProvider(): array
+    {
+        return [
+            'syndeticsurl' => ['syndeticsurl'],
+            'syndeticsplus' => ['syndeticsplus'],
+        ];
+    }
+
+    /**
      * Test Syndetics upgrade.
+     *
+     * @param string $fixtureDir Fixture directory
      *
      * @return void
      */
-    public function testSyndetics(): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('syndeticsProvider')]
+    public function testSyndetics(string $fixtureDir): void
     {
         // Test upgrading an SSL URL
-        $upgrader = $this->runAndGetConfigUpgrader('syndeticsurlssl');
+        $upgrader = $this->runAndGetConfigUpgrader($fixtureDir);
         $results = $upgrader->getNewConfigs();
-        $this->assertEquals(
-            1,
-            $results['config']['Syndetics']['use_ssl']
-        );
-
-        // Test upgrading a non-SSL URL
-        $upgrader = $this->runAndGetConfigUpgrader('syndeticsurlnossl');
-        $results = $upgrader->getNewConfigs();
-        $this->assertEquals(
-            '',
-            $results['config']['Syndetics']['use_ssl']
-        );
+        $this->assertFalse(isset($results['config']['Syndetics']['url']));
+        $this->assertFalse(isset($results['config']['Syndetics']['use_ssl']));
+        $this->assertFalse(isset($results['config']['Syndetics']['plus']));
+        $this->assertFalse(isset($results['config']['Syndetics']['plus_id']));
     }
 
     /**
@@ -361,13 +369,6 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
             in_array(
                 'The [GoogleSearch] section of config.ini is no '
                 . 'longer supported due to changes in Google APIs.',
-                $warnings
-            )
-        );
-        $this->assertTrue(
-            in_array(
-                'The [GoogleAnalytics] universal setting is off. See config.ini '
-                . 'for important information on how to upgrade your Analytics.',
                 $warnings
             )
         );
@@ -656,6 +657,39 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $results = $upgrader->getNewConfigs();
         $this->assertFalse(isset($results['config']['Mail']['require_login']));
         $this->assertEquals($expected, $results['config']['Mail']['email_action']);
+    }
+
+    /**
+     * Data provider for testLdapUriMigration.
+     *
+     * @return array[]
+     */
+    public static function ldapUriMigrationProvider(): array
+    {
+        return [
+            'host and port' => ['ldaphostandport', 'ldap://foo:123'],
+            'uri already present' => ['ldapuri', 'ldap://foo'],
+            'host only' => ['ldaphost', 'ldap://foo:389'],
+            'port only' => ['ldapport', 'ldap://localhost:123'],
+        ];
+    }
+
+    /**
+     * Test migration of [LDAP] host/port settings.
+     *
+     * @param string $fixture  Fixture to load
+     * @param string $expected Expected migrated uri setting
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('ldapUriMigrationProvider')]
+    public function testLdapUriMigration(string $fixture, string $expected): void
+    {
+        $upgrader = $this->runAndGetConfigUpgrader($fixture);
+        $results = $upgrader->getNewConfigs();
+        $this->assertFalse(isset($results['config']['LDAP']['host']));
+        $this->assertFalse(isset($results['config']['LDAP']['port']));
+        $this->assertEquals($expected, $results['config']['LDAP']['uri']);
     }
 
     /**

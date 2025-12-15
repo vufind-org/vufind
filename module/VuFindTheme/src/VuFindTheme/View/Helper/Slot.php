@@ -107,7 +107,7 @@ class Slot extends \Laminas\View\Helper\AbstractHelper
     /**
      * Checks for content to provide isset functionality.
      *
-     * @return boolean
+     * @return bool
      */
     public function isset()
     {
