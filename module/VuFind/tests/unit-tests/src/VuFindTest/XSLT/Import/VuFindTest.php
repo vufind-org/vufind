@@ -286,7 +286,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
     #[\PHPUnit\Framework\Attributes\DataProvider('isInvertedNameProvider')]
     public function testIsInvertedName(string $input, bool $output): void
     {
-        $this->assertEquals($output, VuFind::isInvertedName($input));
+        $this->assertSame($output, VuFind::isInvertedName($input));
     }
 
     /**
@@ -300,7 +300,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
     #[\PHPUnit\Framework\Attributes\DataProvider('nameProvider')]
     public function testInvertName(string $input, string $output): void
     {
-        $this->assertEquals($output, VuFind::invertName($input));
+        $this->assertSame($output, VuFind::invertName($input));
     }
 
     /**

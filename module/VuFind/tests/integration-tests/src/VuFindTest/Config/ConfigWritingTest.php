@@ -123,7 +123,7 @@ class ConfigWritingTest extends ConfigTestCase
             } else {
                 $expectedFileContent = $this->readFileAndNormalizeWhitespace($expected . '/' . $item);
                 $actualFileContent = $this->readFileAndNormalizeWhitespace($actual . '/' . $item);
-                $this->assertEquals($expectedFileContent, $actualFileContent);
+                $this->assertSame($expectedFileContent, $actualFileContent);
             }
         }
     }

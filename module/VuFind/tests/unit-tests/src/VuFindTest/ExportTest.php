@@ -134,7 +134,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
                 'combineXpath' => '/marc21:collection/marc21:record',
             ],
         ];
-        $this->assertEquals(
+        $this->assertSame(
             "<?xml version=\"1.0\"?>\n"
             . '<collection xmlns="http://www.loc.gov/MARC21/slim">'
             . '<record><id>a</id></record><record><id>b</id></record></collection>',

@@ -103,6 +103,6 @@ class PurgeCachedRecordCommandTest extends \PHPUnit\Framework\TestCase
             $expected .= $resourceRetVal ? "Resource deleted\n" : "No resource found\n";
         }
         $this->assertEquals($expected, $commandTester->getDisplay());
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 }

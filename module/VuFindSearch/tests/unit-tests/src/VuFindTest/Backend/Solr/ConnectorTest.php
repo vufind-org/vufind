@@ -70,7 +70,7 @@ class ConnectorTest extends TestCase
         $resp = $conn->retrieve('id');
         $this->assertIsString($resp);
         json_decode($resp, true);
-        $this->assertEquals(\JSON_ERROR_NONE, json_last_error());
+        $this->assertSame(\JSON_ERROR_NONE, json_last_error());
     }
 
     /**
@@ -253,13 +253,13 @@ class ConnectorTest extends TestCase
         $resp = $conn->callWithHttpOptions([], 'retrieve', 'id');
         $this->assertIsString($resp);
         json_decode($resp, true);
-        $this->assertEquals(\JSON_ERROR_NONE, json_last_error());
+        $this->assertSame(\JSON_ERROR_NONE, json_last_error());
 
         // Normal request with options:
         $resp = $conn->callWithHttpOptions(['timeout' => 60], 'retrieve', 'id');
         $this->assertIsString($resp);
         json_decode($resp, true);
-        $this->assertEquals(\JSON_ERROR_NONE, json_last_error());
+        $this->assertSame(\JSON_ERROR_NONE, json_last_error());
 
         // Try to call a protected method:
         $this->expectException(

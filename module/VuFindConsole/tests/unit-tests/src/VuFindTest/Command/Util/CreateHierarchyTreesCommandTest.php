@@ -179,9 +179,9 @@ class CreateHierarchyTreesCommandTest extends \PHPUnit\Framework\TestCase
         $command = $this->getCommand($loader);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['backend' => 'foo']);
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
         $expectedText = "\tBuilding tree for recordid... 5 records\n"
             . "1 files\n";
-        $this->assertEquals($expectedText, $commandTester->getDisplay());
+        $this->assertSame($expectedText, $commandTester->getDisplay());
     }
 }

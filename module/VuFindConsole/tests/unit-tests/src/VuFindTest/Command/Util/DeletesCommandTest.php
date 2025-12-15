@@ -85,8 +85,8 @@ class DeletesCommandTest extends \PHPUnit\Framework\TestCase
         $command = new DeletesCommand($writer);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['filename' => '/does/not/exist']);
-        $this->assertEquals(1, $commandTester->getStatusCode());
-        $this->assertEquals(
+        $this->assertSame(1, $commandTester->getStatusCode());
+        $this->assertSame(
             "Cannot find file: /does/not/exist\n",
             $commandTester->getDisplay()
         );
@@ -111,8 +111,8 @@ class DeletesCommandTest extends \PHPUnit\Framework\TestCase
                 'format' => 'flat',
             ]
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals('', $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
+        $this->assertSame('', $commandTester->getDisplay());
     }
 
     /**
@@ -135,8 +135,8 @@ class DeletesCommandTest extends \PHPUnit\Framework\TestCase
                 '--id-prefix' => 'x.',
             ]
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals('', $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
+        $this->assertSame('', $commandTester->getDisplay());
     }
 
     /**
@@ -158,7 +158,7 @@ class DeletesCommandTest extends \PHPUnit\Framework\TestCase
                 'index' => 'foo',
             ]
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals('', $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
+        $this->assertSame('', $commandTester->getDisplay());
     }
 }

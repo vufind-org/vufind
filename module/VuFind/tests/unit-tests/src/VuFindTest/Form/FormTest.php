@@ -69,7 +69,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue($form->isEnabled());
         $this->assertTrue($form->useCaptcha());
         $this->assertFalse($form->showOnlyForLoggedUsers());
-        $this->assertEquals([], $form->getFormElementConfig());
+        $this->assertSame([], $form->getFormElementConfig());
         $this->assertEquals(
             [['email' => null, 'name' => null]],
             $form->getRecipient()
@@ -82,9 +82,9 @@ class FormTest extends \PHPUnit\Framework\TestCase
             $form->getSubmitResponse()
         );
         $this->assertEquals([[], 'Email/form.phtml'], $form->formatEmailMessage([]));
-        $this->assertEquals([], $form->mapRequestParamsToFieldValues([]));
+        $this->assertSame([], $form->mapRequestParamsToFieldValues([]));
 
-        $this->assertEquals(
+        $this->assertSame(
             'Laminas\InputFilter\InputFilter',
             get_class($form->getInputFilter())
         );
@@ -237,7 +237,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
             $expectedFields,
             $form->mapRequestParamsToFieldValues($postParams)
         );
-        $this->assertEquals(
+        $this->assertSame(
             'Laminas\InputFilter\InputFilter',
             get_class($form->getInputFilter())
         );

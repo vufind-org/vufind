@@ -105,11 +105,11 @@ abstract class AbstractExpireCommandTestCase extends \PHPUnit\Framework\TestCase
         }
         $commandTester->execute(['age' => $this->illegalAge]);
         $expectedMinAge = number_format($this->expectedMinAge, 1, '.', '');
-        $this->assertEquals(
+        $this->assertSame(
             "Expiration age must be at least $expectedMinAge days.\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertSame(1, $commandTester->getStatusCode());
     }
 
     /**
@@ -135,19 +135,19 @@ abstract class AbstractExpireCommandTestCase extends \PHPUnit\Framework\TestCase
         // runs, so let's split things apart to work around that...
         $parts = explode("\n", trim($response));
         $this->assertCount(3, $parts);
-        $this->assertEquals(
+        $this->assertSame(
             "1000 {$this->rowLabel} deleted.",
             explode('] ', $parts[0])[1]
         );
-        $this->assertEquals(
+        $this->assertSame(
             "7 {$this->rowLabel} deleted.",
             explode('] ', $parts[1])[1]
         );
-        $this->assertEquals(
+        $this->assertSame(
             "Total 1007 {$this->rowLabel} deleted.",
             explode('] ', $parts[2])[1]
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -170,11 +170,11 @@ abstract class AbstractExpireCommandTestCase extends \PHPUnit\Framework\TestCase
         // runs, so let's split things apart to work around that...
         $parts = explode("\n", trim($response));
         $this->assertCount(1, $parts);
-        $this->assertEquals(
+        $this->assertSame(
             "Total 0 {$this->rowLabel} deleted.",
             explode('] ', $parts[0])[1]
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**

@@ -200,7 +200,7 @@ class BackendTest extends TestCase
         $response = $back->search(new Query(), 0, 0);
         $facets = $response->getFacets();
         $this->assertIsArray($facets);
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'topic_facet' => [
                     'Research' => 16,
@@ -231,7 +231,7 @@ class BackendTest extends TestCase
         $facets = $response->getPivotFacets();
         $this->assertIsArray($facets);
 
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'A - General Works' => [
                     'field' => 'callnumber-first',
@@ -367,7 +367,7 @@ class BackendTest extends TestCase
         $response = $back->search(new Query(), 0, 0);
         $facets = $response->getQueryFacets();
         $this->assertIsArray($facets);
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'publishDate:[* TO 2000]' => 45,
                 'publishDate:[2001 TO 2010]' => 11,

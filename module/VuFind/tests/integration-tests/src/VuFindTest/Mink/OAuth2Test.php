@@ -245,12 +245,12 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
 
         $this->waitForPageLoad($page);
         [$host] = explode('?', $session->getCurrentUrl());
-        $this->assertEquals($redirectUri, $host);
+        $this->assertSame($redirectUri, $host);
 
         parse_str(parse_url($session->getCurrentUrl(), PHP_URL_QUERY), $queryParams);
         $this->assertArrayHasKey('code', $queryParams);
         $this->assertArrayHasKey('state', $queryParams);
-        $this->assertEquals($state, $queryParams['state']);
+        $this->assertSame($state, $queryParams['state']);
 
         // Fetch and check idToken with back-channel requests:
         $tokenParams = [
@@ -266,7 +266,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
             'application/x-www-form-urlencoded'
         );
 
-        $this->assertEquals(200, $response->getStatusCode());
+        $this->assertSame(200, $response->getStatusCode());
         $tokenResult = json_decode($response->getBody()->getContents(), true);
         $this->assertArrayHasKey('id_token', $tokenResult);
         $this->assertArrayHasKey('token_type', $tokenResult);
@@ -274,7 +274,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         // Fetch public key to verify idToken:
         $response = $this->httpGet($this->getVuFindUrl() . '/OAuth2/jwks');
         $jwksBody = $response->getBody()->getContents();
-        $this->assertEquals(200, $response->getStatusCode(), "Response: $jwksBody");
+        $this->assertSame(200, $response->getStatusCode(), "Response: $jwksBody");
         $jwks = json_decode($jwksBody, true);
         $this->assertArrayHasKey('n', $jwks['keys'][0] ?? []);
 
@@ -316,7 +316,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         $userInfoBody = $response->getBody()->getContents();
-        $this->assertEquals(200, $response->getStatusCode(), "Response: $userInfoBody");
+        $this->assertSame(200, $response->getStatusCode(), "Response: $userInfoBody");
 
         $userInfo = json_decode($userInfoBody, true);
         $this->assertEquals($idToken->sub, $userInfo['sub']);
@@ -348,7 +348,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
             'application/x-www-form-urlencoded'
         );
         $tokenBody = $response->getBody()->getContents();
-        $this->assertEquals(401, $response->getStatusCode(), "Response: $tokenBody");
+        $this->assertSame(401, $response->getStatusCode(), "Response: $tokenBody");
         $tokenResult = json_decode($tokenBody, true);
         $this->assertArrayHasKey('error', $tokenResult);
         $this->assertEquals('invalid_client', $tokenResult['error']);
@@ -392,13 +392,13 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.form-oauth2-authorize button.btn.btn-default');
 
         [$host] = explode('?', $session->getCurrentUrl());
-        $this->assertEquals($redirectUri, $host);
+        $this->assertSame($redirectUri, $host);
 
         parse_str(parse_url($session->getCurrentUrl(), PHP_URL_QUERY), $queryParams);
         $this->assertArrayHasKey('error', $queryParams);
         $this->assertArrayHasKey('state', $queryParams);
-        $this->assertEquals($state, $queryParams['state']);
-        $this->assertEquals('access_denied', $queryParams['error']);
+        $this->assertSame($state, $queryParams['state']);
+        $this->assertSame('access_denied', $queryParams['error']);
     }
 
     /**
@@ -436,11 +436,11 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         $this->submitLoginForm($page, false);
 
         [$host] = explode('?', $session->getCurrentUrl());
-        $this->assertEquals($redirectUri, $host);
+        $this->assertSame($redirectUri, $host);
 
         parse_str(parse_url($session->getCurrentUrl(), PHP_URL_QUERY), $queryParams);
         $this->assertArrayHasKey('error', $queryParams);
-        $this->assertEquals('invalid_scope', $queryParams['error']);
+        $this->assertSame('invalid_scope', $queryParams['error']);
     }
 
     /**
@@ -544,7 +544,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
 
         $response = $this->httpGet($this->getVuFindUrl() . '/.well-known/openid-configuration');
         $contentTypeHeader = $response->getHeader('Content-Type');
-        $this->assertEquals(['application/json'], $contentTypeHeader);
+        $this->assertSame(['application/json'], $contentTypeHeader);
         $json = $response->getBody()->getContents();
         $this->assertJsonStringEqualsJsonString(json_encode($expected), $json);
     }

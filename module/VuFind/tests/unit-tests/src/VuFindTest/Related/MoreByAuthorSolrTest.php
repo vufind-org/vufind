@@ -79,7 +79,7 @@ class MoreByAuthorSolrTest extends \PHPUnit\Framework\TestCase
             ->willReturn($commandObj);
         $related = new MoreByAuthorSolr($service);
         $related->init('', $driver);
-        $this->assertEquals('Smith, John', $related->getName());
+        $this->assertSame('Smith, John', $related->getName());
         $this->assertEquals([$driver2], $related->getResults());
     }
 }

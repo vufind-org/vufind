@@ -59,13 +59,13 @@ class ThemeMixinCommandTest extends \PHPUnit\Framework\TestCase
         $command = new ThemeMixinCommand($generator);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
-        $this->assertEquals(
+        $this->assertSame(
             "\tNo theme mixin name provided, using \"custom\"\n"
             . "\tFinished. Add to your theme.config.php 'mixins' setting "
             . "to activate.\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -86,8 +86,8 @@ class ThemeMixinCommandTest extends \PHPUnit\Framework\TestCase
         $command = new ThemeMixinCommand($generator);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['name' => 'foo']);
-        $this->assertEquals("fake error\n", $commandTester->getDisplay());
-        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertSame("fake error\n", $commandTester->getDisplay());
+        $this->assertSame(1, $commandTester->getStatusCode());
     }
 
     /**

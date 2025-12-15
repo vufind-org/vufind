@@ -93,8 +93,8 @@ final class EmailAuthenticationTest extends \VuFindTest\Integration\MinkTestCase
         $email = $this->getLoggedEmail();
         $headers = $email->getHeaders();
         $body = $email->getBody()->getBody();
-        $this->assertEquals('From: noreply@vufind.org', $headers->get('from')->toString());
-        $this->assertEquals('To: username1@ignore.com', $headers->get('to')->toString());
+        $this->assertSame('From: noreply@vufind.org', $headers->get('from')->toString());
+        $this->assertSame('To: username1@ignore.com', $headers->get('to')->toString());
         preg_match('/Link to login: <(http.*)>/', $body, $matches);
         $loginLink = $matches[1];
 
@@ -188,8 +188,8 @@ final class EmailAuthenticationTest extends \VuFindTest\Integration\MinkTestCase
         $email = $this->getLoggedEmail();
         $headers = $email->getHeaders();
         $body = $email->getBody()->getBody();
-        $this->assertEquals('From: noreply@vufind.org', $headers->get('from')->toString());
-        $this->assertEquals('To: catuser@vufind.org', $headers->get('to')->toString());
+        $this->assertSame('From: noreply@vufind.org', $headers->get('from')->toString());
+        $this->assertSame('To: catuser@vufind.org', $headers->get('to')->toString());
         preg_match('/Link to login: <(http.*)>/', $body, $matches);
         $loginLink = $matches[1];
 

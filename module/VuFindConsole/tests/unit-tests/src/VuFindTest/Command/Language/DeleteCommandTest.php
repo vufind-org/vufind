@@ -118,8 +118,8 @@ class DeleteCommandTest extends \PHPUnit\Framework\TestCase
             );
         $commandTester = new CommandTester($command);
         $commandTester->execute(['target' => $domain . '::bar']);
-        $this->assertEquals("Processing en.ini...\n", $commandTester->getDisplay());
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame("Processing en.ini...\n", $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -132,11 +132,11 @@ class DeleteCommandTest extends \PHPUnit\Framework\TestCase
         $command = $this->getMockCommand();
         $commandTester = new CommandTester($command);
         $commandTester->execute(['target' => 'foo::barzap']);
-        $this->assertEquals(
+        $this->assertSame(
             "Processing en.ini...\nSource key not found.\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**

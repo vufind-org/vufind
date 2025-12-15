@@ -137,7 +137,7 @@ class NonTabRecordActionCommandTest extends \PHPUnit\Framework\TestCase
                 'target_module' => 'xyzzy',
             ]
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**

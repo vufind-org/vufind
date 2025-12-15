@@ -90,7 +90,7 @@ class UnicornTest extends \VuFindTest\Unit\ILSDriverTestCase
             $this->callMethod($this->driver, 'getMarcHoldings', [$marc])
         );
 
-        $this->assertEquals(
+        $this->assertSame(
             [
                 [
                     'library_code' => 'library',

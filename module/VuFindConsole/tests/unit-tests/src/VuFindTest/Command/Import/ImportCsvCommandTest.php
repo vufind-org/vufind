@@ -87,11 +87,11 @@ class ImportCsvCommandTest extends \PHPUnit\Framework\TestCase
                 'ini_file' => 'bar.ini',
             ]
         );
-        $this->assertEquals(
+        $this->assertSame(
             "Successfully imported foo.csv...\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -120,11 +120,11 @@ class ImportCsvCommandTest extends \PHPUnit\Framework\TestCase
                 '--test-only' => true,
             ]
         );
-        $this->assertEquals(
+        $this->assertSame(
             "Fatal error: foo\nPrevious exception: bar\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertSame(1, $commandTester->getStatusCode());
     }
 
     /**

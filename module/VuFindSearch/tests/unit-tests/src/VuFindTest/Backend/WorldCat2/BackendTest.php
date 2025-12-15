@@ -64,7 +64,7 @@ class BackendTest extends TestCase
             ->willReturn($mockResponse);
 
         $back = new Backend($conn);
-        $this->assertEquals($mockResponse, $back->getHoldings($params));
+        $this->assertSame($mockResponse, $back->getHoldings($params));
     }
 
     /**

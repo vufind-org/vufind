@@ -137,7 +137,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         if ($expectedStatus) {
             [, $query] = explode('?', $href);
             parse_str($query, $queryParams);
-            $this->assertEquals($expectedStatus, $queryParams['status']);
+            $this->assertSame($expectedStatus, $queryParams['status']);
         }
         $placeHold->click();
 

@@ -416,11 +416,11 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
             $this->helper->formatDisplayText('0/Sound/'),
             '0/Sound/'
         );
-        $this->assertEquals(
+        $this->assertSame(
             (string)$this->helper->formatDisplayText('1/Sound/Noisy/', true),
             '1/Sound/Noisy/'
         );
-        $this->assertEquals(
+        $this->assertSame(
             (string)$this->helper->formatDisplayText('1/Sound/Noisy/', true, ' - '),
             '1/Sound/Noisy/'
         );
@@ -465,14 +465,14 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
         $result = $this->helper->getFilterStringParts('0/Foo/');
         $this->assertIsArray($result);
         $this->assertCount(1, $result);
-        $this->assertEquals('0/Foo/', (string)$result[0]);
+        $this->assertSame('0/Foo/', (string)$result[0]);
         $this->assertEquals('Foo', $result[0]->getDisplayString());
 
         $result = $this->helper->getFilterStringParts('1/Foo/Bar/');
         $this->assertIsArray($result);
         $this->assertCount(2, $result);
-        $this->assertEquals('0/Foo/', (string)$result[0]);
-        $this->assertEquals('1/Foo/Bar/', (string)$result[1]);
+        $this->assertSame('0/Foo/', (string)$result[0]);
+        $this->assertSame('1/Foo/Bar/', (string)$result[1]);
         $this->assertEquals('Foo', $result[0]->getDisplayString());
         $this->assertEquals('Bar', $result[1]->getDisplayString());
 
