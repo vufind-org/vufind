@@ -82,7 +82,7 @@ abstract class AbstractSolrBackendFactory extends AbstractBackendFactory
      *
      * @var \Psr\Log\LoggerInterface
      */
-    protected \Laminas\Log\LoggerInterface $logger;
+    protected \Psr\Log\LoggerInterface $logger;
 
     /**
      * Primary configuration file identifier.

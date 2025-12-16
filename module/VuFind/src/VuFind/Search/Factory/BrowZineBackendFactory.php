@@ -54,7 +54,7 @@ class BrowZineBackendFactory extends AbstractBackendFactory
      *
      * @var \Psr\Log\LoggerInterface
      */
-    protected \Laminas\Log\LoggerInterface $logger;
+    protected \Psr\Log\LoggerInterface $logger;
 
     /**
      * BrowZine configuration

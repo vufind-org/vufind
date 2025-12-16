@@ -51,7 +51,7 @@ class Options extends \VuFind\Search\Solr\Options
      *
      * @var string
      */
-    protected $searchIni = 'Blender';
+    protected string $searchIni = 'Blender';
 
     /**
      * Configuration file to read facet settings from
@@ -60,21 +60,21 @@ class Options extends \VuFind\Search\Solr\Options
      *
      * @var string
      */
-    protected $facetsIni = 'Blender';
+    protected string $facetsIni = 'Blender';
 
     /**
      * The route name for the search results action.
      *
      * @var string
      */
-    protected $searchAction = 'blender-results';
+    protected string $searchAction = 'blender-results';
 
     /**
      * The route name for the advanced search action.
      *
      * @var string
      */
-    protected $advancedSearchAction = 'blender-advanced';
+    protected string $advancedSearchAction = 'blender-advanced';
 
     /**
      * Constructor

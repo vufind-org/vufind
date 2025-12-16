@@ -59,7 +59,7 @@ class PrimoBackendFactory extends AbstractBackendFactory
      *
      * @var \Psr\Log\LoggerInterface
      */
-    protected \Laminas\Log\LoggerInterface $logger;
+    protected \Psr\Log\LoggerInterface $logger;
 
     /**
      * Primo configuration
