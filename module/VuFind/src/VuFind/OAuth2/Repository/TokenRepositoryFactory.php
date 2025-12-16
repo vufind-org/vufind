@@ -43,6 +43,8 @@ use Psr\Container\ContainerInterface;
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
+ *
+ * @deprecated Use \VuFind\ServiceManager\Factory\AutowiringFactory
  */
 class TokenRepositoryFactory implements FactoryInterface
 {
