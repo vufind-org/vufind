@@ -170,7 +170,7 @@ class RetryTraitTest extends \PHPUnit\Framework\TestCase
         } catch (\Exception $e) {
             // Do nothing
         }
-        $this->assertEquals(2, $retries);
+        $this->assertSame(2, $retries);
     }
 
     /**

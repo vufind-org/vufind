@@ -71,7 +71,7 @@ class InjectHighlightingListenerTest extends \PHPUnit\Framework\TestCase
     protected function setUp(): void
     {
         $this->backend = $this->createMock(\VuFindSearch\Backend\Solr\Backend::class);
-        $this->backend->expects($this->any())->method('getIdentifier')->willReturn('foo');
+        $this->backend->method('getIdentifier')->willReturn('foo');
         $this->listener = new InjectHighlightingListener($this->backend, 'bar,baz', ['xyzzy' => 'true']);
     }
 
@@ -110,7 +110,7 @@ class InjectHighlightingListenerTest extends \PHPUnit\Framework\TestCase
         $this->backend->expects($this->once())->method('getQueryBuilder')
             ->willReturn($mockQueryBuilder);
         $mockQueryBuilder->expects($this->once())->method('setFieldsToHighlight')
-            ->with($this->equalTo('bar,baz'));
+            ->with('bar,baz');
         $event = new Event(
             Service::EVENT_PRE,
             $this->backend,

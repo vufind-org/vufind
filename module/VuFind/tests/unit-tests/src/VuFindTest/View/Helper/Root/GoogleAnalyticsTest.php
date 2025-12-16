@@ -63,7 +63,7 @@ class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
                 //-->
             </script>
             JS;
-        $this->assertEquals($expected, $this->renderGA('myfakekey'));
+        $this->assertSame($expected, $this->renderGA('myfakekey'));
     }
 
     /**
@@ -89,7 +89,7 @@ class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
                 //-->
             </script>
             JS;
-        $this->assertEquals($expected, $this->renderGA('myfakekey', $options));
+        $this->assertSame($expected, $this->renderGA('myfakekey', $options));
     }
 
     /**
@@ -99,18 +99,18 @@ class GoogleAnalyticsTest extends \PHPUnit\Framework\TestCase
      */
     public function testDisabled(): void
     {
-        $this->assertEquals('', $this->renderGA(false));
+        $this->assertSame('', $this->renderGA(null));
     }
 
     /**
      * Render the GA code
      *
-     * @param string $key     GA key (false for disabled)
-     * @param array  $options Options for GA helper
+     * @param ?string $key     GA key (null for disabled)
+     * @param array   $options Options for GA helper
      *
      * @return string
      */
-    protected function renderGA(string $key, $options = []): string
+    protected function renderGA(?string $key, array $options = []): string
     {
         $helper = new GoogleAnalytics($key, $options);
         $helper->setView($this->getPhpRenderer());

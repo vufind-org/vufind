@@ -190,9 +190,7 @@ class CursorMarkIdFetcherTest extends \PHPUnit\Framework\TestCase
         $expectedIds2 = $this->addRecordsToCollection($records2, $this->countPerPage);
         $expectedMods2 = array_map($nullify, $expectedIds2);
         $service = $this->getMockService();
-        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
         $commandObj->expects($this->exactly(2))->method('getResult')
             ->willReturnOnConsecutiveCalls($records1, $records2);
 
@@ -236,7 +234,7 @@ class CursorMarkIdFetcherTest extends \PHPUnit\Framework\TestCase
             )
         );
         // If we send the same cursor mark a second time, we should get no results...
-        $this->assertEquals(
+        $this->assertSame(
             ['ids' => []],
             $fetcher->getIdsFromBackend(
                 $this->backendId,

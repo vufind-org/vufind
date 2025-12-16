@@ -55,9 +55,9 @@ class DatabaseTest extends \VuFindTest\Unit\SessionHandlerTestCase
         $handler = $this->getHandler();
         $session = $this->getMockSessionService();
         $session->expects($this->once())->method('readSession')
-            ->with($this->equalTo('foo'), $this->equalTo(3600))
+            ->with('foo', 3600)
             ->willReturn('bar');
-        $this->assertEquals('bar', $handler->read('foo'));
+        $this->assertSame('bar', $handler->read('foo'));
     }
 
     /**
@@ -70,9 +70,9 @@ class DatabaseTest extends \VuFindTest\Unit\SessionHandlerTestCase
         $handler = $this->getHandler(new Config(['lifetime' => 1000]));
         $session = $this->getMockSessionService();
         $session->expects($this->once())->method('readSession')
-            ->with($this->equalTo('foo'), $this->equalTo(1000))
+            ->with('foo', 1000)
             ->willReturn('bar');
-        $this->assertEquals('bar', $handler->read('foo'));
+        $this->assertSame('bar', $handler->read('foo'));
     }
 
     /**
@@ -85,9 +85,9 @@ class DatabaseTest extends \VuFindTest\Unit\SessionHandlerTestCase
         $handler = $this->getHandler();
         $session = $this->getMockSessionService();
         $session->expects($this->once())->method('garbageCollect')
-            ->with($this->equalTo(3600))
+            ->with(3600)
             ->willReturn(150);
-        $this->assertEquals(150, $handler->gc(3600));
+        $this->assertSame(150, $handler->gc(3600));
     }
 
     /**
@@ -100,7 +100,7 @@ class DatabaseTest extends \VuFindTest\Unit\SessionHandlerTestCase
         $handler = $this->getHandler();
         $session = $this->getMockSessionService();
         $session->expects($this->once())->method('writeSession')
-            ->with($this->equalTo('foo'), $this->equalTo('stuff'))
+            ->with('foo', 'stuff')
             ->willReturn(true);
         $this->assertTrue($handler->write('foo', 'stuff'));
     }
@@ -116,7 +116,7 @@ class DatabaseTest extends \VuFindTest\Unit\SessionHandlerTestCase
         $this->setUpDestroyExpectations('foo');
         $session = $this->getMockSessionService();
         $session->expects($this->once())->method('destroySession')
-            ->with($this->equalTo('foo'));
+            ->with('foo');
         $this->assertTrue($handler->destroy('foo'));
     }
 

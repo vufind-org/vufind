@@ -73,7 +73,7 @@ class FollowupTest extends \PHPUnit\Framework\TestCase
         // standard controller-provided URL retrieval:
         $this->assertEquals('http://localhost/default-url', $f->retrieve('url'));
         // no parameters retrieves session object:
-        $this->assertEquals(Container::class, get_class($f->retrieve()));
+        $this->assertSame(Container::class, get_class($f->retrieve()));
         // test defaulting behavior:
         $this->assertEquals('foo', $f->retrieve('bar', 'foo'));
     }
@@ -103,9 +103,8 @@ class FollowupTest extends \PHPUnit\Framework\TestCase
     protected function getMockController(
         $url = 'http://localhost/default-url'
     ): \VuFind\Controller\AbstractBase {
-        $controller = $this->getMockBuilder(\VuFind\Controller\AbstractBase::class)
-            ->disableOriginalConstructor()->getMock();
-        $controller->expects($this->any())->method('getServerUrl')->willReturn($url);
+        $controller = $this->createMock(\VuFind\Controller\AbstractBase::class);
+        $controller->method('getServerUrl')->willReturn($url);
         return $controller;
     }
 }

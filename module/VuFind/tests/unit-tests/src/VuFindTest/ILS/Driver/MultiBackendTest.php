@@ -369,8 +369,8 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
         $ils2->expects($this->once())
             ->method('getHolding')
             ->with(
-                $this->equalTo('123456'),
-                $this->equalTo(['cat_username' => 'test.patron'])
+                '123456',
+                ['cat_username' => 'test.patron']
             )
             ->willReturn(
                 [
@@ -530,7 +530,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
         $ils1->expects($this->exactly(2))
             ->method('getStatuses')
             ->with(
-                $this->equalTo(['123456', '098765'])
+                ['123456', '098765']
             )
             ->willReturn(
                 [
@@ -557,7 +557,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
         $ils2->expects($this->exactly(1))
             ->method('getStatuses')
             ->with(
-                $this->equalTo(['654321', '567890'])
+                ['654321', '567890']
             )
             ->willReturn(
                 [
@@ -581,14 +581,13 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
         $ils3->expects($this->exactly(1))
             ->method('getStatuses')
             ->with(
-                $this->equalTo(['654321', '567890'])
+                ['654321', '567890']
             )
             ->willThrowException(
                 $exception
             );
 
-        $sm = $this->getMockBuilder(\VuFind\ILS\Driver\PluginManager::class)
-            ->disableOriginalConstructor()->getMock();
+        $sm = $this->createMock(\VuFind\ILS\Driver\PluginManager::class);
         $sm->expects($this->exactly(2))
             ->method('get')
             ->with(
@@ -627,8 +626,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
         $return = $driver->getStatuses($ids);
         $this->assertEquals($expectedReturn, $return);
 
-        $sm = $this->getMockBuilder(\VuFind\ILS\Driver\PluginManager::class)
-            ->disableOriginalConstructor()->getMock();
+        $sm = $this->createMock(\VuFind\ILS\Driver\PluginManager::class);
         $sm->expects($this->exactly(2))
             ->method('get')
             ->with(
@@ -770,7 +768,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
         $ILS = $this->getMockILS('Voyager', ['getNewItems', 'init']);
         $ILS->expects($this->once())
             ->method('getNewItems')
-            ->with($this->equalTo('1'), $this->equalTo('10'), $this->equalTo('5'), $this->equalTo('0'))
+            ->with('1', '10', '5', '0')
             ->willReturn($return);
 
         $sm = $this->getMockSM($this->once(), 'Voyager', $ILS);
@@ -934,7 +932,7 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
         $ILS = $this->getMockILS('Voyager', ['findReserves', 'init']);
         $ILS->expects($this->once())
             ->method('findReserves')
-            ->with($this->equalTo('course'), $this->equalTo('inst'), $this->equalTo('dept'))
+            ->with('course', 'inst', 'dept')
             ->willReturn($reservesReturn);
 
         $sm = $this->getMockSM($this->once(), 'Voyager', $ILS);
@@ -2548,29 +2546,23 @@ class MultiBackendTest extends AbstractMultiDriverTestCase
      */
     protected function getMockILSAuthenticator($userSource = '')
     {
-        $mockAuth = $this->getMockBuilder(\VuFind\Auth\ILSAuthenticator::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $mockAuth = $this->createMock(\VuFind\Auth\ILSAuthenticator::class);
         if ($userSource) {
-            $mockAuth->expects($this->any())
-                ->method('storedCatalogLogin')
+            $mockAuth->method('storedCatalogLogin')
                 ->willReturn(
                     $this->getPatron('username', $userSource)
                 );
-            $mockAuth->expects($this->any())
-                ->method('getStoredCatalogCredentials')
+            $mockAuth->method('getStoredCatalogCredentials')
                 ->willReturn(
                     $this->getPatron('username', $userSource)
                 );
         } elseif (null === $userSource) {
             $e = new ILSException('Simulated exception from ILSAuthenticator');
-            $mockAuth->expects($this->any())
-                ->method('storedCatalogLogin')
+            $mockAuth->method('storedCatalogLogin')
                 ->willThrowException(
                     $e
                 );
-            $mockAuth->expects($this->any())
-                ->method('getStoredCatalogCredentials')
+            $mockAuth->method('getStoredCatalogCredentials')
                 ->willThrowException(
                     $e
                 );

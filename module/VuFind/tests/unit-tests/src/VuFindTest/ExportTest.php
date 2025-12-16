@@ -134,7 +134,7 @@ class ExportTest extends \PHPUnit\Framework\TestCase
                 'combineXpath' => '/marc21:collection/marc21:record',
             ],
         ];
-        $this->assertEquals(
+        $this->assertSame(
             "<?xml version=\"1.0\"?>\n"
             . '<collection xmlns="http://www.loc.gov/MARC21/slim">'
             . '<record><id>a</id></record><record><id>b</id></record></collection>',
@@ -299,17 +299,13 @@ class ExportTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetBulkUrl(): void
     {
-        $url = $this->getMockBuilder(\Laminas\View\Helper\Url::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $url = $this->createMock(\Laminas\View\Helper\Url::class);
         $url->expects($this->once())->method('__invoke')
-            ->with($this->equalTo('cart-doexport'))
+            ->with('cart-doexport')
             ->willReturn('/cart/doExport');
-        $serverUrl = $this->getMockBuilder(\Laminas\View\Helper\ServerUrl::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $serverUrl = $this->createMock(\Laminas\View\Helper\ServerUrl::class);
         $serverUrl->expects($this->once())->method('__invoke')
-            ->with($this->equalTo('/cart/doExport'))
+            ->with('/cart/doExport')
             ->willReturn('http://localhost/cart/doExport');
         $renderer = $this->createMock(PhpRenderer::class);
         $this->expectConsecutiveCalls($renderer, 'plugin', [['serverurl'], ['url']], [$serverUrl, $url]);

@@ -48,9 +48,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
     public function testCart()
     {
         // Create a mock cart object:
-        $cart = $this->getMockBuilder(\VuFind\Cart::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $cart = $this->createMock(\VuFind\Cart::class);
 
         // Create a helper object:
         $helper = new \VuFind\View\Helper\Root\Cart($cart);

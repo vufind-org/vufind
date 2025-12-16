@@ -269,9 +269,9 @@ class Results extends \VuFind\Search\Base\Results
      *
      * @param QueryInterface $query Bad query
      *
-     * @return bool|QueryInterface  Fixed query, or false if no solution is found.
+     * @return ?QueryInterface  Fixed query, or null if no solution is found.
      */
-    protected function fixBadQuery(QueryInterface $query): bool|QueryInterface
+    protected function fixBadQuery(QueryInterface $query): ?QueryInterface
     {
         if ($query instanceof QueryGroup) {
             return $this->fixBadQueryGroup($query);
@@ -288,7 +288,7 @@ class Results extends \VuFind\Search\Base\Results
                 return $query;
             }
         }
-        return false;
+        return null;
     }
 
     /**
@@ -296,9 +296,9 @@ class Results extends \VuFind\Search\Base\Results
      *
      * @param QueryGroup $query Query to fix
      *
-     * @return bool|QueryGroup  Fixed query, or false if no solution is found.
+     * @return ?QueryGroup  Fixed query, or null if no solution is found.
      */
-    protected function fixBadQueryGroup(QueryGroup $query): bool|QueryGroup
+    protected function fixBadQueryGroup(QueryGroup $query): ?QueryGroup
     {
         $newQueries = [];
         $fixed = false;
@@ -323,7 +323,7 @@ class Results extends \VuFind\Search\Base\Results
         }
 
         // If we got this far, nothing was changed -- report failure:
-        return false;
+        return null;
     }
 
     /**
@@ -457,7 +457,7 @@ class Results extends \VuFind\Search\Base\Results
     /**
      * Returns data on pivot facets for the last search.
      *
-     * @return array Flare-formatted object
+     * @return array Flare-formatted array
      */
     public function getPivotFacetList(): array
     {

@@ -123,7 +123,7 @@ class TurnstileTest extends \PHPUnit\Framework\TestCase
             ],
         ];
 
-        $cache = $this->getMockBuilder(\Laminas\Cache\Storage\StorageInterface::class)->getMock();
+        $cache = $this->createMock(\Laminas\Cache\Storage\StorageInterface::class);
         $cache->method('getItem')->willReturn($cacheResult);
 
         $turnstile = new Turnstile($config, $cache);

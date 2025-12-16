@@ -58,10 +58,10 @@ class HarvestOaiCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
         $expectedIni = $pathResolver->getConfigPath('oai.ini', 'harvest');
-        $this->assertEquals(
+        $this->assertSame(
             "Please add OAI-PMH settings to $expectedIni.\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertSame(1, $commandTester->getStatusCode());
     }
 }

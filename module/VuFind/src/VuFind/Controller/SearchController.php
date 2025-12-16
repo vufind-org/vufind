@@ -32,9 +32,12 @@ namespace VuFind\Controller;
 use VuFind\Exception\Forbidden as ForbiddenException;
 use VuFind\Exception\Mail as MailException;
 use VuFind\Search\Factory\UrlQueryHelperFactory;
+use VuFind\Search\NewItemsHelper;
+use VuFind\Search\ReservesHelper;
 
 use function array_slice;
 use function count;
+use function intval;
 
 /**
  * Redirects the user to the appropriate default VuFind action.
@@ -239,14 +242,15 @@ class SearchController extends AbstractSolrSearch
             return $this->forwardTo('Search', 'NewItemResults');
         }
 
+        $newItemsHelper = $this->getService(NewItemsHelper::class);
         $view = $this->createViewModel(
             [
-                'defaultSort' => $this->newItems()->getDefaultSort(),
-                'fundList' => $this->newItems()->getFundList(),
-                'ranges' => $this->newItems()->getRanges(),
+                'defaultSort' => $newItemsHelper->getDefaultSort(),
+                'fundList' => $newItemsHelper->getFundList(),
+                'ranges' => $newItemsHelper->getRanges(),
             ]
         );
-        if ($this->newItems()->includeFacets()) {
+        if ($newItemsHelper->includeFacets()) {
             $view->options = $this->getService(\VuFind\Search\Options\PluginManager::class)
                 ->get($this->searchClassId);
             $this->addFacetDetailsToView($view, 'NewItems');
@@ -262,12 +266,13 @@ class SearchController extends AbstractSolrSearch
     public function newitemresultsAction()
     {
         // Retrieve new item list:
-        $range = $this->params()->fromQuery('range');
+        $range = intval($this->params()->fromQuery('range', 0));
         $dept = $this->params()->fromQuery('department');
 
         // Validate the range parameter -- it should not exceed the greatest
         // configured value:
-        $maxAge = $this->newItems()->getMaxAge();
+        $newItemsHelper = $this->getService(NewItemsHelper::class);
+        $maxAge = $newItemsHelper->getMaxAge();
         if ($maxAge > 0 && $range > $maxAge) {
             $range = $maxAge;
         }
@@ -275,14 +280,13 @@ class SearchController extends AbstractSolrSearch
         // Are there "new item" filter queries specified in the config file?
         // If so, load them now; we may add more values. These will be applied
         // later after the whole list is collected.
-        $hiddenFilters = $this->newItems()->getHiddenFilters();
+        $hiddenFilters = $newItemsHelper->getHiddenFilters();
 
         // Depending on whether we're in ILS or Solr mode, we need to do some
         // different processing here to retrieve the correct items:
-        if ($this->newItems()->getMethod() == 'ils') {
+        if ($newItemsHelper->getMethod() == 'ils') {
             // Use standard search action with override parameter to show results:
-            $bibIDs = $this->newItems()->getBibIDsFromCatalog(
-                $this->getILS(),
+            $bibIDs = $newItemsHelper->getBibIDsFromCatalog(
                 $this->getResultsManager()->get('Solr')->getParams(),
                 $range,
                 $dept,
@@ -291,7 +295,7 @@ class SearchController extends AbstractSolrSearch
             $this->getRequest()->getQuery()->set('overrideIds', $bibIDs);
         } else {
             // Use a Solr filter to show results:
-            $hiddenFilters[] = $this->newItems()->getSolrFilter($range);
+            $hiddenFilters[] = $newItemsHelper->getSolrFilter($range);
         }
 
         // If we found hidden filters above, apply them now:
@@ -347,7 +351,7 @@ class SearchController extends AbstractSolrSearch
 
         // No params?  Show appropriate form (varies depending on whether we're
         // using driver-based or Solr-based reserves searching).
-        if ($this->reserves()->useIndex()) {
+        if ($this->getService(ReservesHelper::class)->useIndex()) {
             return $this->forwardTo('Search', 'ReservesSearch');
         }
 
@@ -417,7 +421,7 @@ class SearchController extends AbstractSolrSearch
         $course = $this->params()->fromQuery('course');
         $inst = $this->params()->fromQuery('inst');
         $dept = $this->params()->fromQuery('dept');
-        $result = $this->reserves()->findReserves($course, $inst, $dept);
+        $result = $this->getService(ReservesHelper::class)->findReserves($course, $inst, $dept);
 
         // Build a list of unique IDs
         $callback = function ($i) {

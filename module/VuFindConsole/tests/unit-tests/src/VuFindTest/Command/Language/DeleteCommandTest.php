@@ -109,17 +109,17 @@ class DeleteCommandTest extends \PHPUnit\Framework\TestCase
         $expectedPath = realpath($this->languageFixtureDir) . '/' . $domain . '/en.ini';
         $normalizer = $this->getMockNormalizer();
         $normalizer->expects($this->once())->method('normalizeFile')
-            ->with($this->equalTo($expectedPath));
+            ->with($expectedPath);
         $command = $this->getMockCommand($normalizer);
         $command->expects($this->once())->method('writeFileToDisk')
             ->with(
-                $this->equalTo($expectedPath),
-                $this->equalTo('')
+                $expectedPath,
+                ''
             );
         $commandTester = new CommandTester($command);
         $commandTester->execute(['target' => $domain . '::bar']);
-        $this->assertEquals("Processing en.ini...\n", $commandTester->getDisplay());
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame("Processing en.ini...\n", $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -132,11 +132,11 @@ class DeleteCommandTest extends \PHPUnit\Framework\TestCase
         $command = $this->getMockCommand();
         $commandTester = new CommandTester($command);
         $commandTester->execute(['target' => 'foo::barzap']);
-        $this->assertEquals(
+        $this->assertSame(
             "Processing en.ini...\nSource key not found.\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**

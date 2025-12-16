@@ -908,8 +908,11 @@ abstract class Results
      *
      * @return array Facets data arrays
      */
-    protected function initializeFacetResults(array $facetList, array $filter, object $options): array
-    {
+    protected function initializeFacetResults(
+        array $facetList,
+        array $filter,
+        \VuFind\Search\Base\Options $options
+    ): array {
         $result = [];
         $dateRangeFields = $options instanceof DateRangeOptionsInterface
             ? $options->getDateRangeFacets() + $options->getFullDateRangeFacets()
@@ -1021,8 +1024,11 @@ abstract class Results
      *
      * @return void
      */
-    protected function setDisplayTextForFacetValues(array &$result, array $hierarchicalFacets, object $options): void
-    {
+    protected function setDisplayTextForFacetValues(
+        array &$result,
+        array $hierarchicalFacets,
+        \VuFind\Search\Base\Options $options
+    ): void {
         $translatedFacets = $options->getTranslatedFacets();
         foreach ($result as $field => $fieldResult) {
             $resultList = $fieldResult['list'];
@@ -1061,8 +1067,11 @@ abstract class Results
      *
      * @return void
      */
-    protected function buildHierarchicalFacets(array &$result, array $hierarchicalFacets, object $options): void
-    {
+    protected function buildHierarchicalFacets(
+        array &$result,
+        array $hierarchicalFacets,
+        \VuFind\Search\Base\Options $options
+    ): void {
         $hierarchicalFacetSortSettings
             = is_callable([$options, 'getHierarchicalFacetSortSettings'])
             ? $options->getHierarchicalFacetSortSettings()

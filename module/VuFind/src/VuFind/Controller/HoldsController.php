@@ -36,6 +36,7 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 use VuFind\Db\Type\AuditEventSubtype;
 use VuFind\Db\Type\AuditEventType;
 use VuFind\Exception\ILS as ILSException;
+use VuFind\ILS\Logic\RecordsHelper;
 use VuFind\Validator\CsrfInterface;
 
 use function count;
@@ -198,9 +199,9 @@ class HoldsController extends AbstractBase
             // locations, they are not supported and we should ignore them.
         }
 
-        $view->recordList = $this->ilsRecords()->getDrivers($driversNeeded);
-        $view->accountStatus = $this->ilsRecords()
-            ->collectRequestStats($view->recordList);
+        $recordsHelper = $this->getService(RecordsHelper::class);
+        $view->recordList = $recordsHelper->getDrivers($driversNeeded);
+        $view->accountStatus = $recordsHelper->collectRequestStats($view->recordList);
         return $view;
     }
 

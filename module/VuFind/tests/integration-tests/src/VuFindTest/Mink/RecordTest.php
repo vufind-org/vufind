@@ -65,7 +65,7 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
             [$session, 'getCurrentUrl']
         );
         $staffViewTable = $this->findCss($page, '.record-tabs .details-tab table.staff-view--marc');
-        $this->assertEquals('LEADER', substr($staffViewTable->getText(), 0, 6));
+        $this->assertSame('LEADER', substr($staffViewTable->getText(), 0, 6));
     }
 
     /**

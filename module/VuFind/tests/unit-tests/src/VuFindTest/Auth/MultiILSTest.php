@@ -143,7 +143,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
         $response = [];
         $driver = $this->getMockMultiBackend();
         $driver->expects($this->once())->method('patronLogin')
-            ->with($this->equalTo('ils1.testuser'), $this->equalTo('testpass'))
+            ->with('ils1.testuser', 'testpass')
             ->willReturn($response);
         $this->getMultiILS($driver)->authenticate($this->getLoginRequest());
     }
@@ -161,7 +161,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
         ];
         $driver = $this->getMockMultiBackend();
         $driver->expects($this->once())->method('patronLogin')
-            ->with($this->equalTo('ils1.testuser'), $this->equalTo('testpass'))
+            ->with('ils1.testuser', 'testpass')
             ->willReturn($response);
         $mockUser = $this->getMockUser();
         $mockUser->expects($this->once())->method('setCatUsername')->with('testuser');
@@ -188,7 +188,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
         ];
         $driver = $this->getMockMultiBackend();
         $driver->expects($this->once())->method('patronLogin')
-            ->with($this->equalTo('ils1.testuser'), $this->equalTo('testpass'))
+            ->with('ils1.testuser', 'testpass')
             ->willReturn($response);
         $auth = $this->getMultiILS($driver);
         // Configure the authenticator to look for a cat_id; since there is no
@@ -229,8 +229,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()
             ->onlyMethods(['storedCatalogLogin'])
             ->getMock();
-        $mock->expects($this->any())->method('storedCatalogLogin')
-            ->willReturn($patron);
+        $mock->method('storedCatalogLogin')->willReturn($patron);
         $mock->setDbServiceManager(new MockDbServicePluginManager($this));
         return $mock;
     }
@@ -249,9 +248,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
         $onlyMethods[] = 'getConfig';
         $onlyMethods[] = 'patronLogin';
         $configManager = $this->container->get(\VuFind\Config\ConfigManagerInterface::class);
-        $ilsAuth = $this->getMockBuilder(\VuFind\Auth\ILSAuthenticator::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $ilsAuth = $this->createMock(\VuFind\Auth\ILSAuthenticator::class);
         $driverManager
             = $this->getMockBuilder(\VuFind\ILS\Driver\PluginManager::class)
             ->setConstructorArgs([$this->container])
@@ -260,15 +257,9 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
             ->setConstructorArgs([$configManager, $ilsAuth, $driverManager])
             ->onlyMethods($onlyMethods)
             ->getMock();
-        $driver->expects($this->any())
-            ->method('getLoginDrivers')
-            ->willReturn(['ils1']);
-        $driver->expects($this->any())
-            ->method('supportsMethod')
-            ->willReturn(true);
-        $driver->expects($this->any())
-            ->method('getConfig')
-            ->willReturn(new \VuFind\Config\Config([]));
+        $driver->method('getLoginDrivers')->willReturn(['ils1']);
+        $driver->method('supportsMethod')->willReturn(true);
+        $driver->method('getConfig')->willReturn(new \VuFind\Config\Config([]));
 
         return $driver;
     }
@@ -304,11 +295,8 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
         $mockAuthenticator = $this->getMockILSAuthenticator($patron);
         $mockUser ??= $this->getMockUser();
         $mockUserService = $this->createMock(UserServiceInterface::class);
-        $mockUserService->expects($this->any())
-            ->method('getUserByUsername')
-            ->willReturn($mockUser);
-        $mockUserService->expects($this->any())
-            ->method('updateUserEmail')
+        $mockUserService->method('getUserByUsername')->willReturn($mockUser);
+        $mockUserService->method('updateUserEmail')
             ->willReturnCallback(
                 function ($mockUser, $email): void {
                     $mockUser->setEmail($email);

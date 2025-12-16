@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Factory for NewItems controller plugin.
+ * Factory for RecordsHelper.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2019.
+ * Copyright (C) Villanova University 2019-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,13 +21,13 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Controller_Plugins
+ * @package  ILS_Logic
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
 
-namespace VuFind\Controller\Plugin;
+namespace VuFind\ILS\Logic;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -36,15 +36,15 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for NewItems controller plugin.
+ * Factory for RecordsHelper.
  *
  * @category VuFind
- * @package  Controller_Plugins
+ * @package  ILS_Logic
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
  */
-class NewItemsFactory implements FactoryInterface
+class RecordsHelperFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -68,9 +68,9 @@ class NewItemsFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $search
-            = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('searches');
-        $config = $search->NewItem ?? new \VuFind\Config\Config([]);
-        return new $requestedName($config);
+        return new $requestedName(
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config'),
+            $container->get(\VuFind\Record\Loader::class)
+        );
     }
 }

@@ -416,11 +416,11 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
             $this->helper->formatDisplayText('0/Sound/'),
             '0/Sound/'
         );
-        $this->assertEquals(
+        $this->assertSame(
             (string)$this->helper->formatDisplayText('1/Sound/Noisy/', true),
             '1/Sound/Noisy/'
         );
-        $this->assertEquals(
+        $this->assertSame(
             (string)$this->helper->formatDisplayText('1/Sound/Noisy/', true, ' - '),
             '1/Sound/Noisy/'
         );
@@ -465,14 +465,14 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
         $result = $this->helper->getFilterStringParts('0/Foo/');
         $this->assertIsArray($result);
         $this->assertCount(1, $result);
-        $this->assertEquals('0/Foo/', (string)$result[0]);
+        $this->assertSame('0/Foo/', (string)$result[0]);
         $this->assertEquals('Foo', $result[0]->getDisplayString());
 
         $result = $this->helper->getFilterStringParts('1/Foo/Bar/');
         $this->assertIsArray($result);
         $this->assertCount(2, $result);
-        $this->assertEquals('0/Foo/', (string)$result[0]);
-        $this->assertEquals('1/Foo/Bar/', (string)$result[1]);
+        $this->assertSame('0/Foo/', (string)$result[0]);
+        $this->assertSame('1/Foo/Bar/', (string)$result[1]);
         $this->assertEquals('Foo', $result[0]->getDisplayString());
         $this->assertEquals('Bar', $result[1]->getDisplayString());
 
@@ -553,10 +553,8 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
             ],
         ];
         $options = $this->getMockOptions();
-        $options->expects($this->any())->method('getHierarchicalExcludeFilters')
-            ->willReturn($exclude);
-        $options->expects($this->any())->method('getHierarchicalFacetFilters')
-            ->willReturn([]);
+        $options->method('getHierarchicalExcludeFilters')->willReturn($exclude);
+        $options->method('getHierarchicalFacetFilters')->willReturn([]);
         $filtered = $this->helper->filterFacets($facet, $facetList, $options);
         $this->assertEquals($expected, $filtered);
     }
@@ -622,10 +620,8 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
             ],
         ];
         $options = $this->getMockOptions();
-        $options->expects($this->any())->method('getHierarchicalExcludeFilters')
-            ->willReturn([]);
-        $options->expects($this->any())->method('getHierarchicalFacetFilters')
-            ->willReturn($filters);
+        $options->method('getHierarchicalExcludeFilters')->willReturn([]);
+        $options->method('getHierarchicalFacetFilters')->willReturn($filters);
         $filtered = $this->helper->filterFacets($facet, $facetList, $options);
         $this->assertEquals($expected, $filtered);
     }
@@ -655,7 +651,6 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockOptions(): \PHPUnit\Framework\MockObject\MockObject
     {
-        return $this->getMockBuilder(\VuFind\Search\Base\Options::class)
-            ->disableOriginalConstructor()->getMock();
+        return $this->createMock(\VuFind\Search\Base\Options::class);
     }
 }

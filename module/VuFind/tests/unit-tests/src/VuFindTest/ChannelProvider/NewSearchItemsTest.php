@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2024.
+ * Copyright (C) Villanova University 2024-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -30,7 +30,7 @@
 namespace VuFindTest\ChannelProvider;
 
 use VuFind\ChannelProvider\NewSearchItems;
-use VuFind\Controller\Plugin\NewItems;
+use VuFind\Search\NewItemsHelper;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
 use VuFindTest\RecordDriver\TestHarness;
@@ -84,12 +84,12 @@ class NewSearchItemsTest extends \PHPUnit\Framework\TestCase
         $params = $this->getConfiguredParamsMock($query, $paramBag);
         $search = $this->createMock(\VuFindSearch\Service::class);
         $paramManager = $this->createMock(\VuFind\Search\Params\PluginManager::class);
-        $newItemsHelper = $this->createMock(NewItems::class);
+        $newItemsHelper = $this->createMock(NewItemsHelper::class);
         $newItemsHelper->expects($this->once())->method('getSolrFilter')->with(30)->willReturn('foo-filter');
         $options = ['mode' => 'notRetain'];
-        $newSearchItems =  new NewSearchItems($search, $paramManager, $newItemsHelper, $options);
+        $newSearchItems = new NewSearchItems($search, $paramManager, $newItemsHelper, $options);
         $paramManager->expects($this->once())->method('get')
-            ->with($this->equalTo('Solr'))
+            ->with('Solr')
             ->willReturn($params);
         $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
         $rci = $this->createMock(\VuFindSearch\Response\RecordCollectionInterface::class);
@@ -132,7 +132,7 @@ class NewSearchItemsTest extends \PHPUnit\Framework\TestCase
     {
         $coverRouter = $this->createMock(\VuFind\Cover\Router::class);
         $coverRouter->expects($this->once())->method('getUrl')
-            ->with($this->equalTo($recordDriver), $this->equalTo('medium'))
+            ->with($recordDriver, 'medium')
             ->willReturn('foo_Thumbnail');
         return $coverRouter;
     }
@@ -149,7 +149,7 @@ class NewSearchItemsTest extends \PHPUnit\Framework\TestCase
     {
         $recordRouter = $this->createMock(\VuFind\Record\Router::class);
         $recordRouter->expects($this->once())->method('getTabRouteDetails')
-            ->with($this->equalTo($recordDriver))
+            ->with($recordDriver)
             ->willReturn('foo_Route');
         return $recordRouter;
     }

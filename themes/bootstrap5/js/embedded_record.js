@@ -1,4 +1,4 @@
-/*global registerAjaxCommentRecord, VuFind */
+/*global VuFind */
 VuFind.register('embedded', function embedded() {
   var _STORAGEKEY = 'vufind_search_open';
   var _SEPARATOR = ':::';
@@ -159,6 +159,7 @@ VuFind.register('embedded', function embedded() {
             longNode.collapse('show');
             // Load first tab
             if (tabid) {
+              document.getElementById(tabid).click();
               ajaxLoadTab(tabid, true);
             } else {
               var $firstTab = $(longNode).find('.list-tab-toggle.active');
@@ -174,12 +175,6 @@ VuFind.register('embedded', function embedded() {
               }
               return ajaxLoadTab(this.id);
             });
-            longNode.find('[id^=usercomment]').find('input[type=submit]').off("click").on(
-              "click",
-              function embeddedComments() {
-                return registerAjaxCommentRecord(longNode);
-              }
-            );
             longNode.find('[data-background]').each(function setupEmbeddedBackgroundTabs(index, el) {
               ajaxLoadTab(el.id, false);
             });

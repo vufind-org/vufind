@@ -57,13 +57,13 @@ class ConfigCommandTest extends \PHPUnit\Framework\TestCase
         $command = new ConfigCommand($upgrader);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
-        $this->assertEquals(
+        $this->assertSame(
             "WARNING1\nWARNING2\nConfiguration upgrade successful! Please review your configurations.\n"
             . "The automatic update process sometimes re-enables disabled settings and removes comments.\n"
             . "Backups of your old configurations have been created for comparison purposes.\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(ConfigCommand::SUCCESS, $commandTester->getStatusCode());
+        $this->assertSame(ConfigCommand::SUCCESS, $commandTester->getStatusCode());
     }
 
     /**
@@ -83,6 +83,6 @@ class ConfigCommandTest extends \PHPUnit\Framework\TestCase
             'Exception: Kaboom',
             $commandTester->getDisplay()
         );
-        $this->assertEquals(ConfigCommand::FAILURE, $commandTester->getStatusCode());
+        $this->assertSame(ConfigCommand::FAILURE, $commandTester->getStatusCode());
     }
 }

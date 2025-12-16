@@ -51,9 +51,9 @@ class StartPageTest extends \PHPUnit\Framework\TestCase
     {
         // By default, plugin returns nothing and uses 'pages' name.
         $plugin = new StartPage();
-        $this->assertEquals('pages', $plugin->getSitemapName());
-        $this->assertEquals([], iterator_to_array($plugin->getUrls()));
-        $this->assertEquals('', $plugin->getFrequency());
+        $this->assertSame('pages', $plugin->getSitemapName());
+        $this->assertSame([], iterator_to_array($plugin->getUrls()));
+        $this->assertSame('', $plugin->getFrequency());
         $this->assertTrue($plugin->supportsVuFindLanguages());
     }
 
@@ -90,7 +90,7 @@ class StartPageTest extends \PHPUnit\Framework\TestCase
                 'baseUrl' => 'http://foo',
             ]
         );
-        $this->assertEquals(['http://foo'], iterator_to_array($plugin->getUrls()));
+        $this->assertSame(['http://foo'], iterator_to_array($plugin->getUrls()));
         $this->assertEquals(
             ['Adding start page http://foo'],
             $messageCollector->messages

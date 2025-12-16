@@ -66,7 +66,7 @@ class DevtoolsControllerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('English', $result['mainName']);
 
         // Make sure correct type of object was loaded:
-        $this->assertEquals(TextDomain::class, get_class($result['main']));
+        $this->assertSame(TextDomain::class, get_class($result['main']));
 
         // Shortcut to help check some key details:
         $en = $result['details']['en'];
@@ -76,7 +76,7 @@ class DevtoolsControllerTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue(in_array('search.phtml', $en['helpFiles']));
 
         // Did we put the object in the right place?
-        $this->assertEquals(TextDomain::class, get_class($en['object']));
+        $this->assertSame(TextDomain::class, get_class($en['object']));
 
         // Did the @parent_ini macro get stripped correctly?
         $this->assertArrayNotHasKey('@parent_ini', $result['details']['en-gb']['object']);

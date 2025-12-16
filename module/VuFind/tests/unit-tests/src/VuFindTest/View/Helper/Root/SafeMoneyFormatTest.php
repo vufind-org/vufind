@@ -54,15 +54,15 @@ class SafeMoneyFormatTest extends \PHPUnit\Framework\TestCase
             new \VuFind\Service\CurrencyFormatter(null, 'en_US'),
             new \Laminas\View\Helper\EscapeHtml()
         );
-        $this->assertEquals('$3.00', $smf(3));
-        $this->assertEquals('€3.00', $smf(3, 'EUR'));
+        $this->assertSame('$3.00', $smf(3));
+        $this->assertSame('€3.00', $smf(3, 'EUR'));
 
         // test override default currency
         $smf = new SafeMoneyFormat(
             new \VuFind\Service\CurrencyFormatter('EUR', 'en_US'),
             new \Laminas\View\Helper\EscapeHtml()
         );
-        $this->assertEquals('€3.00', $smf(3));
-        $this->assertEquals('$3.00', $smf(3, 'USD'));
+        $this->assertSame('€3.00', $smf(3));
+        $this->assertSame('$3.00', $smf(3, 'USD'));
     }
 }

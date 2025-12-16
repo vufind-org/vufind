@@ -66,10 +66,9 @@ class HtmlSafeJsonEncodeTest extends \PHPUnit\Framework\TestCase
      */
     public function testDefaultEscaping(): void
     {
-        $escapeHtmlAttr = $this->getMockBuilder(EscapeHtmlAttr::class)
-            ->disableOriginalConstructor()->getMock();
+        $escapeHtmlAttr = $this->createMock(EscapeHtmlAttr::class);
         $escapeHtmlAttr->expects($this->once())->method('__invoke')
-            ->with($this->equalTo('1'))
+            ->with('1')
             ->willReturn('1');
         $this->assertEquals('1', ($this->getHelper(compact('escapeHtmlAttr')))(1));
     }
@@ -102,6 +101,6 @@ class HtmlSafeJsonEncodeTest extends \PHPUnit\Framework\TestCase
     #[\PHPUnit\Framework\Attributes\DataProvider('getJsonTests')]
     public function testCoreEncoding($input, string $expectedOutput): void
     {
-        $this->assertEquals($expectedOutput, ($this->getHelper())($input, null));
+        $this->assertSame($expectedOutput, ($this->getHelper())($input, null));
     }
 }

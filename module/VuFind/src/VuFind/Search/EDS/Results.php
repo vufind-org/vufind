@@ -137,7 +137,7 @@ class Results extends \VuFind\Search\Base\Results
      *
      * @return array
      */
-    public function getScores()
+    public function getScores(): array
     {
         $scoreMap = [];
         foreach ($this->results as $record) {
@@ -151,7 +151,7 @@ class Results extends \VuFind\Search\Base\Results
      *
      * @return ?float
      */
-    public function getMaxScore()
+    public function getMaxScore(): ?float
     {
         if (
             empty($this->results) ||

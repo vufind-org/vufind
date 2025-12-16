@@ -77,9 +77,7 @@ class TOCTest extends \PHPUnit\Framework\TestCase
     #[\PHPUnit\Framework\Attributes\DataProvider('isActiveProvider')]
     public function testIsActive(string $toc, bool $expectedResult): void
     {
-        $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $recordDriver = $this->createMock(\VuFind\RecordDriver\SolrDefault::class);
         $this->expectConsecutiveCalls(
             $recordDriver,
             'tryMethod',
