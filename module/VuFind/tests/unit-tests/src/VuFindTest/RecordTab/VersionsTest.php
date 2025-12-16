@@ -56,8 +56,8 @@ class VersionsTest extends \PHPUnit\Framework\TestCase
         $som = $this->getMockPluginManager();
         $config = $this->getMockConfig();
         $recordDriver = $this->createMock(\VuFind\RecordDriver\SolrDefault::class);
-        $recordDriver->expects($this->any())->method('tryMethod')
-            ->with($this->equalTo('getOtherVersionCount'))
+        $recordDriver->method('tryMethod')
+            ->with('getOtherVersionCount')
             ->willReturn($count);
         $obj = new Versions($config, $som);
         $obj->setRecordDriver($recordDriver);
@@ -102,18 +102,14 @@ class VersionsTest extends \PHPUnit\Framework\TestCase
         $som = $this->getMockPluginManager();
         $config = $this->getMockConfig();
         $optionsMock = $this->createMock(\VuFind\Search\Base\Options::class);
-        $som->expects($this->any())->method('get')
-            ->with($this->equalTo('foo'))
-            ->willReturn($optionsMock);
+        $som->method('get')->with('foo')->willReturn($optionsMock);
         $optionsMock->expects($this->once())->method('getVersionsAction')
             ->willReturn($versionAction);
-        $recordDriver = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $recordDriver = $this->createMock(\VuFind\RecordDriver\SolrDefault::class);
         $recordDriver->expects($this->once())->method('getSourceIdentifier')
             ->willReturn('foo');
-        $recordDriver->expects($this->any())->method('tryMethod')
-            ->with($this->equalTo('getOtherVersionCount'))
+        $recordDriver->method('tryMethod')
+            ->with('getOtherVersionCount')
             ->willReturn($versionCount);
         $obj = new Versions($config, $som);
         $obj->setRecordDriver($recordDriver);

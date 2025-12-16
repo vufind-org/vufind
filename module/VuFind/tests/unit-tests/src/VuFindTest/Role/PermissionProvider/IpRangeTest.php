@@ -53,12 +53,8 @@ class IpRangeTest extends \PHPUnit\Framework\TestCase
      */
     protected function getPermissionProvider($ipAddr, IpAddressUtils $utils): IpRange
     {
-        $mockRequest = $this->getMockBuilder(
-            \Laminas\Http\PhpEnvironment\Request::class
-        )->disableOriginalConstructor()->getMock();
-        $mockIpReader = $this->getMockBuilder(\VuFind\Net\UserIpReader::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $mockRequest = $this->createMock(\Laminas\Http\PhpEnvironment\Request::class);
+        $mockIpReader = $this->createMock(\VuFind\Net\UserIpReader::class);
         $mockIpReader->expects($this->once())->method('getUserIp')
             ->willReturn($ipAddr);
         return new IpRange($mockRequest, $utils, $mockIpReader);
@@ -76,11 +72,9 @@ class IpRangeTest extends \PHPUnit\Framework\TestCase
         // we're mocking out the IpAddressUtils; we're just confirming that the parts
         // fit together correctly.
         $ipAddr = '123.124.125.126';
-        $utils = $this->getMockBuilder(IpAddressUtils::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $utils = $this->createMock(IpAddressUtils::class);
         $utils->expects($this->once())->method('isInRange')
-            ->with($this->equalTo($ipAddr), $this->equalTo([$ipAddr]))
+            ->with($ipAddr, [$ipAddr])
             ->willReturn(true);
         $provider = $this->getPermissionProvider($ipAddr, $utils);
         $this->assertEquals(
@@ -105,11 +99,9 @@ class IpRangeTest extends \PHPUnit\Framework\TestCase
             '1.2.3.4-1.2.3.7',
             '2.3.4.5',
         ];
-        $utils = $this->getMockBuilder(IpAddressUtils::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $utils = $this->createMock(IpAddressUtils::class);
         $utils->expects($this->once())->method('isInRange')
-            ->with($this->equalTo($ipAddr), $this->equalTo($options))
+            ->with($ipAddr, $options)
             ->willReturn(false);
         $provider = $this->getPermissionProvider($ipAddr, $utils);
         $this->assertEquals([], $provider->getPermissions($options));

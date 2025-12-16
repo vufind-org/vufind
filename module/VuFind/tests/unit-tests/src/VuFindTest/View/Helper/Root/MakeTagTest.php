@@ -213,7 +213,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
     {
         $helper = $this->getHelper();
 
-        $this->assertEquals(
+        $this->assertSame(
             $helper($tagName, ''),
             '<' . $tagName . '></' . $tagName . '>'
         );

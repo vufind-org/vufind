@@ -51,17 +51,13 @@ class SetRecordCollectionFactoryCommandTest extends TestCase
      */
     public function testCommand(): void
     {
-        $factory = $this
-            ->getMockBuilder(RecordCollectionFactoryInterface::class)
-            ->getMock();
+        $factory = $this->createMock(RecordCollectionFactoryInterface::class);
         $backendId = 'bar';
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\Solr\Backend::class);
         $backend->expects($this->once())->method('getIdentifier')
             ->willReturn($backendId);
         $backend->expects($this->once())->method('setRecordCollectionFactory')
-            ->with($this->equalTo($factory));
+            ->with($factory);
         $command = new SetRecordCollectionFactoryCommand($backendId, $factory);
         $this->assertEmpty($command->execute($backend)->getResult());  // void method
     }
@@ -73,9 +69,7 @@ class SetRecordCollectionFactoryCommandTest extends TestCase
      */
     public function testgetArguments(): void
     {
-        $factory = $this
-            ->getMockBuilder(RecordCollectionFactoryInterface::class)
-            ->getMock();
+        $factory = $this->createMock(RecordCollectionFactoryInterface::class);
         $backendId = 'bar';
         $command = new SetRecordCollectionFactoryCommand($backendId, $factory);
         $this->assertSame([$factory], $command->getArguments());

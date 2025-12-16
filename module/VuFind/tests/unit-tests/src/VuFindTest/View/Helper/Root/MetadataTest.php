@@ -95,7 +95,7 @@ class MetadataTest extends \PHPUnit\Framework\TestCase
             ->onlyMethods(['get'])
             ->getMock();
         $mock->expects($this->once())->method('get')
-            ->with($this->equalTo('PRISM'))
+            ->with('PRISM')
             ->willReturn(new PRISM());
         return $mock;
     }

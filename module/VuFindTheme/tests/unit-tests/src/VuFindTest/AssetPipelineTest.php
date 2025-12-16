@@ -160,8 +160,8 @@ class AssetPipelineTest extends \PHPUnit\Framework\TestCase
         $pipeline->method('isPipelineAvailable')->willReturn($available);
         $raw = ['simulated raw assets'];
         $grouped = ['simulated grouped assets'];
-        $pipeline->expects($this->any())->method('groupAssets')->with($raw, $type)->willReturn($grouped);
-        $pipeline->expects($this->any())->method('processGroupedAssets')->with($grouped, $type)->willReturn($grouped);
+        $pipeline->method('groupAssets')->with($raw, $type)->willReturn($grouped);
+        $pipeline->method('processGroupedAssets')->with($grouped, $type)->willReturn($grouped);
         $this->assertEquals($expectGrouped ? $grouped : $raw, $pipeline->process($raw, $type));
     }
 

@@ -61,7 +61,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
     {
         $helper = $this->getCookieConsent([]);
         $this->assertFalse($helper->isEnabled());
-        $this->assertEquals('', $helper->render());
+        $this->assertSame('', $helper->render());
         $this->assertEquals($helper, $helper());
     }
 
@@ -85,8 +85,8 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
             ->willReturn('rendered_template');
 
         $this->assertTrue($helper->isEnabled());
-        $this->assertEquals('rendered_template', $helper->render());
-        $this->assertEquals(
+        $this->assertSame('rendered_template', $helper->render());
+        $this->assertSame(
             ['matomo' => ['matomo']],
             $helper->getControlledVuFindServices()
         );
@@ -134,7 +134,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($helper->isCategoryAccepted('nonexistent'));
         $this->assertTrue($helper->isCategoryAccepted('essential'));
         $this->assertTrue($helper->isServiceAllowed('matomo'));
-        $this->assertEquals('rendered_template', $helper->render());
+        $this->assertSame('rendered_template', $helper->render());
     }
 
     /**
@@ -184,10 +184,8 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
         array $cookies = [],
         string $consentConfigName = 'CookieConsent.yaml'
     ): CookieConsent {
-        $url = $this->getMockBuilder(Url::class)->getMock();
-        $url->expects($this->any())
-            ->method('__invoke')
-            ->willReturn('http://localhost/first/vufind');
+        $url = $this->createMock(Url::class);
+        $url->method('__invoke')->willReturn('http://localhost/first/vufind');
         $serverUrl = new ServerUrl();
         $serverUrl->setHost('localhost');
 
@@ -217,24 +215,17 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
             'serverUrl' => $serverUrl,
             'url' => $url,
         ];
-        $view = $this->getMockBuilder(PhpRenderer::class)->getMock();
-        $view->expects($this->any())
-            ->method('plugin')
+        $view = $this->createMock(PhpRenderer::class);
+        $view->method('plugin')
             ->willReturnCallback(
                 function ($name) use ($plugins) {
                     return $plugins[$name] ?? null;
                 }
             );
 
-        $mockLoginTokenManager = $this->getMockBuilder(LoginTokenManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $mockLoginTokenManager->expects($this->any())
-            ->method('getCookieName')
-            ->willReturn('loginToken');
-        $mockLoginTokenManager->expects($this->any())
-            ->method('getCookieLifetime')
-            ->willReturn(321);
+        $mockLoginTokenManager = $this->createMock(LoginTokenManager::class);
+        $mockLoginTokenManager->method('getCookieName')->willReturn('loginToken');
+        $mockLoginTokenManager->method('getCookieLifetime')->willReturn(321);
 
         $helper = new CookieConsent(
             $config,

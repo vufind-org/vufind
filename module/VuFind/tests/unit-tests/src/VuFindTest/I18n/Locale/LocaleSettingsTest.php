@@ -85,7 +85,7 @@ class LocaleSettingsTest extends \PHPUnit\Framework\TestCase
             )
         );
         $this->assertTrue($settings->browserLanguageDetectionEnabled());
-        $this->assertEquals(['en'], $settings->getFallbackLocales());
+        $this->assertSame(['en'], $settings->getFallbackLocales());
     }
 
     /**

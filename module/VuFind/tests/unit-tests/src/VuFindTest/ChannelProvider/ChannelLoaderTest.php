@@ -133,7 +133,7 @@ class ChannelLoaderTest extends \PHPUnit\Framework\TestCase
         $recordLoader->expects($this->once())->method('load')->with('foo', 'Solr')->willReturn($mockRecord);
         $loader = $this->getChannelLoader($config, $recordLoader);
         $context = $loader->getRecordContext('foo', configSections: $sections);
-        $this->assertEquals(['driver', 'channels', 'token', 'relatedTokens'], array_keys($context));
+        $this->assertSame(['driver', 'channels', 'token', 'relatedTokens'], array_keys($context));
         $this->assertEquals($mockRecord, $context['driver']);
         $this->assertEquals($expectedChannelData, $context['channels']);
         $this->assertEquals($expectedTokenData, $context['relatedTokens']);

@@ -55,7 +55,7 @@ class FeedbackServiceTest extends \PHPUnit\Framework\TestCase
     {
         $configuredService = $this->getConfiguredFeedbackService();
         $configuredService['entityPluginManager']->expects($this->once())->method('get')
-            ->with($this->equalTo(FeedbackEntityInterface::class))
+            ->with(FeedbackEntityInterface::class)
             ->willReturn(new Feedback());
 
         $this->assertInstanceOf(
@@ -81,7 +81,7 @@ class FeedbackServiceTest extends \PHPUnit\Framework\TestCase
             ->onlyMethods(['getResult', 'getSQL', '_doExecute'])
             ->getMock();
         $entityManager->expects($this->once())->method('createQuery')
-            ->with($this->equalTo($queryStmt))
+            ->with($queryStmt)
             ->willReturn($query);
         $query->expects($this->once())->method('getResult')
             ->willReturn([]);
@@ -105,7 +105,7 @@ class FeedbackServiceTest extends \PHPUnit\Framework\TestCase
             ->onlyMethods(['execute', 'setParameters', 'getSQL', '_doExecute'])
             ->getMock();
         $entityManager->expects($this->once())->method('createQuery')
-            ->with($this->equalTo($queryStmt))
+            ->with($queryStmt)
             ->willReturn($query);
         $query->expects($this->once())->method('execute');
         $query->expects($this->once())->method('setParameters')
@@ -134,7 +134,7 @@ class FeedbackServiceTest extends \PHPUnit\Framework\TestCase
             ->onlyMethods(['setParameters', 'setFirstResult', 'setMaxResults'])
             ->getMock();
         $entityManager->expects($this->once())->method('createQuery')
-            ->with($this->equalTo($queryStmt))
+            ->with($queryStmt)
             ->willReturn($query);
 
         $query->expects($this->once())->method('setParameters')

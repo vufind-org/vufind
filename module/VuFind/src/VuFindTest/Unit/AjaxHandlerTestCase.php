@@ -87,10 +87,8 @@ abstract class AjaxHandlerTestCase extends \PHPUnit\Framework\TestCase
             \VuFind\Auth\Manager::class,
             ['getUserObject', 'loginEnabled']
         );
-        $authManager->expects($this->any())->method('getUserObject')
-            ->willReturn($user);
-        $authManager->expects($this->any())->method('loginEnabled')
-            ->willReturn(true);
+        $authManager->method('getUserObject')->willReturn($user);
+        $authManager->method('loginEnabled')->willReturn(true);
         return $authManager;
     }
 
@@ -114,7 +112,7 @@ abstract class AjaxHandlerTestCase extends \PHPUnit\Framework\TestCase
             \Laminas\Mvc\Controller\AbstractActionController::class,
             ['getRequest']
         );
-        $controller->expects($this->any())->method('getRequest')->willReturn($request);
+        $controller->method('getRequest')->willReturn($request);
         $params->setController($controller);
         return $params;
     }

@@ -119,6 +119,6 @@ class SolrPrefixTest extends \PHPUnit\Framework\TestCase
         $handler = new SolrPrefix($this->getMockResultsPluginManager($map));
         $handler->setConfig($config);
         $handler->addFilters($filters);
-        $this->assertEquals(['1', '2', '3', '4'], array_values($handler->getSuggestions('foo(:)bar')));
+        $this->assertSame(['1', '2', '3', '4'], array_values($handler->getSuggestions('foo(:)bar')));
     }
 }

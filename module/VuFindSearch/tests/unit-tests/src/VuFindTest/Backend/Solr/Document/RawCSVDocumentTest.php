@@ -51,10 +51,10 @@ class RawCSVDocumentTest extends TestCase
     public function testBasicBehavior()
     {
         $document = new RawCSVDocument('a,b,c');
-        $this->assertEquals(
+        $this->assertSame(
             'text/csv',
             $document->getContentType()
         );
-        $this->assertEquals('a,b,c', $document->getContent());
+        $this->assertSame('a,b,c', $document->getContent());
     }
 }

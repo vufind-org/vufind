@@ -122,7 +122,7 @@ class CASTest extends \PHPUnit\Framework\TestCase
     public function testGetSessionInitiator(): void
     {
         $cas = $this->getAuthObject();
-        $this->assertEquals(
+        $this->assertSame(
             'http://cas/login?service=http%3A%2F%2Ffoo%2Fbar%3Fauth_method%3DCAS',
             $cas->getSessionInitiator('http://foo/bar')
         );
@@ -136,7 +136,7 @@ class CASTest extends \PHPUnit\Framework\TestCase
     public function testGetLogoutRedirectUrl(): void
     {
         $cas = $this->getAuthObject();
-        $this->assertEquals(
+        $this->assertSame(
             'http://cas/logout?service=http%3A%2F%2Ffoo%2Fbar',
             $cas->getLogoutRedirectUrl('http://foo/bar')
         );

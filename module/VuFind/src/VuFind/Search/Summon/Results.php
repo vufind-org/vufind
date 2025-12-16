@@ -48,37 +48,37 @@ class Results extends \VuFind\Search\Base\Results
     /**
      * Facet details:
      *
-     * @var array
+     * @var ?array
      */
-    protected $responseFacets = null;
+    protected ?array $responseFacets = null;
 
     /**
      * Best bets
      *
      * @var array|bool
      */
-    protected $bestBets = false;
+    protected array|bool $bestBets = false;
 
     /**
      * Database recommendations
      *
      * @var array|bool
      */
-    protected $databaseRecommendations = false;
+    protected array|bool $databaseRecommendations = false;
 
     /**
      * Topic recommendations
      *
      * @var array|bool
      */
-    protected $topicRecommendations = false;
+    protected array|bool $topicRecommendations = false;
 
     /**
      * Search backend identifier.
      *
      * @var string
      */
-    protected $backendId = 'Summon';
+    protected string $backendId = 'Summon';
 
     /**
      * Support method for performAndProcessSearch -- perform a search based on the
@@ -86,7 +86,7 @@ class Results extends \VuFind\Search\Base\Results
      *
      * @return void
      */
-    protected function performSearch()
+    protected function performSearch(): void
     {
         $query  = $this->getParams()->getQuery();
         $limit  = $this->getParams()->getLimit();
@@ -137,12 +137,12 @@ class Results extends \VuFind\Search\Base\Results
     /**
      * Returns the stored list of facets for the last search
      *
-     * @param array $filter Array of field => on-screen description listing
+     * @param ?array $filter Array of field => on-screen description listing
      * all of the desired facet fields; set to null to get all configured values.
      *
      * @return array        Facets data arrays
      */
-    public function getFacetList($filter = null)
+    public function getFacetList(?array $filter = null): array
     {
         // Make sure we have processed the search before proceeding:
         if (null === $this->responseFacets) {
@@ -200,7 +200,7 @@ class Results extends \VuFind\Search\Base\Results
      *
      * @return array           Processed filter list
      */
-    protected function stripFilterParameters($rawFilter)
+    protected function stripFilterParameters(array $rawFilter): array
     {
         $filter = [];
         foreach ($rawFilter as $key => $value) {
@@ -218,7 +218,7 @@ class Results extends \VuFind\Search\Base\Results
      *
      * @return array         Formatted data
      */
-    protected function formatFacetData($current)
+    protected function formatFacetData(array $current): array
     {
         // We'll need this in the loop below:
         $filterList = $this->getParams()->getRawFilters();
@@ -283,7 +283,7 @@ class Results extends \VuFind\Search\Base\Results
      *
      * @return void
      */
-    protected function processSpelling($spelling)
+    protected function processSpelling(array $spelling): void
     {
         $this->suggestions = [];
         foreach ($spelling as $current) {
@@ -304,7 +304,7 @@ class Results extends \VuFind\Search\Base\Results
      *
      * @return array Spelling suggestion data arrays
      */
-    public function getSpellingSuggestions()
+    public function getSpellingSuggestions(): array
     {
         $retVal = [];
         foreach ($this->getRawSuggestions() as $term => $details) {
@@ -323,7 +323,7 @@ class Results extends \VuFind\Search\Base\Results
      *
      * @return array|bool false if no recommendations, detailed array otherwise.
      */
-    public function getBestBets()
+    public function getBestBets(): array|bool
     {
         return $this->bestBets;
     }
@@ -333,7 +333,7 @@ class Results extends \VuFind\Search\Base\Results
      *
      * @return array|bool false if no recommendations, detailed array otherwise.
      */
-    public function getDatabaseRecommendations()
+    public function getDatabaseRecommendations(): array|bool
     {
         return $this->databaseRecommendations;
     }
@@ -343,7 +343,7 @@ class Results extends \VuFind\Search\Base\Results
      *
      * @return array|bool false if no recommendations, detailed array otherwise.
      */
-    public function getTopicRecommendations()
+    public function getTopicRecommendations(): array|bool
     {
         return $this->topicRecommendations;
     }
@@ -351,24 +351,24 @@ class Results extends \VuFind\Search\Base\Results
     /**
      * Get complete facet counts for several index fields
      *
-     * @param array  $facetfields  name of the Solr fields to return facets for
-     * @param bool   $removeFilter Clear existing filters from selected fields (true)
+     * @param array   $facetfields  name of the Solr fields to return facets for
+     * @param bool    $removeFilter Clear existing filters from selected fields (true)
      * or retain them (false)?
-     * @param int    $limit        A limit for the number of facets returned, this
+     * @param int     $limit        A limit for the number of facets returned, this
      * may be useful for very large amounts of facets that can break the JSON parse
      * method because of PHP out of memory exceptions (default = -1, no limit).
-     * @param string $facetSort    A facet sort value to use (null to retain current)
-     * @param int    $page         1 based. Offsets results by limit.
+     * @param ?string $facetSort    A facet sort value to use (null to retain current)
+     * @param ?int    $page         1 based. Offsets results by limit.
      *
      * @return array an array with the facet values for each index field
      */
     public function getPartialFieldFacets(
-        $facetfields,
-        $removeFilter = true,
-        $limit = -1,
-        $facetSort = null,
-        $page = null
-    ) {
+        array $facetfields,
+        bool $removeFilter = true,
+        int $limit = -1,
+        ?string $facetSort = null,
+        ?int $page = null
+    ): array {
         $params = $this->getParams();
         $query  = $params->getQuery();
         // No limit not implemented with Summon: cause page loop

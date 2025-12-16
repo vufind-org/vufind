@@ -74,7 +74,7 @@ class HoldingsTest extends \PHPUnit\Framework\TestCase
     ): void {
         // Create a helper object:
         $helper = new \VuFind\View\Helper\Root\Holdings(['Catalog' => $config]);
-        $this->assertEquals(
+        $this->assertSame(
             $expectedBarcodeResult,
             $helper->holdingIsVisible(
                 [
@@ -83,7 +83,7 @@ class HoldingsTest extends \PHPUnit\Framework\TestCase
                 ]
             )
         );
-        $this->assertEquals(
+        $this->assertSame(
             $expectedNoBarcodeResult,
             $helper->holdingIsVisible(['availability' => new AvailabilityStatus(true, 'Available')])
         );

@@ -51,12 +51,8 @@ class IpRegExTest extends \PHPUnit\Framework\TestCase
      */
     protected function getPermissionProvider($ipAddr)
     {
-        $mockRequest = $this->getMockBuilder(
-            \Laminas\Http\PhpEnvironment\Request::class
-        )->disableOriginalConstructor()->getMock();
-        $mockIpReader = $this->getMockBuilder(\VuFind\Net\UserIpReader::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $mockRequest = $this->createMock(\Laminas\Http\PhpEnvironment\Request::class);
+        $mockIpReader = $this->createMock(\VuFind\Net\UserIpReader::class);
         $mockIpReader->expects($this->once())->method('getUserIp')
             ->willReturn($ipAddr);
         return new IpRegEx($mockRequest, $mockIpReader);

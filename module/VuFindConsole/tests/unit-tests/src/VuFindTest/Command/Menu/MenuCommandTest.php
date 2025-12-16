@@ -206,6 +206,6 @@ class MenuCommandTest extends \PHPUnit\Framework\TestCase
                     Command
             OUTPUT;
         $this->assertStringContainsString($expectedSummary, $tester->getDisplay());
-        $this->assertEquals(Command::SUCCESS, $tester->getStatusCode());
+        $this->assertSame(Command::SUCCESS, $tester->getStatusCode());
     }
 }

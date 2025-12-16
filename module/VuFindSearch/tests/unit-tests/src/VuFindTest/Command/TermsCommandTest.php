@@ -52,16 +52,14 @@ class TermsCommandTest extends TestCase
     public function testCommand(): void
     {
         $backendId = 'bar';
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\Solr\Backend::class);
         $backend->expects($this->once())->method('getIdentifier')
             ->willReturn($backendId);
         $backend->expects($this->once())->method('terms')
             ->with(
-                $this->equalTo('field'),
-                $this->equalTo('from'),
-                $this->equalTo(10)
+                'field',
+                'from',
+                10
             )->willReturn('result');  // not a realistic value!
         $command = new TermsCommand($backendId, 'field', 'from', 10);
         $this->assertEquals('result', $command->execute($backend)->getResult());
@@ -76,9 +74,7 @@ class TermsCommandTest extends TestCase
     public function testUnsupportedBackend(): void
     {
         $backendId = 'bar';
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\EDS\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\EDS\Backend::class);
         $backend->expects($this->once())->method('getIdentifier')
             ->willReturn($backendId);
         $command = new TermsCommand($backendId, 'field', 'from', 10);

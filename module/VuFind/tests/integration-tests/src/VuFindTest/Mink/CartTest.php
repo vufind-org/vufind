@@ -788,7 +788,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
 
         // Printing should not have added anything to the search history beyond
         // the initial search that set everything up.
-        $this->assertEquals(
+        $this->assertSame(
             ['id:(testsample1 OR testsample2)'],
             $this->getSearchHistory()
         );

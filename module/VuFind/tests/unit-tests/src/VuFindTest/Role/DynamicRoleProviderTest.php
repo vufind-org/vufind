@@ -70,19 +70,16 @@ class DynamicRoleProviderTest extends \PHPUnit\Framework\TestCase
         ];
         $pm = $this->getFakePluginManager();
         $pm->get('a')
-            ->expects($this->any())
             ->method('getPermissions')
-            ->with($this->equalTo('foo'))
+            ->with('foo')
             ->willReturn([]);
         $pm->get('b')
-            ->expects($this->any())
             ->method('getPermissions')
-            ->with($this->equalTo('bar'))
+            ->with('bar')
             ->willReturn(['role']);
         $pm->get('c')
-            ->expects($this->any())
             ->method('getPermissions')
-            ->with($this->equalTo([1, 2, 3]))
+            ->with([1, 2, 3])
             ->willReturn(['role']);
         $result = $this->getDynamicRoleProvider($pm, $config)->getRoles(['role']);
         $this->assertCount(1, $result);

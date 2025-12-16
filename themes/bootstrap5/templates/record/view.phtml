@@ -6,6 +6,7 @@
 
   // Set up standard record scripts:
   $this->assetManager()->appendScriptLink('record.js');
+  $this->assetManager()->appendScriptLink('record_tabs.js');
   $this->assetManager()->appendScriptLink('check_save_statuses.js');
 
   // Add any extra scripts the tabs require:
@@ -106,4 +107,3 @@
     </div>
   <?php endif; ?>
 </div>
-<?=$this->assetManager()->outputInlineScriptString('$(document).ready(recordDocReady);'); ?>

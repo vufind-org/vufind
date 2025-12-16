@@ -366,18 +366,6 @@ class Manager implements LoggerAwareInterface
         $opts = array_merge($this->defaults, $overrideOpts);
 
         if (!is_dir($dirName)) {
-            if (isset($opts['umask'])) {
-                // convert umask from string
-                $umask = octdec($opts['umask']);
-                // validate
-                if ($umask & 0o700) {
-                    throw new \Exception(
-                        'Invalid umask: ' . $opts['umask']
-                        . '; need permission to execute, read and write by owner'
-                    );
-                }
-                umask($umask);
-            }
             if (isset($opts['dir_permission'])) {
                 $dir_perm = octdec($opts['dir_permission']);
             } else {
