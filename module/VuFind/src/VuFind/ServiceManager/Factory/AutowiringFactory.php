@@ -101,34 +101,53 @@ class AutowiringFactory implements FactoryInterface
         foreach ($reflectionParameters as $reflectionParameter) {
             $attributes = $reflectionParameter->getAttributes(Autowire::class);
             $autowireArgs = ($attributes[0] ?? null)?->getArguments();
-            if ($config = $autowireArgs['config'] ?? null) {
-                $params[] = $this->getConfigArray($container, $autowireArgs, $config);
-            } else {
-                $params[] = $this->resolveService($container, $autowireArgs, $reflectionParameter);
-            }
+            $params[] = $this->resolveParameter($container, $reflectionParameter, $autowireArgs);
         }
         return new $requestedName(...$params);
+    }
+
+    /**
+     * Resolve and get parameter.
+     *
+     * @param ContainerInterface  $container           Service container
+     * @param ReflectionParameter $reflectionParameter Parameter
+     * @param ?array              $autowireArgs        Autowire attribute arguments
+     *
+     * @return mixed
+     */
+    protected function resolveParameter(
+        ContainerInterface $container,
+        ReflectionParameter $reflectionParameter,
+        ?array $autowireArgs
+    ) {
+        if ($config = $autowireArgs['config'] ?? null) {
+            return $this->getConfig($container, $config, $autowireArgs);
+        }
+        return $this->resolveService($container, $reflectionParameter, $autowireArgs);
     }
 
     /**
      * Get a configuration as an array.
      *
      * @param ContainerInterface $container    Service container
-     * @param ?array             $autowireArgs Autowire attribute arguments
      * @param string             $config       Configuration name
+     * @param ?array             $autowireArgs Autowire attribute arguments
      *
-     * @return array
+     * @return mixed
      */
-    protected function getConfigArray(
+    protected function getConfig(
         ContainerInterface $container,
-        ?array $autowireArgs,
-        string $config
-    ): array {
-        $type = $autowireArgs['configType'] ?? 'ini';
+        string $config,
+        ?array $autowireArgs
+    ) {
+        $type = $autowireArgs['configType'] ?? 'array';
         switch ($type) {
-            case 'ini':
+            case 'array':
+            case 'object':
                 $this->configManager ??= $container->get(ConfigManagerInterface::class);
-                return $this->configManager->getConfigArray($config);
+                return 'object' === $type
+                    ? $this->configManager->getConfigObject($config)
+                    : $this->configManager->getConfigArray($config);
             case 'yaml':
                 $this->yamlReader ??= $container->get(YamlReader::class);
                 return $this->yamlReader->get("$config.yaml");
@@ -141,8 +160,8 @@ class AutowiringFactory implements FactoryInterface
      * Resolve service for a constructor parameter.
      *
      * @param ContainerInterface  $container           Service container
-     * @param ?array              $autowireArgs        Autowire attribute arguments
      * @param ReflectionParameter $reflectionParameter Parameter
+     * @param ?array              $autowireArgs        Autowire attribute arguments
      *
      * @return mixed
      *
@@ -150,8 +169,8 @@ class AutowiringFactory implements FactoryInterface
      */
     protected function resolveService(
         ContainerInterface $container,
-        ?array $autowireArgs,
-        ReflectionParameter $reflectionParameter
+        ReflectionParameter $reflectionParameter,
+        ?array $autowireArgs
     ) {
         $name = $autowireArgs['service'] ?? null;
         if (null === $name) {

@@ -48,7 +48,8 @@ class Autowire
      * Constructor.
      *
      * @param ?string $config     Configuration to inject as an array (mutually exclusive with $service)
-     * @param ?string $configType Configuration type (for $config; valid values are 'ini' (default) and 'yaml')
+     * @param ?string $configType Configuration type (for $config; valid values are 'array' (default), 'object'
+     * and 'yaml')
      * @param ?string $service    Service to inject (mutually exclusive with $config)
      * @param ?string $container  Container or plugin manager to use to get the service
      */

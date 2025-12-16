@@ -33,6 +33,7 @@ namespace VuFindTest\ServiceManager\Factory\TestHarness;
 
 use Laminas\View\HelperPluginManager;
 use VuFind\Auth\Manager;
+use VuFind\Config\Config;
 use VuFind\ILS\Connection;
 use VuFind\ServiceManager\Factory\Autowire;
 use VuFind\View\Helper\Root\Url;
@@ -52,6 +53,8 @@ class AutowiredClass
      * Constructor
      *
      * @param array      $config        Configuration
+     * @param array      $configArray   Configuration (same as $config)
+     * @param Config     $configObject  Configuration object (same configuration as $config)
      * @param array      $yamlConfig    YAML-based configuration
      * @param Url        $url           URL helper
      * @param Manager    $authManager   Authentication manager
@@ -60,6 +63,10 @@ class AutowiredClass
     public function __construct(
         #[Autowire(config: 'config')]
         protected array $config,
+        #[Autowire(config: 'config', configType: 'array')]
+        protected array $configArray,
+        #[Autowire(config: 'config', configType: 'object')]
+        protected Config $configObject,
         #[Autowire(config: 'config2', configType: 'yaml')]
         protected array $yamlConfig,
         #[Autowire(container: HelperPluginManager::class)]
@@ -73,6 +80,12 @@ class AutowiredClass
         }
         if (!isset($config['Foo'])) {
             throw new \Exception('Invalid configuration');
+        }
+        if (!isset($configArray['Foo'])) {
+            throw new \Exception('Invalid array configuration');
+        }
+        if (!isset($configObject->Foo)) {
+            throw new \Exception('Invalid object configuration');
         }
         if (!isset($yamlConfig['YAML'])) {
             throw new \Exception('Invalid YAML configuration');
