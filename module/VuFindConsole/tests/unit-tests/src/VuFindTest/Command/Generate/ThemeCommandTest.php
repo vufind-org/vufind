@@ -55,11 +55,11 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
         $generator = $this->getMockGenerator();
         $generator->expects($this->once())
             ->method('generate')
-            ->with($this->equalTo('custom'))
+            ->with('custom')
             ->willReturn(true);
         $generator->expects($this->once())
             ->method('configure')
-            ->with($this->equalTo($config), $this->equalTo('custom'))
+            ->with($config, 'custom')
             ->willReturn(true);
         $command = new ThemeCommand($generator, $config);
         $commandTester = new CommandTester($command);
@@ -82,11 +82,11 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
         $generator = $this->getMockGenerator();
         $generator->expects($this->once())
             ->method('generate')
-            ->with($this->equalTo('foo'))
+            ->with('foo')
             ->willReturn(true);
         $generator->expects($this->once())
             ->method('configure')
-            ->with($this->equalTo($config), $this->equalTo('foo'))
+            ->with($config, 'foo')
             ->willReturn(false);
         $generator->expects($this->once())
             ->method('getLastError')

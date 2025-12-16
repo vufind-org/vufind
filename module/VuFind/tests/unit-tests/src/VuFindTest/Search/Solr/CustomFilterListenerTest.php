@@ -86,9 +86,9 @@ class CustomFilterListenerTest extends \PHPUnit\Framework\TestCase
         $listener = $this->getListener();
         $mock = $this->createMock(\Laminas\EventManager\SharedEventManagerInterface::class);
         $mock->expects($this->once())->method('attach')->with(
-            $this->equalTo(\VuFindSearch\Service::class),
-            $this->equalTo('pre'),
-            $this->equalTo([$listener, 'onSearchPre'])
+            \VuFindSearch\Service::class,
+            'pre',
+            [$listener, 'onSearchPre']
         );
         $listener->attach($mock);
     }

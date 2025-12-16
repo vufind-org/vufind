@@ -58,13 +58,13 @@ class LinkifyTest extends \PHPUnit\Framework\TestCase
         $urlHighlight
             ->expects($this->once())
             ->method('highlightUrls')
-            ->with($this->equalTo('input text'))
+            ->with('input text')
             ->willReturn('Text with highlighted urls');
 
         $urlHighlightExceptEmail
             ->expects($this->once())
             ->method('highlightUrls')
-            ->with($this->equalTo('input text'))
+            ->with('input text')
             ->willReturn('Text with highlighted urls except emails');
 
         $actual = ($linkify)('input text');

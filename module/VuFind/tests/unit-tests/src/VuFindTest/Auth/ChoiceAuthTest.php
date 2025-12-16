@@ -91,7 +91,7 @@ class ChoiceAuthTest extends \PHPUnit\Framework\TestCase
         $db = $pm->get('Database');
         $db->expects($this->once())
             ->method('authenticate')
-            ->with($this->equalTo($request))
+            ->with($request)
             ->willReturn($user);
         $ca = $this->getChoiceAuth($pm);
         $this->assertEquals($user, $ca->authenticate($request));
@@ -112,7 +112,7 @@ class ChoiceAuthTest extends \PHPUnit\Framework\TestCase
         $db = $pm->get('Database');
         $db->expects($this->once())
             ->method('authenticate')
-            ->with($this->equalTo($request))
+            ->with($request)
             ->willThrowException($exception);
         $ca = $this->getChoiceAuth($pm);
         try {
@@ -136,7 +136,7 @@ class ChoiceAuthTest extends \PHPUnit\Framework\TestCase
         $user = $this->getMockUser();
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
-        $db->expects($this->once())->method('create')->with($this->equalTo($request))->willReturn($user);
+        $db->expects($this->once())->method('create')->with($request)->willReturn($user);
         $ca = $this->getChoiceAuth($pm);
         $this->assertEquals($user, $ca->create($request));
         $this->assertEquals('Database', $ca->getSelectedAuthOption());
@@ -164,7 +164,7 @@ class ChoiceAuthTest extends \PHPUnit\Framework\TestCase
         $shib = $pm->get('Shibboleth');
         $shib->expects($this->once())
             ->method('getLogoutRedirectUrl')
-            ->with($this->equalTo('http://foo'))
+            ->with('http://foo')
             ->willReturn('http://bar');
         $ca = $this->getChoiceAuth($pm, $session);
         $this->assertSame('http://bar', $ca->getLogoutRedirectUrl('http://foo'));
@@ -184,7 +184,7 @@ class ChoiceAuthTest extends \PHPUnit\Framework\TestCase
         $db = $pm->get('Database');
         $db->expects($this->once())
             ->method('updatePassword')
-            ->with($this->equalTo($request))
+            ->with($request)
             ->willReturn($user);
         $ca = $this->getChoiceAuth($pm);
         $this->assertEquals($user, $ca->updatePassword($request));
@@ -233,10 +233,10 @@ class ChoiceAuthTest extends \PHPUnit\Framework\TestCase
             ->disableOriginalConstructor()->getMock();
         if ($method) {
             $mock->method('__isset')
-                ->with($this->equalTo('auth_method'))
+                ->with('auth_method')
                 ->willReturn(true);
             $mock->method('__get')
-                ->with($this->equalTo('auth_method'))
+                ->with('auth_method')
                 ->willReturn($method);
         }
         return $mock;

@@ -71,7 +71,7 @@ class RawJsonSearchCommandTest extends TestCase
         $backend->expects($this->once())->method('getIdentifier')
             ->willReturn('Solr');
         $backend->expects($this->once())->method('rawJsonSearch')
-            ->with($this->equalTo($query), $this->equalTo(0), $this->equalTo(100))
+            ->with($query, 0, 100)
             ->willReturn('[1, 2, 3]');
         $command = new RawJsonSearchCommand('Solr', $query, 0, 100);
         $this->assertEquals([1, 2, 3], $command->execute($backend)->getResult());

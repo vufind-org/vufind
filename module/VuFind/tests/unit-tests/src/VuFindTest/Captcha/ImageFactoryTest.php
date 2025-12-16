@@ -64,17 +64,17 @@ class ImageFactoryTest extends \PHPUnit\Framework\TestCase
             ->willReturn($options);
         $cacheManager = $container->get(\VuFind\Cache\Manager::class);
         $cacheManager->expects($this->once())->method('getCache')
-            ->with($this->equalTo('public'))
+            ->with('public')
             ->willReturn($storage);
 
         $url = $container->get(\VuFind\View\Helper\Root\Url::class);
         $url->expects($this->once())->method('__invoke')
-            ->with($this->equalTo('home'))
+            ->with('home')
             ->willReturn($homeUrl);
 
         $manager = $container->get('ViewHelperManager');
         $manager->expects($this->once())->method('get')
-            ->with($this->equalTo('url'))->willReturn($url);
+            ->with('url')->willReturn($url);
 
         $factory = new \VuFind\Captcha\ImageFactory();
         $fakeImage = new class () {

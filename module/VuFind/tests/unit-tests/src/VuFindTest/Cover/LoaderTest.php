@@ -67,7 +67,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
             ->setConstructorArgs(['foo', 'bar'])->getMock();
         $theme->expects($this->once())
             ->method('findContainingTheme')
-            ->with($this->equalTo(['images/hidden-image.gif']))
+            ->with(['images/hidden-image.gif'])
             ->willReturn(false);
         $loader = $this->getLoader([], null, $theme);
         $loader->getImage();
@@ -139,7 +139,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $loader = $this->getLoader($cfg, null, null, null, ['debug']);
 
         // We expect the loader to complain about the bad filename and load the default image:
-        $loader->expects($this->once())->method('debug')->with($this->equalTo("Cannot access '$badfile'"));
+        $loader->expects($this->once())->method('debug')->with("Cannot access '$badfile'");
         $loader->loadUnavailable();
         $this->assertEquals('64', strlen($loader->getImage()));
     }
@@ -158,7 +158,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         // We expect the loader to complain about the bad filename and load the default image:
         $expected = "Illegal file-extension 'phtml' for image '" . $this->getThemeDir() . '/'
             . $this->testTheme . '/' . $badfile . "'";
-        $loader->expects($this->once())->method('debug')->with($this->equalTo($expected));
+        $loader->expects($this->once())->method('debug')->with($expected);
         $loader->loadUnavailable();
         $this->assertEquals('64', strlen($loader->getImage()));
     }

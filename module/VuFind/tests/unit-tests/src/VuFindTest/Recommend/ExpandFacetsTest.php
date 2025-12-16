@@ -75,10 +75,10 @@ class ExpandFacetsTest extends \PHPUnit\Framework\TestCase
         $params = $results->getParams();
         $params->expects($this->once())
             ->method('addFacet')
-            ->with($this->equalTo('format'), $this->equalTo('Format'));
+            ->with('format', 'Format');
         $results->expects($this->once())
             ->method('getFacetList')
-            ->with($this->equalTo(['format' => 'Format']))
+            ->with(['format' => 'Format'])
             ->willReturn(['foo']);
         $ef = $this->getExpandFacets(
             $this->getMockConfigManager($config, [], $this->once()),

@@ -77,8 +77,8 @@ class ExtendServiceCommandTest extends \PHPUnit\Framework\TestCase
         $tools->expects($this->once())->method('setOutputInterface');
         $tools->expects($this->once())->method('extendService')
             ->with(
-                $this->equalTo('Foo'),
-                $this->equalTo('Bar')
+                'Foo',
+                'Bar'
             );
         $command = new ExtendServiceCommand($tools);
         $commandTester = new CommandTester($command);

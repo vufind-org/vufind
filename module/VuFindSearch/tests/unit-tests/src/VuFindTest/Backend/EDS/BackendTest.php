@@ -61,7 +61,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
             . '&filters=%5B%7B%22name%22%3A%22custid%22%2C%22values%22%3A%5B%22foo%22%5D%7D%5D&term=bla';
         $conn->expects($this->once())
             ->method('call')
-            ->with($this->equalTo($expectedUri))
+            ->with($expectedUri)
             ->willReturn($this->loadResponse('autocomplete'));
 
         $back = $this->getBackend(

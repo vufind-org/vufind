@@ -251,7 +251,7 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
     {
         $mockWriter = $this->createMock(\VuFind\Solr\Writer::class);
         $mockWriter->expects($this->once())->method('save')->with(
-            $this->equalTo('Solr'),
+            'Solr',
             $this->callback(
                 function ($doc) {
                     $expected = file_get_contents($this->csvFixtureDir . 'test.json');
@@ -263,7 +263,7 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
                     return true;
                 }
             ),
-            $this->equalTo('update')
+            'update'
         );
         $this->container->set(\VuFind\Solr\Writer::class, $mockWriter);
         $importer = $this->getImporter();
@@ -285,13 +285,13 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
     {
         $mockWriter = $this->createMock(\VuFind\Solr\Writer::class);
         $mockWriter->expects($this->exactly(3))->method('save')->with(
-            $this->equalTo('Solr'),
+            'Solr',
             $this->callback(
                 function ($doc) {
                     return $doc instanceof RawJSONDocument;
                 }
             ),
-            $this->equalTo('update')
+            'update'
         );
         $this->container->set(\VuFind\Solr\Writer::class, $mockWriter);
         $importer = $this->getImporter();

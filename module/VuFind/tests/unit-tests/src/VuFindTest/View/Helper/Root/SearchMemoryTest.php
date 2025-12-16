@@ -113,10 +113,10 @@ class SearchMemoryTest extends \PHPUnit\Framework\TestCase
     {
         $url = $this->createMock(Url::class);
         $url->method('__invoke')
-            ->with($this->equalTo($this->searchRoute))
+            ->with($this->searchRoute)
             ->willReturn($this->searchBasePath);
         $searchParams = $this->createMock(SearchParams::class);
-        $searchParams->method('__invoke')->with($this->equalTo('Solr'))->willReturn($solrParams);
+        $searchParams->method('__invoke')->with('Solr')->willReturn($solrParams);
         $plugins = compact('searchParams', 'url');
         return $this->getPhpRenderer($plugins);
     }
@@ -140,7 +140,7 @@ class SearchMemoryTest extends \PHPUnit\Framework\TestCase
         $solrParams = $this->getMockSolrParams($expectedRequestArray);
         $expectedRequest = new Parameters($expectedRequestArray);
         $solrParams->expects($this->once())->method('initFromRequest')
-            ->with($this->equalTo($expectedRequest));
+            ->with($expectedRequest);
         $helper->setView($this->getConfiguredView($solrParams));
         $this->assertEquals($solrParams, $helper->getLastSearchParams('Solr'));
     }

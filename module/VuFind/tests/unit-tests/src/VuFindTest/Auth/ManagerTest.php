@@ -74,7 +74,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
         $db->expects($this->once())->method('getSessionInitiator')
-            ->with($this->equalTo('foo'))->willReturn('bar');
+            ->with('foo')->willReturn('bar');
         $manager = $this->getManager([], null, null, $pm);
         $this->assertSame('bar', $manager->getSessionInitiator('foo'));
     }
@@ -144,7 +144,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
         $db->expects($this->once())->method('getLogoutRedirectUrl')
-            ->with($this->equalTo('http://foo/bar'))->willReturn('http://baz');
+            ->with('http://foo/bar')->willReturn('http://baz');
         $manager = $this->getManager([], null, null, $pm);
         $this->assertSame('http://baz', $manager->getLogoutRedirectUrl('http://foo/bar'));
     }

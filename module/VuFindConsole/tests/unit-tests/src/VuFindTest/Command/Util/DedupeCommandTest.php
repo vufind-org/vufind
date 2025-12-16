@@ -78,7 +78,7 @@ class DedupeCommandTest extends \PHPUnit\Framework\TestCase
     {
         $fakeHandle = 7;    // arbitrary number for test purposes
         $command->expects($this->once())->method('openOutputFile')
-            ->with($this->equalTo($output))
+            ->with($output)
             ->willReturn($fakeHandle);
         $this->expectConsecutiveCalls(
             $command,
@@ -90,7 +90,7 @@ class DedupeCommandTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $command->expects($this->once())->method('closeOutputFile')
-            ->with($this->equalTo($fakeHandle));
+            ->with($fakeHandle);
     }
 
     /**

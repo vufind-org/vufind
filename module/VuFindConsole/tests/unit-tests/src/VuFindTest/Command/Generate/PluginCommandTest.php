@@ -81,9 +81,9 @@ class PluginCommandTest extends \PHPUnit\Framework\TestCase
             ->willReturn($tools);
         $tools->expects($this->once())->method('createPlugin')
             ->with(
-                $this->equalTo($container),
-                $this->equalTo('Foo'),
-                $this->equalTo(null)
+                $container,
+                'Foo',
+                null
             );
         $command = new PluginCommand($tools, $container);
         $commandTester = new CommandTester($command);
@@ -106,9 +106,9 @@ class PluginCommandTest extends \PHPUnit\Framework\TestCase
             ->willReturn($tools);
         $tools->expects($this->once())->method('createPlugin')
             ->with(
-                $this->equalTo($container),
-                $this->equalTo('Foo'),
-                $this->equalTo('Factory')
+                $container,
+                'Foo',
+                'Factory'
             );
         $command = new PluginCommand($tools, $container);
         $commandTester = new CommandTester($command);
