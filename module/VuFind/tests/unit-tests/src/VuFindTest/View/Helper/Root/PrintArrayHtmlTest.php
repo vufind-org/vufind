@@ -63,99 +63,98 @@ class PrintArrayHtmlTest extends AbstractMakeTagTestCase
     /**
      * Data provider for test
      *
-     * @return array
+     * @return \Iterator<(int | string), mixed>
      */
-    public static function getPrintArrayHtmlData(): array
+    public static function getPrintArrayHtmlData(): \Iterator
     {
-        return [
-            [ // Set 0
-                [],
-                '',
+        yield [ // Set 0
+            [],
+            '',
+        ];
+        yield [ // Set 1
+            [
+                'KeyA' => 'ValueA',
             ],
-            [ // Set 1
-                [
-                    'KeyA' => 'ValueA',
-                ],
-                <<<END
+            <<<END
                     <span class="term">KeyA:</span> <span class="detail">ValueA</span><br>
 
                     END,
-            ],
-            [ // Set 2
-                'Value0',
-                <<<END
+        ];
+        yield [ // Set 2
+            'Value0',
+            <<<END
                     <span class="detail">Value0</span><br>
 
                     END,
+        ];
+        yield [ // Set 3
+            [
+                0 => 'Value0',
             ],
-            [ // Set 3
-                [
-                    0 => 'Value0',
-                ],
-                <<<END
+            <<<END
                     <span class="detail">Value0</span><br>
 
                     END,
+        ];
+        yield [ // Set 4
+            [
+                0 => 'Value0',
+                1 => 'Value1',
             ],
-            [ // Set 4
-                [
-                    0 => 'Value0',
-                    1 => 'Value1',
-                ],
-                <<<END
+            <<<END
                     <span class="detail">Value0</span><br>
                     <span class="detail">Value1</span><br>
 
                     END,
+        ];
+        yield [ // Set 5
+            [
+                0 => "Escaped values <>&'\"",
             ],
-            [ // Set 5
-                [
-                    0 => "Escaped values <>&'\"",
-                ],
-                <<<END
+            <<<END
                     <span class="detail">Escaped values &lt;&gt;&amp;&#039;&quot;</span><br>
 
                     END,
-            ],
-            [ // Set 6
-                [
-                    'KeyA' => [
-                        0 => 'Value0',
-                        1 => 'Value1',
-                    ],
+        ];
+        yield [ // Set 6
+            [
+                'KeyA' => [
+                    0 => 'Value0',
+                    1 => 'Value1',
                 ],
-                <<<END
+            ],
+            <<<END
                     <span class="term">KeyA:</span><br>
                     &ensp;&ensp;<span class="detail">Value0</span><br>
                     &ensp;&ensp;<span class="detail">Value1</span><br>
 
                     END,
-            ],
-            [ // Set 7
-                [
-                    0 => [
-                        0 => 'Value0',
-                        1 => 'Value1',
-                    ],
+        ];
+        yield [ // Set 7
+            [
+                0 => [
+                    0 => 'Value0',
+                    1 => 'Value1',
                 ],
-                <<<END
+            ],
+            <<<END
                     &ndash;&ensp;<span class="detail">Value0</span><br>
                     &ensp;&ensp;<span class="detail">Value1</span><br>
 
                     END,
-            ],
-            [ // Set 8
-                [
-                    'KeyA' => [
-                        0 => 'Value0',
-                        1 => 'Value1',
-                    ],
-                    'KeyB' => [
-                        'KeyX' => 'Value2',
-                        'KeyY' => 'Value3',
-                    ],
+        ];
+        yield [ // Set 8
+            [
+                'KeyA' => [
+                    0 => 'Value0',
+                    1 => 'Value1',
                 ],
-                <<<END
+                'KeyB' => [
+                    'KeyX' => 'Value2',
+                    'KeyY' => 'Value3',
+                ],
+            ],
+            <<<END
                     <span class="term">KeyA:</span><br>
                     &ensp;&ensp;<span class="detail">Value0</span><br>
                     &ensp;&ensp;<span class="detail">Value1</span><br>
@@ -164,20 +163,20 @@ class PrintArrayHtmlTest extends AbstractMakeTagTestCase
                     &ensp;&ensp;<span class="term">KeyY:</span> <span class="detail">Value3</span><br>
 
                     END,
-            ],
-            [ // Set 9
-                [
-                    0 => [
-                        0 => 'Value0',
-                        1 => 'Value1',
-                    ],
-                    1 => [
-                        'KeyX' => 'Value2',
-                        'KeyY' => 'Value3',
-                    ],
-                    2 => 'Value4',
+        ];
+        yield [ // Set 9
+            [
+                0 => [
+                    0 => 'Value0',
+                    1 => 'Value1',
                 ],
-                <<<END
+                1 => [
+                    'KeyX' => 'Value2',
+                    'KeyY' => 'Value3',
+                ],
+                2 => 'Value4',
+            ],
+            <<<END
                     &ndash;&ensp;<span class="detail">Value0</span><br>
                     &ensp;&ensp;<span class="detail">Value1</span><br>
                     &ndash;&ensp;<span class="term">KeyX:</span> <span class="detail">Value2</span><br>
@@ -185,19 +184,19 @@ class PrintArrayHtmlTest extends AbstractMakeTagTestCase
                     &ndash;&ensp;<span class="detail">Value4</span><br>
 
                     END,
-            ],
-            [ // Set 10
-                [
-                    'KeyA' => [
-                        0 => 'Value0',
-                        1 => 'Value1',
-                    ],
-                    'KeyB' => [
-                        0 => ['KeyW' => 'Value2', 'KeyX' => 'Value3'],
-                        1 => ['KeyY' => 'Value4', 'KeyZ' => 'Value5'],
-                    ],
+        ];
+        yield [ // Set 10
+            [
+                'KeyA' => [
+                    0 => 'Value0',
+                    1 => 'Value1',
                 ],
-                <<<END
+                'KeyB' => [
+                    0 => ['KeyW' => 'Value2', 'KeyX' => 'Value3'],
+                    1 => ['KeyY' => 'Value4', 'KeyZ' => 'Value5'],
+                ],
+            ],
+            <<<END
                     <span class="term">KeyA:</span><br>
                     &ensp;&ensp;<span class="detail">Value0</span><br>
                     &ensp;&ensp;<span class="detail">Value1</span><br>
@@ -208,27 +207,27 @@ class PrintArrayHtmlTest extends AbstractMakeTagTestCase
                     &ensp;&ensp;&ensp;&ensp;<span class="term">KeyZ:</span> <span class="detail">Value5</span><br>
 
                     END,
-            ],
-            [ // Set 11
-                [
-                    'KeyA' => [
-                        0 => 'Value0',
-                        1 => 'Value1',
-                    ],
-                    '001' => [
-                        0 => 'Value2',
-                        1 => 'Value3',
-                    ],
-                    '100' => [
-                        0 => 'Value4',
-                        1 => 'Value5',
-                    ],
-                    101 => [
-                        'KeyB' => 'Value6',
-                        200 => 'Value7',
-                    ],
+        ];
+        yield [ // Set 11
+            [
+                'KeyA' => [
+                    0 => 'Value0',
+                    1 => 'Value1',
                 ],
-                <<<END
+                '001' => [
+                    0 => 'Value2',
+                    1 => 'Value3',
+                ],
+                '100' => [
+                    0 => 'Value4',
+                    1 => 'Value5',
+                ],
+                101 => [
+                    'KeyB' => 'Value6',
+                    200 => 'Value7',
+                ],
+            ],
+            <<<END
                     <span class="term">KeyA:</span><br>
                     &ensp;&ensp;<span class="detail">Value0</span><br>
                     &ensp;&ensp;<span class="detail">Value1</span><br>
@@ -243,20 +242,20 @@ class PrintArrayHtmlTest extends AbstractMakeTagTestCase
                     &ensp;&ensp;<span class="term">200:</span> <span class="detail">Value7</span><br>
 
                     END,
-            ],
-            [ // Set 12
-                [
-                    '001' => ['Value0'],
-                    '002' => [
-                        '020' => ['Value1'],
-                        '040' => ['Value2'],
-                        200 => ['Value3'],
-                        '201' => ['Value4'],
-                    ],
-                    '003' => ['Value5'],
-                    '100' => ['Value6'],
+        ];
+        yield [ // Set 12
+            [
+                '001' => ['Value0'],
+                '002' => [
+                    '020' => ['Value1'],
+                    '040' => ['Value2'],
+                    200 => ['Value3'],
+                    '201' => ['Value4'],
                 ],
-                <<<END
+                '003' => ['Value5'],
+                '100' => ['Value6'],
+            ],
+            <<<END
                     <span class="term">001:</span> <span class="detail">Value0</span><br>
                     <span class="term">002:</span><br>
                     &ensp;&ensp;<span class="term">020:</span> <span class="detail">Value1</span><br>
@@ -267,91 +266,91 @@ class PrintArrayHtmlTest extends AbstractMakeTagTestCase
                     <span class="term">100:</span> <span class="detail">Value6</span><br>
 
                     END,
+        ];
+        yield [ // Set 13
+            [
+                ['001' => ['Value0']],
+                ['002' => ['Value1']],
+                ['049' => ['Value2']],
+                ['100' => ['Value3']],
             ],
-            [ // Set 13
-                [
-                    ['001' => ['Value0']],
-                    ['002' => ['Value1']],
-                    ['049' => ['Value2']],
-                    ['100' => ['Value3']],
-                ],
-                <<<END
+            <<<END
                     &ndash;&ensp;<span class="term">001:</span> <span class="detail">Value0</span><br>
                     &ndash;&ensp;<span class="term">002:</span> <span class="detail">Value1</span><br>
                     &ndash;&ensp;<span class="term">049:</span> <span class="detail">Value2</span><br>
                     &ndash;&ensp;<span class="term">100:</span> <span class="detail">Value3</span><br>
 
                     END,
+        ];
+        yield [ // Set 14
+            [
+                'KeyA' => [0 => 'Value0'],
             ],
-            [ // Set 14
-                [
-                    'KeyA' => [0 => 'Value0'],
-                ],
-                <<<END
+            <<<END
                     <span class="term">KeyA:</span> <span class="detail">Value0</span><br>
 
                     END,
+        ];
+        yield [ // Set 15
+            [
+                'KeyA' => ['000' => 'Value0'],
             ],
-            [ // Set 15
-                [
-                    'KeyA' => ['000' => 'Value0'],
-                ],
-                <<<END
+            <<<END
                     <span class="term">KeyA:</span><br>
                     &ensp;&ensp;<span class="term">000:</span> <span class="detail">Value0</span><br>
 
                     END,
+        ];
+        yield [ // Set 16
+            [
+                'KeyA' => [0 => [0 => 'Value0']],
             ],
-            [ // Set 16
-                [
-                    'KeyA' => [0 => [0 => 'Value0']],
-                ],
-                <<<END
+            <<<END
                     <span class="term">KeyA:</span><br>
                     &ensp;&ensp;<span class="detail">Value0</span><br>
 
                     END,
+        ];
+        yield [ // Set 17
+            [
+                'KeyA' => [0 => [0 => [0 => [0 => 'Value0']]]],
             ],
-            [ // Set 17
-                [
-                    'KeyA' => [0 => [0 => [0 => [0 => 'Value0']]]],
-                ],
-                <<<END
+            <<<END
                     <span class="term">KeyA:</span><br>
                     &ensp;&ensp;&ndash;&ensp;&ndash;&ensp;<span class="detail">Value0</span><br>
 
                     END,
-            ],
-            [ // Set 18
-                [
-                    'KeyA' => [
-                        0 => [0 => 'Value0'],
-                        1 => [0 => 'Value1'],
-                        2 => [0 => 'Value2'],
-                    ],
+        ];
+        yield [ // Set 18
+            [
+                'KeyA' => [
+                    0 => [0 => 'Value0'],
+                    1 => [0 => 'Value1'],
+                    2 => [0 => 'Value2'],
                 ],
-                <<<END
+            ],
+            <<<END
                     <span class="term">KeyA:</span><br>
                     &ensp;&ensp;<span class="detail">Value0</span><br>
                     &ensp;&ensp;<span class="detail">Value1</span><br>
                     &ensp;&ensp;<span class="detail">Value2</span><br>
 
                     END,
-            ],
-            [ // Set 19
-                [
-                    'KeyA' => [
-                        0 => [
-                            0 => ['Value0'],
-                            1 => ['Value1'],
-                        ],
-                        1 => [
-                            0 => 'Value2',
-                            1 => 'Value3',
-                        ],
+        ];
+        yield [ // Set 19
+            [
+                'KeyA' => [
+                    0 => [
+                        0 => ['Value0'],
+                        1 => ['Value1'],
+                    ],
+                    1 => [
+                        0 => 'Value2',
+                        1 => 'Value3',
                     ],
                 ],
-                <<<END
+            ],
+            <<<END
                     <span class="term">KeyA:</span><br>
                     &ensp;&ensp;&ndash;&ensp;<span class="detail">Value0</span><br>
                     &ensp;&ensp;&ensp;&ensp;<span class="detail">Value1</span><br>
@@ -359,7 +358,6 @@ class PrintArrayHtmlTest extends AbstractMakeTagTestCase
                     &ensp;&ensp;&ensp;&ensp;<span class="detail">Value3</span><br>
 
                     END,
-            ],
         ];
     }
 

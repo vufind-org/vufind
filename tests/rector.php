@@ -8,6 +8,7 @@ use Rector\PHPUnit\Set\PHPUnitSetList;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\RemoveExpectAnyFromMockRector;
 use Rector\PHPUnit\PHPUnit60\Rector\MethodCall\GetMockBuilderGetMockToCreateMockRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertEqualsToSameRector;
+use Rector\PHPUnit\CodeQuality\Rector\Class_\YieldDataProviderRector;
 
 return RectorConfig::configure()
     ->withCache(
@@ -26,6 +27,7 @@ return RectorConfig::configure()
         RemoveExpectAnyFromMockRector::class,
         GetMockBuilderGetMockToCreateMockRector::class,
         AssertEqualsToSameRector::class,
+        YieldDataProviderRector::class,
     ])
     ->withTypeCoverageLevel(0)
     ->withDeadCodeLevel(6)
