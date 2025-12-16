@@ -63,7 +63,7 @@ class AbstractTopLevelServiceFactory extends AbstractPluginFactory
         }
         do {
             if (str_starts_with($class, 'VuFind')) {
-                return true;
+                return parent::canCreate($container, $requestedName);
             }
         } while ($class = get_parent_class($class));
         return false;

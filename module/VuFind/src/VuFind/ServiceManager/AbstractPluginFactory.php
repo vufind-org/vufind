@@ -62,6 +62,13 @@ abstract class AbstractPluginFactory implements AbstractFactoryInterface
     protected $classSuffix = '';
 
     /**
+     * Lookup table of factories for classes
+     *
+     * @var array
+     */
+    protected $factoryForClass = [];
+
+    /**
      * Get the name of a class for a given plugin name.
      *
      * @param string $requestedName Name of service
@@ -83,13 +90,15 @@ abstract class AbstractPluginFactory implements AbstractFactoryInterface
     }
 
     /**
-     * Given a class name, find the best matching factory.
+     * Given a class name, detect the best matching factory. Return null if none can be found.
+     * This is a support method for getFactoryForClass and should not be called directly; use
+     * getFactoryForClass to take advantage of internal caching.
      *
      * @param string $class Class name
      *
-     * @return string
+     * @return ?string
      */
-    protected function getFactoryForClass(string $class): string
+    protected function detectFactoryForClass(string $class): ?string
     {
         if (class_exists($class . 'Factory')) {
             return $class . 'Factory';
@@ -101,7 +110,24 @@ abstract class AbstractPluginFactory implements AbstractFactoryInterface
             }
             $parentClass = get_parent_class($parentClass);
         }
+        // TODO: it would be better to return null instead of InvokableFactory, and to annotate
+        // any factories that are not currently detected as autowireable so that they get autowired.
         return $this->isAutowireable($class) ? AutowiringFactory::class : InvokableFactory::class;
+    }
+
+    /**
+     * Given a class name, find the best matching factory. Return null if none can be found.
+     *
+     * @param string $class Class name
+     *
+     * @return ?string
+     */
+    protected function getFactoryForClass(string $class): ?string
+    {
+        if (!isset($this->factoryForClass[$class])) {
+            $this->factoryForClass[$class] = $this->detectFactoryForClass($class);
+        }
+        return $this->factoryForClass[$class];
     }
 
     /**
@@ -116,7 +142,8 @@ abstract class AbstractPluginFactory implements AbstractFactoryInterface
      */
     public function canCreate(ContainerInterface $container, $requestedName)
     {
-        return class_exists($this->getClassName($requestedName));
+        $className = $this->getClassName($requestedName);
+        return class_exists($className) && null !== $this->getFactoryForClass($className);
     }
 
     /**
@@ -135,6 +162,9 @@ abstract class AbstractPluginFactory implements AbstractFactoryInterface
     ) {
         $class = $this->getClassName($requestedName);
         $factoryName = $this->getFactoryForClass($class);
+        if (!$factoryName) {
+            throw new \Exception("Cannot determine factory for $class");
+        }
         $factory = new $factoryName();
         return $factory($container, $class, $options);
     }
