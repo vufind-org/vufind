@@ -47,7 +47,7 @@ class ConfigCacheTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for configuration caching tests
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function cacheSettingsProvider(): \Iterator
     {

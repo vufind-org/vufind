@@ -47,7 +47,7 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testCapitalizeBooleans
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function capitalizeBooleansProvider(): \Iterator
     {
@@ -222,7 +222,7 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testCapitalizeRanges
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function capitalizeRangesProvider(): \Iterator
     {
@@ -355,7 +355,7 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testColonNormalization
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function colonNormalizationProvider(): \Iterator
     {
@@ -391,7 +391,7 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testExtractSearchTerms.
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function extractSearchTermsProvider(): \Iterator
     {
@@ -434,7 +434,7 @@ class LuceneSyntaxHelperTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testUnquotedNormalization
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function unquotedNormalizationProvider(): \Iterator
     {

@@ -46,7 +46,7 @@ class ContentControllerTest extends \VuFindTest\Integration\MinkTestCase
      * Data provider for testMarkdownContentRendering() to confirm that the initial part
      * of the content URL is case-insensitive.
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function basePathProvider(): \Iterator
     {
@@ -92,7 +92,7 @@ class ContentControllerTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testDirectoryHandling().
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function requestPathProvider(): \Iterator
     {

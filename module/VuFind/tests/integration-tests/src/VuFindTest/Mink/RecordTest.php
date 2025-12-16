@@ -159,7 +159,7 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testPermalink().
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function permalinkProvider(): \Iterator
     {

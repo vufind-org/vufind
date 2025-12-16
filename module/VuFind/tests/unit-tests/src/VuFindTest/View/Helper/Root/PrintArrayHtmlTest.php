@@ -63,7 +63,7 @@ class PrintArrayHtmlTest extends AbstractMakeTagTestCase
     /**
      * Data provider for test
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function getPrintArrayHtmlData(): \Iterator
     {

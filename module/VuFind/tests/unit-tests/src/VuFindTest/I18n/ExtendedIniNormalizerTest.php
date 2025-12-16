@@ -98,7 +98,7 @@ class ExtendedIniNormalizerTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testEscaping
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function escapingProvider(): \Iterator
     {

@@ -45,7 +45,7 @@ class ScopeRepositoryTest extends AbstractTokenRepositoryTestCase
     /**
      * Data provider for testScopeRepository
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function getTestScopeRepositoryData(): \Iterator
     {

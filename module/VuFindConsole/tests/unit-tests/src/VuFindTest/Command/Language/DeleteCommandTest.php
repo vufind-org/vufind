@@ -89,7 +89,7 @@ class DeleteCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testSuccessWithMinimalParameters()
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function successWithMinimalParametersProvider(): \Iterator
     {

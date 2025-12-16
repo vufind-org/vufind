@@ -49,7 +49,7 @@ final class ResponsivenessTest extends \VuFindTest\Integration\MinkTestCase
      * Data provider for testing elements that should be hidden in mobile, visible
      * on desktop.
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function windowDimensionProvider(): \Iterator
     {

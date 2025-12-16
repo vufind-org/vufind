@@ -43,7 +43,7 @@ class AlphabrowseTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testTitleSearchNormalization
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function titleSearchNormalizationProvider(): \Iterator
     {

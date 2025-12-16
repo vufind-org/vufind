@@ -96,7 +96,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testDatabaseUpgrade().
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function databaseUpgradeProvider(): \Iterator
     {
@@ -226,7 +226,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testSyndetics.
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function syndeticsProvider(): \Iterator
     {
@@ -403,7 +403,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testEbscoUpgrades
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function ebscoUpgradeProvider(): \Iterator
     {
@@ -626,7 +626,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testMailRequireLoginMigration().
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function mailRequireLoginProvider(): \Iterator
     {
@@ -654,7 +654,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testLdapUriMigration.
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function ldapUriMigrationProvider(): \Iterator
     {

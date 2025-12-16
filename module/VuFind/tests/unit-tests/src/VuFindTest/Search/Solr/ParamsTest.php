@@ -162,7 +162,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testSortTieBreakerParameter.
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function sortValueProvider(): \Iterator
     {
@@ -202,7 +202,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testSortList
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function sortListDataProvider(): \Iterator
     {

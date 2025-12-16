@@ -61,7 +61,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
     /**
      * Test that responds to common inputs
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function htmlAttributesTests(): \Iterator
     {
@@ -86,7 +86,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
     /**
      * Void elements for test below
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function helperOptionTests(): \Iterator
     {
@@ -120,7 +120,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
     /**
      * Void elements for test below
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function voidTags(): \Iterator
     {
@@ -173,7 +173,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
     /**
      * Good tag names for test below
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function validTags(): \Iterator
     {
@@ -211,7 +211,7 @@ class MakeTagTest extends \VuFindTest\Unit\AbstractMakeTagTestCase
     /**
      * Bad tag names for test below
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function invalidTags(): \Iterator
     {

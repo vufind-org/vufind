@@ -76,7 +76,7 @@ class TitleHoldsTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetSuppressedLocations().
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function suppressedLocationsProvider(): \Iterator
     {

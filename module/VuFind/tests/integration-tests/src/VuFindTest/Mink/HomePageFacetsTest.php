@@ -67,7 +67,7 @@ class HomePageFacetsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testHierarchicalFacets
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function hierarchicalFacetsProvider(): \Iterator
     {

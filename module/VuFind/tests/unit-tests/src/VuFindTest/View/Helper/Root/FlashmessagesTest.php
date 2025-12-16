@@ -52,7 +52,7 @@ class FlashmessagesTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testFlashmessageData
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function getTestFlashmessageData(): \Iterator
     {

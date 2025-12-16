@@ -45,7 +45,7 @@ class KohaTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testValidCoverLoading
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function getCoverData(): \Iterator
     {

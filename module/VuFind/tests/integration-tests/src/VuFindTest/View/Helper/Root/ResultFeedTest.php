@@ -94,7 +94,7 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testRSS.
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function rssProvider(): \Iterator
     {

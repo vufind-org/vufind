@@ -54,7 +54,7 @@ class ChannelLoaderTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetRecordContext()
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function getRecordContextProvider(): \Iterator
     {

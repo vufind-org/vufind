@@ -47,7 +47,7 @@ class ConfigWritingTest extends ConfigTestCase
     /**
      * Upgrade test provider.
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function upgradeTestProvider(): \Iterator
     {

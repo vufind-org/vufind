@@ -207,7 +207,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testPcAvailabilityFilter
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function getPcAvailabilityData(): \Iterator
     {

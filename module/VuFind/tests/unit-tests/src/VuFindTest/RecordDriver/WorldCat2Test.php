@@ -48,7 +48,7 @@ class WorldCat2Test extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testMethod().
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function methodTests(): \Iterator
     {

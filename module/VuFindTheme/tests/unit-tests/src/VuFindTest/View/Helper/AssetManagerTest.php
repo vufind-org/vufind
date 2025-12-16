@@ -54,7 +54,7 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testOutputInlineScriptLink() and testOutputInlineScriptString().
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function outputInlineScriptProvider(): \Iterator
     {

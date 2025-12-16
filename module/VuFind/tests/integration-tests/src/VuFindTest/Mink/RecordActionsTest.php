@@ -281,7 +281,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testTagSearchSort
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function getTagSearchSortData(): \Iterator
     {
@@ -692,7 +692,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testRating
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function getTestRatingData(): \Iterator
     {

@@ -194,7 +194,7 @@ class IconTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testUnicodeIcons
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function unicodeIconProvider(): \Iterator
     {

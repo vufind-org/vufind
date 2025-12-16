@@ -65,7 +65,7 @@ class LocalFileTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testValidCoverLoading().
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function validCoverProvider(): \Iterator
     {
@@ -137,7 +137,7 @@ class LocalFileTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testInvalidCover()
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function invalidCoverProvider(): \Iterator
     {

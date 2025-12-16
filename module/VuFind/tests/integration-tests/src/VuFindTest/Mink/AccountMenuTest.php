@@ -118,7 +118,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for menu configuration tests
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function menuConfigurationProvider(): \Iterator
     {
@@ -237,7 +237,7 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testAccountIcon
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function accountIconProvider(): \Iterator
     {

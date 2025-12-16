@@ -93,7 +93,7 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testDOIApiSuccess()
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function doiProvider(): \Iterator
     {

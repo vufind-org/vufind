@@ -495,7 +495,7 @@ class DefaultRecordTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetCleanISBNs
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function getCleanISBNsProvider(): \Iterator
     {

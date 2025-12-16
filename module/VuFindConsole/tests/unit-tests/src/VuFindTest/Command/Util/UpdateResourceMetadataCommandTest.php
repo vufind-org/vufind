@@ -55,7 +55,7 @@ class UpdateResourceMetadataCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testUpdate
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function updateProvider(): \Iterator
     {

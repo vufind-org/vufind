@@ -52,7 +52,7 @@ class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testDownload
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function downloadProvider(): \Iterator
     {

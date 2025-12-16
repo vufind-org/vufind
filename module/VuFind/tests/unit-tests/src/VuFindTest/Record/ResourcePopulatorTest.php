@@ -49,7 +49,7 @@ class ResourcePopulatorTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testCreateAndPersistResourceForRecordId
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function createAndPersistResourceForRecordIdProvider(): \Iterator
     {

@@ -45,7 +45,7 @@ class VarDumperTraitTest extends \PHPUnit\Framework\TestCase
     /**
      * Test varDump method data provider
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function varDumpProvider(): \Iterator
     {

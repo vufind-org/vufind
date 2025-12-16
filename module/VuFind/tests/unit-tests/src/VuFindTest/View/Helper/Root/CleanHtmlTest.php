@@ -47,7 +47,7 @@ class CleanHtmlTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testCleanHtml
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function cleanHtmlProvider(): \Iterator
     {

@@ -51,7 +51,7 @@ class DatabaseCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for SQL-only or non-SQL-only scenarios.
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function sqlOnlyProvider(): \Iterator
     {

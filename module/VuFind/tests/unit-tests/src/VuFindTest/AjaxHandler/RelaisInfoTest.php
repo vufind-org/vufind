@@ -61,7 +61,7 @@ class RelaisInfoTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testSearchResponse()
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function authenticatedBehaviorProvider(): \Iterator
     {

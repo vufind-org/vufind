@@ -195,7 +195,7 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provide for testEncodeParams()
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function encodeParamsProvider(): \Iterator
     {

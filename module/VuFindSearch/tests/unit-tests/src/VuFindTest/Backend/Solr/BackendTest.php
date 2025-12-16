@@ -475,7 +475,7 @@ class BackendTest extends TestCase
     /**
      * Data provider for testGetIds
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function getIdsProvider(): \Iterator
     {

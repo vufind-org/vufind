@@ -801,7 +801,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
     /**
      * Function to get testEmailSubjects data.
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function getEmailSubjectsData(): \Iterator
     {
@@ -846,7 +846,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
     /**
      * Function to get form action route test data
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function getFormActionRouteData(): \Iterator
     {

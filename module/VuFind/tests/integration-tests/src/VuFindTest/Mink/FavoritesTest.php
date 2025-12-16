@@ -785,7 +785,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testListTaggingToDisplayChannel
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function getListTagData(): \Iterator
     {

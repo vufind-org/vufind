@@ -49,7 +49,7 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testCoverLoading.
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function coverProvider(): \Iterator
     {

@@ -121,7 +121,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testSearch
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function getSearchData(): \Iterator
     {

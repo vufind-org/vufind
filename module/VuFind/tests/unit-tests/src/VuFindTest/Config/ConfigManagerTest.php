@@ -175,7 +175,7 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testReadOnlyConfig().
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function readOnlyConfigProvider(): \Iterator
     {
@@ -461,7 +461,7 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testConfigsInLocalDirStack().
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function localDirStackTestProvider(): \Iterator
     {

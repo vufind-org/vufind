@@ -56,7 +56,7 @@ class UserCommentsTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testIsActive.
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function isActiveProvider(): \Iterator
     {
@@ -82,7 +82,7 @@ class UserCommentsTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testIsCaptchaActive.
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function isCaptchaActiveProvider(): \Iterator
     {

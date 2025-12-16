@@ -43,7 +43,7 @@ class RecordCoverImageTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testCoverLoading()
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function coverLoadingProvider(): \Iterator
     {

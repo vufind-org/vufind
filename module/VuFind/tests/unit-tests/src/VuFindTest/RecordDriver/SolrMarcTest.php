@@ -173,7 +173,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
     /**
      * Config and data for assertion of Subject Headings Order (testSubjectHeadingsOrder)
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function marcSubjectHeadingsSortOptionsProvider(): \Iterator
     {
@@ -284,7 +284,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetSchemaOrgFormatsArray().
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function getSchemaOrgFormatsArrayProvider(): \Iterator
     {

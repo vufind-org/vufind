@@ -48,7 +48,7 @@ class MigrationLoaderTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetMigrationDirForPlatform().
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function getMigrationDirForPlatformProvider(): \Iterator
     {
@@ -77,7 +77,7 @@ class MigrationLoaderTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetMigrationSubdirectoriesMatchingVersion().
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function getMigrationSubdirectoriesMatchingVersionProvider(): \Iterator
     {

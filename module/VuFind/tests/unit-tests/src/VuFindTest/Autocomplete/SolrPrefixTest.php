@@ -63,7 +63,7 @@ class SolrPrefixTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetSuggestions().
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function getSuggestionsProvider(): \Iterator
     {

@@ -45,7 +45,7 @@ class SwitchTypeTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetNewHandlerName.
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function newHandlerNameProvider(): \Iterator
     {
@@ -72,7 +72,7 @@ class SwitchTypeTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetNewHandler.
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function newHandlerProvider(): \Iterator
     {

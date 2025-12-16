@@ -70,7 +70,7 @@ final class SsoTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testLogin()
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function loginConfigProvider(): \Iterator
     {

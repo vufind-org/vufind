@@ -97,7 +97,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testCreateWithPasswordPolicy
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function getTestCreateWithPasswordPolicyData(): \Iterator
     {
@@ -263,7 +263,7 @@ class DatabaseUnitTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testCreateWithUsernamePolicy
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function getTestCreateWithUsernamePolicyData(): \Iterator
     {

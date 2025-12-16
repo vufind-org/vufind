@@ -263,7 +263,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
     /**
      * DataProvider for testIsInvertedName().
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function isInvertedNameProvider(): \Iterator
     {
@@ -325,7 +325,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testTitleSortLower().
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function titleSortLowerProvider(): \Iterator
     {

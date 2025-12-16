@@ -79,7 +79,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testPaymentDisabled
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function paymentDisabledProvider(): \Iterator
     {
@@ -107,7 +107,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testPayment
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function paymentProvider(): \Iterator
     {
@@ -380,7 +380,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testReceipt
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function receiptProvider(): \Iterator
     {
@@ -437,7 +437,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testBlockedPayment
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function blockedPaymentProvider(): \Iterator
     {

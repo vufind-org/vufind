@@ -64,7 +64,7 @@ class AccountCapabilitiesTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetEmailActionSettings().
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function emailActionSettingsProvider(): \Iterator
     {
@@ -92,7 +92,7 @@ class AccountCapabilitiesTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testIsEmailActionAvailable()
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function emailActionAvailableProvider(): \Iterator
     {

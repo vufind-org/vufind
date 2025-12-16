@@ -149,7 +149,7 @@ class LocaleSettingsTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testFallbackLocalConfigs
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function fallbackLocalConfigsProvider(): \Iterator
     {

@@ -51,7 +51,7 @@ class QueryAdapterTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testConversions
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function conversionsProvider(): \Iterator
     {

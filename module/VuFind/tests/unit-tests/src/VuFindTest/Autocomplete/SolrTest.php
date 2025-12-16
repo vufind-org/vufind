@@ -64,7 +64,7 @@ class SolrTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testSetConfig().
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function setConfigProvider(): \Iterator
     {

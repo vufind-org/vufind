@@ -120,7 +120,7 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testFeedbackForm
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function feedbackFormProvider(): \Iterator
     {

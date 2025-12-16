@@ -155,7 +155,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testOAuth2Authorization
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function oauth2AuthorizationProvider(): \Iterator
     {

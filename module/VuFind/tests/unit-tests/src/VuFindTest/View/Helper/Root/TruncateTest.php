@@ -46,7 +46,7 @@ class TruncateTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testTruncate
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function truncateProvider(): \Iterator
     {

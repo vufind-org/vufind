@@ -77,7 +77,7 @@ final class PasswordAccessTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testLogin.
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function loginProvider(): \Iterator
     {

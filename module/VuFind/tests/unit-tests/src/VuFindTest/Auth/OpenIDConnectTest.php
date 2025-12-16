@@ -62,7 +62,7 @@ class OpenIDConnectTest extends \PHPUnit\Framework\TestCase
     /**
      * GetAttributeMappings test data provider
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function getAttributesMappingsProvider(): \Iterator
     {

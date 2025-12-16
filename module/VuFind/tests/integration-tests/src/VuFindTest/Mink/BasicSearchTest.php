@@ -91,7 +91,7 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testDefaultTopPagination
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function topPaginationProvider(): \Iterator
     {

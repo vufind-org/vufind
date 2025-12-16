@@ -69,7 +69,7 @@ class LibGuidesTest extends \PHPUnit\Framework\TestCase
     /**
      * GetAZ test provider.
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function getAzProvider(): \Iterator
     {

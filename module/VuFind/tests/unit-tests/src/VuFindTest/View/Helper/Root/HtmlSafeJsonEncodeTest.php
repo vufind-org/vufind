@@ -76,7 +76,7 @@ class HtmlSafeJsonEncodeTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for JSON encoding tests
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function getJsonTests(): \Iterator
     {

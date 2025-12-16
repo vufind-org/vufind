@@ -48,7 +48,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testOptions
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function optionsProvider(): \Iterator
     {

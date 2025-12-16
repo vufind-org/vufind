@@ -108,7 +108,7 @@ class ImageFactoryTest extends \PHPUnit\Framework\TestCase
     /**
      * Provide data for testFactory()
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function factoryDataProvider(): \Iterator
     {

@@ -51,7 +51,7 @@ class InstallCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testing with or without the skip-backups flag.
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function skipBackupsProvider(): \Iterator
     {

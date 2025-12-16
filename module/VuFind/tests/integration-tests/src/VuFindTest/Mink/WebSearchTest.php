@@ -47,7 +47,7 @@ class WebSearchTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testWebSearch()
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function webSearchProvider(): \Iterator
     {

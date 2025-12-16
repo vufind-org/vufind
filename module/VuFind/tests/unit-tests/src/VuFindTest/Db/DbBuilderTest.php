@@ -64,7 +64,7 @@ class DbBuilderTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testPortHandling().
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function portHandlingProvider(): \Iterator
     {
@@ -98,7 +98,7 @@ class DbBuilderTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testPreCommands().
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function preCommandsProvider(): \Iterator
     {
@@ -151,7 +151,7 @@ class DbBuilderTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testMainCommands().
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function mainCommandsProvider(): \Iterator
     {
@@ -183,7 +183,7 @@ class DbBuilderTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testPostCommands().
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function postCommandsProvider(): \Iterator
     {

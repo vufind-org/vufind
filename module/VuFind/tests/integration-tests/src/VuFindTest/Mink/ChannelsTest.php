@@ -201,7 +201,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testPopovers
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function popoversProvider(): \Iterator
     {
@@ -293,7 +293,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testILSChannel().
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function ilsChannelProvider(): \Iterator
     {

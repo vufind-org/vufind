@@ -95,7 +95,7 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Supplemental data provider for testItemStatusFull().
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function itemStatusAndHoldingsCustomTemplateProvider(): \Iterator
     {
@@ -327,7 +327,7 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testCallNoDisplay().
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function callNoDisplayProvider(): \Iterator
     {

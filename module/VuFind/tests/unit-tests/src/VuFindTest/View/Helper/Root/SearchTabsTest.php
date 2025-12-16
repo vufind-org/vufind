@@ -57,7 +57,7 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetCurrentHiddenFilterParams
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function getCurrentHiddenFilterParamsProvider(): \Iterator
     {

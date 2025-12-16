@@ -642,7 +642,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testLoanHistoryWithPurgeDisabled
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function loanHistoryWithPurgeDisabledProvider(): \Iterator
     {

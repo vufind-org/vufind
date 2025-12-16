@@ -90,7 +90,7 @@ class ConnectionTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testIsMethodBlocked
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function isMethodBlockedProvider(): \Iterator
     {

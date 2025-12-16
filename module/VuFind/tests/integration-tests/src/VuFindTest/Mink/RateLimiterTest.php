@@ -64,7 +64,7 @@ class RateLimiterTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testRateLimiter
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function rateLimiterDataProvider(): \Iterator
     {

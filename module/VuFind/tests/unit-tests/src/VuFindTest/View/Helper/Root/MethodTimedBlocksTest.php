@@ -55,7 +55,7 @@ class MethodTimedBlocksTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testMethodTimedBlocks
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function methodTimedBlocksProvider(): \Iterator
     {

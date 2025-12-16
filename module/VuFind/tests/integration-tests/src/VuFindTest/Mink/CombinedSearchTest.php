@@ -171,7 +171,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for different combinations of AJAX columns
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function ajaxCombinationsProvider(): \Iterator
     {
@@ -276,7 +276,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testJumpMenu()
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function jumpMenuProvider(): \Iterator
     {

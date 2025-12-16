@@ -50,7 +50,7 @@ class EscapeOrCleanHtmlTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testEscapeOrCleanHtml
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function escapeOrCleanHtmlProvider(): \Iterator
     {

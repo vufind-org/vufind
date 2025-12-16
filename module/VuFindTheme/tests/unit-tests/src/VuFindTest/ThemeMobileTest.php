@@ -45,7 +45,7 @@ class ThemeMobileTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testDetection.
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function detectionProvider(): \Iterator
     {

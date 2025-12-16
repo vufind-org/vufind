@@ -45,7 +45,7 @@ class HoldingsTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testBarcodeVisibilityBehavior()
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function barcodeVisibilityBehaviorProvider(): \Iterator
     {

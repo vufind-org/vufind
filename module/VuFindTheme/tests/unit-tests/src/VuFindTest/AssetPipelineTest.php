@@ -76,7 +76,7 @@ class AssetPipelineTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testIsPipelineEnabledForType().
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function isPipelineEnabledForTypeProvider(): \Iterator
     {
@@ -166,7 +166,7 @@ class AssetPipelineTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGroupAssets().
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function groupAssetsProvider(): \Iterator
     {
@@ -291,7 +291,7 @@ class AssetPipelineTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testProcessGroupedAssets().
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function processGroupedAssetsProvider(): \Iterator
     {

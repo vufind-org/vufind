@@ -62,7 +62,7 @@ class OaiTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider describing OAI servers.
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function serverProvider(): \Iterator
     {

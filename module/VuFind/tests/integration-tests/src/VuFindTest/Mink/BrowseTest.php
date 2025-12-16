@@ -73,7 +73,7 @@ class BrowseTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testFirstColumnConfig().
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function firstColumnConfigProvider(): \Iterator
     {
@@ -127,7 +127,7 @@ class BrowseTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testSecondColumnBehavior().
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function secondColumnConfigProvider(): \Iterator
     {

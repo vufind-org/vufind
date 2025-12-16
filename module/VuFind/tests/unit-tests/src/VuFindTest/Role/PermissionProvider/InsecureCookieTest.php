@@ -70,7 +70,7 @@ class InsecureCookieTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetPermissions()
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function getPermissionsProvider(): \Iterator
     {

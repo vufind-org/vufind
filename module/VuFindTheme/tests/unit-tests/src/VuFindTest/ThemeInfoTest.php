@@ -337,7 +337,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     /**
      * Test cases for mergeWithoutOverride
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function mergeEdgeCasesProvider(): \Iterator
     {

@@ -101,7 +101,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
     /**
      * Data provider for testIdentityRepository
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function getTestIdentityRepositoryData(): \Iterator
     {

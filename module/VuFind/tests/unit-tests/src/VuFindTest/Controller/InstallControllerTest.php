@@ -92,7 +92,7 @@ class InstallControllerTest extends \PHPUnit\Framework\TestCase
     /**
      * Test data for getMinimalPhpVersion
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function getMinimalPhpVersionProvider(): \Iterator
     {

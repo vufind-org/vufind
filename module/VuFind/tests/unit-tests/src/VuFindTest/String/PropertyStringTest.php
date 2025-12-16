@@ -81,7 +81,7 @@ class PropertyStringTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testFromHtml
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function fromHtmlProvider(): \Iterator
     {

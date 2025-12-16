@@ -93,7 +93,7 @@ class AuthorControllerTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider that offers various author controller paths for testing.
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function authorPathsProvider(): \Iterator
     {

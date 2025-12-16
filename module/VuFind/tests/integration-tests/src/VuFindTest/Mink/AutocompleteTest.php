@@ -131,7 +131,7 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testFilteredAutocomplete().
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function filteredAutocompleteProvider(): \Iterator
     {

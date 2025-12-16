@@ -82,7 +82,7 @@ class PathResolverTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testPathStack.
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function getTestPathStackData(): \Iterator
     {

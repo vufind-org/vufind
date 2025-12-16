@@ -51,7 +51,7 @@ class PurgeCachedRecordCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testBasicOperation
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function basicOperationProvider(): \Iterator
     {

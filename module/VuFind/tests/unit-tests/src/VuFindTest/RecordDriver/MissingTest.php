@@ -65,7 +65,7 @@ class MissingTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testDetermineMissingTitleWithoutDetails
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function titleProvider(): \Iterator
     {

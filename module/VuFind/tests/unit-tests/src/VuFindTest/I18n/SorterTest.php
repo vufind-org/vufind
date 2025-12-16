@@ -47,7 +47,7 @@ class SorterTest extends \PHPUnit\Framework\TestCase
     /**
      * Data Provider for compare tests
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function compareProvider(): \Iterator
     {
@@ -166,7 +166,7 @@ class SorterTest extends \PHPUnit\Framework\TestCase
     /**
      * Data Provider for sort tests
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function sortProvider(): \Iterator
     {
@@ -256,7 +256,7 @@ class SorterTest extends \PHPUnit\Framework\TestCase
     /**
      * Data Provider for asort tests
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function asortProvider(): \Iterator
     {
@@ -331,7 +331,7 @@ class SorterTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testNatsort()
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function natsortProvider(): \Iterator
     {

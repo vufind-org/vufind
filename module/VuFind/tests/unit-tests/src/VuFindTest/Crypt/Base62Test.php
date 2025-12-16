@@ -75,7 +75,7 @@ class Base62Test extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for tests.
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function exampleProvider(): \Iterator
     {

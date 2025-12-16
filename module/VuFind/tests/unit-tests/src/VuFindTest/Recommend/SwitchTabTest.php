@@ -45,7 +45,7 @@ class SwitchTabTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetActiveTab.
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function tabConfigProvider(): \Iterator
     {
@@ -118,7 +118,7 @@ class SwitchTabTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetActiveTab.
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function inactiveTabConfigProvider(): \Iterator
     {

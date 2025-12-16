@@ -381,7 +381,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetItemsFilter.
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function filterProvider(): \Iterator
     {
@@ -597,7 +597,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetThumbnail().
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function getThumbnailProvider(): \Iterator
     {
@@ -696,7 +696,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetCleanDOIFromUrl().
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function getCleanDOIFromUrlProvider(): \Iterator
     {

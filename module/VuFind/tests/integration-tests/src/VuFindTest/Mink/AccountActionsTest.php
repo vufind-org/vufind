@@ -159,7 +159,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testLoginWithSessionSettings().
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function sessionSettingsProvider(): \Iterator
     {
@@ -455,7 +455,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testRecoverPasswordByUsername().
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function honestyProvider(): \Iterator
     {
@@ -575,7 +575,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testRecoverILSPassword
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function recoverILSPasswordProvider(): \Iterator
     {

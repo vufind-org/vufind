@@ -67,7 +67,7 @@ class UtilsTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testSanitizeDate
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function sanitizeDateProvider(): \Iterator
     {

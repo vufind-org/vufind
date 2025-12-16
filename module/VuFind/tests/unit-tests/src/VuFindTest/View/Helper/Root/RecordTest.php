@@ -321,7 +321,7 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetLink()
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function getLinkProvider(): \Iterator
     {

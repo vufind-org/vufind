@@ -104,7 +104,7 @@ class VuFindHighlighterTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetHighlight()
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator
      */
     public static function getHighlightDataProvider(): \Iterator
     {

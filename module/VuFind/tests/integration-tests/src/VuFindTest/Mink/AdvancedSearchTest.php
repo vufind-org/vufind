@@ -364,7 +364,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testHierarchicalFacetsFilters
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function hierarchicalFacetFiltersProvider(): \Iterator
     {

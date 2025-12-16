@@ -593,7 +593,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testIndividualQueryHandlerWithGlobalExtraParams().
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function globalExtraParamsIndividualQueryDataProvider(): \Iterator
     {
@@ -820,7 +820,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGroupedQueryHandlerWithGlobalExtraParams().
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator
      */
     public static function globalExtraParamsGroupedQueryDataProvider(): \Iterator
     {
