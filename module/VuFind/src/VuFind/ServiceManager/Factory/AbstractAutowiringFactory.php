@@ -31,7 +31,6 @@ namespace VuFind\ServiceManager\Factory;
 
 use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 use Psr\Container\ContainerInterface;
-use ReflectionClass;
 
 /**
  * VuFind Abstract Autowiring Factory
@@ -44,14 +43,7 @@ use ReflectionClass;
  */
 class AbstractAutowiringFactory extends AutowiringFactory implements AbstractFactoryInterface
 {
-    /**
-     * Autowireability of known services.
-     *
-     * @var array
-     */
-    protected array $autowireable = [
-        'DoctrineModule\Cache\LaminasStorageCache' => false,
-    ];
+    use AutowireableTrait;
 
     /**
      * Can the factory create an instance for the service?
@@ -60,26 +52,11 @@ class AbstractAutowiringFactory extends AutowiringFactory implements AbstractFac
      * @param string             $requestedName Name of service
      *
      * @return bool
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function canCreate(ContainerInterface $container, $requestedName)
     {
-        if (null !== ($known = $this->autowireable[$requestedName] ?? null)) {
-            return $known;
-        }
-        if (!class_exists($requestedName)) {
-            $this->autowireable[$requestedName] = false;
-            return false;
-        }
-        $reflectionClass = new ReflectionClass($requestedName);
-        if (null === ($constructor = $reflectionClass->getConstructor())) {
-            $this->autowireable[$requestedName] = true;
-            return true;
-        }
-        $reflectionParameters = $constructor->getParameters();
-        if (empty($reflectionParameters)) {
-            $this->autowireable[$requestedName] = true;
-            return true;
-        }
-        return $this->autowireable[$requestedName] = !empty($constructor->getAttributes(Autowire::class));
+        return $this->isAutowireable($requestedName);
     }
 }
