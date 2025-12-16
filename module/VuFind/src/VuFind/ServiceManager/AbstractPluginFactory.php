@@ -32,6 +32,7 @@ namespace VuFind\ServiceManager;
 use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 use Laminas\ServiceManager\Factory\InvokableFactory;
 use Psr\Container\ContainerInterface;
+use VuFind\ServiceManager\Factory\AutowiringFactory;
 
 /**
  * VuFind Abstract Plugin Factory
@@ -44,6 +45,8 @@ use Psr\Container\ContainerInterface;
  */
 abstract class AbstractPluginFactory implements AbstractFactoryInterface
 {
+    use Factory\AutowireableTrait;
+
     /**
      * Default namespace for building class names (null to use class names as-is)
      *
@@ -91,12 +94,14 @@ abstract class AbstractPluginFactory implements AbstractFactoryInterface
         if (class_exists($class . 'Factory')) {
             return $class . 'Factory';
         }
-        while ($class = get_parent_class($class)) {
-            if (class_exists($class . 'Factory')) {
-                return $class . 'Factory';
+        $parentClass = get_parent_class($class);
+        while ($parentClass) {
+            if (class_exists($parentClass . 'Factory')) {
+                return $parentClass . 'Factory';
             }
+            $parentClass = get_parent_class($parentClass);
         }
-        return InvokableFactory::class;
+        return $this->isAutowireable($class) ? AutowiringFactory::class : InvokableFactory::class;
     }
 
     /**

@@ -60,23 +60,35 @@ trait AutowireableTrait
      */
     public function isAutowireable(string $requestedName): bool
     {
+        // Return cached status if we've already checked this service.
         if (null !== ($known = $this->autowireable[$requestedName] ?? null)) {
             return $known;
         }
+        // Not a real class? Not autowireable!
         if (!class_exists($requestedName)) {
             $this->autowireable[$requestedName] = false;
             return false;
         }
+        // No constructor? Autowireable!
         $reflectionClass = new ReflectionClass($requestedName);
         if (null === ($constructor = $reflectionClass->getConstructor())) {
             $this->autowireable[$requestedName] = true;
             return true;
         }
+        // No constructor arguments? Autowireable!
         $reflectionParameters = $constructor->getParameters();
         if (empty($reflectionParameters)) {
             $this->autowireable[$requestedName] = true;
             return true;
         }
+        // Check if the constructor has any parameters with the Autowire attribute:
+        foreach ($reflectionParameters as $param) {
+            if ($param->getAttributes(Autowire::class)) {
+                $this->autowireable[$requestedName] = true;
+                return true;
+            }
+        }
+        // Final check: is there a top-level Autowire attribute on the constructor?
         return $this->autowireable[$requestedName] = !empty($constructor->getAttributes(Autowire::class));
     }
 }
