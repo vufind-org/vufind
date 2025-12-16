@@ -79,6 +79,8 @@ class WorldCat2SimilarTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Data provider for testGetResults()
+     *
+     * @return \Iterator
      */
     public static function getResultsProvider(): \Iterator
     {

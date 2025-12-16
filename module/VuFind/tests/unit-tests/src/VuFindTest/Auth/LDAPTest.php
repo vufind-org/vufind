@@ -77,6 +77,8 @@ class LDAPTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Data provider for testWithMissingConfiguration.
+     *
+     * @return \Iterator
      */
     public static function configKeyProvider(): \Iterator
     {

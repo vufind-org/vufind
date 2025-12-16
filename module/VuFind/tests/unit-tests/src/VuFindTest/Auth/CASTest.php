@@ -82,6 +82,8 @@ class CASTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Data provider for testWithMissingConfiguration.
+     *
+     * @return \Iterator
      */
     public static function configKeyProvider(): \Iterator
     {
@@ -165,6 +167,8 @@ class CASTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Data provider for testBaseUrlConfigFallback.
+     *
+     * @return \Iterator
      */
     public static function fallbackUrlProvider(): \Iterator
     {

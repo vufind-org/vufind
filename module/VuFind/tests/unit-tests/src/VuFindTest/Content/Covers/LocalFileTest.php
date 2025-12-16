@@ -77,7 +77,11 @@ class LocalFileTest extends \PHPUnit\Framework\TestCase
             'small',
             false,
         ];
-        yield 'isbn10 gif via anyimage' => ['0739313126.gif', '%isbn10%.%anyimage%', ['isbn' => new ISBN('0739313126')]];
+        yield 'isbn10 gif via anyimage' => [
+            '0739313126.gif',
+            '%isbn10%.%anyimage%',
+            ['isbn' => new ISBN('0739313126')],
+        ];
         yield 'isbn13 jpg via anyimage' => [
             '9780739313121.jpg',
             '%isbn13%.%anyimage%',

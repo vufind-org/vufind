@@ -96,9 +96,21 @@ class WorldCat2Test extends \PHPUnit\Framework\TestCase
             'worldcat2/pride.json',
         ];
         yield 'non-default languages' => ['getLanguages', ['eng'], 'worldcat2/pride.json'];
-        yield 'non-default places of publication' => ['getPlacesOfPublication', ['Oxford :'], 'worldcat2/pride.json'];
-        yield 'non-default primary authors' => ['getPrimaryAuthors', ['Austen, Jane, 1775-1817.'], 'worldcat2/pride.json'];
-        yield 'non-default primary author with relator code in notes' => ['getPrimaryAuthor', 'Last, First, Title', 'worldcat2/authors.json'];
+        yield 'non-default places of publication' => [
+            'getPlacesOfPublication',
+            ['Oxford :'],
+            'worldcat2/pride.json',
+        ];
+        yield 'non-default primary authors' => [
+            'getPrimaryAuthors',
+            ['Austen, Jane, 1775-1817.'],
+            'worldcat2/pride.json',
+        ];
+        yield 'non-default primary author with relator code in notes' => [
+            'getPrimaryAuthor',
+            'Last, First, Title',
+            'worldcat2/authors.json',
+        ];
         yield 'non-default secondary authors' => ['getSecondaryAuthors', ['Kinsley, James'], 'worldcat2/pride.json'];
         yield 'non-default secondary authors with relator codes in notes' => [
             'getSecondaryAuthors',
@@ -117,7 +129,11 @@ class WorldCat2Test extends \PHPUnit\Framework\TestCase
             'worldcat2/authors.json',
         ];
         yield 'non-default publication dates' => ['getPublicationDates', ['1990'], 'worldcat2/pride.json'];
-        yield 'non-default human-readable dates' => ['getHumanReadablePublicationDates', ['1990'], 'worldcat2/pride.json'];
+        yield 'non-default human-readable dates' => [
+            'getHumanReadablePublicationDates',
+            ['1990'],
+            'worldcat2/pride.json',
+        ];
         yield 'non-default publishers' => ['getPublishers', ['Oxford University Press'], 'worldcat2/pride.json'];
         yield 'non-default title' => ['getTitle', 'Pride and prejudice', 'worldcat2/pride.json'];
         yield 'non-default physical description' => [
@@ -190,7 +206,11 @@ class WorldCat2Test extends \PHPUnit\Framework\TestCase
         yield 'non-default short title' => ['getShortTitle', 'title :', 'worldcat2/title-subtitle.json'];
         yield 'non-default subtitle' => ['getSubtitle', 'the subtitle', 'worldcat2/title-subtitle.json'];
         yield 'non-default newer titles' => ['getNewerTitles', ['New York Saturday journal'], 'worldcat2/star.json'];
-        yield 'non-default previous titles' => ['getPreviousTitles', ['Saturday weekly journal'], 'worldcat2/star.json'];
+        yield 'non-default previous titles' => [
+            'getPreviousTitles',
+            ['Saturday weekly journal'],
+            'worldcat2/star.json',
+        ];
         yield 'non-default publication frequency' => ['getPublicationFrequency', ['Weekly'], 'worldcat2/star.json'];
         yield 'non-default date span' => [
             'getDateSpan',

@@ -92,6 +92,8 @@ class SchemaOrgTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Data provider for testGetRecordTypes().
+     *
+     * @return \Iterator
      */
     public static function getRecordTypesProvider(): \Iterator
     {
