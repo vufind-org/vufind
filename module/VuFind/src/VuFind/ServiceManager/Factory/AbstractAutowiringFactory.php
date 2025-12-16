@@ -31,7 +31,6 @@ namespace VuFind\ServiceManager\Factory;
 
 use Laminas\ServiceManager\Factory\AbstractFactoryInterface;
 use Psr\Container\ContainerInterface;
-use ReflectionClass;
 
 /**
  * VuFind Abstract Autowiring Factory
