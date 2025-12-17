@@ -159,16 +159,14 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testLoginWithSessionSettings().
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function sessionSettingsProvider(): array
+    public static function sessionSettingsProvider(): \Iterator
     {
-        return [
-            'unencrypted file' => ['File', false],
-            'encrypted file' => ['File', true],
-            'unencrypted database' => ['Database', false],
-            'encrypted database' => ['Database', true],
-        ];
+        yield 'unencrypted file' => ['File', false];
+        yield 'encrypted file' => ['File', true];
+        yield 'unencrypted database' => ['Database', false];
+        yield 'encrypted database' => ['Database', true];
     }
 
     /**
@@ -457,14 +455,12 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testRecoverPasswordByUsername().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function honestyProvider(): array
+    public static function honestyProvider(): \Iterator
     {
-        return [
-            'be honest' => [true],
-            'be dishonest' => [false],
-        ];
+        yield 'be honest' => [true];
+        yield 'be dishonest' => [false];
     }
 
     /**
@@ -579,16 +575,14 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testRecoverILSPassword
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function recoverILSPasswordProvider(): array
+    public static function recoverILSPasswordProvider(): \Iterator
     {
-        return [
-            [false, false],
-            [false, true],
-            [true, false],
-            [true, true],
-        ];
+        yield [false, false];
+        yield [false, true];
+        yield [true, false];
+        yield [true, true];
     }
 
     /**

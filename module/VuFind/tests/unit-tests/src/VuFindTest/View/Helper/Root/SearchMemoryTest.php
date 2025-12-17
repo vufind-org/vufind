@@ -209,13 +209,11 @@ class SearchMemoryTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetLastSearchParams()
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getLastSearchParamsProvider(): array
+    public static function getLastSearchParamsProvider(): \Iterator
     {
-        return [
-            'no parameters' => ['?', []],
-            'lookfor parameter' => ['?lookfor=foo', ['lookfor' => 'foo']],
-        ];
+        yield 'no parameters' => ['?', []];
+        yield 'lookfor parameter' => ['?lookfor=foo', ['lookfor' => 'foo']];
     }
 }

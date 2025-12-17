@@ -51,16 +51,14 @@ class PurgeCachedRecordCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testBasicOperation
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function basicOperationProvider(): array
+    public static function basicOperationProvider(): \Iterator
     {
-        return [
-            ['Solr', '123', false, true, null],
-            ['Solr', '123', false, false, null],
-            ['Solr', '123', true, true, true],
-            ['Solr', '123', true, true, false],
-        ];
+        yield ['Solr', '123', false, true, null];
+        yield ['Solr', '123', false, false, null];
+        yield ['Solr', '123', true, true, true];
+        yield ['Solr', '123', true, true, false];
     }
 
     /**

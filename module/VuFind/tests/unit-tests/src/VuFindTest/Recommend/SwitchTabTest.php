@@ -45,30 +45,12 @@ class SwitchTabTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetActiveTab.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function tabConfigProvider(): array
+    public static function tabConfigProvider(): \Iterator
     {
-        return [
-            'First tab selected' => [
-                [
-                    [
-                        'id' => 'A01',
-                        'class' => 'class01',
-                        'label' => 'label01',
-                        'permission' => 'permission01',
-                        'selected' => true,
-                        'url' => 'http://newurl1',
-                    ],
-                    [
-                        'id' => 'A02',
-                        'class' => 'class02',
-                        'label' => 'label02',
-                        'permission' => 'permission02',
-                        'selected' => false,
-                        'url' => 'http://newurl2',
-                    ],
-                ],
+        yield 'First tab selected' => [
+            [
                 [
                     'id' => 'A01',
                     'class' => 'class01',
@@ -77,28 +59,44 @@ class SwitchTabTest extends \PHPUnit\Framework\TestCase
                     'selected' => true,
                     'url' => 'http://newurl1',
                 ],
-            ],
-            'No tab selected' => [
                 [
-                    [
-                        'id' => 'A01',
-                        'class' => 'class01',
-                        'label' => 'label01',
-                        'permission' => 'permission01',
-                        'selected' => false,
-                        'url' => 'http://newurl1',
-                    ],
-                    [
-                        'id' => 'A02',
-                        'class' => 'class02',
-                        'label' => 'label02',
-                        'permission' => 'permission02',
-                        'selected' => false,
-                        'url' => 'http://newurl2',
-                    ],
+                    'id' => 'A02',
+                    'class' => 'class02',
+                    'label' => 'label02',
+                    'permission' => 'permission02',
+                    'selected' => false,
+                    'url' => 'http://newurl2',
                 ],
-                null,
             ],
+            [
+                'id' => 'A01',
+                'class' => 'class01',
+                'label' => 'label01',
+                'permission' => 'permission01',
+                'selected' => true,
+                'url' => 'http://newurl1',
+            ],
+        ];
+        yield 'No tab selected' => [
+            [
+                [
+                    'id' => 'A01',
+                    'class' => 'class01',
+                    'label' => 'label01',
+                    'permission' => 'permission01',
+                    'selected' => false,
+                    'url' => 'http://newurl1',
+                ],
+                [
+                    'id' => 'A02',
+                    'class' => 'class02',
+                    'label' => 'label02',
+                    'permission' => 'permission02',
+                    'selected' => false,
+                    'url' => 'http://newurl2',
+                ],
+            ],
+            null,
         ];
     }
 
@@ -120,39 +118,37 @@ class SwitchTabTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetActiveTab.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function inactiveTabConfigProvider(): array
+    public static function inactiveTabConfigProvider(): \Iterator
     {
-        return [
-            'Test1' => [
+        yield 'Test1' => [
+            [
                 [
-                    [
-                        'id' => 'A01',
-                        'class' => 'class01',
-                        'label' => 'label01',
-                        'permission' => 'permission01',
-                        'selected' => true,
-                        'url' => 'http://newurl1',
-                    ],
-                    [
-                        'id' => 'A02',
-                        'class' => 'class02',
-                        'label' => 'label02',
-                        'permission' => 'permission02',
-                        'selected' => false,
-                        'url' => 'http://newurl2',
-                    ],
+                    'id' => 'A01',
+                    'class' => 'class01',
+                    'label' => 'label01',
+                    'permission' => 'permission01',
+                    'selected' => true,
+                    'url' => 'http://newurl1',
                 ],
                 [
-                    [
-                        'id' => 'A02',
-                        'class' => 'class02',
-                        'label' => 'label02',
-                        'permission' => 'permission02',
-                        'selected' => false,
-                        'url' => 'http://newurl2',
-                    ],
+                    'id' => 'A02',
+                    'class' => 'class02',
+                    'label' => 'label02',
+                    'permission' => 'permission02',
+                    'selected' => false,
+                    'url' => 'http://newurl2',
+                ],
+            ],
+            [
+                [
+                    'id' => 'A02',
+                    'class' => 'class02',
+                    'label' => 'label02',
+                    'permission' => 'permission02',
+                    'selected' => false,
+                    'url' => 'http://newurl2',
                 ],
             ],
         ];

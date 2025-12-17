@@ -451,11 +451,12 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider to return in lightbox / not in lightbox states.
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function inLightboxProvider(): array
+    public static function inLightboxProvider(): \Iterator
     {
-        return ['in lightbox' => [true], 'not in lightbox' => [false]];
+        yield 'in lightbox' => [true];
+        yield 'not in lightbox' => [false];
     }
 
     /**

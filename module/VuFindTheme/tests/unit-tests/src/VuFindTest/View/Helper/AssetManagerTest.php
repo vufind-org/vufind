@@ -54,15 +54,13 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testOutputInlineScriptLink() and testOutputInlineScriptString().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function outputInlineScriptProvider(): array
+    public static function outputInlineScriptProvider(): \Iterator
     {
-        return [
-            'default settings' => [[], false, 'text/javascript'],
-            'arbitrary attribute' => [['data-foo' => 'bar'], true, 'text/javascript'],
-            'arbitrary MIME type' => [['type' => 'mime/type'], false, 'mime/type'],
-        ];
+        yield 'default settings' => [[], false, 'text/javascript'];
+        yield 'arbitrary attribute' => [['data-foo' => 'bar'], true, 'text/javascript'];
+        yield 'arbitrary MIME type' => [['type' => 'mime/type'], false, 'mime/type'];
     }
 
     /**

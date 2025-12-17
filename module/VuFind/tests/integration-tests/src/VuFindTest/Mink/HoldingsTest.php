@@ -95,11 +95,11 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Supplemental data provider for testItemStatusFull().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function itemStatusAndHoldingsCustomTemplateProvider(): array
+    public static function itemStatusAndHoldingsCustomTemplateProvider(): \Iterator
     {
-        return ['custom template test' => [true, 'On Shelf', 'On Shelf', 'success', 'msg', true, true, true]];
+        yield 'custom template test' => [true, 'On Shelf', 'On Shelf', 'success', 'msg', true, true, true];
     }
 
     /**
@@ -327,15 +327,13 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testCallNoDisplay().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function callNoDisplayProvider(): array
+    public static function callNoDisplayProvider(): \Iterator
     {
-        return [
-            'first' => ['first', 'Test1 A1234'],
-            'all' => ['all', 'Test1 A1234, Test2 B1234'],
-            'msg' => ['msg', 'Multiple Call Numbers'],
-        ];
+        yield 'first' => ['first', 'Test1 A1234'];
+        yield 'all' => ['all', 'Test1 A1234, Test2 B1234'];
+        yield 'msg' => ['msg', 'Multiple Call Numbers'];
     }
 
     /**
