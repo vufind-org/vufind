@@ -55,7 +55,7 @@ class RecordCollectionTest extends TestCase
     public function testDefaults()
     {
         $coll = new RecordCollection([]);
-        $this->assertTrue($coll->getSpellcheck() instanceof Spellcheck);
+        $this->assertInstanceOf(Spellcheck::class, $coll->getSpellcheck());
         $this->assertEquals(0, $coll->getTotal());
         $this->assertIsArray($coll->getFacets());
         $this->assertIsArray($coll->getQueryFacets());
@@ -74,7 +74,7 @@ class RecordCollectionTest extends TestCase
     public function testDefaultsWithNullResponse()
     {
         $coll = new RecordCollection(['response' => null]);
-        $this->assertTrue($coll->getSpellcheck() instanceof Spellcheck);
+        $this->assertInstanceOf(Spellcheck::class, $coll->getSpellcheck());
         $this->assertEquals(0, $coll->getTotal());
         $this->assertIsArray($coll->getFacets());
         $this->assertIsArray($coll->getQueryFacets());

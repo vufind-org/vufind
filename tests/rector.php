@@ -9,6 +9,7 @@ use Rector\PHPUnit\CodeQuality\Rector\MethodCall\RemoveExpectAnyFromMockRector;
 use Rector\PHPUnit\PHPUnit60\Rector\MethodCall\GetMockBuilderGetMockToCreateMockRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertEqualsToSameRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\UseSpecificWithMethodRector;
+use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertInstanceOfComparisonRector;
 
 return RectorConfig::configure()
     ->withCache(
@@ -28,6 +29,7 @@ return RectorConfig::configure()
         GetMockBuilderGetMockToCreateMockRector::class,
         UseSpecificWithMethodRector::class,
         AssertEqualsToSameRector::class,
+        AssertInstanceOfComparisonRector::class,
     ])
     ->withTypeCoverageLevel(0)
     ->withDeadCodeLevel(6)
