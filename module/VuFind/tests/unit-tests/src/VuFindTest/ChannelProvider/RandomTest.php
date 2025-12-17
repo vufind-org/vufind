@@ -168,7 +168,7 @@ class RandomTest extends \PHPUnit\Framework\TestCase
         $target = 'Solr'
     ) {
         return function ($command) use ($class, $args, $target) {
-            $this->assertSame($class, $command::class);
+            $this->assertSame($command::class, $class);
             $this->assertEquals($args, $command->getArguments());
             $this->assertSame($target, $command->getTargetIdentifier());
             return true;

@@ -15,6 +15,8 @@ use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertEqualsOrAssertSameFloatPa
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertFalseStrposToContainsRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertNotOperatorRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertCompareOnCountableWithMethodToAssertCountRector;
+use Rector\PHPUnit\CodeQuality\Rector\MethodCall\UseSpecificWillMethodRector;
+use Rector\PHPUnit\CodeQuality\Rector\MethodCall\FlipAssertRector;
 
 
 return RectorConfig::configure()
@@ -41,6 +43,8 @@ return RectorConfig::configure()
         AssertFalseStrposToContainsRector::class,
         AssertNotOperatorRector::class,
         AssertCompareOnCountableWithMethodToAssertCountRector::class,
+        UseSpecificWillMethodRector::class,
+        FlipAssertRector::class,
     ])
     ->withTypeCoverageLevel(0)
     ->withDeadCodeLevel(6)
