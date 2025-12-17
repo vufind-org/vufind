@@ -83,7 +83,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
         $this->assertSame([], $form->mapRequestParamsToFieldValues([]));
 
         $this->assertInstanceOf(
-            'Laminas\InputFilter\InputFilter',
+            \Laminas\InputFilter\InputFilter::class,
             $form->getInputFilter()
         );
         $this->assertCount(0, $form->getSecondaryHandlers());
@@ -236,7 +236,7 @@ class FormTest extends \PHPUnit\Framework\TestCase
             $form->mapRequestParamsToFieldValues($postParams)
         );
         $this->assertInstanceOf(
-            'Laminas\InputFilter\InputFilter',
+            \Laminas\InputFilter\InputFilter::class,
             $form->getInputFilter()
         );
 
