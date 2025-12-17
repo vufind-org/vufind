@@ -191,17 +191,15 @@ class RecordsHelperTest extends TestCase
     /**
      * Data provider for ajax configuration tests
      *
-     * @return array
+     * @return \Iterator<(int | string), mixed>
      */
-    public static function ajaxConfigProvider(): array
+    public static function ajaxConfigProvider(): \Iterator
     {
-        return [
-            'ajax explicitly enabled' => [
-                ['Authentication' => ['enableAjax' => true]],
-            ],
-            'ajax setting not specified (default enabled)' => [
-                ['Authentication' => []],
-            ],
+        yield 'ajax explicitly enabled' => [
+            ['Authentication' => ['enableAjax' => true]],
+        ];
+        yield 'ajax setting not specified (default enabled)' => [
+            ['Authentication' => []],
         ];
     }
 

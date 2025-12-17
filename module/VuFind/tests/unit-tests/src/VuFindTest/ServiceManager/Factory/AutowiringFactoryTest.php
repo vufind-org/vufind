@@ -66,19 +66,19 @@ class AutowiringFactoryTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testAutoWiring
      *
-     * @return array
+     * @return \Iterator<string, array>
      */
-    public static function autowiringProvider(): array
+    public static function autowiringProvider(): \Iterator
     {
-        return [
-            'autowired class' => [AutowiredClass::class],
-            'autowired class with no constructor' => [AutowiredClassNoConstructor::class],
-            'autowired class with empty constructor' => [AutowiredClassEmptyConstructor::class],
-            'invalid class' => [InvalidAutowiredClass::class, 'Unable to autowire parameter config of type array'],
-            'second invalid class'
-                => [InvalidAutowiredClass2::class, 'Unable to resolve type of parameter ilsConnection'],
-            'invalid config type' => [InvalidConfigType::class, 'Invalid configType yummy'],
+        yield 'autowired class' => [AutowiredClass::class];
+        yield 'autowired class with no constructor' => [AutowiredClassNoConstructor::class];
+        yield 'autowired class with empty constructor' => [AutowiredClassEmptyConstructor::class];
+        yield 'invalid class' => [InvalidAutowiredClass::class, 'Unable to autowire parameter config of type array'];
+        yield 'second invalid class' => [
+            InvalidAutowiredClass2::class,
+            'Unable to resolve type of parameter ilsConnection',
         ];
+        yield 'invalid config type' => [InvalidConfigType::class, 'Invalid configType yummy'];
     }
 
     /**

@@ -43,85 +43,83 @@ class RecordCoverImageTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testCoverLoading()
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function coverLoadingProvider(): array
+    public static function coverLoadingProvider(): \Iterator
     {
-        return [
-            'image available, ajax w/ backlinks' => [
-                '0000183626-0', // this ID causes the Demo cover provider to return an image
-                true,
-                true,
-                'themes/root/images/demo-cover-2.jpg',
-                'Cover from vufind.org',
-            ],
-            'image available, ajax w/o backlinks' => [
-                '0000183626-0', // this ID causes the Demo cover provider to return an image
-                false,
-                true,
-                'themes/root/images/demo-cover-2.jpg',
-                '',
-            ],
-            'image available, non-ajax w/o backlinks' => [
-                '0000183626-0', // this ID causes the Demo cover provider to return an image
-                false,
-                false,
-                '/Cover/Show?author=&callnumber=BL1140.4.V572.E+2002+%28BL3%29%2B&size=medium&title=%C5%9Ar%C4'
-                . '%ABvi%E1%B9%A3%E1%B9%87upur%C4%81%E1%B9%87am+%3A+%28a+system+of+Hindu+mythology+and+traditi'
-                . 'on%29+%3D+The+Vi%E1%B9%A3%E1%B9%87u+Pur%C4%81%E1%B9%87am+%2F&recordid=0000183626-0&source=Solr',
-                '',
-            ],
-            'image available, non-ajax w/ backlinks' => [
-                '0000183626-0', // this ID causes the Demo cover provider to return an image
-                true,
-                false,
-                '/Cover/Show?author=&callnumber=BL1140.4.V572.E+2002+%28BL3%29%2B&size=medium&title=%C5%9Ar%C4'
-                . '%ABvi%E1%B9%A3%E1%B9%87upur%C4%81%E1%B9%87am+%3A+%28a+system+of+Hindu+mythology+and+traditi'
-                . 'on%29+%3D+The+Vi%E1%B9%A3%E1%B9%87u+Pur%C4%81%E1%B9%87am+%2F&recordid=0000183626-0&source=Solr',
-                '', // backlinks don't work without AJAX, so we don't expect to see one
-            ],
-            'image unavailable, ajax w/ fallback image' => [
-                '0000183626-1', // this ID causes the Demo cover provider to return no image
-                false,
-                true,
-                '/Cover/Show?author=Vy%C4%81sa&callnumber=BL1140.4.V572.E+2002+%28BL3%29%2B&size=medium&title=%C5'
-                . '%9Ar%C4%ABvi%E1%B9%A3%E1%B9%87upur%C4%81%E1%B9%87am+%3A+%28a+system+of+Hindu+mythology+and+tra'
-                . 'dition%29+%3D+The+Vi%E1%B9%A3%E1%B9%87u+Pur%C4%81%E1%B9%87am+%28with+dubious+author%29%2F&reco'
-                . 'rdid=0000183626-1&source=Solr',
-                '',
-            ],
-            'image unavailable, non-ajax w/ fallback image' => [
-                '0000183626-1', // this ID causes the Demo cover provider to return no image
-                false,
-                false,
-                '/Cover/Show?author=Vy%C4%81sa&callnumber=BL1140.4.V572.E+2002+%28BL3%29%2B&size=medium&title=%C5'
-                . '%9Ar%C4%ABvi%E1%B9%A3%E1%B9%87upur%C4%81%E1%B9%87am+%3A+%28a+system+of+Hindu+mythology+and+tra'
-                . 'dition%29+%3D+The+Vi%E1%B9%A3%E1%B9%87u+Pur%C4%81%E1%B9%87am+%28with+dubious+author%29%2F&reco'
-                . 'rdid=0000183626-1&source=Solr',
-                '',
-            ],
-            'image unavailable, ajax w/o fallback image' => [
-                '0000183626-1', // this ID causes the Demo cover provider to return no image
-                false,
-                true,
-                '/Cover/Show?author=Vy%C4%81sa&callnumber=BL1140.4.V572.E+2002+%28BL3%29%2B&size=medium&title=%C5'
-                . '%9Ar%C4%ABvi%E1%B9%A3%E1%B9%87upur%C4%81%E1%B9%87am+%3A+%28a+system+of+Hindu+mythology+and+tra'
-                . 'dition%29+%3D+The+Vi%E1%B9%A3%E1%B9%87u+Pur%C4%81%E1%B9%87am+%28with+dubious+author%29%2F&reco'
-                . 'rdid=0000183626-1&source=Solr',
-                '',
-                '', // blank string = no fallback image
-            ],
-            'image unavailable, non-ajax w/o fallback image' => [
-                '0000183626-1', // this ID causes the Demo cover provider to return no image
-                false,
-                false,
-                '/Cover/Show?author=Vy%C4%81sa&callnumber=BL1140.4.V572.E+2002+%28BL3%29%2B&size=medium&title=%C5'
-                . '%9Ar%C4%ABvi%E1%B9%A3%E1%B9%87upur%C4%81%E1%B9%87am+%3A+%28a+system+of+Hindu+mythology+and+tra'
-                . 'dition%29+%3D+The+Vi%E1%B9%A3%E1%B9%87u+Pur%C4%81%E1%B9%87am+%28with+dubious+author%29%2F&reco'
-                . 'rdid=0000183626-1&source=Solr',
-                '',
-                '', // blank string = no fallback image
-            ],
+        yield 'image available, ajax w/ backlinks' => [
+            '0000183626-0', // this ID causes the Demo cover provider to return an image
+            true,
+            true,
+            'themes/root/images/demo-cover-2.jpg',
+            'Cover from vufind.org',
+        ];
+        yield 'image available, ajax w/o backlinks' => [
+            '0000183626-0', // this ID causes the Demo cover provider to return an image
+            false,
+            true,
+            'themes/root/images/demo-cover-2.jpg',
+            '',
+        ];
+        yield 'image available, non-ajax w/o backlinks' => [
+            '0000183626-0', // this ID causes the Demo cover provider to return an image
+            false,
+            false,
+            '/Cover/Show?author=&callnumber=BL1140.4.V572.E+2002+%28BL3%29%2B&size=medium&title=%C5%9Ar%C4'
+            . '%ABvi%E1%B9%A3%E1%B9%87upur%C4%81%E1%B9%87am+%3A+%28a+system+of+Hindu+mythology+and+traditi'
+            . 'on%29+%3D+The+Vi%E1%B9%A3%E1%B9%87u+Pur%C4%81%E1%B9%87am+%2F&recordid=0000183626-0&source=Solr',
+            '',
+        ];
+        yield 'image available, non-ajax w/ backlinks' => [
+            '0000183626-0', // this ID causes the Demo cover provider to return an image
+            true,
+            false,
+            '/Cover/Show?author=&callnumber=BL1140.4.V572.E+2002+%28BL3%29%2B&size=medium&title=%C5%9Ar%C4'
+            . '%ABvi%E1%B9%A3%E1%B9%87upur%C4%81%E1%B9%87am+%3A+%28a+system+of+Hindu+mythology+and+traditi'
+            . 'on%29+%3D+The+Vi%E1%B9%A3%E1%B9%87u+Pur%C4%81%E1%B9%87am+%2F&recordid=0000183626-0&source=Solr',
+            '', // backlinks don't work without AJAX, so we don't expect to see one
+        ];
+        yield 'image unavailable, ajax w/ fallback image' => [
+            '0000183626-1', // this ID causes the Demo cover provider to return no image
+            false,
+            true,
+            '/Cover/Show?author=Vy%C4%81sa&callnumber=BL1140.4.V572.E+2002+%28BL3%29%2B&size=medium&title=%C5'
+            . '%9Ar%C4%ABvi%E1%B9%A3%E1%B9%87upur%C4%81%E1%B9%87am+%3A+%28a+system+of+Hindu+mythology+and+tra'
+            . 'dition%29+%3D+The+Vi%E1%B9%A3%E1%B9%87u+Pur%C4%81%E1%B9%87am+%28with+dubious+author%29%2F&reco'
+            . 'rdid=0000183626-1&source=Solr',
+            '',
+        ];
+        yield 'image unavailable, non-ajax w/ fallback image' => [
+            '0000183626-1', // this ID causes the Demo cover provider to return no image
+            false,
+            false,
+            '/Cover/Show?author=Vy%C4%81sa&callnumber=BL1140.4.V572.E+2002+%28BL3%29%2B&size=medium&title=%C5'
+            . '%9Ar%C4%ABvi%E1%B9%A3%E1%B9%87upur%C4%81%E1%B9%87am+%3A+%28a+system+of+Hindu+mythology+and+tra'
+            . 'dition%29+%3D+The+Vi%E1%B9%A3%E1%B9%87u+Pur%C4%81%E1%B9%87am+%28with+dubious+author%29%2F&reco'
+            . 'rdid=0000183626-1&source=Solr',
+            '',
+        ];
+        yield 'image unavailable, ajax w/o fallback image' => [
+            '0000183626-1', // this ID causes the Demo cover provider to return no image
+            false,
+            true,
+            '/Cover/Show?author=Vy%C4%81sa&callnumber=BL1140.4.V572.E+2002+%28BL3%29%2B&size=medium&title=%C5'
+            . '%9Ar%C4%ABvi%E1%B9%A3%E1%B9%87upur%C4%81%E1%B9%87am+%3A+%28a+system+of+Hindu+mythology+and+tra'
+            . 'dition%29+%3D+The+Vi%E1%B9%A3%E1%B9%87u+Pur%C4%81%E1%B9%87am+%28with+dubious+author%29%2F&reco'
+            . 'rdid=0000183626-1&source=Solr',
+            '',
+            '', // blank string = no fallback image
+        ];
+        yield 'image unavailable, non-ajax w/o fallback image' => [
+            '0000183626-1', // this ID causes the Demo cover provider to return no image
+            false,
+            false,
+            '/Cover/Show?author=Vy%C4%81sa&callnumber=BL1140.4.V572.E+2002+%28BL3%29%2B&size=medium&title=%C5'
+            . '%9Ar%C4%ABvi%E1%B9%A3%E1%B9%87upur%C4%81%E1%B9%87am+%3A+%28a+system+of+Hindu+mythology+and+tra'
+            . 'dition%29+%3D+The+Vi%E1%B9%A3%E1%B9%87u+Pur%C4%81%E1%B9%87am+%28with+dubious+author%29%2F&reco'
+            . 'rdid=0000183626-1&source=Solr',
+            '',
+            '', // blank string = no fallback image
         ];
     }
 

@@ -101,15 +101,13 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
     /**
      * Data provider for testIdentityRepository
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getTestIdentityRepositoryData(): array
+    public static function getTestIdentityRepositoryData(): \Iterator
     {
-        return [
-            [null],
-            [false],
-            [true],
-        ];
+        yield [null];
+        yield [false];
+        yield [true];
     }
 
     /**

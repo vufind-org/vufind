@@ -281,14 +281,12 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider to allow testing of top or bottom controls.
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function topOrBottomProvider(): array
+    public static function topOrBottomProvider(): \Iterator
     {
-        return [
-            'top button' => [''],
-            'bottom button' => ['bottom_'],
-        ];
+        yield 'top button' => [''];
+        yield 'bottom button' => ['bottom_'];
     }
 
     /**

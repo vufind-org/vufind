@@ -69,15 +69,13 @@ class LibGuidesTest extends \PHPUnit\Framework\TestCase
     /**
      * GetAZ test provider.
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function getAzProvider(): array
+    public static function getAzProvider(): \Iterator
     {
-        return [
-            'exclude hidden (explicitly)' => [ true, 4 ],
-            'do not exclude hidden' => [ false, 5 ],
-            'exclude hidden (by default)' => [ null, 4 ],
-        ];
+        yield 'exclude hidden (explicitly)' => [ true, 4 ];
+        yield 'do not exclude hidden' => [ false, 5 ];
+        yield 'exclude hidden (by default)' => [ null, 4 ];
     }
 
     /**

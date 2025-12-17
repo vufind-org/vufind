@@ -475,14 +475,12 @@ class BackendTest extends TestCase
     /**
      * Data provider for testGetIds
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getIdsProvider(): array
+    public static function getIdsProvider(): \Iterator
     {
-        return [
-            'default field list' => [null, 'id'],
-            'customized field list' => ['last_indexed', 'id,last_indexed'],
-        ];
+        yield 'default field list' => [null, 'id'];
+        yield 'customized field list' => ['last_indexed', 'id,last_indexed'];
     }
 
     /**

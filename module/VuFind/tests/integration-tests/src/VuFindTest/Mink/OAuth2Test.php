@@ -155,29 +155,27 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testOAuth2Authorization
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function oauth2AuthorizationProvider(): array
+    public static function oauth2AuthorizationProvider(): \Iterator
     {
-        return [
-            'test client' => [
-                'test',
-                [
-                    'Read your user identifier',
-                    'Read your basic profile information (name, language, birthdate)',
-                    'Read a unique hash based on your library user identifier',
-                    'Read your age',
-                ],
-                false,
+        yield 'test client' => [
+            'test',
+            [
+                'Read your user identifier',
+                'Read your basic profile information (name, language, birthdate)',
+                'Read a unique hash based on your library user identifier',
+                'Read your age',
             ],
-            'limited test client' => [
-                'test_limited',
-                [
-                    'Read your user identifier',
-                    'Read your basic profile information (name, language, birthdate)',
-                ],
-                true,
+            false,
+        ];
+        yield 'limited test client' => [
+            'test_limited',
+            [
+                'Read your user identifier',
+                'Read your basic profile information (name, language, birthdate)',
             ],
+            true,
         ];
     }
 

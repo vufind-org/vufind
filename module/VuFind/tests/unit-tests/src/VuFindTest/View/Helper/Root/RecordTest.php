@@ -321,20 +321,18 @@ class RecordTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetLink()
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getLinkProvider(): array
+    public static function getLinkProvider(): \Iterator
     {
-        return [
-            'no hidden filters' => ['http://foo', '?', '', 'http://foo'],
-            'URL with parameters' => [
-                'http://foo?bar=baz',
-                '&amp;',
-                '&amp;filter=hidden',
-                'http://foo?bar=baz&amp;filter=hidden',
-            ],
-            'URL without parameters' => ['http://foo', '?', '?filter=hidden', 'http://foo?filter=hidden'],
+        yield 'no hidden filters' => ['http://foo', '?', '', 'http://foo'];
+        yield 'URL with parameters' => [
+            'http://foo?bar=baz',
+            '&amp;',
+            '&amp;filter=hidden',
+            'http://foo?bar=baz&amp;filter=hidden',
         ];
+        yield 'URL without parameters' => ['http://foo', '?', '?filter=hidden', 'http://foo?filter=hidden'];
     }
 
     /**
