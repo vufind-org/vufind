@@ -50,35 +50,33 @@ class EscapeOrCleanHtmlTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testEscapeOrCleanHtml
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function escapeOrCleanHtmlProvider(): array
+    public static function escapeOrCleanHtmlProvider(): \Iterator
     {
         $link = '<a href="https://vufind.org/">VuFind</a>';
         $div = '<div>Div</div>';
         $dnd = '<i>Dungeons &amp; Dragons</i>';
-        return [
-            'plain string' => ['plain string', null, null, 'default', [], 'plain string'],
-            'link' => [$link, null, null, 'default', [], htmlentities($link)],
-            'link as PropertyString' => [PropertyString::fromHtml($link), null, null, 'default', [], 'VuFind'],
-            'link as PropertyString, allow HTML' => [
-                PropertyString::fromHtml($link), null, true, 'default', [], $link,
-            ],
-            'link as PropertyString, allow by config, proper context' => [
-                PropertyString::fromHtml($link), 'title', null, 'default', ['title' => true], $link,
-            ],
-            'link as PropertyString, allow by config, wrong context' => [
-                PropertyString::fromHtml($link), null, null, 'default', ['title' => true], 'VuFind',
-            ],
-            'div as PropertyString, allow HTML' => [
-                PropertyString::fromHtml($div), null, true, 'default', [], $div,
-            ],
-            'div as PropertyString, allow HTML, rendered in heading' => [
-                PropertyString::fromHtml($div), null, true, 'heading', [], 'Div',
-            ],
-            'HTML containing entity, disallow HTML' => [
-                PropertyString::fromHtml($dnd), null, false, 'heading', [], 'Dungeons &amp; Dragons',
-            ],
+        yield 'plain string' => ['plain string', null, null, 'default', [], 'plain string'];
+        yield 'link' => [$link, null, null, 'default', [], htmlentities($link)];
+        yield 'link as PropertyString' => [PropertyString::fromHtml($link), null, null, 'default', [], 'VuFind'];
+        yield 'link as PropertyString, allow HTML' => [
+            PropertyString::fromHtml($link), null, true, 'default', [], $link,
+        ];
+        yield 'link as PropertyString, allow by config, proper context' => [
+            PropertyString::fromHtml($link), 'title', null, 'default', ['title' => true], $link,
+        ];
+        yield 'link as PropertyString, allow by config, wrong context' => [
+            PropertyString::fromHtml($link), null, null, 'default', ['title' => true], 'VuFind',
+        ];
+        yield 'div as PropertyString, allow HTML' => [
+            PropertyString::fromHtml($div), null, true, 'default', [], $div,
+        ];
+        yield 'div as PropertyString, allow HTML, rendered in heading' => [
+            PropertyString::fromHtml($div), null, true, 'heading', [], 'Div',
+        ];
+        yield 'HTML containing entity, disallow HTML' => [
+            PropertyString::fromHtml($dnd), null, false, 'heading', [], 'Dungeons &amp; Dragons',
         ];
     }
 

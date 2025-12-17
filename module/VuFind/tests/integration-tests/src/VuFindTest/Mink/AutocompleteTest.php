@@ -131,18 +131,16 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testFilteredAutocomplete().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function filteredAutocompleteProvider(): array
+    public static function filteredAutocompleteProvider(): \Iterator
     {
-        return [
-            'retain filters, no explicit autocomplete setting' => [null, true, true],
-            'do not retain filters, no explicit autocomplete setting' => [null, false, false],
-            'retain filters, explicit autocomplete true setting' => [true, true, true],
-            'do not retain filters, explicit autocomplete true setting' => [true, false, true],
-            'retain filters, explicit autocomplete false setting' => [false, true, false],
-            'do not retain filters, explicit autocomplete false setting' => [false, false, false],
-        ];
+        yield 'retain filters, no explicit autocomplete setting' => [null, true, true];
+        yield 'do not retain filters, no explicit autocomplete setting' => [null, false, false];
+        yield 'retain filters, explicit autocomplete true setting' => [true, true, true];
+        yield 'do not retain filters, explicit autocomplete true setting' => [true, false, true];
+        yield 'retain filters, explicit autocomplete false setting' => [false, true, false];
+        yield 'do not retain filters, explicit autocomplete false setting' => [false, false, false];
     }
 
     /**

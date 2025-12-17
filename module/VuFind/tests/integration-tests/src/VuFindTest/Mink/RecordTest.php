@@ -159,15 +159,13 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testPermalink().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function permalinkProvider(): array
+    public static function permalinkProvider(): \Iterator
     {
-        return [
-            'default' => [null],
-            'enabled' => [true],
-            'disabled' => [false],
-        ];
+        yield 'default' => [null];
+        yield 'enabled' => [true];
+        yield 'disabled' => [false];
     }
 
     /**

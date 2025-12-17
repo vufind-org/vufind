@@ -57,40 +57,38 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetCurrentHiddenFilterParams
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getCurrentHiddenFilterParamsProvider(): array
+    public static function getCurrentHiddenFilterParamsProvider(): \Iterator
     {
-        return [
+        yield [
+            [],
+            2,
+            [],
+            1,
+            '',
+        ];
+        yield [
             [
-                [],
-                2,
-                [],
-                1,
-                '',
+                'first' => 'foo',
+                'second' => 'bar',
             ],
+            1,
             [
-                [
-                    'first' => 'foo',
-                    'second' => 'bar',
-                ],
-                1,
-                [
-                    'last' => ['foo'],
-                ],
-                0,
-                'hiddenFilters%5B%5D=first%3A%22foo%22'
-                . '&amp;hiddenFilters%5B%5D=second%3A%22bar%22',
+                'last' => ['foo'],
             ],
+            0,
+            'hiddenFilters%5B%5D=first%3A%22foo%22'
+            . '&amp;hiddenFilters%5B%5D=second%3A%22bar%22',
+        ];
+        yield [
+            [],
+            1,
             [
-                [],
-                1,
-                [
-                    'last' => ['foo'],
-                ],
-                1,
-                'hiddenFilters%5B%5D=last%3A%22foo%22',
+                'last' => ['foo'],
             ],
+            1,
+            'hiddenFilters%5B%5D=last%3A%22foo%22',
         ];
     }
 

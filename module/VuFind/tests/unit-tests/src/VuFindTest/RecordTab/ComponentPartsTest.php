@@ -70,11 +70,12 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testIsActive.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function isActiveProvider(): array
+    public static function isActiveProvider(): \Iterator
     {
-        return ['no children' => [0, false], 'children' => [10, true]];
+        yield 'no children' => [0, false];
+        yield 'children' => [10, true];
     }
 
     /**

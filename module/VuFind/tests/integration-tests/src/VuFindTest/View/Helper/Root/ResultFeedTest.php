@@ -94,17 +94,15 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testRSS.
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function rssProvider(): array
+    public static function rssProvider(): \Iterator
     {
         $routeLink = 'http://server/url';
         $driverLink = 'http://driver-url';
-        return [
-            'default options' => [[], $routeLink],
-            'prioritizeRecordDriverLinks = false' => [['prioritizeRecordDriverLinks' => false], $routeLink],
-            'prioritizeRecordDriverLinks = true' => [['prioritizeRecordDriverLinks' => true], $driverLink],
-        ];
+        yield 'default options' => [[], $routeLink];
+        yield 'prioritizeRecordDriverLinks = false' => [['prioritizeRecordDriverLinks' => false], $routeLink];
+        yield 'prioritizeRecordDriverLinks = true' => [['prioritizeRecordDriverLinks' => true], $driverLink];
     }
 
     /**

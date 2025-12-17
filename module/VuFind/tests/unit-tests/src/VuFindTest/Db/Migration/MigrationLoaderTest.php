@@ -48,17 +48,15 @@ class MigrationLoaderTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetMigrationDirForPlatform().
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getMigrationDirForPlatformProvider(): array
+    public static function getMigrationDirForPlatformProvider(): \Iterator
     {
         $basePath = APPLICATION_PATH . '/module/VuFind/sql/migrations';
-        return [
-            ['postgres', "$basePath/pgsql"],
-            ['pgsql', "$basePath/pgsql"],
-            ['mysql', "$basePath/mysql"],
-            ['mariadb', "$basePath/mysql"],
-        ];
+        yield ['postgres', "$basePath/pgsql"];
+        yield ['pgsql', "$basePath/pgsql"];
+        yield ['mysql', "$basePath/mysql"];
+        yield ['mariadb', "$basePath/mysql"];
     }
 
     /**
@@ -79,16 +77,14 @@ class MigrationLoaderTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetMigrationSubdirectoriesMatchingVersion().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function getMigrationSubdirectoriesMatchingVersionProvider(): array
+    public static function getMigrationSubdirectoriesMatchingVersionProvider(): \Iterator
     {
-        return [
-            ['10.1', ['10.1', '11.0', '11.1']],
-            ['11.0', ['11.0', '11.1']],
-            ['11.1', ['11.1']],
-            ['11.2', []],
-        ];
+        yield ['10.1', ['10.1', '11.0', '11.1']];
+        yield ['11.0', ['11.0', '11.1']];
+        yield ['11.1', ['11.1']];
+        yield ['11.2', []];
     }
 
     /**
