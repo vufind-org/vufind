@@ -311,7 +311,7 @@ class AlmaTest extends \VuFindTest\Unit\ILSDriverTestCase
         $result = $this->driver->getMyProfile(['id' => '1111']);
         $this->assertArrayHasKey('group', $result);
         // Alma uses Translatable strings in group field; make sure that passed through correctly.
-        $this->assertInstanceOf(\VuFind\I18n\TranslatableString::class, $result['group']);
+        $this->assertInstanceOf(TranslatableString::class, $result['group']);
         $this->assertEquals($expected, $result);
     }
 

@@ -20,6 +20,7 @@ use Rector\PHPUnit\CodeQuality\Rector\MethodCall\FlipAssertRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertInstanceOfComparisonRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\MatchAssertSameExpectedTypeRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\SingleWithConsecutiveToWithRector;
+use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertInstanceOfComparisonRector;
 
 return RectorConfig::configure()
     ->withCache(
@@ -39,6 +40,7 @@ return RectorConfig::configure()
         GetMockBuilderGetMockToCreateMockRector::class,
         UseSpecificWithMethodRector::class,
         AssertEqualsToSameRector::class,
+        AssertInstanceOfComparisonRector::class,
         YieldDataProviderRector::class,
         ReplaceAtMethodWithDesiredMatcherRector::class,
         AssertEqualsOrAssertSameFloatParameterToSpecificMethodsTypeRector::class,

@@ -32,8 +32,6 @@ namespace VuFindTest\Backend\Solr\Json\Response;
 use PHPUnit\Framework\TestCase;
 use VuFindSearch\Backend\Solr\Response\Json\Terms;
 
-use function get_class;
-
 /**
  * Unit tests for terms information.
  *

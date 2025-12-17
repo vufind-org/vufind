@@ -121,7 +121,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     public function testDefaultQueryBuilder()
     {
         $back = new Backend($this->getConnectorMock(), $this->getRCFactory());
-        $this->assertInstanceOf(\VuFindSearch\Backend\EIT\QueryBuilder::class, $back->getQueryBuilder());
+        $this->assertInstanceOf(QueryBuilder::class, $back->getQueryBuilder());
     }
 
     /**

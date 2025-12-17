@@ -114,7 +114,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     public function testDefaultQueryBuilder()
     {
         $back = new Backend($this->getConnector(), $this->getRCFactory());
-        $this->assertInstanceOf(\VuFindSearch\Backend\LibGuides\QueryBuilder::class, $back->getQueryBuilder());
+        $this->assertInstanceOf(QueryBuilder::class, $back->getQueryBuilder());
     }
 
     /**
@@ -139,7 +139,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     public function testDefaultRecordCollectionFactory()
     {
         $back = new Backend($this->getConnector());
-        $this->assertInstanceOf(\VuFindSearch\Backend\LibGuides\Response\RecordCollectionFactory::class, $back->getRecordCollectionFactory());
+        $this->assertInstanceOf(RecordCollectionFactory::class, $back->getRecordCollectionFactory());
     }
 
     /**
