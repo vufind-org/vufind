@@ -114,7 +114,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     public function testDefaultQueryBuilder()
     {
         $back = new Backend($this->getConnector(), $this->getRCFactory());
-        $this->assertTrue($back->getQueryBuilder() instanceof QueryBuilder);
+        $this->assertInstanceOf(QueryBuilder::class, $back->getQueryBuilder());
     }
 
     /**
@@ -139,7 +139,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     public function testDefaultRecordCollectionFactory()
     {
         $back = new Backend($this->getConnector());
-        $this->assertTrue($back->getRecordCollectionFactory() instanceof RecordCollectionFactory);
+        $this->assertInstanceOf(RecordCollectionFactory::class, $back->getRecordCollectionFactory());
     }
 
     /**
