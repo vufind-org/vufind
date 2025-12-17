@@ -64,7 +64,7 @@ class Options extends \VuFind\Search\Base\Options
             $this->defaultLimit = $limit;
         }
         if (null !== ($limitOptions = $this->mainConfig['Social']['lists_limit_options'] ?? null)) {
-            $this->limitOptions = $this->explodeListSetting($limitOptions);
+            $this->limitOptions = $this->explodeListSetting($limitOptions, 'intval');
         }
         if (null !== ($view = $this->mainConfig['Social']['lists_view'] ?? null)) {
             $this->listviewOption = $view;

@@ -158,7 +158,7 @@ abstract class Options implements TranslatorAwareInterface
     /**
      * Available limit options
      *
-     * @var array
+     * @var int[]
      */
     protected array $limitOptions;
 
@@ -485,7 +485,10 @@ abstract class Options implements TranslatorAwareInterface
 
         // Limit preferences:
         $this->defaultLimit = $this->searchSettings['General']['default_limit'] ?? 20;
-        $this->limitOptions = $this->explodeListSetting($this->searchSettings['General']['limit_options'] ?? '');
+        $this->limitOptions = $this->explodeListSetting(
+            $this->searchSettings['General']['limit_options'] ?? '',
+            'intval'
+        );
         $this->resultLimit = (int)($this->searchSettings['General']['result_limit'] ?? $this->defaultResultLimit);
         if ($this->maxResultLimit) {
             $this->resultLimit = -1 === $this->resultLimit

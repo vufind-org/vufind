@@ -430,7 +430,7 @@ class Options extends AbstractEDSOptions
             $this->defaultLimit = $limit;
         }
         if (null !== ($limitOptions = $this->searchSettings['General']['limit_options'] ?? null)) {
-            $this->limitOptions = $this->explodeListSetting($limitOptions);
+            $this->limitOptions = $this->explodeListSetting($limitOptions, 'intval');
         }
 
         // Set up highlighting preference
