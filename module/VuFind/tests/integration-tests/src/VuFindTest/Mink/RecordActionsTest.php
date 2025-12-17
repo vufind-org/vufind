@@ -281,15 +281,13 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testTagSearchSort
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getTagSearchSortData(): array
+    public static function getTagSearchSortData(): \Iterator
     {
-        return [
-            [1, 'author', 'Fake Record 1 with multiple relators/', 'Dewey browse test'],
-            [2, 'year DESC', '<HTML> The Basics', 'Fake Record 1 with multiple relators/'],
-            [3, 'year', 'Fake Record 1 with multiple relators/', '<HTML> The Basics'],
-        ];
+        yield [1, 'author', 'Fake Record 1 with multiple relators/', 'Dewey browse test'];
+        yield [2, 'year DESC', '<HTML> The Basics', 'Fake Record 1 with multiple relators/'];
+        yield [3, 'year', 'Fake Record 1 with multiple relators/', '<HTML> The Basics'];
     }
 
     /**
@@ -694,14 +692,12 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testRating
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getTestRatingData(): array
+    public static function getTestRatingData(): \Iterator
     {
-        return [
-            [true],
-            [false],
-        ];
+        yield [true];
+        yield [false];
     }
 
     /**

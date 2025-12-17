@@ -263,16 +263,14 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
     /**
      * DataProvider for testIsInvertedName().
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function isInvertedNameProvider(): array
+    public static function isInvertedNameProvider(): \Iterator
     {
-        return [
-            ['foo bar', false],
-            ['foo bar, jr.', false],
-            ['bar, foo', true],
-            ['bar, foo, jr.', true],
-        ];
+        yield ['foo bar', false];
+        yield ['foo bar, jr.', false];
+        yield ['bar, foo', true];
+        yield ['bar, foo, jr.', true];
     }
 
     /**
@@ -327,24 +325,22 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testTitleSortLower().
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function titleSortLowerProvider(): array
+    public static function titleSortLowerProvider(): \Iterator
     {
-        return [
-            'basic lowercasing' => ['ABCDEF', 'abcdef'],
-            'Latin accent stripping' => ['çèñüĂ', 'cenua'],
-            'Punctuation stripping' => ['this:that:...!>!the other', 'this that the other'],
-            'Japanese text' => ['日本語テキスト', '日本語テキスト'],
-            'Leading bracket' => ['[foo', 'foo'],
-            'Trailing bracket' => ['foo]', 'foo'],
-            'Outer brackets' => ['[foo]', 'foo'],
-            'Stacked outer brackets' => ['[[foo]]', 'foo'],
-            'Tons of brackets' => ['[]foo][[', 'foo'],
-            'Inner brackets' => ['foo[]foo', 'foo foo'],
-            'Trailing whitespace' => ['foo   ', 'foo'],
-            'Trailing punctuation' => ['foo /.', 'foo'],
-        ];
+        yield 'basic lowercasing' => ['ABCDEF', 'abcdef'];
+        yield 'Latin accent stripping' => ['çèñüĂ', 'cenua'];
+        yield 'Punctuation stripping' => ['this:that:...!>!the other', 'this that the other'];
+        yield 'Japanese text' => ['日本語テキスト', '日本語テキスト'];
+        yield 'Leading bracket' => ['[foo', 'foo'];
+        yield 'Trailing bracket' => ['foo]', 'foo'];
+        yield 'Outer brackets' => ['[foo]', 'foo'];
+        yield 'Stacked outer brackets' => ['[[foo]]', 'foo'];
+        yield 'Tons of brackets' => ['[]foo][[', 'foo'];
+        yield 'Inner brackets' => ['foo[]foo', 'foo foo'];
+        yield 'Trailing whitespace' => ['foo   ', 'foo'];
+        yield 'Trailing punctuation' => ['foo /.', 'foo'];
     }
 
     /**

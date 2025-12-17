@@ -337,74 +337,66 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     /**
      * Test cases for mergeWithoutOverride
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function mergeEdgeCasesProvider(): array
+    public static function mergeEdgeCasesProvider(): \Iterator
     {
-        return [
-            // string
+        // string
+        yield [
             [
-                [
-                    'override',
-                    'original',
-                ],
+                'override',
                 'original',
             ],
-
-            // array
+            'original',
+        ];
+        // array
+        yield [
             [
-                [
-                    ['override'],
-                    ['original'],
-                ],
-                ['override', 'original'],
+                ['override'],
+                ['original'],
             ],
-
-            // string-keyed arrays
+            ['override', 'original'],
+        ];
+        // string-keyed arrays
+        yield [
             [
-                [
-                    ['array' => [2], 'string' => 'override', 'sub' => ['a' => 2]],
-                    ['array' => [1], 'string' => 'original', 'sub' => ['a' => 1]],
-                ],
-                ['array' => [2, 1], 'string' => 'original', 'sub' => ['a' => 1]],
+                ['array' => [2], 'string' => 'override', 'sub' => ['a' => 2]],
+                ['array' => [1], 'string' => 'original', 'sub' => ['a' => 1]],
             ],
-
-            // string-keyed arrays: missing
+            ['array' => [2, 1], 'string' => 'original', 'sub' => ['a' => 1]],
+        ];
+        // string-keyed arrays: missing
+        yield [
             [
-                [
-                    ['shared' => [1], 'child' => 'only'],
-                    ['shared' => [1], 'parent' => 'only'],
-                ],
-                ['shared' => [1, 1], 'parent' => 'only', 'child' => 'only'],
+                ['shared' => [1], 'child' => 'only'],
+                ['shared' => [1], 'parent' => 'only'],
             ],
-
-            // string-keyed string -> array
+            ['shared' => [1, 1], 'parent' => 'only', 'child' => 'only'],
+        ];
+        // string-keyed string -> array
+        yield [
             [
-                [
-                    ['mixed' => 'string'],
-                    ['mixed' => ['array']],
-                ],
-                ['mixed' => ['string', 'array']],
+                ['mixed' => 'string'],
+                ['mixed' => ['array']],
             ],
-
-            // string-keyed array -> string
+            ['mixed' => ['string', 'array']],
+        ];
+        // string-keyed array -> string
+        yield [
             [
-                [
-                    ['mixed' => ['array']],
-                    ['mixed' => 'string'],
-                ],
-                ['mixed' => ['array', 'string']],
+                ['mixed' => ['array']],
+                ['mixed' => 'string'],
             ],
-
-            // arrays and strings
+            ['mixed' => ['array', 'string']],
+        ];
+        // arrays and strings
+        yield [
             [
-                [
-                    'not an array',
-                    ['mixed' => ['array']],
-                ],
-                [
-                    'mixed' => ['array'],
-                ],
+                'not an array',
+                ['mixed' => ['array']],
+            ],
+            [
+                'mixed' => ['array'],
             ],
         ];
     }

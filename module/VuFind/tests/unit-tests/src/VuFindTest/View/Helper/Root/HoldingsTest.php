@@ -45,15 +45,13 @@ class HoldingsTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testBarcodeVisibilityBehavior()
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function barcodeVisibilityBehaviorProvider(): array
+    public static function barcodeVisibilityBehaviorProvider(): \Iterator
     {
-        return [
-            'default' => [[], true, true],
-            'enabled' => [['display_items_without_barcodes' => true], true, true],
-            'disabled' => [['display_items_without_barcodes' => false], true, false],
-        ];
+        yield 'default' => [[], true, true];
+        yield 'enabled' => [['display_items_without_barcodes' => true], true, true];
+        yield 'disabled' => [['display_items_without_barcodes' => false], true, false];
     }
 
     /**

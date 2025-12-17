@@ -64,34 +64,32 @@ class RateLimiterTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testRateLimiter
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function rateLimiterDataProvider(): array
+    public static function rateLimiterDataProvider(): \Iterator
     {
         $searchPath = '/Search/Results';
         $searchQuery = ['lookfor' => 'foobar'];
-        return [
-            'search by bot' => [
-                true,
-                true,
-                2,
-                $searchPath,
-                $searchQuery,
-            ],
-            'search by user' => [
-                false,
-                false,
-                5,
-                $searchPath,
-                $searchQuery,
-            ],
-            'front page (unlimited)' => [
-                false,
-                false,
-                null,
-                '',
-                [],
-            ],
+        yield 'search by bot' => [
+            true,
+            true,
+            2,
+            $searchPath,
+            $searchQuery,
+        ];
+        yield 'search by user' => [
+            false,
+            false,
+            5,
+            $searchPath,
+            $searchQuery,
+        ];
+        yield 'front page (unlimited)' => [
+            false,
+            false,
+            null,
+            '',
+            [],
         ];
     }
 

@@ -62,14 +62,12 @@ class OaiTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider describing OAI servers.
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function serverProvider(): array
+    public static function serverProvider(): \Iterator
     {
-        return [
-            'auth' => ['/OAI/AuthServer'],
-            'biblio' => ['/OAI/Server'],
-        ];
+        yield 'auth' => ['/OAI/AuthServer'];
+        yield 'biblio' => ['/OAI/Server'];
     }
 
     /**

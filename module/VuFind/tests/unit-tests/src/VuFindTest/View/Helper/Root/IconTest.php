@@ -194,65 +194,63 @@ class IconTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testUnicodeIcons
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function unicodeIconProvider(): array
+    public static function unicodeIconProvider(): \Iterator
     {
-        return [
+        yield [
+            '',
+            '',
+            '1F600',
+            'smile',
+            '',
+        ];
+        yield [
+            'wry',
+            '',
+            '1F600',
+            'wrySmile',
+            '',
+        ];
+        yield [
+            'super wry',
+            '',
+            '1F600',
+            'wrySmile',
+            'super',
+        ];
+        yield [
+            'super wry',
+            '',
+            '1F600',
+            'wrySmile',
+            ['class' => 'super'],
+        ];
+        yield [
+            'wry',
+            'foo="b+r"',
+            '1F600',
+            'wrySmile',
             [
-                '',
-                '',
-                '1F600',
-                'smile',
-                '',
+                'foo' => 'b+r',
             ],
+        ];
+        yield [
+            'super wry',
+            'foo="b+r"',
+            '1F600',
+            'wrySmile',
             [
-                'wry',
-                '',
-                '1F600',
-                'wrySmile',
-                '',
+                'class' => 'super',
+                'foo' => 'b+r',
             ],
-            [
-                'super wry',
-                '',
-                '1F600',
-                'wrySmile',
-                'super',
-            ],
-            [
-                'super wry',
-                '',
-                '1F600',
-                'wrySmile',
-                ['class' => 'super'],
-            ],
-            [
-                'wry',
-                'foo="b+r"',
-                '1F600',
-                'wrySmile',
-                [
-                    'foo' => 'b+r',
-                ],
-            ],
-            [
-                'super wry',
-                'foo="b+r"',
-                '1F600',
-                'wrySmile',
-                [
-                    'class' => 'super',
-                    'foo' => 'b+r',
-                ],
-            ],
-            [
-                '',
-                '',
-                'c&lt;de',
-                'oddGlyph',
-                '',
-            ],
+        ];
+        yield [
+            '',
+            '',
+            'c&lt;de',
+            'oddGlyph',
+            '',
         ];
     }
 

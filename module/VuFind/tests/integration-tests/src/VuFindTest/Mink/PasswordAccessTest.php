@@ -77,14 +77,12 @@ final class PasswordAccessTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testLogin.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function loginProvider(): array
+    public static function loginProvider(): \Iterator
     {
-        return [
-            'unhashed password' => [false],
-            'hashed password' => [true],
-        ];
+        yield 'unhashed password' => [false];
+        yield 'hashed password' => [true];
     }
 
     /**

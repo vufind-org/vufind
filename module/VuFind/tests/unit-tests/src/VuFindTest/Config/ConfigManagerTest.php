@@ -175,14 +175,12 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testReadOnlyConfig().
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function readOnlyConfigProvider(): array
+    public static function readOnlyConfigProvider(): \Iterator
     {
-        return [
-            'empty config' => ['unset'],
-            'override config' => ['title'],
-        ];
+        yield 'empty config' => ['unset'];
+        yield 'override config' => ['title'];
     }
 
     /**
@@ -463,107 +461,105 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testConfigsInLocalDirStack().
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function localDirStackTestProvider(): array
+    public static function localDirStackTestProvider(): \Iterator
     {
-        return [
-            'all' => [
-                'all',
-                [
+        yield 'all' => [
+            'all',
+            [
+                'Section' => [
+                    'value' => 'primary',
+                    'value2' => 'secondary',
+                ],
+            ],
+        ];
+        yield 'primary' => [
+            'primary',
+            [
+                'Section' => [
+                    'value' => 'primary',
+                ],
+            ],
+        ];
+        yield 'base-secondary' => [
+            'base-secondary',
+            [
+                'Section' => [
+                    'value' => 'secondary',
+                    'value2' => 'secondary',
+                ],
+            ],
+        ];
+        yield 'base' => [
+            'base',
+            [
+                'Section' => [
+                    'value' => 'base',
+                    'value2' => 'base',
+                ],
+            ],
+        ];
+        yield 'dir_config' => [
+            'dir_config',
+            [
+                'all-sub' => [
                     'Section' => [
                         'value' => 'primary',
                         'value2' => 'secondary',
                     ],
                 ],
-            ],
-            'primary' => [
-                'primary',
-                [
+                'primary-sub' => [
                     'Section' => [
                         'value' => 'primary',
                     ],
                 ],
-            ],
-            'base-secondary' => [
-                'base-secondary',
-                [
+                'base-secondary-sub' => [
                     'Section' => [
                         'value' => 'secondary',
                         'value2' => 'secondary',
                     ],
                 ],
-            ],
-            'base' => [
-                'base',
-                [
+                'base-sub' => [
                     'Section' => [
                         'value' => 'base',
                         'value2' => 'base',
                     ],
                 ],
             ],
-            'dir_config' => [
-                'dir_config',
-                [
-                    'all-sub' => [
-                        'Section' => [
-                            'value' => 'primary',
-                            'value2' => 'secondary',
-                        ],
-                    ],
-                    'primary-sub' => [
-                        'Section' => [
-                            'value' => 'primary',
-                        ],
-                    ],
-                    'base-secondary-sub' => [
-                        'Section' => [
-                            'value' => 'secondary',
-                            'value2' => 'secondary',
-                        ],
-                    ],
-                    'base-sub' => [
-                        'Section' => [
-                            'value' => 'base',
-                            'value2' => 'base',
-                        ],
-                    ],
+        ];
+        yield 'all-sub' => [
+            'dir_config/all-sub',
+            [
+                'Section' => [
+                    'value' => 'primary',
+                    'value2' => 'secondary',
                 ],
             ],
-            'all-sub' => [
-                'dir_config/all-sub',
-                [
-                    'Section' => [
-                        'value' => 'primary',
-                        'value2' => 'secondary',
-                    ],
+        ];
+        yield 'primary-sub' => [
+            'dir_config/primary-sub',
+            [
+                'Section' => [
+                    'value' => 'primary',
                 ],
             ],
-            'primary-sub' => [
-                'dir_config/primary-sub',
-                [
-                    'Section' => [
-                        'value' => 'primary',
-                    ],
+        ];
+        yield 'base-secondary-sub' => [
+            'dir_config/base-secondary-sub',
+            [
+                'Section' => [
+                    'value' => 'secondary',
+                    'value2' => 'secondary',
                 ],
             ],
-            'base-secondary-sub' => [
-                'dir_config/base-secondary-sub',
-                [
-                    'Section' => [
-                        'value' => 'secondary',
-                        'value2' => 'secondary',
-                    ],
-                ],
-            ],
-            'base-sub' => [
-                'dir_config/base-sub',
-                [
-                    'Section' => [
-                        'value' => 'base',
-                        'value2' => 'base',
-                    ],
+        ];
+        yield 'base-sub' => [
+            'dir_config/base-sub',
+            [
+                'Section' => [
+                    'value' => 'base',
+                    'value2' => 'base',
                 ],
             ],
         ];

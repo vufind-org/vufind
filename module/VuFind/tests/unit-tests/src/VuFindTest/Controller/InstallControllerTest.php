@@ -92,92 +92,90 @@ class InstallControllerTest extends \PHPUnit\Framework\TestCase
     /**
      * Test data for getMinimalPhpVersion
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function getMinimalPhpVersionProvider(): array
+    public static function getMinimalPhpVersionProvider(): \Iterator
     {
-        return [
+        yield [
             [
-                [
-                    'require' => [
-                        'php' => '>=7.4.1',
+                'require' => [
+                    'php' => '>=7.4.1',
+                ],
+            ],
+            '7.4.1',
+        ];
+        yield [
+            [
+                'require' => [
+                    'php' => '7.3.0',
+                ],
+            ],
+            '7.3.0',
+        ];
+        yield [
+            [
+                'require' => [
+                    'php' => '^7.2.0',
+                ],
+            ],
+            '7.2.0',
+        ];
+        yield [
+            [
+                'require' => [
+                    'php' => '~7.1.0',
+                ],
+                'config' => [
+                    'platform' => [
+                        'php' => '5.6.0',
                     ],
                 ],
-                '7.4.1',
             ],
+            '7.1.0',
+        ];
+        yield [
             [
-                [
-                    'require' => [
-                        'php' => '7.3.0',
+                'config' => [
+                    'platform' => [
+                        'php' => '7.0.0',
                     ],
                 ],
-                '7.3.0',
             ],
+            '7.0.0',
+        ];
+        yield [
             [
-                [
-                    'require' => [
-                        'php' => '^7.2.0',
+                'require' => [
+                    'php' => '5.8.0 || 5.9.0',
+                ],
+            ],
+            '5.8.0',
+        ];
+        yield [
+            [
+                'require' => [
+                    'php' => '^5.7',
+                ],
+            ],
+            '5.7.0',
+        ];
+        yield [
+            [
+                'require' => [
+                    'php' => '^5',
+                ],
+            ],
+            '5.0.0',
+        ];
+        yield [
+            [
+                'config' => [
+                    'platform' => [
+                        'php' => '4',
                     ],
                 ],
-                '7.2.0',
             ],
-            [
-                [
-                    'require' => [
-                        'php' => '~7.1.0',
-                    ],
-                    'config' => [
-                        'platform' => [
-                            'php' => '5.6.0',
-                        ],
-                    ],
-                ],
-                '7.1.0',
-            ],
-            [
-                [
-                    'config' => [
-                        'platform' => [
-                            'php' => '7.0.0',
-                        ],
-                    ],
-                ],
-                '7.0.0',
-            ],
-            [
-                [
-                    'require' => [
-                        'php' => '5.8.0 || 5.9.0',
-                    ],
-                ],
-                '5.8.0',
-            ],
-            [
-                [
-                    'require' => [
-                        'php' => '^5.7',
-                    ],
-                ],
-                '5.7.0',
-            ],
-            [
-                [
-                    'require' => [
-                        'php' => '^5',
-                    ],
-                ],
-                '5.0.0',
-            ],
-            [
-                [
-                    'config' => [
-                        'platform' => [
-                            'php' => '4',
-                        ],
-                    ],
-                ],
-                '4.0.0',
-            ],
+            '4.0.0',
         ];
     }
 

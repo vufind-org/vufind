@@ -93,15 +93,13 @@ class SchemaOrgTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetRecordTypes().
      *
-     * @return void
+     * @return \Iterator
      */
-    public static function getRecordTypesProvider(): array
+    public static function getRecordTypesProvider(): \Iterator
     {
-        return [
-            'no types' => [[], ''],
-            'one type' => [['foo'], 'foo'],
-            'two types' => [['foo', 'bar'], 'foo bar'],
-        ];
+        yield 'no types' => [[], ''];
+        yield 'one type' => [['foo'], 'foo'];
+        yield 'two types' => [['foo', 'bar'], 'foo bar'];
     }
 
     /**

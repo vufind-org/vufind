@@ -54,60 +54,58 @@ class ChannelLoaderTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetRecordContext()
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function getRecordContextProvider(): array
+    public static function getRecordContextProvider(): \Iterator
     {
         $defaultConfig = ['batchSize' => 24, 'pageSize' => 6, 'rowSize' => 6];
-        return [
-            'no configuration' => [[], [], [], ['record']],
-            'one provider' => [
-                [
-                    'source.Solr' => [
-                        'record' => ['bar'],
-                    ],
+        yield 'no configuration' => [[], [], [], ['record']];
+        yield 'one provider' => [
+            [
+                'source.Solr' => [
+                    'record' => ['bar'],
                 ],
-                [['contents' => 'bar', 'providerId' => 'mock', 'config' => $defaultConfig]],
-                [],
-                ['record'],
             ],
-            'two providers, including config' => [
-                [
-                    'source.Solr' => [
-                        'record' => ['bar', 'baz:xyzzy'],
-                    ],
-                    'xyzzy' => [
-                        'extraConfig',
-                    ],
+            [['contents' => 'bar', 'providerId' => 'mock', 'config' => $defaultConfig]],
+            [],
+            ['record'],
+        ];
+        yield 'two providers, including config' => [
+            [
+                'source.Solr' => [
+                    'record' => ['bar', 'baz:xyzzy'],
                 ],
-                [
-                    ['contents' => 'bar', 'providerId' => 'mock', 'config' => $defaultConfig],
-                    ['contents' => 'baz-extraConfig', 'providerId' => 'mock', 'config' => $defaultConfig],
+                'xyzzy' => [
+                    'extraConfig',
                 ],
-                [],
-                ['record'],
             ],
-            'override section' => [
-                [
-                    'source.Solr' => [
-                        'record' => ['bar'],
-                        'recordTab' => ['override'],
-                    ],
-                ],
-                [['contents' => 'override', 'providerId' => 'mock', 'config' => $defaultConfig]],
-                [],
-                ['recordTab', 'record'],
+            [
+                ['contents' => 'bar', 'providerId' => 'mock', 'config' => $defaultConfig],
+                ['contents' => 'baz-extraConfig', 'providerId' => 'mock', 'config' => $defaultConfig],
             ],
-            'proper section fallback' => [
-                [
-                    'source.Solr' => [
-                        'record' => ['bar'],
-                    ],
+            [],
+            ['record'],
+        ];
+        yield 'override section' => [
+            [
+                'source.Solr' => [
+                    'record' => ['bar'],
+                    'recordTab' => ['override'],
                 ],
-                [['contents' => 'bar', 'providerId' => 'mock', 'config' => $defaultConfig]],
-                [],
-                ['recordTab', 'record'],
             ],
+            [['contents' => 'override', 'providerId' => 'mock', 'config' => $defaultConfig]],
+            [],
+            ['recordTab', 'record'],
+        ];
+        yield 'proper section fallback' => [
+            [
+                'source.Solr' => [
+                    'record' => ['bar'],
+                ],
+            ],
+            [['contents' => 'bar', 'providerId' => 'mock', 'config' => $defaultConfig]],
+            [],
+            ['recordTab', 'record'],
         ];
     }
 
