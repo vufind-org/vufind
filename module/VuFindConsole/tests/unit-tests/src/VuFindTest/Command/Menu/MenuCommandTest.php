@@ -119,11 +119,12 @@ class MenuCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testSimpleExternalCommand().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function simpleExternalCommandProvider(): array
+    public static function simpleExternalCommandProvider(): \Iterator
     {
-        return ['success' => [true], 'failure' => [false]];
+        yield 'success' => [true];
+        yield 'failure' => [false];
     }
 
     /**

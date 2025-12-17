@@ -51,15 +51,13 @@ class QueryAdapterTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testConversions
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function conversionsProvider(): array
+    public static function conversionsProvider(): \Iterator
     {
-        return [
-            ['basic', true],
-            ['advanced', true],
-            ['workkeys', false],
-        ];
+        yield ['basic', true];
+        yield ['advanced', true];
+        yield ['workkeys', false];
     }
 
     /**

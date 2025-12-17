@@ -642,15 +642,13 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testLoanHistoryWithPurgeDisabled
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function loanHistoryWithPurgeDisabledProvider(): array
+    public static function loanHistoryWithPurgeDisabledProvider(): \Iterator
     {
-        return [
-            [false, false],
-            [false, true],
-            [true, false],
-        ];
+        yield [false, false];
+        yield [false, true];
+        yield [true, false];
     }
 
     /**

@@ -64,16 +64,14 @@ class AccountCapabilitiesTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetEmailActionSettings().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function emailActionSettingsProvider(): array
+    public static function emailActionSettingsProvider(): \Iterator
     {
-        return [
-            'email_action setting' => [['email_action' => 'foo'], 'foo'],
-            'legacy require_login true' => [['require_login' => true], 'require_login'],
-            'legacy require_login false' => [['require_login' => false], 'enabled'],
-            'default (no config)' => [[], 'require_login'],
-        ];
+        yield 'email_action setting' => [['email_action' => 'foo'], 'foo'];
+        yield 'legacy require_login true' => [['require_login' => true], 'require_login'];
+        yield 'legacy require_login false' => [['require_login' => false], 'enabled'];
+        yield 'default (no config)' => [[], 'require_login'];
     }
 
     /**
@@ -94,18 +92,16 @@ class AccountCapabilitiesTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testIsEmailActionAvailable()
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function emailActionAvailableProvider(): array
+    public static function emailActionAvailableProvider(): \Iterator
     {
-        return [
-            'disabled, login' => ['disabled', true, false],
-            'disabled, no login' => ['disabled', false, false],
-            'enabled, login' => ['enabled', true, true],
-            'enabled, no login' => ['enabled', false, true],
-            'require_login, login' => ['require_login', true, true],
-            'require_login, no login' => ['require_login', false, false],
-        ];
+        yield 'disabled, login' => ['disabled', true, false];
+        yield 'disabled, no login' => ['disabled', false, false];
+        yield 'enabled, login' => ['enabled', true, true];
+        yield 'enabled, no login' => ['enabled', false, true];
+        yield 'require_login, login' => ['require_login', true, true];
+        yield 'require_login, no login' => ['require_login', false, false];
     }
 
     /**

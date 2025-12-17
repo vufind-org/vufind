@@ -76,15 +76,14 @@ class VersionsTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testIsActive.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function isActiveProvider(): array
+    public static function isActiveProvider(): \Iterator
     {
-        return ['Test1' => [true, 1, true],
-                'Test2' => [true, 0, false],
-                'Test3' => [false, 1, false],
-                'Test4' => [true, 0, false],
-            ];
+        yield 'Test1' => [true, 1, true];
+        yield 'Test2' => [true, 0, false];
+        yield 'Test3' => [false, 1, false];
+        yield 'Test4' => [true, 0, false];
     }
 
     /**

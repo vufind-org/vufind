@@ -45,24 +45,22 @@ class KohaTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testValidCoverLoading
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getCoverData(): array
+    public static function getCoverData(): \Iterator
     {
-        return [
-            'no id' => [false, [null, 'small', []]],
-            'small image' => [
-                'http://base?thumbnail=1&biblionumber=foo',
-                [null, 'small', ['recordid' => 'foo']],
-            ],
-            'medium image' => [
-                'http://base?thumbnail=1&biblionumber=foo',
-                [null, 'medium', ['recordid' => 'foo']],
-            ],
-            'large image' => [
-                'http://base?biblionumber=foo',
-                [null, 'large', ['recordid' => 'foo']],
-            ],
+        yield 'no id' => [false, [null, 'small', []]];
+        yield 'small image' => [
+            'http://base?thumbnail=1&biblionumber=foo',
+            [null, 'small', ['recordid' => 'foo']],
+        ];
+        yield 'medium image' => [
+            'http://base?thumbnail=1&biblionumber=foo',
+            [null, 'medium', ['recordid' => 'foo']],
+        ];
+        yield 'large image' => [
+            'http://base?biblionumber=foo',
+            [null, 'large', ['recordid' => 'foo']],
         ];
     }
 

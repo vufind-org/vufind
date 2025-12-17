@@ -48,210 +48,218 @@ class WorldCat2Test extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testMethod().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function methodTests(): array
+    public static function methodTests(): \Iterator
     {
-        return [
-            'default call numbers' => ['getCallNumbers', []],
-            'default dewey call number' => ['getDeweyCallNumber', ''],
-            'default raw LCCN' => ['getLCCN', ''],
-            'default formats' => ['getFormats', []],
-            'default ISBNs' => ['getISBNs', []],
-            'default ISSNs' => ['getISSNs', []],
-            'default languages' => ['getLanguages', []],
-            'default places of publication' => ['getPlacesOfPublication', []],
-            'default primary authors' => ['getPrimaryAuthors', []],
-            'default secondary authors' => ['getSecondaryAuthors', []],
-            'default corporate authors' => ['getCorporateAuthors', []],
-            'default date span' => ['getDateSpan', []],
-            'default publication dates' => ['getPublicationDates', []],
-            'default human-readable dates' => ['getHumanReadablePublicationDates', []],
-            'default publishers' => ['getPublishers', []],
-            'default newer titles' => ['getNewerTitles', []],
-            'default previous titles' => ['getPreviousTitles', []],
-            'default summary' => ['getSummary', []],
-            'default title' => ['getTitle', ''],
-            'default short title' => ['getShortTitle', ''],
-            'default subtitle' => ['getSubtitle', ''],
-            'default edition' => ['getEdition', ''],
-            'default physical description' => ['getPhysicalDescriptions', ''],
-            'default subject headings' => ['getAllSubjectHeadings', []],
-            'default awards' => ['getAwards', []],
-            'default general notes' => ['getGeneralNotes', []],
-            'default bibliography notes' => ['getBibliographyNotes', []],
-            'default production credits' => ['getProductionCredits', []],
-            'default publication frequency' => ['getPublicationFrequency', []],
-            'default series' => ['getSeries', []],
-            'default table of contents' => ['getTOC', []],
-            'default URLs (no config)' => ['getURLs', []],
-            'default URLs (config disabled)' => ['getURLs', [], null, ['Record' => ['show_urls' => false]]],
-            'default URLs (config enabled)' => ['getURLs', [], null, ['Record' => ['show_urls' => true]]],
-
-            'non-default call numbers' => ['getCallNumbers', ['PR4034 .P7 1990eb', '823/.7'], 'worldcat2/pride.json'],
-            'non-default dewey call number' => ['getDeweyCallNumber', '823/.7', 'worldcat2/pride.json'],
-            'non-default raw LCCN' => ['getLCCN', 'PR4034.P71990eb', 'worldcat2/pride.json'],
-            'non-default formats' => ['getFormats', ['Book', 'Digital'], 'worldcat2/pride.json'],
-            'non-default ISBNs' => [
-                'getISBNs',
-                ['9780191592539', '0191592536', '0585377618', '9780585377612'],
-                'worldcat2/pride.json',
+        yield 'default call numbers' => ['getCallNumbers', []];
+        yield 'default dewey call number' => ['getDeweyCallNumber', ''];
+        yield 'default raw LCCN' => ['getLCCN', ''];
+        yield 'default formats' => ['getFormats', []];
+        yield 'default ISBNs' => ['getISBNs', []];
+        yield 'default ISSNs' => ['getISSNs', []];
+        yield 'default languages' => ['getLanguages', []];
+        yield 'default places of publication' => ['getPlacesOfPublication', []];
+        yield 'default primary authors' => ['getPrimaryAuthors', []];
+        yield 'default secondary authors' => ['getSecondaryAuthors', []];
+        yield 'default corporate authors' => ['getCorporateAuthors', []];
+        yield 'default date span' => ['getDateSpan', []];
+        yield 'default publication dates' => ['getPublicationDates', []];
+        yield 'default human-readable dates' => ['getHumanReadablePublicationDates', []];
+        yield 'default publishers' => ['getPublishers', []];
+        yield 'default newer titles' => ['getNewerTitles', []];
+        yield 'default previous titles' => ['getPreviousTitles', []];
+        yield 'default summary' => ['getSummary', []];
+        yield 'default title' => ['getTitle', ''];
+        yield 'default short title' => ['getShortTitle', ''];
+        yield 'default subtitle' => ['getSubtitle', ''];
+        yield 'default edition' => ['getEdition', ''];
+        yield 'default physical description' => ['getPhysicalDescriptions', ''];
+        yield 'default subject headings' => ['getAllSubjectHeadings', []];
+        yield 'default awards' => ['getAwards', []];
+        yield 'default general notes' => ['getGeneralNotes', []];
+        yield 'default bibliography notes' => ['getBibliographyNotes', []];
+        yield 'default production credits' => ['getProductionCredits', []];
+        yield 'default publication frequency' => ['getPublicationFrequency', []];
+        yield 'default series' => ['getSeries', []];
+        yield 'default table of contents' => ['getTOC', []];
+        yield 'default URLs (no config)' => ['getURLs', []];
+        yield 'default URLs (config disabled)' => ['getURLs', [], null, ['Record' => ['show_urls' => false]]];
+        yield 'default URLs (config enabled)' => ['getURLs', [], null, ['Record' => ['show_urls' => true]]];
+        yield 'non-default call numbers' => ['getCallNumbers', ['PR4034 .P7 1990eb', '823/.7'], 'worldcat2/pride.json'];
+        yield 'non-default dewey call number' => ['getDeweyCallNumber', '823/.7', 'worldcat2/pride.json'];
+        yield 'non-default raw LCCN' => ['getLCCN', 'PR4034.P71990eb', 'worldcat2/pride.json'];
+        yield 'non-default formats' => ['getFormats', ['Book', 'Digital'], 'worldcat2/pride.json'];
+        yield 'non-default ISBNs' => [
+            'getISBNs',
+            ['9780191592539', '0191592536', '0585377618', '9780585377612'],
+            'worldcat2/pride.json',
+        ];
+        yield 'non-default languages' => ['getLanguages', ['eng'], 'worldcat2/pride.json'];
+        yield 'non-default places of publication' => [
+            'getPlacesOfPublication',
+            ['Oxford :'],
+            'worldcat2/pride.json',
+        ];
+        yield 'non-default primary authors' => [
+            'getPrimaryAuthors',
+            ['Austen, Jane, 1775-1817.'],
+            'worldcat2/pride.json',
+        ];
+        yield 'non-default primary author with relator code in notes' => [
+            'getPrimaryAuthor',
+            'Last, First, Title',
+            'worldcat2/authors.json',
+        ];
+        yield 'non-default secondary authors' => ['getSecondaryAuthors', ['Kinsley, James'], 'worldcat2/pride.json'];
+        yield 'non-default secondary authors with relator codes in notes' => [
+            'getSecondaryAuthors',
+            [
+                'Lst, 1st, 1900-1960',
+                'Lst2, 1st2, 1900-1960',
+                'Lst3, 1st3, 1900-',
+                'Lst4, 1st4, 1900-',
+                'Lst5, 1st5, ca. 1900-1970',
+                'Lst6, 1st6, 1900-',
+                'Lst7, 1st7, (1900-...).',
+                'Lst8, 1st8, 1900-',
+                'Lst9, 1st9, (First M.)',
+                'Lst10, 1st10',
             ],
-            'non-default languages' => ['getLanguages', ['eng'], 'worldcat2/pride.json'],
-            'non-default places of publication' => ['getPlacesOfPublication', ['Oxford :'], 'worldcat2/pride.json'],
-            'non-default primary authors' =>
-                ['getPrimaryAuthors', ['Austen, Jane, 1775-1817.'], 'worldcat2/pride.json'],
-            'non-default primary author with relator code in notes' =>
-                ['getPrimaryAuthor', 'Last, First, Title', 'worldcat2/authors.json'],
-            'non-default secondary authors' => ['getSecondaryAuthors', ['Kinsley, James'], 'worldcat2/pride.json'],
-            'non-default secondary authors with relator codes in notes' => [
-                'getSecondaryAuthors',
+            'worldcat2/authors.json',
+        ];
+        yield 'non-default publication dates' => ['getPublicationDates', ['1990'], 'worldcat2/pride.json'];
+        yield 'non-default human-readable dates' => [
+            'getHumanReadablePublicationDates',
+            ['1990'],
+            'worldcat2/pride.json',
+        ];
+        yield 'non-default publishers' => ['getPublishers', ['Oxford University Press'], 'worldcat2/pride.json'];
+        yield 'non-default title' => ['getTitle', 'Pride and prejudice', 'worldcat2/pride.json'];
+        yield 'non-default physical description' => [
+            'getPhysicalDescriptions',
+            '1 online resource (xxxii, 303 pages)',
+            'worldcat2/pride.json',
+        ];
+        yield 'non-default subject headings' => [
+            'getAllSubjectHeadings',
+            [
+               ['Young women Fiction'],
+               ['Courtship Fiction'],
+               ['Sisters Fiction'],
+               ['Jeunes femmes Romans, nouvelles, etc'],
+               ['Amours Romans, nouvelles, etc'],
+               ['Sœurs Romans, nouvelles, etc'],
+               ['FICTION Romance General'],
+               ['Courtship'],
+               ['Sisters'],
+               ['Young women'],
+               ['England Fiction'],
+               ['Angleterre Romans, nouvelles, etc'],
+               ['England'],
+               ['Domestic fiction'],
+               ['Fiction'],
+               ['Love stories'],
+            ],
+            'worldcat2/pride.json',
+        ];
+        yield 'non-default general notes' => [
+            'getGeneralNotes',
+            ['Reprint. Originally published: Oxford University Press, 1970'],
+            'worldcat2/pride.json',
+        ];
+        yield 'non-default series' => [
+            'getSeries',
+            [
+                ['name' => 'Oxford world\'s classics (Oxford University Press)', 'number' => ''],
+                ['name' => 'World\'s classics', 'number' => ''],
+            ],
+            'worldcat2/pride.json',
+        ];
+        yield 'non-default URLs (no config)' => ['getURLs', [], 'worldcat2/pride.json'];
+        yield 'non-default URLs (config disabled)' => [
+            'getURLs',
+            [],
+            'worldcat2/pride.json',
+            ['Record' => ['show_urls' => false]],
+        ];
+        yield 'non-default URLs (config enabled)' => [
+            'getURLs',
+            [
                 [
-                    'Lst, 1st, 1900-1960',
-                    'Lst2, 1st2, 1900-1960',
-                    'Lst3, 1st3, 1900-',
-                    'Lst4, 1st4, 1900-',
-                    'Lst5, 1st5, ca. 1900-1970',
-                    'Lst6, 1st6, 1900-',
-                    'Lst7, 1st7, (1900-...).',
-                    'Lst8, 1st8, 1900-',
-                    'Lst9, 1st9, (First M.)',
-                    'Lst10, 1st10',
+                    'url' =>
+                        'https://search.ebscohost.com/login.aspx?direct=true&scope=site&db=nlebk&db=nlabk&AN=55923',
                 ],
-                'worldcat2/authors.json',
+                ['url' => 'http://www.netlibrary.com/UrlApi.aspx?action=browse&v=1&bookid=1085113'],
+                ['url' => 'https://archive.org/details/prideprejudice100aust'],
+                ['url' => 'https://openlibrary.org/books/OL1875263M'],
             ],
-            'non-default publication dates' => ['getPublicationDates', ['1990'], 'worldcat2/pride.json'],
-            'non-default human-readable dates' =>
-                ['getHumanReadablePublicationDates', ['1990'], 'worldcat2/pride.json'],
-            'non-default publishers' => ['getPublishers', ['Oxford University Press'], 'worldcat2/pride.json'],
-            'non-default title' => ['getTitle', 'Pride and prejudice', 'worldcat2/pride.json'],
-            'non-default physical description' => [
-                'getPhysicalDescriptions',
-                '1 online resource (xxxii, 303 pages)',
-                'worldcat2/pride.json',
+            'worldcat2/pride.json',
+            ['Record' => ['show_urls' => true]],
+        ];
+        yield 'non-default ID' => ['getUniqueID', '49569228', 'worldcat2/pride.json'];
+        yield 'non-default OCLC numbers' => [
+            'getOCLC',
+            ['49569228', '530699569', '702096151', '1036823755', '1332980563'],
+            'worldcat2/pride.json',
+        ];
+        yield 'non-default short title' => ['getShortTitle', 'title :', 'worldcat2/title-subtitle.json'];
+        yield 'non-default subtitle' => ['getSubtitle', 'the subtitle', 'worldcat2/title-subtitle.json'];
+        yield 'non-default newer titles' => ['getNewerTitles', ['New York Saturday journal'], 'worldcat2/star.json'];
+        yield 'non-default previous titles' => [
+            'getPreviousTitles',
+            ['Saturday weekly journal'],
+            'worldcat2/star.json',
+        ];
+        yield 'non-default publication frequency' => ['getPublicationFrequency', ['Weekly'], 'worldcat2/star.json'];
+        yield 'non-default date span' => [
+            'getDateSpan',
+            ['Vol. 2, no. 97 (Jan. 20, 1872)-v. 3, no. 156 (Mar. 8, 1873).'],
+            'worldcat2/star.json',
+        ];
+        yield 'non-default corporate authors' => [
+            'getCorporateAuthors',
+            ['Beadle and Adams (1872-1898)', 'Johannsen Collection'],
+            'worldcat2/star.json',
+        ];
+        yield 'non-default ISSNs' => ['getISSNs', ['0362-4331'], 'worldcat2/issn.json'];
+        yield 'non-default summary' => [
+            'getSummary',
+            [
+                'This book contains tools a Dungeon Master needs to provide stories and game play. A resource for '
+                . 'new and existing Dungeon Masters to engage in both adventure and world creation, with rules, '
+                . 'guidelines, and advice from the game\'s experts. Created as part of a massive public playtest '
+                . 'involving more than 170,000 fans of the game',
             ],
-            'non-default subject headings' => [
-                'getAllSubjectHeadings',
-                [
-                   ['Young women Fiction'],
-                   ['Courtship Fiction'],
-                   ['Sisters Fiction'],
-                   ['Jeunes femmes Romans, nouvelles, etc'],
-                   ['Amours Romans, nouvelles, etc'],
-                   ['Sœurs Romans, nouvelles, etc'],
-                   ['FICTION Romance General'],
-                   ['Courtship'],
-                   ['Sisters'],
-                   ['Young women'],
-                   ['England Fiction'],
-                   ['Angleterre Romans, nouvelles, etc'],
-                   ['England'],
-                   ['Domestic fiction'],
-                   ['Fiction'],
-                   ['Love stories'],
-                ],
-                'worldcat2/pride.json',
+            'worldcat2/dmg.json',
+        ];
+        yield 'non-default production credits' => [
+            'getProductionCredits',
+            [
+                'D&D lead designers, Mike Mearls, Jeremy Crawford ; Dungeon master\'s guide leads, Jeremy '
+                . 'Crawford, Christopher Perkins, James Wyatt ; designers, Robert J. Schwalb, Rodney '
+                . 'Thompson, Peter Lee ; editors, Scott Fitzgerald Gray, Michele Carter, Chris Sims, '
+                . 'Jennifer Clarke Wilkes ; producer, Greg Bilsland.',
             ],
-            'non-default general notes' => [
-                'getGeneralNotes',
-                ['Reprint. Originally published: Oxford University Press, 1970'],
-                'worldcat2/pride.json',
+            'worldcat2/dmg.json',
+        ];
+        yield 'non-default edition' => ['getEdition', 'Fifth edition', 'worldcat2/dmg.json'];
+        yield 'non-default table of contents' => [
+            'getTOC',
+            [
+                'A world of your own -- Creating a multiverse -- Creating adventures -- '
+                . 'Creating nonplayer characters -- Adventure environments -- Between adventures -- '
+                . 'Treasure -- Running the game -- Dungeon master\'s workshop -- Appendix A: '
+                . 'Random dungeons -- Appendix B: Monster lists -- Appendix C: Maps -- Appendix '
+                . 'D: Dungeon Master inspiration.',
             ],
-            'non-default series' => [
-                'getSeries',
-                [
-                    ['name' => 'Oxford world\'s classics (Oxford University Press)', 'number' => ''],
-                    ['name' => 'World\'s classics', 'number' => ''],
-                ],
-                'worldcat2/pride.json',
-            ],
-            'non-default URLs (no config)' => ['getURLs', [], 'worldcat2/pride.json'],
-            'non-default URLs (config disabled)' => [
-                'getURLs',
-                [],
-                'worldcat2/pride.json',
-                ['Record' => ['show_urls' => false]],
-            ],
-            'non-default URLs (config enabled)' => [
-                'getURLs',
-                [
-                    [
-                        'url' =>
-                            'https://search.ebscohost.com/login.aspx?direct=true&scope=site&db=nlebk&db=nlabk&AN=55923',
-                    ],
-                    ['url' => 'http://www.netlibrary.com/UrlApi.aspx?action=browse&v=1&bookid=1085113'],
-                    ['url' => 'https://archive.org/details/prideprejudice100aust'],
-                    ['url' => 'https://openlibrary.org/books/OL1875263M'],
-                ],
-                'worldcat2/pride.json',
-                ['Record' => ['show_urls' => true]],
-            ],
-            'non-default ID' => ['getUniqueID', '49569228', 'worldcat2/pride.json'],
-            'non-default OCLC numbers' => [
-                'getOCLC',
-                ['49569228', '530699569', '702096151', '1036823755', '1332980563'],
-                'worldcat2/pride.json',
-            ],
-
-            'non-default short title' => ['getShortTitle', 'title :', 'worldcat2/title-subtitle.json'],
-            'non-default subtitle' => ['getSubtitle', 'the subtitle', 'worldcat2/title-subtitle.json'],
-
-            'non-default newer titles' => ['getNewerTitles', ['New York Saturday journal'], 'worldcat2/star.json'],
-            'non-default previous titles' => ['getPreviousTitles', ['Saturday weekly journal'], 'worldcat2/star.json'],
-            'non-default publication frequency' => ['getPublicationFrequency', ['Weekly'], 'worldcat2/star.json'],
-            'non-default date span' => [
-                'getDateSpan',
-                ['Vol. 2, no. 97 (Jan. 20, 1872)-v. 3, no. 156 (Mar. 8, 1873).'],
-                'worldcat2/star.json',
-            ],
-            'non-default corporate authors' => [
-                'getCorporateAuthors',
-                ['Beadle and Adams (1872-1898)', 'Johannsen Collection'],
-                'worldcat2/star.json',
-            ],
-
-            'non-default ISSNs' => ['getISSNs', ['0362-4331'], 'worldcat2/issn.json'],
-
-            'non-default summary' => [
-                'getSummary',
-                [
-                    'This book contains tools a Dungeon Master needs to provide stories and game play. A resource for '
-                    . 'new and existing Dungeon Masters to engage in both adventure and world creation, with rules, '
-                    . 'guidelines, and advice from the game\'s experts. Created as part of a massive public playtest '
-                    . 'involving more than 170,000 fans of the game',
-                ],
-                'worldcat2/dmg.json',
-            ],
-            'non-default production credits' => [
-                'getProductionCredits',
-                [
-                    'D&D lead designers, Mike Mearls, Jeremy Crawford ; Dungeon master\'s guide leads, Jeremy '
-                    . 'Crawford, Christopher Perkins, James Wyatt ; designers, Robert J. Schwalb, Rodney '
-                    . 'Thompson, Peter Lee ; editors, Scott Fitzgerald Gray, Michele Carter, Chris Sims, '
-                    . 'Jennifer Clarke Wilkes ; producer, Greg Bilsland.',
-                ],
-                'worldcat2/dmg.json',
-            ],
-            'non-default edition' => ['getEdition', 'Fifth edition', 'worldcat2/dmg.json'],
-            'non-default table of contents' => [
-                'getTOC',
-                [
-                    'A world of your own -- Creating a multiverse -- Creating adventures -- '
-                    . 'Creating nonplayer characters -- Adventure environments -- Between adventures -- '
-                    . 'Treasure -- Running the game -- Dungeon master\'s workshop -- Appendix A: '
-                    . 'Random dungeons -- Appendix B: Monster lists -- Appendix C: Maps -- Appendix '
-                    . 'D: Dungeon Master inspiration.',
-                ],
-                'worldcat2/dmg.json',
-            ],
-
-            'non-default awards' => ['getAwards', ['Fake example award'], 'worldcat2/award.json'],
-
-            'non-default bibliography notes' => [
-                'getBibliographyNotes',
-                ['Includes bibliographical references (pages xliii-lv)'],
-                'worldcat2/sherlock.json',
-            ],
+            'worldcat2/dmg.json',
+        ];
+        yield 'non-default awards' => ['getAwards', ['Fake example award'], 'worldcat2/award.json'];
+        yield 'non-default bibliography notes' => [
+            'getBibliographyNotes',
+            ['Includes bibliographical references (pages xliii-lv)'],
+            'worldcat2/sherlock.json',
         ];
     }
 

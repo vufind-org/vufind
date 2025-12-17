@@ -47,23 +47,21 @@ class ConfigWritingTest extends ConfigTestCase
     /**
      * Upgrade test provider.
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function upgradeTestProvider(): array
+    public static function upgradeTestProvider(): \Iterator
     {
-        return [
-            'generic file handler' => [
-                'generic-file',
-                'config',
-            ],
-            'ini handler' => [
-                'ini',
-                'config',
-            ],
-            'dir handler' => [
-                'dir',
-                'baseDir',
-            ],
+        yield 'generic file handler' => [
+            'generic-file',
+            'config',
+        ];
+        yield 'ini handler' => [
+            'ini',
+            'config',
+        ];
+        yield 'dir handler' => [
+            'dir',
+            'baseDir',
         ];
     }
 

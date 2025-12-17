@@ -173,9 +173,9 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
     /**
      * Config and data for assertion of Subject Headings Order (testSubjectHeadingsOrder)
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function marcSubjectHeadingsSortOptionsProvider(): array
+    public static function marcSubjectHeadingsSortOptionsProvider(): \Iterator
     {
         // Record order is the default; save it to a variable so we
         // can test both explicit and default configuration behaviors
@@ -195,33 +195,31 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
                 'Photobooks.',
             ],
         ];
-        return [
-            'field config' => [
-                'numerical',
+        yield 'field config' => [
+            'numerical',
+            [
                 [
-                    [
-                        'Street photography',
-                        'Mexico',
-                        'Guerrero (State)',
-                    ],
-                    [
-                        'Guerrero (Mexico : State)',
-                        'Social life and customs',
-                        'Pictorial works.',
-                    ],
-                    [
-                        'Photobooks.',
-                    ],
+                    'Street photography',
+                    'Mexico',
+                    'Guerrero (State)',
+                ],
+                [
+                    'Guerrero (Mexico : State)',
+                    'Social life and customs',
+                    'Pictorial works.',
+                ],
+                [
+                    'Photobooks.',
                 ],
             ],
-            'record config' => [
-                'record',
-                $recordOrderResults,
-            ],
-            'default config' => [
-                null,
-                $recordOrderResults,
-            ],
+        ];
+        yield 'record config' => [
+            'record',
+            $recordOrderResults,
+        ];
+        yield 'default config' => [
+            null,
+            $recordOrderResults,
         ];
     }
 
@@ -286,14 +284,12 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetSchemaOrgFormatsArray().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function getSchemaOrgFormatsArrayProvider(): array
+    public static function getSchemaOrgFormatsArrayProvider(): \Iterator
     {
-        return [
-            'with ILS' => [true, ['CreativeWork', 'Product']],
-            'without ILS' => [false, ['CreativeWork']],
-        ];
+        yield 'with ILS' => [true, ['CreativeWork', 'Product']];
+        yield 'without ILS' => [false, ['CreativeWork']];
     }
 
     /**

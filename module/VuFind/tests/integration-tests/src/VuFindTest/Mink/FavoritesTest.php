@@ -785,54 +785,52 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testListTaggingToDisplayChannel
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getListTagData(): array
+    public static function getListTagData(): \Iterator
     {
         $defaultChannelConfig = ['tags' => ['channel'], 'displayPublicLists' => false];
-        return [
-            'case insensitive channel match' => [
-                'CHANNEL',
-                $defaultChannelConfig,
-                false, // case insensitive
-                true,   // match expected
-            ],
-            'case sensitive channel match' => [
-                'channel',
-                $defaultChannelConfig,
-                true, // case sensitive
-                true,  // match expected
-            ],
-            'case sensitive channel mismatch' => [
-                'Channel',
-                $defaultChannelConfig,
-                true, // case sensitive
-                false, // mismatch expected
-            ],
-            'case sensitive AND mismatch' => [
-                'channel',
-                ['tags' => ['channel', 'banana'], 'displayPublicLists' => false],
-                true, // case sensitive
-                false, // mismatch expected
-            ],
-            'case sensitive AND match' => [
-                'channel banana',
-                ['tags' => ['channel', 'banana'], 'displayPublicLists' => false],
-                true, // case sensitive
-                true,  // match expected
-            ],
-            'case sensitive OR match' => [
-                'channel',
-                ['tags' => ['channel', 'banana'], 'displayPublicLists' => false, 'tagsOperator' => 'OR'],
-                true, // case sensitive
-                true,  // match expected
-            ],
-            'case insensitive OR match' => [
-                'channel',
-                ['tags' => ['chAnnEl', 'banana'], 'displayPublicLists' => false, 'tagsOperator' => 'OR'],
-                false, // case insensitive
-                true,   // match expected
-            ],
+        yield 'case insensitive channel match' => [
+            'CHANNEL',
+            $defaultChannelConfig,
+            false, // case insensitive
+            true,   // match expected
+        ];
+        yield 'case sensitive channel match' => [
+            'channel',
+            $defaultChannelConfig,
+            true, // case sensitive
+            true,  // match expected
+        ];
+        yield 'case sensitive channel mismatch' => [
+            'Channel',
+            $defaultChannelConfig,
+            true, // case sensitive
+            false, // mismatch expected
+        ];
+        yield 'case sensitive AND mismatch' => [
+            'channel',
+            ['tags' => ['channel', 'banana'], 'displayPublicLists' => false],
+            true, // case sensitive
+            false, // mismatch expected
+        ];
+        yield 'case sensitive AND match' => [
+            'channel banana',
+            ['tags' => ['channel', 'banana'], 'displayPublicLists' => false],
+            true, // case sensitive
+            true,  // match expected
+        ];
+        yield 'case sensitive OR match' => [
+            'channel',
+            ['tags' => ['channel', 'banana'], 'displayPublicLists' => false, 'tagsOperator' => 'OR'],
+            true, // case sensitive
+            true,  // match expected
+        ];
+        yield 'case insensitive OR match' => [
+            'channel',
+            ['tags' => ['chAnnEl', 'banana'], 'displayPublicLists' => false, 'tagsOperator' => 'OR'],
+            false, // case insensitive
+            true,   // match expected
         ];
     }
 

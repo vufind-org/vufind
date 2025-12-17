@@ -89,11 +89,12 @@ class DeleteCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testSuccessWithMinimalParameters()
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function successWithMinimalParametersProvider(): array
+    public static function successWithMinimalParametersProvider(): \Iterator
     {
-        return ['double-quoted string' => ['foo'], 'single-quoted string' => ['foo-quoted']];
+        yield 'double-quoted string' => ['foo'];
+        yield 'single-quoted string' => ['foo-quoted'];
     }
 
     /**
