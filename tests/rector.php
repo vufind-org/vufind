@@ -10,6 +10,7 @@ use Rector\PHPUnit\PHPUnit60\Rector\MethodCall\GetMockBuilderGetMockToCreateMock
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertEqualsToSameRector;
 use Rector\PHPUnit\CodeQuality\Rector\Class_\YieldDataProviderRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\UseSpecificWithMethodRector;
+use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertInstanceOfComparisonRector;
 
 return RectorConfig::configure()
     ->withCache(
@@ -29,6 +30,7 @@ return RectorConfig::configure()
         GetMockBuilderGetMockToCreateMockRector::class,
         UseSpecificWithMethodRector::class,
         AssertEqualsToSameRector::class,
+        AssertInstanceOfComparisonRector::class,
         YieldDataProviderRector::class,
     ])
     ->withTypeCoverageLevel(0)

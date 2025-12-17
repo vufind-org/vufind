@@ -33,7 +33,6 @@ use Laminas\I18n\Translator\TextDomain;
 use VuFindDevTools\Controller\DevtoolsController as Controller;
 
 use function count;
-use function get_class;
 use function in_array;
 
 /**
@@ -66,7 +65,7 @@ class DevtoolsControllerTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('English', $result['mainName']);
 
         // Make sure correct type of object was loaded:
-        $this->assertSame(TextDomain::class, get_class($result['main']));
+        $this->assertInstanceOf(TextDomain::class, $result['main']);
 
         // Shortcut to help check some key details:
         $en = $result['details']['en'];
@@ -76,7 +75,7 @@ class DevtoolsControllerTest extends \PHPUnit\Framework\TestCase
         $this->assertTrue(in_array('search.phtml', $en['helpFiles']));
 
         // Did we put the object in the right place?
-        $this->assertSame(TextDomain::class, get_class($en['object']));
+        $this->assertInstanceOf(TextDomain::class, $en['object']);
 
         // Did the @parent_ini macro get stripped correctly?
         $this->assertArrayNotHasKey('@parent_ini', $result['details']['en-gb']['object']);
