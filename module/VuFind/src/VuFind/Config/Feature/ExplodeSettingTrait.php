@@ -43,18 +43,20 @@ trait ExplodeSettingTrait
     /**
      * Explode a delimited setting to an array
      *
-     * @param string $value     Setting value
-     * @param bool   $trim      Whether to trim the values (disabled by default to
+     * @param string  $value     Setting value
+     * @param bool    $trim      Whether to trim the values (disabled by default to
      * ensure any valid blank entry does not get trimmed, and to avoid doing extra
      * work on each execution)
-     * @param string $separator Separator
+     * @param string  $separator Separator
+     * @param ?string $typecast  Type casting method
      *
      * @return array
      */
     protected function explodeSetting(
         string $value,
         $trim = false,
-        string $separator = ':'
+        string $separator = ':',
+        ?string $typecast = null
     ): array {
         if ('' === $value) {
             return [];
@@ -63,18 +65,22 @@ trait ExplodeSettingTrait
         if ($trim) {
             $result = array_map('trim', $result);
         }
+        if ($typecast) {
+            $result = array_map($typecast, $result);
+        }
         return $result;
     }
 
     /**
      * Explode a comma-delimited setting to an array of trimmed values
      *
-     * @param string $value Setting value
+     * @param string  $value    Setting value
+     * @param ?string $typecast Type casting method
      *
      * @return array
      */
-    protected function explodeListSetting(string $value): array
+    protected function explodeListSetting(string $value, ?string $typecast = null): array
     {
-        return $this->explodeSetting($value, true, ',');
+        return $this->explodeSetting($value, true, ',', $typecast);
     }
 }

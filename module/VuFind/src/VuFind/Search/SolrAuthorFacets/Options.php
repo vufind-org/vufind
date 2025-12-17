@@ -65,15 +65,15 @@ class Options extends \VuFind\Search\Solr\Options
     }
 
     /**
-     * Return the route name for the facet list action. Returns false to cover
+     * Return the route name for the facet list action. Returns null to cover
      * unimplemented support.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getFacetListAction()
+    public function getFacetListAction(): ?string
     {
         // Not applicable here; we don't want to inherit the parent class' route.
-        return false;
+        return null;
     }
 
     /**
@@ -81,7 +81,7 @@ class Options extends \VuFind\Search\Solr\Options
      *
      * @return string
      */
-    public function getSearchAction()
+    public function getSearchAction(): string
     {
         return 'author-search';
     }
@@ -91,7 +91,7 @@ class Options extends \VuFind\Search\Solr\Options
      *
      * @return bool
      */
-    public function supportsCart()
+    public function supportsCart(): bool
     {
         // Not currently supported
         return false;
@@ -103,11 +103,11 @@ class Options extends \VuFind\Search\Solr\Options
      * or side) and the value is the settings found in the file (which may be either
      * a single string or an array of strings).
      *
-     * @param string $handler Name of handler for which to load specific settings.
+     * @param ?string $handler Name of handler for which to load specific settings.
      *
      * @return array associative: location (top/side/etc.) => search settings
      */
-    public function getRecommendationSettings($handler = null)
+    public function getRecommendationSettings(?string $handler = null): array
     {
         // No recommendations here:
         return [];

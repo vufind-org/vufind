@@ -102,7 +102,7 @@ class AbstractSearch extends AbstractBase
     {
         $view = $this->createViewModel();
         $view->options = $this->getOptionsForClass();
-        if ($view->options->getAdvancedSearchAction() === false) {
+        if ($view->options->getAdvancedSearchAction() === null) {
             throw new \Exception('Advanced search not supported.');
         }
 

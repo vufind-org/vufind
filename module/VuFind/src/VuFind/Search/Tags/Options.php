@@ -48,7 +48,7 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @var bool
      */
-    protected $useSolrSearchOptions;
+    protected bool $useSolrSearchOptions;
 
     /**
      * Constructor
@@ -75,11 +75,11 @@ class Options extends \VuFind\Search\Base\Options
 
     /**
      * Return the route name of the action used for performing advanced searches.
-     * Returns false if the feature is not supported.
+     * Returns null if the feature is not supported.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getAdvancedSearchAction()
+    public function getAdvancedSearchAction(): ?string
     {
         return $this->useSolrSearchOptions ? 'search-advanced' : null;
     }
@@ -89,7 +89,7 @@ class Options extends \VuFind\Search\Base\Options
      *
      * @return string
      */
-    public function getSearchAction()
+    public function getSearchAction(): string
     {
         return 'search-results';
     }
@@ -100,11 +100,11 @@ class Options extends \VuFind\Search\Base\Options
      * or side) and the value is the settings found in the file (which may be either
      * a single string or an array of strings).
      *
-     * @param string $handler Name of handler for which to load specific settings.
+     * @param ?string $handler Name of handler for which to load specific settings.
      *
      * @return array associative: location (top/side/etc.) => search settings
      */
-    public function getRecommendationSettings($handler = null)
+    public function getRecommendationSettings(?string $handler = null): array
     {
         // No recommendation modules in tag view currently:
         return [];

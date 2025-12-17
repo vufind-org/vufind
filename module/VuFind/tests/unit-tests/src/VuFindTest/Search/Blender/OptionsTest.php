@@ -55,7 +55,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
         return [
             [
                 [],
-                false,
+                null,
             ],
             [
                 [
@@ -71,13 +71,13 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
     /**
      * Test that the Options object returns correct data .
      *
-     * @param array        $config    Blender configuration
-     * @param string|false $advAction Expected advanced search action
+     * @param array   $config    Blender configuration
+     * @param ?string $advAction Expected advanced search action
      *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('optionsProvider')]
-    public function testOptions(array $config, $advAction): void
+    public function testOptions(array $config, ?string $advAction): void
     {
         $mockConfigManager = $this->getMockConfigManager(
             [
@@ -85,8 +85,8 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $options = new Options($mockConfigManager);
-        $this->assertEquals('blender-results', $options->getSearchAction());
+        $this->assertSame('blender-results', $options->getSearchAction());
         $this->assertEquals($advAction, $options->getAdvancedSearchAction());
-        $this->assertFalse($options->getFacetListAction());
+        $this->assertNull($options->getFacetListAction());
     }
 }

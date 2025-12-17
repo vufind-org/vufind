@@ -311,7 +311,7 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
     public function getVersionsSearchUrl($driver)
     {
         $route = $this->getVersionsActionForSource($driver->getSourceIdentifier());
-        if (false === $route) {
+        if ($route === null) {
             return '';
         }
 
@@ -343,9 +343,9 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
      *
      * @param string $source Record source identifier.
      *
-     * @return string|bool
+     * @return ?string
      */
-    protected function getVersionsActionForSource($source)
+    protected function getVersionsActionForSource($source): ?string
     {
         $optionsHelper = $this->getView()->plugin('searchOptions');
         return $optionsHelper($source)->getVersionsAction();

@@ -58,10 +58,9 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $options = new Options($mockConfigManager);
-        $this->assertEquals('browzine-search', $options->getSearchAction());
-        $this->assertEquals(['relevance' => 'Relevance'], $options->getSortOptions());
-        $this->assertFalse($options->getFacetListAction());
-        $this->assertFalse($options->getAdvancedSearchAction());
-        $this->assertFalse($options->getAdvancedSearchAction());
+        $this->assertSame('browzine-search', $options->getSearchAction());
+        $this->assertSame(['relevance' => 'Relevance'], $options->getSortOptions());
+        $this->assertNull($options->getFacetListAction());
+        $this->assertNull($options->getAdvancedSearchAction());
     }
 }
