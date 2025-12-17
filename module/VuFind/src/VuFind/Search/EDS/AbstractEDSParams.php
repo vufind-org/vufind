@@ -71,27 +71,23 @@ class AbstractEDSParams extends \VuFind\Search\Base\Params
         // Which filters should be applied to our query?
         $filterList = $this->getFilterList();
         $hiddenFilterList = $this->getHiddenFilters();
-        if (!empty($filterList)) {
-            // Loop through all filters and add appropriate values to request:
-            foreach ($filterList as $filterArray) {
-                foreach ($filterArray as $filt) {
-                    $fq = $filt['field']
-                        . ($this->filterRequiresFacetOperator($filt['field']) ?
-                            ":{$this->getFacetOperator($filt['field'], $filt['operator'])}" : '')
-                        . ":{$filt['value']}";
-                    $params->add('filters', $fq);
-                }
+        // Loop through all filters and add appropriate values to request:
+        foreach ($filterList as $filterArray) {
+            foreach ($filterArray as $filt) {
+                $fq = $filt['field']
+                    . ($this->filterRequiresFacetOperator($filt['field']) ?
+                        ":{$this->getFacetOperator($filt['field'], $filt['operator'])}" : '')
+                    . ":{$filt['value']}";
+                $params->add('filters', $fq);
             }
         }
-        if (!empty($hiddenFilterList)) {
-            foreach ($hiddenFilterList as $field => $hiddenFilters) {
-                foreach ($hiddenFilters as $value) {
-                    $hfq = $field
-                        . ($this->filterRequiresFacetOperator($field) ?
-                            ":{$this->getFacetOperator($field)}" : '')
-                        . ":{$value}";
-                    $params->add('filters', $hfq);
-                }
+        foreach ($hiddenFilterList as $field => $hiddenFilters) {
+            foreach ($hiddenFilters as $value) {
+                $hfq = $field
+                    . ($this->filterRequiresFacetOperator($field) ?
+                        ":{$this->getFacetOperator($field)}" : '')
+                    . ":{$value}";
+                $params->add('filters', $hfq);
             }
         }
     }

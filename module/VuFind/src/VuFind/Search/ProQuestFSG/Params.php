@@ -61,13 +61,11 @@ class Params extends \VuFind\Search\Base\Params
         $backendParams->set('x-navigators', 'database');
 
         $filterList = $this->getFilterList();
-        if (!empty($filterList)) {
-            // Loop through all filters and add appropriate values to request:
-            foreach ($filterList as $filterArray) {
-                foreach ($filterArray as $filt) {
-                    $value = explode('|', $filt['value'])[0];
-                    $backendParams->add('filters', $filt['field'] . ':' . $value);
-                }
+        // Loop through all filters and add appropriate values to request:
+        foreach ($filterList as $filterArray) {
+            foreach ($filterArray as $filt) {
+                $value = explode('|', $filt['value'])[0];
+                $backendParams->add('filters', $filt['field'] . ':' . $value);
             }
         }
 

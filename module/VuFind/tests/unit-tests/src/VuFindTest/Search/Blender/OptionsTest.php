@@ -85,7 +85,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $options = new Options($mockConfigManager);
-        $this->assertEquals('blender-results', $options->getSearchAction());
+        $this->assertSame('blender-results', $options->getSearchAction());
         $this->assertEquals($advAction, $options->getAdvancedSearchAction());
         $this->assertFalse($options->getFacetListAction());
     }
