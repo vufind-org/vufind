@@ -10,6 +10,12 @@ use Rector\PHPUnit\PHPUnit60\Rector\MethodCall\GetMockBuilderGetMockToCreateMock
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertEqualsToSameRector;
 use Rector\PHPUnit\CodeQuality\Rector\Class_\YieldDataProviderRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\UseSpecificWithMethodRector;
+use Rector\PHPUnit\PHPUnit90\Rector\MethodCall\ReplaceAtMethodWithDesiredMatcherRector;
+use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertEqualsOrAssertSameFloatParameterToSpecificMethodsTypeRector;
+use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertFalseStrposToContainsRector;
+use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertNotOperatorRector;
+use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertCompareOnCountableWithMethodToAssertCountRector;
+
 
 return RectorConfig::configure()
     ->withCache(
@@ -30,6 +36,11 @@ return RectorConfig::configure()
         UseSpecificWithMethodRector::class,
         AssertEqualsToSameRector::class,
         YieldDataProviderRector::class,
+        ReplaceAtMethodWithDesiredMatcherRector::class,
+        AssertEqualsOrAssertSameFloatParameterToSpecificMethodsTypeRector::class,
+        AssertFalseStrposToContainsRector::class,
+        AssertNotOperatorRector::class,
+        AssertCompareOnCountableWithMethodToAssertCountRector::class,
     ])
     ->withTypeCoverageLevel(0)
     ->withDeadCodeLevel(6)
