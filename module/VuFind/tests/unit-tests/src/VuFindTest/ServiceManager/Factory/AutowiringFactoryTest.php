@@ -66,7 +66,7 @@ class AutowiringFactoryTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testAutoWiring
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return \Iterator<string, array>
      */
     public static function autowiringProvider(): \Iterator
     {
