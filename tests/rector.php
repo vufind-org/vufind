@@ -17,7 +17,9 @@ use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertNotOperatorRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertCompareOnCountableWithMethodToAssertCountRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\UseSpecificWillMethodRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\FlipAssertRector;
-
+use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertInstanceOfComparisonRector;
+use Rector\PHPUnit\CodeQuality\Rector\MethodCall\MatchAssertSameExpectedTypeRector;
+use Rector\PHPUnit\CodeQuality\Rector\MethodCall\SingleWithConsecutiveToWithRector;
 
 return RectorConfig::configure()
     ->withCache(
@@ -45,6 +47,9 @@ return RectorConfig::configure()
         AssertCompareOnCountableWithMethodToAssertCountRector::class,
         UseSpecificWillMethodRector::class,
         FlipAssertRector::class,
+        AssertInstanceOfComparisonRector::class,
+        MatchAssertSameExpectedTypeRector::class,
+        SingleWithConsecutiveToWithRector::class,
     ])
     ->withTypeCoverageLevel(0)
     ->withDeadCodeLevel(6)

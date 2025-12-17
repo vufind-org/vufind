@@ -84,9 +84,9 @@ class FormTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals([[], 'Email/form.phtml'], $form->formatEmailMessage([]));
         $this->assertSame([], $form->mapRequestParamsToFieldValues([]));
 
-        $this->assertSame(
+        $this->assertInstanceOf(
             'Laminas\InputFilter\InputFilter',
-            get_class($form->getInputFilter())
+            $form->getInputFilter()
         );
         $this->assertCount(0, $form->getSecondaryHandlers());
     }
@@ -237,9 +237,9 @@ class FormTest extends \PHPUnit\Framework\TestCase
             $expectedFields,
             $form->mapRequestParamsToFieldValues($postParams)
         );
-        $this->assertSame(
+        $this->assertInstanceOf(
             'Laminas\InputFilter\InputFilter',
-            get_class($form->getInputFilter())
+            $form->getInputFilter()
         );
 
         // Validators: Required field problems
