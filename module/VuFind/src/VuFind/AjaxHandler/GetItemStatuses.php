@@ -83,7 +83,7 @@ class GetItemStatuses extends AbstractBase implements
      * @param RendererInterface         $renderer                  View renderer
      * @param Holds                     $holdLogic                 Holds logic
      * @param AvailabilityStatusManager $availabilityStatusManager Availability status manager
-     * @param ?GetThisLoader            $getThis                   Get this loader or null if not enabled
+     * @param ?GetThisLoader            $getThis                   Get This loader or null if not enabled
      */
     public function __construct(
         SessionSettings $ss,

@@ -1,12 +1,17 @@
-<!-- Get-this: remote-delivery -->
 <?php
 $link = $getThisParams['general_link'] ?? '';
 $requestCopyLink = trim($getThisParams['request_link'], '/') . '/' . $this->driver->getOpenUrl();
 ?>
 <div>
   <p>
-    <strong><a href="<?= $this->escapeHtml($link) ?>"
-               target="_blank"><?= $this->transEsc('delivery_request_distance') ?></a> :</strong>
+    <strong>
+      <a
+        href="<?= $this->escapeHtml($link) ?>"
+        target="_blank"
+      >
+        <?= $this->transEsc('delivery_request_distance') ?>
+      </a>:
+    </strong>
     <?= $this->transEsc('delivery_request_distance_text') ?>
   </p>
   <ul>

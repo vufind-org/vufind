@@ -5,6 +5,9 @@
 # Whether to display the copy number (next to the call number), default false
 showCopyNumber: true
 
+# Whether to comment in the HTML code the displayed template name, default true
+commentTemplateName: true
+
 templates:
   # Elements here correspond to .phtml template files within templates/record/get-this
   # (e.g. the holdings section configures templates/record/get-this/holdings.phtml)

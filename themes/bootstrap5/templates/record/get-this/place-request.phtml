@@ -1,4 +1,3 @@
-<!-- Get-this: place-request -->
 <?php
 $item = $this->getThis->getItem();
 if (empty($item)) {
@@ -10,8 +9,9 @@ $dataLightbox = !empty($item['linkLightbox']) ? 'data-lightbox' : '';
 ?>
 <?php if (isset($item['is_holdable']) && !empty($link)) : ?>
   <div>
-    <p><strong><?= $this->transEsc('campus_pickup') ?> :</strong>
-        <?= $this->transEsc('campus_pickup_place_request_text') ?>
+    <p>
+      <strong><?= $this->transEsc('campus_pickup') ?>:</strong>
+      <?= $this->transEsc('campus_pickup_place_request_text') ?>
     </p>
     <ul>
       <li>

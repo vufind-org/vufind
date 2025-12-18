@@ -177,60 +177,57 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Provider for testGetThisStandardStatus
      *
-     * @return array[]
+     * @return \Iterator<(int | string), array<mixed>>
      */
-    public static function provideStandardStatusTestData(): array
+    public static function provideStandardStatusTestData(): \Iterator
     {
         $recordId = 'autocomplete1';
-
-        return [
-            [
-                // $config
-                self::getVufindConfigArray(
-                    $recordId,
-                    false,
-                    [
-                        'CallNumberOne',
-                        'CallNumberTwo',
-                        'CallNumberThree',
-                        'CallNumberFour',
-                    ]
-                ),
-                // $expectedPresence
+        yield [
+            // $config
+            self::getVufindConfigArray(
+                $recordId,
+                false,
                 [
-                    'holdings' => true,
-                    'biblio-info' => true,
-                    'place-request' => true,
-                    'inter-library' => false,
-                    'micro-form' => false,
-                    'remote-delivery' => true,
-                    'staff-office-delivery' => true,
-                ],
-                // $search
-                self::SEARCH,
-            ],
+                    'CallNumberOne',
+                    'CallNumberTwo',
+                    'CallNumberThree',
+                    'CallNumberFour',
+                ]
+            ),
+            // $expectedPresence
             [
-                // $config
-                self::getVufindConfigArray(
-                    $recordId,
-                    false,
-                    [
-                        'CallNumberFive',
-                    ]
-                ),
-                // $expectedPresence
-                [
-                    'holdings' => false,
-                    'biblio-info' => true,
-                    'place-request' => true,
-                    'inter-library' => true,
-                    'micro-form' => true,
-                    'remote-delivery' => false,
-                    'staff-office-delivery' => false,
-                ],
-                // $search
-                self::SEARCH,
+                'holdings' => true,
+                'biblio-info' => true,
+                'place-request' => true,
+                'inter-library' => false,
+                'micro-form' => false,
+                'remote-delivery' => true,
+                'staff-office-delivery' => true,
             ],
+            // $search
+            self::SEARCH,
+        ];
+        yield [
+            // $config
+            self::getVufindConfigArray(
+                $recordId,
+                false,
+                [
+                    'CallNumberFive',
+                ]
+            ),
+            // $expectedPresence
+            [
+                'holdings' => false,
+                'biblio-info' => true,
+                'place-request' => true,
+                'inter-library' => true,
+                'micro-form' => true,
+                'remote-delivery' => false,
+                'staff-office-delivery' => false,
+            ],
+            // $search
+            self::SEARCH,
         ];
     }
 
@@ -258,9 +255,9 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Provider for testGetThisFullStatus
      *
-     * @return array[]
+     * @return \Iterator<(int | string), array<mixed>>
      */
-    public static function provideFullStatusTestData(): array
+    public static function provideFullStatusTestData(): \Iterator
     {
         $recordId = 'autocomplete1';
 
@@ -270,70 +267,68 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
         $callNumberTest2 = 'CallNumberFive';
         $callNumberFive = self::getAvailableRecordItems()[$callNumberTest2];
         $callNumberFive['status'] = $callNumberFive['availability'] ? 'Available' : 'Unavailable';
-        return [
+        yield [
+            // $config
+            self::getVufindConfigArray(
+                $recordId,
+                true,
+                [
+                    'CallNumberOne',
+                    'CallNumberTwo',
+                    'CallNumberThree',
+                    'CallNumberFour',
+                ]
+            ),
+            // $expectedBlockPresence
             [
-                // $config
-                self::getVufindConfigArray(
-                    $recordId,
-                    true,
-                    [
-                        'CallNumberOne',
-                        'CallNumberTwo',
-                        'CallNumberThree',
-                        'CallNumberFour',
-                    ]
-                ),
-                // $expectedBlockPresence
-                [
-                    'holdings' => true,
-                    'biblio-info' => true,
-                    'place-request' => true,
-                    'inter-library' => true,
-                    'micro-form' => false,
-                    'remote-delivery' => false,
-                    'staff-office-delivery' => false,
-                ],
-                // $expectedTerms
-                [
-                    'Call Number : ' . $callNumberThree['callnumber'],
-                    'Location : ' . $callNumberThree['location'],
-                    'Status : ' . $callNumberThree['status'],
-                ],
-                // $search
-                self::SEARCH,
-                // $callNumberSelected
-                $callNumberTest1,
+                'holdings' => true,
+                'biblio-info' => true,
+                'place-request' => true,
+                'inter-library' => true,
+                'micro-form' => false,
+                'remote-delivery' => false,
+                'staff-office-delivery' => false,
             ],
+            // $expectedTerms
             [
-                // $config
-                self::getVufindConfigArray(
-                    $recordId,
-                    true,
-                    [
-                        'CallNumberFive',
-                    ]
-                ),
-                // $expectedBlockPresence
-                [
-                    'holdings' => false,
-                    'biblio-info' => true,
-                    'place-request' => true,
-                    'inter-library' => true,
-                    'micro-form' => true,
-                    'remote-delivery' => false,
-                    'staff-office-delivery' => false,
-                ],
-                // $expectedTerms
-                [
-                    'Call Number : ' . $callNumberFive['callnumber'],
-                    'Location : ' . $callNumberFive['location'],
-                    'Status : ' . $callNumberFive['status'],
-                ],
-                // $search
-                self::SEARCH,
-                // $callNumberSelected
-                $callNumberTest2,
+                'Call Number : ' . $callNumberThree['callnumber'],
+                'Location : ' . $callNumberThree['location'],
+                'Status : ' . $callNumberThree['status'],
             ],
+            // $search
+            self::SEARCH,
+            // $callNumberSelected
+            $callNumberTest1,
+        ];
+        yield [
+            // $config
+            self::getVufindConfigArray(
+                $recordId,
+                true,
+                [
+                    'CallNumberFive',
+                ]
+            ),
+            // $expectedBlockPresence
+            [
+                'holdings' => false,
+                'biblio-info' => true,
+                'place-request' => true,
+                'inter-library' => true,
+                'micro-form' => true,
+                'remote-delivery' => false,
+                'staff-office-delivery' => false,
+            ],
+            // $expectedTerms
+            [
+                'Call Number : ' . $callNumberFive['callnumber'],
+                'Location : ' . $callNumberFive['location'],
+                'Status : ' . $callNumberFive['status'],
+            ],
+            // $search
+            self::SEARCH,
+            // $callNumberSelected
+            $callNumberTest2,
         ];
     }
 

@@ -2,7 +2,11 @@
 # Usually this is displayed in a modal, but if it is not (coming back from login), we don't want the search box.
 $this->layout()->searchbox = false;
 $templates = $this->getThis->getSubTemplates();
+$commentTemplateName = $this->getThis->commentTemplateName();
 foreach ($templates as $template) {
+    if ($commentTemplateName) {
+        echo '<!-- Get-This: ' . $template . ' -->';
+    }
     echo $this->context()->renderInContext(
         'record/get-this/' . $template . '.phtml',
         ['getThisParams' => $this->getThis->getSubTemplateParams($template)]

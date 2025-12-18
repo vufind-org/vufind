@@ -26,7 +26,7 @@ $(function pageLoad() {
    * Whether to show the arrow pointing up or down for the dropdown
    * @param {boolean} open True to show the arrow pointing up, False pointing down
    */
-  function toggleDropdownArow(open) {
+  function toggleDropdownArrow(open) {
     document.querySelector(".get-this-dropdown .fa-close-dropdown").style.display = open ? 'block' : 'none';
     document.querySelector(".get-this-dropdown .fa-open-dropdown").style.display = open ? 'none' : 'block';
   }
@@ -50,7 +50,7 @@ $(function pageLoad() {
       const firstOption = document.querySelector(".get-this-dropdown .dropdown a");
       if (firstOption) firstOption.focus();
     }
-    toggleDropdownArow(isOpen);
+    toggleDropdownArrow(isOpen);
   }
 
   /**

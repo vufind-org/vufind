@@ -791,4 +791,9 @@ class GetThisLoader implements LoggerAwareInterface
         }
         return false;
     }
+
+    public function commentTemplateName(): bool
+    {
+        return $this->config['commentTemplateName'] ?? true;
+    }
 }

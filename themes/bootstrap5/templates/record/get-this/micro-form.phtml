@@ -1,4 +1,3 @@
-<!-- Get-this: micro-form -->
 <?php
 $link = $getThisParams['open_hours'] ?? '';
 if (empty($link)) {
@@ -11,11 +10,8 @@ if (empty($link)) {
 ?>
 <div>
   <p>
-    <strong><?= $this->transEsc('viewing_request') ?> :</strong>
-    <?= $this->translate('microform_viewing_request_html', [
-        '%%link_start%%' => $linkStart,
-        '%%link_end%%' => $linkEnd,
-    ]) ?>
+    <strong><?= $this->transEsc('viewing_request') ?>:</strong>
+    <?= $this->transEsc('microform_viewing_request') ?>
   </p>
 </div>
 

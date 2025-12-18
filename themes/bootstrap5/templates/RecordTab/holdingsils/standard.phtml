@@ -6,19 +6,19 @@
     $availabilityStatus = $holding['availability'];
     $getThisLoader = $tab->getGetThisLoader();
     $getThisEnabled = $getThisLoader?->areItemsSupported([$holding]);
-    if ($getThisEnabled) {
+    if ($getThisEnabled = $getThisLoader?->areItemsSupported([$holding])) {
         $getThisLoader->setItems([$holding]);
         $getThisLoader->setRecord($this->record($this->driver));
         $isOnlineResource = $getThisLoader->isOnlineResource($holding['item_id'] ?? null);
-        $getThisURI = $this->escapeHtmlAttr($this->url(
+        $getThisURI = $isOnlineResource ? null : $this->url(
             'record-getthis',
             ['id' => $holding['id']],
             ['query' => ['item_id' => $holding['item_id'] ?? null]]
-        ));
+        );
     }
   ?>
   <tr class="holding-row"<?=$this->schemaOrg()->getAttributes(['vocab' => 'http://schema.org/', 'typeof' => 'Offer'])?>>
-    <th class="copy-number"><?=$this->transEsc('Copy')?> <?=$this->escapeHtml($holding['number'] ?? null)?>
+    <th class="copy-number"><?=$this->transEsc('Copy')?> <?=$this->escapeHtml($holding['number'] ?? '')?>
       <?php if ($holding['enumchron'] ?? false): ?>
         <span class="enumchron">(<?=$this->escapeHtml($holding['enumchron'])?>)</span>
       <?php endif; ?>
@@ -64,7 +64,7 @@
           </a>
         <?php endif; ?>
         <?php if ($getThisEnabled && !$isOnlineResource): ?>
-          <a data-lightbox href="<?= $getThisURI ?>" rel="nofollow">
+          <a data-lightbox href="<?= $this->escapeHtmlAttr($getThisURI) ?>" rel="nofollow">
             <?=$this->transEsc('Get This')?>
           </a>
         <?php endif; ?>
@@ -83,9 +83,9 @@
               <span class="icon-link__label"><?=$this->transEsc($check ? 'Check Recall' : 'Recall This')?></span>
             </a>
           <?php endif; ?>
-          <?php if ($getThisEnabled && !$isOnlineResource): ?>
+          <?php if (isset($getThisURI)): ?>
             <a data-lightbox href="<?= $getThisURI ?>" rel="nofollow">
-              <?=$this->transEsc('Get this')?>
+              <?=$this->transEsc('Get This')?>
             </a>
           <?php endif; ?>
           <?=$this->relais()->renderButtonIfActive($this->driver ?? null)?>

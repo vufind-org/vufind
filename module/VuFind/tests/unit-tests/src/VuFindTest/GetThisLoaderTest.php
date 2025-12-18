@@ -187,116 +187,114 @@ class GetThisLoaderTest extends TestCase
     /**
      * Data provider
      *
-     * @return array[]
+     * @return \Iterator<(int | string), array<mixed>>
      */
-    public static function provideConfigConditionsFunctionsData(): array
+    public static function provideConfigConditionsFunctionsData(): \Iterator
     {
-        return [
+        yield [
+            [
+                // Items
+            ],
+            [
+                // Expected templates
+                'biblio-info',
+            ],
+        ];
+        yield [
+            self::getItems(),
+            [
+                // Expected templates
+                'holdings',
+                'biblio-info',
+                'staff-office-delivery',
+                'inter-library',
+                'remote-delivery',
+            ],
+        ];
+        yield [
             [
                 [
-                    // Items
-                ],
-                [
-                    // Expected templates
-                    'biblio-info',
+                    'item_id' => 1,
+                    'location' => 'Main Library',
+                    'location_code' => 'ML',
+                    'availability' => new AvailabilityStatus(true, 'Not Available'),
+                    'temporary_loan_type' => 'AWAITING PICKUP',
+                    'callnumber' => 'callnumber00',
                 ],
             ],
             [
-                self::getItems(),
+                // Expected templates
+                'biblio-info',
+                'inter-library',
+            ],
+        ];
+        yield [
+            [
                 [
-                    // Expected templates
-                    'holdings',
-                    'biblio-info',
-                    'staff-office-delivery',
-                    'inter-library',
-                    'remote-delivery',
+                    'item_id' => 1,
+                    'location' => 'Main Library',
+                    'location_code' => 'ML',
+                    'availability' => new AvailabilityStatus(true, 'Not Available'),
+                    'temporary_loan_type' => 'AGED TO LOST',
+                    'callnumber' => 'callnumber00',
                 ],
             ],
             [
+                // Expected templates
+                'biblio-info',
+                'inter-library',
+            ],
+        ];
+        yield [
+            [
                 [
-                    [
-                        'item_id' => 1,
-                        'location' => 'Main Library',
-                        'location_code' => 'ML',
-                        'availability' => new AvailabilityStatus(true, 'Not Available'),
-                        'temporary_loan_type' => 'AWAITING PICKUP',
-                        'callnumber' => 'callnumber00',
-                    ],
-                ],
-                [
-                    // Expected templates
-                    'biblio-info',
-                    'inter-library',
+                    'item_id' => 1,
+                    'location' => 'Our Campus only',
+                    'location_code' => 'ML',
+                    'availability' => new AvailabilityStatus(true, 'Not Available'),
+                    'temporary_loan_type' => 'AGED TO LOST',
+                    'callnumber' => 'callnumber00',
                 ],
             ],
             [
+                // Expected templates
+                'biblio-info',
+            ],
+        ];
+        yield [
+            [
                 [
-                    [
-                        'item_id' => 1,
-                        'location' => 'Main Library',
-                        'location_code' => 'ML',
-                        'availability' => new AvailabilityStatus(true, 'Not Available'),
-                        'temporary_loan_type' => 'AGED TO LOST',
-                        'callnumber' => 'callnumber00',
-                    ],
-                ],
-                [
-                    // Expected templates
-                    'biblio-info',
-                    'inter-library',
+                    'item_id' => 1,
+                    'location' => 'Somewhere',
+                    'location_code' => 'ML',
+                    'availability' => new AvailabilityStatus(true, 'RESTRICTED'),
+                    'temporary_loan_type' => 'RESTRICTED',
+                    'callnumber' => 'callnumber00',
                 ],
             ],
             [
+                // Expected templates
+                'biblio-info',
+                'inter-library',
+            ],
+        ];
+        yield [
+            [
                 [
-                    [
-                        'item_id' => 1,
-                        'location' => 'Our Campus only',
-                        'location_code' => 'ML',
-                        'availability' => new AvailabilityStatus(true, 'Not Available'),
-                        'temporary_loan_type' => 'AGED TO LOST',
-                        'callnumber' => 'callnumber00',
-                    ],
-                ],
-                [
-                    // Expected templates
-                    'biblio-info',
+                    'item_id' => 1,
+                    'location' => 'MICROFORMS',
+                    'location_code' => 'ML',
+                    'availability' => new AvailabilityStatus(true, 'Available'),
+                    'temporary_loan_type' => 'Available',
+                    'callnumber' => 'callnumber00',
                 ],
             ],
             [
-                [
-                    [
-                        'item_id' => 1,
-                        'location' => 'Somewhere',
-                        'location_code' => 'ML',
-                        'availability' => new AvailabilityStatus(true, 'RESTRICTED'),
-                        'temporary_loan_type' => 'RESTRICTED',
-                        'callnumber' => 'callnumber00',
-                    ],
-                ],
-                [
-                    // Expected templates
-                    'biblio-info',
-                    'inter-library',
-                ],
-            ],
-            [
-                [
-                    [
-                        'item_id' => 1,
-                        'location' => 'MICROFORMS',
-                        'location_code' => 'ML',
-                        'availability' => new AvailabilityStatus(true, 'Available'),
-                        'temporary_loan_type' => 'Available',
-                        'callnumber' => 'callnumber00',
-                    ],
-                ],
-                [
-                    // Expected templates
-                    'biblio-info',
-                    'micro-form',
-                    'staff-office-delivery',
-                    'remote-delivery',
-                ],
+                // Expected templates
+                'biblio-info',
+                'micro-form',
+                'staff-office-delivery',
+                'remote-delivery',
             ],
         ];
     }
@@ -323,52 +321,50 @@ class GetThisLoaderTest extends TestCase
     /**
      * Data provider
      *
-     * @return array[]
+     * @return \Iterator<(int | string), array<mixed>>
      */
-    public static function provideAdvancedConfigConditionsFunctionsData(): array
+    public static function provideAdvancedConfigConditionsFunctionsData(): \Iterator
     {
-        return [
+        yield [
             [
-                [
-                    // Config
-                    'my_template' => [
-                        'condition_group' => [
-                            [
-                                'condition_function' => 'showMicroForm',
-                            ],
-                            [
-                                'condition_group' => [
-                                    [
-                                        'condition_function' => 'showHoldings',
-                                    ],
-                                    [
-                                        'operator' => 'and',
-                                    ],
-                                    [
-                                        'condition_function' => '!showMicroForm',
-                                    ],
+                // Config
+                'my_template' => [
+                    'condition_group' => [
+                        [
+                            'condition_function' => 'showMicroForm',
+                        ],
+                        [
+                            'condition_group' => [
+                                [
+                                    'condition_function' => 'showHoldings',
+                                ],
+                                [
+                                    'operator' => 'and',
+                                ],
+                                [
+                                    'condition_function' => '!showMicroForm',
                                 ],
                             ],
                         ],
                     ],
+                ],
 
-                ],
-                [
-                    // Expected templates
-                    'my_template',
-                ],
             ],
             [
-                [
-                    // Config
-                    'my_template' => [
-                        'condition_function' => 'showMicroForm',
-                    ],
+                // Expected templates
+                'my_template',
+            ],
+        ];
+        yield [
+            [
+                // Config
+                'my_template' => [
+                    'condition_function' => 'showMicroForm',
+                ],
 
-                ],
-                [
-                    // Expected templates
-                ],
+            ],
+            [
+                // Expected templates
             ],
         ];
     }
@@ -434,38 +430,36 @@ class GetThisLoaderTest extends TestCase
     /**
      * Data provider
      *
-     * @return array
+     * @return \Iterator<(int | string), mixed>
      */
-    public static function provideSubTemplateParamsData(): array
+    public static function provideSubTemplateParamsData(): \Iterator
     {
-        return [
+        yield [
             [
-                [
-                    // Config
-                    'my_template' => [
-                        'view_variables' => [
-                            'param1' => 'value1',
-                            'param2' => 'value2',
-                        ],
-                    ],
-
-                ],
-                [
-                    'my_template' => [
-                        // Expected params
+                // Config
+                'my_template' => [
+                    'view_variables' => [
                         'param1' => 'value1',
                         'param2' => 'value2',
                     ],
                 ],
+
             ],
             [
-                [
-                    // Config
-                    'my_template' => [],
-                ],
-                [
+                'my_template' => [
                     // Expected params
+                    'param1' => 'value1',
+                    'param2' => 'value2',
                 ],
+            ],
+        ];
+        yield [
+            [
+                // Config
+                'my_template' => [],
+            ],
+            [
+                // Expected params
             ],
         ];
     }
@@ -502,7 +496,7 @@ class GetThisLoaderTest extends TestCase
         $reflection = new ReflectionClass($this->getThis);
         $method = $reflection->getMethod('setSubTemplateParam');
         $method->invoke($this->getThis, 'my_template', 'param_key', 'param_value');
-        $this->assertEquals(['param_key' => 'param_value'], $this->getThis->getSubTemplateParams('my_template'));
+        $this->assertSame(['param_key' => 'param_value'], $this->getThis->getSubTemplateParams('my_template'));
     }
 
     /**
@@ -539,7 +533,7 @@ class GetThisLoaderTest extends TestCase
         $this->getThis->setItems(self::getItems());
 
         $status = $this->getThis->getStatus(5);
-        $this->assertEquals('Unknown', $status);
+        $this->assertSame('Unknown', $status);
 
         $this->getThis->getItem(1);
         $status = $this->getThis->getStatus(1);
@@ -557,12 +551,12 @@ class GetThisLoaderTest extends TestCase
      */
     public function testGetLocationAndCode()
     {
-        $this->assertEquals('', $this->getThis->getLocation());
+        $this->assertSame('', $this->getThis->getLocation());
 
         $this->getThis->setItems(self::getItems());
-        $this->assertEquals('Main Library', $this->getThis->getLocation(1));
+        $this->assertSame('Main Library', $this->getThis->getLocation(1));
 
-        $this->assertEquals('ML', $this->getThis->getLocationCode(1));
+        $this->assertSame('ML', $this->getThis->getLocationCode(1));
     }
 
     /**
@@ -581,12 +575,12 @@ class GetThisLoaderTest extends TestCase
         $driver = $this->getMockRecordDriver();
         $driver->method('getRealTimeHoldings')->willReturn([]);
         $this->setProperty($this->getThis, 'record', $driver);
-        $this->assertEquals('', $this->getThis->getLink());
+        $this->assertSame('', $this->getThis->getLink());
 
         $driver = $this->getMockRecordDriver();
         $driver->method('getRealTimeHoldings')->willReturn(['holdings' => [123]]);
         $this->setProperty($this->getThis, 'record', $driver);
-        $this->assertEquals('', $this->getThis->getLink());
+        $this->assertSame('', $this->getThis->getLink());
 
         $driver = $this->getMockRecordDriver();
         $driver->method('getRealTimeHoldings')->willReturn([
@@ -614,8 +608,8 @@ class GetThisLoaderTest extends TestCase
             ],
         ]);
         $this->setProperty($this->getThis, 'record', $driver);
-        $this->assertEquals('https://what_a_great_link.com', $this->getThis->getLink());
-        $this->assertEquals('https://what_another_great_link.com', $this->getThis->getLink(3));
+        $this->assertSame('https://what_a_great_link.com', $this->getThis->getLink());
+        $this->assertSame('https://what_another_great_link.com', $this->getThis->getLink(3));
     }
 
     /**
@@ -661,10 +655,10 @@ class GetThisLoaderTest extends TestCase
                 'callnumber_prefix' => 'call',
             ],
         ]);
-        $this->assertEquals('Online', $this->getThis->getCallNumber(9));
+        $this->assertSame('Online', $this->getThis->getCallNumber(9));
         $this->assertNull($this->getThis->getCallNumber(16));
-        $this->assertEquals('call_me', $this->getThis->getCallNumber(18));
-        $this->assertEquals('call on me', $this->getThis->getCallNumber(42));
+        $this->assertSame('call_me', $this->getThis->getCallNumber(18));
+        $this->assertSame('call on me', $this->getThis->getCallNumber(42));
     }
 
     /**
@@ -717,9 +711,9 @@ class GetThisLoaderTest extends TestCase
         $driver->method('getSummary')->willReturnOnConsecutiveCalls([], ['sum1'], ['sum1', 'sum2']);
         $this->setProperty($this->getThis, 'record', $driver);
 
-        $this->assertEquals('', $this->getThis->getSummary());
-        $this->assertEquals('sum1', $this->getThis->getSummary());
-        $this->assertEquals('sum1, sum2', $this->getThis->getSummary());
+        $this->assertSame('', $this->getThis->getSummary());
+        $this->assertSame('sum1', $this->getThis->getSummary());
+        $this->assertSame('sum1, sum2', $this->getThis->getSummary());
     }
 
     /**

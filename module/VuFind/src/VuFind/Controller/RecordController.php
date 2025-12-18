@@ -67,7 +67,7 @@ class RecordController extends AbstractRecord
     }
 
     /**
-     * Display the "Get this" dialog content.
+     * Display the "Get This" dialog content.
      *
      * @return ViewModel
      * @throws ContainerExceptionInterface
