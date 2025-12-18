@@ -90,7 +90,7 @@ class Results extends \VuFind\Search\Base\Results
                 fn ($filter) => str_starts_with($filter, 'LIMIT')
             );
             if (!$hasLimiters) {
-                $this->storeErrorResponse('empty_no_filters_search_disallowed');
+                $this->storeErrorResponse('empty_search_no_filters_disallowed');
                 return;
             }
         }
