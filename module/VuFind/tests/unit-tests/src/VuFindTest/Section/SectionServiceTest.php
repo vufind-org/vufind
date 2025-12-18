@@ -48,25 +48,21 @@ class SectionServiceTest extends AbstractSectionTestCase
     /**
      * Data provider for testGetSectionConfiguration.
      *
-     * @return array
+     * @return \Iterator<string, array>
      */
-    public static function getSectionConfigurationProvider(): array
+    public static function getSectionConfigurationProvider(): \Iterator
     {
-        return [
-            // Missing section key from default configuration.
-            [
-                'MissingSectionKey',
-                SectionServiceInterface::DEFAULT_CONFIG_PATH,
-                BadConfig::class,
-                'Section not found: MissingSectionKey',
-            ],
-            // Missing configuration.
-            [
-                'MissingConfiguration',
-                'MissingConfiguration',
-                ConfigException::class,
-                'Configuration path not found or empty: MissingConfiguration',
-            ],
+        yield 'Missing section key from default configuration' => [
+            'MissingSectionKey',
+            SectionServiceInterface::DEFAULT_CONFIG_PATH,
+            BadConfig::class,
+            'Section not found: MissingSectionKey',
+        ];
+        yield 'Missing configuration' => [
+            'MissingConfiguration',
+            'MissingConfiguration',
+            ConfigException::class,
+            'Configuration path not found or empty: MissingConfiguration',
         ];
     }
 
@@ -97,34 +93,29 @@ class SectionServiceTest extends AbstractSectionTestCase
     /**
      * Data provider for testSectionConfiguration.
      *
-     * @return array
+     * @return \Iterator<string, array>
      */
-    public static function sectionConfigurationProvider(): array
+    public static function sectionConfigurationProvider(): \Iterator
     {
-        return [
-            // Missing section type.
+        yield 'Missing section type' => [
+            'MissingSectionType',
+            [],
+            BadConfig::class,
+            'Missing required setting: type',
+        ];
+        yield 'Navigation plugin with a missing plugin setting' => [
+            'MissingNavigationPlugin',
+            ['type' => 'navigation'],
+            BadConfig::class,
+            'Missing required setting: plugin',
+        ];
+        yield 'Nonexistent navigation plugin' => [
+            'NonexistentNavigationPlugin',
             [
-                'MissingSectionType',
-                [],
-                BadConfig::class,
-                'Missing required setting: type',
+                'type' => 'navigation',
+                'plugin' => 'nonexistentNavigationPlugin',
             ],
-            // Navigation plugin with a missing plugin setting.
-            [
-                'MissingNavigationPlugin',
-                ['type' => 'navigation'],
-                BadConfig::class,
-                'Missing required setting: plugin',
-            ],
-            // Nonexistent navigation plugin.
-            [
-                'NonexistentNavigationPlugin',
-                [
-                    'type' => 'navigation',
-                    'plugin' => 'nonexistentNavigationPlugin',
-                ],
-                ServiceNotFoundException::class,
-            ],
+            ServiceNotFoundException::class,
         ];
     }
 

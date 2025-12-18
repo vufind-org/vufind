@@ -189,22 +189,18 @@ class AccountMenuTest extends AbstractSectionTestCase
     /**
      * Data provider for testRequiredConfiguration
      *
-     * @return array
+     * @return \Iterator<string, array>
      */
-    public static function requiredConfigurationProvider(): array
+    public static function requiredConfigurationProvider(): \Iterator
     {
-        return [
-            // Missing group settings.
+        yield 'Missing group settings' => [
+            ['Account' => []],
+        ];
+        yield 'Missing menu item settings' => [
             [
-                ['Account' => []],
-            ],
-            // Missing menu item settings.
-            [
-                [
-                    'Account' => [
-                        'label' => 'Test',
-                        'MenuItems' => [[]],
-                    ],
+                'Account' => [
+                    'label' => 'Test',
+                    'MenuItems' => [[]],
                 ],
             ],
         ];

@@ -74,17 +74,14 @@ class AdminMenuTest extends AbstractSectionTestCase
     /**
      * Data provider for testRequiredConfiguration
      *
-     * @return array
+     * @return \Iterator<string, array>
      */
-    public static function requiredConfigurationProvider(): array
+    public static function requiredConfigurationProvider(): \Iterator
     {
-        return [
-            // Missing menu item settings.
+        yield 'Missing menu item settings' => [
             [
-                [
-                    'Admin' => [
-                        'MenuItems' => [[]],
-                    ],
+                'Admin' => [
+                    'MenuItems' => [[]],
                 ],
             ],
         ];
