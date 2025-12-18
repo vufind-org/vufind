@@ -1,8 +1,6 @@
 <?php
-# Usually this is displayed in a modal, but if it is not (coming back from login), we don't want the search box and
-# we want a link back to search results if possible.
+# Usually this is displayed in a modal, but if it is not (coming back from login), we don't want the search box.
 $this->layout()->searchbox = false;
-$this->layout()->showSearchBacklink = true;
 $templates = $this->getThis->getSubTemplates();
 foreach ($templates as $template) {
     echo $this->context()->renderInContext(
