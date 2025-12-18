@@ -54,7 +54,7 @@ class LookupDoiCommandTest extends TestCase
         $backend->expects($this->once())->method('getIdentifier')
             ->willReturn('BrowZine');
         $backend->expects($this->once())->method('lookupDoi')
-            ->with($this->equalTo('doi'))
+            ->with('doi')
             ->willReturn('foo');
         $command = new LookupDoiCommand('BrowZine', 'doi');
         $this->assertEquals('foo', $command->execute($backend)->getResult());

@@ -31,8 +31,6 @@ declare(strict_types=1);
 
 namespace VuFindTest\Mink;
 
-use function count;
-
 /**
  * OAI-PMH test class.
  *
@@ -62,14 +60,12 @@ class OaiTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider describing OAI servers.
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function serverProvider(): array
+    public static function serverProvider(): \Iterator
     {
-        return [
-            'auth' => ['/OAI/AuthServer'],
-            'biblio' => ['/OAI/Server'],
-        ];
+        yield 'auth' => ['/OAI/AuthServer'];
+        yield 'biblio' => ['/OAI/Server'];
     }
 
     /**
@@ -149,16 +145,16 @@ class OaiTest extends \VuFindTest\Integration\MinkTestCase
         $pageSize = $this->defaultOaiConfig['OAI']['page_size'];
         $resumptionAttributes = $xml->ListRecords->resumptionToken->attributes();
         $this->assertCount($pageSize, $xml->ListRecords->record);
-        $this->assertEquals($resultSetSize, (int)$resumptionAttributes['completeListSize']);
-        $this->assertEquals(0, (int)$resumptionAttributes['cursor']);
+        $this->assertSame($resultSetSize, (int)$resumptionAttributes['completeListSize']);
+        $this->assertSame(0, (int)$resumptionAttributes['cursor']);
         $resumptionToken = (string)$xml->ListRecords->resumptionToken;
         $firstPageFirstId = (string)$xml->ListRecords->record[0]->header->identifier;
         $this->assertStringStartsWith('oai:vufind.org:', $firstPageFirstId);
 
         // Assert that only the first two records are marked deleted:
-        $this->assertEquals('deleted', (string)$xml->ListRecords->record[0]->header->attributes());
-        $this->assertEquals('deleted', (string)$xml->ListRecords->record[1]->header->attributes());
-        $this->assertEquals('', (string)$xml->ListRecords->record[2]->header->attributes());
+        $this->assertSame('deleted', (string)$xml->ListRecords->record[0]->header->attributes());
+        $this->assertSame('deleted', (string)$xml->ListRecords->record[1]->header->attributes());
+        $this->assertSame('', (string)$xml->ListRecords->record[2]->header->attributes());
 
         // Now get the second page of results, using the resumption token from the first. Make sure
         // the results are different than before by comparing first record IDs.
@@ -167,13 +163,13 @@ class OaiTest extends \VuFindTest\Integration\MinkTestCase
         )->getBody()->getContents();
         $xml2 = simplexml_load_string($rawXml2);
         $resumptionAttributes2 = $xml2->ListRecords->resumptionToken->attributes();
-        $this->assertEquals($resultSetSize - $pageSize, count($xml2->ListRecords->record));
-        $this->assertEquals($resultSetSize, (int)$resumptionAttributes2['completeListSize']);
+        $this->assertCount($resultSetSize - $pageSize, $xml2->ListRecords->record);
+        $this->assertSame($resultSetSize, (int)$resumptionAttributes2['completeListSize']);
         $this->assertEquals($pageSize, (int)$resumptionAttributes2['cursor']);
         $resumptionToken2 = (string)$xml2->ListRecords->resumptionToken;
         $secondPageFirstId = (string)$xml2->ListRecords->record[0]->header->identifier;
         $this->assertStringStartsWith('oai:vufind.org:', $secondPageFirstId);
-        $this->assertNotEquals($firstPageFirstId, $secondPageFirstId);
-        $this->assertEquals('', $resumptionToken2); // end of set
+        $this->assertNotSame($firstPageFirstId, $secondPageFirstId);
+        $this->assertSame('', $resumptionToken2); // end of set
     }
 }

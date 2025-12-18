@@ -77,14 +77,12 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetSuppressedLocations().
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function suppressedLocationsProvider(): array
+    public static function suppressedLocationsProvider(): \Iterator
     {
-        return [
-            'default' => [[], []],
-            'non-empty list' => [['Record' => ['hide_holdings' => ['a', 'b', 'c']]], ['a', 'b', 'c']],
-        ];
+        yield 'default' => [[], []];
+        yield 'non-empty list' => [['Record' => ['hide_holdings' => ['a', 'b', 'c']]], ['a', 'b', 'c']];
     }
 
     /**

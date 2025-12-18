@@ -235,7 +235,7 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
 
         // Check that we're still on the same page after login
         $this->findCss($page, '.logoutOptions');
-        $this->assertEquals($recordUrl, $this->getCurrentUrlWithoutSid());
+        $this->assertSame($recordUrl, $this->getCurrentUrlWithoutSid());
 
         // Log out
         $this->clickCss($page, '.logoutOptions a.logout');
@@ -252,7 +252,7 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
 
         // Check that we're still on the same page after login
         $this->findCss($page, '.logoutOptions');
-        $this->assertEquals($recordUrl, $this->getCurrentUrlWithoutSid());
+        $this->assertSame($recordUrl, $this->getCurrentUrlWithoutSid());
 
         // Log out
         $this->clickCss($page, '.logoutOptions a.logout');

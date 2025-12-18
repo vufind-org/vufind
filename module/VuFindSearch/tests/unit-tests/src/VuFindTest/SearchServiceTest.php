@@ -65,7 +65,7 @@ class SearchServiceTest extends TestCase
         $backend = $this->getBackend();
         $command = $this->createMock(\VuFindSearch\Command\RetrieveCommand::class);
         $command->expects($this->once())->method('execute')
-            ->with($this->equalTo($backend));
+            ->with($backend);
         $em = $service->getEventManager();
         $this->expectConsecutiveCalls(
             $em,
@@ -89,7 +89,7 @@ class SearchServiceTest extends TestCase
         $backend = $this->getBackend();
         $command = $this->createMock(\VuFindSearch\Command\RetrieveCommand::class);
         $command->expects($this->once())->method('execute')
-            ->with($this->equalTo($backend))
+            ->with($backend)
             ->willThrowException(new BackendException('test'));
         $em = $service->getEventManager();
         $this->expectConsecutiveCalls(
@@ -117,8 +117,8 @@ class SearchServiceTest extends TestCase
         $em->method('triggerUntil')
             ->with(
                 $this->anything(),
-                $this->equalTo('resolve'),
-                $this->equalTo($service)
+                'resolve',
+                $service
             )->willReturn($mockResponse);
         $service->setEventManager($em);
         $service->invoke(new \VuFindSearch\Backend\EDS\Command\GetInfoCommand());

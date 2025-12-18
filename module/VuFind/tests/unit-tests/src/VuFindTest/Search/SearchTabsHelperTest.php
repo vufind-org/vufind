@@ -215,7 +215,7 @@ class SearchTabsHelperTest extends \PHPUnit\Framework\TestCase
         $filters = null
     ) {
         $mockRequest = $this->createMock(\Laminas\Http\Request::class);
-        $mockRequest->method('getQuery')->with($this->equalTo('hiddenFilters'))->willReturn($filters);
+        $mockRequest->method('getQuery')->with('hiddenFilters')->willReturn($filters);
 
         $configManager = $this->createMock(ConfigManagerInterface::class);
 

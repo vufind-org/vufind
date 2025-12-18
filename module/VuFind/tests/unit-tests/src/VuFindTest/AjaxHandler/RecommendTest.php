@@ -100,7 +100,7 @@ class RecommendTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         // Set up recommend plugin manager:
         $mockPlugin = $this->container->createMock(RecommendInterface::class);
         $rm = $this->container->createMock(PluginManager::class, ['get']);
-        $rm->expects($this->once())->method('get')->with($this->equalTo('foo'))
+        $rm->expects($this->once())->method('get')->with('foo')
             ->willReturn($mockPlugin);
         $this->container->set(PluginManager::class, $rm);
 
@@ -120,7 +120,7 @@ class RecommendTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         $resultsManager = $this->container
             ->createMock(ResultsManager::class, ['get']);
         $resultsManager->expects($this->once())->method('get')
-            ->with($this->equalTo('Solr'))
+            ->with('Solr')
             ->willReturn($results);
         $this->container->set(ResultsManager::class, $resultsManager);
 

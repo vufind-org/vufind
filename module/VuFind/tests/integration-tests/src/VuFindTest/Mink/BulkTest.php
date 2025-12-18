@@ -281,14 +281,12 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider to allow testing of top or bottom controls.
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function topOrBottomProvider(): array
+    public static function topOrBottomProvider(): \Iterator
     {
-        return [
-            'top button' => [''],
-            'bottom button' => ['bottom_'],
-        ];
+        yield 'top button' => [''];
+        yield 'bottom button' => ['bottom_'];
     }
 
     /**
@@ -362,7 +360,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
             $this->retryClickWithResizedWindow($session, $page, $buttonSelector);
             [, $params] = explode('?', $session->getCurrentUrl());
         }
-        $this->assertEquals(
+        $this->assertSame(
             'print=true&id[]=Solr|testsample1&id[]=Solr|testsample2',
             str_replace(['%5B', '%5D', '%7C'], ['[', ']', '|'], $params)
         );

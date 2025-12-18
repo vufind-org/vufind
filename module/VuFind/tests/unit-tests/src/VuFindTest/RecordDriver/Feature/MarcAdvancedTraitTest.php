@@ -179,23 +179,23 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
     {
         $obj = $this->getMockDriverFromFixture('marc/altscript.xml');
 
-        $this->assertEquals(
+        $this->assertSame(
             ['Русская народная поэзия : лирическая поэзия /'],
             $obj->getTitlesAltScript()
         );
-        $this->assertEquals(
+        $this->assertSame(
             ['Русская народная поэзия : лирическая поэзия / 1'],
             $obj->getFullTitlesAltScript()
         );
-        $this->assertEquals(
+        $this->assertSame(
             ['Русская народная поэзия :'],
             $obj->getShortTitlesAltScript()
         );
-        $this->assertEquals(
+        $this->assertSame(
             ['лирическая поэзия /'],
             $obj->getSubTitlesAltScript()
         );
-        $this->assertEquals(
+        $this->assertSame(
             ['1'],
             $obj->getTitleSectionsAltScript()
         );

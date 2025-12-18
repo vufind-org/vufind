@@ -32,6 +32,7 @@ namespace VuFind\OAuth2\Repository;
 use League\OAuth2\Server\Entities\ClientEntityInterface;
 use League\OAuth2\Server\Repositories\ClientRepositoryInterface;
 use VuFind\OAuth2\Entity\ClientEntity;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * OAuth2 client repository implementation.
@@ -45,20 +46,14 @@ use VuFind\OAuth2\Entity\ClientEntity;
 class ClientRepository implements ClientRepositoryInterface
 {
     /**
-     * OAuth2 server configuration
-     *
-     * @var array
-     */
-    protected $oauth2Config = [];
-
-    /**
      * Constructor
      *
-     * @param array $config OAuth2 configuration
+     * @param array $oauth2Config OAuth2 configuration
      */
-    public function __construct(array $config)
-    {
-        $this->oauth2Config = $config;
+    public function __construct(
+        #[Autowire(config: 'OAuth2Server', configType: 'yaml')]
+        protected array $oauth2Config
+    ) {
     }
 
     /**

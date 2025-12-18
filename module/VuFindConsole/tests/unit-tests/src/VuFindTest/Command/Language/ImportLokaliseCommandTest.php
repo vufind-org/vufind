@@ -95,11 +95,11 @@ class ImportLokaliseCommandTest extends \PHPUnit\Framework\TestCase
         $command = new ImportLokaliseCommand(new ExtendedIniNormalizer());
         $commandTester = new CommandTester($command);
         $commandTester->execute(compact('source', 'target'));
-        $this->assertEquals(
+        $this->assertSame(
             "{$source} does not exist or is not a directory.\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertSame(1, $commandTester->getStatusCode());
     }
 
     /**
@@ -114,11 +114,11 @@ class ImportLokaliseCommandTest extends \PHPUnit\Framework\TestCase
         $command = new ImportLokaliseCommand(new ExtendedIniNormalizer());
         $commandTester = new CommandTester($command);
         $commandTester->execute(compact('source', 'target'));
-        $this->assertEquals(
+        $this->assertSame(
             "{$target} does not exist or is not a directory.\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertSame(1, $commandTester->getStatusCode());
     }
 
     /**
@@ -143,7 +143,7 @@ class ImportLokaliseCommandTest extends \PHPUnit\Framework\TestCase
         );
         $commandTester = new CommandTester($command);
         $commandTester->execute(compact('source', 'target'));
-        $this->assertEquals(
+        $this->assertSame(
             "Warning: unexpected missing key in $source/en.ini - bar\nImport complete.\n",
             $commandTester->getDisplay()
         );

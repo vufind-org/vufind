@@ -54,7 +54,7 @@ class SolrTest extends \PHPUnit\Framework\TestCase
     {
         $record = $this->createMock(\VuFind\RecordDriver\SolrDefault::class);
         $record->expects($this->once())->method('setPreviousUniqueId')
-            ->with($this->equalTo('oldId'));
+            ->with('oldId');
         $record->expects($this->once())->method('getUniqueId')->willReturn('newId');
         $collection = new \VuFindSearch\Backend\Solr\Response\Json\RecordCollection(
             ['recordCount' => 1]
@@ -75,9 +75,9 @@ class SolrTest extends \PHPUnit\Framework\TestCase
         $updater = $this->createMock(RecordIdUpdater::class);
         $updater->expects($this->once())->method('updateRecordId')
             ->with(
-                $this->equalTo('oldId'),
-                $this->equalTo('newId'),
-                $this->equalTo('Solr')
+                'oldId',
+                'newId',
+                'Solr'
             );
         $loader = new Solr($this->createMock(ResourceServiceInterface::class), $updater, $search);
         $this->assertEquals([$record], $loader->load(['oldId']));

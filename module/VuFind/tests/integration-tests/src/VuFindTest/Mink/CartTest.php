@@ -451,11 +451,12 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider to return in lightbox / not in lightbox states.
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function inLightboxProvider(): array
+    public static function inLightboxProvider(): \Iterator
     {
-        return ['in lightbox' => [true], 'not in lightbox' => [false]];
+        yield 'in lightbox' => [true];
+        yield 'not in lightbox' => [false];
     }
 
     /**
@@ -788,7 +789,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
 
         // Printing should not have added anything to the search history beyond
         // the initial search that set everything up.
-        $this->assertEquals(
+        $this->assertSame(
             ['id:(testsample1 OR testsample2)'],
             $this->getSearchHistory()
         );

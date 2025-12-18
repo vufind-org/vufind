@@ -55,20 +55,20 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
         $generator = $this->getMockGenerator();
         $generator->expects($this->once())
             ->method('generate')
-            ->with($this->equalTo('custom'))
+            ->with('custom')
             ->willReturn(true);
         $generator->expects($this->once())
             ->method('configure')
-            ->with($this->equalTo($config), $this->equalTo('custom'))
+            ->with($config, 'custom')
             ->willReturn(true);
         $command = new ThemeCommand($generator, $config);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
-        $this->assertEquals(
+        $this->assertSame(
             "\tNo theme name provided, using \"custom\"\n\tFinished.\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -82,11 +82,11 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
         $generator = $this->getMockGenerator();
         $generator->expects($this->once())
             ->method('generate')
-            ->with($this->equalTo('foo'))
+            ->with('foo')
             ->willReturn(true);
         $generator->expects($this->once())
             ->method('configure')
-            ->with($this->equalTo($config), $this->equalTo('foo'))
+            ->with($config, 'foo')
             ->willReturn(false);
         $generator->expects($this->once())
             ->method('getLastError')
@@ -94,8 +94,8 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
         $command = new ThemeCommand($generator, $config);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['name' => 'foo']);
-        $this->assertEquals("fake error\n", $commandTester->getDisplay());
-        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertSame("fake error\n", $commandTester->getDisplay());
+        $this->assertSame(1, $commandTester->getStatusCode());
     }
 
     /**

@@ -67,11 +67,11 @@ class HelpTextTest extends \PHPUnit\Framework\TestCase
         };
         $helper->expects($this->once())->method('renderTranslated')
             ->with(
-                $this->equalTo($topic),
-                $this->equalTo('HelpTranslations'),
-                $this->equalTo($context),
-                $this->equalTo(null),
-                $this->equalTo('%pathPrefix%/%language%/%pageName%')
+                $topic,
+                'HelpTranslations',
+                $context,
+                null,
+                '%pathPrefix%/%language%/%pageName%'
             )->willReturnCallback($callback);
         return $helper;
     }

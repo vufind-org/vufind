@@ -177,7 +177,7 @@ class RouterTest extends \PHPUnit\Framework\TestCase
         $driver = $this->getDriver();
         $driver->expects($this->once())
             ->method('tryMethod')
-            ->with($this->equalTo('isCollection'))
+            ->with('isCollection')
             ->willReturn(true);
         $router = $this->getRouter(['Collections' => ['collections' => true]]);
         $this->assertEquals(

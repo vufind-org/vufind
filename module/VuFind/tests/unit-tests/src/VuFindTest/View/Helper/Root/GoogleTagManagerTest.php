@@ -75,8 +75,8 @@ class GoogleTagManagerTest extends \PHPUnit\Framework\TestCase
      */
     public function testDisabled(): void
     {
-        $this->assertEquals('', $this->renderGTMHeadCode(false));
-        $this->assertEquals('', $this->renderGTMBodyCode(false));
+        $this->assertSame('', $this->renderGTMHeadCode(false));
+        $this->assertSame('', $this->renderGTMBodyCode(false));
     }
 
     /**

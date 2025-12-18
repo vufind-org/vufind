@@ -585,7 +585,7 @@ class GetItemStatuses extends AbstractBase implements
         foreach ($missingIds as $missingId => $recordNumber) {
             $availabilityStatus = $this->availabilityStatusManager->createAvailabilityStatus(false);
             $statuses[] = [
-                'id'                   => $missingId,
+                'id'                   => (string)$missingId, // array_flip may have converted to int
                 'availability'         => 'false',
                 'availability_message' => $this->getAvailabilityMessage($availabilityStatus),
                 'location'             => $this->translate('Unknown'),

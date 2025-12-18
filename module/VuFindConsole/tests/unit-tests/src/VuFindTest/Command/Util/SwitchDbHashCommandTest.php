@@ -169,8 +169,8 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         $command = $this->getMockCommand();
         $commandTester = new CommandTester($command);
         $commandTester->execute(['newmethod' => $this->encryptionAlgorithm]);
-        $this->assertEquals(1, $commandTester->getStatusCode());
-        $this->assertEquals(
+        $this->assertSame(1, $commandTester->getStatusCode());
+        $this->assertSame(
             "Please specify a key as the second parameter.\n",
             $commandTester->getDisplay()
         );
@@ -196,8 +196,8 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester->execute(
             ['newmethod' => $this->encryptionAlgorithm, 'newkey' => 'bar']
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals(
+        $this->assertSame(0, $commandTester->getStatusCode());
+        $this->assertSame(
             "No changes requested -- no action needed.\n",
             $commandTester->getDisplay()
         );
@@ -218,8 +218,8 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester->execute(
             ['newmethod' => $this->encryptionAlgorithm, 'newkey' => 'foo']
         );
-        $this->assertEquals(1, $commandTester->getStatusCode());
-        $this->assertEquals(
+        $this->assertSame(1, $commandTester->getStatusCode());
+        $this->assertSame(
             "\tUpdating {$this->expectedConfigIniPath}...\n\tWrite failed!\n",
             $commandTester->getDisplay()
         );
@@ -257,8 +257,8 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester->execute(
             ['newmethod' => $this->encryptionAlgorithm, 'newkey' => 'foo']
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals(
+        $this->assertSame(0, $commandTester->getStatusCode());
+        $this->assertSame(
             "\tUpdating {$this->expectedConfigIniPath}...\n\tConverting hashes for"
             . " 0 user(s).\n\tFinished.\n",
             $commandTester->getDisplay()
@@ -381,14 +381,14 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester->execute(
             ['newmethod' => $this->encryptionAlgorithm, 'newkey' => 'foo']
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals(
+        $this->assertSame(0, $commandTester->getStatusCode());
+        $this->assertSame(
             "\tUpdating {$this->expectedConfigIniPath}...\n\tConverting hashes for"
             . " 1 user(s).\n\tFinished.\n",
             $commandTester->getDisplay()
         );
         $this->assertEquals(null, $user->getRawCatPassword());
-        $this->assertEquals('mypassword', $this->decode($user->getCatPassEnc()));
+        $this->assertSame('mypassword', $this->decode($user->getCatPassEnc()));
     }
 
     /**
@@ -419,20 +419,20 @@ class SwitchDbHashCommandTest extends \PHPUnit\Framework\TestCase
         $cardService = $this->getMockCardService();
         $cardService->expects($this->once())->method('getAllRowsWithUsernames')->willReturn([$card]);
         $cardService->expects($this->once())->method('persistEntity')
-            ->with($this->equalTo($card));
+            ->with($card);
         $command = $this->getMockCommand([], $userService, $cardService);
         $command->expects($this->once())->method('getConfigWriter')->willReturn($writer);
         $commandTester = new CommandTester($command);
         $commandTester->execute(
             ['newmethod' => $this->encryptionAlgorithm, 'newkey' => 'foo']
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals(
+        $this->assertSame(0, $commandTester->getStatusCode());
+        $this->assertSame(
             "\tUpdating {$this->expectedConfigIniPath}...\n\tConverting hashes for"
             . " 0 user(s).\n\tConverting hashes for 1 card(s).\n\tFinished.\n",
             $commandTester->getDisplay()
         );
         $this->assertEquals(null, $card->getRawCatPassword());
-        $this->assertEquals('mypassword', $this->decode($card->getCatPassEnc()));
+        $this->assertSame('mypassword', $this->decode($card->getCatPassEnc()));
     }
 }

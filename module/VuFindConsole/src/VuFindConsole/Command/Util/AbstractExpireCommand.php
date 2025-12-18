@@ -48,7 +48,7 @@ use function floatval;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class AbstractExpireCommand extends Command
+abstract class AbstractExpireCommand extends Command
 {
     /**
      * Help description for the command.

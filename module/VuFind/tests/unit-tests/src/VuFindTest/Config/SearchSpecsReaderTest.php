@@ -58,7 +58,7 @@ class SearchSpecsReaderTest extends \PHPUnit\Framework\TestCase
         // other things).
         $reader = $this->getSearchSpecsReader();
         $specs = $reader->get('searchspecs.yaml');
-        $this->assertTrue(!empty($specs['Author']['DismaxFields']));
+        $this->assertNotEmpty($specs['Author']['DismaxFields']);
     }
 
     /**

@@ -118,31 +118,29 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for menu configuration tests
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function menuConfigurationProvider(): array
+    public static function menuConfigurationProvider(): \Iterator
     {
-        return [
-            'no ajax, no dropdown' => [
-                false,
-                false,
-                0,
-            ],
-            'ajax, no dropdown' => [
-                true,
-                false,
-                1,
-            ],
-            'no ajax, dropdown' => [
-                false,
-                true,
-                0,
-            ],
-            'ajax, dropdown' => [
-                true,
-                true,
-                2,
-            ],
+        yield 'no ajax, no dropdown' => [
+            false,
+            false,
+            0,
+        ];
+        yield 'ajax, no dropdown' => [
+            true,
+            false,
+            1,
+        ];
+        yield 'no ajax, dropdown' => [
+            false,
+            true,
+            0,
+        ];
+        yield 'ajax, dropdown' => [
+            true,
+            true,
+            2,
         ];
     }
 
@@ -239,81 +237,79 @@ final class AccountMenuTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testAccountIcon
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function accountIconProvider(): array
+    public static function accountIconProvider(): \Iterator
     {
-        return [
-            'no icon' => [
+        yield 'no icon' => [
+            [
+                // No fines
+                ['fines' => ['total' => 0, 'display' => 'ZILTCH']],
+                // Holds in transit only
+                ['holds' => ['in_transit' => 1, 'available' => 0, 'other' => 0]],
+                // ILL Requests in transit only
+                ['illRequests' => ['in_transit' => 1, 'available' => 0, 'other' => 0]],
+                // Storage Retrievals in transit only
+                ['storageRetrievalRequests' => ['in_transit' => 1, 'available' => 0, 'other' => 0]],
+            ],
+            '.account-status-none',
+        ];
+        yield 'good' => [
+            [
+                // Holds available
+                ['holds' => ['in_transit' => 0, 'available' => 1, 'level' => 1]],
+                // ILL Requests available
+                ['illRequests' => ['in_transit' => 0, 'available' => 1, 'level' => 1]],
+                // Storage Retrievals available
+                ['storageRetrievalRequests' => ['in_transit' => 0, 'available' => 1, 'level' => 1]],
+            ],
+            '.account-status-good',
+        ];
+        yield 'warning' => [
+            [
+                ['checkedOut' => ['warn' => 1, 'level' => 2]],
+            ],
+            '.account-status-warning',
+        ];
+        yield 'danger' => [
+            [
+                // User has fines
+                ['fines' => ['value' => 1000000, 'display' => '$...yikes', 'level' => 3]],
+                // Checkedout overdue
+                ['checkedOut' => ['overdue' => 1, 'level' => 3]],
+            ],
+            '.account-status-danger',
+        ];
+        yield 'danger overrides warning' => [
+            [['checkedOut' => ['warn' => 2, 'overdue' => 1, 'level' => 3]]],
+            '.account-status-danger',
+        ];
+        yield 'danger overrides good' => [
+            [
                 [
-                    // No fines
-                    ['fines' => ['total' => 0, 'display' => 'ZILTCH']],
-                    // Holds in transit only
-                    ['holds' => ['in_transit' => 1, 'available' => 0, 'other' => 0]],
-                    // ILL Requests in transit only
-                    ['illRequests' => ['in_transit' => 1, 'available' => 0, 'other' => 0]],
-                    // Storage Retrievals in transit only
-                    ['storageRetrievalRequests' => ['in_transit' => 1, 'available' => 0, 'other' => 0]],
+                    'checkedOut' => ['overdue' => 1, 'level' => 3],
+                    'holds' => ['available' => 1, 'level' => 1],
                 ],
-                '.account-status-none',
             ],
-            'good' => [
+            '.account-status-danger',
+        ];
+        yield 'warning overrides good' => [
+            [
                 [
-                    // Holds available
-                    ['holds' => ['in_transit' => 0, 'available' => 1, 'level' => 1]],
-                    // ILL Requests available
-                    ['illRequests' => ['in_transit' => 0, 'available' => 1, 'level' => 1]],
-                    // Storage Retrievals available
-                    ['storageRetrievalRequests' => ['in_transit' => 0, 'available' => 1, 'level' => 1]],
+                    'checkedOut' => ['warn' => 1, 'level' => 2],
+                    'holds' => ['available' => 1, 'level' => 1],
                 ],
-                '.account-status-good',
             ],
-            'warning' => [
+            '.account-status-warning',
+        ];
+        yield 'good overrides none' => [
+            [
                 [
-                    ['checkedOut' => ['warn' => 1, 'level' => 2]],
+                    'holds' => ['available' => 1, 'level' => 1],
+                    'fines' => ['total' => 0, 'display' => 'none', 'level' => 0],
                 ],
-                '.account-status-warning',
             ],
-            'danger' => [
-                [
-                    // User has fines
-                    ['fines' => ['value' => 1000000, 'display' => '$...yikes', 'level' => 3]],
-                    // Checkedout overdue
-                    ['checkedOut' => ['overdue' => 1, 'level' => 3]],
-                ],
-                '.account-status-danger',
-            ],
-            'danger overrides warning' => [
-                [['checkedOut' => ['warn' => 2, 'overdue' => 1, 'level' => 3]]],
-                '.account-status-danger',
-            ],
-            'danger overrides good' => [
-                [
-                    [
-                        'checkedOut' => ['overdue' => 1, 'level' => 3],
-                        'holds' => ['available' => 1, 'level' => 1],
-                    ],
-                ],
-                '.account-status-danger',
-            ],
-            'warning overrides good' => [
-                [
-                    [
-                        'checkedOut' => ['warn' => 1, 'level' => 2],
-                        'holds' => ['available' => 1, 'level' => 1],
-                    ],
-                ],
-                '.account-status-warning',
-            ],
-            'good overrides none' => [
-                [
-                    [
-                        'holds' => ['available' => 1, 'level' => 1],
-                        'fines' => ['total' => 0, 'display' => 'none', 'level' => 0],
-                    ],
-                ],
-                '.account-status-good',
-            ],
+            '.account-status-good',
         ];
     }
 
