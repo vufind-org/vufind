@@ -94,7 +94,7 @@ class VuFindHighlighterTest extends \PHPUnit\Framework\TestCase
         $this->proxyUrl
             ->expects(self::atLeastOnce())
             ->method('__invoke')
-            ->willReturnOnConsecutiveCalls('URL_WITH_PROXY');
+            ->willReturn('URL_WITH_PROXY');
 
         $replacer = ReplacerFactory::createReplacer();
         $actual = $this->vuFindHighlighter->highlight($url, $replacer);

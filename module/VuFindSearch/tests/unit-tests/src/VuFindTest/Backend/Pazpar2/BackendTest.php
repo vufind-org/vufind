@@ -111,7 +111,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     {
         $back = new Backend($this->getConnectorMock());
         $back->setSearchProgressTarget(0.75);
-        $this->assertEquals(0.75, $this->getProperty($back, 'progressTarget'));
+        $this->assertEqualsWithDelta(0.75, $this->getProperty($back, 'progressTarget'), PHP_FLOAT_EPSILON);
     }
 
     /**

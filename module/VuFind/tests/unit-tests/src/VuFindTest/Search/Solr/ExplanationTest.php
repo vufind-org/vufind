@@ -454,8 +454,8 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(424332884, $explanation->getRecordId());
 
         $this->assertEquals(10, $explanation->getMaxScore());
-        $this->assertEquals(200575.50390625, $explanation->getTotalScore());
-        $this->assertEquals(200575.50390625, $explanation->getBaseScore());
+        $this->assertEqualsWithDelta(200575.50390625, $explanation->getTotalScore(), PHP_FLOAT_EPSILON);
+        $this->assertEqualsWithDelta(200575.50390625, $explanation->getBaseScore(), PHP_FLOAT_EPSILON);
         $this->assertEquals(null, $explanation->getBoost());
         $this->assertEquals(null, $explanation->getCoord());
         $this->assertEquals(-1, $explanation->getMaxFields());
@@ -643,7 +643,7 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
         );
         $explanation->performRequest($recordId);
         $this->assertEquals($recordId, $explanation->getRecordId());
-        $this->assertEquals(3794.7397, $explanation->getTotalScore());
+        $this->assertEqualsWithDelta(3794.7397, $explanation->getTotalScore(), PHP_FLOAT_EPSILON);
         $this->assertCount(5, $explanation->getExplanation());
     }
 
@@ -710,7 +710,7 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
         $explanation->performRequest($recordId);
 
         $this->assertEquals($recordId, $explanation->getRecordId());
-        $this->assertEquals(0.598864, $explanation->getTotalScore());
+        $this->assertEqualsWithDelta(0.598864, $explanation->getTotalScore(), PHP_FLOAT_EPSILON);
     }
 
     /**

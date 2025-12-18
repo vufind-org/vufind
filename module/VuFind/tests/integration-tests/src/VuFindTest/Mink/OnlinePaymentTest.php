@@ -315,9 +315,9 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
 
         // Check payment status:
         $payment = $this->getPaymentFromReturnUrl($page);
-        $this->assertEquals(
-            $payment->getStatus(),
-            PaymentStatus::InProgress
+        $this->assertSame(
+            PaymentStatus::InProgress,
+            $payment->getStatus()
         );
 
         // Send notify event:
@@ -333,9 +333,9 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
         $paymentService = $this->getDbService(PaymentServiceInterface::class);
         assert($paymentService instanceof PaymentServiceInterface);
         $paymentService->refreshEntity($payment);
-        $this->assertEquals(
-            $payment->getStatus(),
-            PaymentStatus::Paid
+        $this->assertSame(
+            PaymentStatus::Paid,
+            $payment->getStatus()
         );
 
         // Resolve the payment so that it doesn't block further tests:

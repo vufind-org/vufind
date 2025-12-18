@@ -1669,7 +1669,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performSearch('building:weird_ids.mrc OR building:journals.mrc');
         $sidebar = $this->findCss($page, '.sidebar');
         $checkbox = $this->findCss($sidebar, '.js-user-selection-multi-filters');
-        $this->assertStringContainsString($checkbox->isChecked(), true);
+        $this->assertTrue($checkbox->isChecked());
     }
 
     /**

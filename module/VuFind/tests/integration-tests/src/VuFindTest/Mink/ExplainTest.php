@@ -146,7 +146,7 @@ class ExplainTest extends \VuFindTest\Integration\MinkTestCase
         // test pie chart
         $pieChart = $explainOutput->find('css', '#js-explain-pie-chart');
         $chartData = $pieChart->getAttribute('data-chart-data');
-        $this->assertSame(count($tableRows), count(explode(';', $chartData)));
+        $this->assertCount(count($tableRows), explode(';', $chartData));
 
         // test column chart
         $columnChart = $explainOutput->find('css', '#js-explain-column-chart');

@@ -31,7 +31,6 @@ namespace VuFindTest\Integration\Connection;
 
 use VuFindSearch\ParamBag;
 
-use function count;
 use function in_array;
 
 /**
@@ -73,7 +72,7 @@ class SolrTest extends \PHPUnit\Framework\TestCase
         $extras = new ParamBag(['extras' => 'id']);
         $result = $solr->alphabeticBrowse('author', 'Dublin Society', 0, 1, $extras);
         $item = $result['Browse']['items'][0];
-        $this->assertEquals($item['count'], count($item['extras']['id']));
+        $this->assertCount($item['count'], $item['extras']['id']);
         $this->assertEmpty($item['useInstead']);
         $this->assertTrue(in_array(['vtls000013187'], $item['extras']['id']));
         $this->assertTrue(in_array('Royal Dublin Society', $item['seeAlso']));
@@ -93,7 +92,7 @@ class SolrTest extends \PHPUnit\Framework\TestCase
             ->alphabeticBrowse('author', 'Dublin Society, Royal', 0, 1, $extras);
         $item = $result['Browse']['items'][0];
         $this->assertEquals(0, $item['count']);
-        $this->assertEquals($item['count'], count($item['extras']['id']));
+        $this->assertCount($item['count'], $item['extras']['id']);
         $this->assertEquals('Dublin Society, Royal', $item['heading']);
         $this->assertEmpty($item['seeAlso']);
         $this->assertTrue(in_array('Royal Dublin Society', $item['useInstead']));
@@ -111,12 +110,12 @@ class SolrTest extends \PHPUnit\Framework\TestCase
         $result = $solr->alphabeticBrowse('dewey', '123.45 .I39', 0, 1, $extras);
         $item = $result['Browse']['items'][0];
         $this->assertEquals(1, $item['count']);
-        $this->assertEquals($item['count'], count($item['extras']['id']));
+        $this->assertCount($item['count'], $item['extras']['id']);
         $this->assertEquals('123.45 .I39', $item['heading']);
         $result = $solr->alphabeticBrowse('dewey', '123.46 .Q39', 0, 1, $extras);
         $item = $result['Browse']['items'][0];
         $this->assertEquals(1, $item['count']);
-        $this->assertEquals($item['count'], count($item['extras']['id']));
+        $this->assertCount($item['count'], $item['extras']['id']);
         $this->assertEquals('123.46 .Q39', $item['heading']);
     }
 
