@@ -43,12 +43,12 @@ trait ExplodeSettingTrait
     /**
      * Explode a delimited setting to an array
      *
-     * @param string  $value     Setting value
-     * @param bool    $trim      Whether to trim the values (disabled by default to
+     * @param string  $value               Setting value
+     * @param bool    $trim                Whether to trim the values (disabled by default to
      * ensure any valid blank entry does not get trimmed, and to avoid doing extra
      * work on each execution)
-     * @param string  $separator Separator
-     * @param ?string $typecast  Type casting method
+     * @param string  $separator           Separator
+     * @param ?string $formatValueCallback Optional callback to format values
      *
      * @return array
      */
@@ -56,7 +56,7 @@ trait ExplodeSettingTrait
         string $value,
         $trim = false,
         string $separator = ':',
-        ?string $typecast = null
+        ?string $formatValueCallback = null
     ): array {
         if ('' === $value) {
             return [];
@@ -65,8 +65,8 @@ trait ExplodeSettingTrait
         if ($trim) {
             $result = array_map('trim', $result);
         }
-        if ($typecast) {
-            $result = array_map($typecast, $result);
+        if ($formatValueCallback) {
+            $result = array_map($formatValueCallback, $result);
         }
         return $result;
     }
@@ -74,13 +74,13 @@ trait ExplodeSettingTrait
     /**
      * Explode a comma-delimited setting to an array of trimmed values
      *
-     * @param string  $value    Setting value
-     * @param ?string $typecast Type casting method
+     * @param string  $value               Setting value
+     * @param ?string $formatValueCallback Optional callback to format values
      *
      * @return array
      */
-    protected function explodeListSetting(string $value, ?string $typecast = null): array
+    protected function explodeListSetting(string $value, ?string $formatValueCallback = null): array
     {
-        return $this->explodeSetting($value, true, ',', $typecast);
+        return $this->explodeSetting($value, true, ',', $formatValueCallback);
     }
 }
