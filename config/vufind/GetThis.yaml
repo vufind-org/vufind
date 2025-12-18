@@ -1,6 +1,6 @@
 ---
 # This file contains the settings for the GetThis feature
-# See Regex.yaml for comment related to regex
+# See Regex.yaml for comments related to regex
 
 # Whether to display the copy number (next to the call number), default false
 showCopyNumber: true
