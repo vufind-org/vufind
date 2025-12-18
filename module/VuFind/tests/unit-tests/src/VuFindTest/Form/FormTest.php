@@ -35,8 +35,6 @@ use VuFind\Config\YamlReader;
 use VuFind\Form\Form;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
-use function get_class;
-
 /**
  * Form Test Class
  *
@@ -84,9 +82,9 @@ class FormTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals([[], 'Email/form.phtml'], $form->formatEmailMessage([]));
         $this->assertSame([], $form->mapRequestParamsToFieldValues([]));
 
-        $this->assertSame(
-            'Laminas\InputFilter\InputFilter',
-            get_class($form->getInputFilter())
+        $this->assertInstanceOf(
+            \Laminas\InputFilter\InputFilter::class,
+            $form->getInputFilter()
         );
         $this->assertCount(0, $form->getSecondaryHandlers());
     }
@@ -237,9 +235,9 @@ class FormTest extends \PHPUnit\Framework\TestCase
             $expectedFields,
             $form->mapRequestParamsToFieldValues($postParams)
         );
-        $this->assertSame(
-            'Laminas\InputFilter\InputFilter',
-            get_class($form->getInputFilter())
+        $this->assertInstanceOf(
+            \Laminas\InputFilter\InputFilter::class,
+            $form->getInputFilter()
         );
 
         // Validators: Required field problems
