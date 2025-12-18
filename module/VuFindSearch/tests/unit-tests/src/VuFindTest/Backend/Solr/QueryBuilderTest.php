@@ -333,7 +333,7 @@ class QueryBuilderTest extends \PHPUnit\Framework\TestCase
                 '(_query_:"{!edismax qf=\"b\" mm=\\\'0%\\\'}\"t2\""))'],
             ['NOT "t1" AND t2', '((*:* NOT ((_query_:"{!edismax qf=\"b\" mm=\\\'0%\\\'}\"t1\""))) AND ' .
                 '(_query_:"{!edismax qf=\"a\" mm=\\\'0%\\\'}t2"))'],
-            ['t1 AND NOT "t2"', '((_query_:"{!edismax qf=\"a\" mm=\\\'0%\\\'}t1 AND") AND ' .
+            ['t1 AND NOT "t2"', '((_query_:"{!edismax qf=\"a\" mm=\\\'0%\\\'}t1") AND ' .
                 '(*:* NOT ((_query_:"{!edismax qf=\"b\" mm=\\\'0%\\\'}\"t2\""))))'],
             ['-"t1" t2', '((*:* NOT ((_query_:"{!edismax qf=\"b\" mm=\\\'0%\\\'}\"t1\""))) AND ' .
                 '(_query_:"{!edismax qf=\"a\" mm=\\\'0%\\\'}t2"))'],

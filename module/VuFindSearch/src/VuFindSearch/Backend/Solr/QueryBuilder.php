@@ -238,11 +238,11 @@ class QueryBuilder implements QueryBuilderInterface
         $groupOperator = 'AND';
         $negateQuotedPart = false;
         $before = trim($parts[1]);
-        if (preg_match('/^(.*)\s*(NOT|-)$/u', $before, $notParts)) {
-            $before = $notParts[1];
+        if (preg_match('/^(.+\s+)?(NOT|-)$/u', $before, $notParts)) {
+            $before = trim($notParts[1]);
             $negateQuotedPart = true;
         }
-        if (preg_match('/^(.*)\s*(AND|OR)$/u', $before, $beforeParts)) {
+        if (preg_match('/^(.*)\s+(AND|OR)$/u', $before, $beforeParts)) {
             $before = $beforeParts[1];
             $groupOperator = $beforeParts[2];
         }
