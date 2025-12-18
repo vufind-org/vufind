@@ -128,22 +128,22 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
         yield [
             ['page' => 1],
             'Blender/Results',
-            'Blended'
+            'Blended',
         ];
         yield [
             ['page' => 2],
             'Blender/Results',
-            'Blended'
+            'Blended',
         ];
         yield [
             ['page' => 1],
             'Search/Blended', // legacy path
-            'Blended'
+            'Blended',
         ];
         yield [
             ['page' => 2],
             'Search/Blended', // legacy path
-            'Blended'
+            'Blended',
         ];
         yield [
             ['page' => 1],
