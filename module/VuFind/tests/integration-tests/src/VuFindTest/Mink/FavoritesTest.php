@@ -405,7 +405,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
             $listCount
         );
         $savedLists = $page->findAll('css', '.savedLists a');
-        $this->assertSame($listCount + 1, count($savedLists));
+        $this->assertCount($listCount + 1, $savedLists);
     }
 
     /**

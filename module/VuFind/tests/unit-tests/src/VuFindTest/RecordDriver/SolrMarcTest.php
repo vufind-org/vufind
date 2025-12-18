@@ -34,7 +34,6 @@ use VuFind\ILS\Connection;
 use VuFind\ILS\Logic\Holds;
 use VuFind\ILS\Logic\TitleHolds;
 
-use function count;
 use function in_array;
 
 /**
@@ -102,14 +101,14 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
         $record->setRawData($fixture['response']['docs'][0]);
 
         $this->assertEquals(
-            $record->getPrimaryAuthor(),
-            'Vico, Giambattista, 1668-1744.'
+            'Vico, Giambattista, 1668-1744.',
+            $record->getPrimaryAuthor()
         );
         $secondary = $record->getSecondaryAuthors();
-        $this->assertSame(count($secondary), 1);
+        $this->assertCount(1, $secondary);
         $this->assertTrue(in_array('Pandolfi, Claudia.', $secondary));
         $series = $record->getSeries();
-        $this->assertSame(count($series), 1);
+        $this->assertCount(1, $series);
         $this->assertEquals(
             'Vico, Giambattista, 1668-1744. Works. 1982 ;',
             $series[0]['name']
