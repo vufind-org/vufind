@@ -35,21 +35,21 @@ return RectorConfig::configure()
         PHPUnitSetList::ANNOTATIONS_TO_ATTRIBUTES,
     ])
     ->withRules([
-        RemoveExpectAnyFromMockRector::class,
-        GetMockBuilderGetMockToCreateMockRector::class,
-        UseSpecificWithMethodRector::class,
-        AssertEqualsToSameRector::class,
-        AssertInstanceOfComparisonRector::class,
-        YieldDataProviderRector::class,
-        ReplaceAtMethodWithDesiredMatcherRector::class,
-        AssertEqualsOrAssertSameFloatParameterToSpecificMethodsTypeRector::class,
-        AssertFalseStrposToContainsRector::class,
-        AssertNotOperatorRector::class,
         AssertCompareOnCountableWithMethodToAssertCountRector::class,
-        UseSpecificWillMethodRector::class,
+        AssertEqualsOrAssertSameFloatParameterToSpecificMethodsTypeRector::class,
+        AssertEqualsToSameRector::class,
+        AssertFalseStrposToContainsRector::class,
+        AssertInstanceOfComparisonRector::class,
+        AssertNotOperatorRector::class,
         FlipAssertRector::class,
+        GetMockBuilderGetMockToCreateMockRector::class,
         MatchAssertSameExpectedTypeRector::class,
+        RemoveExpectAnyFromMockRector::class,
+        ReplaceAtMethodWithDesiredMatcherRector::class,
         SingleWithConsecutiveToWithRector::class,
+        UseSpecificWillMethodRector::class,
+        UseSpecificWithMethodRector::class,
+        YieldDataProviderRector::class,
     ])
     ->withTypeCoverageLevel(0)
     ->withDeadCodeLevel(6)
