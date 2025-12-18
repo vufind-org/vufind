@@ -34,7 +34,6 @@ use VuFind\ILS\Connection;
 use VuFind\ILS\Logic\Holds;
 use VuFind\ILS\Logic\TitleHolds;
 
-use function count;
 use function in_array;
 
 /**

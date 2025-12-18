@@ -31,8 +31,6 @@ declare(strict_types=1);
 
 namespace VuFindTest\Mink;
 
-use function count;
-
 /**
  * OAI-PMH test class.
  *
