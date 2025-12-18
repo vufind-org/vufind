@@ -794,6 +794,7 @@ class GetThisLoader implements LoggerAwareInterface
 
     /**
      * Whether to display the template name in a HTML comment (default to true)
+     *
      * @return bool
      */
     public function commentTemplateName(): bool
