@@ -2,7 +2,7 @@
 # This file contains the settings for the GetThis feature
 # See Regex.yaml for comment related to regex
 
-# Either to display the copy number (next to the call number), default false
+# Whether to display the copy number (next to the call number), default false
 showCopyNumber: true
 
 templates:
