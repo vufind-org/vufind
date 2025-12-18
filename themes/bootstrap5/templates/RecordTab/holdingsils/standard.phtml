@@ -24,7 +24,7 @@
       <?php endif; ?>
     </th>
     <td>
-      <?php if (isset($holding['reserve']) && $holding['reserve'] == 'Y'): ?>
+      <?php if (($holding['reserve'] ?? 'N') == 'Y'): ?>
         <?=$this->schemaOrg()->getLink('http://schema.org/InStoreOnly', 'availability')?>
         <?=$this->transEsc('On Reserve - Ask at Circulation Desk')?><br>
       <?php endif; ?>
