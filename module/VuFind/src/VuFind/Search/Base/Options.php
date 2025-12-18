@@ -751,7 +751,7 @@ abstract class Options implements TranslatorAwareInterface
     /**
      * Get the default sort option for the specified search handler.
      *
-     * @param ?string $handler Search handler being used
+     * @param ?string $handler Search handler being used (null for default)
      *
      * @return string
      */
