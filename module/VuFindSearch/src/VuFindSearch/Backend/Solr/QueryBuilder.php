@@ -218,13 +218,13 @@ class QueryBuilder implements QueryBuilderInterface
      * Logical operators can be used, but not parentheses or field names.
      * The original query is returned for any non-supported case.
      *
-     * @param QueryInterface $query User query
+     * @param AbstractQuery $query User query
      *
-     * @return QueryInterface
+     * @return AbstractQuery
      */
-    protected function possiblyConvertMixedExactQueryIntoAdvanced($query)
+    protected function possiblyConvertMixedExactQueryIntoAdvanced(AbstractQuery $query): AbstractQuery
     {
-        if (! $query instanceof Query) {
+        if (!($query instanceof Query)) {
             return $query;
         }
         $handler = $query->getHandler();
