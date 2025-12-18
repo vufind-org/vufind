@@ -95,7 +95,8 @@ class ServerUrlHelperTest extends \PHPUnit\Framework\TestCase
     public static function urlsWithPathsProvider(): \Iterator
     {
         yield 'http, no port' => [ '', 'somehost', '/vufind/Record/12345', 'http://somehost/vufind/Record/12345' ];
-        yield 'http, port' => [ '', 'somehost:8080', '/vufind/Record/12345', 'http://somehost:8080/vufind/Record/12345'];
+        yield 'http, port' =>
+            [ '', 'somehost:8080', '/vufind/Record/12345', 'http://somehost:8080/vufind/Record/12345'];
         yield 'https, no port' => [ 'on', 'somehost', '/vufind/Record/12345', 'https://somehost/vufind/Record/12345'];
     }
 
