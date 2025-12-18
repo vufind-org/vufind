@@ -215,7 +215,7 @@ class QueryBuilder implements QueryBuilderInterface
     /**
      * Converts a simple query (Query) into an advanced one (QueryGroup) if part of it should be an exact query.
      * This only supports a single exact query (surrounded with quotes) combined with a non-exact query.
-     * Logical operators can be used, but not parenthesis or field names.
+     * Logical operators can be used, but not parentheses or field names.
      * The original query is returned for any non-supported case.
      *
      * @param QueryGroup|Query $query User query
