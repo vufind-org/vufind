@@ -6,7 +6,8 @@
 showCopyNumber: true
 
 templates:
-  # Elements here correspond to a template file within templates/get-this with .phtml being stripped from the end
+  # Elements here correspond to .phtml template files within templates/record/get-this
+  # (e.g. the holdings section configures templates/record/get-this/holdings.phtml)
   # Elements parameter, all parameters are optional :
   #   enabled: true/false, whether to enable the template
   #   view_variables: array of extra variables made available to the templates.
