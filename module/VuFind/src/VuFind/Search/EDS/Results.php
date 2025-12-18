@@ -81,13 +81,19 @@ class Results extends \VuFind\Search\Base\Results
     {
         $query  = $this->getParams()->getQuery();
         $allTerms = $query->getAllTerms();
-        if ($allTerms === '') {
-            $this->storeErrorResponse('empty_search_disallowed');
-            return;
-        }
         $limit  = $this->getParams()->getLimit();
         $offset = $this->getStartRecord() - 1;
         $params = $this->getParams()->getBackendParameters();
+        if ($allTerms === '') {
+            $hasLimiters = (bool)array_filter(
+                $params->get('filters') ?? [],
+                fn ($filter) => str_starts_with($filter, 'LIMIT')
+            );
+            if (!$hasLimiters) {
+                $this->storeErrorResponse('empty_search_disallowed');
+                return;
+            }
+        }
         $command = new SearchCommand(
             $this->backendId,
             $query,
