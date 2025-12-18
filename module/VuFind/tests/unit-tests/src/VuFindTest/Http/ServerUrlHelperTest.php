@@ -56,15 +56,13 @@ class ServerUrlHelperTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider to return in getBaseUrl tests.
      *
-     * @return array[]
+     * @return \Iterator<(int | string), array<mixed>>
      */
-    public static function getBaseUrlProvider(): array
+    public static function getBaseUrlProvider(): \Iterator
     {
-        return [
-            'http, no port' => [ '', 'somehost', 'http://somehost' ],
-            'http, port' => [ '', 'somehost:8080', 'http://somehost:8080'],
-            'https, no port' => [ 'on', 'somehost', 'https://somehost'],
-        ];
+        yield 'http, no port' => [ '', 'somehost', 'http://somehost' ];
+        yield 'http, port' => [ '', 'somehost:8080', 'http://somehost:8080'];
+        yield 'https, no port' => [ 'on', 'somehost', 'https://somehost'];
     }
 
     /**
@@ -92,15 +90,13 @@ class ServerUrlHelperTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider to return in getCurrentUrl and getUrlForPath tests.
      *
-     * @return array[]
+     * @return \Iterator<(int | string), array<mixed>>
      */
-    public static function urlsWithPathsProvider(): array
+    public static function urlsWithPathsProvider(): \Iterator
     {
-        return [
-            'http, no port' => [ '', 'somehost', '/vufind/Record/12345', 'http://somehost/vufind/Record/12345' ],
-            'http, port' => [ '', 'somehost:8080', '/vufind/Record/12345', 'http://somehost:8080/vufind/Record/12345'],
-            'https, no port' => [ 'on', 'somehost', '/vufind/Record/12345', 'https://somehost/vufind/Record/12345'],
-        ];
+        yield 'http, no port' => [ '', 'somehost', '/vufind/Record/12345', 'http://somehost/vufind/Record/12345' ];
+        yield 'http, port' => [ '', 'somehost:8080', '/vufind/Record/12345', 'http://somehost:8080/vufind/Record/12345'];
+        yield 'https, no port' => [ 'on', 'somehost', '/vufind/Record/12345', 'https://somehost/vufind/Record/12345'];
     }
 
     /**
