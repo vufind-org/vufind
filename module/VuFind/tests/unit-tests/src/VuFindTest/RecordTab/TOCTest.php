@@ -59,11 +59,12 @@ class TOCTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testIsActive.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function isActiveProvider(): array
+    public static function isActiveProvider(): \Iterator
     {
-        return ['Enabled' => ['foo', true], 'Not Enabled' => ['', false]];
+        yield 'Enabled' => ['foo', true];
+        yield 'Not Enabled' => ['', false];
     }
 
     /**

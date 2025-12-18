@@ -86,7 +86,7 @@ class RouteGeneratorTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
         ];
-        $this->assertEquals(
+        $this->assertSame(
             ['router' => ['routes' => $expected]],
             $config
         );
@@ -124,7 +124,7 @@ class RouteGeneratorTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
         ];
-        $this->assertEquals(
+        $this->assertSame(
             ['router' => ['routes' => $expected]],
             $config
         );
@@ -160,20 +160,6 @@ class RouteGeneratorTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
             ],
-            'route1-nontabaction' => [
-                'type' => 'Laminas\Router\Http\Segment',
-                'options' => [
-                    'route' => '/Controller1/[:id]/NonTabAction',
-                    'constraints' => [
-                        'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                    ],
-                    'defaults' => [
-                        'controller' => 'Controller1',
-                        'action' => 'NonTabAction',
-                    ],
-                ],
-            ],
             'route2' => [
                 'type' => 'Laminas\Router\Http\Segment',
                 'options' => [
@@ -186,6 +172,20 @@ class RouteGeneratorTest extends \PHPUnit\Framework\TestCase
                     'defaults' => [
                         'controller' => 'Controller2',
                         'action' => 'Home',
+                    ],
+                ],
+            ],
+            'route1-nontabaction' => [
+                'type' => 'Laminas\Router\Http\Segment',
+                'options' => [
+                    'route' => '/Controller1/[:id]/NonTabAction',
+                    'constraints' => [
+                        'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                    ],
+                    'defaults' => [
+                        'controller' => 'Controller1',
+                        'action' => 'NonTabAction',
                     ],
                 ],
             ],
@@ -205,7 +205,7 @@ class RouteGeneratorTest extends \PHPUnit\Framework\TestCase
             ],
         ];
 
-        $this->assertEquals(
+        $this->assertSame(
             ['router' => ['routes' => $expected]],
             $config
         );
@@ -247,34 +247,6 @@ class RouteGeneratorTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
             ],
-            'route1-nontabaction' => [
-                'type' => 'Laminas\Router\Http\Segment',
-                'options' => [
-                    'route' => '/Controller1/[:id]/NonTabAction',
-                    'constraints' => [
-                        'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                    ],
-                    'defaults' => [
-                        'controller' => 'Controller1',
-                        'action' => 'NonTabAction',
-                    ],
-                ],
-            ],
-            'route1-nontabactionextended' => [
-                'type' => 'Laminas\Router\Http\Segment',
-                'options' => [
-                    'route' => '/Controller1/[:id]/NonTabActionExtended',
-                    'constraints' => [
-                        'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
-                    ],
-                    'defaults' => [
-                        'controller' => 'Controller1',
-                        'action' => 'NonTabActionExtended',
-                    ],
-                ],
-            ],
             'route2' => [
                 'type' => 'Laminas\Router\Http\Segment',
                 'options' => [
@@ -290,6 +262,20 @@ class RouteGeneratorTest extends \PHPUnit\Framework\TestCase
                     ],
                 ],
             ],
+            'route1-nontabaction' => [
+                'type' => 'Laminas\Router\Http\Segment',
+                'options' => [
+                    'route' => '/Controller1/[:id]/NonTabAction',
+                    'constraints' => [
+                        'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                    ],
+                    'defaults' => [
+                        'controller' => 'Controller1',
+                        'action' => 'NonTabAction',
+                    ],
+                ],
+            ],
             'route2-nontabaction' => [
                 'type' => 'Laminas\Router\Http\Segment',
                 'options' => [
@@ -301,6 +287,20 @@ class RouteGeneratorTest extends \PHPUnit\Framework\TestCase
                     'defaults' => [
                         'controller' => 'Controller2',
                         'action' => 'NonTabAction',
+                    ],
+                ],
+            ],
+            'route1-nontabactionextended' => [
+                'type' => 'Laminas\Router\Http\Segment',
+                'options' => [
+                    'route' => '/Controller1/[:id]/NonTabActionExtended',
+                    'constraints' => [
+                        'controller' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                        'action' => '[a-zA-Z][a-zA-Z0-9_-]*',
+                    ],
+                    'defaults' => [
+                        'controller' => 'Controller1',
+                        'action' => 'NonTabActionExtended',
                     ],
                 ],
             ],
@@ -320,7 +320,7 @@ class RouteGeneratorTest extends \PHPUnit\Framework\TestCase
             ],
         ];
 
-        $this->assertEquals(
+        $this->assertSame(
             ['router' => ['routes' => $expected]],
             $config
         );

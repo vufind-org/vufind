@@ -67,7 +67,7 @@ class FavoriteFacetsTest extends \PHPUnit\Framework\TestCase
         $results = $this->getMockResults();
         $params = $results->getParams();
         $params->expects($this->once())->method('addFacet')
-            ->with($this->equalTo('tags'), $this->equalTo('Your Tags'), $this->equalTo(false));
+            ->with('tags', 'Your Tags', false);
         $this->getFavoriteFacets($results);
     }
 

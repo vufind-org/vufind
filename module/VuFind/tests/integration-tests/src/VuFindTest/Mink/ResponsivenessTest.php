@@ -49,14 +49,12 @@ final class ResponsivenessTest extends \VuFindTest\Integration\MinkTestCase
      * Data provider for testing elements that should be hidden in mobile, visible
      * on desktop.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function windowDimensionProvider(): array
+    public static function windowDimensionProvider(): \Iterator
     {
-        return [
-            'mobile' => [500, 500, ['bulk' => false, 'offcanvas' => true]],
-            'desktop' => [1280, 768, ['bulk' => true, 'offcanvas' => false]],
-        ];
+        yield 'mobile' => [500, 500, ['bulk' => false, 'offcanvas' => true]];
+        yield 'desktop' => [1280, 768, ['bulk' => true, 'offcanvas' => false]];
     }
 
     /**

@@ -201,27 +201,25 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testPopovers
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function popoversProvider(): array
+    public static function popoversProvider(): \Iterator
     {
-        return [
-            'different records (weird IDs)' => [
-                'building:"weird_ids.mrc"',
-                'hashes#coming@ya',
-                'Octothorpes: Why not?',
-                'dollar$ign/slashcombo',
-                'Of Money and Slashes',
-                null,
-            ],
-            'same record in two channels' => [
-                'id:017791359-1',
-                '017791359-1',
-                'Fake Record 1 with multiple relators/',
-                '017791359-1',
-                'Fake Record 1 with multiple relators/',
-                1,
-            ],
+        yield 'different records (weird IDs)' => [
+            'building:"weird_ids.mrc"',
+            'hashes#coming@ya',
+            'Octothorpes: Why not?',
+            'dollar$ign/slashcombo',
+            'Of Money and Slashes',
+            null,
+        ];
+        yield 'same record in two channels' => [
+            'id:017791359-1',
+            '017791359-1',
+            'Fake Record 1 with multiple relators/',
+            '017791359-1',
+            'Fake Record 1 with multiple relators/',
+            1,
         ];
     }
 
@@ -295,15 +293,13 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testILSChannel().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function ilsChannelProvider(): array
+    public static function ilsChannelProvider(): \Iterator
     {
-        return [
-            'New ILS Items' => ['newilsitems', 'New Items'],
-            'Recently Returned' => ['recentlyreturned', 'Recently Returned'],
-            'Trending ILS Items' => ['trendingilsitems', 'Trending Items'],
-        ];
+        yield 'New ILS Items' => ['newilsitems', 'New Items'];
+        yield 'Recently Returned' => ['recentlyreturned', 'Recently Returned'];
+        yield 'Trending ILS Items' => ['trendingilsitems', 'Trending Items'];
     }
 
     /**

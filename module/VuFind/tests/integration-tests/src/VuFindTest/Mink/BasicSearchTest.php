@@ -91,14 +91,12 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testDefaultTopPagination
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function topPaginationProvider(): array
+    public static function topPaginationProvider(): \Iterator
     {
-        return [
-            [false],
-            [true],
-        ];
+        yield [false];
+        yield [true];
     }
 
     /**

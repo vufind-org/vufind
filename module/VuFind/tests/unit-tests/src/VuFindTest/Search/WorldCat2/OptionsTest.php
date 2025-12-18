@@ -52,7 +52,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
     public function testGetTermsLimitWithConfiguration(): void
     {
         $config = ['General' => ['terms_limit' => 5]];
-        $this->assertEquals(5, $this->getOptions($config)->getQueryTermsLimit());
+        $this->assertSame(5, $this->getOptions($config)->getQueryTermsLimit());
     }
 
     /**
@@ -62,7 +62,7 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetTermsLimitWithDefault(): void
     {
-        $this->assertEquals(30, $this->getOptions()->getQueryTermsLimit());
+        $this->assertSame(30, $this->getOptions()->getQueryTermsLimit());
     }
 
     /**

@@ -159,6 +159,7 @@ VuFind.register('embedded', function embedded() {
             longNode.collapse('show');
             // Load first tab
             if (tabid) {
+              document.getElementById(tabid).click();
               ajaxLoadTab(tabid, true);
             } else {
               var $firstTab = $(longNode).find('.list-tab-toggle.active');

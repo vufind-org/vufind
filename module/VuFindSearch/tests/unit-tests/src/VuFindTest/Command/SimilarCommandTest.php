@@ -59,8 +59,8 @@ class SimilarCommandTest extends TestCase
             ->willReturn($backendId);
         $backend->expects($this->once())->method('similar')
             ->with(
-                $this->equalTo('id'),
-                $this->equalTo($params)
+                'id',
+                $params
             )->willReturn('result');
         $command = $this->getCommand();
         $this->assertEquals('result', $command->execute($backend)->getResult());

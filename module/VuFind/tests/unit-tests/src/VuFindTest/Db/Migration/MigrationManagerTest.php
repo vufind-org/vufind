@@ -110,7 +110,7 @@ class MigrationManagerTest extends \PHPUnit\Framework\TestCase
         );
         $manager = $this->getMockMigrationManager(['getAppliedMigrations'], loader: $loader);
         $manager->method('getAppliedMigrations')->willReturn([]);
-        $this->assertEquals(
+        $this->assertSame(
             [
                 '/fake/path/9.0/001-bar.sql',
                 '/fake/path/9.0/002-baz.sql',
@@ -166,7 +166,7 @@ class MigrationManagerTest extends \PHPUnit\Framework\TestCase
         $manager->expects($this->once())->method('cleanUpMigrationEvents')->with($connection, $shortName)
             ->willReturn('cleanup');
         $result = $manager->applyMigration($basePath . '/' . $shortName, $connection);
-        $this->assertEquals(
+        $this->assertSame(
             <<<EXPECTED_RESULT
                 log 10.1/001-dummy.sql : start
                 log 10.1/001-dummy.sql : writing chunk 0
@@ -190,7 +190,7 @@ class MigrationManagerTest extends \PHPUnit\Framework\TestCase
         $loader = $this->createMock(MigrationLoader::class);
         $loader->expects($this->once())->method('getMigrationDirForPlatform')->willReturn('/base/path/foo');
         $manager = $this->getMockMigrationManager([], loader: $loader);
-        $this->assertEquals('10.0/001-foo.sql', $manager->getShortMigrationName('/base/path/foo/10.0/001-foo.sql'));
+        $this->assertSame('10.0/001-foo.sql', $manager->getShortMigrationName('/base/path/foo/10.0/001-foo.sql'));
     }
 
     /**
@@ -208,6 +208,6 @@ class MigrationManagerTest extends \PHPUnit\Framework\TestCase
         $manager->expects($this->once())->method('getShortMigrationName')->with($longName)->willReturn($shortName);
         $manager->expects($this->once())->method('logMigrationEvent')->with($connection, $shortName, 'success')
             ->willReturn($resultSql);
-        $this->assertEquals($resultSql, $manager->markMigrationApplied($longName, $connection));
+        $this->assertSame($resultSql, $manager->markMigrationApplied($longName, $connection));
     }
 }

@@ -53,7 +53,7 @@ class JumpToRecordTest extends \VuFindTest\Integration\MinkTestCase
 
         $page = $this->performSearch('id:testbug2');
 
-        $this->assertEquals(
+        $this->assertSame(
             'La congiura dei Principi Napoletani 1701 : (prima e seconda stesura) /',
             trim($this->findCssAndGetText($page, 'h1'))
         );

@@ -57,9 +57,9 @@ class TermsCommandTest extends TestCase
             ->willReturn($backendId);
         $backend->expects($this->once())->method('terms')
             ->with(
-                $this->equalTo('field'),
-                $this->equalTo('from'),
-                $this->equalTo(10)
+                'field',
+                'from',
+                10
             )->willReturn('result');  // not a realistic value!
         $command = new TermsCommand($backendId, 'field', 'from', 10);
         $this->assertEquals('result', $command->execute($backend)->getResult());

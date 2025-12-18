@@ -45,15 +45,13 @@ class ScopeRepositoryTest extends AbstractTokenRepositoryTestCase
     /**
      * Data provider for testScopeRepository
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getTestScopeRepositoryData(): array
+    public static function getTestScopeRepositoryData(): \Iterator
     {
-        return [
-            ['openid', 'OpenID', false, false],
-            ['id', 'Unique ID', false, false],
-            ['phone', 'Phone', false, true],
-        ];
+        yield ['openid', 'OpenID', false, false];
+        yield ['id', 'Unique ID', false, false];
+        yield ['phone', 'Phone', false, true];
     }
 
     /**
@@ -95,7 +93,7 @@ class ScopeRepositoryTest extends AbstractTokenRepositoryTestCase
         $this->assertEquals($ils, $scope->getILSNeeded());
 
         $scopes = ['openid', 'id', 'phone'];
-        $this->assertEquals(
+        $this->assertSame(
             $scopes,
             $repo->finalizeScopes($scopes, 'AuthCode', $this->createClientEntity())
         );

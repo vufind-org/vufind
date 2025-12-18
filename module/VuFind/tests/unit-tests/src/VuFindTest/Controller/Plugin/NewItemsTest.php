@@ -72,7 +72,7 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
     {
         $flash = $this->createMock(\Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger::class);
         $flash->expects($this->once())->method('addMessage')
-            ->with($this->equalTo('too_many_new_items'), $this->equalTo('info'));
+            ->with('too_many_new_items', 'info');
         $config = new Config(['result_pages' => 10]);
         $newItems = new NewItems($config);
         $bibs = $newItems->getBibIDsFromCatalog(
@@ -94,7 +94,7 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
     {
         $catalog = $this->createMock(\VuFind\ILS\Connection::class);
         $catalog->expects($this->once())->method('checkCapability')
-            ->with($this->equalTo('getFunds'))->willReturn(true);
+            ->with('getFunds')->willReturn(true);
         $catalog->expects($this->once())->method('__call')
             ->willReturnCallback(
                 fn ($method) => $method === 'getFunds' ? ['a', 'b', 'c'] : null

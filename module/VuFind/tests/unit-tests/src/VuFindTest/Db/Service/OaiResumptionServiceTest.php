@@ -101,7 +101,7 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
         $pluginManager = $this->createMock(PluginManager::class);
         if ($setExpectation) {
             $pluginManager->expects($this->once())->method('get')
-                ->with($this->equalTo(OaiResumptionEntityInterface::class))
+                ->with(OaiResumptionEntityInterface::class)
                 ->willReturn(new OaiResumption());
         }
         return $pluginManager;
@@ -181,7 +181,7 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
 
         $query = $this->createMock(\Doctrine\ORM\AbstractQuery::class);
         $entityManager->expects($this->once())->method('createQuery')
-            ->with($this->equalTo($queryStmt))
+            ->with($queryStmt)
             ->willReturn($query);
         $oaiResumption = $this->createMock(\VuFind\Db\Entity\OaiResumption::class);
         $query->expects($this->once())->method('getOneOrNullResult')
@@ -195,17 +195,15 @@ class OaiResumptionServiceTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provide for testEncodeParams()
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function encodeParamsProvider(): array
+    public static function encodeParamsProvider(): \Iterator
     {
         // The expected result is encoded in the test below; both data sets represent the
         // same values, but in different orders. We want to be sure the result is the same
         // regardless of order.
-        return [
-            'sorted keys' => [['cursor' => 20, 'cursorMark' => 100, 'foo' => 'bar']],
-            'unsorted keys' => [['foo' => 'bar', 'cursorMark' => 100, 'cursor' => 20]],
-        ];
+        yield 'sorted keys' => [['cursor' => 20, 'cursorMark' => 100, 'foo' => 'bar']];
+        yield 'unsorted keys' => [['foo' => 'bar', 'cursorMark' => 100, 'cursor' => 20]];
     }
 
     /**
