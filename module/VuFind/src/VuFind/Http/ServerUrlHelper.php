@@ -56,18 +56,34 @@ class ServerUrlHelper
     }
 
     /**
-     * Calls Laminas ServerUrl helper to return a fully qualified URL based on the current host.
-     *
-     * @param string|bool|null $requestUri [optional] if true, the request URI
-     *                                     found in $_SERVER will be appended
-     *                                     as a path. If a string is given, it
-     *                                     will be appended as a path. Default
-     *                                     is to not append any path.
+     * Return the base URL of the current host.
      *
      * @return string
      */
-    public function getServerUrl(string|bool|null $requestUri = null): string
+    public function getBaseUrl(): string
     {
-        return ($this->serverUrlHelper)($requestUri);
+        return ($this->serverUrlHelper)(null);
+    }
+
+    /**
+     * Return the fully qualified request URL.
+     *
+     * @return string
+     */
+    public function getCurrentUrl(): string
+    {
+        return ($this->serverUrlHelper)(true);
+    }
+
+    /**
+     * Return the fully qualified URL for the given path on the current host.
+     *
+     * @param string $path A path beginning at the root, with starting slash.
+     *
+     * @return string
+     */
+    public function getUrlForPath(string $path): string
+    {
+        return ($this->serverUrlHelper)($path);
     }
 }
