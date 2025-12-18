@@ -300,6 +300,8 @@ VuFind.register('searchbox_controls', function SearchboxControls() {
           },
           dataType: 'json',
           success: function autocompleteJSON(json) {
+            // Make the query regular-expression safe so we can do case-insensitive matching.
+            // TODO: consider using RegExp.escape() here when it is more widely available.
             const regex = new RegExp(query.replace(/[-/\\^$*+?.()|[\]{}]/g, '\\$&'), "ig");
             const highlighted = json.data.suggestions.map(
               (item) => ({
