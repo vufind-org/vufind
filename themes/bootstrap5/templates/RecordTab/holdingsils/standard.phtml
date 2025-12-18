@@ -5,7 +5,7 @@
     $checkILLRequest = $holding['checkILLRequest'] ?? false;
     $availabilityStatus = $holding['availability'];
     $getThisLoader = $tab->getGetThisLoader();
-    $getThisEnabled = $getThisLoader !== null && $getThisLoader->areItemsSupported([$holding]);
+    $getThisEnabled = $getThisLoader?->areItemsSupported([$holding]);
     if ($getThisEnabled) {
         $getThisLoader->setItems([$holding]);
         $getThisLoader->setRecord($this->record($this->driver));
