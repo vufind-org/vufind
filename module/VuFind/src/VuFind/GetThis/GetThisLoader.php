@@ -792,6 +792,10 @@ class GetThisLoader implements LoggerAwareInterface
         return false;
     }
 
+    /**
+     * Whether to display the template name in a HTML comment (default to true)
+     * @return bool
+     */
     public function commentTemplateName(): bool
     {
         return $this->config['commentTemplateName'] ?? true;
