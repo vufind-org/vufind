@@ -47,15 +47,13 @@ class WebSearchTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testWebSearch()
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function webSearchProvider(): array
+    public static function webSearchProvider(): \Iterator
     {
-        return [
-            'blank search' => ['', 3, '', ['Fact', 'Fantasy', 'Fiction']],
-            'search in full text' => ['"second record"', 1, 'second record', ['Fact']],
-            'search in description' => ['three', 1, 'three', ['Fantasy']],
-        ];
+        yield 'blank search' => ['', 3, '', ['Fact', 'Fantasy', 'Fiction']];
+        yield 'search in full text' => ['"second record"', 1, 'second record', ['Fact']];
+        yield 'search in description' => ['three', 1, 'three', ['Fantasy']];
     }
 
     /**
@@ -84,7 +82,7 @@ class WebSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
 
         // Confirm the result count:
-        $this->assertEquals(
+        $this->assertSame(
             $expectedCount,
             intval($this->findCssAndGetText($page, '.js-search-stats strong', index: 1))
         );

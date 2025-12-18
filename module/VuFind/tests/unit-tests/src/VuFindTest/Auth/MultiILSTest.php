@@ -143,7 +143,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
         $response = [];
         $driver = $this->getMockMultiBackend();
         $driver->expects($this->once())->method('patronLogin')
-            ->with($this->equalTo('ils1.testuser'), $this->equalTo('testpass'))
+            ->with('ils1.testuser', 'testpass')
             ->willReturn($response);
         $this->getMultiILS($driver)->authenticate($this->getLoginRequest());
     }
@@ -161,7 +161,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
         ];
         $driver = $this->getMockMultiBackend();
         $driver->expects($this->once())->method('patronLogin')
-            ->with($this->equalTo('ils1.testuser'), $this->equalTo('testpass'))
+            ->with('ils1.testuser', 'testpass')
             ->willReturn($response);
         $mockUser = $this->getMockUser();
         $mockUser->expects($this->once())->method('setCatUsername')->with('testuser');
@@ -188,7 +188,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
         ];
         $driver = $this->getMockMultiBackend();
         $driver->expects($this->once())->method('patronLogin')
-            ->with($this->equalTo('ils1.testuser'), $this->equalTo('testpass'))
+            ->with('ils1.testuser', 'testpass')
             ->willReturn($response);
         $auth = $this->getMultiILS($driver);
         // Configure the authenticator to look for a cat_id; since there is no

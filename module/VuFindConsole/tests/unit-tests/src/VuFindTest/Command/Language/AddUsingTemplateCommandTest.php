@@ -95,24 +95,24 @@ class AddUsingTemplateCommandTest extends \PHPUnit\Framework\TestCase
         $expectedPath = realpath($this->languageFixtureDir) . '/foo/en.ini';
         $normalizer = $this->getMockNormalizer();
         $normalizer->expects($this->once())->method('normalizeFile')
-            ->with($this->equalTo($expectedPath));
+            ->with($expectedPath);
         $reader = $this->getMockReader();
         $reader->expects($this->once())->method('getTextDomain')
-            ->with($this->equalTo($expectedPath), $this->equalTo(false))
+            ->with($expectedPath, false)
             ->willReturn(['bar' => 'baz']);
         $command = $this->getMockCommand($normalizer, $reader);
         $command->expects($this->once())->method('addLineToFile')
             ->with(
-                $this->equalTo($expectedPath),
-                $this->equalTo('xyzzy'),
-                $this->equalTo('baz-baz')
+                $expectedPath,
+                'xyzzy',
+                'baz-baz'
             );
         $commandTester = new CommandTester($command);
         $commandTester->execute(
             ['template' => '||foo::bar||-||foo::bar||', 'target' => 'foo::xyzzy']
         );
-        $this->assertEquals("Processing en.ini...\n", $commandTester->getDisplay());
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame("Processing en.ini...\n", $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**

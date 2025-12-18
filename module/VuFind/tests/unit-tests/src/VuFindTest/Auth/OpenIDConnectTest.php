@@ -62,37 +62,35 @@ class OpenIDConnectTest extends \PHPUnit\Framework\TestCase
     /**
      * GetAttributeMappings test data provider
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getAttributesMappingsProvider(): array
+    public static function getAttributesMappingsProvider(): \Iterator
     {
-        return [
-            'User configured attributes' => [
-                [
-                    'Default' => [
-                        'url' => 'openidconnect.provider.url',
-                        'client_id' => 'test_cliend_id',
-                        'client_secret' => 'test_client_secret',
-                        'attributes' => [
-                            'firstname' => 'test_given_name',
-                            'lastname' => 'test_family_name',
-                            'email' => 'test_email',
-                        ],
+        yield 'User configured attributes' => [
+            [
+                'Default' => [
+                    'url' => 'openidconnect.provider.url',
+                    'client_id' => 'test_cliend_id',
+                    'client_secret' => 'test_client_secret',
+                    'attributes' => [
+                        'firstname' => 'test_given_name',
+                        'lastname' => 'test_family_name',
+                        'email' => 'test_email',
                     ],
                 ],
-                [
-                    'firstname' => 'test_given_name',
-                    'lastname' => 'test_family_name',
-                    'email' => 'test_email',
-                ],
             ],
-            'Default attributes' => [
-                [],
-                [
-                    'firstname' => 'given_name',
-                    'lastname' => 'family_name',
-                    'email' => 'email',
-                ],
+            [
+                'firstname' => 'test_given_name',
+                'lastname' => 'test_family_name',
+                'email' => 'test_email',
+            ],
+        ];
+        yield 'Default attributes' => [
+            [],
+            [
+                'firstname' => 'given_name',
+                'lastname' => 'family_name',
+                'email' => 'email',
             ],
         ];
     }

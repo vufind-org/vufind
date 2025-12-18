@@ -53,7 +53,7 @@ class OptimizeDocumentTest extends TestCase
     public function testAsXML()
     {
         $document = new OptimizeDocument(false);
-        $this->assertEquals(
+        $this->assertSame(
             'text/xml; charset=UTF-8',
             $document->getContentType()
         );

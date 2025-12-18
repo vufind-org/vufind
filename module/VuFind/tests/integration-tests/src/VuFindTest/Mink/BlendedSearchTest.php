@@ -121,36 +121,34 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testSearch
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getSearchData(): array
+    public static function getSearchData(): \Iterator
     {
-        return [
-            [
-                ['page' => 1],
-                'Blender/Results',
-                'Blended',
-            ],
-            [
-                ['page' => 2],
-                'Blender/Results',
-                'Blended',
-            ],
-            [
-                ['page' => 1],
-                'Search/Blended', // legacy path
-                'Blended',
-            ],
-            [
-                ['page' => 2],
-                'Search/Blended', // legacy path
-                'Blended',
-            ],
-            [
-                ['page' => 1],
-                'Blender2/Results',
-                'Also Blended',
-            ],
+        yield [
+            ['page' => 1],
+            'Blender/Results',
+            'Blended'
+        ];
+        yield [
+            ['page' => 2],
+            'Blender/Results',
+            'Blended'
+        ];
+        yield [
+            ['page' => 1],
+            'Search/Blended', // legacy path
+            'Blended'
+        ];
+        yield [
+            ['page' => 2],
+            'Search/Blended', // legacy path
+            'Blended'
+        ];
+        yield [
+            ['page' => 1],
+            'Blender2/Results',
+            'Also Blended',
         ];
     }
 

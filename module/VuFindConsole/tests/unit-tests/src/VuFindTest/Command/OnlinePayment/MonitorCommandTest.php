@@ -95,7 +95,7 @@ class MonitorCommandTest extends \PHPUnit\Framework\TestCase
         $this->assertCount(2, $results);
         $this->assertStringEndsWith('Online payment monitor started', $results[0]);
         $this->assertStringEndsWith('Online payment monitor completed', $results[1]);
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**

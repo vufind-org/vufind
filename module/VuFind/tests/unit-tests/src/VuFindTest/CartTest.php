@@ -239,7 +239,7 @@ class CartTest extends \PHPUnit\Framework\TestCase
     {
         $this->loader->expects($this->once())
             ->method('loadBatch')
-            ->with($this->equalTo(['Solr|a']))
+            ->with(['Solr|a'])
             ->willReturn('success');
         $cart = $this->getCart();
         $cart->addItem('Solr|a');
