@@ -62,11 +62,12 @@ class HoldingsWorldCat2Test extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testIsActive.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function isActiveProvider(): array
+    public static function isActiveProvider(): \Iterator
     {
-        return ['Enabled' => ['foo', true], 'Not Enabled' => ['', false]];
+        yield 'Enabled' => ['foo', true];
+        yield 'Not Enabled' => ['', false];
     }
 
     /**
@@ -109,7 +110,7 @@ class HoldingsWorldCat2Test extends \PHPUnit\Framework\TestCase
         $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
         $commandObj->method('getResult')->willReturn(true);
         $checkCommand = function ($command) {
-            $this->assertEquals($command::class, \VuFindSearch\Backend\WorldCat2\Command\GetHoldingsCommand::class);
+            $this->assertSame($command::class, \VuFindSearch\Backend\WorldCat2\Command\GetHoldingsCommand::class);
             $expectedParams = new ParamBag(
                 [
                     'oclcNumber' => 'bar',

@@ -310,16 +310,16 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($facetList[0]['isApplied']);
         $this->assertFalse($facetList[0]['hasAppliedChildren']);
         $this->assertEquals(
-            $facetList[0]['children'][0]['value'],
-            '1/Book/BookPart/'
+            '1/Book/BookPart/',
+            $facetList[0]['children'][0]['value']
         );
         $this->assertEquals(1, $facetList[0]['children'][0]['level']);
         $this->assertFalse($facetList[0]['children'][0]['isApplied']);
         $this->assertEquals('0/AV/', $facetList[1]['value']);
         $this->assertEquals('0/Audio/', $facetList[2]['value']);
         $this->assertEquals(
-            $facetList[2]['children'][0]['value'],
-            '1/Audio/Spoken/'
+            '1/Audio/Spoken/',
+            $facetList[2]['children'][0]['value']
         );
         $this->assertEquals('1/Audio/Music/', $facetList[2]['children'][1]['value']);
 
@@ -332,8 +332,8 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($facetList[0]['isApplied']);
         $this->assertTrue($facetList[0]['hasAppliedChildren']);
         $this->assertEquals(
-            $facetList[0]['children'][0]['value'],
-            '1/Book/BookPart/'
+            '1/Book/BookPart/',
+            $facetList[0]['children'][0]['value']
         );
         $this->assertEquals(true, $facetList[0]['children'][0]['isApplied']);
     }
@@ -395,34 +395,34 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
     public function testFormatDisplayText(): void
     {
         $this->assertEquals(
-            $this->helper->formatDisplayText('0/Sound/')->getDisplayString(),
-            'Sound'
+            'Sound',
+            $this->helper->formatDisplayText('0/Sound/')->getDisplayString()
         );
         $this->assertEquals(
-            $this->helper->formatDisplayText('1/Sound/Noisy/')->getDisplayString(),
-            'Noisy'
+            'Noisy',
+            $this->helper->formatDisplayText('1/Sound/Noisy/')->getDisplayString()
         );
         $this->assertEquals(
+            'Sound/Noisy',
             $this->helper->formatDisplayText('1/Sound/Noisy/', true)
-                ->getDisplayString(),
-            'Sound/Noisy'
+                ->getDisplayString()
         );
         $this->assertEquals(
+            'Sound - Noisy',
             $this->helper->formatDisplayText('1/Sound/Noisy/', true, ' - ')
-                ->getDisplayString(),
-            'Sound - Noisy'
+                ->getDisplayString()
         );
         $this->assertEquals(
-            $this->helper->formatDisplayText('0/Sound/'),
-            '0/Sound/'
+            '0/Sound/',
+            $this->helper->formatDisplayText('0/Sound/')
         );
-        $this->assertEquals(
-            (string)$this->helper->formatDisplayText('1/Sound/Noisy/', true),
-            '1/Sound/Noisy/'
+        $this->assertSame(
+            '1/Sound/Noisy/',
+            (string)$this->helper->formatDisplayText('1/Sound/Noisy/', true)
         );
-        $this->assertEquals(
-            (string)$this->helper->formatDisplayText('1/Sound/Noisy/', true, ' - '),
-            '1/Sound/Noisy/'
+        $this->assertSame(
+            '1/Sound/Noisy/',
+            (string)$this->helper->formatDisplayText('1/Sound/Noisy/', true, ' - ')
         );
     }
 
@@ -465,14 +465,14 @@ class HierarchicalFacetHelperTest extends \PHPUnit\Framework\TestCase
         $result = $this->helper->getFilterStringParts('0/Foo/');
         $this->assertIsArray($result);
         $this->assertCount(1, $result);
-        $this->assertEquals('0/Foo/', (string)$result[0]);
+        $this->assertSame('0/Foo/', (string)$result[0]);
         $this->assertEquals('Foo', $result[0]->getDisplayString());
 
         $result = $this->helper->getFilterStringParts('1/Foo/Bar/');
         $this->assertIsArray($result);
         $this->assertCount(2, $result);
-        $this->assertEquals('0/Foo/', (string)$result[0]);
-        $this->assertEquals('1/Foo/Bar/', (string)$result[1]);
+        $this->assertSame('0/Foo/', (string)$result[0]);
+        $this->assertSame('1/Foo/Bar/', (string)$result[1]);
         $this->assertEquals('Foo', $result[0]->getDisplayString());
         $this->assertEquals('Bar', $result[1]->getDisplayString());
 

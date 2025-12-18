@@ -48,17 +48,15 @@ class MigrationLoaderTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetMigrationDirForPlatform().
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getMigrationDirForPlatformProvider(): array
+    public static function getMigrationDirForPlatformProvider(): \Iterator
     {
         $basePath = APPLICATION_PATH . '/module/VuFind/sql/migrations';
-        return [
-            ['postgres', "$basePath/pgsql"],
-            ['pgsql', "$basePath/pgsql"],
-            ['mysql', "$basePath/mysql"],
-            ['mariadb', "$basePath/mysql"],
-        ];
+        yield ['postgres', "$basePath/pgsql"];
+        yield ['pgsql', "$basePath/pgsql"];
+        yield ['mysql', "$basePath/mysql"];
+        yield ['mariadb', "$basePath/mysql"];
     }
 
     /**
@@ -73,22 +71,20 @@ class MigrationLoaderTest extends \PHPUnit\Framework\TestCase
     public function testGetMigrationDirForPlatform(string $platform, string $expectedDir): void
     {
         $loader = new MigrationLoader();
-        $this->assertEquals($expectedDir, $loader->getMigrationDirForPlatform($platform));
+        $this->assertSame($expectedDir, $loader->getMigrationDirForPlatform($platform));
     }
 
     /**
      * Data provider for testGetMigrationSubdirectoriesMatchingVersion().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function getMigrationSubdirectoriesMatchingVersionProvider(): array
+    public static function getMigrationSubdirectoriesMatchingVersionProvider(): \Iterator
     {
-        return [
-            ['10.1', ['10.1', '11.0', '11.1']],
-            ['11.0', ['11.0', '11.1']],
-            ['11.1', ['11.1']],
-            ['11.2', []],
-        ];
+        yield ['10.1', ['10.1', '11.0', '11.1']];
+        yield ['11.0', ['11.0', '11.1']];
+        yield ['11.1', ['11.1']];
+        yield ['11.2', []];
     }
 
     /**
@@ -137,7 +133,7 @@ class MigrationLoaderTest extends \PHPUnit\Framework\TestCase
         $statement1 = "select * from table where field='has;semicolon';";
         $statement2 = 'drop table foo;';
         $sql = "$statement1\n$statement2\r$statement1     \n$statement2";
-        $this->assertEquals(
+        $this->assertSame(
             [$statement1, $statement2, $statement1, $statement2],
             array_map(
                 fn ($line) => "$line;", // restore semicolons for easier assertion

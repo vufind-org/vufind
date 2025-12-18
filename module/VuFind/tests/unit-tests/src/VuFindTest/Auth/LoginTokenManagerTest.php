@@ -94,7 +94,7 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
         $mockToken = $this->getMockLoginToken();
         $userService = $this->createMock(UserServiceInterface::class);
         $userService->expects($this->once())->method('getUserById')
-            ->with($this->equalTo(0))
+            ->with(0)
             ->willReturn($this->getMockUser());
         $tokenTable = $this->getMockLoginTokenService();
         $tokenTable->expects($this->once())->method('matchToken')

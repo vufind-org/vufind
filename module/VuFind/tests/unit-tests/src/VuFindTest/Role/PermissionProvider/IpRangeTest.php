@@ -74,7 +74,7 @@ class IpRangeTest extends \PHPUnit\Framework\TestCase
         $ipAddr = '123.124.125.126';
         $utils = $this->createMock(IpAddressUtils::class);
         $utils->expects($this->once())->method('isInRange')
-            ->with($this->equalTo($ipAddr), $this->equalTo([$ipAddr]))
+            ->with($ipAddr, [$ipAddr])
             ->willReturn(true);
         $provider = $this->getPermissionProvider($ipAddr, $utils);
         $this->assertEquals(
@@ -101,7 +101,7 @@ class IpRangeTest extends \PHPUnit\Framework\TestCase
         ];
         $utils = $this->createMock(IpAddressUtils::class);
         $utils->expects($this->once())->method('isInRange')
-            ->with($this->equalTo($ipAddr), $this->equalTo($options))
+            ->with($ipAddr, $options)
             ->willReturn(false);
         $provider = $this->getPermissionProvider($ipAddr, $utils);
         $this->assertEquals([], $provider->getPermissions($options));

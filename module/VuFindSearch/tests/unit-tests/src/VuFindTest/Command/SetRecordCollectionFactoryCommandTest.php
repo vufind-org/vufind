@@ -57,7 +57,7 @@ class SetRecordCollectionFactoryCommandTest extends TestCase
         $backend->expects($this->once())->method('getIdentifier')
             ->willReturn($backendId);
         $backend->expects($this->once())->method('setRecordCollectionFactory')
-            ->with($this->equalTo($factory));
+            ->with($factory);
         $command = new SetRecordCollectionFactoryCommand($backendId, $factory);
         $this->assertEmpty($command->execute($backend)->getResult());  // void method
     }

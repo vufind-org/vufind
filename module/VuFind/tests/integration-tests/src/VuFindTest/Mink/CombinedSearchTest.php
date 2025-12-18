@@ -171,16 +171,14 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for different combinations of AJAX columns
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function ajaxCombinationsProvider(): array
+    public static function ajaxCombinationsProvider(): \Iterator
     {
-        return [
-            'no ajax' => [false, false],
-            'left ajax' => [true, false],
-            'right ajax' => [false, true],
-            'all ajax' => [true, true],
-        ];
+        yield 'no ajax' => [false, false];
+        yield 'left ajax' => [true, false];
+        yield 'right ajax' => [false, true];
+        yield 'all ajax' => [true, true];
     }
 
     /**
@@ -278,14 +276,12 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testJumpMenu()
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function jumpMenuProvider(): array
+    public static function jumpMenuProvider(): \Iterator
     {
-        return [
-            'anchor mode' => ['anchor'],
-            'link mode' => ['link'],
-        ];
+        yield 'anchor mode' => ['anchor'];
+        yield 'link mode' => ['link'];
     }
 
     /**

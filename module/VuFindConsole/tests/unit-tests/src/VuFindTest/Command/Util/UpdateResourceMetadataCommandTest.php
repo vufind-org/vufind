@@ -55,19 +55,17 @@ class UpdateResourceMetadataCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testUpdate
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function updateProvider(): array
+    public static function updateProvider(): \Iterator
     {
-        return [
-            [
-                [],
-                [null, 100, null, []],
-            ],
-            [
-                ['--min-age' => '30', '--backend' => ['solr'], '--batch' => '10'],
-                [null, 10, 30, ['solr']],
-            ],
+        yield [
+            [],
+            [null, 100, null, []],
+        ];
+        yield [
+            ['--min-age' => '30', '--backend' => ['solr'], '--batch' => '10'],
+            [null, 10, 30, ['solr']],
         ];
     }
 
@@ -133,8 +131,8 @@ class UpdateResourceMetadataCommandTest extends \PHPUnit\Framework\TestCase
         );
         $commandTester = new CommandTester($command);
         $commandTester->execute($commandParams);
-        $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals(
+        $this->assertSame(0, $commandTester->getStatusCode());
+        $this->assertSame(
             "Updating resource metadata\n1 records updated (0 redirects), 0 records missing\n"
             . "Resource metadata update completed\n",
             $commandTester->getDisplay()

@@ -140,7 +140,7 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
         $pluginManager = $this->createMock(\VuFind\Db\Entity\PluginManager::class);
         if ($setExpectation) {
             $pluginManager->method('get')
-                ->with($this->equalTo(AccessToken::class))
+                ->with(AccessToken::class)
                 ->willReturn(new AccessToken());
         }
         return $pluginManager;
@@ -330,7 +330,7 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
         $mockUserService
             ->method('getUserByField')
             ->willReturnCallback(function (string $fieldName, $fieldValue) {
-                $this->assertEquals('id', $fieldName);
+                $this->assertSame('id', $fieldName);
                 return $this->createMockUserEntity($fieldValue, 'test');
             });
 

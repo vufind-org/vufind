@@ -125,11 +125,12 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetBreadcrumbParams().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function getBreadcrumbParamsProvider(): array
+    public static function getBreadcrumbParamsProvider(): \Iterator
     {
-        return ['empty' => [''], 'non-empty' => ['foo']];
+        yield 'empty' => [''];
+        yield 'non-empty' => ['foo'];
     }
 
     /**

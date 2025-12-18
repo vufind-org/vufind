@@ -69,13 +69,13 @@ class Office365Test extends \PHPUnit\Framework\TestCase
 
         $client = $this->createMock(Client::class);
         $client->expects($this->once())->method('setUri')
-            ->with($this->equalTo($fakeUri));
+            ->with($fakeUri);
         $client->expects($this->once())->method('setMethod')
-            ->with($this->equalTo('POST'));
+            ->with('POST');
         $client->expects($this->once())->method('setEncType')
-            ->with($this->equalTo('application/json'));
+            ->with('application/json');
         $client->expects($this->once())->method('setRawBody')
-            ->with($this->equalTo($expectedBody));
+            ->with($expectedBody);
         $client->expects($this->once())->method('send');
 
         $handler = new Office365Handler($fakeUri, $client, $options);

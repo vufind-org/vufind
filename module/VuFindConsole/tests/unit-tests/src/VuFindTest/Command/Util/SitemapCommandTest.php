@@ -52,9 +52,9 @@ class SitemapCommandTest extends \PHPUnit\Framework\TestCase
     {
         $generator = $this->createMock(\VuFind\Sitemap\Generator::class);
         $generator->expects($this->once())->method('setBaseUrl')
-            ->with($this->equalTo('http://foo'));
+            ->with('http://foo');
         $generator->expects($this->once())->method('setBaseSitemapUrl')
-            ->with($this->equalTo('http://bar'));
+            ->with('http://bar');
         $generator->expects($this->once())->method('generate');
         $generator->expects($this->once())->method('getWarnings')
             ->willReturn(['Sample warning']);
@@ -63,8 +63,8 @@ class SitemapCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester->execute(
             ['--baseurl' => 'http://foo', '--basesitemapurl' => 'http://bar']
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals(
+        $this->assertSame(0, $commandTester->getStatusCode());
+        $this->assertSame(
             "Sample warning\n",
             $commandTester->getDisplay()
         );

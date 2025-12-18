@@ -58,7 +58,7 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
         ];
         $loader = new ExtendedIni($pathStack);
         $result = $loader->load('en', null);
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'blank_line' =>
                     html_entity_decode('&#x200C;', ENT_NOQUOTES, 'UTF-8'),
@@ -81,7 +81,7 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
         ];
         $loader = new ExtendedIni($pathStack, 'en');
         $result = $loader->load('fake', null);
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'blank_line' =>
                     html_entity_decode('&#x200C;', ENT_NOQUOTES, 'UTF-8'),
@@ -105,7 +105,7 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
         ];
         $loader = new ExtendedIni($pathStack, 'fake');
         $result = $loader->load('fake', null);
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'test3' => 'test three',
             ],
@@ -125,7 +125,7 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
         ];
         $loader = new ExtendedIni($pathStack);
         $result = $loader->load('self-parent', null);
-        $this->assertEquals(
+        $this->assertSame(
             [
                 '@parent_ini' => 'self-parent.ini',
                 'string' => 'bad',
@@ -146,12 +146,12 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
         ];
         $loader = new ExtendedIni($pathStack);
         $result = $loader->load('child2', null);
-        $this->assertEquals(
+        $this->assertSame(
             [
-                '@parent_ini' => 'child1.ini',
-                'test1' => 'test 1',
-                'test2' => 'test 2',
                 'test3' => 'test three',
+                '@parent_ini' => 'child1.ini',
+                'test2' => 'test 2',
+                'test1' => 'test 1',
             ],
             (array)$result
         );
@@ -183,11 +183,11 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
         ];
         $loader = new ExtendedIni($pathStack, 'en');
         $result = $loader->load('en', null);
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'bar' => 'Translation',
-                'baz' => 'Domain Translation',
                 'foo' => 'Translation',
+                'baz' => 'Domain Translation',
                 'xyzzy' => 'Domain Translation',
                 'foofoo' => 'Translation',
             ],
@@ -207,7 +207,7 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
         ];
         $loader = new ExtendedIni($pathStack, 'en');
         $result = $loader->load('en', 'Domain');
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'bar' => 'Domain Translation',
                 'foofoo' => 'Translation',
@@ -243,13 +243,13 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
         ];
         $loader = new ExtendedIni($pathStack, 'en');
         $result = $loader->load('en-gb', null);
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'bar' => 'Translation',
-                'baz' => 'Domain Translation',
-                'foo' => 'Translation',
-                'xyzzy' => 'Child Overriding Alias',
                 '@parent_ini' => 'en.ini',
+                'xyzzy' => 'Child Overriding Alias',
+                'foo' => 'Translation',
+                'baz' => 'Domain Translation',
                 'foofoo' => 'Translation',
             ],
             (array)$result
@@ -269,18 +269,18 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
         $loader = new ExtendedIni($pathStack, 'en');
         $loader->disableAliases();
         $result = $loader->load('en', null);
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'bar' => 'Translation',
             ],
             (array)$result
         );
         $result = $loader->load('en-gb', null);
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'bar' => 'Translation',
-                'xyzzy' => 'Child Overriding Alias',
                 '@parent_ini' => 'en.ini',
+                'xyzzy' => 'Child Overriding Alias',
             ],
             (array)$result
         );

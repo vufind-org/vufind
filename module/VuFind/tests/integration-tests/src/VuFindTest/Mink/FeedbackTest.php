@@ -120,18 +120,16 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testFeedbackForm
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function feedbackFormProvider(): array
+    public static function feedbackFormProvider(): \Iterator
     {
-        return [
-            ['test@test.com', true, true],
-            ['foobar@spam.com', true, true],
-            ['test@blockeddomain.com', false, false],
-            ['bar@bad.com', false, false],
-            ['test@ignoreddomain.com', true, false],
-            ['bar@spam.com', true, false],
-        ];
+        yield ['test@test.com', true, true];
+        yield ['foobar@spam.com', true, true];
+        yield ['test@blockeddomain.com', false, false];
+        yield ['bar@bad.com', false, false];
+        yield ['test@ignoreddomain.com', true, false];
+        yield ['bar@spam.com', true, false];
     }
 
     /**
