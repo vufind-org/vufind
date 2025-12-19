@@ -27,7 +27,7 @@
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 
-namespace VuFindTest\Section;
+namespace VuFindTest\Unit;
 
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Auth\Manager;
@@ -62,25 +62,35 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Get a container with section related services.
      *
+     * @param string $userLocale      User locale (optional)
+     * @param array  $fallbackLocales Fallback locale(s) (optional)
+     *
      * @return MockContainer
      */
-    protected function getContainerWithSectionRelatedServices(): MockContainer
-    {
+    protected function getContainerWithSectionRelatedServices(
+        string $userLocale = 'en',
+        array $fallbackLocales = ['en', 'fi']
+    ): MockContainer {
         $container = new MockContainer($this);
-        $this->addSectionRelatedServicesToContainer($container);
+        $this->addSectionRelatedServicesToContainer($container, $userLocale, $fallbackLocales);
         return $container;
     }
 
     /**
      * Add section related services to a mock container.
      *
-     * @param MockContainer $container Mock container
+     * @param MockContainer $container       Mock container
+     * @param string        $userLocale      User locale (optional)
+     * @param array         $fallbackLocales Fallback locale(s) (optional)
      *
      * @return void
      */
-    protected function addSectionRelatedServicesToContainer(MockContainer $container)
-    {
-        $container->set(YamlReader::class, new YAMLReader($this->getPathResolver()));
+    protected function addSectionRelatedServicesToContainer(
+        MockContainer $container,
+        string $userLocale = 'en',
+        array $fallbackLocales = ['en', 'fi']
+    ): void {
+        $container->set(YamlReader::class, new YamlReader($this->getPathResolver()));
         $sectionManager = new SectionManager($container);
         $container->set(SectionManager::class, $sectionManager);
         $navigationManager = new NavigationManager($container);
@@ -89,12 +99,12 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
             $container->get(YamlReader::class),
             $sectionManager,
             $navigationManager,
-            'en',
-            ['en', 'fi']
+            $userLocale,
+            $fallbackLocales
         );
         $container->set(SectionServiceInterface::class, $service);
-        $this->getAccountMenu([], [], $container);
-        $this->getAdminMenu([], [], $container);
+        $this->getAccountMenu($container);
+        $this->getAdminMenu($container);
     }
 
     /**
@@ -111,19 +121,17 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Set section plugin to a mock container.
      *
+     * @param MockContainer    $container Mock container with section related services
      * @param SectionInterface $plugin    Section plugin
      * @param string           $alias     Plugin alias
-     * @param ?MockContainer   $container Mock container with section related
-     *                                    services (optional)
      *
      * @return MockContainer
      */
     protected function setSectionPlugin(
+        MockContainer $container,
         SectionInterface $plugin,
         string $alias,
-        ?MockContainer $container = null
     ): MockContainer {
-        $container ??= $this->getContainerWithSectionRelatedServices();
         $pluginManager = $plugin instanceof NavigationInterface
             ? $container->get(NavigationManager::class)
             : $container->get(SectionManager::class);
@@ -145,16 +153,16 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock AccountMenu.
      *
-     * @param array          $config       Configuration to use
-     * @param array          $checkMethods Values to return for specific check methods
-     * @param ?MockContainer $container    Mock container (optional)
+     * @param MockContainer $container    Mock container
+     * @param array         $config       Configuration to use
+     * @param array         $checkMethods Values to return for specific check methods
      *
      * @return AccountMenu
      */
     protected function getAccountMenu(
+        MockContainer $container,
         array $config = [],
         array $checkMethods = [],
-        ?MockContainer $container = null
     ): AccountMenu {
         $accountMenu = $this->getMockBuilder(AccountMenu::class)
             ->setConstructorArgs(
@@ -172,7 +180,7 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         foreach ($this->getAccountMenuCheckMethods() as $checkMethod => $default) {
             $accountMenu->method($checkMethod)->willReturn($checkMethods[$checkMethod] ?? $default);
         }
-        $this->setSectionPlugin($accountMenu, 'accountMenu', $container);
+        $this->setSectionPlugin($container, $accountMenu, 'accountMenu');
         return $accountMenu;
     }
 
@@ -204,16 +212,16 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock AdminMenu.
      *
-     * @param array          $config       Configuration to use
-     * @param array          $checkMethods Values to return for specific check methods
-     * @param ?MockContainer $container    Mock container (optional)
+     * @param MockContainer $container    Mock container
+     * @param array         $config       Configuration to use
+     * @param array         $checkMethods Values to return for specific check methods
      *
      * @return AdminMenu
      */
     protected function getAdminMenu(
+        MockContainer $container,
         array $config = [],
         array $checkMethods = [],
-        ?MockContainer $container = null
     ): AdminMenu {
         $adminMenu = $this->getMockBuilder(AdminMenu::class)
             ->setConstructorArgs(
@@ -227,7 +235,7 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         foreach ($this->getAdminMenuCheckMethods() as $checkMethod => $default) {
             $adminMenu->method($checkMethod)->willReturn($checkMethods[$checkMethod] ?? $default);
         }
-        $this->setSectionPlugin($adminMenu, 'adminMenu', $container);
+        $this->setSectionPlugin($container, $adminMenu, 'adminMenu');
         return $adminMenu;
     }
 

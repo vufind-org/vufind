@@ -31,7 +31,7 @@ namespace VuFindTest\Navigation;
 
 use VuFind\Exception\BadConfig;
 use VuFind\Navigation\AdminMenu;
-use VuFindTest\Section\AbstractSectionTestCase;
+use VuFindTest\Unit\AbstractSectionTestCase;
 
 /**
  * Admin menu tests.
@@ -51,9 +51,10 @@ class AdminMenuTest extends AbstractSectionTestCase
      */
     public function testMissingConfiguration()
     {
+        $container = $this->getContainerWithSectionRelatedServices();
         $this->assertEquals(
-            $this->getAdminMenu()->getMenu(),
-            $this->getAdminMenu(AdminMenu::getDefaultMenuConfig())->getMenu()
+            $this->getAdminMenu($container)->getMenu(),
+            $this->getAdminMenu($container, AdminMenu::getDefaultMenuConfig())->getMenu()
         );
     }
 
@@ -64,7 +65,9 @@ class AdminMenuTest extends AbstractSectionTestCase
      */
     public function testDefaultMenuAllCheckMethodsReturnFalse()
     {
+        $container = $this->getContainerWithSectionRelatedServices();
         $menu = $this->getAdminMenu(
+            $container,
             AdminMenu::getDefaultMenuConfig(),
             $this->getAdminMenuCheckMethods(false)
         )->getMenu();
@@ -84,26 +87,31 @@ class AdminMenuTest extends AbstractSectionTestCase
                     'MenuItems' => [[]],
                 ],
             ],
+            BadConfig::class,
+            'Missing required setting: label',
         ];
     }
 
     /**
      * Test required configuration.
      *
-     * @param array  $config                      Account menu configuration
-     * @param string $expectedExceptionClass      Expected exception class
-     * @param string $expectedExceptionMsgMatches Expected exception message regexp
+     * @param array   $config                 Account menu configuration
+     * @param string  $expectedExceptionClass Expected exception class
+     * @param ?string $expectedExceptionMsg   Expected exception message
      *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('requiredConfigurationProvider')]
     public function testRequiredConfiguration(
         array $config,
-        string $expectedExceptionClass = BadConfig::class,
-        string $expectedExceptionMsgMatches = '/^Missing required setting: /'
-    ) {
+        string $expectedExceptionClass,
+        ?string $expectedExceptionMsg = null
+    ): void {
         $this->expectException($expectedExceptionClass);
-        $this->expectExceptionMessageMatches($expectedExceptionMsgMatches);
-        $this->getAccountMenu($config);
+        if ($expectedExceptionMsg) {
+            $this->expectExceptionMessage($expectedExceptionMsg);
+        }
+        $container = $this->getContainerWithSectionRelatedServices();
+        $this->getAdminMenu($container, $config);
     }
 }

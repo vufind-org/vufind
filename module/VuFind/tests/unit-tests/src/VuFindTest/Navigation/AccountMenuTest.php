@@ -32,7 +32,7 @@ namespace VuFindTest\Navigation;
 
 use VuFind\Exception\BadConfig;
 use VuFind\Navigation\AccountMenu;
-use VuFindTest\Section\AbstractSectionTestCase;
+use VuFindTest\Unit\AbstractSectionTestCase;
 
 /**
  * Account menu tests.
@@ -53,9 +53,10 @@ class AccountMenuTest extends AbstractSectionTestCase
      */
     public function testMissingConfiguration()
     {
+        $container = $this->getContainerWithSectionRelatedServices();
         $this->assertEquals(
-            $this->getAccountMenu()->getMenu(),
-            $this->getAccountMenu(AccountMenu::getDefaultMenuConfig())->getMenu()
+            $this->getAccountMenu($container)->getMenu(),
+            $this->getAccountMenu($container, AccountMenu::getDefaultMenuConfig())->getMenu()
         );
     }
 
@@ -66,7 +67,9 @@ class AccountMenuTest extends AbstractSectionTestCase
      */
     public function testDefaultMenuAllCheckMethodsReturnFalse()
     {
+        $container = $this->getContainerWithSectionRelatedServices();
         $menu = $this->getAccountMenu(
+            $container,
             AccountMenu::getDefaultMenuConfig(),
             $this->getAccountMenuCheckMethods(false)
         )->getMenu();
@@ -81,7 +84,8 @@ class AccountMenuTest extends AbstractSectionTestCase
      */
     public function testBackwardCompatibilityForOldConfigurations()
     {
-        $menu = $this->getAccountMenu($this->getOldDefaultMenuConfig())->getMenu();
+        $container = $this->getContainerWithSectionRelatedServices();
+        $menu = $this->getAccountMenu($container, $this->getOldDefaultMenuConfig())->getMenu();
         $this->assertCount(12, $menu['Account']['MenuItems']);
     }
 
@@ -195,34 +199,45 @@ class AccountMenuTest extends AbstractSectionTestCase
     {
         yield 'Missing group settings' => [
             ['Account' => []],
+            BadConfig::class,
+            'Missing required setting: label',
         ];
         yield 'Missing menu item settings' => [
             [
                 'Account' => [
-                    'label' => 'Test',
-                    'MenuItems' => [[]],
+                    'label' => 'Test menu label',
+                    'MenuItems' => [
+                        [
+                            'label' => 'Test item label',
+                        ],
+                    ],
                 ],
             ],
+            BadConfig::class,
+            'Missing required setting: route',
         ];
     }
 
     /**
      * Test required configuration.
      *
-     * @param array  $config                      Account menu configuration
-     * @param string $expectedExceptionClass      Expected exception class
-     * @param string $expectedExceptionMsgMatches Expected exception message regexp
+     * @param array   $config                 Account menu configuration
+     * @param string  $expectedExceptionClass Expected exception class
+     * @param ?string $expectedExceptionMsg   Expected exception message
      *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('requiredConfigurationProvider')]
     public function testRequiredConfiguration(
         array $config,
-        string $expectedExceptionClass = BadConfig::class,
-        string $expectedExceptionMsgMatches = '/^Missing required setting: /'
-    ) {
+        string $expectedExceptionClass,
+        ?string $expectedExceptionMsg = null
+    ): void {
         $this->expectException($expectedExceptionClass);
-        $this->expectExceptionMessageMatches($expectedExceptionMsgMatches);
-        $this->getAccountMenu($config);
+        if ($expectedExceptionMsg) {
+            $this->expectExceptionMessage($expectedExceptionMsg);
+        }
+        $container = $this->getContainerWithSectionRelatedServices();
+        $this->getAccountMenu($container, $config);
     }
 }

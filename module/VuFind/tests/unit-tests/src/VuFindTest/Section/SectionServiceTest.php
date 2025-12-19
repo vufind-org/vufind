@@ -33,6 +33,7 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use VuFind\Exception\BadConfig;
 use VuFind\Exception\ConfigException;
 use VuFind\Section\SectionServiceInterface;
+use VuFindTest\Unit\AbstractSectionTestCase;
 
 /**
  * Section service tests.
@@ -82,7 +83,7 @@ class SectionServiceTest extends AbstractSectionTestCase
         string $configPath,
         string $expectedExceptionClass,
         ?string $expectedExceptionMsg = null
-    ) {
+    ): void {
         $this->expectException($expectedExceptionClass);
         if ($expectedExceptionMsg) {
             $this->expectExceptionMessage($expectedExceptionMsg);
@@ -104,7 +105,7 @@ class SectionServiceTest extends AbstractSectionTestCase
             'Missing required setting: type',
         ];
         yield 'Navigation plugin with a missing plugin setting' => [
-            'MissingNavigationPlugin',
+            'MissingNavigationPluginSetting',
             ['type' => 'navigation'],
             BadConfig::class,
             'Missing required setting: plugin',
@@ -135,7 +136,7 @@ class SectionServiceTest extends AbstractSectionTestCase
         array $config,
         string $expectedExceptionClass,
         ?string $expectedExceptionMsg = null
-    ) {
+    ): void {
         $this->expectException($expectedExceptionClass);
         if ($expectedExceptionMsg) {
             $this->expectExceptionMessage($expectedExceptionMsg);
@@ -148,7 +149,7 @@ class SectionServiceTest extends AbstractSectionTestCase
      *
      * @return void
      */
-    public function testSettingsLocalization()
+    public function testSettingsLocalization(): void
     {
         $config = [
             'Account' => [
@@ -164,9 +165,22 @@ class SectionServiceTest extends AbstractSectionTestCase
                 ],
             ],
         ];
-        $localizedConfig = $this->getAccountMenu($config)->getSectionConfig();
+        $container = $this->getContainerWithSectionRelatedServices();
+        $localizedConfig = $this->getAccountMenu($container, $config)->getSectionConfig();
         $this->assertEquals(
             'English language URL',
+            $localizedConfig['Account']['MenuItems'][0]['url']
+        );
+        $container = $this->getContainerWithSectionRelatedServices('fi');
+        $localizedConfig = $this->getAccountMenu($container, $config)->getSectionConfig();
+        $this->assertEquals(
+            'Finnish language URL',
+            $localizedConfig['Account']['MenuItems'][0]['url']
+        );
+        $container = $this->getContainerWithSectionRelatedServices('sv', ['fi', 'en']);
+        $localizedConfig = $this->getAccountMenu($container, $config)->getSectionConfig();
+        $this->assertEquals(
+            'Finnish language URL',
             $localizedConfig['Account']['MenuItems'][0]['url']
         );
     }
