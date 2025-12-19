@@ -61,12 +61,11 @@ class ConnectorTest extends \PHPUnit\Framework\TestCase
     {
         $client = $this->createMock(\Laminas\Http\Client::class);
         $client->expects($this->once())->method('setUri')
-            ->with($this->equalTo($expectedUri));
+            ->with($expectedUri);
         $response = $this->createMock(\Laminas\Http\Response::class);
         $response->expects($this->once())->method('getBody')
             ->willReturn($body);
-        $response->expects($this->any())->method('isSuccess')
-            ->willReturn($status === 200);
+        $response->method('isSuccess')->willReturn($status === 200);
         $response->method('getStatusCode')->willReturn($status);
         $client->expects($this->once())->method('send')
             ->willReturn($response);

@@ -100,14 +100,14 @@ class NonTabRecordActionCommandTest extends \PHPUnit\Framework\TestCase
             ['getModuleConfigPath', 'backUpFile', 'writeModuleConfig']
         );
         $tools->expects($this->once())->method('getModuleConfigPath')
-            ->with($this->equalTo('xyzzy'))
+            ->with('xyzzy')
             ->willReturn($configFixturePath);
         $tools->expects($this->once())->method('backUpFile')
-            ->with($this->equalTo($configFixturePath));
+            ->with($configFixturePath);
         $tools->expects($this->once())->method('writeModuleConfig')
             ->with(
-                $this->equalTo($configFixturePath),
-                $this->equalTo($expectedConfig)
+                $configFixturePath,
+                $expectedConfig
             );
         $config = [
             'router' => [
@@ -137,7 +137,7 @@ class NonTabRecordActionCommandTest extends \PHPUnit\Framework\TestCase
                 'target_module' => 'xyzzy',
             ]
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**

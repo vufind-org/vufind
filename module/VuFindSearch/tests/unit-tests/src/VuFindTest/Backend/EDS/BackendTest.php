@@ -61,7 +61,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
             . '&filters=%5B%7B%22name%22%3A%22custid%22%2C%22values%22%3A%5B%22foo%22%5D%7D%5D&term=bla';
         $conn->expects($this->once())
             ->method('call')
-            ->with($this->equalTo($expectedUri))
+            ->with($expectedUri)
             ->willReturn($this->loadResponse('autocomplete'));
 
         $back = $this->getBackend(
@@ -75,15 +75,13 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $autocompleteData = [
             'custid' => 'foo', 'url' => 'http://foo', 'token' => 'auth1234',
         ];
-        $back->expects($this->any())
-            ->method('getAutocompleteData')
-            ->willReturn($autocompleteData);
+        $back->method('getAutocompleteData')->willReturn($autocompleteData);
 
         $coll = $back->autocomplete('bla', 'rawdata');
         // check count
         $this->assertCount(10, $coll);
         foreach ($coll as $value) {
-            $this->assertEquals('bla', substr($value, 0, 3));
+            $this->assertSame('bla', substr($value, 0, 3));
         }
     }
 
@@ -108,12 +106,8 @@ class BackendTest extends \PHPUnit\Framework\TestCase
             ['getAuthenticationToken', 'getSessionToken']
         );
         $back->setBackendType('EDS');
-        $back->expects($this->any())
-            ->method('getAuthenticationToken')
-            ->willReturn('auth1234');
-        $back->expects($this->any())
-            ->method('getSessionToken')
-            ->willReturn('sess1234');
+        $back->method('getAuthenticationToken')->willReturn('auth1234');
+        $back->method('getSessionToken')->willReturn('sess1234');
         $back->setIdentifier('test');
 
         $coll = $back->retrieve('bwh,201407212251PR.NEWS.USPR.MM73898');
@@ -145,12 +139,8 @@ class BackendTest extends \PHPUnit\Framework\TestCase
             ['getAuthenticationToken', 'getSessionToken']
         );
         $back->setBackendType('EPF');
-        $back->expects($this->any())
-            ->method('getAuthenticationToken')
-            ->willReturn('auth1234');
-        $back->expects($this->any())
-            ->method('getSessionToken')
-            ->willReturn('sess1234');
+        $back->method('getAuthenticationToken')->willReturn('auth1234');
+        $back->method('getSessionToken')->willReturn('sess1234');
         $back->setIdentifier('test');
 
         $coll = $back->retrieve('edp297646');
@@ -181,12 +171,8 @@ class BackendTest extends \PHPUnit\Framework\TestCase
             [],
             ['getAuthenticationToken', 'getSessionToken']
         );
-        $back->expects($this->any())
-            ->method('getAuthenticationToken')
-            ->willReturn('auth1234');
-        $back->expects($this->any())
-            ->method('getSessionToken')
-            ->willReturn('sess1234');
+        $back->method('getAuthenticationToken')->willReturn('auth1234');
+        $back->method('getSessionToken')->willReturn('sess1234');
         $back->setIdentifier('test');
 
         $coll = $back->search(new Query('foobar'), 0, 3);
@@ -210,7 +196,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $expected = ['Value' => 'News', 'Count' => '12055', 'AddAction' => 'addfacetfilter(SourceType:News)'];
         $this->assertEquals($expected, $rawFacets[0]['AvailableFacetValues'][0]);
         $facets = $coll->getFacets();
-        $this->assertEquals(count($facets), count($rawFacets));
+        $this->assertCount(count($facets), $rawFacets);
         $this->assertEquals(
             [
                 'News' => 12055,
@@ -326,8 +312,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
             $cache = $this->createMock(\Laminas\Cache\Storage\StorageInterface::class);
         }
         if (null === $container) {
-            $container = $this->getMockBuilder(\Laminas\Session\Container::class)
-                ->disableOriginalConstructor()->getMock();
+            $container = $this->createMock(\Laminas\Session\Container::class);
         }
         if (null === $mock) {
             return new Backend($connector, $factory, $cache, $container, new \VuFind\Config\Config($settings));

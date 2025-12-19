@@ -62,11 +62,12 @@ class HoldingsWorldCat2Test extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testIsActive.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function isActiveProvider(): array
+    public static function isActiveProvider(): \Iterator
     {
-        return ['Enabled' => ['foo', true], 'Not Enabled' => ['', false]];
+        yield 'Enabled' => ['foo', true];
+        yield 'Not Enabled' => ['', false];
     }
 
     /**
@@ -106,12 +107,10 @@ class HoldingsWorldCat2Test extends \PHPUnit\Framework\TestCase
         };
         $recordDriver->method('tryMethod')->willReturnCallback($callback);
         $obj->setRecordDriver($recordDriver);
-        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $commandObj->expects($this->any())->method('getResult')->willReturn(true);
+        $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
+        $commandObj->method('getResult')->willReturn(true);
         $checkCommand = function ($command) {
-            $this->assertEquals($command::class, \VuFindSearch\Backend\WorldCat2\Command\GetHoldingsCommand::class);
+            $this->assertSame($command::class, \VuFindSearch\Backend\WorldCat2\Command\GetHoldingsCommand::class);
             $expectedParams = new ParamBag(
                 [
                     'oclcNumber' => 'bar',
@@ -122,7 +121,7 @@ class HoldingsWorldCat2Test extends \PHPUnit\Framework\TestCase
             $this->assertEquals('WorldCat2', $command->getTargetIdentifier());
             return true;
         };
-        $searchObj->expects($this->any())->method('invoke')
+        $searchObj->method('invoke')
             ->with($this->callback($checkCommand))
             ->willReturn($commandObj);
         $this->assertTrue($obj->getHoldings());

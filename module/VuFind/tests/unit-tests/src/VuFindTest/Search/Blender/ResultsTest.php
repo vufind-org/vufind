@@ -93,14 +93,11 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
             new Config([]),
             []
         );
-        $searchService = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->getMock();
+        $searchService = $this->createMock(\VuFindSearch\Service::class);
         $searchService->expects($this->once())
             ->method('invoke')
             ->willReturnCallback($callback);
-        $recordLoader = $this->getMockBuilder(\VuFind\Record\Loader::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $recordLoader = $this->createMock(\VuFind\Record\Loader::class);
         $results = new Results($params, $searchService, $recordLoader);
         $results->performAndProcessSearch();
 

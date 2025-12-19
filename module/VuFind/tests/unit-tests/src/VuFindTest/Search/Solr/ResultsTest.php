@@ -220,13 +220,9 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         array $expectedParams
     ): SearchService {
         $collection = new RecordCollection($response);
-        $searchService = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $searchService = $this->createMock(\VuFindSearch\Service::class);
 
-        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
         $commandObj->expects($this->once())->method('getResult')
             ->willReturn($collection);
 
@@ -496,13 +492,9 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         );
 
         $collection = new RecordCollection($response);
-        $searchService = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $searchService = $this->createMock(\VuFindSearch\Service::class);
         // No need to validate the parameters, just return the requested results:
-        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
         $commandObj->expects($this->once())->method('getResult')
             ->willReturn($collection);
 

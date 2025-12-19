@@ -125,11 +125,12 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetBreadcrumbParams().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function getBreadcrumbParamsProvider(): array
+    public static function getBreadcrumbParamsProvider(): \Iterator
     {
-        return ['empty' => [''], 'non-empty' => ['foo']];
+        yield 'empty' => [''];
+        yield 'non-empty' => ['foo'];
     }
 
     /**
@@ -189,8 +190,7 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
     {
         $request = $this->getMockBuilder(\Laminas\Http\PhpEnvironment\Request::class)
             ->onlyMethods(['getQuery'])->getMock();
-        $request->expects($this->any())->method('getQuery')
-            ->willReturn(new \Laminas\Stdlib\Parameters());
+        $request->method('getQuery')->willReturn(new \Laminas\Stdlib\Parameters());
 
         $url = new \VuFind\View\Helper\Root\Url($request);
 

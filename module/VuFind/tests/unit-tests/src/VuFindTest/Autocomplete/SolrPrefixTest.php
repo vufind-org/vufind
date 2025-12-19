@@ -63,16 +63,14 @@ class SolrPrefixTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetSuggestions().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function getSuggestionsProvider(): array
+    public static function getSuggestionsProvider(): \Iterator
     {
         $autocompleteField = 'auto_str';
         $facetField = 'facet_str';
-        return [
-            'default limit' => [$autocompleteField, $facetField, "$autocompleteField:$facetField", 10],
-            'non-default limit' => [$autocompleteField, $facetField, "$autocompleteField:$facetField:20", 20],
-        ];
+        yield 'default limit' => [$autocompleteField, $facetField, "$autocompleteField:$facetField", 10];
+        yield 'non-default limit' => [$autocompleteField, $facetField, "$autocompleteField:$facetField:20", 20];
     }
 
     /**
@@ -119,6 +117,6 @@ class SolrPrefixTest extends \PHPUnit\Framework\TestCase
         $handler = new SolrPrefix($this->getMockResultsPluginManager($map));
         $handler->setConfig($config);
         $handler->addFilters($filters);
-        $this->assertEquals(['1', '2', '3', '4'], array_values($handler->getSuggestions('foo(:)bar')));
+        $this->assertSame(['1', '2', '3', '4'], array_values($handler->getSuggestions('foo(:)bar')));
     }
 }

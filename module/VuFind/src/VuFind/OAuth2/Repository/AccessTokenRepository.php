@@ -37,6 +37,7 @@ use VuFind\Auth\InvalidArgumentException;
 use VuFind\Db\Service\AccessTokenServiceInterface;
 use VuFind\Db\Service\UserServiceInterface;
 use VuFind\OAuth2\Entity\AccessTokenEntity;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * OAuth2 access token repository implementation.
@@ -57,8 +58,11 @@ class AccessTokenRepository extends AbstractTokenRepository implements AccessTok
      * @param UserServiceInterface        $userService        User service
      */
     public function __construct(
+        #[Autowire(config: 'OAuth2Server', configType: 'yaml')]
         array $oauth2Config,
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         AccessTokenServiceInterface $accessTokenService,
+        #[Autowire(container: \VuFind\Db\Service\PluginManager::class)]
         UserServiceInterface $userService
     ) {
         parent::__construct(

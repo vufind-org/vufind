@@ -74,9 +74,7 @@ class ConsortialVuFindTest extends \PHPUnit\Framework\TestCase
     public function setUp(): void
     {
         // Mock ExternalVuFind connector
-        $this->connector = $this->getMockBuilder(ExternalVuFind::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $this->connector = $this->createMock(ExternalVuFind::class);
         $searchResultsFixture = $this->getFixture('externalvufind/search');
         $searchResults = json_decode(substr($searchResultsFixture, strpos($searchResultsFixture, '{')), true);
         $this->connector->method('search')->willReturn($searchResults);
@@ -176,9 +174,7 @@ class ConsortialVuFindTest extends \PHPUnit\Framework\TestCase
         $queryResults = new Results(
             $queryParams,
             $this->createStub(\VuFindSearch\Service::class),
-            $this->getMockBuilder(\VuFind\Record\Loader::class)
-                ->disableOriginalConstructor()
-                ->getMock(),
+            $this->createMock(\VuFind\Record\Loader::class),
             null,
             $facets
         );

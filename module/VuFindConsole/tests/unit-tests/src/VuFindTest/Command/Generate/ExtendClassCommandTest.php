@@ -80,10 +80,10 @@ class ExtendClassCommandTest extends \PHPUnit\Framework\TestCase
         $tools->expects($this->once())->method('setOutputInterface');
         $tools->expects($this->once())->method('extendClass')
             ->with(
-                $this->equalTo($container),
-                $this->equalTo('Foo'),
-                $this->equalTo('Bar'),
-                $this->equalTo(null)
+                $container,
+                'Foo',
+                'Bar',
+                null
             );
         $command = new ExtendClassCommand($tools, $container);
         $commandTester = new CommandTester($command);
@@ -93,7 +93,7 @@ class ExtendClassCommandTest extends \PHPUnit\Framework\TestCase
                 'target_module' => 'Bar',
             ]
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -110,10 +110,10 @@ class ExtendClassCommandTest extends \PHPUnit\Framework\TestCase
         $tools->expects($this->once())->method('setOutputInterface');
         $tools->expects($this->once())->method('extendClass')
             ->with(
-                $this->equalTo($container),
-                $this->equalTo('Foo'),
-                $this->equalTo('Bar'),
-                $this->equalTo(true)
+                $container,
+                'Foo',
+                'Bar',
+                true
             );
         $command = new ExtendClassCommand($tools, $container);
         $commandTester = new CommandTester($command);
@@ -124,7 +124,7 @@ class ExtendClassCommandTest extends \PHPUnit\Framework\TestCase
                 '--extendfactory' => true,
             ]
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -149,8 +149,8 @@ class ExtendClassCommandTest extends \PHPUnit\Framework\TestCase
                 'target_module' => 'Bar',
             ]
         );
-        $this->assertEquals("Foo!\n", $commandTester->getDisplay());
-        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertSame("Foo!\n", $commandTester->getDisplay());
+        $this->assertSame(1, $commandTester->getStatusCode());
     }
 
     /**

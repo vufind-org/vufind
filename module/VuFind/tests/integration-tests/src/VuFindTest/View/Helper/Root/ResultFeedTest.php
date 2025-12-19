@@ -69,7 +69,7 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
     protected function getPlugins(): array
     {
         $currentPath = $this->createMock(\VuFind\View\Helper\Root\CurrentPath::class);
-        $currentPath->expects($this->any())->method('__invoke')->willReturn('/test/path');
+        $currentPath->method('__invoke')->willReturn('/test/path');
 
         $record = $this->createMock(\VuFind\View\Helper\Root\Record::class);
         $record->method('__invoke')->willReturn($record);
@@ -83,10 +83,10 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
                     ),
                 ]
             )->getMock();
-        $recordLinker->expects($this->any())->method('getUrl')->willReturn('test/url');
+        $recordLinker->method('getUrl')->willReturn('test/url');
 
         $serverUrl = $this->createMock(\Laminas\View\Helper\ServerUrl::class);
-        $serverUrl->expects($this->any())->method('__invoke')->willReturn('http://server/url');
+        $serverUrl->method('__invoke')->willReturn('http://server/url');
 
         return compact('currentPath', 'record', 'recordLinker') + ['serverurl' => $serverUrl];
     }
@@ -94,17 +94,15 @@ class ResultFeedTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testRSS.
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function rssProvider(): array
+    public static function rssProvider(): \Iterator
     {
         $routeLink = 'http://server/url';
         $driverLink = 'http://driver-url';
-        return [
-            'default options' => [[], $routeLink],
-            'prioritizeRecordDriverLinks = false' => [['prioritizeRecordDriverLinks' => false], $routeLink],
-            'prioritizeRecordDriverLinks = true' => [['prioritizeRecordDriverLinks' => true], $driverLink],
-        ];
+        yield 'default options' => [[], $routeLink];
+        yield 'prioritizeRecordDriverLinks = false' => [['prioritizeRecordDriverLinks' => false], $routeLink];
+        yield 'prioritizeRecordDriverLinks = true' => [['prioritizeRecordDriverLinks' => true], $driverLink];
     }
 
     /**

@@ -62,9 +62,7 @@ class UserIpReaderFactoryTest extends \PHPUnit\Framework\TestCase
             \VuFind\Config\ConfigManagerInterface::class,
             $this->getMockConfigManager(compact('config'), [], $this->once())
         );
-        $mockRequest = $this
-            ->getMockBuilder(\Laminas\Http\PhpEnvironment\Request::class)
-            ->disableOriginalConstructor()->getMock();
+        $mockRequest = $this->createMock(\Laminas\Http\PhpEnvironment\Request::class);
         $mockRequest->expects($this->once())->method('getServer')
             ->willReturn(new Parameters($server));
         $container->set('Request', $mockRequest);

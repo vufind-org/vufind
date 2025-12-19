@@ -51,7 +51,12 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
     {
         $session = $this->getMinkSession();
         $page = $this->getSearchHomePage($session);
-        $acItem = $this->assertAutocompleteValueAndReturnItem($page, 'fake doi test', 'Fake DOI test 1');
+        $acItem = $this->assertAutocompleteValueAndReturnItem(
+            $page,
+            'fake doi test',
+            'Fake DOI test 1',
+            'Fake DOI test'
+        );
         $acItem->click();
         $this->waitForPageLoad($page);
         $this->assertEquals(
@@ -72,7 +77,8 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
         $acItem = $this->assertAutocompleteValueAndReturnItem(
             $page,
             'millers mechanical',
-            'Letterhead enclosure: "The Millers Mechanical Battlefield: world\'s greatest exhibition", [1920?].'
+            'Letterhead enclosure: "The Millers Mechanical Battlefield: world\'s greatest exhibition", [1920?].',
+            'Millers Mechanical'
         );
         $acItem->click();
         $this->waitForPageLoad($page);
@@ -93,7 +99,7 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
     {
         $session = $this->getMinkSession();
         $page = $this->getSearchHomePage($session);
-        $acItem = $this->assertAutocompleteValueAndReturnItem($page, 'jsto', 'JSTOR (Organization)', 'Author');
+        $acItem = $this->assertAutocompleteValueAndReturnItem($page, 'jsto', 'JSTOR (Organization)', 'JSTO', 'Author');
         $acItem->click();
         $this->waitForPageLoad($page);
         $this->assertEquals(
@@ -115,17 +121,64 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->getSearchHomePage($session);
 
         // First do a search in All Fields
-        $this->assertAutocompleteValueAndReturnItem($page, 'jsto', 'Al Gore');
+        $this->assertAutocompleteValueAndReturnItem($page, 'jsto', 'Al Gore', null);
 
         // Now repeat the same search in Author, making sure we get the right author match, and not a cached
         // All Fields value!
-        $acItem = $this->assertAutocompleteValueAndReturnItem($page, 'jsto', 'JSTOR (Organization)', 'Author');
+        $acItem = $this->assertAutocompleteValueAndReturnItem($page, 'jsto', 'JSTOR (Organization)', 'JSTO', 'Author');
         $acItem->click();
         $this->waitForPageLoad($page);
         $this->assertEquals(
             $this->getVuFindUrl() . '/Search/Results?lookfor=%22JSTOR+%28Organization%29%22&type=Author',
             $session->getCurrentUrl()
         );
+    }
+
+    /**
+     * Data provider for testFilteredAutocomplete().
+     *
+     * @return \Iterator
+     */
+    public static function filteredAutocompleteProvider(): \Iterator
+    {
+        yield 'retain filters, no explicit autocomplete setting' => [null, true, true];
+        yield 'do not retain filters, no explicit autocomplete setting' => [null, false, false];
+        yield 'retain filters, explicit autocomplete true setting' => [true, true, true];
+        yield 'do not retain filters, explicit autocomplete true setting' => [true, false, true];
+        yield 'retain filters, explicit autocomplete false setting' => [false, true, false];
+        yield 'do not retain filters, explicit autocomplete false setting' => [false, false, false];
+    }
+
+    /**
+     * Test the apply_active_filters setting.
+     *
+     * @param ?bool $filtered       Should we apply the active filters?
+     * @param bool  $retain         Should filters be retained by default?
+     * @param bool  $filterExpected Do we expect filtering to be applied?
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('filteredAutocompleteProvider')]
+    public function testFilteredAutocomplete(?bool $filtered, bool $retain, bool $filterExpected): void
+    {
+        // Turn on autocomplete filtering:
+        $this->changeConfigs(
+            [
+                'searches' => [
+                    'Autocomplete' => $filtered === null ? [] : ['apply_active_filters' => $filtered],
+                    'General' => ['retain_filters_by_default' => $retain],
+                ],
+            ]
+        );
+
+        // Go to a filtered page:
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl() . '/Search/Results?filter[]=building%3A"hierarchy.mrc"');
+        $page = $session->getPage();
+
+        // Depending on filter setting, we expect a different result:
+        $expected = $filterExpected ? 'The Hierarchy Example 9' : 'Al Gore';
+        $this->assertAutocompleteValueAndReturnItem($page, 'jsto', $expected, null);
     }
 
     /**
@@ -140,7 +193,12 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
         );
         $session = $this->getMinkSession();
         $page = $this->getSearchHomePage($session);
-        $acItem = $this->assertAutocompleteValueAndReturnItem($page, 'fake doi test', 'Fake DOI test 1');
+        $acItem = $this->assertAutocompleteValueAndReturnItem(
+            $page,
+            'fake doi test',
+            'Fake DOI test 1',
+            'Fake DOI test'
+        );
         $acItem->click();
         $this->waitForPageLoad($page);
         $this->assertEquals(
@@ -185,7 +243,12 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
         $this->changeConfigs($this->getCombinedSearchHandlersConfigs());
         $session = $this->getMinkSession();
         $page = $this->getSearchHomePage($session);
-        $acItem = $this->assertAutocompleteValueAndReturnItem($page, 'fake doi test', 'Fake DOI test 1');
+        $acItem = $this->assertAutocompleteValueAndReturnItem(
+            $page,
+            'fake doi test',
+            'Fake DOI test 1',
+            'Fake DOI test'
+        );
         $acItem->click();
         $this->waitForPageLoad($page);
         $this->assertEquals(
@@ -208,6 +271,7 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
             $page,
             'jsto',
             'JSTOR (Organization)',
+            'JSTO',
             'VuFind:Solr|Author'
         );
         $acItem->click();
@@ -232,6 +296,7 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
             $page,
             'roy',
             'Royal Dublin Society',
+            'Roy',
             'VuFind:SolrAuth|MainHeading'
         );
         $acItem->click();
@@ -257,7 +322,13 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
         $vufindUrl = $this->getVuFindUrl();
         $basePath = parse_url($vufindUrl, PHP_URL_PATH);
         $handler = "External:$basePath/Alphabrowse/Home?source=title&from=";
-        $acItem = $this->assertAutocompleteValueAndReturnItem($page, 'test pu', 'test publication 20001', $handler);
+        $acItem = $this->assertAutocompleteValueAndReturnItem(
+            $page,
+            'test pu',
+            'test publication 20001',
+            'test pu',
+            $handler
+        );
         $acItem->click();
         $this->waitForPageLoad($page);
         $this->assertEquals(

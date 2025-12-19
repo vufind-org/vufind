@@ -64,14 +64,12 @@ class DbBuilderTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testPortHandling().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function portHandlingProvider(): array
+    public static function portHandlingProvider(): \Iterator
     {
-        return [
-            'port' => ['localhost:1234', 'localhost', '1234'],
-            'no port' => ['localhost', 'localhost', null],
-        ];
+        yield 'port' => ['localhost:1234', 'localhost', '1234'];
+        yield 'no port' => ['localhost', 'localhost', null];
     }
 
     /**
@@ -100,9 +98,9 @@ class DbBuilderTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testPreCommands().
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function preCommandsProvider(): array
+    public static function preCommandsProvider(): \Iterator
     {
         $expectedMySql = [
             'CREATE DATABASE name;',
@@ -117,14 +115,12 @@ class DbBuilderTest extends \PHPUnit\Framework\TestCase
             "CREATE USER user WITH PASSWORD 'pass';",
             'GRANT ALL PRIVILEGES ON DATABASE name TO user;',
         ];
-        return [
-            'mariadb, sql-only' => ['mariadb', $expectedMySql, true],
-            'mariadb, not sql-only' => ['mariadb', $expectedMySql, false],
-            'mysql, sql-only' => ['mysql', $expectedMySql, true],
-            'mysql, not sql-only' => ['mysql', $expectedMySql, false],
-            'pgsql, sql-only' => ['pgsql', $expectedPgSql, true],
-            'pgsql, not sql-only' => ['pgsql', $expectedPgSql, false],
-        ];
+        yield 'mariadb, sql-only' => ['mariadb', $expectedMySql, true];
+        yield 'mariadb, not sql-only' => ['mariadb', $expectedMySql, false];
+        yield 'mysql, sql-only' => ['mysql', $expectedMySql, true];
+        yield 'mysql, not sql-only' => ['mysql', $expectedMySql, false];
+        yield 'pgsql, sql-only' => ['pgsql', $expectedPgSql, true];
+        yield 'pgsql, not sql-only' => ['pgsql', $expectedPgSql, false];
     }
 
     /**
@@ -149,19 +145,21 @@ class DbBuilderTest extends \PHPUnit\Framework\TestCase
         }
         $builder = new DbBuilder($factory, $this->createMock(MigrationLoader::class));
         $result = $builder->build('name', 'user', 'pass', $driver, returnSqlOnly: $sqlOnly, steps: ['pre']);
-        $this->assertEquals(implode("\n", $expectedCommands), trim($result));
+        $this->assertSame(implode("\n", $expectedCommands), trim($result));
     }
 
     /**
      * Data provider for testMainCommands().
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function mainCommandsProvider(): array
+    public static function mainCommandsProvider(): \Iterator
     {
         $mysql = APPLICATION_PATH . '/module/VuFind/sql/mysql.sql';
         $pgsql = APPLICATION_PATH . '/module/VuFind/sql/pgsql.sql';
-        return ['mysql' => ['mysql', $mysql], 'mariadb' => ['mysql', $mysql], 'pgsql' => ['pgsql', $pgsql]];
+        yield 'mysql' => ['mysql', $mysql];
+        yield 'mariadb' => ['mysql', $mysql];
+        yield 'pgsql' => ['pgsql', $pgsql];
     }
 
     /**
@@ -179,15 +177,15 @@ class DbBuilderTest extends \PHPUnit\Framework\TestCase
         $factory->expects($this->never())->method('getConnectionFromOptions');
         $builder = new DbBuilder($factory, $this->createMock(MigrationLoader::class));
         $result = $builder->build('name', 'user', 'pass', $driver, returnSqlOnly: true, steps: ['main']);
-        $this->assertEquals(trim(file_get_contents($expectedFile)), trim($result));
+        $this->assertSame(trim(file_get_contents($expectedFile)), trim($result));
     }
 
     /**
      * Data provider for testPostCommands().
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function postCommandsProvider(): array
+    public static function postCommandsProvider(): \Iterator
     {
         $version = Version::getBuildVersion();
         $expectedMySql = [
@@ -202,14 +200,12 @@ class DbBuilderTest extends \PHPUnit\Framework\TestCase
             "INSERT INTO migrations(name, status, target_version) VALUES ('11.0/001-fake.sql', 'success', '$version');",
             "INSERT INTO migrations(name, status, target_version) VALUES ('11.0/002-fake.sql', 'success', '$version');",
         ];
-        return [
-            'mariadb, sql-only' => ['mariadb', $expectedMySql, true],
-            'mariadb, not sql-only' => ['mariadb', $expectedMySql, false],
-            'mysql, sql-only' => ['mysql', $expectedMySql, true],
-            'mysql, not sql-only' => ['mysql', $expectedMySql, false],
-            'pgsql, sql-only' => ['pgsql', $expectedPgSql, true],
-            'pgsql, not sql-only' => ['pgsql', $expectedPgSql, false],
-        ];
+        yield 'mariadb, sql-only' => ['mariadb', $expectedMySql, true];
+        yield 'mariadb, not sql-only' => ['mariadb', $expectedMySql, false];
+        yield 'mysql, sql-only' => ['mysql', $expectedMySql, true];
+        yield 'mysql, not sql-only' => ['mysql', $expectedMySql, false];
+        yield 'pgsql, sql-only' => ['pgsql', $expectedPgSql, true];
+        yield 'pgsql, not sql-only' => ['pgsql', $expectedPgSql, false];
     }
 
     /**
@@ -244,6 +240,6 @@ class DbBuilderTest extends \PHPUnit\Framework\TestCase
             ->willReturn(["$migrationSubdir/001-fake.sql", "$migrationSubdir/002-fake.sql"]);
         $builder = new DbBuilder($factory, $loader);
         $result = $builder->build('name', 'user', 'pass', $driver, returnSqlOnly: $sqlOnly, steps: ['post']);
-        $this->assertEquals(implode("\n", $expectedCommands), trim($result));
+        $this->assertSame(implode("\n", $expectedCommands), trim($result));
     }
 }

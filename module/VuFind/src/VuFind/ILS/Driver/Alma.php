@@ -505,8 +505,7 @@ class Alma extends AbstractBase implements
      *
      * @param array $patron The patron array with username and password
      *
-     * @return array|boolean    An array of block messages or false if there are no
-     *                          blocks
+     * @return array|bool    An array of block messages or false if there are no blocks
      * @author Michael Birkner
      */
     public function getRequestBlocks($patron)
@@ -519,8 +518,7 @@ class Alma extends AbstractBase implements
      *
      * @param array $patron The patron array with username and password
      *
-     * @return array|boolean    An array of block messages or false if there are no
-     *                          blocks
+     * @return array|bool    An array of block messages or false if there are no blocks
      * @author Michael Birkner
      */
     public function getAccountBlocks($patron)
@@ -573,9 +571,8 @@ class Alma extends AbstractBase implements
      * @param array  $fulfillmentUnits An array of fulfillment units with all its
      *                                 locations.
      *
-     * @return string|NULL              Null if the location was not found or a
-     *                                  string specifying the fulfillment unit of
-     *                                  the location that was found.
+     * @return ?string                 Null if the location was not found or a string specifying
+     *                                 the fulfillment unit of the location that was found.
      * @author Michael Birkner
      */
     protected function getFulfillmentUnitByLocation($locationCode, $fulfillmentUnits)
@@ -595,7 +592,7 @@ class Alma extends AbstractBase implements
      *
      * @throws \VuFind\Exception\Auth
      *
-     * @return NULL|SimpleXMLElement
+     * @return ?SimpleXMLElement
      * @author Michael Birkner
      */
     public function createAlmaUser($formParams)
@@ -708,7 +705,7 @@ class Alma extends AbstractBase implements
      * @param string $username The patrons barcode or other username.
      * @param string $password The patrons password.
      *
-     * @return string[]|NULL
+     * @return ?array
      */
     public function patronLogin($username, $password)
     {
@@ -1644,8 +1641,8 @@ class Alma extends AbstractBase implements
     /**
      * Parse a date.
      *
-     * @param string  $date     Date to parse
-     * @param boolean $withTime Add time to return if available?
+     * @param string $date     Date to parse
+     * @param bool   $withTime Add time to return if available?
      *
      * @return string
      */
@@ -1878,7 +1875,7 @@ class Alma extends AbstractBase implements
      *
      * @param SimpleXMLElement $user User data
      *
-     * @return string|null
+     * @return ?string
      */
     protected function getPreferredEmail($user)
     {
@@ -1901,7 +1898,7 @@ class Alma extends AbstractBase implements
      *
      * @param SimpleXMLElement $element XML element
      *
-     * @return \VuFind\I18n\TranslatableString
+     * @return ?TranslatableString
      */
     protected function getTranslatableString($element)
     {
@@ -1919,7 +1916,7 @@ class Alma extends AbstractBase implements
      *
      * @param SimpleXMLElement $element XML element
      *
-     * @return TranslatableString
+     * @return ?TranslatableString
      */
     protected function getTranslatableStatusString($element)
     {
