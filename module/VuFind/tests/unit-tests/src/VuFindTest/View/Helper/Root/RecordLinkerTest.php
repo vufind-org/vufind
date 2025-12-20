@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2019.
+ * Copyright (C) The National Library of Finland 2019-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -31,6 +31,7 @@ namespace VuFindTest\View\Helper\Root;
 
 use VuFind\Config\Config;
 use VuFind\Record\Router;
+use VuFind\Search\Base\Results;
 use VuFind\View\Helper\Root\RecordLinker;
 use VuFind\View\Helper\Root\Translate;
 use VuFind\View\Helper\Root\Truncate;
@@ -158,6 +159,43 @@ class RecordLinkerTest extends \PHPUnit\Framework\TestCase
         $driver = new TestHarness();
         $driver->setRawData(['Breadcrumb' => $breadcrumb]);
         $this->assertEquals([$expected, '/Record/?sid=-123'], $recordLinker->getBreadcrumbParams($driver));
+    }
+
+    /**
+     * Test handling of Results in __invoke.
+     *
+     * @return void
+     */
+    public function testInvoke(): void
+    {
+        $recordLinker = $this->getRecordLinker();
+        $results = $this->createMock(Results::class);
+        $results->expects($this->exactly(2))
+            ->method('getSearchId')
+            ->willReturn(234);
+        $this->assertEquals(
+            '/Record/foo?sid=234',
+            $recordLinker($results)->getUrl('Solr|foo')
+        );
+        $recordLinker(null);
+        $this->assertEquals(
+            '/Record/foo?sid=234',
+            $recordLinker->getUrl('Solr|foo')
+        );
+        $recordLinker->resetStoredResults();
+        $this->assertEquals(
+            '/Record/foo?sid=-123',
+            $recordLinker->getUrl('Solr|foo')
+        );
+
+        $results2 = $this->createMock(Results::class);
+        $results2->expects($this->once())
+            ->method('getSearchId')
+            ->willReturn(345);
+        $this->assertEquals(
+            '/Record/foo?sid=345',
+            $recordLinker($results2)->getUrl('Solr|foo')
+        );
     }
 
     /**
