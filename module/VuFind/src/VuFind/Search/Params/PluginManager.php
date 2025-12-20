@@ -47,6 +47,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         'blender' => \VuFind\Search\Blender\Params::class,
+        'blender2' => \VuFind\Search\Blender2\Params::class,
         'browzine' => \VuFind\Search\BrowZine\Params::class,
         'combined' => \VuFind\Search\Combined\Params::class,
         'eds' => \VuFind\Search\EDS\Params::class,
@@ -80,8 +81,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        \VuFind\Search\Blender\Params::class
-            => \VuFind\Search\Blender\ParamsFactory::class,
+        \VuFind\Search\Blender\Params::class => \VuFind\Search\Blender\ParamsFactory::class,
+        \VuFind\Search\Blender2\Params::class => \VuFind\Search\Blender2\ParamsFactory::class,
         \VuFind\Search\BrowZine\Params::class => ParamsFactory::class,
         \VuFind\Search\Combined\Params::class => ParamsFactory::class,
         \VuFind\Search\EDS\Params::class => ParamsFactory::class,
@@ -95,10 +96,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         \VuFind\Search\Pazpar2\Params::class => ParamsFactory::class,
         \VuFind\Search\Primo\Params::class => ParamsFactory::class,
         \VuFind\Search\ProQuestFSG\Params::class => ParamsFactory::class,
-        \VuFind\Search\Search2\Params::class =>
-            \VuFind\Search\Solr\ParamsFactory::class,
-        \VuFind\Search\Solr\Params::class =>
-            \VuFind\Search\Solr\ParamsFactory::class,
+        \VuFind\Search\Search2\Params::class => \VuFind\Search\Solr\ParamsFactory::class,
+        \VuFind\Search\Solr\Params::class => \VuFind\Search\Solr\ParamsFactory::class,
         \VuFind\Search\SolrAuth\Params::class => ParamsFactory::class,
         \VuFind\Search\SolrAuthor\Params::class => ParamsFactory::class,
         \VuFind\Search\SolrAuthorFacets\Params::class =>  ParamsFactory::class,
