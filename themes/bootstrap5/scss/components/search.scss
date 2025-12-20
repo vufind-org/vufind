@@ -1000,3 +1000,10 @@ table.search-history-table {
 .callnumAndLocation .itemWithAdditionalHoldingFields td {
   border-bottom-width: 0;
 }
+
+/* OpenLibrarySubjects recommendation module */
+.olSubjectCover {
+ display: inline-block;
+ min-width: 48px;
+ padding: 2px;
+}
