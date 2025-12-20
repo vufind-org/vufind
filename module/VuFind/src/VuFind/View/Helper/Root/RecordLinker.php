@@ -6,7 +6,7 @@
  * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
- * Copyright (C) The National Library of Finland 2023.
+ * Copyright (C) The National Library of Finland 2023-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -89,8 +89,21 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
      */
     public function __invoke($results = null)
     {
-        $this->results = $results;
+        // Avoid setting any existing results null:
+        if (null !== $results) {
+            $this->results = $results;
+        }
         return $this;
+    }
+
+    /**
+     * Reset any stored Results object.
+     *
+     * @return void
+     */
+    public function resetStoredResults(): void
+    {
+        $this->results = null;
     }
 
     /**
@@ -216,9 +229,9 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
         $driverId = is_string($driver)
             ? $driver
             : ($driver->getSourceIdentifier() . '|' . $driver->getUniqueID());
+        $recordUrlParams = $this->getRecordUrlParams($options);
         $cacheKey = md5(
-            $driverId . '|' . ($tab ?? '-') . '|' . var_export($query, true)
-            . var_export($options, true)
+            $driverId . '|' . ($tab ?? '-') . '|' . var_export($query, true) . var_export($recordUrlParams, true)
         );
         if (!isset($this->cachedDriverUrls[$cacheKey])) {
             // Build the URL:
@@ -229,7 +242,7 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
                 $details['params'],
                 array_merge_recursive(
                     $details['options'] ?? [],
-                    ['query' => $this->getRecordUrlParams($options)]
+                    ['query' => $recordUrlParams]
                 )
             );
         }
