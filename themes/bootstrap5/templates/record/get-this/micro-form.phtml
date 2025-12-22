@@ -1,13 +1,3 @@
-<?php
-$link = $getThisParams['open_hours'] ?? '';
-if (empty($link)) {
-    $linkStart = '';
-    $linkEnd = '';
-} else {
-    $linkStart = '<a href="' . $this->escapeHtml($link) . '">';
-    $linkEnd = '</a>';
-}
-?>
 <div>
   <p>
     <strong><?= $this->transEsc('viewing_request') ?>:</strong>
