@@ -79,7 +79,7 @@ class RecordFormatterFactory implements FactoryInterface
         $recordFields = $container->get(\VuFind\Config\YamlReader::class)
             ->get($this->configFile);
         $helperManager = $container->get('ViewHelperManager');
-        $serverUrlHelper = $container->get('VuFind\Http\ServerUrlHelper');
+        $serverUrlHelper = $container->get(\VuFind\Http\ServerUrlHelper::class);
         return new $requestedName($recordFields, $helperManager, $serverUrlHelper);
     }
 }
