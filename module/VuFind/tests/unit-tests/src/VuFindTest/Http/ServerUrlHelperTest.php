@@ -56,7 +56,7 @@ class ServerUrlHelperTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider to return in getBaseUrl tests.
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator<string, array>
      */
     public static function getBaseUrlProvider(): \Iterator
     {
@@ -75,7 +75,7 @@ class ServerUrlHelperTest extends \PHPUnit\Framework\TestCase
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('getBaseUrlProvider')]
-    public function testGetBaseUrl(string $https, string $host, string $expected)
+    public function testGetBaseUrl(string $https, string $host, string $expected): void
     {
         $helper = $this->getServerUrlHelper();
         $serverBackup = $this->backupAndSetServerFields($https, $host);
@@ -90,7 +90,7 @@ class ServerUrlHelperTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider to return in getCurrentUrl and getUrlForPath tests.
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return \Iterator<string, array>
      */
     public static function urlsWithPathsProvider(): \Iterator
     {
@@ -111,7 +111,7 @@ class ServerUrlHelperTest extends \PHPUnit\Framework\TestCase
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('urlsWithPathsProvider')]
-    public function testGetCurrentUrl(string $https, string $host, string $currentPath, string $expected)
+    public function testGetCurrentUrl(string $https, string $host, string $currentPath, string $expected): void
     {
         $helper = $this->getServerUrlHelper();
         $serverBackup = $this->backupAndSetServerFields($https, $host, $currentPath);
@@ -134,7 +134,7 @@ class ServerUrlHelperTest extends \PHPUnit\Framework\TestCase
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('urlsWithPathsProvider')]
-    public function testGetUrlForPath(string $https, string $host, string $path, string $expected)
+    public function testGetUrlForPath(string $https, string $host, string $path, string $expected): void
     {
         $helper = $this->getServerUrlHelper();
         $serverBackup = $this->backupAndSetServerFields($https, $host);
@@ -193,7 +193,7 @@ class ServerUrlHelperTest extends \PHPUnit\Framework\TestCase
      *
      * @return ServerUrlHelper
      */
-    protected function getServerUrlHelper()
+    protected function getServerUrlHelper(): ServerUrlHelper
     {
         return new ServerUrlHelper(
             Closure::fromCallable(new ServerUrl())
