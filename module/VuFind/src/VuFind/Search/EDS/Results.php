@@ -32,6 +32,7 @@
 namespace VuFind\Search\EDS;
 
 use VuFindSearch\Command\SearchCommand;
+use VuFindSearch\ParamBag;
 
 /**
  * EDS API Results
@@ -84,15 +85,9 @@ class Results extends \VuFind\Search\Base\Results
         $limit  = $this->getParams()->getLimit();
         $offset = $this->getStartRecord() - 1;
         $params = $this->getParams()->getBackendParameters();
-        if ($allTerms === '') {
-            $hasLimiters = (bool)array_filter(
-                $params->get('filters') ?? [],
-                fn ($filter) => str_starts_with($filter, 'LIMIT')
-            );
-            if (!$hasLimiters) {
-                $this->storeErrorResponse('empty_search_no_filters_disallowed');
-                return;
-            }
+        if ($allTerms === '' && !$this->paramsIncludeLimiter($params)) {
+            $this->storeErrorResponse('empty_search_no_filters_disallowed');
+            return;
         }
         $command = new SearchCommand(
             $this->backendId,
@@ -120,6 +115,22 @@ class Results extends \VuFind\Search\Base\Results
             $this->results = $collection->getRecords();
             $this->restrictedView = $collection->isRestrictedView();
         }
+    }
+
+    /**
+     * Return true if the given $params include any filters that limit the number
+     * of results.  EDS "filters" can also include expanders.
+     *
+     * @param ParamBag $params The params
+     *
+     * @return bool
+     */
+    protected function paramsIncludeLimiter(ParamBag $params): bool
+    {
+        return (bool)array_filter(
+            $params->get('filters') ?? [],
+            fn ($filter) => str_starts_with($filter, 'LIMIT')
+        );
     }
 
     /**
