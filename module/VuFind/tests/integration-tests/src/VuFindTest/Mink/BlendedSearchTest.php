@@ -128,31 +128,41 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
         yield [
             ['page' => 1],
             'Blender/Results',
+            'Blended',
         ];
         yield [
             ['page' => 2],
             'Blender/Results',
+            'Blended',
         ];
         yield [
             ['page' => 1],
             'Search/Blended', // legacy path
+            'Blended',
         ];
         yield [
             ['page' => 2],
             'Search/Blended', // legacy path
+            'Blended',
+        ];
+        yield [
+            ['page' => 1],
+            'Blender2/Results',
+            'Also Blended',
         ];
     }
 
     /**
      * Test blended search
      *
-     * @param array  $queryParams Query parameters
-     * @param string $path        URL path
+     * @param array  $queryParams    Query parameters
+     * @param string $path           URL path
+     * @param string $searchBoxLabel Label of the active search box
      *
      * @return void
      */
     #[\PHPUnit\Framework\Attributes\DataProvider('getSearchData')]
-    public function testSearch(array $queryParams, string $path): void
+    public function testSearch(array $queryParams, string $path, string $searchBoxLabel): void
     {
         $expectedLabels = $this->getExpectedLabels($queryParams['page']);
         $this->changeConfigs(
@@ -161,9 +171,11 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
                     'SearchTabs' => [
                         'Solr' => 'Catalog',
                         'Blender' => 'Blended',
+                        'Blender2' => 'Also Blended',
                     ],
                 ],
                 'Blender' => $this->getBlenderIniOverrides(),
+                'Blender2' => $this->getBlenderIniOverrides(),
             ],
             ['Blender']
         );
@@ -193,7 +205,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#result0 .title');
         $this->waitForPageLoad($page);
         $this->assertEquals(
-            'Blended',
+            $searchBoxLabel,
             $this->findCssAndGetText($page, '.searchbox li a.active')
         );
 
