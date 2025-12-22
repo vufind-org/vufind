@@ -5,7 +5,7 @@
   $i = $this->indexStart;
   $listStart = $this->results->getStartRecord() + $i - $this->indexStart;
   $showCheckboxes = $this->searchSettings($this->results->getParams())->checkboxesEnabled();
-  $between = $this->results->getRecommendations('between');
+  $between = isset($combined) && $combined ? [] : $this->results->getRecommendations('between');
   $betweenPlacements = $this->recommend()->getBetweenHelper()->getPlacements($between, $this->results);
 ?>
 <ol class="<?=$this->escapeHtmlAttr(trim('record-list ' . ($this->resultsClass ?? '')))?>" start="<?=$listStart?>"<?=isset($this->resultsAttrs) ? ' ' . $this->resultsAttrs : ''?>>
