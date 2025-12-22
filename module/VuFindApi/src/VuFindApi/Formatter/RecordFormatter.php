@@ -133,8 +133,22 @@ class RecordFormatter extends BaseFormatter
      * @param \VuFind\RecordDriver\AbstractBase $record Record driver
      *
      * @return string
+     *
+     * @deprecated Use getRecordPageRelativeLink instead
      */
     protected function getRecordPage($record)
+    {
+        return $this->getRecordPageRelativeLink($record);
+    }
+
+    /**
+     * Get relative link to record page
+     *
+     * @param \VuFind\RecordDriver\AbstractBase $record Record driver
+     *
+     * @return string
+     */
+    protected function getRecordPageRelativeLink($record)
     {
         $urlHelper = $this->helperManager->get('recordLinker');
         return $urlHelper->getUrl($record);
