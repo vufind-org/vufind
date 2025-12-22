@@ -81,7 +81,7 @@ class ServerUrlHelperTest extends \PHPUnit\Framework\TestCase
         $serverBackup = $this->backupAndSetServerFields($https, $host);
         try {
             $results = $helper->getBaseUrl();
-            $this->assertEquals($expected, $results);
+            $this->assertSame($expected, $results);
         } finally {
             $this->restoreServerFields($serverBackup);
         }
@@ -117,7 +117,7 @@ class ServerUrlHelperTest extends \PHPUnit\Framework\TestCase
         $serverBackup = $this->backupAndSetServerFields($https, $host, $currentPath);
         try {
             $results = $helper->getCurrentUrl();
-            $this->assertEquals($expected, $results);
+            $this->assertSame($expected, $results);
         } finally {
             $this->restoreServerFields($serverBackup);
         }
@@ -140,7 +140,7 @@ class ServerUrlHelperTest extends \PHPUnit\Framework\TestCase
         $serverBackup = $this->backupAndSetServerFields($https, $host);
         try {
             $results = $helper->getUrlForPath($path);
-            $this->assertEquals($expected, $results);
+            $this->assertSame($expected, $results);
         } finally {
             $this->restoreServerFields($serverBackup);
         }
