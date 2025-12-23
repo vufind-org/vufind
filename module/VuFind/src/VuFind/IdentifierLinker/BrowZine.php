@@ -35,6 +35,7 @@ use VuFindSearch\Backend\BrowZine\Command\LookupIssnsCommand;
 use VuFindSearch\Service;
 
 use function in_array;
+use function is_array;
 
 /**
  * BrowZine identifier linker
@@ -205,8 +206,7 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
         foreach ($config as $key => $configLine) {
             if (empty($configLine)) {
                 $result[$key] = [];
-            }
-            else {
+            } else {
                 $parts = explode('|', $configLine);
                 $result[$key] = [
                     'linkText' => $parts[0],
