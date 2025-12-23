@@ -501,7 +501,6 @@ $config = [
             'VuFind\Hierarchy\TreeRenderer\PluginManager' => 'VuFind\ServiceManager\AbstractPluginManagerFactory',
             'VuFind\Http\CachingDownloader' => 'VuFind\Http\CachingDownloaderFactory',
             'VuFind\Http\GuzzleService' => 'VuFind\Http\GuzzleServiceFactory',
-            'VuFind\Http\ServerUrlHelper' => 'VuFind\Http\ServerUrlHelperFactory',
             'VuFind\Http\PhpEnvironment\Request' => 'Laminas\ServiceManager\Factory\InvokableFactory',
             'VuFind\Http\ServerUrlHelper' => 'VuFind\Http\ServerUrlHelperFactory',
             'VuFind\I18n\Locale\LocaleSettings' => 'VuFind\Service\ServiceWithConfigIniFactory',
