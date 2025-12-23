@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) AK Bibliothek Wien für Sozialwissenschaften 2025.
+ * Copyright (C) AK Bibliothek Wien für Sozialwissenschaften 2018-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
