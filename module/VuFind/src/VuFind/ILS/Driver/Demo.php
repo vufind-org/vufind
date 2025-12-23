@@ -51,6 +51,7 @@ use function array_key_exists;
 use function array_slice;
 use function count;
 use function in_array;
+use function is_array;
 use function is_callable;
 use function sprintf;
 use function strlen;
@@ -2256,9 +2257,13 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                     ? 'hold_error_blocked' : 'Demonstrating a custom failure',
             ];
         }
-        return [
+        // Validate that we received data in the appropriate format (see PR #4985):
+        return is_array($data) ? [
             'valid' => true,
             'status' => 'request_place_text',
+        ] : [
+            'valid' => false,
+            'status' => 'invalid data provided',
         ];
     }
 
@@ -2381,9 +2386,13 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                     : 'Demonstrating a custom failure',
             ];
         }
-        return [
+        // Validate that we received data in the appropriate format (see PR #4985):
+        return is_array($data) ? [
             'valid' => true,
             'status' => 'storage_retrieval_request_place_text',
+        ] : [
+            'valid' => false,
+            'status' => 'invalid data provided',
         ];
     }
 
@@ -2511,9 +2520,13 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                     ? 'ill_request_error_blocked' : 'Demonstrating a custom failure',
             ];
         }
-        return [
+        // Validate that we received data in the appropriate format (see PR #4985):
+        return is_array($data) ? [
             'valid' => true,
             'status' => 'ill_request_place_text',
+        ] : [
+            'valid' => false,
+            'status' => 'invalid data provided',
         ];
     }
 
