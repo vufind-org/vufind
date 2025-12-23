@@ -75,7 +75,7 @@ class AlmaDatabase extends Database
     ) {
         $this->almaDriver = $catalog->getDriver();
         $this->almaConfig = $catalog->getDriverConfig();
-        $this->hasher = $hasher ?? new PasswordHasher();
+        parent::__construct($hasher);
     }
 
     /**
