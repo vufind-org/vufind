@@ -164,7 +164,7 @@ class OpenLibrary
                         }
                         $result[$i]['key'] = $work['key'];
                         $result[$i]['ia'] = $work['ia'];
-                        $result[$i]['mainAuthor'] = $work['authors'][0]['name'];
+                        $result[$i]['mainAuthor'] = $work['authors'][0]['name'] ?? null;
                         $i++;
                     }
                 }

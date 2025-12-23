@@ -16,7 +16,7 @@ function checkRequestIsValid(element, requestType, icon = 'place-hold') {
     method: 'checkRequestIsValid',
     id: recordId,
     requestType: requestType,
-    data: vars
+    data: JSON.stringify(vars)
   });
   fetch(url, {
     headers: {
