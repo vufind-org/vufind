@@ -173,14 +173,14 @@ class VirtuaTest extends \PHPUnit\Framework\TestCase
      * @param array $profiles Profiles mocking db select
      * @param array $expected Expected results
      *
-     * @return       void
-     * @dataProvider getTestGetMyProfileData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestGetMyProfileData')]
     public function testGetMyProfile(array $profiles, array $expected): void
     {
         $db = $this->getMockBuilder(Oracle::class)->onlyMethods(['simpleSelect'])
             ->disableOriginalConstructor()->getMock();
-        $db->expects($this->any())->method('simpleSelect')->willReturn($profiles);
+        $db->method('simpleSelect')->willReturn($profiles);
         $result = $this->createConnector(db: $db)->getMyProfile(['id' => '1111']);
         $this->assertEquals($expected, $result);
     }

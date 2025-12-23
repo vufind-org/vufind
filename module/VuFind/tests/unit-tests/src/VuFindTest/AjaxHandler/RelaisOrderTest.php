@@ -61,14 +61,12 @@ class RelaisOrderTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testSearchResponse()
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function authenticatedBehaviorProvider(): array
+    public static function authenticatedBehaviorProvider(): \Iterator
     {
-        return [
-            'failure' => ['error: it is broken', ['error: it is broken', 500]],
-            'success' => ['success', [['result' => 'success']]],
-        ];
+        yield 'failure' => ['error: it is broken', ['error: it is broken', 500]];
+        yield 'success' => ['success', [['result' => 'success']]];
     }
 
     /**
@@ -78,9 +76,8 @@ class RelaisOrderTest extends \PHPUnit\Framework\TestCase
      * @param array  $expected Expected handler response
      *
      * @return void
-     *
-     * @dataProvider authenticatedBehaviorProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('authenticatedBehaviorProvider')]
     public function testAuthenticatedBehavior(string $response, array $expected): void
     {
         $user = $this->createMock(\VuFind\Db\Entity\UserEntityInterface::class);

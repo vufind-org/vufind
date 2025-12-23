@@ -61,20 +61,18 @@ class RelaisInfoTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testSearchResponse()
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function authenticatedBehaviorProvider(): array
+    public static function authenticatedBehaviorProvider(): \Iterator
     {
-        return [
-            'failure' => [null, ['Failed', 403]],
-            'forbidden' => [
-                (object)['AuthorizationId' => 1234, 'AllowLoanAddRequest' => false],
-                ['AllowLoan was false', 500],
-            ],
-            'success' => [
-                (object)['AuthorizationId' => 1234, 'AllowLoanAddRequest' => true],
-                [['result' => 'search-result']],
-            ],
+        yield 'failure' => [null, ['Failed', 403]];
+        yield 'forbidden' => [
+            (object)['AuthorizationId' => 1234, 'AllowLoanAddRequest' => false],
+            ['AllowLoan was false', 500],
+        ];
+        yield 'success' => [
+            (object)['AuthorizationId' => 1234, 'AllowLoanAddRequest' => true],
+            [['result' => 'search-result']],
         ];
     }
 
@@ -85,9 +83,8 @@ class RelaisInfoTest extends \PHPUnit\Framework\TestCase
      * @param array   $expected Expected handler response
      *
      * @return void
-     *
-     * @dataProvider authenticatedBehaviorProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('authenticatedBehaviorProvider')]
     public function testAuthenticatedBehavior(?object $response, array $expected): void
     {
         $user = $this->createMock(\VuFind\Db\Entity\UserEntityInterface::class);
@@ -99,9 +96,7 @@ class RelaisInfoTest extends \PHPUnit\Framework\TestCase
         $relais->expects($this->once())->method('authenticatePatron')
             ->with('user', true)
             ->willReturn($response);
-        $relais->expects($this->any())->method('search')
-            ->with('oclcnum', 1234)
-            ->willReturn('search-result');
+        $relais->method('search')->with('oclcnum', 1234)->willReturn('search-result');
         $handler = new RelaisInfo(
             $this->createMock(\VuFind\Session\Settings::class),
             $relais,

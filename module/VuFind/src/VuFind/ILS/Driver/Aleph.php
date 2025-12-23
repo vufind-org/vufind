@@ -689,11 +689,7 @@ class Aleph extends AbstractBase implements
             $params['patron'] = $this->defaultPatronId;
         }
         $xml = $this->doRestDLFRequest(['record', $resource, 'items'], $params);
-        if (!empty($xml->{'items'})) {
-            $items = $xml->{'items'}->{'item'};
-        } else {
-            $items = [];
-        }
+        $items = !empty($xml->{'items'}) ? $xml->{'items'}->{'item'} : [];
         foreach ($items as $item) {
             $item_status         = (string)$item->{'z30-item-status-code'}; // $isc
             // $ipsc:
@@ -774,7 +770,7 @@ class Aleph extends AbstractBase implements
                 'addLink'           => $addLink,
                 'holdtype'          => 'hold',
                 /* below are optional attributes*/
-                'collection'        => (string)$collection,
+                'collection'        => $collection,
                 'collection_desc'   => (string)$collection_desc['desc'],
                 'callnumber_second' => (string)$z30->{'z30-call-no-2'},
                 'sub_lib_desc'      => (string)$item_status['sub_lib_desc'],
@@ -806,9 +802,9 @@ class Aleph extends AbstractBase implements
      * This is responsible for retrieving all transactions (i.e. checked out items)
      * by a specific patron.
      *
-     * @param array   $user    The patron array from patronLogin
-     * @param array   $params  Parameters
-     * @param boolean $history History
+     * @param array $user    The patron array from patronLogin
+     * @param array $params  Parameters
+     * @param bool  $history History
      *
      * @throws DateException
      * @throws ILSException
@@ -1000,11 +996,7 @@ class Aleph extends AbstractBase implements
             if (preg_match($this->queuePositionRegex, $status, $matches)) {
                 $position = $matches['position'];
             }
-            if ($holddate == '00000000') {
-                $holddate = null;
-            } else {
-                $holddate = $this->parseDate($holddate);
-            }
+            $holddate = $holddate == '00000000' ? null : $this->parseDate($holddate);
             $delete = ($delete[0] == 'Y');
             // Secondary, Aleph-specific identifier that may be useful for
             // local customizations
@@ -1159,11 +1151,7 @@ class Aleph extends AbstractBase implements
      */
     public function getMyProfile($user)
     {
-        if ($this->xserver_enabled) {
-            $profile = $this->getMyProfileX($user);
-        } else {
-            $profile = $this->getMyProfileDLF($user);
-        }
+        $profile = $this->xserver_enabled ? $this->getMyProfileX($user) : $this->getMyProfileDLF($user);
         $profile['cat_username'] ??= $user['id'];
         return $profile;
     }
@@ -1241,7 +1229,7 @@ class Aleph extends AbstractBase implements
         return $this->createProfileArray(
             firstname: $firstname,
             lastname: $lastname,
-            group: $xml->xpath('//institution/z305-bor-status')[0],
+            group: (string)$xml->xpath('//institution/z305-bor-status')[0],
             city: $mappedValues['city'] ?? null,
             country: $mappedValues['country'] ?? null,
             phone: $mappedValues['phone'] ?? null,
@@ -1250,7 +1238,7 @@ class Aleph extends AbstractBase implements
             address2: $mappedValues['address2'] ?? null,
             zip: $mappedValues['zip'] ?? null,
             birthdate: $mappedValues['birthdate'] ?? '',
-            expiration_date: $this->parseDate($expiry[0]),
+            expiration_date: $this->parseDate((string)$expiry[0]),
             // Merge all mapped values here even if all the default values are checked
             // independently. This ensures that all the possible values are being set correctly
             // and clarification what is being output remains.
@@ -1321,7 +1309,7 @@ class Aleph extends AbstractBase implements
             id: (string)$id,
             cat_username: (string)$user,
             cat_password: $password,
-            firstname: (string)$firstName,
+            firstname: $firstName,
             lastname: (string)$lastName,
             email: (string)$email_addr,
         );
@@ -1712,10 +1700,10 @@ class Aleph extends AbstractBase implements
      *
      * Retrieve the IDs of items recently added to the catalog.
      *
-     * @param int $page    Page number of results to retrieve (counting starts at 1)
-     * @param int $limit   The size of each page of results to retrieve
-     * @param int $daysOld The maximum age of records to retrieve in days (max. 30)
-     * @param int $fundId  optional fund ID to use for limiting results (use a value
+     * @param int     $page    Page number of results to retrieve (counting starts at 1)
+     * @param int     $limit   The size of each page of results to retrieve
+     * @param int     $daysOld The maximum age of records to retrieve in days (max. 30)
+     * @param ?string $fundId  optional fund ID to use for limiting results (use a value
      * returned by getFunds, or exclude for no limit); note that "fund" may be a
      * misnomer - if funds are not an appropriate way to limit your new item
      * results, you can return a different set of values from getFunds. The

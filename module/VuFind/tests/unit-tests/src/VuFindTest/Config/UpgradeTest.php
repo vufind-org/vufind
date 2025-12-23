@@ -96,58 +96,56 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testDatabaseUpgrade().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function databaseUpgradeProvider(): array
+    public static function databaseUpgradeProvider(): \Iterator
     {
-        return [
-            'legacy and new formats' => [
-                'database-both-formats',
-                // New format should take precedence:
-                [
-                    'use_ssl' => '',
-                    'verify_server_certificate' => '',
-                    'database_driver' => 'mysql',
-                    'database_username' => 'notroot',
-                    'database_password' => 'password',
-                    'database_host' => 'localhost',
-                    'database_port' => '3306',
-                    'database_name' => 'vufind',
-                ],
+        yield 'legacy and new formats' => [
+            'database-both-formats',
+            // New format should take precedence:
+            [
+                'use_ssl' => '',
+                'verify_server_certificate' => '',
+                'database_driver' => 'mysql',
+                'database_username' => 'notroot',
+                'database_password' => 'password',
+                'database_host' => 'localhost',
+                'database_port' => '3306',
+                'database_name' => 'vufind',
             ],
-            'legacy format only' => [
-                'database-legacy-format',
-                [
-                    'use_ssl' => '',
-                    'verify_server_certificate' => '',
-                    'database' => 'mysql://user:pass@localhost/vufind_custom',
-                ],
+        ];
+        yield 'legacy format only' => [
+            'database-legacy-format',
+            [
+                'use_ssl' => '',
+                'verify_server_certificate' => '',
+                'database' => 'mysql://user:pass@localhost/vufind_custom',
             ],
-            'new format only' => [
-                'database-new-format',
-                [
-                    'use_ssl' => '',
-                    'verify_server_certificate' => '',
-                    'database_driver' => 'mysql',
-                    'database_username' => 'notroot',
-                    'database_password' => 'password',
-                    'database_host' => 'localhost',
-                    'database_port' => '3306',
-                    'database_name' => 'vufind',
-                ],
+        ];
+        yield 'new format only' => [
+            'database-new-format',
+            [
+                'use_ssl' => '',
+                'verify_server_certificate' => '',
+                'database_driver' => 'mysql',
+                'database_username' => 'notroot',
+                'database_password' => 'password',
+                'database_host' => 'localhost',
+                'database_port' => '3306',
+                'database_name' => 'vufind',
             ],
-            'new format only, with file-based password' => [
-                'database-new-format-password-file',
-                [
-                    'use_ssl' => '',
-                    'verify_server_certificate' => '',
-                    'database_driver' => 'mysql',
-                    'database_username' => 'notroot',
-                    'database_password_file' => '/path/to/secret',
-                    'database_host' => 'localhost',
-                    'database_port' => '3306',
-                    'database_name' => 'vufind',
-                ],
+        ];
+        yield 'new format only, with file-based password' => [
+            'database-new-format-password-file',
+            [
+                'use_ssl' => '',
+                'verify_server_certificate' => '',
+                'database_driver' => 'mysql',
+                'database_username' => 'notroot',
+                'database_password_file' => '/path/to/secret',
+                'database_host' => 'localhost',
+                'database_port' => '3306',
+                'database_name' => 'vufind',
             ],
         ];
     }
@@ -159,9 +157,8 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      * @param array  $expected Expected result
      *
      * @return void
-     *
-     * @dataProvider databaseUpgradeProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('databaseUpgradeProvider')]
     public function testDatabaseUpgrade(string $fixture, array $expected): void
     {
         $upgrader = $this->runAndGetConfigUpgrader($fixture);
@@ -227,27 +224,33 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Data provider for testSyndetics.
+     *
+     * @return \Iterator
+     */
+    public static function syndeticsProvider(): \Iterator
+    {
+        yield 'syndeticsurl' => ['syndeticsurl'];
+        yield 'syndeticsplus' => ['syndeticsplus'];
+    }
+
+    /**
      * Test Syndetics upgrade.
+     *
+     * @param string $fixtureDir Fixture directory
      *
      * @return void
      */
-    public function testSyndetics(): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('syndeticsProvider')]
+    public function testSyndetics(string $fixtureDir): void
     {
         // Test upgrading an SSL URL
-        $upgrader = $this->runAndGetConfigUpgrader('syndeticsurlssl');
+        $upgrader = $this->runAndGetConfigUpgrader($fixtureDir);
         $results = $upgrader->getNewConfigs();
-        $this->assertEquals(
-            1,
-            $results['config']['Syndetics']['use_ssl']
-        );
-
-        // Test upgrading a non-SSL URL
-        $upgrader = $this->runAndGetConfigUpgrader('syndeticsurlnossl');
-        $results = $upgrader->getNewConfigs();
-        $this->assertEquals(
-            '',
-            $results['config']['Syndetics']['use_ssl']
-        );
+        $this->assertFalse(isset($results['config']['Syndetics']['url']));
+        $this->assertFalse(isset($results['config']['Syndetics']['use_ssl']));
+        $this->assertFalse(isset($results['config']['Syndetics']['plus']));
+        $this->assertFalse(isset($results['config']['Syndetics']['plus_id']));
     }
 
     /**
@@ -367,13 +370,6 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertTrue(
             in_array(
-                'The [GoogleAnalytics] universal setting is off. See config.ini '
-                . 'for important information on how to upgrade your Analytics.',
-                $warnings
-            )
-        );
-        $this->assertTrue(
-            in_array(
                 'Google Maps is no longer a supported Content/recordMap option;'
                 . ' please review your config.ini.',
                 $warnings
@@ -407,19 +403,17 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testEbscoUpgrades
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function ebscoUpgradeProvider(): array
+    public static function ebscoUpgradeProvider(): \Iterator
     {
-        return [
-            [
-                'eds',
-                'EDS',
-            ],
-            [
-                'epf',
-                'EPF',
-            ],
+        yield [
+            'eds',
+            'EDS',
+        ];
+        yield [
+            'epf',
+            'EPF',
         ];
     }
 
@@ -430,13 +424,12 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      * @param string $configName Configuration name, EDS or EPF
      *
      * @return void
-     *
-     * @dataProvider ebscoUpgradeProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('ebscoUpgradeProvider')]
     public function testEbscoUpgrade(string $backend, string $configName): void
     {
         $upgrader = $this->runAndGetConfigUpgrader($backend);
-        $this->assertEquals([], $upgrader->getWarnings());
+        $this->assertSame([], $upgrader->getWarnings());
         $results = $upgrader->getNewConfigs();
         $this->assertEquals(
             ['foo' => 'bar'],
@@ -456,7 +449,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     public function testEDSRecordDataFormatterUpgradeSimple(): void
     {
         $upgrader = $this->runAndGetConfigUpgrader('eds-record-data-formatter-default');
-        $this->assertEquals([], $upgrader->getWarnings());
+        $this->assertSame([], $upgrader->getWarnings());
         $results = $upgrader->getNewConfigs();
         $edsConfig = $results['EDS'];
         $this->assertArrayNotHasKey('ItemCoreFilter', $edsConfig);
@@ -472,7 +465,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     public function testEDSRecordDataFormatterUpgradeAdvanced(): void
     {
         $upgrader = $this->runAndGetConfigUpgrader('eds-record-data-formatter-advanced');
-        $this->assertEquals([], $upgrader->getWarnings());
+        $this->assertSame([], $upgrader->getWarnings());
         $results = $upgrader->getNewConfigs();
         $edsConfig = $results['EDS'];
         $edsRecordDataFormatterConfig = $results['RecordDataFormatter/EDS'];
@@ -542,7 +535,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     public function testPrimoUpgrade(): void
     {
         $upgrader = $this->runAndGetConfigUpgrader('primo');
-        $this->assertEquals([], $upgrader->getWarnings());
+        $this->assertSame([], $upgrader->getWarnings());
         $results = $upgrader->getNewConfigs();
         $this->assertEquals(
             'http://my-id.hosted.exlibrisgroup.com:1701',
@@ -561,7 +554,7 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $expectedWarning = 'WARNING: This version of VuFind does not support the doesnotexist theme. '
             . 'Your config.ini [Site] theme setting has been reset to the default: sandal5. '
             . 'You may need to reimplement your custom theme.';
-        $this->assertEquals([$expectedWarning], $upgrader->getWarnings());
+        $this->assertSame([$expectedWarning], $upgrader->getWarnings());
         $results = $upgrader->getNewConfigs();
         $this->assertEquals(
             'sandal5',
@@ -633,14 +626,12 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testMailRequireLoginMigration().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function mailRequireLoginProvider(): array
+    public static function mailRequireLoginProvider(): \Iterator
     {
-        return [
-            'false' => ['email-require-login-false', 'enabled'],
-            'true' => ['email-require-login-true', 'require_login'],
-        ];
+        yield 'false' => ['email-require-login-false', 'enabled'];
+        yield 'true' => ['email-require-login-true', 'require_login'];
     }
 
     /**
@@ -650,15 +641,45 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
      * @param string $expected Expected migrated setting
      *
      * @return void
-     *
-     * @dataProvider mailRequireLoginProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('mailRequireLoginProvider')]
     public function testMailRequireLoginMigration(string $fixture, string $expected): void
     {
         $upgrader = $this->runAndGetConfigUpgrader($fixture);
         $results = $upgrader->getNewConfigs();
         $this->assertFalse(isset($results['config']['Mail']['require_login']));
         $this->assertEquals($expected, $results['config']['Mail']['email_action']);
+    }
+
+    /**
+     * Data provider for testLdapUriMigration.
+     *
+     * @return \Iterator
+     */
+    public static function ldapUriMigrationProvider(): \Iterator
+    {
+        yield 'host and port' => ['ldaphostandport', 'ldap://foo:123'];
+        yield 'uri already present' => ['ldapuri', 'ldap://foo'];
+        yield 'host only' => ['ldaphost', 'ldap://foo:389'];
+        yield 'port only' => ['ldapport', 'ldap://localhost:123'];
+    }
+
+    /**
+     * Test migration of [LDAP] host/port settings.
+     *
+     * @param string $fixture  Fixture to load
+     * @param string $expected Expected migrated uri setting
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('ldapUriMigrationProvider')]
+    public function testLdapUriMigration(string $fixture, string $expected): void
+    {
+        $upgrader = $this->runAndGetConfigUpgrader($fixture);
+        $results = $upgrader->getNewConfigs();
+        $this->assertFalse(isset($results['config']['LDAP']['host']));
+        $this->assertFalse(isset($results['config']['LDAP']['port']));
+        $this->assertEquals($expected, $results['config']['LDAP']['uri']);
     }
 
     /**

@@ -74,10 +74,10 @@ class ImportXslCommandTest extends \PHPUnit\Framework\TestCase
         $importer = $this->getMockImporter();
         $importer->expects($this->once())->method('save')
             ->with(
-                $this->equalTo('foo.xml'),
-                $this->equalTo('bar.properties'),
-                $this->equalTo('Solr'),
-                $this->equalTo(false)
+                'foo.xml',
+                'bar.properties',
+                'Solr',
+                false
             );
         $command = new ImportXslCommand($importer);
         $commandTester = new CommandTester($command);
@@ -87,11 +87,11 @@ class ImportXslCommandTest extends \PHPUnit\Framework\TestCase
                 'properties_file' => 'bar.properties',
             ]
         );
-        $this->assertEquals(
+        $this->assertSame(
             "Successfully imported foo.xml...\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -105,11 +105,11 @@ class ImportXslCommandTest extends \PHPUnit\Framework\TestCase
         $importer = $this->getMockImporter();
         $importer->expects($this->once())->method('save')
             ->with(
-                $this->equalTo('foo.xml'),
-                $this->equalTo('bar.properties'),
-                $this->equalTo('SolrTest'),
-                $this->equalTo(true)
-            )->will($this->throwException($e));
+                'foo.xml',
+                'bar.properties',
+                'SolrTest',
+                true
+            )->willThrowException($e);
         $command = new ImportXslCommand($importer);
         $commandTester = new CommandTester($command);
         $commandTester->execute(
@@ -120,11 +120,11 @@ class ImportXslCommandTest extends \PHPUnit\Framework\TestCase
                 '--test-only' => true,
             ]
         );
-        $this->assertEquals(
+        $this->assertSame(
             "Fatal error: foo\nPrevious exception: bar\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertSame(1, $commandTester->getStatusCode());
     }
 
     /**

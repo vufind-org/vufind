@@ -93,7 +93,7 @@ trait LoggerAwareTrait
      */
     public function logException(\Exception $exception): void
     {
-        if ($this->logger instanceof \VuFind\Log\Logger) {
+        if ($this->logger instanceof ExtendedLoggerInterface) {
             $this->logger->logException($exception, new \Laminas\Stdlib\Parameters());
         }
     }

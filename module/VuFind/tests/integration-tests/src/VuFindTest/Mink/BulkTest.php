@@ -190,10 +190,9 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that the save control works.
      *
-     * @depends testBulkEmail
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testBulkEmail')]
     public function testBulkSave(): void
     {
         $page = $this->setUpGenericBulkTest();
@@ -235,9 +234,8 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      * Test that we can bulk-delete records from a favorites list.
      *
      * @return void
-     *
-     * @depends testBulkSave
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testBulkSave')]
     public function testBulkDeleteFromList(): void
     {
         // Log in to account that owns the list:
@@ -283,14 +281,12 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider to allow testing of top or bottom controls.
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function topOrBottomProvider(): array
+    public static function topOrBottomProvider(): \Iterator
     {
-        return [
-            'top button' => [''],
-            'bottom button' => ['bottom_'],
-        ];
+        yield 'top button' => [''];
+        yield 'bottom button' => ['bottom_'];
     }
 
     /**
@@ -299,9 +295,8 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $idPrefix Prefix for bulk control IDs.
      *
      * @return void
-     *
-     * @dataProvider topOrBottomProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('topOrBottomProvider')]
     public function testBulkExport(string $idPrefix): void
     {
         $session = $this->getMinkSession();
@@ -343,9 +338,8 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $idPrefix Prefix for bulk control IDs.
      *
      * @return void
-     *
-     * @dataProvider topOrBottomProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('topOrBottomProvider')]
     public function testBulkPrint(string $idPrefix): void
     {
         $session = $this->getMinkSession();
@@ -366,7 +360,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
             $this->retryClickWithResizedWindow($session, $page, $buttonSelector);
             [, $params] = explode('?', $session->getCurrentUrl());
         }
-        $this->assertEquals(
+        $this->assertSame(
             'print=true&id[]=Solr|testsample1&id[]=Solr|testsample2',
             str_replace(['%5B', '%5D', '%7C'], ['[', ']', '|'], $params)
         );
@@ -376,9 +370,8 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      * Test that the print control works.
      *
      * @return void
-     *
-     * @depends testBulkEmail
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testBulkEmail')]
     public function testBulkActionLimits(): void
     {
         $session = $this->getMinkSession();

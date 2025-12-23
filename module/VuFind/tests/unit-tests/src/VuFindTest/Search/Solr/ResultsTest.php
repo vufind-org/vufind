@@ -220,15 +220,11 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         array $expectedParams
     ): SearchService {
         $collection = new RecordCollection($response);
-        $searchService = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $searchService = $this->createMock(\VuFindSearch\Service::class);
 
-        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
         $commandObj->expects($this->once())->method('getResult')
-            ->will($this->returnValue($collection));
+            ->willReturn($collection);
 
         $checkCommand = function ($command) use ($expectedParams) {
             return $command::class === \VuFindSearch\Command\SearchCommand::class
@@ -240,7 +236,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         };
         $searchService->expects($this->once())->method('invoke')
             ->with($this->callback($checkCommand))
-            ->will($this->returnValue($commandObj));
+            ->willReturn($commandObj);
         return $searchService;
     }
 
@@ -276,6 +272,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                             'count' => 16,
                             'operator' => 'AND',
                             'isApplied' => false,
+                            'isExcluded' => false,
                         ],
                         [
                             'value' => 'Psychotherapy',
@@ -283,6 +280,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                             'count' => 8,
                             'operator' => 'AND',
                             'isApplied' => false,
+                            'isExcluded' => false,
                         ],
                     ],
                 ],
@@ -304,6 +302,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                             'count' => 16,
                             'operator' => 'OR',
                             'isApplied' => false,
+                            'isExcluded' => false,
                         ],
                         [
                             'value' => 'Psychotherapy',
@@ -311,6 +310,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                             'count' => 8,
                             'operator' => 'OR',
                             'isApplied' => false,
+                            'isExcluded' => false,
                         ],
                     ],
                 ],
@@ -332,6 +332,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                             'count' => 16,
                             'operator' => 'OR',
                             'isApplied' => true,
+                            'isExcluded' => false,
                         ],
                         [
                             'value' => 'Psychotherapy',
@@ -339,6 +340,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                             'count' => 8,
                             'operator' => 'OR',
                             'isApplied' => false,
+                            'isExcluded' => false,
                         ],
                     ],
                 ],
@@ -375,8 +377,10 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                                 'href' => '',
                                 'exclude' => '',
                                 'children' => [],
+                                'isExcluded' => false,
                             ],
                         ],
+                        'isExcluded' => false,
                     ],
                     [
                         'value' => '0/Sub/',
@@ -390,6 +394,7 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
                         'href' => '',
                         'exclude' => '',
                         'children' => [],
+                        'isExcluded' => false,
                     ],
                 ],
             ],
@@ -487,22 +492,18 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
         );
 
         $collection = new RecordCollection($response);
-        $searchService = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $searchService = $this->createMock(\VuFindSearch\Service::class);
         // No need to validate the parameters, just return the requested results:
-        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
         $commandObj->expects($this->once())->method('getResult')
-            ->will($this->returnValue($collection));
+            ->willReturn($collection);
 
         $checkCommand = function ($command) {
             return $command::class === \VuFindSearch\Command\SearchCommand::class;
         };
         $searchService->expects($this->once())->method('invoke')
             ->with($this->callback($checkCommand))
-            ->will($this->returnValue($commandObj));
+            ->willReturn($commandObj);
         return $this->getResults($params, $searchService);
     }
 

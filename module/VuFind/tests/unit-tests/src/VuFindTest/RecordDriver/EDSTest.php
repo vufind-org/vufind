@@ -381,29 +381,27 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetItemsFilter.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function filterProvider(): array
+    public static function filterProvider(): \Iterator
     {
-        return [
-            'exclude' => [
-                ['exclude' => ['Label' => ['Title']]],
-                [self::$validAuthor, self::$validPublisher,],
-                10,
+        yield 'exclude' => [
+            ['exclude' => ['Label' => ['Title']]],
+            [self::$validAuthor, self::$validPublisher,],
+            10,
+        ];
+        yield 'include' => [
+            ['include' => ['Label' => ['Title']]],
+            [self::$validTitle],
+            1,
+        ];
+        yield 'exclude and include' => [
+            [
+                'include' => ['Label' => ['Title', 'Authors']],
+                'exclude' => ['Label' => ['Title']],
             ],
-            'include' => [
-                ['include' => ['Label' => ['Title']]],
-                [self::$validTitle],
-                1,
-            ],
-            'exclude and include' => [
-                [
-                    'include' => ['Label' => ['Title', 'Authors']],
-                    'exclude' => ['Label' => ['Title']],
-                ],
-                [self::$validAuthor],
-                1,
-            ],
+            [self::$validAuthor],
+            1,
         ];
     }
 
@@ -414,10 +412,9 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      * @param array $expectedItems Expected items
      * @param int   $expectedCount Expected item count
      *
-     * @dataProvider filterProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('filterProvider')]
     public function testGetItemsFilter(array $filter, array $expectedItems, int $expectedCount): void
     {
         // Change the default order the array data is in and exclude one of the items
@@ -600,15 +597,13 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetThumbnail().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function getThumbnailProvider(): array
+    public static function getThumbnailProvider(): \Iterator
     {
-        return [
-            'thumb is upscaled to small' => ['small', 'small thumbnail link'],
-            'medium is used as-is' => ['medium', 'medium thumbnail link'],
-            'medium is upscaled to large' => ['large', 'medium thumbnail link'],
-        ];
+        yield 'thumb is upscaled to small' => ['small', 'small thumbnail link'];
+        yield 'medium is used as-is' => ['medium', 'medium thumbnail link'];
+        yield 'medium is upscaled to large' => ['large', 'medium thumbnail link'];
     }
 
     /**
@@ -618,9 +613,8 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      * @param string $expected Expected result
      *
      * @return void
-     *
-     * @dataProvider getThumbnailProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getThumbnailProvider')]
     public function testGetThumbnail(string $size, string $expected): void
     {
         $driver = $this->getDriver('valid-eds-record');
@@ -702,21 +696,19 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetCleanDOIFromUrl().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function getCleanDOIFromUrlProvider(): array
+    public static function getCleanDOIFromUrlProvider(): \Iterator
     {
         $cleanDoi = '10.1016/j.jveb.2025.02.006';
-        return [
-            'plain DOI' => [$cleanDoi, $cleanDoi],
-            'URL: http, and no subdomain' => ['http://doi.org/' . $cleanDoi, $cleanDoi],
-            'URL: https, and subdomain' => ['https://dx.doi.org/' . $cleanDoi, $cleanDoi],
-            'link wrapper' => [
-                '&lt;link linkTarget="URL" linkWindow="_blank" linkTerm="http://dx.doi.org/'
-                . $cleanDoi
-                . '"&gt;http://dx.doi.org/' . $cleanDoi . '&lt;/link&gt;',
-                $cleanDoi,
-            ],
+        yield 'plain DOI' => [$cleanDoi, $cleanDoi];
+        yield 'URL: http, and no subdomain' => ['http://doi.org/' . $cleanDoi, $cleanDoi];
+        yield 'URL: https, and subdomain' => ['https://dx.doi.org/' . $cleanDoi, $cleanDoi];
+        yield 'link wrapper' => [
+            '&lt;link linkTarget="URL" linkWindow="_blank" linkTerm="http://dx.doi.org/'
+            . $cleanDoi
+            . '"&gt;http://dx.doi.org/' . $cleanDoi . '&lt;/link&gt;',
+            $cleanDoi,
         ];
     }
 
@@ -728,9 +720,8 @@ class EDSTest extends \PHPUnit\Framework\TestCase
      * @param string $cleanDoi Expected value
      *
      * @return void
-     *
-     * @dataProvider getCleanDOIFromUrlProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getCleanDOIFromUrlProvider')]
     public function testGetCleanDOIFromUrl(string $testDoi, string $cleanDoi): void
     {
         $driver = $this->getDriver('valid-eds-record-2');
@@ -1107,5 +1098,27 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     {
         $driver = $this->getDriver('catalog_record_patron_empowerment_ebook');
         $this->assertFalse($driver->pubTypeRtacEnabled());
+    }
+
+    /**
+     * Test relevancy score (present)
+     *
+     * @return void
+     */
+    public function testRelevancyScorePresent(): void
+    {
+        $driver = $this->getDriver('valid-eds-record');
+        $this->assertEqualsWithDelta(908.217102050781, $driver->getScore(), PHP_FLOAT_EPSILON);
+    }
+
+    /**
+     * Test relevancy score (absent)
+     *
+     * @return void
+     */
+    public function testRelevancyScoreAbsent(): void
+    {
+        $driver = $this->getDriver('valid-eds-record-2');
+        $this->assertNull($driver->getScore());
     }
 }

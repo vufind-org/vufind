@@ -297,6 +297,13 @@ abstract class Options implements TranslatorAwareInterface
     protected $autocompleteAutoSubmit = true;
 
     /**
+     * Autocomplete apply active filters setting (null to fall back to retainFiltersByDefault setting)
+     *
+     * @var ?bool
+     */
+    protected $autocompleteApplyActiveFilters = null;
+
+    /*
      * Autocomplete max display items setting
      *
      * @var int
@@ -864,11 +871,9 @@ abstract class Options implements TranslatorAwareInterface
             $defaultDelimiter = $this->getDefaultFacetDelimiter();
             foreach ($this->delimitedFacets as $current) {
                 $parts = explode('|', $current, 2);
-                if (count($parts) == 2) {
-                    $this->processedDelimitedFacets[$parts[0]] = $parts[1];
-                } else {
-                    $this->processedDelimitedFacets[$parts[0]] = $defaultDelimiter;
-                }
+                $this->processedDelimitedFacets[$parts[0]] = count($parts) == 2
+                    ? $parts[1]
+                    : $defaultDelimiter;
             }
         }
         return $this->processedDelimitedFacets;
@@ -1052,6 +1057,16 @@ abstract class Options implements TranslatorAwareInterface
     public function autocompleteAutoSubmit()
     {
         return $this->autocompleteAutoSubmit;
+    }
+
+    /**
+     * Should autocomplete apply active filters?
+     *
+     * @return bool
+     */
+    public function autocompleteApplyActiveFilters(): bool
+    {
+        return $this->autocompleteApplyActiveFilters ?? $this->getRetainFilterSetting();
     }
 
     /**
@@ -1541,6 +1556,7 @@ abstract class Options implements TranslatorAwareInterface
         if (null !== ($autosubmit = $autocompleteSettings['auto_submit'] ?? null)) {
             $this->autocompleteAutoSubmit = $autosubmit;
         }
+        $this->autocompleteApplyActiveFilters = $autocompleteSettings['apply_active_filters'] ?? null;
         if (null !== ($displaylimit = $autocompleteSettings['display_limit'] ?? null)) {
             $this->autocompleteDisplayLimit = (int)$displaylimit;
         }

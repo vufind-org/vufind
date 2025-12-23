@@ -8,7 +8,6 @@ parameters:
     tmpDir: %currentWorkingDirectory%/.phpstan_cache
     ignoreErrors:
         - '#Class VuFind\\Hierarchy\\Driver\\Hierarchy[a-zA-Z0-9]+ not found#'
-        - '#Class VuFind\\Content\\[a-zA-Z0-9]+\\SyndeticsPlus not found#'
         - '#Class VuFind\\Content\\[a-zA-Z0-9]+\\Amazon[a-zA-Z0-9]* not found#'
         - '#Class VuFind\\Content\\[a-zA-Z0-9]+\\Booksite not found#'
     bootstrapFiles:

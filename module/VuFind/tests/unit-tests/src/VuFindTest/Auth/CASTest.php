@@ -83,18 +83,16 @@ class CASTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testWithMissingConfiguration.
      *
-     * @return void
+     * @return \Iterator
      */
-    public static function configKeyProvider(): array
+    public static function configKeyProvider(): \Iterator
     {
-        return [
-            'missing server' => ['server'],
-            'missing port' => ['port'],
-            'missing context' => ['context'],
-            'missing CACert' => ['CACert'],
-            'missing login' => ['login'],
-            'missing logout' => ['logout'],
-        ];
+        yield 'missing server' => ['server'];
+        yield 'missing port' => ['port'];
+        yield 'missing context' => ['context'];
+        yield 'missing CACert' => ['CACert'];
+        yield 'missing login' => ['login'];
+        yield 'missing logout' => ['logout'];
     }
 
     /**
@@ -103,9 +101,8 @@ class CASTest extends \PHPUnit\Framework\TestCase
      * @param string $key Key to omit
      *
      * @return void
-     *
-     * @dataProvider configKeyProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('configKeyProvider')]
     public function testConfigValidation(string $key): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
@@ -123,7 +120,7 @@ class CASTest extends \PHPUnit\Framework\TestCase
     public function testGetSessionInitiator(): void
     {
         $cas = $this->getAuthObject();
-        $this->assertEquals(
+        $this->assertSame(
             'http://cas/login?service=http%3A%2F%2Ffoo%2Fbar%3Fauth_method%3DCAS',
             $cas->getSessionInitiator('http://foo/bar')
         );
@@ -137,7 +134,7 @@ class CASTest extends \PHPUnit\Framework\TestCase
     public function testGetLogoutRedirectUrl(): void
     {
         $cas = $this->getAuthObject();
-        $this->assertEquals(
+        $this->assertSame(
             'http://cas/logout?service=http%3A%2F%2Ffoo%2Fbar',
             $cas->getLogoutRedirectUrl('http://foo/bar')
         );
@@ -171,14 +168,12 @@ class CASTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testBaseUrlConfigFallback.
      *
-     * @return void
+     * @return \Iterator
      */
-    public static function fallbackUrlProvider(): array
+    public static function fallbackUrlProvider(): \Iterator
     {
-        return [
-            'without port' => ['http://myuniversity.edu/foo/bar', 'http://myuniversity.edu'],
-            'with port' => ['https://myuniversity.edu:8080/foo/bar', 'https://myuniversity.edu:8080'],
-        ];
+        yield 'without port' => ['http://myuniversity.edu/foo/bar', 'http://myuniversity.edu'];
+        yield 'with port' => ['https://myuniversity.edu:8080/foo/bar', 'https://myuniversity.edu:8080'];
     }
 
     /**
@@ -188,9 +183,8 @@ class CASTest extends \PHPUnit\Framework\TestCase
      * @param string $host Expected hostname extracted from $url
      *
      * @return void
-     *
-     * @dataProvider fallbackUrlProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('fallbackUrlProvider')]
     public function testBaseUrlConfigFallback(string $url, string $host): void
     {
         $config = $this->getAuthConfig([], ['Site' => ['url' => $url]]);

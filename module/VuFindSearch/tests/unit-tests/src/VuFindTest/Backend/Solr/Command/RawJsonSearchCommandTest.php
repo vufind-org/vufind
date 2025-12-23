@@ -52,11 +52,9 @@ class RawJsonSearchCommandTest extends TestCase
     public function testUnsupportedBackend(): void
     {
         $command = new RawJsonSearchCommand('foo', new Query());
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\BrowZine\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\BrowZine\Backend::class);
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue('foo'));
+            ->willReturn('foo');
         $this->expectExceptionMessage('foo does not support rawJsonSearch()');
         $command->execute($backend);
     }
@@ -69,14 +67,12 @@ class RawJsonSearchCommandTest extends TestCase
     public function testSupportedBackend(): void
     {
         $query = new Query();
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\Solr\Backend::class);
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue('Solr'));
+            ->willReturn('Solr');
         $backend->expects($this->once())->method('rawJsonSearch')
-            ->with($this->equalTo($query), $this->equalTo(0), $this->equalTo(100))
-            ->will($this->returnValue('[1, 2, 3]'));
+            ->with($query, 0, 100)
+            ->willReturn('[1, 2, 3]');
         $command = new RawJsonSearchCommand('Solr', $query, 0, 100);
         $this->assertEquals([1, 2, 3], $command->execute($backend)->getResult());
     }

@@ -140,9 +140,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test adding comments on records (with Captcha enabled).
      *
      * @return void
-     *
-     * @depends testAddComment
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddComment')]
     public function testAddCommentWithCaptcha(): void
     {
         // Set up configs:
@@ -195,9 +194,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test adding tags on records.
      *
      * @return void
-     *
-     * @depends testAddComment
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddComment')]
     public function testAddTag(): void
     {
         // Go to a record view
@@ -215,7 +213,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->addTagsToRecord($page, 'one 2 "three 4" five', 'username2', 'test');
         // Count tags
         $this->waitForPageLoad($page);
-        $this->assertEquals(['2', 'five', 'one', 'three 4'], $this->getTagsFromPage($page));
+        $this->assertSame(['2', 'five', 'one', 'three 4'], $this->getTagsFromPage($page));
         // Remove a tag
         $this->clickCss($page, '.tagList .tag button');
         $this->waitForPageLoad($page);
@@ -228,7 +226,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
                 $sum += intval($link->getText());
             }
         }
-        $this->assertEquals(3, $sum);
+        $this->assertSame(3, $sum);
         // Log out
         $this->clickCss($page, '.logoutOptions a.logout');
         $this->waitForPageLoad($page);
@@ -262,9 +260,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test searching for one of the tags created above.
      *
      * @return void
-     *
-     * @depends testAddTag
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddTag')]
     public function testTagSearch(): void
     {
         // First try an undefined tag:
@@ -284,15 +281,13 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testTagSearchSort
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getTagSearchSortData(): array
+    public static function getTagSearchSortData(): \Iterator
     {
-        return [
-            [1, 'author', 'Fake Record 1 with multiple relators/', 'Dewey browse test'],
-            [2, 'year DESC', '<HTML> The Basics', 'Fake Record 1 with multiple relators/'],
-            [3, 'year', 'Fake Record 1 with multiple relators/', '<HTML> The Basics'],
-        ];
+        yield [1, 'author', 'Fake Record 1 with multiple relators/', 'Dewey browse test'];
+        yield [2, 'year DESC', '<HTML> The Basics', 'Fake Record 1 with multiple relators/'];
+        yield [3, 'year', 'Fake Record 1 with multiple relators/', '<HTML> The Basics'];
     }
 
     /**
@@ -304,11 +299,9 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $expectedLast  Expected last title after sorting
      *
      * @return void
-     *
-     * @dataProvider getTagSearchSortData
-     *
-     * @depends testTagSearch
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testTagSearch')]
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTagSearchSortData')]
     public function testTagSearchSort(
         int $index,
         string $expectedSort,
@@ -326,14 +319,13 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test that default autocomplete behavior is correct on a non-default search handler.
      *
      * @return void
-     *
-     * @depends testTagSearch
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testTagSearch')]
     public function testTagAutocomplete(): void
     {
         $session = $this->getMinkSession();
         $page = $this->getSearchHomePage($session);
-        $acItem = $this->assertAutocompleteValueAndReturnItem($page, 'fiv', 'five', 'tag');
+        $acItem = $this->assertAutocompleteValueAndReturnItem($page, 'fiv', 'five', 'fiv', 'tag');
         $acItem->click();
         $this->waitForPageLoad($page);
         $this->assertEquals(
@@ -341,7 +333,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
             $session->getCurrentUrl()
         );
         $expected = 'Showing 1 - 3 results of 3';
-        $this->assertEquals(
+        $this->assertSame(
             $expected,
             substr(
                 $this->findCssAndGetText($page, '.search-stats'),
@@ -355,9 +347,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test adding case sensitive tags on records.
      *
      * @return void
-     *
-     * @depends testAddTag
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testAddTag')]
     public function testAddSensitiveTag(): void
     {
         // Set up configs:
@@ -389,10 +380,9 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test that the tag admin module works.
      *
      * @return void
-     *
-     * @depends testTagSearch
-     * @depends testAddSensitiveTag
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testTagSearch')]
+    #[\PHPUnit\Framework\Attributes\Depends('testAddSensitiveTag')]
     public function testTagAdminHome(): void
     {
         // Go to admin page:
@@ -407,10 +397,9 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test that listing tags in Admin works.
      *
      * @return void
-     *
-     * @depends testTagSearch
-     * @depends testAddSensitiveTag
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testTagSearch')]
+    #[\PHPUnit\Framework\Attributes\Depends('testAddSensitiveTag')]
     public function testTagAdminList(): void
     {
         $page = $this->goToTagAdmin('/List');
@@ -422,7 +411,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals('All username2', $this->findCss($page, '#user_id')->getText());
         // We need to do a case-insensitive comparison here because different database engines
         // may make different decisions about uppercase-first vs. lowercase-first:
-        $this->assertEquals(
+        $this->assertSame(
             strtolower('All five new tag ONE one THREE 4 three 4'),
             strtolower($this->findCss($page, '#tag_id')->getText())
         );
@@ -462,9 +451,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test that managing tags in Admin works.
      *
      * @return void
-     *
-     * @depends testTagAdminList
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testTagAdminList')]
     public function testTagAdminManage(): void
     {
         $page = $this->goToTagAdmin('/Manage');
@@ -475,7 +463,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         // We need to do a case-insensitive comparison here because different database engines
         // may make different decisions about uppercase-first vs. lowercase-first:
-        $this->assertEquals(
+        $this->assertSame(
             strtolower('new tag ONE one THREE 4 three 4'),
             strtolower($this->findCss($page, '#tag_id')->getText())
         );
@@ -704,14 +692,12 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testRating
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getTestRatingData(): array
+    public static function getTestRatingData(): \Iterator
     {
-        return [
-            [true],
-            [false],
-        ];
+        yield [true];
+        yield [false];
     }
 
     /**
@@ -719,10 +705,9 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @param bool $allowRemove Value for remove_rating config
      *
-     * @dataProvider getTestRatingData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestRatingData')]
     public function testRating($allowRemove): void
     {
         // Set up configs:
@@ -922,7 +907,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $session->getPage();
         $this->findCss($page, '.usercontent-table');
         $this->assertCount(2, $page->findAll('css', 'div.user-comment-truncate'));
-        $this->clickCss($page, '.checkbox input[name="selectAll"]');
+        $this->clickCss($page, '.select-all-container input[name="selectAll"]');
         $this->clickCss($page, 'button#cancelSelected');
         $this->clickCss($page, 'a#confirm_cancel_selected_yes');
         $this->unfindCss($page, '.usercontent-table');
@@ -931,7 +916,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->findCss($page, '.usercontent-table');
         $this->assertEquals('testtag', $this->findCssAndGetText($page, '.usercontent-table .user-tag div'));
-        $this->clickCss($page, '.checkbox input[name="selectAll"]');
+        $this->clickCss($page, '.select-all-container input[name="selectAll"]');
         $this->clickCss($page, 'button#cancelSelected');
         $this->clickCss($page, 'a#confirm_cancel_selected_yes');
         $this->unfindCss($page, '.usercontent-table');
@@ -942,7 +927,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $inputs = $page->findAll('css', 'div.star-rating input:checked');
         $this->assertCount(1, $inputs);
         $this->assertEquals('50', $inputs[0]->getValue());
-        $this->clickCss($page, '.checkbox input[name="selectAll"]');
+        $this->clickCss($page, '.select-all-container input[name="selectAll"]');
         $this->clickCss($page, 'button#cancelSelected');
         $this->clickCss($page, 'a#confirm_cancel_selected_yes');
         $this->unfindCss($page, '.usercontent-table');

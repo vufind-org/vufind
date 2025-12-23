@@ -2,10 +2,11 @@
 
 ## Prerequisites
 
- - [Community Code of Conduct](https://github.com/vufind-org/vufind/blob/dev/CODE_OF_CONDUCT.md)
+ - [Community Code of Conduct](https://github.com/vufind-org/vufind/blob/dev/CODE_OF_CONDUCT.md) - Community standards for successful collaboration.
  - [Coding Standards](https://vufind.org/wiki/development:coding_standards) - How to conform to VuFind®'s style.
  - [Recommended Tools](https://vufind.org/wiki/development:recommended_tools) - Suggestions for successful VuFind® development.
- - [Making Pull Requests](https://vufind.org/wiki/development:making_pull_requests)
+ - [Making Pull Requests](https://vufind.org/wiki/development:making_pull_requests) - How to contribute code to the project.
+ - [Reviewing Pull Requests](https://vufind.org/wiki/development:reviewing_pull_requests) - How to help review and improve others' contributions.
 
 ## About VuFind®
 
@@ -15,9 +16,10 @@
  - [Testing](https://vufind.org/wiki/development:testing) - Notes on testing VuFind®.
  - [Troubleshooting](https://vufind.org/wiki/development:troubleshooting) - Notes on troubleshooting and debugging VuFind®.
  - [APIs](https://vufind.org/wiki/development:apis) - APIs that VuFind® provides for searching and other functionality.
+ - [Built-in Development Tools](https://vufind.org/wiki/development:devtools) - Notes about useful utilities built into VuFind®.
 
 ## VuFind® Planning
  - [Community Call](https://vufind.org/wiki/community_call) - A regular meeting (free, online and open to all) for discussion, planning and information sharing.
  - [GitHub pull requests](https://github.com/vufind-org/vufind/pulls) - A place to view and discuss work in progress on new features.
- - [JIRA](http://vufind.org/jira) - VuFind®'s issue tracker.
- - [Slack](http://vufind.slack.com/) - Email info@vufind.org for an invitation to the Slack if you cannot sign up directly.
+ - [JIRA](https://vufind.org/jira) - VuFind®'s issue tracker.
+ - [Slack](https://open-libr-foundation.slack.com/) - VuFind® discussions take place on the Open Library Foundation Slack. There is a [Slack Invitation Page](https://slack-invitation.openlibraryfoundation.org/) you can use to join the conversation. Email info@vufind.org for an invitation to the Slack if you cannot sign up directly.

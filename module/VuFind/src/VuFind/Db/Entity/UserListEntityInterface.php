@@ -43,6 +43,13 @@ use DateTime;
 interface UserListEntityInterface extends EntityInterface
 {
     /**
+     * Constant for default type of user list.
+     *
+     * @var string
+     */
+    public const TYPE_DEFAULT = 'default';
+
+    /**
      * Get identifier (returns null for an uninitialized or non-persisted object).
      *
      * @return ?int

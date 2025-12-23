@@ -33,7 +33,7 @@ jobs:
           ini-values: error_reporting=E_ALL
 
       - name: Checkout
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Disable Solr installation
         run: touch solr/.disableAutomaticInstall
@@ -96,6 +96,13 @@ jobs:
           path: tests/phpcs.cache.json
           key: "php-${{ matrix.php-version }}-phpcs-${{ github.sha }}"
           restore-keys: "php-${{ matrix.php-version }}-phpcs-"
+
+      - name: Cache rector data
+        uses: actions/cache@v4
+        with:
+          path: .rector
+          key: "php-${{ matrix.php-version }}-rector-${{ github.sha }}"
+          restore-keys: "php-${{ matrix.php-version }}-rector-"
 
       - name: Install composer dependencies
         run: composer install

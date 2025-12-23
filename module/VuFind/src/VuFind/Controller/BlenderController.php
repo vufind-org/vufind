@@ -29,8 +29,6 @@
 
 namespace VuFind\Controller;
 
-use Laminas\ServiceManager\ServiceLocatorInterface;
-
 /**
  * Blended Search Controller
  *
@@ -43,13 +41,9 @@ use Laminas\ServiceManager\ServiceLocatorInterface;
 class BlenderController extends AbstractSearch
 {
     /**
-     * Constructor
+     * Search class family to use.
      *
-     * @param ServiceLocatorInterface $sm Service locator
+     * @var string
      */
-    public function __construct(ServiceLocatorInterface $sm)
-    {
-        $this->searchClassId = 'Blender';
-        parent::__construct($sm);
-    }
+    protected $searchClassId = 'Blender';
 }

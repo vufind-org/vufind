@@ -92,7 +92,7 @@ class TurnstileTest extends \PHPUnit\Framework\TestCase
                 $turnstile->setHttpService($this->buildHttpService(
                     ['success' => $result]
                 ));
-                $validationResult = $turnstile->validateToken('some_token', $policyId, $clientIp);
+                $validationResult = $turnstile->validateToken('some_token');
                 $this->assertEquals($result, $validationResult);
             }
 
@@ -123,7 +123,7 @@ class TurnstileTest extends \PHPUnit\Framework\TestCase
             ],
         ];
 
-        $cache = $this->getMockBuilder(\Laminas\Cache\Storage\StorageInterface::class)->getMock();
+        $cache = $this->createMock(\Laminas\Cache\Storage\StorageInterface::class);
         $cache->method('getItem')->willReturn($cacheResult);
 
         $turnstile = new Turnstile($config, $cache);

@@ -222,11 +222,9 @@ class Upgrade implements LoggerAwareInterface
         foreach ($custom_ini as $k => $v) {
             // Make a recursive call if we need to merge array values into an
             // existing key... otherwise just drop the value in place.
-            if (is_array($v) && isset($config_ini[$k])) {
-                $config_ini[$k] = self::iniMerge($config_ini[$k], $custom_ini[$k]);
-            } else {
-                $config_ini[$k] = $v;
-            }
+            $config_ini[$k] = is_array($v) && isset($config_ini[$k])
+                ? self::iniMerge($config_ini[$k], $custom_ini[$k])
+                : $v;
         }
         return $config_ini;
     }
@@ -496,17 +494,6 @@ class Upgrade implements LoggerAwareInterface
                 . ' please review your config.ini.'
             );
         }
-        if (isset($newConfig['GoogleAnalytics']['apiKey'])) {
-            if (
-                !isset($newConfig['GoogleAnalytics']['universal'])
-                || !$newConfig['GoogleAnalytics']['universal']
-            ) {
-                $this->addWarning(
-                    'The [GoogleAnalytics] universal setting is off. See config.ini '
-                    . 'for important information on how to upgrade your Analytics.'
-                );
-            }
-        }
 
         // Upgrade CAPTCHA Options
         $legacySettingsMap = [
@@ -608,10 +595,16 @@ class Upgrade implements LoggerAwareInterface
 
         // Update Syndetics config:
         if (isset($newConfig['Syndetics']['url'])) {
-            $newConfig['Syndetics']['use_ssl']
-                = (!str_contains($newConfig['Syndetics']['url'], 'https://'))
-                ? '' : 1;
             unset($newConfig['Syndetics']['url']);
+        }
+        if (isset($newConfig['Syndetics']['use_ssl'])) {
+            unset($newConfig['Syndetics']['use_ssl']);
+        }
+        if (isset($newConfig['Syndetics']['plus'])) {
+            unset($newConfig['Syndetics']['plus']);
+        }
+        if (isset($newConfig['Syndetics']['plus_id'])) {
+            unset($newConfig['Syndetics']['plus_id']);
         }
 
         // Convert spellchecker 'simple' option
@@ -639,6 +632,24 @@ class Upgrade implements LoggerAwareInterface
                 $newConfig['CacheConfigName_searchspecs']['disabled'] = true;
             }
             unset($this->newConfigs['searches']['Cache']);
+        }
+
+        // Update LDAP settings (replace deprecated host/port with uri):
+        $ldapHost = $newConfig['LDAP']['host'] ?? null;
+        $ldapPort = $newConfig['LDAP']['port'] ?? null;
+        if ($ldapHost || $ldapPort) {
+            if (!isset($newConfig['LDAP']['uri'])) {
+                if ($ldapHost && (str_starts_with($ldapHost, 'ldap://') || str_starts_with($ldapHost, 'ldaps://'))) {
+                    // Note that ldap_connect ignores the port setting when the first argument is a URI, so it is
+                    // intentional that we ignore the port setting this case.
+                    $newConfig['LDAP']['uri'] = $ldapHost;
+                } else {
+                    // If the host setting is not a URI, convert it into one:
+                    $newConfig['LDAP']['uri'] = 'ldap://' . ($ldapHost ?? 'localhost') . ':' . ($ldapPort ?? '389');
+                }
+            }
+            unset($newConfig['LDAP']['host']);
+            unset($newConfig['LDAP']['port']);
         }
 
         // Translate obsolete permission settings:

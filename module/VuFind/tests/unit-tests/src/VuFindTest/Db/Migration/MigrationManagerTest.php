@@ -95,10 +95,9 @@ class MigrationManagerTest extends \PHPUnit\Framework\TestCase
     public function testGetMigrationsSorting(): void
     {
         $basePath = '/fake/path';
-        // Test data is intentionally out of order, so we can test that sorting behaves as intended.
         $testData = [
-            "$basePath/10.0" => ['001-foo', '002-foo', '003-foo'],
             "$basePath/9.0" => ['001-bar', '002-baz'],
+            "$basePath/10.0" => ['001-foo', '002-foo', '003-foo'],
             "$basePath/11.0" => ['001-baz'],
         ];
         $loader = $this->createMock(MigrationLoader::class);
@@ -110,8 +109,8 @@ class MigrationManagerTest extends \PHPUnit\Framework\TestCase
             fn ($version) => array_map(fn ($file) => "$version/$file.sql", $testData[$version])
         );
         $manager = $this->getMockMigrationManager(['getAppliedMigrations'], loader: $loader);
-        $manager->expects($this->any())->method('getAppliedMigrations')->willReturn([]);
-        $this->assertEquals(
+        $manager->method('getAppliedMigrations')->willReturn([]);
+        $this->assertSame(
             [
                 '/fake/path/9.0/001-bar.sql',
                 '/fake/path/9.0/002-baz.sql',
@@ -167,7 +166,7 @@ class MigrationManagerTest extends \PHPUnit\Framework\TestCase
         $manager->expects($this->once())->method('cleanUpMigrationEvents')->with($connection, $shortName)
             ->willReturn('cleanup');
         $result = $manager->applyMigration($basePath . '/' . $shortName, $connection);
-        $this->assertEquals(
+        $this->assertSame(
             <<<EXPECTED_RESULT
                 log 10.1/001-dummy.sql : start
                 log 10.1/001-dummy.sql : writing chunk 0
@@ -191,7 +190,7 @@ class MigrationManagerTest extends \PHPUnit\Framework\TestCase
         $loader = $this->createMock(MigrationLoader::class);
         $loader->expects($this->once())->method('getMigrationDirForPlatform')->willReturn('/base/path/foo');
         $manager = $this->getMockMigrationManager([], loader: $loader);
-        $this->assertEquals('10.0/001-foo.sql', $manager->getShortMigrationName('/base/path/foo/10.0/001-foo.sql'));
+        $this->assertSame('10.0/001-foo.sql', $manager->getShortMigrationName('/base/path/foo/10.0/001-foo.sql'));
     }
 
     /**
@@ -209,6 +208,6 @@ class MigrationManagerTest extends \PHPUnit\Framework\TestCase
         $manager->expects($this->once())->method('getShortMigrationName')->with($longName)->willReturn($shortName);
         $manager->expects($this->once())->method('logMigrationEvent')->with($connection, $shortName, 'success')
             ->willReturn($resultSql);
-        $this->assertEquals($resultSql, $manager->markMigrationApplied($longName, $connection));
+        $this->assertSame($resultSql, $manager->markMigrationApplied($longName, $connection));
     }
 }

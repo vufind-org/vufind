@@ -48,23 +48,21 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testOptions
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function optionsProvider(): array
+    public static function optionsProvider(): \Iterator
     {
-        return [
+        yield [
+            [],
+            false,
+        ];
+        yield [
             [
-                [],
-                false,
-            ],
-            [
-                [
-                    'Advanced_Searches' => [
-                        'foo' => 'bar',
-                    ],
+                'Advanced_Searches' => [
+                    'foo' => 'bar',
                 ],
-                'blender-advanced',
             ],
+            'blender-advanced',
         ];
     }
 
@@ -75,9 +73,8 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
      * @param string|false $advAction Expected advanced search action
      *
      * @return void
-     *
-     * @dataProvider optionsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('optionsProvider')]
     public function testOptions(array $config, $advAction): void
     {
         $mockConfigManager = $this->getMockConfigManager(

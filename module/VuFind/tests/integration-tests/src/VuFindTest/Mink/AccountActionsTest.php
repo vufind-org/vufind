@@ -135,10 +135,9 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test username case-insensitivity.
      *
-     * @depends testChangePassword
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testChangePassword')]
     public function testCaseInsensitiveUsername(): void
     {
         $session = $this->getMinkSession();
@@ -160,16 +159,14 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testLoginWithSessionSettings().
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function sessionSettingsProvider(): array
+    public static function sessionSettingsProvider(): \Iterator
     {
-        return [
-            'unencrypted file' => ['File', false],
-            'encrypted file' => ['File', true],
-            'unencrypted database' => ['Database', false],
-            'encrypted database' => ['Database', true],
-        ];
+        yield 'unencrypted file' => ['File', false];
+        yield 'encrypted file' => ['File', true];
+        yield 'unencrypted database' => ['Database', false];
+        yield 'encrypted database' => ['Database', true];
     }
 
     /**
@@ -179,11 +176,9 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool   $secure Should we enable secure session mode?
      *
      * @return void
-     *
-     * @depends testChangePassword
-     *
-     * @dataProvider sessionSettingsProvider
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testChangePassword')]
+    #[\PHPUnit\Framework\Attributes\DataProvider('sessionSettingsProvider')]
     public function testLoginWithSessionSettings(string $type, bool $secure): void
     {
         // Adjust session settings:
@@ -213,10 +208,9 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that changing email is disabled by default.
      *
-     * @depends testChangePassword
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testChangePassword')]
     public function testChangeEmailDisabledByDefault(): void
     {
         // Go to profile page:
@@ -238,10 +232,9 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test changing an email.
      *
-     * @depends testChangePassword
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testChangePassword')]
     public function testChangeEmail(): void
     {
         // Turn on email change option:
@@ -358,7 +351,7 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals('B', $this->findCssAndGetValue($page, '#home_library'));
         $entityManager = $this->getLiveDatabaseContainer()->get(EntityManager::class);
         $entityManager->clear();
-        $this->assertEquals(
+        $this->assertSame(
             'B',
             $userService->getUserByUsername('username2')->getHomeLibrary()
         );
@@ -425,9 +418,8 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test account deletion.
      *
      * @return void
-     *
-     * @depends testDefaultPickUpLocation
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testDefaultPickUpLocation')]
     public function testAccountDeletion(): void
     {
         $this->changeConfigs(
@@ -463,14 +455,12 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testRecoverPasswordByUsername().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function honestyProvider(): array
+    public static function honestyProvider(): \Iterator
     {
-        return [
-            'be honest' => [true],
-            'be dishonest' => [false],
-        ];
+        yield 'be honest' => [true];
+        yield 'be dishonest' => [false];
     }
 
     /**
@@ -479,11 +469,9 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool $beHonest Should the recovery error message be honest?
      *
      * @return void
-     *
-     * @depends testChangePassword
-     *
-     * @dataProvider honestyProvider
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testChangePassword')]
+    #[\PHPUnit\Framework\Attributes\DataProvider('honestyProvider')]
     public function testRecoveryHonesty(bool $beHonest): void
     {
         $this->changeConfigs(
@@ -530,9 +518,8 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
      * Test recovering a password by username.
      *
      * @return void
-     *
-     * @depends testChangePassword
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testChangePassword')]
     public function testRecoverPasswordByUsername(): void
     {
         $this->changeConfigs(
@@ -588,16 +575,14 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testRecoverILSPassword
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function recoverILSPasswordProvider(): array
+    public static function recoverILSPasswordProvider(): \Iterator
     {
-        return [
-            [false, false],
-            [false, true],
-            [true, false],
-            [true, true],
-        ];
+        yield [false, false];
+        yield [false, true];
+        yield [true, false];
+        yield [true, true];
     }
 
     /**
@@ -607,9 +592,8 @@ final class AccountActionsTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool $choiceAuth   Test with ChoiceAuth?
      *
      * @return void
-     *
-     * @dataProvider recoverILSPasswordProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('recoverILSPasswordProvider')]
     public function testRecoverILSPassword(bool $multiBackend, bool $choiceAuth): void
     {
         $configs = [

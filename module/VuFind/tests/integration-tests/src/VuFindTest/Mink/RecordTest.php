@@ -65,7 +65,7 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
             [$session, 'getCurrentUrl']
         );
         $staffViewTable = $this->findCss($page, '.record-tabs .details-tab table.staff-view--marc');
-        $this->assertEquals('LEADER', substr($staffViewTable->getText(), 0, 6));
+        $this->assertSame('LEADER', substr($staffViewTable->getText(), 0, 6));
     }
 
     /**
@@ -159,15 +159,13 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testPermalink().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function permalinkProvider(): array
+    public static function permalinkProvider(): \Iterator
     {
-        return [
-            'default' => [null],
-            'enabled' => [true],
-            'disabled' => [false],
-        ];
+        yield 'default' => [null];
+        yield 'enabled' => [true];
+        yield 'disabled' => [false];
     }
 
     /**
@@ -177,9 +175,8 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $id      Record ID to test with
      *
      * @return void
-     *
-     * @dataProvider permalinkProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('permalinkProvider')]
     public function testPermalink(?bool $enabled, $id = 'testbug1'): void
     {
         // Change configuration, unless we're using the default value:

@@ -200,7 +200,7 @@ class BackendTest extends TestCase
         $response = $back->search(new Query(), 0, 0);
         $facets = $response->getFacets();
         $this->assertIsArray($facets);
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'topic_facet' => [
                     'Research' => 16,
@@ -231,7 +231,7 @@ class BackendTest extends TestCase
         $facets = $response->getPivotFacets();
         $this->assertIsArray($facets);
 
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'A - General Works' => [
                     'field' => 'callnumber-first',
@@ -367,7 +367,7 @@ class BackendTest extends TestCase
         $response = $back->search(new Query(), 0, 0);
         $facets = $response->getQueryFacets();
         $this->assertIsArray($facets);
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'publishDate:[* TO 2000]' => 45,
                 'publishDate:[2001 TO 2010]' => 11,
@@ -475,14 +475,12 @@ class BackendTest extends TestCase
     /**
      * Data provider for testGetIds
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getIdsProvider(): array
+    public static function getIdsProvider(): \Iterator
     {
-        return [
-            'default field list' => [null, 'id'],
-            'customized field list' => ['last_indexed', 'id,last_indexed'],
-        ];
+        yield 'default field list' => [null, 'id'];
+        yield 'customized field list' => ['last_indexed', 'id,last_indexed'];
     }
 
     /**
@@ -492,9 +490,8 @@ class BackendTest extends TestCase
      * @param string  $expectedFlOut Expected field list in output
      *
      * @return void
-     *
-     * @dataProvider getIdsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getIdsProvider')]
     public function testGetIds(?string $flIn, string $expectedFlOut): void
     {
         $paramBagChecker = function (ParamBag $params) use ($expectedFlOut) {
@@ -582,7 +579,7 @@ class BackendTest extends TestCase
         $params = $this->getMockBuilder(\VuFindSearch\ParamBag::class)
             ->onlyMethods(['set'])->getMock();
         $params->expects($this->once())->method('set')
-            ->with($this->equalTo('sort'), $this->matchesRegularExpression('/[0-9]+_random asc/'));
+            ->with('sort', $this->matchesRegularExpression('/[0-9]+_random asc/'));
 
         // Test that random proxies search; stub out injectResponseWriter() to prevent it
         // from injecting unwanted extra parameters into $params:
@@ -612,8 +609,8 @@ class BackendTest extends TestCase
         $connector = $this->getConnectorMock(['getUrl', 'write'], $client);
         $connector->expects($this->once())->method('write')
             ->with(
-                $this->equalTo($doc),
-                $this->equalTo('update'),
+                $doc,
+                'update',
                 $this->isNull()
             )
             ->willReturnCallback(
@@ -688,8 +685,8 @@ class BackendTest extends TestCase
         $conn = $this->getConnectorMock(['query']);
         $e = new RemoteErrorException($msg, 400, new \Laminas\Http\Response());
         $conn->expects($this->once())->method('query')
-            ->with($this->equalTo('browse'))
-            ->will($this->throwException($e));
+            ->with('browse')
+            ->willThrowException($e);
         $back = new Backend($conn);
         $back->alphabeticBrowse('foo', 'bar', 1);
     }

@@ -64,17 +64,15 @@ class SolrTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testSetConfig().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function setConfigProvider(): array
+    public static function setConfigProvider(): \Iterator
     {
         $filters = ['FF1:FV1', 'FF2:FV2'];
-        return [
-            'default limit, filters' => ['Handler:Display:Sort:FF1:FV1:FF2:FV2', $filters, null],
-            'non-default limit, filters' => ['Handler:Display:Sort:20:FF1:FV1:FF2:FV2', $filters, 20],
-            'default limit, no filters' => ['Handler:Display:Sort', [], null],
-            'non-default limit, no filters' => ['Handler:Display:Sort:20', [], 20],
-        ];
+        yield 'default limit, filters' => ['Handler:Display:Sort:FF1:FV1:FF2:FV2', $filters, null];
+        yield 'non-default limit, filters' => ['Handler:Display:Sort:20:FF1:FV1:FF2:FV2', $filters, 20];
+        yield 'default limit, no filters' => ['Handler:Display:Sort', [], null];
+        yield 'non-default limit, no filters' => ['Handler:Display:Sort:20', [], 20];
     }
 
     /**
@@ -85,9 +83,8 @@ class SolrTest extends \PHPUnit\Framework\TestCase
      * @param ?int     $expectedLimit   Limit expected to be parsed from the config
      *
      * @return void
-     *
-     * @dataProvider setConfigProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('setConfigProvider')]
     public function testSetConfig(string $config, array $expectedFilters, ?int $expectedLimit)
     {
         $solr = new Solr($this->getMockResultsPluginManager(allowDefaultFallback: true));

@@ -120,18 +120,16 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testFeedbackForm
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function feedbackFormProvider(): array
+    public static function feedbackFormProvider(): \Iterator
     {
-        return [
-            ['test@test.com', true, true],
-            ['foobar@spam.com', true, true],
-            ['test@blockeddomain.com', false, false],
-            ['bar@bad.com', false, false],
-            ['test@ignoreddomain.com', true, false],
-            ['bar@spam.com', true, false],
-        ];
+        yield ['test@test.com', true, true];
+        yield ['foobar@spam.com', true, true];
+        yield ['test@blockeddomain.com', false, false];
+        yield ['bar@bad.com', false, false];
+        yield ['test@ignoreddomain.com', true, false];
+        yield ['bar@spam.com', true, false];
     }
 
     /**
@@ -141,10 +139,9 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool   $expectSuccess Expect successful send?
      * @param bool   $expectEmail   Expect email to be received?
      *
-     * @dataProvider feedbackFormProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('feedbackFormProvider')]
     public function testFeedbackForm(string $sender, bool $expectSuccess, bool $expectEmail): void
     {
         $this->resetEmailLog();
@@ -210,9 +207,8 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
      * Test that the feedback admin module works.
      *
      * @return void
-     *
-     * @depends testFeedbackFormDatabaseStorage
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testFeedbackFormDatabaseStorage')]
     public function testFeedbackAdmin(): void
     {
         // Go to admin page:

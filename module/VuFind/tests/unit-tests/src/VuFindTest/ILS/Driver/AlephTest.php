@@ -219,17 +219,17 @@ class AlephTest extends \VuFindTest\Unit\ILSDriverTestCase
      * @param bool   $xserver_enabled Use xserver
      * @param array  $expected        Expected results for the test
      *
-     * @return       void
-     * @dataProvider getTestGetMyProfileData
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestGetMyProfileData')]
     public function testGetMyProfile(string $fixture, bool $xserver_enabled, array $expected): void
     {
         $mockRequest = $xserver_enabled ? 'doXRequest' : 'doRestDLFRequest';
         $driver = $this->getMockBuilder(Aleph::class)->disableOriginalConstructor()
             ->onlyMethods([$mockRequest, 'parseDate'])->getMock();
-        $driver->expects($this->any())->method('parseDate')->willReturnCallback(fn ($date) => $date);
+        $driver->method('parseDate')->willReturnCallback(fn ($date) => $date);
         $fixture = $this->getFixture('aleph/' . $fixture);
-        $driver->expects($this->any())->method($mockRequest)->willReturn(simplexml_load_string($fixture));
+        $driver->method($mockRequest)->willReturn(simplexml_load_string($fixture));
         $config = [
             'Catalog' => [
                 'host' => 'test.test',

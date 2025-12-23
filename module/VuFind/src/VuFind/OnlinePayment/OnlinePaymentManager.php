@@ -24,7 +24,7 @@
  * @package  OnlinePayment
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 
 declare(strict_types=1);
@@ -59,7 +59,7 @@ use VuFind\OnlinePayment\Handler\PluginManager as HandlerPluginManager;
  * @package  OnlinePayment
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org/wiki/vufind2:developer_manual Wiki
+ * @link     https://vufind.org/wiki/development Wiki
  */
 class OnlinePaymentManager implements LoggerAwareInterface
 {
@@ -502,13 +502,14 @@ class OnlinePaymentManager implements LoggerAwareInterface
                         'Registration failed: fines updated'
                     );
                 } else {
+                    $error = $res['reason'] ?? 'no error information';
                     $payment->applyRegistrationFailedStatus(
-                        'Failed to mark fees paid: ' . ($res ?: 'no error information')
+                        "Failed to mark fees paid: $error"
                     );
                     $this->persistEntityWithAuditEvent(
                         $payment,
                         AuditEventSubtype::PaymentRegistration,
-                        'Registration failed: ' . ($res['reason'] ?? 'no error information')
+                        "Registration failed: $error"
                     );
                 }
                 return false;
@@ -570,13 +571,10 @@ class OnlinePaymentManager implements LoggerAwareInterface
             return [];
         }
 
-        // Check that mandatory settings exist
-        $mandatory = ['currency', 'handler'];
-        foreach ($mandatory as $current) {
-            if (empty($paymentConfig[$current])) {
-                $this->logError("Mandatory setting '$current' missing from ILS driver for $sourceIls");
-                return [];
-            }
+        // Check that mandatory handler setting exists
+        if (empty($paymentConfig['handler'])) {
+            $this->logError("Mandatory setting 'handler' missing from ILS driver for $sourceIls");
+            return [];
         }
 
         return $paymentConfig;
@@ -716,7 +714,7 @@ class OnlinePaymentManager implements LoggerAwareInterface
         $this->paymentService->beginTransaction();
         try {
             $this->paymentService->persistEntity($payment);
-            $this->auditEventService->addPaymentEvent($payment, $eventSubtype, $auditMessage, $eventData);
+            $this->auditEventService->addPaymentEvent($payment, $eventSubtype, $auditMessage, $eventData, 1);
         } catch (\Exception $e) {
             $this->paymentService->rollbackTransaction();
             throw $e;

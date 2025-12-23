@@ -37,6 +37,7 @@ use Monolog\Handler\BufferHandler;
 use Monolog\Handler\FilterHandler;
 use Monolog\Handler\HandlerInterface;
 use Monolog\Logger as MonologLogger;
+use Monolog\LogRecord;
 use Monolog\Processor\PsrLogMessageProcessor;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
@@ -54,6 +55,7 @@ use VuFind\Log\Handler\StreamHandler;
 use VuFind\Mailer\Mailer;
 use VuFind\Net\UserIpReader;
 
+use function constant;
 use function error_log;
 use function explode;
 use function is_array;
@@ -323,8 +325,10 @@ class LoggerFactory implements FactoryInterface
                 try {
                     $authManager = $container->get(AuthManager::class);
                     if ($user = $authManager->getUserObject()) {
-                        $monologLogger->pushProcessor(function (array $record) use ($user) {
-                            $record['extra']['username'] = $user->getUsername();
+                        $monologLogger->pushProcessor(function (LogRecord $record) use ($user) {
+                            $record['extra'] = array_merge($record['extra'], [
+                                'username' => $user->getUsername(),
+                            ]);
                             return $record;
                         });
                     }
@@ -364,12 +368,16 @@ class LoggerFactory implements FactoryInterface
             // Ensure verbosity is an int, default to 1 if not specified or invalid
             $verbosity = isset($parts[1]) && is_numeric($parts[1]) ? (int)$parts[1] : 1;
 
-            $min = LogLevel::DEBUG; // Default min, will be overwritten by switch
-            $max = LogLevel::EMERGENCY; // Default max, will be overwritten by switch
+            // Default logging level range logs everything:
+            $min = LogLevel::DEBUG;
+            $max = LogLevel::EMERGENCY;
 
             // VuFind's configuration provides four priority options, each
-            // combining two of the standard Monolog levels.
-            switch (trim($priority)) {
+            // combining two of the standard PSR levels, but uppercase strings can
+            // be used to match each PSR level:
+            $logBadPriority = false;
+            $priority = trim($priority);
+            switch ($priority) {
                 case 'debug':
                     $min = LogLevel::DEBUG;
                     $max = LogLevel::INFO;
@@ -386,8 +394,19 @@ class LoggerFactory implements FactoryInterface
                     $min = LogLevel::ALERT;
                     $max = LogLevel::EMERGENCY;
                     break;
+                case 'DEBUG':
+                case 'INFO':
+                case 'NOTICE':
+                case 'WARNING':
+                case 'ERROR':
+                case 'CRITICAL':
+                case 'ALERT':
+                case 'EMERGENCY':
+                    $min = $max = constant(LogLevel::class . "::$priority");
+                    break;
                 default:
-                    continue 2;
+                    // Fall through using defaults, but prepare to log a message about the priority
+                    $logBadPriority = true;
             }
 
             // Clone the submitted baseHandler since we'll need a separate instance
@@ -413,6 +432,9 @@ class LoggerFactory implements FactoryInterface
             } else {
                 // Add the fully configured handler (wrapped in its filter) to the Monolog logger.
                 $monologLogger->pushHandler($filterHandler);
+            }
+            if ($logBadPriority) {
+                $monologLogger->error("Invalid priority '$priority' specified; logging everything");
             }
         }
     }
@@ -462,7 +484,7 @@ class LoggerFactory implements FactoryInterface
         // Construct the logger as a lazy loading proxy so that the object is not
         // instantiated until it is called. This helps break potential circular
         // dependencies with other services.
-        $callback = function (&$wrapped, $proxy) use ($container, $requestedName) {
+        $callback = function (&$wrapped, $proxy) use ($container, $requestedName): void {
             // Now build the actual service:
             $monologLogger = new MonologLogger('vufind');
             $wrapped = new $requestedName(

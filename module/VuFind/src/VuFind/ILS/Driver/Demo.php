@@ -532,7 +532,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             'callnumber_prefix' => $this->getFakeCallNumPrefix(),
             'duedate'      => '',
             'is_holdable'  => true,
-            'addLink'      => $patron ? true : false,
+            'addLink'      => (bool)$patron,
             'level'        => 'copy',
             'storageRetrievalRequest' => 'auto',
             'addStorageRetrievalRequestLink' => $patron ? 'check' : false,
@@ -807,9 +807,12 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
     protected function setStatus(string $id, $holding = [], $append = true, $patron = null)
     {
         $session = $this->getSession($patron['id'] ?? null);
-        $i = isset($session->statuses[$id])
-            ? count($session->statuses[$id]) + 1 : 1;
-        $holding = array_merge($this->getRandomHolding($id, $i, $patron), $holding);
+
+        if ($this->config['Holdings']['generateRandomHoldings'] ?? true) {
+            $i = isset($session->statuses[$id])
+                ? count($session->statuses[$id]) + 1 : 1;
+            $holding = array_merge($this->getRandomHolding($id, $i, $patron), $holding);
+        }
 
         // if statuses is already stored
         if ($session->statuses) {
@@ -932,7 +935,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             $status[$i] += $this->getLoanTypeForHolding();
             $volume = intdiv($issue, 4) + 1;
             $seriesIssue = $issue % 4;
-            $issue = $issue + 1;
+            $issue += 1;
             $status[$i]['enumchron'] = "volume $volume, issue $seriesIssue";
             if (rand(1, 100) <= ($this->config['Holdings']['boundWithProbability'] ?? 25)) {
                 $status[$i]['bound_with_records'] = [];
@@ -1132,6 +1135,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                     'U',
                     strtotime("now - $day_overdue days")
                 ),
+                'organization' => $this->getFakeLoc(),
             ];
 
             $fine['payableOnline'] = $this->fineIsPayable($fine);
@@ -1870,10 +1874,10 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      *
      * Retrieve the IDs of items recently added to the catalog.
      *
-     * @param int $page    Page number of results to retrieve (counting starts at 1)
-     * @param int $limit   The size of each page of results to retrieve
-     * @param int $daysOld The maximum age of records to retrieve in days (max. 30)
-     * @param int $fundId  optional fund ID to use for limiting results (use a value
+     * @param int     $page    Page number of results to retrieve (counting starts at 1)
+     * @param int     $limit   The size of each page of results to retrieve
+     * @param int     $daysOld The maximum age of records to retrieve in days (max. 30)
+     * @param ?string $fundId  optional fund ID to use for limiting results (use a value
      * returned by getFunds, or exclude for no limit); note that "fund" may be a
      * misnomer - if funds are not an appropriate way to limit your new item
      * results, you can return a different set of values from getFunds. The
@@ -2182,7 +2186,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
                             'U',
                             $transactions[$i]['rawduedate']
                         );
-                    $transactions[$i]['renew'] = $transactions[$i]['renew'] + 1;
+                    $transactions[$i]['renew'] += 1;
                     $transactions[$i]['renewable']
                         = $transactions[$i]['renew']
                         < $transactions[$i]['renewLimit'];
@@ -2881,7 +2885,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
      * @param string $function The name of the feature to be checked
      * @param array  $params   Optional feature-specific parameters (array)
      *
-     * @return array An array with key-value pairs.
+     * @return array|false An array with key-value pairs.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */

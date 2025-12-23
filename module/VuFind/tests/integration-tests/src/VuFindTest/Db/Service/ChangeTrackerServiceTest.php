@@ -134,7 +134,7 @@ final class ChangeTrackerServiceTest extends \PHPUnit\Framework\TestCase
         $tracker->markDeleted($core, 'test2');
         $row = $tracker->getChangeTrackerEntity($core, 'test2');
         $this->assertIsObject($row);
-        $this->assertTrue(!empty($row->getDeleted()));
+        $this->assertNotEmpty($row->getDeleted());
 
         // Index the previously-deleted record and make sure it undeletes properly:
         $tracker->index($core, 'test2', 1326833170);

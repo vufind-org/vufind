@@ -45,15 +45,13 @@ class HoldingsTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testBarcodeVisibilityBehavior()
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function barcodeVisibilityBehaviorProvider(): array
+    public static function barcodeVisibilityBehaviorProvider(): \Iterator
     {
-        return [
-            'default' => [[], true, true],
-            'enabled' => [['display_items_without_barcodes' => true], true, true],
-            'disabled' => [['display_items_without_barcodes' => false], true, false],
-        ];
+        yield 'default' => [[], true, true];
+        yield 'enabled' => [['display_items_without_barcodes' => true], true, true];
+        yield 'disabled' => [['display_items_without_barcodes' => false], true, false];
     }
 
     /**
@@ -65,9 +63,8 @@ class HoldingsTest extends \PHPUnit\Framework\TestCase
      * barcodes
      *
      * @return void
-     *
-     * @dataProvider barcodeVisibilityBehaviorProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('barcodeVisibilityBehaviorProvider')]
     public function testBarcodeVisibilityBehavior(
         array $config,
         bool $expectedBarcodeResult,
@@ -75,7 +72,7 @@ class HoldingsTest extends \PHPUnit\Framework\TestCase
     ): void {
         // Create a helper object:
         $helper = new \VuFind\View\Helper\Root\Holdings(['Catalog' => $config]);
-        $this->assertEquals(
+        $this->assertSame(
             $expectedBarcodeResult,
             $helper->holdingIsVisible(
                 [
@@ -84,7 +81,7 @@ class HoldingsTest extends \PHPUnit\Framework\TestCase
                 ]
             )
         );
-        $this->assertEquals(
+        $this->assertSame(
             $expectedNoBarcodeResult,
             $helper->holdingIsVisible(['availability' => new AvailabilityStatus(true, 'Available')])
         );

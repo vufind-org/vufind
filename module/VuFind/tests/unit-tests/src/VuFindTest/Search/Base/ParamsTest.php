@@ -337,7 +337,7 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
         );
         $this->assertEquals(50, $minified->scp['limit']);
 
-        $customAdapter = $this->getMockBuilder(QueryAdapter::class)->getMock();
+        $customAdapter = $this->createMock(QueryAdapter::class);
         $customAdapter->expects($this->once())
             ->method('minify')
             ->willReturn('CUSTOM');

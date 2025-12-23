@@ -1731,7 +1731,7 @@ class ComposedDriverTest extends AbstractMultiDriverTestCase
             call_user_func_array(
                 [$driver->expects($driverConfig['times'])->method($function), 'with'],
                 $params
-            )->will($this->returnValue($driverConfig['return']));
+            )->willReturn($driverConfig['return']);
             $drivers[$diverName] = $driver;
         }
         $composedDriver = $this->getMultiDriverForDrivers(

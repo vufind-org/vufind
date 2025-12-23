@@ -14,9 +14,6 @@
       <?php if ($showCheckboxes): ?>
         <?=$this->record($current)->getCheckbox('', 'search-cart-form', $recordNumber)?>
       <?php endif; ?>
-      <div class="record-number">
-        <?=$recordNumber ?>
-      </div>
       <?=$this->record($current)->getSearchResult('list', $this->results)?>
     </li>
     <?php

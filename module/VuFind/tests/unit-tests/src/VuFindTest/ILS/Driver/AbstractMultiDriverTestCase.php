@@ -249,12 +249,11 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function getMockSM($times = null, $driver = 'Voyager', $return = null)
     {
-        $sm = $this->getMockBuilder(\VuFind\ILS\Driver\PluginManager::class)
-            ->disableOriginalConstructor()->getMock();
+        $sm = $this->createMock(\VuFind\ILS\Driver\PluginManager::class);
         $sm->expects($times ?? $this->any())
             ->method('get')
             ->with($driver)
-            ->will($this->returnValue($return));
+            ->willReturn($return);
         return $sm;
     }
 
@@ -265,8 +264,7 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
      */
     protected function getMockDemoDriver()
     {
-        $session = $this->getMockBuilder(\Laminas\Session\Container::class)
-            ->disableOriginalConstructor()->getMock();
+        $session = $this->createMock(\Laminas\Session\Container::class);
         return $this->getMockBuilder(__NAMESPACE__ . '\MultiDriverTest\DemoMock')
             ->setConstructorArgs(
                 [
@@ -304,9 +302,7 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
                 ->getMock();
         }
         if ($methods && in_array('init', $methods)) {
-            $mock->expects($this->any())
-                ->method('init')
-                ->will($this->returnValue(null));
+            $mock->method('init')->willReturn(null);
         }
         $mock->setConfig(['dummy_config' => true]);
         return $mock;
@@ -353,8 +349,7 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
             $driverMap[$driverName] = $driver;
             $driverNameMap[$name] = $driverName;
         }
-        $sm = $this->getMockBuilder(\VuFind\ILS\Driver\PluginManager::class)
-            ->disableOriginalConstructor()->getMock();
+        $sm = $this->createMock(\VuFind\ILS\Driver\PluginManager::class);
         // MultiBackend should always ask for a driver just once, so exactly can be
         // used here:
         $sm->expects(null !== $count ? $count : $this->exactly(count($driverMap)))
@@ -362,12 +357,10 @@ abstract class AbstractMultiDriverTestCase extends \PHPUnit\Framework\TestCase
             ->with(
                 call_user_func_array([$this, 'logicalOr'], array_keys($driverMap))
             )
-            ->will(
-                $this->returnCallback(
-                    function ($driver) use ($driverMap) {
-                        return $driverMap[$driver];
-                    }
-                )
+            ->willReturnCallback(
+                function ($driver) use ($driverMap) {
+                    return $driverMap[$driver];
+                }
             );
 
         $driver = $this->initDriver(['driverManager' => $sm]);

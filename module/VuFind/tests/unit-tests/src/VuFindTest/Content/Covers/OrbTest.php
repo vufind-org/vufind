@@ -59,13 +59,11 @@ class OrbTest extends \PHPUnit\Framework\TestCase
     {
         $loader = new Orb('http://foo', 'fakeuser', 'fakekey');
         if ($fixtureFile) {
-            $mockDownloader = $this->getMockBuilder(CachingDownloader::class)
-                ->disableOriginalConstructor()
-                ->getMock();
+            $mockDownloader = $this->createMock(CachingDownloader::class);
             $fixture = $this->getFixture($fixtureFile);
             $mockDownloader->expects($this->once())->method('downloadJson')
-                ->with($this->equalTo("https://fakeuser:fakekey@http://foo/products?eans=$expectedEAN&sort=ean_asc"))
-                ->will($this->returnValue(json_decode($fixture)));
+                ->with("https://fakeuser:fakekey@http://foo/products?eans=$expectedEAN&sort=ean_asc")
+                ->willReturn(json_decode($fixture));
             $loader->setCachingDownloader($mockDownloader);
         }
         return $loader;

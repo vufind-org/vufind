@@ -125,9 +125,8 @@ final class EmailVerificationTest extends \VuFindTest\Integration\MinkTestCase
      * Test changing email address.
      *
      * @return void
-     *
-     * @depends testEmailVerification
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testEmailVerification')]
     public function testEmailAddressChange(): void
     {
         // Set up configs, session and message logging:
@@ -177,7 +176,7 @@ final class EmailVerificationTest extends \VuFindTest\Integration\MinkTestCase
 
         // Confirm that messages went to both new and old email addresses, and extract the verify link:
         $email = $this->getLoggedEmail(0);
-        $this->assertEquals('To: changed@example.com', $email->getHeaders()->get('to')->toString());
+        $this->assertSame('To: changed@example.com', $email->getHeaders()->get('to')->toString());
         preg_match(
             '/You can verify your email address with this link: <(http.*)>/',
             $email->getBody()->getBody(),
@@ -186,7 +185,7 @@ final class EmailVerificationTest extends \VuFindTest\Integration\MinkTestCase
         $verifyLink = $matches[1];
 
         $notifyEmail = $this->getLoggedEmail(1);
-        $this->assertEquals('To: username1@ignore.com', $notifyEmail->getHeaders()->get('to')->toString());
+        $this->assertSame('To: username1@ignore.com', $notifyEmail->getHeaders()->get('to')->toString());
         $this->assertStringContainsString(
             'A request was just made to change your email address at Library Catalog.',
             $notifyEmail->getBody()->getBody()

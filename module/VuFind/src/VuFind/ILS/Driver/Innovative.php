@@ -197,11 +197,7 @@ class Innovative extends AbstractBase implements
                     }
                     // Does column hold reserves information?
                     if (stripos($keys[$i], (string)$reserves_col_name) > -1) {
-                        if (stripos($cols[$i], (string)$reserves_key_name) > -1) {
-                            $ret[$count - 2]['reserve'] = 'Y';
-                        } else {
-                            $ret[$count - 2]['reserve'] = 'N';
-                        }
+                        $ret[$count - 2]['reserve'] = stripos($cols[$i], (string)$reserves_key_name) > -1 ? 'Y' : 'N';
                     }
                     // Does column hold call numbers?
                     if (stripos($keys[$i], (string)$call_col_name) > -1) {

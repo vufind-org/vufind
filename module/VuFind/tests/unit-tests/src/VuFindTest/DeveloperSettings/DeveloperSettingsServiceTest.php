@@ -96,7 +96,7 @@ class DeveloperSettingsServiceTest extends \PHPUnit\Framework\TestCase
     {
         $mockObject = $this->createMock($name);
         foreach ($methodsAndReturns as $method => $return) {
-            $mockObject->expects($this->any())->method($method)->willReturn($return);
+            $mockObject->method($method)->willReturn($return);
         }
         return $mockObject;
     }
@@ -207,9 +207,9 @@ class DeveloperSettingsServiceTest extends \PHPUnit\Framework\TestCase
      * @param array $user     User data
      * @param array $expected Expected value in result key, omit when error expected.
      *
-     * @dataProvider getTestGenerateApiKeyForUserData
-     * @return       void
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestGenerateApiKeyForUserData')]
     public function testGenerateApiKeyForUser(
         array $config,
         array $tokens,
@@ -243,7 +243,7 @@ class DeveloperSettingsServiceTest extends \PHPUnit\Framework\TestCase
         if (is_bool($result)) {
             $this->assertEquals($expected['result'], $result);
         } else {
-            $this->assertEquals('test', $result->getTitle());
+            $this->assertSame('test', $result->getTitle());
         }
     }
 
@@ -352,15 +352,15 @@ class DeveloperSettingsServiceTest extends \PHPUnit\Framework\TestCase
      * @param ?array  $apiKey   Methods and returns for API key entity
      * @param bool    $expected Expected value
      *
-     * @dataProvider getTestIsApiKeyAllowedData
-     * @return       void
+     * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestIsApiKeyAllowedData')]
     public function testIsApiKeyAllowed(?string $token, array $config, ?array $apiKey, bool $expected): void
     {
         $apiKey = $apiKey ? $this->createMockWithMethods(ApiKeyEntityInterface::class, $apiKey) : null;
         $apiKeyService = $this->createMockWithMethods(ApiKeyServiceInterface::class, ['getByToken' => $apiKey]);
         $result = $this->getService($config, $apiKeyService)->isApiKeyAllowed($token);
-        $this->assertEquals($expected, $result);
+        $this->assertSame($expected, $result);
     }
 
     /**
@@ -379,7 +379,7 @@ class DeveloperSettingsServiceTest extends \PHPUnit\Framework\TestCase
         $apiKey->setTitle('heitest')->setCreated($date)->setLastUsed($date)->setRevoked(false);
         $apiKeyService = $this->createMockWithMethods(ApiKeyServiceInterface::class, ['getByToken' => $apiKey]);
         $apiKeyService->expects($this->once())->method('persistEntity')->willReturnCallback(
-            function ($apiKey) use ($date) {
+            function ($apiKey) use ($date): void {
                 $this->assertNotEquals(
                     $apiKey->getLastUsed()->getTimestamp(),
                     $date->getTimestamp()

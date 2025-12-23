@@ -364,51 +364,49 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testHierarchicalFacetsFilters
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function hierarchicalFacetFiltersProvider(): array
+    public static function hierarchicalFacetFiltersProvider(): \Iterator
     {
-        return [
-            'default sort' => [
-                null,
-                null,
-                'top',
-            ],
-            'top level alphabetical' => [
-                'top',
-                'all',
-                'top',
-            ],
-            'all alphabetical' => [
-                'all',
-                'top',
-                'all',
-            ],
-            'count' => [
-                'count',
-                'all',
-                'count',
-            ],
-            'default sort (inherited)' => [
-                null,
-                'top',
-                'top',
-            ],
-            'top level alphabetical (inherited)' => [
-                null,
-                'top',
-                'top',
-            ],
-            'all alphabetical (inherited)' => [
-                null,
-                'all',
-                'all',
-            ],
-            'count (inherited)' => [
-                null,
-                'count',
-                'count',
-            ],
+        yield 'default sort' => [
+            null,
+            null,
+            'top',
+        ];
+        yield 'top level alphabetical' => [
+            'top',
+            'all',
+            'top',
+        ];
+        yield 'all alphabetical' => [
+            'all',
+            'top',
+            'all',
+        ];
+        yield 'count' => [
+            'count',
+            'all',
+            'count',
+        ];
+        yield 'default sort (inherited)' => [
+            null,
+            'top',
+            'top',
+        ];
+        yield 'top level alphabetical (inherited)' => [
+            null,
+            'top',
+            'top',
+        ];
+        yield 'all alphabetical (inherited)' => [
+            null,
+            'all',
+            'all',
+        ];
+        yield 'count (inherited)' => [
+            null,
+            'count',
+            'count',
         ];
     }
 
@@ -419,10 +417,9 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
      * @param ?string $defaultSort  Default sort option
      * @param string  $expectedSort Expected sort order of options
      *
-     * @dataProvider hierarchicalFacetFiltersProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('hierarchicalFacetFiltersProvider')]
     public function testHierarchicalFacetsFilters(?string $sort, ?string $defaultSort, string $expectedSort): void
     {
         $config = [

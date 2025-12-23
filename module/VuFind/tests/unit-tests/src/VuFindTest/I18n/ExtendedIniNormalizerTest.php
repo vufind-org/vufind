@@ -98,14 +98,12 @@ class ExtendedIniNormalizerTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testEscaping
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function escapingProvider(): array
+    public static function escapingProvider(): \Iterator
     {
-        return [
-            ['foo = "This is a backslash: \\\\"'],
-            ["foo = 'Single \\'quote\\' vs. double \"quote\"'"],
-        ];
+        yield ['foo = "This is a backslash: \\\\"'];
+        yield ["foo = 'Single \\'quote\\' vs. double \"quote\"'"];
     }
 
     /**
@@ -113,10 +111,9 @@ class ExtendedIniNormalizerTest extends \PHPUnit\Framework\TestCase
      *
      * @param string $value Value to test
      *
-     * @dataProvider escapingProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('escapingProvider')]
     public function testEscaping(string $value): void
     {
         $reader = new ExtendedIniReader();

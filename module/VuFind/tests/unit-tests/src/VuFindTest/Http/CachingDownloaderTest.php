@@ -52,14 +52,12 @@ class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testDownload
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function downloadProvider(): array
+    public static function downloadProvider(): \Iterator
     {
-        return [
-            'cache enabled' => [true],
-            'cache disabled' => [false],
-        ];
+        yield 'cache enabled' => [true];
+        yield 'cache disabled' => [false];
     }
 
     /**
@@ -68,9 +66,8 @@ class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
      * @param bool $cacheEnabled Is the cache enabled?
      *
      * @return void
-     *
-     * @dataProvider downloadProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('downloadProvider')]
     public function testDownload(bool $cacheEnabled): void
     {
         $container = new \VuFindTest\Container\MockContainer($this);
@@ -83,7 +80,7 @@ class CachingDownloaderTest extends \PHPUnit\Framework\TestCase
         $service = $this->createMock(GuzzleService::class);
 
         $stream = $this->createMock(StreamInterface::class);
-        $stream->expects($this->any())->method('getContents')->willReturn($testBody);
+        $stream->method('getContents')->willReturn($testBody);
         $stream->expects($this->once())->method('rewind');
 
         $response = $this->createMock(ResponseInterface::class);

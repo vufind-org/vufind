@@ -57,12 +57,12 @@ class PropertyStringTest extends \PHPUnit\Framework\TestCase
         $str['attr'] = 'bonus';
         $str['attr2'] = 'bonus2';
 
-        $this->assertEquals('Foo', (string)$str);
-        $this->assertEquals('Foo', $str->getString());
-        $this->assertEquals('<p>Foo</p>', $str->getHtml());
-        $this->assertEquals(['id_foo', 'id_bar'], $str->getIds());
-        $this->assertEquals('bonus', $str['attr']);
-        $this->assertEquals('bonus2', $str['attr2']);
+        $this->assertSame('Foo', (string)$str);
+        $this->assertSame('Foo', $str->getString());
+        $this->assertSame('<p>Foo</p>', $str->getHtml());
+        $this->assertSame(['id_foo', 'id_bar'], $str->getIds());
+        $this->assertSame('bonus', $str['attr']);
+        $this->assertSame('bonus2', $str['attr2']);
         $this->assertTrue(isset($str['attr']));
         $this->assertFalse(isset($str['nattr']));
 
@@ -71,7 +71,7 @@ class PropertyStringTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse(isset($str['attr']));
 
         $str->addId('id_baz');
-        $this->assertEquals(['id_foo', 'id_bar', 'id_baz'], $str->getIds());
+        $this->assertSame(['id_foo', 'id_bar', 'id_baz'], $str->getIds());
 
         $this->assertNull($str->isHtmlTrusted());
         $str->setHtmlTrusted(true);
@@ -81,46 +81,44 @@ class PropertyStringTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testFromHtml
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function fromHtmlProvider(): array
+    public static function fromHtmlProvider(): \Iterator
     {
-        return [
-            'plain string, no attributes' => [
-                'Plain string',
-                [],
-                'Plain string',
-                'Plain string',
-                [],
-            ],
-            'plain string, attributes' => [
-                'Plain string',
-                ['foo' => 'bar', 'bar' => 'baz'],
-                'Plain string',
-                'Plain string',
-                ['foo' => 'bar', 'bar' => 'baz'],
-            ],
-            'HTML string, array attributes' => [
-                '<strong>HTML</strong> string',
-                ['foo' => ['bar', 'baz']],
-                'HTML string',
-                '<strong>HTML</strong> string',
-                ['foo' => ['bar', 'baz']],
-            ],
-            'HTML string, reserved array attributes' => [
-                '<strong>HTML</strong> string',
-                ['__html' => ['bar', 'baz']],
-                'HTML string',
-                '<strong>HTML</strong> string',
-                ['__html' => '<strong>HTML</strong> string'],
-            ],
-            'HTML string containing entities' => [
-                '<i>Dungeons &amp; Dragons</i>',
-                [],
-                'Dungeons & Dragons',
-                '<i>Dungeons &amp; Dragons</i>',
-                ['__html' => '<i>Dungeons &amp; Dragons</i>'],
-            ],
+        yield 'plain string, no attributes' => [
+            'Plain string',
+            [],
+            'Plain string',
+            'Plain string',
+            [],
+        ];
+        yield 'plain string, attributes' => [
+            'Plain string',
+            ['foo' => 'bar', 'bar' => 'baz'],
+            'Plain string',
+            'Plain string',
+            ['foo' => 'bar', 'bar' => 'baz'],
+        ];
+        yield 'HTML string, array attributes' => [
+            '<strong>HTML</strong> string',
+            ['foo' => ['bar', 'baz']],
+            'HTML string',
+            '<strong>HTML</strong> string',
+            ['foo' => ['bar', 'baz']],
+        ];
+        yield 'HTML string, reserved array attributes' => [
+            '<strong>HTML</strong> string',
+            ['__html' => ['bar', 'baz']],
+            'HTML string',
+            '<strong>HTML</strong> string',
+            ['__html' => '<strong>HTML</strong> string'],
+        ];
+        yield 'HTML string containing entities' => [
+            '<i>Dungeons &amp; Dragons</i>',
+            [],
+            'Dungeons & Dragons',
+            '<i>Dungeons &amp; Dragons</i>',
+            ['__html' => '<i>Dungeons &amp; Dragons</i>'],
         ];
     }
 
@@ -134,9 +132,8 @@ class PropertyStringTest extends \PHPUnit\Framework\TestCase
      * @param array  $expectedAttrs Expected attributes
      *
      * @return void
-     *
-     * @dataProvider fromHtmlProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('fromHtmlProvider')]
     public function testFromHtml(
         string $html,
         array $attrs,
@@ -145,8 +142,8 @@ class PropertyStringTest extends \PHPUnit\Framework\TestCase
         array $expectedAttrs
     ): void {
         $str = PropertyString::fromHtml($html, $attrs);
-        $this->assertEquals($expectedPlain, (string)$str);
-        $this->assertEquals($expectedHtml, $str->getHtml());
+        $this->assertSame($expectedPlain, (string)$str);
+        $this->assertSame($expectedHtml, $str->getHtml());
         foreach ($expectedAttrs as $key => $value) {
             $this->assertEquals($value, $str[$key]);
         }

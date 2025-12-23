@@ -47,31 +47,29 @@ class ConfigCacheTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for configuration caching tests
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function cacheSettingsProvider(): array
+    public static function cacheSettingsProvider(): \Iterator
     {
-        return [
-            'no caching' => [
-                false,
-                false,
-                false,
-            ],
-            'override no caching' => [
-                false,
-                true,
-                true,
-            ],
-            'override caching' => [
-                true,
-                false,
-                false,
-            ],
-            'all caching' => [
-                true,
-                true,
-                true,
-            ],
+        yield 'no caching' => [
+            false,
+            false,
+            false,
+        ];
+        yield 'override no caching' => [
+            false,
+            true,
+            true,
+        ];
+        yield 'override caching' => [
+            true,
+            false,
+            false,
+        ];
+        yield 'all caching' => [
+            true,
+            true,
+            true,
         ];
     }
 
@@ -82,10 +80,9 @@ class ConfigCacheTest extends \VuFindTest\Integration\MinkTestCase
      * @param bool $cacheIni         Ini cache enabled
      * @param bool $cacheSearchspecs Searchspecs cache enabled
      *
-     * @dataProvider cacheSettingsProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('cacheSettingsProvider')]
     public function testConfigurationCaching(bool $cacheDefault, bool $cacheIni, bool $cacheSearchspecs): void
     {
         $this->changeConfigs(

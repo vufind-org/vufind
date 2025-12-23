@@ -149,7 +149,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
             ->method('query')
-            ->will($this->throwException(new \Exception()));
+            ->willThrowException(new \Exception());
         $back = new Backend($conn);
         $back->search(new Query(), 1, 1);
     }
@@ -168,7 +168,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $conn = $this->getConnectorMock(['getRecord']);
         $conn->expects($this->once())
             ->method('getRecord')
-            ->will($this->throwException(new \Exception()));
+            ->willThrowException(new \Exception());
         $back = new Backend($conn);
         $back->retrieve('1234');
     }
@@ -196,9 +196,9 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $conn->expects($this->once())
             ->method('query')
             ->with(
-                $this->equalTo('inst-id'),
-                $this->equalTo($expectedParams['query']),
-                $this->equalTo($expectedParams)
+                'inst-id',
+                $expectedParams['query'],
+                $expectedParams
             )->willReturn(['recordCount' => 0, 'documents' => []]);
         $back = new Backend($conn);
         $back->search(new Query('baz'), 0, 10, $myParams);
@@ -207,47 +207,45 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testPcAvailabilityFilter
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getPcAvailabilityData(): array
+    public static function getPcAvailabilityData(): \Iterator
     {
-        return [
-            [
-                '',
-                true,
-            ],
-            [
-                true,
-                true,
-            ],
-            [
-                1,
-                true,
-            ],
-            [
-                '1',
-                true,
-            ],
-            [
-                'true',
-                true,
-            ],
-            [
-                false,
-                false,
-            ],
-            [
-                0,
-                false,
-            ],
-            [
-                '0',
-                false,
-            ],
-            [
-                'false',
-                false,
-            ],
+        yield [
+            '',
+            true,
+        ];
+        yield [
+            true,
+            true,
+        ];
+        yield [
+            1,
+            true,
+        ];
+        yield [
+            '1',
+            true,
+        ];
+        yield [
+            'true',
+            true,
+        ];
+        yield [
+            false,
+            false,
+        ];
+        yield [
+            0,
+            false,
+        ];
+        yield [
+            '0',
+            false,
+        ];
+        yield [
+            'false',
+            false,
         ];
     }
 
@@ -257,10 +255,9 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      * @param mixed $value    Input value of filter
      * @param bool  $expected Expected output value of filter
      *
-     * @dataProvider getPcAvailabilityData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getPcAvailabilityData')]
     public function testPcAvailabilityFilter(mixed $value, bool $expected): void
     {
         $params = new ParamBag(
@@ -291,9 +288,9 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $conn->expects($this->once())
             ->method('query')
             ->with(
-                $this->equalTo('inst-id'),
-                $this->equalTo($expectedParams['query']),
-                $this->equalTo($expectedParams)
+                'inst-id',
+                $expectedParams['query'],
+                $expectedParams
             )->willReturn(['recordCount' => 0, 'documents' => []]);
         $back = new Backend($conn);
         $back->search(new Query('foo'), 0, 10, $params);

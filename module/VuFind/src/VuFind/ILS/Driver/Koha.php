@@ -80,7 +80,7 @@ class Koha extends AbstractBase
     /**
      * Should we validate passwords against Koha system?
      *
-     * @var boolean
+     * @var bool
      */
     protected $validatePasswords;
 

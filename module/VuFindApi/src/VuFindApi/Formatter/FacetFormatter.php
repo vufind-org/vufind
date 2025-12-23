@@ -76,14 +76,14 @@ class FacetFormatter extends BaseFormatter
      * @param array $facet   Facet
      * @param array $filters Facet filters
      *
-     * @return boolean
+     * @return bool
      */
     protected function matchFacetItem($facet, $filters)
     {
         $discard = true;
         array_walk_recursive(
             $facet,
-            function ($item, $key) use (&$discard, $filters) {
+            function ($item, $key) use (&$discard, $filters): void {
                 if ($discard && $key == 'value') {
                     foreach ($filters as $filter) {
                         $pattern = '/' . addcslashes($filter, '/') . '/';

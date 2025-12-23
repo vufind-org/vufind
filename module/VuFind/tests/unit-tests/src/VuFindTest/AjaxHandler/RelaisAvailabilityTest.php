@@ -61,16 +61,14 @@ class RelaisAvailabilityTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testSearchResponse()
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function searchResponseProvider(): array
+    public static function searchResponseProvider(): \Iterator
     {
-        return [
-            'error type 1' => ['error: foo', [['result' => 'no']]],
-            'error type 2' => ['ErrorMessage: foo', [['result' => 'no']]],
-            'error type 3' => ['false', [['result' => 'no']]],
-            'success' => ['happy day!', [['result' => 'ok']]],
-        ];
+        yield 'error type 1' => ['error: foo', [['result' => 'no']]];
+        yield 'error type 2' => ['ErrorMessage: foo', [['result' => 'no']]];
+        yield 'error type 3' => ['false', [['result' => 'no']]];
+        yield 'success' => ['happy day!', [['result' => 'ok']]];
     }
 
     /**
@@ -80,9 +78,8 @@ class RelaisAvailabilityTest extends \PHPUnit\Framework\TestCase
      * @param array  $expected Expected handler response
      *
      * @return void
-     *
-     * @dataProvider searchResponseProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('searchResponseProvider')]
     public function testSearchResponse(string $response, array $expected): void
     {
         $params = $this->createMock(\Laminas\Mvc\Controller\Plugin\Params::class);

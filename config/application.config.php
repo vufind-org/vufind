@@ -93,6 +93,7 @@ return [
             APPLICATION_PATH . '/module',
             APPLICATION_PATH . '/vendor',
         ],
+        'use_laminas_loader' => false,
     ],
     'service_manager' => [
         'use_defaults' => true,

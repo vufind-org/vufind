@@ -155,29 +155,27 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testOAuth2Authorization
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function oauth2AuthorizationProvider(): array
+    public static function oauth2AuthorizationProvider(): \Iterator
     {
-        return [
-            'test client' => [
-                'test',
-                [
-                    'Read your user identifier',
-                    'Read your basic profile information (name, language, birthdate)',
-                    'Read a unique hash based on your library user identifier',
-                    'Read your age',
-                ],
-                false,
+        yield 'test client' => [
+            'test',
+            [
+                'Read your user identifier',
+                'Read your basic profile information (name, language, birthdate)',
+                'Read a unique hash based on your library user identifier',
+                'Read your age',
             ],
-            'limited test client' => [
-                'test_limited',
-                [
-                    'Read your user identifier',
-                    'Read your basic profile information (name, language, birthdate)',
-                ],
-                true,
+            false,
+        ];
+        yield 'limited test client' => [
+            'test_limited',
+            [
+                'Read your user identifier',
+                'Read your basic profile information (name, language, birthdate)',
             ],
+            true,
         ];
     }
 
@@ -189,9 +187,8 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
      * @param bool   $limited             Whether the permission set has been limited by the server
      *
      * @return void
-     *
-     * @dataProvider oauth2AuthorizationProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('oauth2AuthorizationProvider')]
     public function testOAuth2Authorization(string $clientId, array $expectedPermissions, bool $limited): void
     {
         // Bogus redirect URI, but it doesn't matter since the page won't handle the
@@ -246,12 +243,12 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
 
         $this->waitForPageLoad($page);
         [$host] = explode('?', $session->getCurrentUrl());
-        $this->assertEquals($redirectUri, $host);
+        $this->assertSame($redirectUri, $host);
 
         parse_str(parse_url($session->getCurrentUrl(), PHP_URL_QUERY), $queryParams);
         $this->assertArrayHasKey('code', $queryParams);
         $this->assertArrayHasKey('state', $queryParams);
-        $this->assertEquals($state, $queryParams['state']);
+        $this->assertSame($state, $queryParams['state']);
 
         // Fetch and check idToken with back-channel requests:
         $tokenParams = [
@@ -267,19 +264,16 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
             'application/x-www-form-urlencoded'
         );
 
-        $this->assertEquals(200, $response->getStatusCode());
-        $tokenResult = json_decode($response->getBody(), true);
+        $this->assertSame(200, $response->getStatusCode());
+        $tokenResult = json_decode($response->getBody()->getContents(), true);
         $this->assertArrayHasKey('id_token', $tokenResult);
         $this->assertArrayHasKey('token_type', $tokenResult);
 
         // Fetch public key to verify idToken:
         $response = $this->httpGet($this->getVuFindUrl() . '/OAuth2/jwks');
-        $this->assertEquals(
-            200,
-            $response->getStatusCode(),
-            'Response: ' . $response->getContent()
-        );
-        $jwks = json_decode($response->getBody(), true);
+        $jwksBody = $response->getBody()->getContents();
+        $this->assertSame(200, $response->getStatusCode(), "Response: $jwksBody");
+        $jwks = json_decode($jwksBody, true);
         $this->assertArrayHasKey('n', $jwks['keys'][0] ?? []);
 
         $idToken = \Firebase\JWT\JWT::decode(
@@ -313,19 +307,16 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         $response = $this->httpGet(
             $this->getVuFindUrl() . '/OAuth2/userinfo',
             [],
-            '',
+            null,
             [
                 'Authorization' => $tokenResult['token_type'] . ' '
                 . $tokenResult['access_token'],
             ]
         );
-        $this->assertEquals(
-            200,
-            $response->getStatusCode(),
-            'Response: ' . $response->getContent()
-        );
+        $userInfoBody = $response->getBody()->getContents();
+        $this->assertSame(200, $response->getStatusCode(), "Response: $userInfoBody");
 
-        $userInfo = json_decode($response->getBody(), true);
+        $userInfo = json_decode($userInfoBody, true);
         $this->assertEquals($idToken->sub, $userInfo['sub']);
         $this->assertEquals($nonce, $userInfo['nonce']);
         $this->assertEquals('Tester McTestenson', $userInfo['name']);
@@ -354,13 +345,9 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
             http_build_query($tokenParams),
             'application/x-www-form-urlencoded'
         );
-        $this->assertEquals(401, $response->getStatusCode());
-        $this->assertEquals(
-            401,
-            $response->getStatusCode(),
-            'Response: ' . $response->getContent()
-        );
-        $tokenResult = json_decode($response->getBody(), true);
+        $tokenBody = $response->getBody()->getContents();
+        $this->assertSame(401, $response->getStatusCode(), "Response: $tokenBody");
+        $tokenResult = json_decode($tokenBody, true);
         $this->assertArrayHasKey('error', $tokenResult);
         $this->assertEquals('invalid_client', $tokenResult['error']);
     }
@@ -403,13 +390,13 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.form-oauth2-authorize button.btn.btn-default');
 
         [$host] = explode('?', $session->getCurrentUrl());
-        $this->assertEquals($redirectUri, $host);
+        $this->assertSame($redirectUri, $host);
 
         parse_str(parse_url($session->getCurrentUrl(), PHP_URL_QUERY), $queryParams);
         $this->assertArrayHasKey('error', $queryParams);
         $this->assertArrayHasKey('state', $queryParams);
-        $this->assertEquals($state, $queryParams['state']);
-        $this->assertEquals('access_denied', $queryParams['error']);
+        $this->assertSame($state, $queryParams['state']);
+        $this->assertSame('access_denied', $queryParams['error']);
     }
 
     /**
@@ -447,11 +434,11 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         $this->submitLoginForm($page, false);
 
         [$host] = explode('?', $session->getCurrentUrl());
-        $this->assertEquals($redirectUri, $host);
+        $this->assertSame($redirectUri, $host);
 
         parse_str(parse_url($session->getCurrentUrl(), PHP_URL_QUERY), $queryParams);
         $this->assertArrayHasKey('error', $queryParams);
-        $this->assertEquals('invalid_scope', $queryParams['error']);
+        $this->assertSame('invalid_scope', $queryParams['error']);
     }
 
     /**
@@ -554,11 +541,9 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         ];
 
         $response = $this->httpGet($this->getVuFindUrl() . '/.well-known/openid-configuration');
-        $this->assertEquals(
-            'application/json',
-            $response->getHeaders()->get('Content-Type')->getFieldValue()
-        );
-        $json = $response->getBody();
+        $contentTypeHeader = $response->getHeader('Content-Type');
+        $this->assertSame(['application/json'], $contentTypeHeader);
+        $json = $response->getBody()->getContents();
         $this->assertJsonStringEqualsJsonString(json_encode($expected), $json);
     }
 

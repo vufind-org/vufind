@@ -162,7 +162,7 @@ class OverdriveConnector implements
      *
      * Returns the currently logged in user or false if the user is not
      *
-     * @return array|bool  an array of user info from the ILSAuthenticator or false if user is not logged in.
+     * @return array|bool an array of user info from the ILSAuthenticator or false if user is not logged in.
      */
     public function getUser()
     {
@@ -246,11 +246,7 @@ class OverdriveConnector implements
         } else {
             // assume that it is accessOnly
             $result = $this->getAccess();
-
-            if (!$result->status && $result->code == 'od_account_noaccess') {
-                return false;
-            }
-            return true;
+            return !(!$result->status && $result->code == 'od_account_noaccess');
         }
     }
 

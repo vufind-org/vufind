@@ -64,13 +64,13 @@ class SchemaOrgTest extends \PHPUnit\Framework\TestCase
     public function testEnabled(): void
     {
         $helper = $this->getHelper(true);
-        $this->assertEquals(' foo="bar"', $helper->getAttributes(['foo' => 'bar']));
-        $this->assertEquals('<foo bar="baz">', $helper->getTag('foo', ['bar' => 'baz']));
-        $this->assertEquals(
+        $this->assertSame(' foo="bar"', $helper->getAttributes(['foo' => 'bar']));
+        $this->assertSame('<foo bar="baz">', $helper->getTag('foo', ['bar' => 'baz']));
+        $this->assertSame(
             '<link href="http&#x3A;&#x2F;&#x2F;foo" property="bar" baz="xyzzy">',
             $helper->getLink('http://foo', 'bar', ['baz' => 'xyzzy'])
         );
-        $this->assertEquals(
+        $this->assertSame(
             '<meta property="foo" content="bar" baz="xyzzy">',
             $helper->getMeta('foo', 'bar', ['baz' => 'xyzzy'])
         );
@@ -84,24 +84,22 @@ class SchemaOrgTest extends \PHPUnit\Framework\TestCase
     public function testDisabled(): void
     {
         $helper = $this->getHelper(false);
-        $this->assertEquals('', $helper->getAttributes(['foo' => 'bar']));
-        $this->assertEquals('', $helper->getTag('foo', ['bar' => 'baz']));
-        $this->assertEquals('', $helper->getLink('http://foo', 'bar', ['baz' => 'xyzzy']));
-        $this->assertEquals('', $helper->getMeta('foo', 'bar', ['baz' => 'xyzzy']));
+        $this->assertSame('', $helper->getAttributes(['foo' => 'bar']));
+        $this->assertSame('', $helper->getTag('foo', ['bar' => 'baz']));
+        $this->assertSame('', $helper->getLink('http://foo', 'bar', ['baz' => 'xyzzy']));
+        $this->assertSame('', $helper->getMeta('foo', 'bar', ['baz' => 'xyzzy']));
     }
 
     /**
      * Data provider for testGetRecordTypes().
      *
-     * @return void
+     * @return \Iterator
      */
-    public static function getRecordTypesProvider(): array
+    public static function getRecordTypesProvider(): \Iterator
     {
-        return [
-            'no types' => [[], ''],
-            'one type' => [['foo'], 'foo'],
-            'two types' => [['foo', 'bar'], 'foo bar'],
-        ];
+        yield 'no types' => [[], ''];
+        yield 'one type' => [['foo'], 'foo'];
+        yield 'two types' => [['foo', 'bar'], 'foo bar'];
     }
 
     /**
@@ -111,9 +109,8 @@ class SchemaOrgTest extends \PHPUnit\Framework\TestCase
      * @param string   $expected Expected return value
      *
      * @return void
-     *
-     * @dataProvider getRecordTypesProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getRecordTypesProvider')]
     public function testGetRecordTypes(array $types, string $expected): void
     {
         $helper = $this->getHelper(true);
@@ -121,6 +118,6 @@ class SchemaOrgTest extends \PHPUnit\Framework\TestCase
         $driver->setRawData(
             ['SchemaOrgFormatsArray' => $types]
         );
-        $this->assertEquals($expected, $helper->getRecordTypes($driver));
+        $this->assertSame($expected, $helper->getRecordTypes($driver));
     }
 }

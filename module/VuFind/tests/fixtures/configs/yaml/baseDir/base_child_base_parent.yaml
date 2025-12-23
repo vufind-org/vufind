@@ -1,0 +1,3 @@
+"@parent_config_name": "base_parent"
+All: base-child
+ChildOnly: base-child

@@ -83,7 +83,7 @@ class ExtendClassCommand extends AbstractContainerAwareCommand
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         // Normalize class name to exclude leading slashes; a FQCN doesn't need them:
         $class = ltrim($input->getArgument('class_name'), '\\');
@@ -100,9 +100,9 @@ class ExtendClassCommand extends AbstractContainerAwareCommand
             );
         } catch (\Exception $e) {
             $output->writeln($e->getMessage());
-            return 1;
+            return self::FAILURE;
         }
 
-        return 0;
+        return self::SUCCESS;
     }
 }
