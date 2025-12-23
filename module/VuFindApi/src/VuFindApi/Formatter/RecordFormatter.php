@@ -32,6 +32,7 @@ namespace VuFindApi\Formatter;
 use Laminas\View\HelperPluginManager;
 use VuFind\Http\ServerUrlHelper;
 use VuFind\I18n\TranslatableString;
+use VuFindApi\Controller\ApiException;
 
 use function is_object;
 
@@ -51,12 +52,12 @@ class RecordFormatter extends BaseFormatter
      *
      * @param array               $recordFields    Record field definitions
      * @param HelperPluginManager $helperManager   View helper plugin manager
-     * @param ServerUrlHelper     $serverUrlHelper Server URL helper
+     * @param ?ServerUrlHelper    $serverUrlHelper Server URL helper
      */
     public function __construct(
         protected array $recordFields,
         protected HelperPluginManager $helperManager,
-        protected ServerUrlHelper $serverUrlHelper
+        protected ?ServerUrlHelper $serverUrlHelper = null
     ) {
     }
 
@@ -163,6 +164,9 @@ class RecordFormatter extends BaseFormatter
      */
     protected function getRecordPageAbsoluteLink($record)
     {
+        if (!$this->serverUrlHelper) {
+            throw new ApiException('Cannot generate absolute link to record.');
+        }
         $recordPage = $this->getRecordPageRelativeLink($record);
         return $this->serverUrlHelper->getUrlForPath($recordPage);
     }
