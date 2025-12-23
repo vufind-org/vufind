@@ -116,6 +116,9 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
 
             $linkType = $serviceData['linkType'] ?? null;
             $specificConfig = $this->getBestIntegratorLinks()[$linkType] ?? false;
+            // False means there is no specific config; use the bestIntegratorLink default.
+            // Non-empty array means actually use this specific config.
+            // Empty array means this integrator link type is disabled.
             if (is_array($specificConfig)) {
                 $config = $specificConfig;
                 if (empty($config)) {
