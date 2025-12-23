@@ -92,13 +92,12 @@ class CheckRequestIsValid extends AbstractIlsAndUserAction
         $id = $params->fromQuery('id');
         $jsonData = $params->fromQuery('data');
         $requestType = $params->fromQuery('requestType');
-        if (empty($id) || empty($jsonData)) {
+        if (empty($id) || empty($jsonData) || !($data = json_decode($jsonData, true))) {
             return $this->formatResponse(
                 $this->translate('bulk_error_missing'),
                 self::STATUS_HTTP_BAD_REQUEST
             );
         }
-        $data = json_decode($jsonData, true);
 
         // check if user is logged in
         if (!$this->user) {
