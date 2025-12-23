@@ -32,7 +32,6 @@ namespace VuFind\AjaxHandler;
 use Laminas\Mvc\Controller\Plugin\Params;
 
 use function is_array;
-use function is_string;
 
 /**
  * "Check Request is Valid" AJAX handler
@@ -91,17 +90,16 @@ class CheckRequestIsValid extends AbstractIlsAndUserAction
     {
         $this->disableSessionWrites();  // avoid session write timing bug
         $id = $params->fromQuery('id');
-        $data = $params->fromQuery('data');
-        if (!empty($data) && is_string($data)) {
-            $data = json_decode($data, true);
-        }
+        $jsonData = $params->fromQuery('data');
         $requestType = $params->fromQuery('requestType');
-        if (empty($id) || empty($data)) {
+        if (empty($id) || empty($jsonData)) {
             return $this->formatResponse(
                 $this->translate('bulk_error_missing'),
                 self::STATUS_HTTP_BAD_REQUEST
             );
         }
+        $data = json_decode($jsonData, true);
+
         // check if user is logged in
         if (!$this->user) {
             return $this->formatResponse(
