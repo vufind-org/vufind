@@ -165,7 +165,7 @@ class Alma extends AbstractBase implements
             }
 
             // Create the API URL
-            $url = !str_contains($path, '://') ? $this->baseUrl . $path : $path;
+            $url = $this->baseUrl . $path;
 
             // Create client with API URL
             $client = $this->httpService->createClient($url);
@@ -996,7 +996,6 @@ class Alma extends AbstractBase implements
             try {
                 // Delete the request in Alma
                 $apiResult = $this->makeRequest(
-                    $this->baseUrl .
                     '/users/' . rawurlencode($patronId) .
                     '/requests/' . rawurlencode($requestId),
                     ['reason' => 'CancelledAtPatronRequest'],
@@ -1055,7 +1054,7 @@ class Alma extends AbstractBase implements
         $results = [];
         $patronId = $patron['id'];
         foreach ($holdsDetails as $requestId) {
-            $requestUrl = $this->baseUrl . '/users/' . rawurlencode($patronId)
+            $requestUrl = '/users/' . rawurlencode($patronId)
                 . '/requests/' . rawurlencode($requestId);
             $requestDetails = $this->makeRequest($requestUrl);
 
