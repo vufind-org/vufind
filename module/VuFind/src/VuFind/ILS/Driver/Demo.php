@@ -2258,7 +2258,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             ];
         }
         // Validate that we received data in the appropriate format (see PR #4985):
-        return is_array($data) ? [
+        return isset($data['id']) ? [
             'valid' => true,
             'status' => 'request_place_text',
         ] : [
@@ -2387,7 +2387,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             ];
         }
         // Validate that we received data in the appropriate format (see PR #4985):
-        return is_array($data) ? [
+        return isset($data['id']) ? [
             'valid' => true,
             'status' => 'storage_retrieval_request_place_text',
         ] : [
@@ -2521,7 +2521,7 @@ class Demo extends AbstractBase implements \VuFind\I18n\HasSorterInterface
             ];
         }
         // Validate that we received data in the appropriate format (see PR #4985):
-        return is_array($data) ? [
+        return isset($data['id']) ? [
             'valid' => true,
             'status' => 'ill_request_place_text',
         ] : [
