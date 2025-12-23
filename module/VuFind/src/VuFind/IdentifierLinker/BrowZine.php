@@ -92,15 +92,15 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
     }
 
     /**
-     * Format a single service link.
+     * Format a single service link, or return null if it should not be displayed.
      *
      * @param array  $data       Raw API response data
      * @param string $serviceKey Key being extracted from response
      * @param array  $config     Service-specific configuration settings
      *
-     * @return array{link: string, label: string, data: array, localIcon: ?string, icon: ?string, linkType: ?string}
+     * @return ?array{link: string, label: string, data: array, localIcon: ?string, icon: ?string, linkType: ?string}
      */
-    protected function processServiceLink(array $data, string $serviceKey, array $config): array
+    protected function processServiceLink(array $data, string $serviceKey, array $config): ?array
     {
         $serviceData = $data[$serviceKey];
         $result = [
@@ -118,7 +118,7 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
             if ($specificConfig) {
                 $config = $specificConfig;
                 if (empty($config['linkText'])) {
-                    return ['link' => '', 'label' => '', 'data' => $data];
+                    return null;
                 }
             }
             if ($this->config['useBrowzineLabel'] ?? false) {
@@ -158,23 +158,38 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
                 $command = new LookupDoiCommand('BrowZine', $ids['doi']);
                 $result = $this->searchService->invoke($command)->getResult();
                 $data = $result['data'] ?? null;
-                foreach ($doiServices as $serviceKey => $config) {
-                    if ($this->arrayKeyAvailable($serviceKey, $data)) {
-                        $response[$idKey][] = $this->processServiceLink($data, $serviceKey, $config);
-                    }
-                }
+                $response = array_merge($response, $this->getLinksByType($data, $idKey, $doiServices));
             } elseif (isset($ids['issn']) && ($issnServices = $this->getIssnServices())) {
                 $command = new LookupIssnsCommand('BrowZine', $ids['issn']);
                 $result = $this->searchService->invoke($command)->getResult();
                 $data = $result['data'][0] ?? null;
-                foreach ($issnServices as $serviceKey => $config) {
-                    if ($this->arrayKeyAvailable($serviceKey, $data)) {
-                        $response[$idKey][] = $this->processServiceLink($data, $serviceKey, $config);
-                    }
-                }
+                $response = array_merge($response, $this->getLinksByType($data, $idKey, $issnServices));
             }
         }
         return $response;
+    }
+
+    /**
+     * Helper method for getLinks. Generate links by link type.
+     *
+     * @param array  $data     Response data from search service
+     * @param string $idKey    Identifier key
+     * @param array  $services Configured services by link type
+     *
+     * @return array An array of link type to an array of links.
+     */
+    protected function getLinksByType(array $data, string $idKey, array $services): array
+    {
+        $links = [];
+        foreach ($services as $serviceKey => $config) {
+            if (
+                $this->arrayKeyAvailable($serviceKey, $data) &&
+                $serviceLink = $this->processServiceLink($data, $serviceKey, $config)
+            ) {
+                $links[] = $serviceLink;
+            }
+        }
+        return $links ? [$idKey => $links] : [];
     }
 
     /**

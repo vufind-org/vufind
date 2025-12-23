@@ -35,6 +35,8 @@ use VuFind\IdentifierLinker\BrowZineFactory;
 use VuFind\Search\BackendManager;
 use VuFindSearch\Backend\BrowZine\Connector;
 
+use function is_array;
+
 /**
  * BrowZine Test Class
  *
@@ -212,6 +214,12 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
         ];
+        yield 'best integrator link with full text disabled' => [
+            ['useBrowzineLabel' => true],
+            ['bestIntegratorLink' => 'Get full text|browzine-best'],
+            ['fullTextFile' => false],
+            [],
+        ];
     }
 
     /**
@@ -259,10 +267,10 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
     /**
      * Test a DOI API response.
      *
-     * @param array $identifierLinksConfig     BrowZine configuration for identifier links
-     * @param array $doiServicesConfig         BrowZine configuration for DOI services
-     * @param array $bestIntegratorLinksConfig BrowZine configuration for bestIntegratorLinks
-     * @param array $expectedResponse          Expected response
+     * @param array  $identifierLinksConfig     BrowZine configuration for identifier links
+     * @param array  $doiServicesConfig         BrowZine configuration for DOI services
+     * @param ?array $bestIntegratorLinksConfig BrowZine configuration for bestIntegratorLinks
+     * @param ?array $expectedResponse          Expected response
      *
      * @return void
      */
@@ -271,7 +279,7 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
         array $identifierLinksConfig,
         array $doiServicesConfig,
         ?array $bestIntegratorLinksConfig,
-        array $expectedResponse
+        ?array $expectedResponse
     ): void {
         $rawData = $this->getJsonFixture('browzine/doi.json');
         $ids = [['doi' => '10.1155/2020/8690540']];
@@ -282,10 +290,13 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
             $doiServicesConfig,
             $bestIntegratorLinksConfig
         );
-        foreach ($expectedResponse[0] as & $current) {
-            $current['data'] = $rawData['data'];
+
+        if (is_array($expectedResponse[0] ?? null)) {
+            foreach ($expectedResponse[0] as & $current) {
+                $current['data'] = $rawData['data'];
+            }
+            unset($current);
         }
-        unset($current);
         $this->assertEquals($expectedResponse, $browzine->getLinks($ids));
     }
 
