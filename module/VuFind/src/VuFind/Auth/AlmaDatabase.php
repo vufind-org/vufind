@@ -65,8 +65,7 @@ class AlmaDatabase extends Database
      *
      * @param \VuFind\ILS\Connection        $catalog       The ILS connection
      * @param \VuFind\Auth\ILSAuthenticator $authenticator The ILS authenticator
-     * @param ?PasswordHasher               $hasher        Password hash service
-     * (null to create one)
+     * @param ?PasswordHasher               $hasher        Password hash service (null to create one)
      */
     public function __construct(
         protected \VuFind\ILS\Connection $catalog,
