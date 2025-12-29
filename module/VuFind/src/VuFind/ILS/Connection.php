@@ -834,7 +834,7 @@ class Connection implements TranslatorAwareInterface, LoggerAwareInterface
      * @param array  $functionConfig Function configuration values
      * @param ?array $params         An array of function-specific params (or null)
      *
-     * @return bool
+     * @return mixed On success, an associative array with the function name; on failure, false.
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */

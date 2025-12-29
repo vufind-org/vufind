@@ -165,7 +165,7 @@ class ChangeTracker implements ChangeTrackerEntityInterface
      */
     public function getFirstIndexed(): ?DateTime
     {
-        // Return to a clone to avoid indirect modification of the entity:
+        // Return a clone to avoid indirect modification of the entity:
         return $this->getDateTimeClone($this->firstIndexed);
     }
 
@@ -189,7 +189,7 @@ class ChangeTracker implements ChangeTrackerEntityInterface
      */
     public function getLastIndexed(): ?DateTime
     {
-        // Return to a clone to avoid indirect modification of the entity:
+        // Return a clone to avoid indirect modification of the entity:
         return $this->getDateTimeClone($this->lastIndexed);
     }
 
