@@ -167,8 +167,13 @@ header .container.navbar {
   padding-bottom: 0.5rem;
 }
 
-.search-controls form:not(:last-child) {
-  margin-bottom: 0.25rem;
+.search-controls form {
+  &:not(:last-child) {
+    margin-bottom: 0.25rem;
+  }
+  label {
+    font-weight: bold;
+  }
 }
 
 @include media-breakpoint-up(sm) {
