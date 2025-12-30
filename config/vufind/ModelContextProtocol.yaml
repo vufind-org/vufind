@@ -1,61 +1,74 @@
+# Model Context Protocol (MCP) server configuration.
+#
+# See (a wiki page -- I don't have wiki permissions to create a page)
+
 General:
+  # Enable the MCP Server and register all capabilities defined below. Disabled by default.
+  # Access must also be granted in permissions.ini.
+  # enabled: true
 
-  enabled: true
-
+# Resource Templates to register with the MCP server. Define / uncomment to enable.
+# - class and function identify the implementation
+# - uriTemplate must match the implementing function's annotation
 ResourceTemplates:
 
-  getRecord:
-    class: VuFindApi\Mcp\Capabilities
-    function: getRecord
-    uriTemplate: 'catalog://record/{recordId}'
+  # getRecord:
+  #   class: VuFindApi\Mcp\Capabilities
+  #   function: getRecord
+  #   uriTemplate: 'catalog://record/{recordId}'
 
+# Tools to register with the MCP server.
+# - description will be sent back to the LLM, and may be relevant to discovery
+# - class and function identify the implementation
+# - inputSchema is a JSON Schema definition of the input requested from the LLM.
+# Note that multiple tools may be defined using the same implementing function
+# but different input schema, via default parameter values.
 Tools:
 
-  searchRecordsAnyType:
-    description: Search library catalog records of all content types by keywords.
-    class: VuFindApi\Mcp\Capabilities
-    function: searchRecords
-    inputSchema: 
-      type: object
-      properties:
-        keywords:
-          type: string
-          description: Keywords to search for
-      required:
-        - keywords
+  # searchRecordsAnyType:
+  #   description: Search library catalog records of all content types by keywords.
+  #   class: VuFindApi\Mcp\Capabilities
+  #   function: searchRecords
+  #   inputSchema: 
+  #     type: object
+  #     properties:
+  #       keywords:
+  #         type: string
+  #         description: Keywords to search for
+  #     required:
+  #       - keywords
 
-  searchRecordsByContentType:
-    description: Search library catalog records for a specific content type by keywords.
-    class: VuFindApi\Mcp\Capabilities
-    function: searchRecords
-    inputSchema: 
-      type: object
-      properties:
-        keywords:
-          type: string
-          description: Keywords to search for
-        contentType:
-          type: string
-          description: A type of library content
-          enum:
-            - books
-            - ebooks
-            - videos
-      required:
-        - keywords
-        - contentType
+  # searchRecordsByContentType:
+  #   description: Search library catalog records for a specific content type by keywords.
+  #   class: VuFindApi\Mcp\Capabilities
+  #   function: searchRecords
+  #   inputSchema: 
+  #     type: object
+  #     properties:
+  #       keywords:
+  #         type: string
+  #         description: Keywords to search for
+  #       contentType:
+  #         type: string
+  #         description: A type of library content
+  #         # At least one enum value is required and must be defined below in ContentTypes.
+  #         enum:
+  #           - books
+  #           - videos
+  #     required:
+  #       - keywords
+  #       - contentType
 
+# Content Type filters supporting capabilities above that use them
 ContentTypes:
-  books:
-    filter: (format:"Print Book" OR format:eBook OR format:"Streaming Audio" OR format:Serial)
-  ebooks: 
-    filter: format:eBook
-  videos:
-    filter: (format:DVD OR format:VHS OR format:"Blu-ray Disc" OR format:Filmstrip OR format:"Streaming Video")
+  # books:
+  #   filter: (format:Book OR format:eBook OR format:"Streaming Audio" OR format:Serial)
+  # videos:
+  #   filter: (format:DVD OR format:VHS OR format:"Blu-ray Disc" OR format:Filmstrip OR format:"Streaming Video")
 
-ResponseFields:
-  - recordPageFullUrl
-  - title
-  - authors
-  - publicationDates
-  - formats
+# Response fields for capabilities that return records. For valid field names and format functions,
+# see SearchApiRecordFields.yaml. Default is below.
+# ResponseFields:
+#   - recordPageFullUrl
+#   - title
+#   - authors
