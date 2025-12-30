@@ -1,6 +1,6 @@
 # Model Context Protocol (MCP) server configuration.
 #
-# See (a wiki page -- I don't have wiki permissions to create a page)
+# See https://vufind.org/wiki/configuration:model_context_protocol
 
 General:
   # Enable the MCP Server and register all capabilities defined below. Disabled by default.
