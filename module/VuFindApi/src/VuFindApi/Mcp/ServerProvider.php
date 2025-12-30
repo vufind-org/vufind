@@ -95,6 +95,7 @@ class ServerProvider
             ->setContainer($container);
         $this->addResourceTemplates($builder);
         $this->addTools($builder);
+        $this->addAutoDiscovery($builder);
         $this->server = $builder->build();
     }
 
@@ -138,6 +139,27 @@ class ServerProvider
                 description: $description,
                 inputSchema: $inputSchema
             );
+        }
+    }
+
+    /**
+     * Set the server builder to auto-discover capabilities in configured folders.
+     *
+     * @param Builder $builder The server builder
+     *
+     * @return void
+     */
+    protected function addAutoDiscovery(Builder $builder): void
+    {
+        if ($discovery = ($this->config['AutoDiscovery'] ?? [])) {
+            $params = [$discovery['basePath'] ?? __DIR__];
+            if ($scanDirs = $discovery['scanDirs'] ?? []) {
+                $params['scanDirs'] = $scanDirs;
+            }
+            if ($excludeDirs = $discovery['excludeDirs'] ?? []) {
+                $params['excludeDirs'] = $excludeDirs;
+            }
+            $builder->setDiscovery(...$params);
         }
     }
 

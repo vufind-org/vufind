@@ -7,13 +7,30 @@ General:
   # Access must also be granted in permissions.ini.
   # enabled: true
 
+# Capabilities may be auto-discovered in the defined directories, if they are properly
+# defined with the appropriate PHP attributes #[McpTool], #[McpResource], etc.
+# Alternately, capabilities can be manually configured below.
+# Auto-discovery may be useful for custom-defined capabilities, and is less verbose.
+# But manual configuration here makes it easier to reuse shared config (i.e. ContentTypes)
+# and to internationalize. So auto-discovery is not recommended for anything that will be
+# shared back upstream.
+# AutoDiscovery:
+#   # basePath: Leave blank for the VuFindApi/Mcp base path
+#   basePath:
+#   # scanDirs: Default is ['.', 'src']
+#   scanDirs:
+#     # There is an example capability in this folder.
+#     # - Capabilities/AutoDiscovery
+#   # excludeDirs: default is []
+#   excludeDirs:
+
 # Resource Templates to register with the MCP server. Define / uncomment to enable.
 # - class and function identify the implementation
 # - uriTemplate must match the implementing function's annotation
 ResourceTemplates:
 
   # getRecord:
-  #   class: VuFindApi\Mcp\Capabilities
+  #   class: VuFindApi\Mcp\Capabilities\SearchSolr
   #   function: getRecord
   #   uriTemplate: 'catalog://record/{recordId}'
 
@@ -27,7 +44,7 @@ Tools:
 
   # searchRecordsAnyType:
   #   description: Search library catalog records of all content types by keywords.
-  #   class: VuFindApi\Mcp\Capabilities
+  #   class: VuFindApi\Mcp\Capabilities\SearchSolr
   #   function: searchRecords
   #   inputSchema: 
   #     type: object
@@ -40,7 +57,7 @@ Tools:
 
   # searchRecordsByContentType:
   #   description: Search library catalog records for a specific content type by keywords.
-  #   class: VuFindApi\Mcp\Capabilities
+  #   class: VuFindApi\Mcp\Capabilities\SearchSolr
   #   function: searchRecords
   #   inputSchema: 
   #     type: object

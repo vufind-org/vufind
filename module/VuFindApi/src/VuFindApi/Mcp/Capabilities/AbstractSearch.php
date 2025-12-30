@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Capabilities (stub) for Model Context Protocol (MCP)
+ * Abstract search capability provider for Model Context Protocol (MCP)
  *
  * PHP version 8
  *
@@ -27,11 +27,10 @@
  * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFindApi\Mcp;
+namespace VuFindApi\Mcp\Capabilities;
 
 use Exception;
 use Mcp\Capability\Attribute\McpResourceTemplate;
-use Mcp\Capability\Attribute\McpTool;
 use Mcp\Exception\InvalidArgumentException;
 use Mcp\Exception\ResourceNotFoundException;
 use Mcp\Exception\ResourceReadException;
@@ -41,7 +40,7 @@ use VuFind\Search\SearchRunner;
 use VuFindApi\Formatter\RecordFormatter;
 
 /**
- * Capabilities (stub) for Model Context Protocol (MCP)
+ * Abstract search capability provider for Model Context Protocol (MCP)
  *
  * @category VuFind
  * @package  Mcp
@@ -49,13 +48,8 @@ use VuFindApi\Formatter\RecordFormatter;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Capabilities
+abstract class AbstractSearch extends AbstractCapabilities
 {
-    /**
-     * Search class Id
-     */
-    protected string $searchClassId = 'Solr';
-
     /**
      * Record fields to return
      */
@@ -65,16 +59,6 @@ class Capabilities
      * Limit for searches
      */
     protected int $limit = 50;
-
-    /**
-     * Config filename
-     */
-    protected string $configName = 'ModelContextProtocol';
-
-    /**
-     * Config for MCP
-     */
-    protected array $config;
 
     /**
      * Constructor
@@ -90,23 +74,25 @@ class Capabilities
         protected RecordFormatter $recordFormatter,
         protected SearchRunner $searchRunner
     ) {
-        $this->config = $this->yamlReader->get($this->configName . '.yaml');
-
+        parent::__construct($yamlReader, $recordLoader, $recordFormatter, $searchRunner);
         $this->responseFields = $this->config['ResponseFields'] ?? $this->responseFields;
     }
 
     /**
-     * Add two numbers.  It's AI-powered magic!
+     * Get the search class ID.
      *
-     * @param int $a One of those super interesting numbers
-     * @param int $b A second really fantastic number
-     *
-     * @return int An even more amazing number that magically combines the first two!!!
+     * @return string
      */
-    #[McpTool]
-    public function add(int $a, int $b): int
+    abstract protected function getSearchClassId();
+
+    /**
+     * Return the request parameter name.
+     *
+     * @return string
+     */
+    protected function getRequestParam()
     {
-        return $a + $b;
+        return 'lookfor';
     }
 
     /**
@@ -121,19 +107,18 @@ class Capabilities
     public function searchRecords(string $keywords, ?string $contentType = null): array
     {
         $limit = $this->limit;
-        $rawRequest = ['lookfor' => urldecode($keywords)];
+        $rawRequest = [$this->getRequestParam() => urldecode($keywords)];
         if ($contentType) {
             if ($filter = $this->config['ContentTypes'][$contentType]['filter'] ?? null) {
                 $rawRequest['filter'] = $filter;
-            }
-            else {
+            } else {
                 throw new ResourceNotFoundException('Unknown content type: ' . $contentType);
             }
         }
-        
+
         $results = $this->searchRunner->run(
             $rawRequest,
-            $this->searchClassId,
+            $this->getSearchClassId(),
             function (
                 $runner,
                 $params,
@@ -177,7 +162,7 @@ class Capabilities
         }
 
         try {
-            $record = $this->recordLoader->load($recordId, $this->searchClassId);
+            $record = $this->recordLoader->load($recordId, $this->getSearchClassId());
         } catch (Exception $e) {
             throw new ResourceReadException(message: "Record not found for ID: {$recordId}", previous: $e);
         }
