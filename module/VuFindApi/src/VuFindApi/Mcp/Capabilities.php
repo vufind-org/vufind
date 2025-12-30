@@ -122,9 +122,15 @@ class Capabilities
     {
         $limit = $this->limit;
         $rawRequest = ['lookfor' => urldecode($keywords)];
-        if ($filter = $this->config['ContentTypes'][$contentType]['filter'] ?? null) {
-            $rawRequest['filter'] = $filter;
+        if ($contentType) {
+            if ($filter = $this->config['ContentTypes'][$contentType]['filter'] ?? null) {
+                $rawRequest['filter'] = $filter;
+            }
+            else {
+                throw new ResourceNotFoundException('Unknown content type: ' . $contentType);
+            }
         }
+        
         $results = $this->searchRunner->run(
             $rawRequest,
             $this->searchClassId,
