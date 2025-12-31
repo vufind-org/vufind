@@ -32,6 +32,7 @@
 namespace VuFindSearch\Backend\Solr;
 
 use VuFindSearch\ParamBag;
+use VuFindSearch\ParamBagBag;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Query\QueryGroup;
@@ -133,12 +134,13 @@ class QueryBuilder implements QueryBuilderInterface
      */
     public function build(AbstractQuery $query, ?ParamBag $params = null)
     {
-        $newParams = new ParamBag();
+        $newParams = new ParamBagBag();
 
         // Add spelling query if applicable -- note that we must set this up before
         // we process the main query in order to avoid unwanted extra syntax:
         if ($this->createSpellingQuery) {
-            $newParams->set(
+            $newParams->setNested(
+                'params',
                 'spellcheck.q',
                 $this->getLuceneHelper()->extractSearchTerms($query->getAllTerms())
             );
@@ -173,13 +175,13 @@ class QueryBuilder implements QueryBuilderInterface
                     }
                 }
             } elseif ($handler->hasDismax()) {
-                $newParams->set('qf', implode(' ', $handler->getDismaxFields()));
-                $newParams->set('qt', $handler->getDismaxHandler());
+                $newParams->setNested('params', 'qf', implode(' ', $handler->getDismaxFields()));
+                $newParams->setNested('params', 'qt', $handler->getDismaxHandler());
                 foreach ($handler->getDismaxParams() as $param) {
-                    $newParams->add(reset($param), next($param));
+                    $newParams->addNested('params', reset($param), next($param));
                 }
                 if ($handler->hasFilterQuery()) {
-                    $newParams->add('fq', $handler->getFilterQuery());
+                    $newParams->add('filter', $handler->getFilterQuery());
                 }
             } else {
                 $string = $handler->createSimpleQueryString($string);
@@ -188,9 +190,9 @@ class QueryBuilder implements QueryBuilderInterface
         // Set an appropriate highlight field list when applicable:
         if ($highlight) {
             $filter = $handler ? $handler->getAllFields() : [];
-            $newParams->add('hl.fl', $this->getFieldsToHighlight($filter));
+            $newParams->addNested('params', 'hl.fl', $this->getFieldsToHighlight($filter));
         }
-        $newParams->set('q', $string);
+        $newParams->set('query', $string);
 
         // Handle any extra parameters:
         foreach ($this->globalExtraParams as $extraParam) {
@@ -203,7 +205,7 @@ class QueryBuilder implements QueryBuilderInterface
                 continue;
             }
             foreach ((array)$extraParam['value'] as $value) {
-                $newParams->add($extraParam['param'], $value);
+                $newParams->addNested('params', $extraParam['param'], $value);
             }
         }
 

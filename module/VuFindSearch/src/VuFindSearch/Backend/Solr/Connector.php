@@ -42,6 +42,7 @@ use VuFindSearch\Backend\Exception\RequestErrorException;
 use VuFindSearch\Backend\Solr\Document\DocumentInterface;
 use VuFindSearch\Exception\InvalidArgumentException;
 use VuFindSearch\ParamBag;
+use VuFindSearch\ParamBagBag;
 
 use function call_user_func_array;
 use function count;
@@ -199,7 +200,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
     {
         $params = $params ?: new ParamBag();
         $params
-            ->set('q', sprintf('%s:"%s"', $this->uniqueKey, addcslashes($id, '"')));
+            ->set('query', sprintf('%s:"%s"', $this->uniqueKey, addcslashes($id, '"')));
 
         $handler = $this->map->getHandler(__FUNCTION__);
         $this->map->prepare(__FUNCTION__, $params);
@@ -299,30 +300,24 @@ class Connector implements \Psr\Log\LoggerAwareInterface
     /**
      * Send query to SOLR and return response body.
      *
-     * @param string   $handler   SOLR request handler to use
-     * @param ParamBag $params    Request parameters
-     * @param bool     $cacheable Whether the query is cacheable
+     * @param string      $handler   SOLR request handler to use
+     * @param ParamBagBag $params    Request parameters
+     * @param bool        $cacheable Whether the query is cacheable
      *
      * @return string Response body
      */
-    public function query($handler, ParamBag $params, bool $cacheable = false)
+    public function query($handler, ParamBagBag $params, bool $cacheable = false)
     {
         $urlSuffix = '/' . $handler;
-        $paramString = implode('&', $params->request());
-        if (strlen($paramString) > self::MAX_GET_URL_LENGTH) {
-            $method = Request::METHOD_POST;
-            $callback = function ($client) use ($paramString): void {
-                $client->setRawBody($paramString);
-                $client->setEncType(HttpClient::ENC_URLENCODED);
-                $client->setHeaders(['Content-Length' => strlen($paramString)]);
-            };
-        } else {
-            $method = Request::METHOD_GET;
-            $urlSuffix .= '?' . $paramString;
-            $callback = null;
-        }
+        $body = $params->json();
+        $method = Request::METHOD_POST;
+        $callback = function ($client) use ($body): void {
+            $client->setRawBody($body);
+            $client->setEncType('application/json');
+            $client->setHeaders(['Content-Length' => strlen($body)]);
+        };
 
-        $this->debug(sprintf('Query %s', $paramString));
+        $this->debug(sprintf('Query body %s', $body));
         return $this->trySolrUrls($method, $urlSuffix, $callback, $cacheable);
     }
 

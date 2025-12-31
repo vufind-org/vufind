@@ -54,7 +54,7 @@ class ParamBag implements \Countable
      *
      * @var array
      */
-    protected $params = [];
+    protected $items = [];
 
     /**
      * Constructor.
@@ -79,7 +79,7 @@ class ParamBag implements \Countable
      */
     public function get($name)
     {
-        return $this->params[$name] ?? null;
+        return $this->items[$name] ?? null;
     }
 
     /**
@@ -89,7 +89,7 @@ class ParamBag implements \Countable
      */
     public function count(): int
     {
-        return count($this->params);
+        return count($this->items);
     }
 
     /**
@@ -101,7 +101,7 @@ class ParamBag implements \Countable
      */
     public function hasParam($name)
     {
-        return isset($this->params[$name]);
+        return isset($this->items[$name]);
     }
 
     /**
@@ -128,7 +128,7 @@ class ParamBag implements \Countable
      */
     public function set($name, $value)
     {
-        $this->params[$name] = is_array($value) ? $value : [$value];
+        $this->items[$name] = is_array($value) ? $value : [$value];
     }
 
     /**
@@ -140,8 +140,8 @@ class ParamBag implements \Countable
      */
     public function remove($name)
     {
-        if (isset($this->params[$name])) {
-            unset($this->params[$name]);
+        if (isset($this->items[$name])) {
+            unset($this->items[$name]);
         }
     }
 
@@ -156,22 +156,24 @@ class ParamBag implements \Countable
      */
     public function add($name, $value, $deduplicate = true)
     {
-        if (!isset($this->params[$name])) {
-            $this->params[$name] = [];
+        if (!isset($this->items[$name])) {
+            $this->items[$name] = [];
         }
         if (is_array($value)) {
-            $this->params[$name] = array_merge_recursive($this->params[$name], $value);
+            $this->items[$name] = array_merge_recursive($this->items[$name], $value);
+        } elseif ($value instanceof ParamBag) {
+            $bar = 1;
         } else {
-            $this->params[$name][] = $value;
+            $this->items[$name][] = $value;
         }
         if ($deduplicate) {
             // Avoid deduplicating associative array params (like Primo filterList):
-            foreach ($this->params[$name] as $key => $current) {
+            foreach ($this->items[$name] as $key => $current) {
                 if (!is_numeric($key) || is_array($current)) {
                     return;
                 }
             }
-            $this->params[$name] = array_values(array_unique($this->params[$name]));
+            $this->items[$name] = array_values(array_unique($this->items[$name]));
         }
     }
 
@@ -184,7 +186,7 @@ class ParamBag implements \Countable
      */
     public function mergeWith(ParamBag $bag)
     {
-        foreach ($bag->params as $key => $value) {
+        foreach ($bag->items as $key => $value) {
             if (!empty($value)) {
                 $this->add($key, $value);
             }
@@ -212,7 +214,7 @@ class ParamBag implements \Countable
      */
     public function getArrayCopy()
     {
-        return $this->params;
+        return $this->items;
     }
 
     /**
@@ -224,8 +226,8 @@ class ParamBag implements \Countable
      */
     public function exchangeArray(array $input)
     {
-        $current = $this->params;
-        $this->params = [];
+        $current = $this->items;
+        $this->items = [];
         foreach ($input as $key => $value) {
             $this->set($key, $value);
         }
@@ -243,7 +245,7 @@ class ParamBag implements \Countable
     public function request()
     {
         $request = [];
-        foreach ($this->params as $name => $values) {
+        foreach ($this->items as $name => $values) {
             if (!empty($values)) {
                 $request = array_merge(
                     $request,

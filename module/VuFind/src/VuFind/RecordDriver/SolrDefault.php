@@ -33,6 +33,8 @@
 namespace VuFind\RecordDriver;
 
 use VuFindSearch\Command\SearchCommand;
+use VuFindSearch\ParamBag;
+use VuFindSearch\ParamBagBag;
 
 use function count;
 use function in_array;
@@ -317,7 +319,7 @@ class SolrDefault extends DefaultRecord implements
             'hierarchy_parent_id:"' . $safeId . '"'
         );
         // Disable highlighting for efficiency; not needed here:
-        $params = new \VuFindSearch\ParamBag(['hl' => ['false']]);
+        $params = new ParamBagBag(['params' => new ParamBag(['hl' => ['false']])]);
         $command = new SearchCommand($this->sourceIdentifier, $query, 0, 0, $params);
         return $this->searchService
             ->invoke($command)->getResult()->getTotal();

@@ -32,7 +32,7 @@ namespace VuFind\Search\Solr;
 
 use VuFind\Config\Config;
 use VuFind\Config\ConfigManagerInterface;
-use VuFindSearch\ParamBag;
+use VuFindSearch\ParamBagBag;
 
 use function count;
 use function in_array;
@@ -567,14 +567,15 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Create search backend parameters for advanced features.
      *
-     * @return ParamBag
+     * @return ParamBagBag
      */
     public function getBackendParameters()
     {
-        $backendParams = new ParamBag();
+        $backendParams = new ParamBagBag();
 
         // Spellcheck
-        $backendParams->set(
+        $backendParams->setNested(
+            'params',
             'spellcheck',
             $this->getOptions()->spellcheckEnabled() ? 'true' : 'false'
         );
@@ -582,20 +583,20 @@ class Params extends \VuFind\Search\Base\Params
         // Facets
         $facets = $this->getFacetSettings();
         if (!empty($facets)) {
-            $backendParams->add('facet', 'true');
+            $backendParams->addNested('params', 'facet', 'true');
 
             foreach ($facets as $key => $value) {
                 // prefix keys with "facet" unless they already have a "f." prefix:
                 $fullKey = str_starts_with($key, 'f.') ? $key : "facet.$key";
-                $backendParams->add($fullKey, $value);
+                $backendParams->addNested('params', $fullKey, $value);
             }
-            $backendParams->add('facet.mincount', 1);
+            $backendParams->addNested('params', 'facet.mincount', 1);
         }
 
         // Filters
         $filters = $this->getFilterSettings();
         foreach ($filters as $filter) {
-            $backendParams->add('fq', $filter);
+            $backendParams->add('filter', $filter);
         }
 
         // Shards
@@ -611,7 +612,7 @@ class Params extends \VuFind\Search\Base\Params
             foreach ($shards as $current) {
                 $selectedShards[$current] = $allShards[$current];
             }
-            $backendParams->add('shards', implode(',', $selectedShards));
+            $backendParams->addNested('params', 'shards', implode(',', $selectedShards));
         }
 
         // Sort
@@ -633,14 +634,14 @@ class Params extends \VuFind\Search\Base\Params
 
         // Highlighting -- on by default, but we should disable if necessary:
         if (!$this->getOptions()->highlightEnabled()) {
-            $backendParams->add('hl', 'false');
+            $backendParams->addNested('params', 'hl', 'false');
         }
 
         // Pivot facets for visual results
 
         if ($pf = $this->getPivotFacets()) {
-            $backendParams->add('facet.pivot', $pf);
-            $backendParams->set('facet', 'true');
+            $backendParams->addNested('params', 'facet.pivot', $pf);
+            $backendParams->setNested('params', 'facet', 'true');
         }
 
         return $backendParams;

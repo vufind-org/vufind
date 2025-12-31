@@ -151,6 +151,7 @@ class Solr extends AbstractBase
      */
     protected function getDefaultSearchParams(): array
     {
+        // Needs adjustment
         return [
             'fq' => $this->filters,
             'hl' => ['false'],
@@ -199,6 +200,7 @@ class Solr extends AbstractBase
         $records = [];
         while ($cursorMark !== $prevCursorMark) {
             $params = new ParamBag(
+                // Needs adjustment
                 $this->getDefaultSearchParams() + [
                     // Sort is required
                     'sort' => ['id asc'],
