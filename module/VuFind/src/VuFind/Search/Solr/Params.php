@@ -238,7 +238,6 @@ class Params extends \VuFind\Search\Base\Params
         if (!empty($this->facetConfig)) {
             $dateRangeTypes = $this->getOptions()->getDateRangeFieldTypes();
             foreach (array_keys($this->facetConfig) as $facetField) {
-
                 // Figure out date range field
                 if ('DateRangeField' === ($dateRangeTypes[$facetField] ?? null)) {
                     $startYear = $this->getOptions()->getDateRangeSliderMinValue($facetField)
@@ -265,7 +264,7 @@ class Params extends \VuFind\Search\Base\Params
                         $facetSet["f.{$facetField}.facet.matches"] = $fieldMatches;
                     }
 
-                    // TODO have to replace this 
+                    // TODO have to replace this
                     // if ($this->getFacetOperator($facetField) == 'OR') {
                     //     $facetField = '{!ex=' . $facetField . '_filter}' . $facetField;
                     // }
@@ -273,7 +272,7 @@ class Params extends \VuFind\Search\Base\Params
                     $facetSet[$facetFieldName] = [
                         'type' => 'terms',
                         'field' => $facetField,
-                        'limit' => $fieldLimit
+                        'limit' => $fieldLimit,
                     ];
                 }
             }

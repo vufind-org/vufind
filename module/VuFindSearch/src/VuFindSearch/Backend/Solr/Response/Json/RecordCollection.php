@@ -32,6 +32,7 @@ namespace VuFindSearch\Backend\Solr\Response\Json;
 use VuFindSearch\Response\AbstractRecordCollection;
 
 use function array_key_exists;
+use function is_array;
 
 /**
  * Simple JSON-based record collection.
@@ -149,7 +150,7 @@ class RecordCollection extends AbstractRecordCollection
                 if (is_array($facetData)) {
                     $values = [];
                     foreach ($facetData['buckets'] as $bucket) {
-                        $values[$bucket['val']] = $bucket['count'];                    
+                        $values[$bucket['val']] = $bucket['count'];
                     }
                     $this->facetFields[$field] = $values;
                 }

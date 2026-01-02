@@ -154,8 +154,7 @@ class ParamBagBag extends ParamBag
             foreach ($value as $nestedName => $nestedValue) {
                 $nestedBag->addMultiNested($nestedName, $nestedValue);
             }
-        }
-        else {
+        } else {
             $this->add($name, $value);
         }
     }
@@ -198,7 +197,7 @@ class ParamBagBag extends ParamBag
     /**
      * Parse ParamBag items into an array, recursively.
      *
-     * @param array $items
+     * @param array $items The array from a ParamBag
      *
      * @return array
      */
