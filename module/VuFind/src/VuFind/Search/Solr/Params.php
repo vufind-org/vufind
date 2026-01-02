@@ -238,7 +238,7 @@ class Params extends \VuFind\Search\Base\Params
         if (!empty($this->facetConfig)) {
             $dateRangeTypes = $this->getOptions()->getDateRangeFieldTypes();
             foreach (array_keys($this->facetConfig) as $facetField) {
-                // Figure out date range field
+                // TODO Figure out date range field
                 if ('DateRangeField' === ($dateRangeTypes[$facetField] ?? null)) {
                     $startYear = $this->getOptions()->getDateRangeSliderMinValue($facetField)
                         ?? VUFIND_DEFAULT_EARLIEST_YEAR;

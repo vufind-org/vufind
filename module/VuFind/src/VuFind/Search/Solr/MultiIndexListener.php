@@ -148,7 +148,7 @@ class MultiIndexListener
                 $fields = $this->getFields($shards);
                 $specs  = $this->getSearchSpecs($fields);
                 $this->backend->getQueryBuilder()->setSpecs($specs);
-                // This will need an update for the JSON Facet API
+                // TODO This will need an update for the JSON Facet API
                 $facets = $params->get('facet.field') ?: [];
                 $params->set('facet.field', array_diff($facets, $fields));
             }
