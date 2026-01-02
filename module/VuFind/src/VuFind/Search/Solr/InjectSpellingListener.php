@@ -35,7 +35,7 @@ use Psr\Log\LoggerInterface;
 use VuFind\Log\LoggerAwareTrait;
 use VuFindSearch\Backend\BackendInterface;
 use VuFindSearch\Backend\Solr\Response\Json\Spellcheck;
-use VuFindSearch\ParamBag;
+use VuFindSearch\ParamBagBag;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Service;
 
@@ -128,8 +128,10 @@ class InjectSpellingListener
         }
         if ($command->getTargetIdentifier() === $this->backend->getIdentifier()) {
             if ($params = $command->getSearchParameters()) {
+                $params == ParamBagBag::from($params);
+
                 // Set spelling parameters when enabled:
-                $sc = $params->get('spellcheck');
+                $sc = $params->getNested('params', 'spellcheck');
                 if (isset($sc[0]) && $sc[0] != 'false') {
                     $this->active = true;
                     if (empty($this->dictionaries)) {
@@ -140,8 +142,9 @@ class InjectSpellingListener
 
                     // Set relevant Solr parameters:
                     reset($this->dictionaries);
-                    $params->set('spellcheck', 'true');
-                    $params->set(
+                    $params->setNested('params', 'spellcheck', 'true');
+                    $params->setNested(
+                        'params',
                         'spellcheck.dictionary',
                         current($this->dictionaries)
                     );
@@ -175,7 +178,8 @@ class InjectSpellingListener
         if ($command->getTargetIdentifier() === $this->backend->getIdentifier()) {
             $result = $command->getResult();
             $params = $command->getSearchParameters();
-            $spellcheckQuery = $params->get('spellcheck.q');
+            $params = ParamBagBag::from($params);
+            $spellcheckQuery = $params->getNested('params', 'spellcheck.q');
             if (!empty($spellcheckQuery)) {
                 $this->aggregateSpellcheck(
                     $result->getSpellcheck(),
@@ -197,9 +201,9 @@ class InjectSpellingListener
     protected function aggregateSpellcheck(Spellcheck $spellcheck, $query)
     {
         while (next($this->dictionaries) !== false) {
-            $params = new ParamBag();
-            $params->set('spellcheck', 'true');
-            $params->set('spellcheck.dictionary', current($this->dictionaries));
+            $params = new ParamBagBag();
+            $params->setNested('params', 'spellcheck', 'true');
+            $params->setNested('params', 'spellcheck.dictionary', current($this->dictionaries));
             $queryObj = new Query($query, 'AllFields');
             try {
                 $collection = $this->backend->search($queryObj, 0, 0, $params);

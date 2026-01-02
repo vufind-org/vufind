@@ -69,15 +69,15 @@ class ParamBagBag extends ParamBag
      * @param string $name       Parameter name
      * @param string $nestedName Nested parameter name
      *
-     * @return mixed|null Parameter value or NULL if not set
+     * @return ?array Array of parameter values or NULL if not set
      */
-    public function getNested(string $name, string $nestedName): string|ParamBag|null
+    public function getNested(string $name, string $nestedName): ?array
     {
         $nestedBag = $this->get($name);
-        if (!$nestedBag || !($nestedBag instanceof ParamBag)) {
+        if (!$nestedBag) {
             return null;
         }
-        return $nestedBag->get($nestedName);
+        return $nestedBag[0]->get($nestedName);
     }
 
     /**
@@ -94,7 +94,7 @@ class ParamBagBag extends ParamBag
         if (!$nestedBag) {
             return false;
         }
-        return $nestedBag->hasParam($nestedName);
+        return $nestedBag[0]->hasParam($nestedName);
     }
 
     /**
@@ -179,12 +179,10 @@ class ParamBagBag extends ParamBag
                     foreach ($nestedValues as $nestedName => $nestedValue) {
                         $jsonObject[$name][$nestedName] = $nestedValue[0] ?? $nestedValue;
                     }
-                }
-                else {
+                } else {
                     $jsonObject[$name] = $value;
                 }
-            }
-            else {
+            } else {
                 $jsonObject[$name] = $values;
             }
         }
