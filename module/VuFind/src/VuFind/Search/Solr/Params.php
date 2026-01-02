@@ -237,20 +237,9 @@ class Params extends \VuFind\Search\Base\Params
 
         if (!empty($this->facetConfig)) {
             $dateRangeTypes = $this->getOptions()->getDateRangeFieldTypes();
-            $facetSet['limit'] = $this->facetLimit;
             foreach (array_keys($this->facetConfig) as $facetField) {
-                $fieldLimit = $this->getFacetLimitForField($facetField);
-                if ($fieldLimit != $this->facetLimit) {
-                    $facetSet["f.{$facetField}.facet.limit"] = $fieldLimit;
-                }
-                $fieldPrefix = $this->getFacetPrefixForField($facetField);
-                if (!empty($fieldPrefix)) {
-                    $facetSet["f.{$facetField}.facet.prefix"] = $fieldPrefix;
-                }
-                $fieldMatches = $this->getFacetMatchesForField($facetField);
-                if (!empty($fieldMatches)) {
-                    $facetSet["f.{$facetField}.facet.matches"] = $fieldMatches;
-                }
+
+                // Figure out date range field
                 if ('DateRangeField' === ($dateRangeTypes[$facetField] ?? null)) {
                     $startYear = $this->getOptions()->getDateRangeSliderMinValue($facetField)
                         ?? VUFIND_DEFAULT_EARLIEST_YEAR;
@@ -263,10 +252,29 @@ class Params extends \VuFind\Search\Base\Params
                     $facetSet["f.{$facetField}.facet.range.gap"] = '+1YEAR';
                     $facetSet['range'][] = $facetField;
                 } else {
-                    if ($this->getFacetOperator($facetField) == 'OR') {
-                        $facetField = '{!ex=' . $facetField . '_filter}' . $facetField;
+                    $facetFieldName = $facetField;
+                    $fieldLimit = $this->getFacetLimitForField($facetField);
+
+                    // TODO Deal with prefix and suffix
+                    $fieldPrefix = $this->getFacetPrefixForField($facetField);
+                    if (!empty($fieldPrefix)) {
+                        $facetSet["f.{$facetField}.facet.prefix"] = $fieldPrefix;
                     }
-                    $facetSet['field'][] = $facetField;
+                    $fieldMatches = $this->getFacetMatchesForField($facetField);
+                    if (!empty($fieldMatches)) {
+                        $facetSet["f.{$facetField}.facet.matches"] = $fieldMatches;
+                    }
+
+                    // TODO have to replace this 
+                    // if ($this->getFacetOperator($facetField) == 'OR') {
+                    //     $facetField = '{!ex=' . $facetField . '_filter}' . $facetField;
+                    // }
+
+                    $facetSet[$facetFieldName] = [
+                        'type' => 'terms',
+                        'field' => $facetField,
+                        'limit' => $fieldLimit
+                    ];
                 }
             }
             if ($this->facetContains != null) {
@@ -583,14 +591,7 @@ class Params extends \VuFind\Search\Base\Params
         // Facets
         $facets = $this->getFacetSettings();
         if (!empty($facets)) {
-            $backendParams->addNested('params', 'facet', 'true');
-
-            foreach ($facets as $key => $value) {
-                // prefix keys with "facet" unless they already have a "f." prefix:
-                $fullKey = str_starts_with($key, 'f.') ? $key : "facet.$key";
-                $backendParams->addNested('params', $fullKey, $value);
-            }
-            $backendParams->addNested('params', 'facet.mincount', 1);
+            $backendParams->addMultiNested('facet', $facets);
         }
 
         // Filters

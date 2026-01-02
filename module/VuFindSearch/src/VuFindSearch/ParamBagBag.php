@@ -136,6 +136,31 @@ class ParamBagBag extends ParamBag
     }
 
     /**
+     * Parse n-deep arrays to add values.
+     *
+     * @param string $name  Parameter name
+     * @param string $value Some n-deep array of arrays into parameters
+     *
+     * @return void
+     */
+    public function addMultiNested($name, $value): void
+    {
+        if (is_array($value)) {
+            $nestedBag = $this->items[$name] ?? null;
+            if (!$nestedBag) {
+                $nestedBag = new ParamBagBag();
+                $this->set($name, $nestedBag);
+            }
+            foreach ($value as $nestedName => $nestedValue) {
+                $nestedBag->addMultiNested($nestedName, $nestedValue);
+            }
+        }
+        else {
+            $this->add($name, $value);
+        }
+    }
+
+    /**
      * Add parameter value.
      *
      * @param string $name        Parameter name
@@ -166,8 +191,20 @@ class ParamBagBag extends ParamBag
      */
     public function json(): string
     {
-        $jsonObject = [];
-        foreach ($this->items as $name => $values) {
+        $jsonObject = $this->jsonObject($this->items);
+        return json_encode($jsonObject);
+    }
+
+    /**
+     * Parse ParamBag items into an array, recursively.
+     *
+     * @param array $items
+     *
+     * @return array
+     */
+    protected function jsonObject($items)
+    {
+        foreach ($items as $name => $values) {
             if (is_array($values) && count($values) > 1) {
                 throw new \Exception('got more than one value for ' . $name);
             }
@@ -175,18 +212,17 @@ class ParamBagBag extends ParamBag
                 $value = $values[0];
                 if ($value instanceof ParamBag) {
                     $nestedValues = $value->getArrayCopy();
-                    $jsonObject[$name] = [];
-                    foreach ($nestedValues as $nestedName => $nestedValue) {
-                        $jsonObject[$name][$nestedName] = $nestedValue[0] ?? $nestedValue;
-                    }
+                    $jsonObject[$name] = $this->jsonObject($nestedValues);
                 } else {
                     $jsonObject[$name] = $value;
                 }
             } else {
+                // TODO This can't work properly...need unique names?
+                // But will JSON ever require non-unique?  If not, then using the array-based parambag is not needed?
                 $jsonObject[$name] = $values;
             }
         }
-        return json_encode($jsonObject);
+        return $jsonObject;
     }
 
     /**

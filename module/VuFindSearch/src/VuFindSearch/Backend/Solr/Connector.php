@@ -319,6 +319,11 @@ class Connector implements \Psr\Log\LoggerAwareInterface
 
         $this->debug(sprintf('Query body %s', $body));
         return $this->trySolrUrls($method, $urlSuffix, $callback, $cacheable);
+        // $responseBody = $this->trySolrUrls($method, $urlSuffix, $callback, $cacheable);
+        // if (strlen($body) > 500) {
+        //    $this->debug(sprintf('Response body to long query %s', $responseBody));
+        // }
+        // return $responseBody;
     }
 
     /**
