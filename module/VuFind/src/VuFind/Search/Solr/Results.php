@@ -30,6 +30,7 @@
 namespace VuFind\Search\Solr;
 
 use VuFindSearch\Command\SearchCommand;
+use VuFindSearch\ParamBagBag;
 use VuFindSearch\Query\AbstractQuery;
 use VuFindSearch\Query\QueryGroup;
 
@@ -194,13 +195,14 @@ class Results extends \VuFind\Search\Base\Results
         $limit  = $this->getParams()->getLimit();
         $offset = $this->getStartRecord() - 1;
         $params = $this->getParams()->getBackendParameters();
+        $params = ParamBagBag::from($params);
         $searchService = $this->getSearchService();
         $cursorMark = $this->getCursorMark();
         if (null !== $cursorMark) {
-            $params->set('cursorMark', '' === $cursorMark ? '*' : $cursorMark);
+            $params->setNested('params', 'cursorMark', '' === $cursorMark ? '*' : $cursorMark);
             // Override any default timeAllowed since it cannot be used with
             // cursorMark
-            $params->set('timeAllowed', -1);
+            $params->setNested('params', 'timeAllowed', -1);
         }
 
         try {

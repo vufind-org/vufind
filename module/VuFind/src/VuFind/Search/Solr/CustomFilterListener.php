@@ -74,7 +74,7 @@ class CustomFilterListener
      *
      * @var string
      */
-    protected $filterParam = 'fq';
+    protected $filterParam = 'filter';
 
     /**
      * Constructor.

@@ -120,6 +120,7 @@ class DefaultParametersListener
                     if (!isset($parts[1])) {
                         continue;
                     }
+                    // This will need some config changes to know how to nest
                     $params->add(urldecode($parts[0]), urldecode($parts[1]));
                 }
             }

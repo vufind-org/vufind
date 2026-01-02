@@ -154,15 +154,15 @@ class DeduplicationListener
                     $this->enabled && 'getids' !== $context
                     && !$this->hasChildFilter($params)
                 ) {
-                    $fq = '-merged_child_boolean:true';
+                    $filter = '-merged_child_boolean:true';
                     if ($context == 'similar' && $id = $event->getParam('id')) {
-                        $fq .= ' AND -local_ids_str_mv:"'
+                        $filter .= ' AND -local_ids_str_mv:"'
                             . addcslashes($id, '"') . '"';
                     }
                 } else {
-                    $fq = '-merged_boolean:true';
+                    $filter = '-merged_boolean:true';
                 }
-                $params->add('fq', $fq);
+                $params->add('filter', $filter);
             }
         }
         return $event;
@@ -177,7 +177,7 @@ class DeduplicationListener
      */
     public function hasChildFilter($params)
     {
-        $filters = $params->get('fq');
+        $filters = $params->get('filter');
         return $filters != null && in_array('merged_child_boolean:true', $filters);
     }
 

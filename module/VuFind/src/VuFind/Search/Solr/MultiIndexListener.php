@@ -32,6 +32,7 @@ namespace VuFind\Search\Solr;
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 use VuFindSearch\Backend\BackendInterface;
+use VuFindSearch\ParamBagBag;
 use VuFindSearch\Service;
 
 use function in_array;
@@ -126,11 +127,12 @@ class MultiIndexListener
         $command = $event->getParam('command');
         if ($command->getTargetIdentifier() === $this->backend->getIdentifier()) {
             $params = $command->getSearchParameters();
+            $params = ParamBagBag::from($params);
             $allShardsContexts = ['retrieve', 'retrieveBatch'];
             if (in_array($command->getContext(), $allShardsContexts)) {
                 // If we're retrieving by id(s), we should pull all shards to be
                 // sure we find the right record(s).
-                $params->set('shards', implode(',', $this->shards));
+                $params->setNested('params', 'shards', implode(',', $this->shards));
             } else {
                 // In any other context, we should make sure our field values are
                 // all legal.
@@ -138,7 +140,7 @@ class MultiIndexListener
                 // Normalize array of strings containing comma-separated values to
                 // simple array of values; check if $params->get('shards') returns
                 // an array to prevent invalid argument warnings.
-                $shards = $params->get('shards');
+                $shards = $params->getNested('params', 'shards');
                 $shards = explode(
                     ',',
                     implode(',', (is_array($shards) ? $shards : []))
@@ -146,6 +148,7 @@ class MultiIndexListener
                 $fields = $this->getFields($shards);
                 $specs  = $this->getSearchSpecs($fields);
                 $this->backend->getQueryBuilder()->setSpecs($specs);
+                // This will need an update for the JSON Facet API
                 $facets = $params->get('facet.field') ?: [];
                 $params->set('facet.field', array_diff($facets, $fields));
             }

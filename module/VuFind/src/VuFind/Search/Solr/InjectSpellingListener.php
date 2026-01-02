@@ -128,7 +128,7 @@ class InjectSpellingListener
         }
         if ($command->getTargetIdentifier() === $this->backend->getIdentifier()) {
             if ($params = $command->getSearchParameters()) {
-                $params == ParamBagBag::from($params);
+                $params = ParamBagBag::from($params);
 
                 // Set spelling parameters when enabled:
                 $sc = $params->getNested('params', 'spellcheck');

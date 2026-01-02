@@ -32,6 +32,7 @@ namespace VuFind\Search\Solr;
 
 use VuFindSearch\Backend\Solr\Command\RawJsonSearchCommand;
 use VuFindSearch\ParamBag;
+use VuFindSearch\ParamBagBag;
 
 use function count;
 use function floatval;
@@ -249,15 +250,18 @@ class Explanation extends \VuFind\Search\Base\Explanation
 
         // prepare search params
         $params = $this->getParams()->getBackendParameters();
-        $params->set('spellcheck', 'false');
-        $explainParams = new ParamBag([
-            'fl' => 'id,score',
-            'facet' => 'true',
-            'debug' => 'true',
-            'indent' => 'true',
-            'param' => 'q',
-            'echoParams' => 'all',
-            'explainOther' => 'id:"' . addcslashes($recordId, '"') . '"',
+        $params = ParamBagBag::from($params);
+        $params->setNested('params', 'spellcheck', 'false');
+        $explainParams = new ParamBagBag([
+            'fields' => 'id,score',
+            'facet' => 'true', // This field will need an update when I do the facet API upgrade
+            'params' => new ParamBag([
+                'debug' => 'true',
+                'indent' => 'true',
+                'param' => 'query', // Is this change correct?
+                'echoParams' => 'all',
+                'explainOther' => 'id:"' . addcslashes($recordId, '"') . '"',
+            ]),
         ]);
         $params->mergeWith($explainParams);
 
