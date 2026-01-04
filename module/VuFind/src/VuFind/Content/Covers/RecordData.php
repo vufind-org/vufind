@@ -69,15 +69,6 @@ class RecordData extends \VuFind\Content\AbstractCover
         $recordId = $ids['recordid'];
         $source = $ids['source'] ?? DEFAULT_SEARCH_BACKEND;
         $driver = $this->recordLoader->load($recordId, $source);
-        $marc = $driver->getMarcReader();
-        $fields856 = $marc->getFields('856');
-        foreach ($fields856 as $field) {
-            $description = $marc->getSubfield($field, '3');
-            if (stripos($description, 'cover') !== false) {
-                $url = $marc->getSubfield($field, 'u');
-                return $url;
-            }
-        }
-        return false;
+        return $driver->getCoverUrl();
     }
 }
