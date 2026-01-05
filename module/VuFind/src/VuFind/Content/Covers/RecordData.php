@@ -69,6 +69,6 @@ class RecordData extends \VuFind\Content\AbstractCover
         $recordId = $ids['recordid'];
         $source = $ids['source'] ?? DEFAULT_SEARCH_BACKEND;
         $driver = $this->recordLoader->load($recordId, $source);
-        return $driver->getCoverUrl();
+        return $driver->tryMethod('getCoverUrl', default: false);
     }
 }
