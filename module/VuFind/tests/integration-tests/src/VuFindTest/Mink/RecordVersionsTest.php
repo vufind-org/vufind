@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -65,7 +65,7 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->assertEquals(
             'Other Versions (3)',
-            $this->findCssAndGetText($page, 'li.record-tab.active')
+            $this->findCssAndGetText($page, $this->activeRecordTabSelector)
         );
 
         // Click the "see all versions" link:
@@ -74,8 +74,8 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
         // Confirm that all four versions are now visible in the versions display:
         $this->waitForPageLoad($page);
         $this->assertEquals(
-            'Versions - The collected letters of Thomas and Jane Welsh Carlyle :',
-            $this->findCssAndGetText($page, 'ul.breadcrumb li.active')
+            'The collected letters of Thomas and Jane Welsh Carlyle : Versions',
+            $this->findCssAndGetText($page, 'ul.breadcrumb')
         );
         $results = $page->findAll('css', '.result');
         $this->assertCount(4, $results);
@@ -99,6 +99,35 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
     public function testVersionsInSearch2()
     {
         $this->runVersionsTest('/Search2');
+    }
+
+    /**
+     * Test that results scripts are properly initialized for the versions tab.
+     *
+     * @return void
+     */
+    public function testVersionsTabInit()
+    {
+        // Enable QRCodes:
+        $extraConfigs = [
+            'config' => [
+                'QRCode' => [
+                    'showInResults' => true,
+                ],
+            ],
+        ];
+        $this->changeConfigs($extraConfigs);
+        $session = $this->getMinkSession();
+        // Go to the tab by clicking it so that any global init in common.js doesn't
+        // mask issues:
+        $session->visit($this->getVuFindUrl() . '/Record/0001732009-0');
+        $page = $session->getPage();
+        $this->waitForPageLoad($page);
+        $this->clickCss($page, '#record-tab-versions a');
+        $this->waitForPageLoad($page);
+        // Click the QR code link and verify that the image gets added dynamically:
+        $this->clickCss($page, '.result-links .qrcodeLink');
+        $this->findCss($page, '.result-links .qrcode img');
     }
 
     /**
@@ -134,8 +163,8 @@ class RecordVersionsTest extends \VuFindTest\Integration\MinkTestCase
         // and that all four versions are now visible in the versions display:
         $this->waitForPageLoad($page);
         $this->assertEquals(
-            'Versions - The collected letters of Thomas and Jane Welsh Carlyle :',
-            $this->findCssAndGetText($page, 'ul.breadcrumb li.active')
+            'The collected letters of Thomas and Jane Welsh Carlyle : Versions',
+            $this->findCssAndGetText($page, 'ul.breadcrumb')
         );
         $results = $page->findAll('css', '.result');
         $this->assertCount(4, $results);

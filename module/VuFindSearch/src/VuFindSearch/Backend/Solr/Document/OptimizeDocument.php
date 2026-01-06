@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -47,24 +47,24 @@ class OptimizeDocument implements DocumentInterface
     /**
      * Value for waitFlush attribute
      *
-     * @var bool
+     * @var ?bool
      */
     protected $waitFlush;
 
     /**
      * Value for waitSearch attribute
      *
-     * @var bool
+     * @var ?bool
      */
     protected $waitSearcher;
 
     /**
      * Constructor.
      *
-     * @param bool $waitFlush    waitFlush attribute value
-     * @param bool $waitSearcher waitSearcher attribute value
+     * @param ?bool $waitFlush    waitFlush attribute value
+     * @param ?bool $waitSearcher waitSearcher attribute value
      */
-    public function __construct(bool $waitFlush = null, bool $waitSearcher = null)
+    public function __construct(?bool $waitFlush = null, ?bool $waitSearcher = null)
     {
         $this->waitFlush    = $waitFlush;
         $this->waitSearcher = $waitSearcher;

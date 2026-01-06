@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -29,22 +29,22 @@
 
 namespace VuFindConsole\Command\Util;
 
-use Laminas\Config\Config;
-use Laminas\Crypt\BlockCipher;
-use Laminas\Crypt\Exception\InvalidArgumentException;
-use Laminas\Crypt\Symmetric\Openssl;
+use Closure;
+use InvalidArgumentException;
 use Symfony\Component\Console\Attribute\AsCommand;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use VuFind\Config\Locator as ConfigLocator;
+use VuFind\Config\Config;
 use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
-use VuFind\Db\Row\User as UserRow;
-use VuFind\Db\Row\UserCard as UserCardRow;
-use VuFind\Db\Table\User as UserTable;
-use VuFind\Db\Table\UserCard as UserCardTable;
+use VuFind\Crypt\BlockCipher;
+use VuFind\Db\Entity\UserCardEntityInterface;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\DbServiceInterface;
+use VuFind\Db\Service\UserCardServiceInterface;
+use VuFind\Db\Service\UserServiceInterface;
 
 use function count;
 
@@ -64,54 +64,25 @@ use function count;
 class SwitchDbHashCommand extends Command
 {
     /**
-     * VuFind configuration.
-     *
-     * @var Config
-     */
-    protected $config;
-
-    /**
-     * User table gateway
-     *
-     * @var UserTable
-     */
-    protected $userTable;
-
-    /**
-     * UserCard table gateway
-     *
-     * @var UserCardTable
-     */
-    protected $userCardTable;
-
-    /**
-     * Config file path resolver
-     *
-     * @var PathResolver
-     */
-    protected $pathResolver;
-
-    /**
      * Constructor
      *
-     * @param Config        $config        VuFind configuration
-     * @param UserTable     $userTable     User table gateway
-     * @param UserCardTable $userCardTable UserCard table gateway
-     * @param string|null   $name          The name of the command; passing null means
+     * @param Config                   $config          VuFind configuration
+     * @param UserServiceInterface     $userService     User database service
+     * @param UserCardServiceInterface $userCardService UserCard database service
+     * @param Closure                  $cipherFactory   Callback to generate a BlockCipher object (must
+     * take two arguments: algorithm and key)
+     * @param PathResolver             $pathResolver    Config file path resolver
+     * @param ?string                  $name            The name of the command; passing null means
      * it must be set in configure()
-     * @param PathResolver  $pathResolver  Config file path resolver
      */
     public function __construct(
-        Config $config,
-        UserTable $userTable,
-        UserCardTable $userCardTable,
-        $name = null,
-        PathResolver $pathResolver = null
+        protected Config $config,
+        protected UserServiceInterface $userService,
+        protected UserCardServiceInterface $userCardService,
+        protected Closure $cipherFactory,
+        protected PathResolver $pathResolver,
+        ?string $name = null,
     ) {
-        $this->config = $config;
-        $this->userTable = $userTable;
-        $this->userCardTable = $userCardTable;
-        $this->pathResolver = $pathResolver;
         parent::__construct($name);
     }
 
@@ -144,36 +115,29 @@ class SwitchDbHashCommand extends Command
     }
 
     /**
-     * Get an OpenSsl object for the specified algorithm (or return null if the
-     * algorithm is 'none').
+     * Re-encrypt an entity.
      *
-     * @param string $algorithm Encryption algorithm
-     *
-     * @return Openssl
-     */
-    protected function getOpenSsl($algorithm)
-    {
-        return ($algorithm == 'none') ? null : new Openssl(compact('algorithm'));
-    }
-
-    /**
-     * Re-encrypt a row.
-     *
-     * @param UserRow|UserCardRow $row       Row to update
-     * @param ?BlockCipher        $oldcipher Old cipher (null for none)
-     * @param BlockCipher         $newcipher New cipher
+     * @param AbstractDbService                           $service   Database service
+     * @param UserEntityInterface|UserCardEntityInterface $entity    Row to update
+     * @param ?BlockCipher                                $oldcipher Old cipher (null for none)
+     * @param BlockCipher                                 $newcipher New cipher
      *
      * @return void
      * @throws InvalidArgumentException
      */
-    protected function fixRow($row, ?BlockCipher $oldcipher, BlockCipher $newcipher): void
-    {
-        $pass = ($oldcipher && $row['cat_pass_enc'] !== null)
-            ? $oldcipher->decrypt($row['cat_pass_enc'])
-            : $row['cat_password'];
-        $row['cat_password'] = null;
-        $row['cat_pass_enc'] = $pass === null ? null : $newcipher->encrypt($pass);
-        $row->save();
+    protected function fixEntity(
+        DbServiceInterface $service,
+        UserEntityInterface|UserCardEntityInterface $entity,
+        ?BlockCipher $oldcipher,
+        BlockCipher $newcipher
+    ): void {
+        $oldEncrypted = $entity->getCatPassEnc();
+        $pass = ($oldcipher && $oldEncrypted !== null)
+            ? $oldcipher->decrypt($oldEncrypted)
+            : $entity->getRawCatPassword();
+        $entity->setRawCatPassword(null);
+        $entity->setCatPassEnc($pass === null ? null : $newcipher->encrypt($pass));
+        $service->persistEntity($entity);
     }
 
     /**
@@ -184,7 +148,7 @@ class SwitchDbHashCommand extends Command
      *
      * @return int 0 for success
      */
-    protected function execute(InputInterface $input, OutputInterface $output)
+    protected function execute(InputInterface $input, OutputInterface $output): int
     {
         // Validate command line arguments:
         $newhash = $input->getArgument('newmethod');
@@ -208,30 +172,27 @@ class SwitchDbHashCommand extends Command
         // No key specified AND no key on file = fatal error:
         if ($newkey === null) {
             $output->writeln('Please specify a key as the second parameter.');
-            return 1;
+            return self::FAILURE;
         }
 
         // If no changes were requested, abort early:
         if ($oldkey == $newkey && $oldhash == $newhash) {
             $output->writeln('No changes requested -- no action needed.');
-            return 0;
+            return self::SUCCESS;
         }
 
-        // Initialize Openssl first, so we can catch any illegal algorithms before
-        // making any changes:
+        // Initialize ciphers first, so we can catch any illegal algorithms before making any changes:
         try {
-            $oldCrypt = $this->getOpenSsl($oldhash);
-            $newCrypt = $this->getOpenSsl($newhash);
+            $oldcipher = ($oldhash === 'none') ? null : ($this->cipherFactory)($oldhash, $oldkey);
+            $newcipher = ($this->cipherFactory)($newhash, $newkey);
         } catch (\Exception $e) {
             $output->writeln($e->getMessage());
-            return 1;
+            return self::FAILURE;
         }
 
         // Next update the config file, so if we are unable to write the file,
         // we don't go ahead and make unwanted changes to the database:
-        $configPath = $this->pathResolver
-            ? $this->pathResolver->getLocalConfigPath('config.ini', null, true)
-            : ConfigLocator::getLocalConfigPath('config.ini', null, true);
+        $configPath = $this->pathResolver->getLocalConfigPath('config.ini', null, true);
         $output->writeln("\tUpdating $configPath...");
         $writer = $this->getConfigWriter($configPath);
         $writer->set('Authentication', 'encrypt_ils_password', true);
@@ -239,46 +200,33 @@ class SwitchDbHashCommand extends Command
         $writer->set('Authentication', 'ils_encryption_key', $newkey);
         if (!$writer->save()) {
             $output->writeln("\tWrite failed!");
-            return 1;
+            return self::FAILURE;
         }
-
-        // Set up ciphers for use below:
-        if ($oldhash != 'none') {
-            $oldcipher = new BlockCipher($oldCrypt);
-            $oldcipher->setKey($oldkey);
-        } else {
-            $oldcipher = null;
-        }
-        $newcipher = new BlockCipher($newCrypt);
-        $newcipher->setKey($newkey);
 
         // Now do the database rewrite:
-        $callback = function ($select) {
-            $select->where->isNotNull('cat_username');
-        };
-        $users = $this->userTable->select($callback);
-        $cards = $this->userCardTable->select($callback);
+        $users = $this->userService->getAllUsersWithCatUsernames();
+        $cards = $this->userCardService->getAllRowsWithUsernames();
         $output->writeln("\tConverting hashes for " . count($users) . ' user(s).');
         foreach ($users as $row) {
             try {
-                $this->fixRow($row, $oldcipher, $newcipher);
+                $this->fixEntity($this->userService, $row, $oldcipher, $newcipher);
             } catch (\Exception $e) {
-                $output->writeln("Problem with user {$row['username']}: " . (string)$e);
+                $output->writeln("Problem with user {$row->getUsername()}: " . (string)$e);
             }
         }
         if (count($cards) > 0) {
             $output->writeln("\tConverting hashes for " . count($cards) . ' card(s).');
-            foreach ($cards as $row) {
+            foreach ($cards as $entity) {
                 try {
-                    $this->fixRow($row, $oldcipher, $newcipher);
+                    $this->fixEntity($this->userCardService, $entity, $oldcipher, $newcipher);
                 } catch (\Exception $e) {
-                    $output->writeln("Problem with card {$row['id']}: " . (string)$e);
+                    $output->writeln("Problem with card {$entity->getId()}: " . (string)$e);
                 }
             }
         }
 
         // If we got this far, all went well!
         $output->writeln("\tFinished.");
-        return 0;
+        return self::SUCCESS;
     }
 }

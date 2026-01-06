@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -54,25 +54,21 @@ class SimilarTest extends \PHPUnit\Framework\TestCase
         $driver = $this->getMockBuilder(\VuFind\RecordDriver\SolrDefault::class)
             ->onlyMethods(['getUniqueId'])
             ->getMock();
-        $driver->expects($this->once())
-            ->method('getUniqueId')
-            ->will($this->returnValue('fakeid'));
+        $driver->expects($this->once())->method('getUniqueId')->willReturn('fakeid');
 
-        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
         $commandObj->expects($this->once())->method('getResult')
-            ->will($this->returnValue(['fakeresponse']));
+            ->willReturn(['fakeresponse']);
         $checkCommand = function ($command) {
-            return $command::class === \VuFindSearch\Command\SimilarCommand::class
-                    && $command->getTargetIdentifier() === 'Solr'
-                    && $command->getArguments()[0] === 'fakeid';
+            $this->assertEquals(\VuFindSearch\Command\SimilarCommand::class, $command::class);
+            $this->assertEquals('Solr', $command->getTargetIdentifier());
+            $this->assertEquals('fakeid', $command->getArguments()[0]);
+            return true;
         };
-        $service = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->getMock();
+        $service = $this->createMock(\VuFindSearch\Service::class);
         $service->expects($this->once())->method('invoke')
             ->with($this->callback($checkCommand))
-            ->will($this->returnValue($commandObj));
+            ->willReturn($commandObj);
         $similar = new Similar($service);
         $similar->init('', $driver);
         $this->assertEquals(['fakeresponse'], $similar->getResults());

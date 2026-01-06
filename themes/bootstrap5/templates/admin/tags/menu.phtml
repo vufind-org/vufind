@@ -1,0 +1,14 @@
+<nav>
+  <ul class="nav nav-pills">
+    <li class="nav-item">
+      <a class="nav-link<?=strtolower($this->active ?? '') == 'list' ? ' active" aria-current="page"' : '"'?> href="<?=$this->url('admin/tags', ['action' => 'List'])?>">
+        <?=$this->transEsc('List Tags')?>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link<?=strtolower($this->active ?? '') == 'manage' ? ' active" aria-current="page"' : '"'?> href="<?=$this->url('admin/tags', ['action' => 'Manage'])?>">
+        <?=$this->transEsc('Manage Tags')?>
+      </a>
+    </li>
+  </ul>
+</nav>

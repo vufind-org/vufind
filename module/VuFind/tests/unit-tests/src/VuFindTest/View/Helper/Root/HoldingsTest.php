@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -28,6 +28,8 @@
  */
 
 namespace VuFindTest\View\Helper\Root;
+
+use VuFind\ILS\Logic\AvailabilityStatus;
 
 /**
  * Holdings view helper Test Class
@@ -43,15 +45,13 @@ class HoldingsTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testBarcodeVisibilityBehavior()
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function barcodeVisibilityBehaviorProvider(): array
+    public static function barcodeVisibilityBehaviorProvider(): \Iterator
     {
-        return [
-            'default' => [[], true, true],
-            'enabled' => [['display_items_without_barcodes' => true], true, true],
-            'disabled' => [['display_items_without_barcodes' => false], true, false],
-        ];
+        yield 'default' => [[], true, true];
+        yield 'enabled' => [['display_items_without_barcodes' => true], true, true];
+        yield 'disabled' => [['display_items_without_barcodes' => false], true, false];
     }
 
     /**
@@ -63,9 +63,8 @@ class HoldingsTest extends \PHPUnit\Framework\TestCase
      * barcodes
      *
      * @return void
-     *
-     * @dataProvider barcodeVisibilityBehaviorProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('barcodeVisibilityBehaviorProvider')]
     public function testBarcodeVisibilityBehavior(
         array $config,
         bool $expectedBarcodeResult,
@@ -73,13 +72,18 @@ class HoldingsTest extends \PHPUnit\Framework\TestCase
     ): void {
         // Create a helper object:
         $helper = new \VuFind\View\Helper\Root\Holdings(['Catalog' => $config]);
-        $this->assertEquals(
+        $this->assertSame(
             $expectedBarcodeResult,
-            $helper->holdingIsVisible(['barcode' => '1234'])
+            $helper->holdingIsVisible(
+                [
+                    'availability' => new AvailabilityStatus(true, 'Available'),
+                    'barcode' => '1234',
+                ]
+            )
         );
-        $this->assertEquals(
+        $this->assertSame(
             $expectedNoBarcodeResult,
-            $helper->holdingIsVisible([])
+            $helper->holdingIsVisible(['availability' => new AvailabilityStatus(true, 'Available')])
         );
     }
 }

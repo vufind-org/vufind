@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -45,15 +45,13 @@ class ScopeRepositoryTest extends AbstractTokenRepositoryTestCase
     /**
      * Data provider for testScopeRepository
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getTestScopeRepositoryData(): array
+    public static function getTestScopeRepositoryData(): \Iterator
     {
-        return [
-            ['openid', 'OpenID', false, false],
-            ['id', 'Unique ID', false, false],
-            ['phone', 'Phone', false, true],
-        ];
+        yield ['openid', 'OpenID', false, false];
+        yield ['id', 'Unique ID', false, false];
+        yield ['phone', 'Phone', false, true];
     }
 
     /**
@@ -64,10 +62,9 @@ class ScopeRepositoryTest extends AbstractTokenRepositoryTestCase
      * @param bool   $hidden  Expected hidden value
      * @param bool   $ils     Expected "ILS Needed" value
      *
-     * @dataProvider getTestScopeRepositoryData
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestScopeRepositoryData')]
     public function testScopeRepository(
         string $scopeId,
         string $desc,
@@ -96,7 +93,7 @@ class ScopeRepositoryTest extends AbstractTokenRepositoryTestCase
         $this->assertEquals($ils, $scope->getILSNeeded());
 
         $scopes = ['openid', 'id', 'phone'];
-        $this->assertEquals(
+        $this->assertSame(
             $scopes,
             $repo->finalizeScopes($scopes, 'AuthCode', $this->createClientEntity())
         );

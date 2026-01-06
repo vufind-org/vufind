@@ -20,8 +20,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Session_Handlers
@@ -32,7 +32,7 @@
 
 namespace VuFind\Session;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 
 use function get_class;
 use function in_array;
@@ -58,10 +58,10 @@ class Memcache extends AbstractBase
     /**
      * Constructor
      *
-     * @param Config                    $config Session configuration ([Session] section of config.ini)
+     * @param ?Config                   $config Session configuration ([Session] section of config.ini)
      * @param \Memcache|\Memcached|null $client Optional Memcache client object
      */
-    public function __construct(Config $config = null, object $client = null)
+    public function __construct(?Config $config = null, ?object $client = null)
     {
         parent::__construct($config);
         $this->connect($config, $client);
@@ -81,10 +81,10 @@ class Memcache extends AbstractBase
         $host = $config->memcache_host ?? 'localhost';
         $port = $config->memcache_port ?? 11211;
         $timeout = $config->memcache_connection_timeout ?? 1;
-        $clientClass = $config->memcache_client ?? 'Memcache';
+        $clientClass = $config->memcache_client ?? \Memcache::class;
 
         // Create/validate client object:
-        if (!in_array($clientClass, ['Memcache', 'Memcached'])) {
+        if (!in_array($clientClass, [\Memcache::class, \Memcached::class])) {
             throw new \Exception("Unsupported Memcache client: $clientClass");
         }
         $this->connection = $client ?? new $clientClass();
@@ -100,19 +100,16 @@ class Memcache extends AbstractBase
         );
 
         // Establish connection:
-        switch ($clientClass) {
-            case 'Memcache':
-                if (!$this->connection->connect($host, $port, $timeout)) {
-                    throw $connectionException;
-                }
-                break;
-            case 'Memcached':
-                $this->connection
-                    ->setOption(\Memcached::OPT_CONNECT_TIMEOUT, $timeout);
-                if (!$this->connection->addServer($host, $port)) {
-                    throw $connectionException;
-                }
-                break;
+        if ($clientClass === \Memcache::class) {
+            trigger_error('Memcache support is deprecated; use Memcached instead', E_USER_DEPRECATED);
+            if (!$this->connection->connect($host, $port, $timeout)) {
+                throw $connectionException;
+            }
+        } else {
+            $this->connection->setOption(\Memcached::OPT_CONNECT_TIMEOUT, $timeout);
+            if (!$this->connection->addServer($host, $port)) {
+                throw $connectionException;
+            }
         }
     }
 

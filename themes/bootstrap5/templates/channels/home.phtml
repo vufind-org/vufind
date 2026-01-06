@@ -1,0 +1,8 @@
+<?php
+    // Set up page title:
+    $this->headTitle($this->translate('Channels'));
+
+    // Set up breadcrumbs:
+    $this->breadcrumbs()->set($this->translate('Channels'), active: true);
+?>
+<?=$this->render('channels/channelList.phtml')?>

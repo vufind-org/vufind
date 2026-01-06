@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,7 +29,7 @@
 
 namespace VuFindTest\Controller\Plugin;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\Controller\Plugin\NewItems;
 
 /**
@@ -72,7 +72,7 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
     {
         $flash = $this->createMock(\Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger::class);
         $flash->expects($this->once())->method('addMessage')
-            ->with($this->equalTo('too_many_new_items'), $this->equalTo('info'));
+            ->with('too_many_new_items', 'info');
         $config = new Config(['result_pages' => 10]);
         $newItems = new NewItems($config);
         $bibs = $newItems->getBibIDsFromCatalog(
@@ -92,19 +92,16 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetFundList()
     {
-        $catalog = $this->getMockBuilder(\VuFind\ILS\Connection::class)
-            ->onlyMethods(['checkCapability'])
-            ->addMethods(['getFunds'])
-            ->disableOriginalConstructor()
-            ->getMock();
+        $catalog = $this->createMock(\VuFind\ILS\Connection::class);
         $catalog->expects($this->once())->method('checkCapability')
-            ->with($this->equalTo('getFunds'))->will($this->returnValue(true));
-        $catalog->expects($this->once())->method('getFunds')
-            ->will($this->returnValue(['a', 'b', 'c']));
-        $controller = $this->getMockBuilder(\VuFind\Controller\SearchController::class)
-            ->disableOriginalConstructor()->getMock();
+            ->with('getFunds')->willReturn(true);
+        $catalog->expects($this->once())->method('__call')
+            ->willReturnCallback(
+                fn ($method) => $method === 'getFunds' ? ['a', 'b', 'c'] : null
+            );
+        $controller = $this->createMock(\VuFind\Controller\SearchController::class);
         $controller->expects($this->once())->method('getILS')
-            ->will($this->returnValue($catalog));
+            ->willReturn($catalog);
         $newItems = new NewItems(new Config([]));
         $newItems->setController($controller);
         $this->assertEquals(['a', 'b', 'c'], $newItems->getFundList());
@@ -218,22 +215,23 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockCatalog(): \VuFind\ILS\Connection
     {
-        $catalog = $this->getMockBuilder(\VuFind\ILS\Connection::class)
-            ->addMethods(['getNewItems'])
-            ->disableOriginalConstructor()
-            ->getMock();
-        $catalog->expects($this->once())->method('getNewItems')
-            ->with(
-                $this->equalTo(1),
-                $this->equalTo(200),
-                $this->equalTo(10),
-                $this->equalTo('a')
-            )
-            ->will(
-                $this->returnValue(
-                    ['results' => [['id' => 1], ['id' => 2]]]
-                )
-            );
+        $catalog = $this->createMock(\VuFind\ILS\Connection::class);
+
+        $catalog->expects($this->once())->method('__call')
+        ->willReturnCallback(
+            function ($method, $args) {
+                if ($method !== 'getNewItems') {
+                    return null;
+                }
+
+                $this->assertEquals(1, $args[0]);
+                $this->assertEquals(200, $args[1]);
+                $this->assertEquals(10, $args[2]);
+                $this->assertEquals('a', $args[3]);
+
+                return ['results' => [['id' => 1], ['id' => 2]]];
+            }
+        );
         return $catalog;
     }
 
@@ -246,12 +244,11 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockParams($idLimit = 1024)
     {
-        $params = $this->getMockBuilder(\VuFind\Search\Solr\Params::class)
-            ->disableOriginalConstructor()->getMock();
+        $params = $this->createMock(\VuFind\Search\Solr\Params::class);
         $params->expects($this->once())->method('getLimit')
-            ->will($this->returnValue(20));
+            ->willReturn(20);
         $params->expects($this->once())->method('getQueryIDLimit')
-            ->will($this->returnValue($idLimit));
+            ->willReturn($idLimit);
         return $params;
     }
 }

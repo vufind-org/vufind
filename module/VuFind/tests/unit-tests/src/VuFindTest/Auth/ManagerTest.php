@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,12 +29,15 @@
 
 namespace VuFindTest\Auth;
 
-use Laminas\Config\Config;
+use Laminas\Http\PhpEnvironment\Request;
 use Laminas\Session\SessionManager;
+use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Auth\Manager;
 use VuFind\Auth\PluginManager;
-use VuFind\Db\Row\User as UserRow;
-use VuFind\Db\Table\User as UserTable;
+use VuFind\Auth\UserSessionPersistenceInterface;
+use VuFind\Config\Config;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\UserServiceInterface;
 
 use function get_class;
 
@@ -56,9 +59,9 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDefaultConfig()
+    public function testDefaultConfig(): void
     {
-        $this->assertEquals('Database', $this->getManager()->getAuthMethod());
+        $this->assertSame('Database', $this->getManager()->getAuthMethod());
     }
 
     /**
@@ -66,14 +69,14 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetSessionInitiator()
+    public function testGetSessionInitiator(): void
     {
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
         $db->expects($this->once())->method('getSessionInitiator')
-            ->with($this->equalTo('foo'))->will($this->returnValue('bar'));
+            ->with('foo')->willReturn('bar');
         $manager = $this->getManager([], null, null, $pm);
-        $this->assertEquals('bar', $manager->getSessionInitiator('foo'));
+        $this->assertSame('bar', $manager->getSessionInitiator('foo'));
     }
 
     /**
@@ -81,26 +84,24 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetSelectableAuthOptions()
+    public function testGetSelectableAuthOptions(): void
     {
         // Simple case -- default Database helper.
-        $this->assertEquals(['Database'], $this->getManager()->getSelectableAuthOptions());
+        $this->assertSame(['Database'], $this->getManager()->getSelectableAuthOptions());
 
         // Advanced case -- ChoiceAuth.
         $config = ['Authentication' => ['method' => 'ChoiceAuth']];
         $manager = $this->getManager($config);
-        $this->assertEquals(['Database', 'Shibboleth'], $manager->getSelectableAuthOptions());
+        $this->assertSame(['Database', 'Shibboleth'], $manager->getSelectableAuthOptions());
 
         // Advanced case -- ChoiceAuth's getSelectableAuthOptions returns false.
         $pm = $this->getMockPluginManager();
-        $mockChoice = $this->getMockBuilder(\VuFind\Auth\ChoiceAuth::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $mockChoice->expects($this->any())->method('getSelectableAuthOptions')->will($this->returnValue(false));
+        $mockChoice = $this->createMock(\VuFind\Auth\ChoiceAuth::class);
+        $mockChoice->method('getSelectableAuthOptions')->willReturn(false);
         $pm->setService('ChoiceAuth2', $mockChoice);
         $config = ['Authentication' => ['method' => 'ChoiceAuth2']];
         $manager = $this->getManager($config, null, null, $pm);
-        $this->assertEquals(['ChoiceAuth2'], $manager->getSelectableAuthOptions());
+        $this->assertSame(['ChoiceAuth2'], $manager->getSelectableAuthOptions());
     }
 
     /**
@@ -108,14 +109,14 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetLoginTargets()
+    public function testGetLoginTargets(): void
     {
         $pm = $this->getMockPluginManager();
         $targets = ['a', 'b', 'c'];
         $multi = $pm->get('MultiILS');
-        $multi->expects($this->once())->method('getLoginTargets')->will($this->returnValue($targets));
+        $multi->expects($this->once())->method('getLoginTargets')->willReturn($targets);
         $config = ['Authentication' => ['method' => 'MultiILS']];
-        $this->assertEquals($targets, $this->getManager($config, null, null, $pm)->getLoginTargets());
+        $this->assertSame($targets, $this->getManager($config, null, null, $pm)->getLoginTargets());
     }
 
     /**
@@ -123,48 +124,61 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetDefaultLoginTarget()
+    public function testGetDefaultLoginTarget(): void
     {
         $pm = $this->getMockPluginManager();
         $target = 'foo';
         $multi = $pm->get('MultiILS');
-        $multi->expects($this->once())->method('getDefaultLoginTarget')->will($this->returnValue($target));
+        $multi->expects($this->once())->method('getDefaultLoginTarget')->willReturn($target);
         $config = ['Authentication' => ['method' => 'MultiILS']];
-        $this->assertEquals($target, $this->getManager($config, null, null, $pm)->getDefaultLoginTarget());
+        $this->assertSame($target, $this->getManager($config, null, null, $pm)->getDefaultLoginTarget());
     }
 
     /**
-     * Test logout (with destruction)
+     * Test getLogoutRedirectUrl
      *
      * @return void
      */
-    public function testLogoutWithDestruction()
+    public function testGetLogoutRedirectUrl(): void
     {
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
-        $db->expects($this->once())->method('logout')
-            ->with($this->equalTo('http://foo/bar'))->will($this->returnValue('http://baz'));
+        $db->expects($this->once())->method('getLogoutRedirectUrl')
+            ->with('http://foo/bar')->willReturn('http://baz');
+        $manager = $this->getManager([], null, null, $pm);
+        $this->assertSame('http://baz', $manager->getLogoutRedirectUrl('http://foo/bar'));
+    }
+
+    /**
+     * Test clearLoginState (with destruction)
+     *
+     * @return void
+     */
+    public function testClearLoginStateWithDestruction(): void
+    {
+        $pm = $this->getMockPluginManager();
+        $db = $pm->get('Database');
+        $db->expects($this->once())->method('clearLoginState');
         $sm = $this->getMockSessionManager();
         $sm->expects($this->once())->method('destroy');
         $manager = $this->getManager([], null, $sm, $pm);
-        $this->assertEquals('http://baz', $manager->logout('http://foo/bar'));
+        $manager->clearLoginState();
     }
 
     /**
-     * Test logout (without destruction)
+     * Test clearLoginState (without destruction)
      *
      * @return void
      */
-    public function testLogoutWithoutDestruction()
+    public function testClearLoginStateWithoutDestruction(): void
     {
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
-        $db->expects($this->once())->method('logout')
-            ->with($this->equalTo('http://foo/bar'))->will($this->returnValue('http://baz'));
+        $db->expects($this->once())->method('clearLoginState');
         $sm = $this->getMockSessionManager();
         $sm->expects($this->exactly(0))->method('destroy');
         $manager = $this->getManager([], null, $sm, $pm);
-        $this->assertEquals('http://baz', $manager->logout('http://foo/bar', false));
+        $manager->clearLoginState(false);
     }
 
     /**
@@ -172,7 +186,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLoginEnabled()
+    public function testLoginEnabled(): void
     {
         $this->assertTrue($this->getManager()->loginEnabled());
     }
@@ -182,7 +196,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testLoginDisabled()
+    public function testLoginDisabled(): void
     {
         $config = ['Authentication' => ['hideLogin' => true]];
         $this->assertFalse($this->getManager($config)->loginEnabled());
@@ -193,15 +207,15 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSwitchingSuccess()
+    public function testSwitchingSuccess(): void
     {
         $config = ['Authentication' => ['method' => 'ChoiceAuth']];
         $manager = $this->getManager($config);
-        $this->assertEquals('ChoiceAuth', $manager->getAuthMethod());
+        $this->assertSame('ChoiceAuth', $manager->getAuthMethod());
         // The default mock object in this test is configured to allow a
         // switch from ChoiceAuth --> Database
         $manager->setAuthMethod('Database');
-        $this->assertEquals('Database', $manager->getAuthMethod());
+        $this->assertSame('Database', $manager->getAuthMethod());
     }
 
     /**
@@ -209,14 +223,14 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSwitchingFailure()
+    public function testSwitchingFailure(): void
     {
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('Illegal authentication method: MultiILS');
 
         $config = ['Authentication' => ['method' => 'ChoiceAuth']];
         $manager = $this->getManager($config);
-        $this->assertEquals('ChoiceAuth', $manager->getAuthMethod());
+        $this->assertSame('ChoiceAuth', $manager->getAuthMethod());
         // The default mock object in this test is NOT configured to allow a
         // switch from ChoiceAuth --> MultiILS
         $manager->setAuthMethod('MultiILS');
@@ -227,14 +241,14 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSupportsCreation()
+    public function testSupportsCreation(): void
     {
         $config = ['Authentication' => ['method' => 'ChoiceAuth']];
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
-        $db->expects($this->once())->method('supportsCreation')->will($this->returnValue(true));
+        $db->expects($this->once())->method('supportsCreation')->willReturn(true);
         $shib = $pm->get('Shibboleth');
-        $shib->expects($this->once())->method('supportsCreation')->will($this->returnValue(false));
+        $shib->expects($this->once())->method('supportsCreation')->willReturn(false);
         $manager = $this->getManager($config, null, null, $pm);
         $this->assertTrue($manager->supportsCreation('Database'));
         $this->assertFalse($manager->supportsCreation('Shibboleth'));
@@ -245,7 +259,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSupportsRecovery()
+    public function testSupportsRecovery(): void
     {
         // Most common case -- no:
         $this->assertFalse($this->getManager()->supportsRecovery());
@@ -253,7 +267,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         // Less common case -- yes:
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
-        $db->expects($this->once())->method('supportsPasswordRecovery')->will($this->returnValue(true));
+        $db->expects($this->once())->method('supportsPasswordRecovery')->willReturn(true);
         $config = ['Authentication' => ['recover_password' => true]];
         $this->assertTrue($this->getManager($config, null, null, $pm)->supportsRecovery());
     }
@@ -263,7 +277,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSupportsEmailChange()
+    public function testSupportsEmailChange(): void
     {
         // Most common case -- no:
         $this->assertFalse($this->getManager()->supportsEmailChange());
@@ -281,7 +295,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSupportsPasswordChange()
+    public function testSupportsPasswordChange(): void
     {
         // Most common case -- no:
         $this->assertFalse($this->getManager()->supportsPasswordChange());
@@ -289,7 +303,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         // Less common case -- yes:
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
-        $db->expects($this->any())->method('supportsPasswordChange')->will($this->returnValue(true));
+        $db->method('supportsPasswordChange')->willReturn(true);
         $config = ['Authentication' => ['change_password' => true]];
         $this->assertTrue($this->getManager($config, null, null, $pm)->supportsPasswordChange());
         $config = ['Authentication' => ['change_password' => false]];
@@ -301,7 +315,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testGetAuthClassForTemplateRendering()
+    public function testGetAuthClassForTemplateRendering(): void
     {
         // Simple default case:
         $pm = $this->getMockPluginManager();
@@ -310,7 +324,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         // Complex case involving proxied authenticator in ChoiceAuth:
         $config = ['Authentication' => ['method' => 'ChoiceAuth']];
         $choice = $pm->get('ChoiceAuth');
-        $choice->expects($this->once())->method('getSelectedAuthOption')->will($this->returnValue('Shibboleth'));
+        $choice->expects($this->once())->method('getSelectedAuthOption')->willReturn('Shibboleth');
         $manager = $this->getManager($config, null, null, $pm);
         $this->assertEquals(get_class($pm->get('Shibboleth')), $manager->getAuthClassForTemplateRendering());
     }
@@ -320,7 +334,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testUserHasLoggedOut()
+    public function testUserHasLoggedOut(): void
     {
         // this won't be true in the context of a test class due to lack of cookies
         $this->assertFalse($this->getManager()->userHasLoggedOut());
@@ -331,13 +345,13 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCreate()
+    public function testCreate(): void
     {
         $user = $this->getMockUser();
         $request = $this->getMockRequest();
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
-        $db->expects($this->once())->method('create')->with($request)->will($this->returnValue($user));
+        $db->expects($this->once())->method('create')->with($request)->willReturn($user);
         $manager = $this->getManager([], null, null, $pm);
         $this->assertNull($manager->getUserObject());
         $this->assertEquals($user, $manager->create($request));
@@ -349,13 +363,13 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSuccessfulLogin()
+    public function testSuccessfulLogin(): void
     {
         $user = $this->getMockUser();
         $request = $this->getMockRequest();
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
-        $db->expects($this->once())->method('authenticate')->with($request)->will($this->returnValue($user));
+        $db->expects($this->once())->method('authenticate')->with($request)->willReturn($user);
         $manager = $this->getManager([], null, null, $pm);
         $request->getPost()->set('csrf', $manager->getCsrfHash());
         $this->assertNull($manager->getUserObject());
@@ -368,7 +382,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMissingCsrf()
+    public function testMissingCsrf(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
         $this->expectExceptionMessage('authentication_error_technical');
@@ -384,7 +398,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testIncorrectCsrf()
+    public function testIncorrectCsrf(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
         $this->expectExceptionMessage('authentication_error_technical');
@@ -401,7 +415,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testPasswordSecurityException()
+    public function testPasswordSecurityException(): void
     {
         $this->expectException(\VuFind\Exception\PasswordSecurity::class);
         $this->expectExceptionMessage('Boom');
@@ -410,7 +424,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $request = $this->getMockRequest();
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
-        $db->expects($this->once())->method('authenticate')->with($request)->will($this->throwException($e));
+        $db->expects($this->once())->method('authenticate')->with($request)->willThrowException($e);
         $manager = $this->getManager([], null, null, $pm);
         $request->getPost()->set('csrf', $manager->getCsrfHash());
         $manager->login($request);
@@ -421,7 +435,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testAuthException()
+    public function testAuthException(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
         $this->expectExceptionMessage('Blam');
@@ -430,7 +444,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $request = $this->getMockRequest();
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
-        $db->expects($this->once())->method('authenticate')->with($request)->will($this->throwException($e));
+        $db->expects($this->once())->method('authenticate')->with($request)->willThrowException($e);
         $manager = $this->getManager([], null, null, $pm);
         $request->getPost()->set('csrf', $manager->getCsrfHash());
         $manager->login($request);
@@ -441,7 +455,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testUnanticipatedException()
+    public function testUnanticipatedException(): void
     {
         $this->expectException(\VuFind\Exception\Auth::class);
         $this->expectExceptionMessage('authentication_error_technical');
@@ -450,7 +464,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $request = $this->getMockRequest();
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
-        $db->expects($this->once())->method('authenticate')->with($request)->will($this->throwException($e));
+        $db->expects($this->once())->method('authenticate')->with($request)->willThrowException($e);
         $manager = $this->getManager([], null, null, $pm);
         $request->getPost()->set('csrf', $manager->getCsrfHash());
         $manager->login($request);
@@ -461,13 +475,13 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testUpdatePassword()
+    public function testUpdatePassword(): void
     {
         $user = $this->getMockUser();
         $request = $this->getMockRequest();
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
-        $db->expects($this->once())->method('updatePassword')->with($request)->will($this->returnValue($user));
+        $db->expects($this->once())->method('updatePassword')->with($request)->willReturn($user);
         $manager = $this->getManager([], null, null, $pm);
         $this->assertEquals($user, $manager->updatePassword($request));
         $this->assertEquals($user, $manager->getUserObject());
@@ -478,7 +492,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testCheckForExpiredCredentials()
+    public function testCheckForExpiredCredentials(): void
     {
         // Simple case -- none found:
         $this->assertFalse($this->getManager()->checkForExpiredCredentials());
@@ -488,8 +502,8 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $request = $this->getMockRequest();
         $pm = $this->getMockPluginManager();
         $db = $pm->get('Database');
-        $db->expects($this->once())->method('create')->with($request)->will($this->returnValue($user));
-        $db->expects($this->once())->method('isExpired')->will($this->returnValue(true));
+        $db->expects($this->once())->method('create')->with($request)->willReturn($user);
+        $db->expects($this->once())->method('isExpired')->willReturn(true);
         $manager = $this->getManager([], null, null, $pm);
         $manager->create($request);
         $this->assertTrue($manager->checkForExpiredCredentials());
@@ -500,26 +514,13 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testUserLoginFromSession()
+    public function testUserLoginFromSession(): void
     {
-        $table = $this->getMockUserTable();
         $user = $this->getMockUser();
-        $userArray = new \ArrayObject();
-        $userArray->append($user);
-        $table->expects($this->once())->method('select')
-            ->with($this->equalTo(['id' => 'foo']))->will($this->returnValue($userArray->getIterator()));
-        $manager = $this->getManager([], $table);
-
-        // Fake the session inside the manager:
-        $mockSession = $this->getMockBuilder(\Laminas\Session\Container::class)
-            ->onlyMethods(['__get', '__isset', '__set', '__unset'])
-            ->disableOriginalConstructor()->getMock();
-        $mockSession->expects($this->any())->method('__isset')
-            ->with($this->equalTo('userId'))->will($this->returnValue(true));
-        $mockSession->expects($this->any())->method('__get')
-            ->with($this->equalTo('userId'))->will($this->returnValue('foo'));
-        $this->setProperty($manager, 'session', $mockSession);
-
+        $service = $this->createMock(UserSessionPersistenceInterface::class);
+        $service->expects($this->once())->method('hasUserSessionData')->willReturn(true);
+        $service->expects($this->once())->method('getUserFromSession')->willReturn($user);
+        $manager = $this->getManager([], $service);
         $this->assertEquals($user, $manager->getUserObject());
     }
 
@@ -547,25 +548,20 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a manager object to test with.
      *
-     * @param array          $config         Configuration
-     * @param UserTable      $userTable      User table gateway
-     * @param SessionManager $sessionManager Session manager
-     * @param PluginManager  $pm             Authentication plugin manager
+     * @param array                            $config         Configuration
+     * @param ?UserSessionPersistenceInterface $userSession    User session persistence service
+     * @param ?SessionManager                  $sessionManager Session manager
+     * @param ?PluginManager                   $pm             Authentication plugin manager
      *
      * @return Manager
      */
-    protected function getManager($config = [], $userTable = null, $sessionManager = null, $pm = null)
-    {
+    protected function getManager(
+        array $config = [],
+        ?UserSessionPersistenceInterface $userSession = null,
+        ?SessionManager $sessionManager = null,
+        ?PluginManager $pm = null
+    ): Manager {
         $config = new Config($config);
-        if (null === $userTable) {
-            $userTable = $this->getMockUserTable();
-        }
-        if (null === $sessionManager) {
-            $sessionManager = new SessionManager();
-        }
-        if (null === $pm) {
-            $pm = $this->getMockPluginManager();
-        }
         $cookies = new \VuFind\Cookie\CookieManager([]);
         $csrf = new \VuFind\Validator\SessionCsrf(
             [
@@ -573,49 +569,33 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
                 'salt' => 'csrftest',
             ]
         );
-        $loginTokenManager = $this->getMockBuilder(\VuFind\Auth\LoginTokenManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $ils = $this->getMockBuilder(\VuFind\ILS\Connection::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $ils->expects($this->any())
-            ->method('loginIsHidden')
-            ->willReturn(false);
+        $loginTokenManager = $this->createMock(\VuFind\Auth\LoginTokenManager::class);
+        $ils = $this->createMock(\VuFind\ILS\Connection::class);
+        $ils->method('loginIsHidden')->willReturn(false);
+        $viewRenderer = $this->createMock(\Laminas\View\Renderer\RendererInterface::class);
         return new Manager(
             $config,
-            $userTable,
-            $sessionManager,
-            $pm,
+            $this->createMock(UserServiceInterface::class),
+            $userSession ?? $this->createMock(UserSessionPersistenceInterface::class),
+            $sessionManager ?? new SessionManager(),
+            $pm ?? $this->getMockPluginManager(),
             $cookies,
             $csrf,
             $loginTokenManager,
-            $ils
+            $ils,
+            $viewRenderer,
+            $this->createMock(\VuFind\Db\Service\AuditEventServiceInterface::class)
         );
-    }
-
-    /**
-     * Get a mock user table.
-     *
-     * @return UserTable
-     */
-    protected function getMockUserTable()
-    {
-        return $this->getMockBuilder(\VuFind\Db\Table\User::class)
-            ->disableOriginalConstructor()
-            ->getMock();
     }
 
     /**
      * Get a mock session manager.
      *
-     * @return SessionManager
+     * @return MockObject&SessionManager
      */
-    protected function getMockSessionManager()
+    protected function getMockSessionManager(): MockObject&SessionManager
     {
-        return $this->getMockBuilder(\Laminas\Session\SessionManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(\Laminas\Session\SessionManager::class);
     }
 
     /**
@@ -623,25 +603,17 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
      *
      * @return PluginManager
      */
-    protected function getMockPluginManager()
+    protected function getMockPluginManager(): PluginManager
     {
         $pm = new PluginManager(new \VuFindTest\Container\MockContainer($this));
-        $mockChoice = $this->getMockBuilder(\VuFind\Auth\ChoiceAuth::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $mockChoice->expects($this->any())
-            ->method('getSelectableAuthOptions')->will($this->returnValue(['Database', 'Shibboleth']));
-        $mockDb = $this->getMockBuilder(\VuFind\Auth\Database::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $mockDb->expects($this->any())->method('needsCsrfCheck')
-            ->will($this->returnValue(true));
-        $mockMulti = $this->getMockBuilder(\VuFind\Auth\MultiILS::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $mockShib = $this->getMockBuilder(\VuFind\Auth\Shibboleth::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $mockChoice = $this->createMock(\VuFind\Auth\ChoiceAuth::class);
+        $mockChoice
+            ->method('getSelectableAuthOptions')->willReturn(['Database', 'Shibboleth']);
+        $mockDb = $this->createMock(\VuFind\Auth\Database::class);
+        $mockDb->method('needsCsrfCheck')
+            ->willReturn(true);
+        $mockMulti = $this->createMock(\VuFind\Auth\MultiILS::class);
+        $mockShib = $this->createMock(\VuFind\Auth\Shibboleth::class);
         $pm->setService(\VuFind\Auth\ChoiceAuth::class, $mockChoice);
         $pm->setService(\VuFind\Auth\Database::class, $mockDb);
         $pm->setService(\VuFind\Auth\MultiILS::class, $mockMulti);
@@ -652,31 +624,27 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock user object
      *
-     * @return UserRow
+     * @return MockObject&UserEntityInterface
      */
-    protected function getMockUser()
+    protected function getMockUser(): MockObject&UserEntityInterface
     {
-        return $this->getMockBuilder(\VuFind\Db\Row\User::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $user = $this->createMock(UserEntityInterface::class);
+        $user->method('getId')->willReturn(-1);
+        return $user;
     }
 
     /**
      * Get a mock request object
      *
-     * @return \Laminas\Http\PhpEnvironment\Request
+     * @return MockObject&Request
      */
-    protected function getMockRequest()
+    protected function getMockRequest(): MockObject&Request
     {
-        $mock = $this->getMockBuilder(\Laminas\Http\PhpEnvironment\Request::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $mock = $this->createMock(Request::class);
         $post = new \Laminas\Stdlib\Parameters();
-        $mock->expects($this->any())->method('getPost')
-            ->will($this->returnValue($post));
+        $mock->method('getPost')->willReturn($post);
         $get = new \Laminas\Stdlib\Parameters();
-        $mock->expects($this->any())->method('getQuery')
-            ->will($this->returnValue($get));
+        $mock->method('getQuery')->willReturn($get);
         return $mock;
     }
 }

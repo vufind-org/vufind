@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -396,7 +396,7 @@ class GeniePlus extends AbstractAPI
      * record.
      *
      * @param string $id      The record id to retrieve the holdings for
-     * @param array  $patron  Patron data
+     * @param ?array $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
      * @return mixed     On success, an associative array with the following keys:
@@ -405,7 +405,7 @@ class GeniePlus extends AbstractAPI
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null, array $options = [])
+    public function getHolding($id, ?array $patron = null, array $options = [])
     {
         return $this->getStatus($id);
     }
@@ -501,16 +501,14 @@ class GeniePlus extends AbstractAPI
             )
         );
         [$last, $first] = explode(',', $name, 2);
-        return [
-            'id'           => $id,
-            'firstname'    => trim($first),
-            'lastname'     => trim($last),
-            'cat_username' => trim($username),
-            'cat_password' => trim($password),
-            'email'        => $email,
-            'major'        => null,
-            'college'      => null,
-        ];
+        return $this->createPatronArray(
+            id: $id,
+            cat_username: $username,
+            cat_password: $password,
+            firstname: $first,
+            lastname: $last,
+            email: $email
+        );
     }
 
     /**
@@ -591,17 +589,17 @@ class GeniePlus extends AbstractAPI
             )
         );
         $cityAndState = trim($city . (!empty($city) ? ', ' : '') . $state);
-        return [
-            'firstname'       => $patron['firstname'],
-            'lastname'        => $patron['lastname'],
-            'address1'        => empty($addr1) ? null : $addr1,
-            'address2'        => empty($addr2) ? null : $addr2,
-            'zip'             => empty($zip) ? null : $zip,
-            'city'            => empty($city) ? null : $cityAndState,
-            'country'         => empty($country) ? null : $country,
-            'phone'           => empty($phone) ? null : $phone,
-            'expiration_date' => empty($expirationDate) ? null : $expirationDate,
-        ];
+        return $this->createProfileArray(
+            firstname: $patron['firstname'],
+            lastname: $patron['lastname'],
+            address1: $addr1 ?: null,
+            address2: $addr2 ?: null,
+            zip: $zip ?: null,
+            city: $city ? $cityAndState : null,
+            country: $country ?: null,
+            phone: $phone ?: null,
+            expiration_date: $expirationDate ?: null
+        );
     }
 
     /**

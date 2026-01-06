@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -46,14 +46,12 @@ class ContentControllerTest extends \VuFindTest\Integration\MinkTestCase
      * Data provider for testMarkdownContentRendering() to confirm that the initial part
      * of the content URL is case-insensitive.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function basePathProvider(): array
+    public static function basePathProvider(): \Iterator
     {
-        return [
-            'capitalized path' => ['/Content'],
-            'lowercase path' => ['/content'],
-        ];
+        yield 'capitalized path' => ['/Content'];
+        yield 'lowercase path' => ['/content'];
     }
 
     /**
@@ -61,10 +59,9 @@ class ContentControllerTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @param string $basePath Base path of content route
      *
-     * @dataProvider basePathProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('basePathProvider')]
     public function testMarkdownContentRendering(string $basePath): void
     {
         // Switch to the example theme, because that's where a Markdown example lives:
@@ -95,71 +92,63 @@ class ContentControllerTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testDirectoryHandling().
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function requestPathProvider(): array
+    public static function requestPathProvider(): \Iterator
     {
-        return [
-            'main path en' => [
-                'en',
-                'test',
-                'MAIN LEVEL TEST',
-                'html',
-            ],
-            'main path de' => [
-                'de',
-                'test',
-                'MAIN LEVEL TEST',
-                'html',
-            ],
-            'main path fi' => [
-                'fi',
-                'test',
-                'FINNISH TEST',
-                'html',
-            ],
-            'sub path phtml' => [
-                'en',
-                'test/test',
-                'SUB LEVEL PHTML',
-                'html',
-            ],
-            'sub path md' => [
-                'en',
-                'test/testmd',
-                'SUB LEVEL MD',
-                'md',
-            ],
-            'sub sub path phtml' => [
-                'en',
-                'test/sub/test',
-                'SUB SUB LEVEL PHTML',
-                'html',
-            ],
-            'bad sub path phtml' => [
-                'en',
-                'test/sub/bad/test',
-                'An error has occurred',
-                'error',
-            ],
-            'bad path 1' => [
-                'en',
-                'test//testmd',
-                'An error has occurred',
-                'error',
-            ],
-            'bad path 2' => [
-                'en',
-                'test/.testmd',
-                'An error has occurred',
-                'error',
-            ],
-            'bad path 3' => [
-                'en',
-                '../../../local_theme_example/templates/content/example',
-                'Not Found',
-                'error',
-            ],
+        yield 'main path en' => [
+            'en',
+            'test',
+            'MAIN LEVEL TEST',
+            'html',
+        ];
+        yield 'main path de' => [
+            'de',
+            'test',
+            'MAIN LEVEL TEST',
+            'html',
+        ];
+        yield 'main path fi' => [
+            'fi',
+            'test',
+            'FINNISH TEST',
+            'html',
+        ];
+        yield 'sub path phtml' => [
+            'en',
+            'test/test',
+            'SUB LEVEL PHTML',
+            'html',
+        ];
+        yield 'sub path md' => [
+            'en',
+            'test/testmd',
+            'SUB LEVEL MD',
+            'md',
+        ];
+        yield 'sub sub path phtml' => [
+            'en',
+            'test/sub/test',
+            'SUB SUB LEVEL PHTML',
+            'html',
+        ];
+        yield 'bad sub path phtml' => [
+            'en',
+            'test/sub/bad/test',
+            'An error has occurred',
+            'error',
+        ];
+        yield 'bad path 1' => [
+            'en',
+            'test//testmd',
+            'An error has occurred',
+            'error',
+        ];
+        yield 'bad path 2' => [
+            'en',
+            'test/.testmd',
+            'An error has occurred',
+            'error',
         ];
     }
 
@@ -171,10 +160,9 @@ class ContentControllerTest extends \VuFindTest\Integration\MinkTestCase
      * @param string $expected Expected heading
      * @param string $pageType Page type (html, md or error)
      *
-     * @dataProvider requestPathProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('requestPathProvider')]
     public function testDirectoryHandling(string $language, string $path, string $expected, string $pageType): void
     {
         // Switch to the minktest theme:

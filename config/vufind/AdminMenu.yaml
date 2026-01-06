@@ -1,0 +1,51 @@
+# If this file is empty or missing, default settings will be used, matching
+# the examples provided below.
+#
+# Please note that the current implementation of AdminMenu only supports a subset of
+# the options supported by AccountMenu.
+#
+# Array keys for every menu item could be:
+#   - name: name of an item
+#   - label: the text shown as link, will be translated - required
+#   - route: route name used to generate link target - required
+#   - icon: icon used for the item, has to be defined in theme config
+#   - iconMethod: method to dynamically create the icon name; ignored when
+#     icon is explicitly set.
+#   - checkMethod: the name of an AdminMenu navigation plugin method to perform
+#     a check whether to show the item. If omitted, item will always display.
+#   - status: whether to show status label, defaults to false
+
+Admin:
+  MenuItems:
+    - name: home
+      label: Home
+      route: admin
+
+    - name: socialstats
+      label: Social Statistics
+      route: admin/social
+
+    - name: config
+      label: Configuration
+      route: admin/config
+
+    - name: maintenance
+      label: System Maintenance
+      route: admin/maintenance
+
+    - name: tags
+      label: Tag Maintenance
+      route: admin/tags
+
+    - name: feedback
+      label: Feedback Management
+      route: admin/feedback
+
+    - name: overdrive
+      label: od_admin_menu
+      route: admin/overdrive
+      checkMethod: checkShowOverdrive
+
+    - name: payment
+      label: Online Payment
+      route: admin/payment

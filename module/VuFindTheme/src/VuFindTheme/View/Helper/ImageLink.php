@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -40,6 +40,8 @@ namespace VuFindTheme\View\Helper;
  */
 class ImageLink extends \Laminas\View\Helper\AbstractHelper
 {
+    use RelativePathTrait;
+
     /**
      * Theme information service
      *
@@ -66,7 +68,11 @@ class ImageLink extends \Laminas\View\Helper\AbstractHelper
      */
     public function __invoke($image)
     {
-        // Normalize href to account for themes:
+        // If this is an absolute path, return it as-is:
+        if (!$this->isRelativePath($image)) {
+            return $image;
+        }
+        // Otherwise, normalize href to account for themes:
         $relPath = 'images/' . $image;
         $details = $this->themeInfo->findContainingTheme(
             $relPath,

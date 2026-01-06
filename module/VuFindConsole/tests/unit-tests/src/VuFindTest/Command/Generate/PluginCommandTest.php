@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -78,17 +78,17 @@ class PluginCommandTest extends \PHPUnit\Framework\TestCase
             ['setOutputInterface', 'createPlugin']
         );
         $tools->expects($this->once())->method('setOutputInterface')
-            ->will($this->returnValue($tools));
+            ->willReturn($tools);
         $tools->expects($this->once())->method('createPlugin')
             ->with(
-                $this->equalTo($container),
-                $this->equalTo('Foo'),
-                $this->equalTo(null)
+                $container,
+                'Foo',
+                null
             );
         $command = new PluginCommand($tools, $container);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['class_name' => 'Foo']);
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -103,19 +103,19 @@ class PluginCommandTest extends \PHPUnit\Framework\TestCase
             ['setOutputInterface', 'createPlugin']
         );
         $tools->expects($this->once())->method('setOutputInterface')
-            ->will($this->returnValue($tools));
+            ->willReturn($tools);
         $tools->expects($this->once())->method('createPlugin')
             ->with(
-                $this->equalTo($container),
-                $this->equalTo('Foo'),
-                $this->equalTo('Factory')
+                $container,
+                'Foo',
+                'Factory'
             );
         $command = new PluginCommand($tools, $container);
         $commandTester = new CommandTester($command);
         $commandTester->execute(
             ['class_name' => 'Foo', 'factory' => 'Factory']
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -130,16 +130,16 @@ class PluginCommandTest extends \PHPUnit\Framework\TestCase
             ['createPlugin', 'setOutputInterface']
         );
         $tools->expects($this->once())->method('setOutputInterface')
-            ->will($this->returnValue($tools));
+            ->willReturn($tools);
         $tools->expects($this->once())->method('createPlugin')
-            ->will($this->throwException(new \Exception('Foo!')));
+            ->willThrowException(new \Exception('Foo!'));
         $command = new PluginCommand($tools, $container);
         $commandTester = new CommandTester($command);
         $commandTester->execute(
             ['class_name' => 'Foo', 'factory' => 'Factory']
         );
-        $this->assertEquals("Foo!\n", $commandTester->getDisplay());
-        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertSame("Foo!\n", $commandTester->getDisplay());
+        $this->assertSame(1, $commandTester->getStatusCode());
     }
 
     /**

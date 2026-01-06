@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -52,9 +52,7 @@ class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockIlsConnection()
     {
-        return $this->getMockBuilder(Connection::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(Connection::class);
     }
 
     /**
@@ -64,20 +62,18 @@ class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockSolrWriter()
     {
-        return $this->getMockBuilder(Writer::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(Writer::class);
     }
 
     /**
      * Get command to test.
      *
-     * @param Writer     $solr Solr writer
-     * @param Connection $ils  ILS connection
+     * @param ?Writer     $solr Solr writer
+     * @param ?Connection $ils  ILS connection
      *
      * @return SuppressedCommand
      */
-    protected function getCommand(Writer $solr = null, Connection $ils = null)
+    protected function getCommand(?Writer $solr = null, ?Connection $ils = null)
     {
         $args = [
             $solr ?? $this->getMockSolrWriter(),
@@ -98,13 +94,13 @@ class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
     {
         $ils = $this->getMockIlsConnection();
         $ils->expects($this->once())->method('__call')
-            ->with($this->equalTo('getSuppressedRecords'))
-            ->will($this->returnValue([]));
+            ->with('getSuppressedRecords')
+            ->willReturn([]);
         $command = $this->getCommand(null, $ils);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
-        $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals(
+        $this->assertSame(0, $commandTester->getStatusCode());
+        $this->assertSame(
             "No suppressed records to delete.\n",
             $commandTester->getDisplay()
         );
@@ -119,20 +115,20 @@ class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
     {
         $ils = $this->getMockIlsConnection();
         $ils->expects($this->once())->method('__call')
-            ->with($this->equalTo('getSuppressedRecords'))
-            ->will($this->returnValue([1, 2]));
+            ->with('getSuppressedRecords')
+            ->willReturn([1, 2]);
         $solr = $this->getMockSolrWriter();
         $solr->expects($this->once())->method('deleteRecords')
-            ->with($this->equalTo('Solr'), $this->equalTo([1, 2]));
+            ->with('Solr', [1, 2]);
         $solr->expects($this->once())->method('commit')
-            ->with($this->equalTo('Solr'));
+            ->with('Solr');
         $solr->expects($this->once())->method('optimize')
-            ->with($this->equalTo('Solr'));
+            ->with('Solr');
         $command = $this->getCommand($solr, $ils);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
-        $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals('', $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
+        $this->assertSame('', $commandTester->getDisplay());
     }
 
     /**
@@ -144,13 +140,13 @@ class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
     {
         $ils = $this->getMockIlsConnection();
         $ils->expects($this->once())->method('__call')
-            ->with($this->equalTo('getSuppressedAuthorityRecords'))
-            ->will($this->returnValue([]));
+            ->with('getSuppressedAuthorityRecords')
+            ->willReturn([]);
         $command = $this->getCommand(null, $ils);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['--authorities' => true]);
-        $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals(
+        $this->assertSame(0, $commandTester->getStatusCode());
+        $this->assertSame(
             "No suppressed records to delete.\n",
             $commandTester->getDisplay()
         );
@@ -165,16 +161,16 @@ class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
     {
         $ils = $this->getMockIlsConnection();
         $ils->expects($this->once())->method('__call')
-            ->with($this->equalTo('getSuppressedRecords'))
-            ->will($this->returnValue([1, 2]));
+            ->with('getSuppressedRecords')
+            ->willReturn([1, 2]);
         $command = $this->getCommand(null, $ils);
         $command->expects($this->once())->method('writeToDisk')
-            ->with($this->equalTo('foo'), $this->equalTo("1\n2"))
-            ->will($this->returnValue(true));
+            ->with('foo', "1\n2")
+            ->willReturn(true);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['--outfile' => 'foo']);
-        $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals('', $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
+        $this->assertSame('', $commandTester->getDisplay());
     }
 
     /**
@@ -186,16 +182,16 @@ class SuppressedCommandTest extends \PHPUnit\Framework\TestCase
     {
         $ils = $this->getMockIlsConnection();
         $ils->expects($this->once())->method('__call')
-            ->with($this->equalTo('getSuppressedRecords'))
-            ->will($this->returnValue([1, 2]));
+            ->with('getSuppressedRecords')
+            ->willReturn([1, 2]);
         $command = $this->getCommand(null, $ils);
         $command->expects($this->once())->method('writeToDisk')
-            ->with($this->equalTo('foo'), $this->equalTo("1\n2"))
-            ->will($this->returnValue(false));
+            ->with('foo', "1\n2")
+            ->willReturn(false);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['--outfile' => 'foo']);
-        $this->assertEquals(1, $commandTester->getStatusCode());
-        $this->assertEquals(
+        $this->assertSame(1, $commandTester->getStatusCode());
+        $this->assertSame(
             "Problem writing to foo\n",
             $commandTester->getDisplay()
         );

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -229,10 +229,26 @@ class Primo extends DefaultRecord
      */
     public function getThumbnail($size = 'small')
     {
+        $params = ['size' => $size];
+
         if ($isbn = $this->getCleanISBN()) {
-            return ['size' => $size, 'isn' => $isbn];
+            $params['isn'] = $isbn;
         }
-        return ['size' => $size, 'contenttype' => 'JournalArticle'];
+
+        if ($issn = $this->getCleanISSN()) {
+            $params['issn'] = $issn;
+        }
+
+        $formats = $this->getFormats();
+        if (!empty($formats)) {
+            $params['contenttype'] = $formats[0];
+        }
+
+        if (empty($params['isn']) && empty($params['issn']) && empty($params['contenttype'])) {
+            $params['contenttype'] = 'JournalArticle';
+        }
+
+        return $params;
     }
 
     /**

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Content
@@ -50,12 +50,14 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      */
     protected $aliases = [
         Amazon::class => Deprecated::class,
+        Booksite::class => Deprecated::class,
         'amazon' => Deprecated::class,
         'bokinfo' => Bokinfo::class,
-        'booksite' => Booksite::class,
+        'booksite' => Deprecated::class,
         'buchhandel' => Buchhandel::class,
         'browzine' => BrowZine::class,
         'contentcafe' => ContentCafe::class,
+        'demo' => Demo::class,
         'google' => Google::class,
         'koha' => Koha::class,
         'librarything' => LibraryThing::class,
@@ -73,12 +75,11 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
-        Amazon::class => AmazonFactory::class,
         Bokinfo::class => InvokableFactory::class,
-        Booksite::class => BooksiteFactory::class,
         BrowZine::class => BrowZineFactory::class,
         Buchhandel::class => BuchhandelFactory::class,
         ContentCafe::class => ContentCafeFactory::class,
+        Demo::class => DemoFactory::class,
         Deprecated::class => InvokableFactory::class,
         Google::class => GoogleFactory::class,
         Koha::class => KohaFactory::class,

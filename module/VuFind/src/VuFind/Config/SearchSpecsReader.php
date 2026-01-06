@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Config
@@ -41,17 +41,9 @@ namespace VuFind\Config;
 class SearchSpecsReader extends YamlReader
 {
     /**
-     * Constructor
+     * Cache directory name
      *
-     * @param \VuFind\Cache\Manager $cacheManager Cache manager (optional)
-     * @param PathResolver          $pathResolver Config file path resolver
-     * (optional; defaults to \VuFind\Config\Locator)
+     * @var string
      */
-    public function __construct(
-        \VuFind\Cache\Manager $cacheManager = null,
-        PathResolver $pathResolver = null
-    ) {
-        parent::__construct($cacheManager, $pathResolver);
-        $this->cacheName = 'searchspecs';
-    }
+    protected $cacheName = 'searchspecs';
 }

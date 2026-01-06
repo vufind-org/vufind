@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -31,12 +31,14 @@
 
 namespace VuFind\Auth;
 
-use Laminas\Crypt\Password\Bcrypt;
+use DateTime;
 use Laminas\Http\PhpEnvironment\Request;
-use VuFind\Db\Row\User;
-use VuFind\Db\Table\User as UserTable;
+use VuFind\Crypt\PasswordHasher;
+use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\UserServiceInterface;
 use VuFind\Exception\Auth as AuthException;
 use VuFind\Exception\AuthEmailNotVerified as AuthEmailNotVerifiedException;
+use VuFind\Exception\DuplicateKeyException;
 
 use function in_array;
 use function is_object;
@@ -55,6 +57,13 @@ use function is_object;
 class Database extends AbstractBase
 {
     /**
+     * Password hasher
+     *
+     * @var PasswordHasher
+     */
+    protected $hasher;
+
+    /**
      * Username
      *
      * @var string
@@ -69,12 +78,22 @@ class Database extends AbstractBase
     protected $password;
 
     /**
+     * Constructor
+     *
+     * @param ?PasswordHasher $hasher Password hash service (null to create one)
+     */
+    public function __construct(?PasswordHasher $hasher = null)
+    {
+        $this->hasher = $hasher ?? new PasswordHasher();
+    }
+
+    /**
      * Attempt to authenticate the current user. Throws exception if login fails.
      *
      * @param Request $request Request object containing account credentials.
      *
      * @throws AuthException
-     * @return User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     public function authenticate($request)
     {
@@ -86,7 +105,8 @@ class Database extends AbstractBase
         }
 
         // Validate the credentials:
-        $user = $this->getUserTable()->getByUsername($this->username, false);
+        $userService = $this->getUserService();
+        $user = $userService->getUserByUsername($this->username);
         if (!is_object($user) || !$this->checkPassword($this->password, $user)) {
             throw new AuthException('authentication_error_invalid');
         }
@@ -110,16 +130,20 @@ class Database extends AbstractBase
     }
 
     /**
-     * Does the provided exception indicate that a duplicate key value has been
-     * created?
+     * Set the password in a UserEntityInterface object.
      *
-     * @param \Exception $e Exception to check
+     * @param UserEntityInterface $user User to update
+     * @param string              $pass Password to store
      *
-     * @return bool
+     * @return void
      */
-    protected function exceptionIndicatesDuplicateKey(\Exception $e): bool
+    protected function setUserPassword(UserEntityInterface $user, string $pass): void
     {
-        return strstr($e->getMessage(), 'Duplicate entry') !== false;
+        if ($this->passwordHashingEnabled()) {
+            $user->setPasswordHash($this->hasher->create($pass));
+        } else {
+            $user->setRawPassword($pass);
+        }
     }
 
     /**
@@ -128,7 +152,7 @@ class Database extends AbstractBase
      * @param Request $request Request object containing new account details.
      *
      * @throws AuthException
-     * @return User New user row.
+     * @return UserEntityInterface New user entity.
      */
     public function create($request)
     {
@@ -140,16 +164,16 @@ class Database extends AbstractBase
         $this->validatePassword($params);
 
         // Get the user table
-        $userTable = $this->getUserTable();
+        $userService = $this->getUserService();
 
         // Make sure parameters are correct
-        $this->validateParams($params, $userTable);
+        $this->validateParams($params, $userService);
 
         // If we got this far, we're ready to create the account:
-        $user = $this->createUserFromParams($params, $userTable);
+        $user = $this->createUserFromParams($params, $userService);
         try {
-            $user->save();
-        } catch (\Laminas\Db\Adapter\Exception\RuntimeException $e) {
+            $userService->persistEntity($user);
+        } catch (DuplicateKeyException $e) {
             // In a scenario where the unique key of the user table is
             // shorter than the username field length, it is possible that
             // a user will pass validation but still get rejected due to
@@ -157,8 +181,7 @@ class Database extends AbstractBase
             // unlikely scenario, but if it occurs, we will treat it the
             // same as a duplicate username. Other unexpected database
             // errors will be passed through unmodified.
-            throw $this->exceptionIndicatesDuplicateKey($e)
-                ? new AuthException('That username is already taken') : $e;
+            throw new AuthException('That username is already taken');
         }
 
         // Verify email address:
@@ -173,7 +196,7 @@ class Database extends AbstractBase
      * @param Request $request Request object containing new account details.
      *
      * @throws AuthException
-     * @return User New user row.
+     * @return UserEntityInterface Updated user entity.
      */
     public function updatePassword($request)
     {
@@ -192,15 +215,9 @@ class Database extends AbstractBase
         $this->validatePassword($params);
 
         // Create the row and send it back to the caller:
-        $table = $this->getUserTable();
-        $user = $table->getByUsername($params['username'], false);
-        if ($this->passwordHashingEnabled()) {
-            $bcrypt = new Bcrypt();
-            $user->pass_hash = $bcrypt->create($params['password']);
-        } else {
-            $user->password = $params['password'];
-        }
-        $user->save();
+        $user = $this->getUserService()->getUserByUsername($params['username']);
+        $this->setUserPassword($user, $params['password']);
+        $this->getUserService()->persistEntity($user);
         return $user;
     }
 
@@ -250,7 +267,7 @@ class Database extends AbstractBase
      * Check if the user's email address has been verified (if necessary) and
      * throws exception if not.
      *
-     * @param User $user User to check
+     * @param UserEntityInterface $user User to check
      *
      * @return void
      * @throws AuthEmailNotVerifiedException
@@ -259,20 +276,19 @@ class Database extends AbstractBase
     {
         $config = $this->getConfig();
         $verify_email = $config->Authentication->verify_email ?? false;
-        if ($verify_email && !$user->checkEmailVerified()) {
-            $exception = new AuthEmailNotVerifiedException(
+        if ($verify_email && !$user->getEmailVerified()) {
+            throw new AuthEmailNotVerifiedException(
+                $user,
                 'authentication_error_email_not_verified_html'
             );
-            $exception->user = $user;
-            throw $exception;
         }
     }
 
     /**
      * Check that the user's password matches the provided value.
      *
-     * @param string $password Password to check.
-     * @param object $userRow  The user row. We pass this instead of the password
+     * @param string              $password Password to check.
+     * @param UserEntityInterface $userRow  The user row. We pass this instead of the password
      * because we may need to check different values depending on the password
      * hashing configuration.
      *
@@ -282,18 +298,17 @@ class Database extends AbstractBase
     {
         // Special case: hashing enabled:
         if ($this->passwordHashingEnabled()) {
-            if ($userRow->password) {
+            if ($userRow->getRawPassword()) {
                 throw new \VuFind\Exception\PasswordSecurity(
                     'Unexpected unencrypted password found in database'
                 );
             }
 
-            $bcrypt = new Bcrypt();
-            return $bcrypt->verify($password, $userRow->pass_hash ?? '');
+            return $this->hasher->verify($password, $userRow->getPasswordHash() ?? '');
         }
 
         // Default case: unencrypted passwords:
-        return $password == $userRow->password;
+        return $password == $userRow->getRawPassword();
     }
 
     /**
@@ -353,11 +368,64 @@ class Database extends AbstractBase
     /**
      * Does this authentication method support password recovery
      *
+     * @param ?string $target Authentication target for methods that support target selection
+     *
      * @return bool
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function supportsPasswordRecovery()
+    public function supportsPasswordRecovery(?string $target = null)
     {
         return true;
+    }
+
+    /**
+     * Get password recovery data (such as a user id or recovery token) based on form data submitted by the user.
+     *
+     * @param array $params Request params (form data)
+     *
+     * @return ?array Null if user not found, or associative array with following keys:
+     *   string email    User's email address
+     *   string username Username (optional, for display)
+     *   array  details  Array of user details required for resetPassword request
+     */
+    public function getPasswordRecoveryData(array $params): ?array
+    {
+        $userService = $this->getUserService();
+        if ($email = $params['email'] ?? null) {
+            $user = $userService->getUserByEmail($email);
+        } elseif ($username = $params['username'] ?? null) {
+            $user = $userService->getUserByUsername($username);
+        }
+        if ($email = $user?->getEmail()) {
+            return [
+                'email' => $email,
+                'username' => $user->getUsername(),
+                'details' => [
+                    'id' => $user->getId(),
+                ],
+            ];
+        }
+        return null;
+    }
+
+    /**
+     * Reset a user's password.
+     *
+     * @param array $recoveryData Account recovery data from getPasswordRecoveryData.
+     * @param array $params       User-entered form parameters.
+     *
+     * @throws AuthException
+     * @return void
+     */
+    public function resetPassword(array $recoveryData, array $params)
+    {
+        $this->validatePassword($params);
+        $user = $this->getUserService()->getUserById($recoveryData['details']['id']);
+        $this->setUserPassword($user, $params['password']);
+        // Also treat email address as verified
+        $user->setEmailVerified(new DateTime());
+        $this->getUserService()->persistEntity($user);
     }
 
     /**
@@ -378,9 +446,13 @@ class Database extends AbstractBase
     /**
      * Password policy for a new password (e.g. minLength, maxLength)
      *
+     * @param ?string $target Authentication target for methods that support target selection
+     *
      * @return array
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getPasswordPolicy()
+    public function getPasswordPolicy(?string $target = null): array
     {
         $policy = parent::getPasswordPolicy();
         // Limit maxLength to the database limit
@@ -415,14 +487,14 @@ class Database extends AbstractBase
     /**
      * Validate parameters.
      *
-     * @param string[]  $params Parameters returned from collectParamsFromRequest()
-     * @param UserTable $table  The VuFind user table
+     * @param string[]             $params      Parameters returned from collectParamsFromRequest()
+     * @param UserServiceInterface $userService User service
      *
      * @throws AuthException
      *
      * @return void
      */
-    protected function validateParams($params, $table)
+    protected function validateParams(array $params, UserServiceInterface $userService): void
     {
         // Invalid Email Check
         $validator = new \Laminas\Validator\EmailAddress();
@@ -436,37 +508,31 @@ class Database extends AbstractBase
         }
 
         // Make sure we have a unique username
-        if ($table->getByUsername($params['username'], false)) {
+        if ($userService->getUserByUsername($params['username'])) {
             throw new AuthException('That username is already taken');
         }
 
         // Make sure we have a unique email
-        if ($table->getByEmail($params['email'])) {
+        if ($userService->getUserByEmail($params['email'])) {
             throw new AuthException('That email address is already used');
         }
     }
 
     /**
-     * Create a user row object from given parameters.
+     * Create a user entity object from given parameters.
      *
-     * @param string[]  $params Parameters returned from collectParamsFromRequest()
-     * @param UserTable $table  The VuFind user table
+     * @param string[]             $params      Parameters returned from collectParamsFromRequest()
+     * @param UserServiceInterface $userService User service
      *
-     * @return User A user row object
+     * @return UserEntityInterface A user entity
      */
-    protected function createUserFromParams($params, $table)
+    protected function createUserFromParams(array $params, UserServiceInterface $userService)
     {
-        $user = $table->createRowForUsername($params['username']);
-        $user->firstname = $params['firstname'];
-        $user->lastname = $params['lastname'];
-        $user->updateEmail($params['email'], true);
-        if ($this->passwordHashingEnabled()) {
-            $bcrypt = new Bcrypt();
-            $user->pass_hash = $bcrypt->create($params['password']);
-        } else {
-            $user->password = $params['password'];
-        }
-
+        $user = $userService->createEntityForUsername($params['username']);
+        $user->setFirstname($params['firstname']);
+        $user->setLastname($params['lastname']);
+        $this->getUserService()->updateUserEmail($user, $params['email'], true);
+        $this->setUserPassword($user, $params['password']);
         return $user;
     }
 }

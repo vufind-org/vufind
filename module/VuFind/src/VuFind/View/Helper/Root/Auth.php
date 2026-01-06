@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -29,8 +29,12 @@
 
 namespace VuFind\View\Helper\Root;
 
-use LmcRbacMvc\Identity\IdentityInterface;
+use Lmc\Rbac\Identity\IdentityInterface;
+use RuntimeException;
 use VuFind\Db\Entity\UserEntityInterface;
+use VuFind\Db\Service\DbServiceAwareInterface;
+use VuFind\Db\Service\DbServiceAwareTrait;
+use VuFind\Db\Service\LoginTokenServiceInterface;
 use VuFind\Exception\ILS as ILSException;
 
 /**
@@ -42,9 +46,10 @@ use VuFind\Exception\ILS as ILSException;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Auth extends \Laminas\View\Helper\AbstractHelper
+class Auth extends \Laminas\View\Helper\AbstractHelper implements DbServiceAwareInterface
 {
     use ClassBasedTemplateRendererTrait;
+    use DbServiceAwareTrait;
 
     /**
      * Authentication manager
@@ -104,19 +109,6 @@ class Auth extends \Laminas\View\Helper\AbstractHelper
     /**
      * Checks whether the user is logged in.
      *
-     * @return \VuFind\Db\Row\User|bool Object if user is logged in, false
-     * otherwise.
-     *
-     * @deprecated Use getIdentity() or getUserObject() instead.
-     */
-    public function isLoggedIn()
-    {
-        return $this->getManager()->isLoggedIn();
-    }
-
-    /**
-     * Checks whether the user is logged in.
-     *
      * @return ?UserEntityInterface Object if user is logged in, null otherwise.
      */
     public function getUserObject(): ?UserEntityInterface
@@ -132,6 +124,27 @@ class Auth extends \Laminas\View\Helper\AbstractHelper
     public function getIdentity(): ?IdentityInterface
     {
         return $this->getManager()->getIdentity();
+    }
+
+    /**
+     * Check if session initiator is used.
+     *
+     * @return bool
+     */
+    public function hasSessionInitiator(): bool
+    {
+        return $this->getManager()->hasSessionInitiator();
+    }
+
+    /**
+     * Get the URL to establish a session (needed when the internal VuFind login
+     * form is inadequate). Returns false when no session initiator is needed.
+     *
+     * @return ?string
+     */
+    public function getSessionInitiator(): ?string
+    {
+        return $this->getManager()->getSessionInitiator();
     }
 
     /**
@@ -197,6 +210,18 @@ class Auth extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
+     * Get login token data
+     *
+     * @param int $userId user identifier
+     *
+     * @return array
+     */
+    public function getLoginTokens(int $userId): array
+    {
+        return $this->getDbService(LoginTokenServiceInterface::class)->getByUser($userId);
+    }
+
+    /**
      * Render the new password form template.
      *
      * @param array $context Context for rendering template
@@ -209,6 +234,18 @@ class Auth extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
+     * Render the reset password form template.
+     *
+     * @param array $context Context for rendering template
+     *
+     * @return string
+     */
+    public function getResetPasswordForm($context = [])
+    {
+        return $this->renderTemplate('resetpassword.phtml', $context);
+    }
+
+    /**
      * Render the password recovery form template.
      *
      * @param array $context Context for rendering template
@@ -218,5 +255,25 @@ class Auth extends \Laminas\View\Helper\AbstractHelper
     public function getPasswordRecoveryForm($context = [])
     {
         return $this->renderTemplate('recovery.phtml', $context);
+    }
+
+    /**
+     * Get the password recovery email template path.
+     *
+     * @return string
+     */
+    public function getPasswordRecoveryEmailTemplate()
+    {
+        $className = $this->getManager()->getAuthClassForTemplateRendering();
+        $template = 'Auth/%s/recovery-email.phtml';
+        $classTemplate = $this->getCachedClassTemplate($template, $className);
+        if (!$classTemplate) {
+            throw new RuntimeException(
+                'Cannot find '
+                . $this->getTemplateWithClass($template, '[brief class name]')
+                . " for class $className or any of its parent classes"
+            );
+        }
+        return $classTemplate;
     }
 }

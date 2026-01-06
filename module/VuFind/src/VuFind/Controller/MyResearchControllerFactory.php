@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -62,17 +62,17 @@ class MyResearchControllerFactory extends AbstractBaseFactory
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
         $session = new \Laminas\Session\Container(
             'cart_followup',
             $container->get(\Laminas\Session\SessionManager::class)
         );
-        $configLoader = $container->get(\VuFind\Config\PluginManager::class);
+        $configManager = $container->get(\VuFind\Config\ConfigManagerInterface::class);
         $export = $container->get(\VuFind\Export::class);
-        return parent::__invoke($container, $requestedName, [$session, $configLoader, $export]);
+        return parent::__invoke($container, $requestedName, [$session, $configManager, $export]);
     }
 }

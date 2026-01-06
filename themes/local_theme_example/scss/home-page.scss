@@ -1,0 +1,32 @@
+.searchHomeContent {
+  margin-left: -$grid-gutter-width;
+  margin-right: -$grid-gutter-width;
+}
+.search-hero {
+  @extend .clearfix;
+
+  position: relative;
+  padding: 16rem 8rem;
+  color: #fff;
+  background-image: url('#{$image-path}/yosemite.jpg');
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+
+  a { color: #eef; }
+
+  .image-credit {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    padding: 1rem;
+    font-size: .8rem;
+    color: rgba(255,255,255,.5);
+    background-color: rgba(0,0,0,.5);
+
+    a { color: #fff; }
+  }
+}
+
+/* Hide search bar */
+.template-dir-search.template-name-home .search.container { display: none; }

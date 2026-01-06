@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Translator
@@ -109,17 +109,17 @@ class ExtendedIni implements FileLoaderInterface
     /**
      * Constructor
      *
-     * @param array             $pathStack       List of directories to search for
+     * @param array              $pathStack       List of directories to search for
      * language files.
-     * @param string|string[]   $fallbackLocales Fallback locale(s) to use for
+     * @param string|string[]    $fallbackLocales Fallback locale(s) to use for
      * language strings missing from selected file.
-     * @param ExtendedIniReader $reader          Helper for reading .ini files from
+     * @param ?ExtendedIniReader $reader          Helper for reading .ini files from
      * disk.
      */
     public function __construct(
         $pathStack = [],
         $fallbackLocales = null,
-        ExtendedIniReader $reader = null
+        ?ExtendedIniReader $reader = null
     ) {
         $this->pathStack = $pathStack;
         $this->fallbackLocales = $fallbackLocales ? (array)$fallbackLocales : [];
@@ -194,7 +194,7 @@ class ExtendedIni implements FileLoaderInterface
      */
     public function getLanguageFilename($locale, $domain)
     {
-        return empty($domain)
+        return (empty($domain) || $domain === 'default')
             ? $locale . '.ini'
             : $domain . '/' . $locale . '.ini';
     }

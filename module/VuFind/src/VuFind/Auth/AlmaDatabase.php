@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) AK Bibliothek Wien für Sozialwissenschaften 2018.
+ * Copyright (C) AK Bibliothek Wien für Sozialwissenschaften 2018-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -17,46 +17,35 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
- * @author   Michael Birkner <michael.birkner@akwien.at>
+ * @author   Michael Birkner-Tröger <michael.birkner@akwien.at>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:authentication_handlers Wiki
  */
 
 namespace VuFind\Auth;
 
+use Laminas\Http\PhpEnvironment\Request;
+use VuFind\Crypt\PasswordHasher;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
 
 /**
  * Authentication class for Alma. The VuFind database and the Alma API are
- * combined for authentication by this classe.
+ * combined for authentication by this class.
  *
  * @category VuFind
  * @package  Authentication
- * @author   Michael Birkner <michael.birkner@akwien.at>
+ * @author   Michael Birkner-Tröger <michael.birkner@akwien.at>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:plugins:authentication_handlers Wiki
  */
 class AlmaDatabase extends Database
 {
-    /**
-     * ILS Authenticator
-     *
-     * @var \VuFind\Auth\ILSAuthenticator
-     */
-    protected $authenticator;
-
-    /**
-     * Catalog connection
-     *
-     * @var \VuFind\ILS\Connection
-     */
-    protected $catalog = null;
-
     /**
      * Alma driver
      *
@@ -74,26 +63,26 @@ class AlmaDatabase extends Database
     /**
      * Constructor
      *
-     * @param \VuFind\ILS\Connection        $connection    The ILS connection
+     * @param \VuFind\ILS\Connection        $catalog       The ILS connection
      * @param \VuFind\Auth\ILSAuthenticator $authenticator The ILS authenticator
+     * @param ?PasswordHasher               $hasher        Password hash service (null to create one)
      */
     public function __construct(
-        \VuFind\ILS\Connection $connection,
-        \VuFind\Auth\ILSAuthenticator $authenticator
+        protected \VuFind\ILS\Connection $catalog,
+        protected \VuFind\Auth\ILSAuthenticator $authenticator,
+        ?PasswordHasher $hasher = null
     ) {
-        $this->catalog = $connection;
-        $this->authenticator = $authenticator;
-        $this->almaDriver = $connection->getDriver();
-        $this->almaConfig = $connection->getDriverConfig();
+        $this->almaDriver = $catalog->getDriver();
+        $this->almaConfig = $catalog->getDriverConfig();
+        parent::__construct($hasher);
     }
 
     /**
      * Create a new user account in Alma AND in the VuFind Database.
      *
-     * @param \Laminas\Http\PhpEnvironment\Request $request Request object containing
-     *                                                   new account details.
+     * @param Request $request Request object containing new account details.
      *
-     * @return NULL|\VuFind\Db\Row\User New user row.
+     * @return UserEntityInterface New user entity.
      */
     public function create($request)
     {
@@ -110,11 +99,11 @@ class AlmaDatabase extends Database
         $this->validateUsername($params);
         $this->validatePassword($params);
 
-        // Get the user table
-        $userTable = $this->getUserTable();
+        // Get the user service
+        $userService = $this->getUserService();
 
         // Make sure parameters are correct
-        $this->validateParams($params, $userTable);
+        $this->validateParams($params, $userService);
 
         // Create user account in Alma
         $almaAnswer = $this->almaDriver->createAlmaUser($params);
@@ -122,19 +111,25 @@ class AlmaDatabase extends Database
         // Create user account in VuFind user table if Alma gave us an answer
         if ($almaAnswer !== null) {
             // If we got this far, we're ready to create the account:
-            $user = $this->createUserFromParams($params, $userTable);
+            $user = $this->createUserFromParams($params, $userService);
 
             // Add the Alma primary ID as cat_id to the VuFind user table
-            $user->cat_id = $almaAnswer->primary_id ?? null;
+            $user->setCatId($almaAnswer->primary_id ?? null);
 
             // Save the new user to the user table
-            $user->save();
+            $this->getUserService()->persistEntity($user);
 
             // Save the credentials to cat_username and cat_password to bypass
             // the ILS login screen from VuFind
-            $user->saveCredentials($params['username'], $params['password']);
+            $this->authenticator->saveUserCatalogCredentials(
+                $user,
+                $params['username'],
+                $params['password']
+            );
         } else {
-            throw new AuthException($this->translate('ils_account_create_error'));
+            throw new AuthException(
+                $this->translate('ils_account_create_error')
+            );
         }
 
         return $user;

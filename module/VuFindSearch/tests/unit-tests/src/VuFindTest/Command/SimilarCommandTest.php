@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -59,8 +59,8 @@ class SimilarCommandTest extends TestCase
             ->willReturn($backendId);
         $backend->expects($this->once())->method('similar')
             ->with(
-                $this->equalTo('id'),
-                $this->equalTo($params)
+                'id',
+                $params
             )->willReturn('result');
         $command = $this->getCommand();
         $this->assertEquals('result', $command->execute($backend)->getResult());
@@ -157,8 +157,7 @@ class SimilarCommandTest extends TestCase
      */
     public function getBackend()
     {
-        $backend = $this->getMockBuilder(Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(Backend::class);
         return $backend;
     }
 }

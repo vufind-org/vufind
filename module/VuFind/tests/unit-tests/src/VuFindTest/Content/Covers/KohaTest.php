@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -45,24 +45,22 @@ class KohaTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testValidCoverLoading
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getCoverData(): array
+    public static function getCoverData(): \Iterator
     {
-        return [
-            'no id' => [false, [null, 'small', []]],
-            'small image' => [
-                'http://base?thumbnail=1&biblionumber=foo',
-                [null, 'small', ['recordid' => 'foo']],
-            ],
-            'medium image' => [
-                'http://base?thumbnail=1&biblionumber=foo',
-                [null, 'medium', ['recordid' => 'foo']],
-            ],
-            'large image' => [
-                'http://base?biblionumber=foo',
-                [null, 'large', ['recordid' => 'foo']],
-            ],
+        yield 'no id' => [false, [null, 'small', []]];
+        yield 'small image' => [
+            'http://base?thumbnail=1&biblionumber=foo',
+            [null, 'small', ['recordid' => 'foo']],
+        ];
+        yield 'medium image' => [
+            'http://base?thumbnail=1&biblionumber=foo',
+            [null, 'medium', ['recordid' => 'foo']],
+        ];
+        yield 'large image' => [
+            'http://base?biblionumber=foo',
+            [null, 'large', ['recordid' => 'foo']],
         ];
     }
 
@@ -73,9 +71,8 @@ class KohaTest extends \PHPUnit\Framework\TestCase
      * @param array       $params   Parameters to send to cover loader
      *
      * @return void
-     *
-     * @dataProvider getCoverData
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getCoverData')]
     public function testValidCoverLoading($expected, array $params): void
     {
         $loader = new Koha('http://base');

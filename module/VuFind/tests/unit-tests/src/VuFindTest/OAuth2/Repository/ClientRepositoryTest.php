@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -114,14 +114,14 @@ class ClientRepositoryTest extends \PHPUnit\Framework\TestCase
 
         $client = $repo->getClientEntity('openid_test');
         $this->assertInstanceOf(ClientEntity::class, $client);
-        $this->assertEquals('OpenID Tester', $client->getName());
-        $this->assertEquals('http://localhost/callback', $client->getRedirectUri());
+        $this->assertSame('OpenID Tester', $client->getName());
+        $this->assertSame('http://localhost/callback', $client->getRedirectUri());
         $this->assertFalse($client->isConfidential());
 
         $client = $repo->getClientEntity('confidential');
         $this->assertInstanceOf(ClientEntity::class, $client);
-        $this->assertEquals('Confidential Client', $client->getName());
-        $this->assertEquals('http://localhost/secure', $client->getRedirectUri());
+        $this->assertSame('Confidential Client', $client->getName());
+        $this->assertSame('http://localhost/secure', $client->getRedirectUri());
         $this->assertTrue($client->isConfidential());
     }
 

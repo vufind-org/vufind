@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -47,7 +47,7 @@ use function array_slice;
 class ImporterTest extends \PHPUnit\Framework\TestCase
 {
     use \VuFindTest\Feature\FixtureTrait;
-    use \VuFindTest\Feature\PathResolverTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Location of fixture files.
@@ -72,7 +72,7 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
     {
         $this->csvFixtureDir = $this->getFixtureDir() . 'csv/';
         $this->container = new MockContainer($this);
-        $this->addPathResolverToContainer($this->container);
+        $this->addConfigRelatedServicesToContainer($this->container);
     }
 
     /**
@@ -118,6 +118,34 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
     public function testImportInTestMode(): void
     {
         $this->runTestModeTest();
+    }
+
+    /**
+     * Test that importer injects dependencies into static callback classes
+     * when appropriate.
+     *
+     * @return void
+     */
+    public function testCallbackDependencyInjection(): void
+    {
+        // Before running the test, there will be no dependencies injected
+        // into the static callback container, and trying to call getConfig
+        // will throw an exception due to the missing dependency.
+        $errorMsg = '';
+        try {
+            \VuFind\XSLT\Import\VuFind::getConfig();
+        } catch (\Throwable $t) {
+            $errorMsg = $t->getMessage();
+        }
+        $this->assertSame('Call to a member function get() on null', $errorMsg);
+        $this->runTestModeTest(
+            [
+                'ini' => 'test-injection.ini',
+            ]
+        );
+        // After running the test, dependencies will have been injected, so
+        // we can now call the same method without errors:
+        \VuFind\XSLT\Import\VuFind::getConfig();
     }
 
     /**
@@ -221,10 +249,9 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
      */
     public function testImportInLiveMode(): void
     {
-        $mockWriter = $this->getMockBuilder(\VuFind\Solr\Writer::class)
-            ->disableOriginalConstructor()->getMock();
+        $mockWriter = $this->createMock(\VuFind\Solr\Writer::class);
         $mockWriter->expects($this->once())->method('save')->with(
-            $this->equalTo('Solr'),
+            'Solr',
             $this->callback(
                 function ($doc) {
                     $expected = file_get_contents($this->csvFixtureDir . 'test.json');
@@ -236,7 +263,7 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
                     return true;
                 }
             ),
-            $this->equalTo('update')
+            'update'
         );
         $this->container->set(\VuFind\Solr\Writer::class, $mockWriter);
         $importer = $this->getImporter();
@@ -246,7 +273,7 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
             'Solr',
             false
         );
-        $this->assertEquals('', $result); // no output in non-test mode
+        $this->assertSame('', $result); // no output in non-test mode
     }
 
     /**
@@ -256,16 +283,15 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
      */
     public function testImportInSmallBatches(): void
     {
-        $mockWriter = $this->getMockBuilder(\VuFind\Solr\Writer::class)
-            ->disableOriginalConstructor()->getMock();
+        $mockWriter = $this->createMock(\VuFind\Solr\Writer::class);
         $mockWriter->expects($this->exactly(3))->method('save')->with(
-            $this->equalTo('Solr'),
+            'Solr',
             $this->callback(
                 function ($doc) {
                     return $doc instanceof RawJSONDocument;
                 }
             ),
-            $this->equalTo('update')
+            'update'
         );
         $this->container->set(\VuFind\Solr\Writer::class, $mockWriter);
         $importer = $this->getImporter();
@@ -275,6 +301,6 @@ class ImporterTest extends \PHPUnit\Framework\TestCase
             'Solr',
             false
         );
-        $this->assertEquals('', $result); // no output in non-test mode
+        $this->assertSame('', $result); // no output in non-test mode
     }
 }

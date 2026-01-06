@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -153,17 +153,17 @@ class CollectionsTest extends \VuFindTest\Integration\MinkTestCase
 
         $page = $this->goToCollectionHierarchy();
         $this->waitForPageLoad($page);
-        $this->assertEquals(
-            trim($this->findCssAndGetText($page, '#tree-preview h2')),
-            'Subcollection 1'
+        $this->assertSame(
+            'Subcollection 1',
+            trim($this->findCssAndGetText($page, '#tree-preview h2'))
         );
         $this->clickCss($page, 'a[data-record-id="colitem2"]');
 
         $this->waitStatement('$("#tree-preview h2").text().trim() === "Collection item 2"');
 
         $this->assertEquals(
-            $this->getMinkSession()->getCurrentUrl(),
-            $this->getVuFindUrl() . '/Collection/subcollection1/HierarchyTree'
+            $this->getVuFindUrl() . '/Collection/subcollection1/HierarchyTree',
+            $this->getMinkSession()->getCurrentUrl()
         );
     }
 }

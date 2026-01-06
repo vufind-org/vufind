@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -112,9 +112,7 @@ class TermsIdFetcherTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockService(): Service
     {
-        return $this->getMockBuilder(Service::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(Service::class);
     }
 
     /**
@@ -126,10 +124,9 @@ class TermsIdFetcherTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockTermsCommand(Terms $terms): TermsCommand
     {
-        $command = $this->getMockBuilder(TermsCommand::class)
-            ->disableOriginalConstructor()->getMock();
+        $command = $this->createMock(TermsCommand::class);
         $command->expects($this->once())->method('getResult')
-            ->will($this->returnValue($terms));
+            ->willReturn($terms);
         return $command;
     }
 
@@ -140,10 +137,9 @@ class TermsIdFetcherTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockKeyCommand(): GetUniqueKeyCommand
     {
-        $command = $this->getMockBuilder(GetUniqueKeyCommand::class)
-            ->disableOriginalConstructor()->getMock();
+        $command = $this->createMock(GetUniqueKeyCommand::class);
         $command->expects($this->once())->method('getResult')
-            ->will($this->returnValue($this->uniqueKey));
+            ->willReturn($this->uniqueKey);
         return $command;
     }
 
@@ -204,7 +200,7 @@ class TermsIdFetcherTest extends \PHPUnit\Framework\TestCase
                 []
             )
         );
-        $this->assertEquals(
+        $this->assertSame(
             ['ids' => $expectedIds2],
             $fetcher->getIdsFromBackend(
                 'foo',

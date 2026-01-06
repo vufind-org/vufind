@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  OAuth2
@@ -68,13 +68,14 @@ class IdentityRepository implements IdentityProviderInterface
     /**
      * Get a user entity by identifier.
      *
-     * @param int $identifier User ID
+     * @param int|string $identifier User Identifier
      *
      * @return ?UserEntity
      */
     public function getUserEntityByIdentifier($identifier)
     {
-        if ($user = $this->userService->getUserById($identifier)) {
+        $userIdentifierField = $this->oauth2Config['Server']['userIdentifierField'] ?? 'id';
+        if ($user = $this->userService->getUserByField($userIdentifierField, $identifier)) {
             return new UserEntity(
                 $user,
                 $this->ils,

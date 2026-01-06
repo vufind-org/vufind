@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -59,6 +59,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'mixedlist' => \VuFind\Search\MixedList\Options::class,
         'pazpar2' => \VuFind\Search\Pazpar2\Options::class,
         'primo' => \VuFind\Search\Primo\Options::class,
+        'proquestfsg' => \VuFind\Search\ProQuestFSG\Options::class,
         'search2' => \VuFind\Search\Search2\Options::class,
         'search2collection' => \VuFind\Search\Search2\Options::class,
         'solr' => \VuFind\Search\Solr\Options::class,
@@ -71,6 +72,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'summon' => \VuFind\Search\Summon\Options::class,
         'tags' => \VuFind\Search\Tags\Options::class,
         'worldcat' => \VuFind\Search\WorldCat\Options::class,
+        'worldcat2' => \VuFind\Search\WorldCat2\Options::class,
     ];
 
     /**
@@ -93,6 +95,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         \VuFind\Search\MixedList\Options::class => OptionsFactory::class,
         \VuFind\Search\Pazpar2\Options::class => OptionsFactory::class,
         \VuFind\Search\Primo\Options::class => OptionsFactory::class,
+        \VuFind\Search\ProQuestFSG\Options::class => OptionsFactory::class,
         \VuFind\Search\Search2\Options::class => OptionsFactory::class,
         \VuFind\Search\Search2Collection\Options::class => OptionsFactory::class,
         \VuFind\Search\Solr\Options::class => OptionsFactory::class,
@@ -105,6 +108,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         \VuFind\Search\Summon\Options::class => OptionsFactory::class,
         \VuFind\Search\Tags\Options::class => OptionsFactory::class,
         \VuFind\Search\WorldCat\Options::class => OptionsFactory::class,
+        \VuFind\Search\WorldCat2\Options::class => OptionsFactory::class,
     ];
 
     /**

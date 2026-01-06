@@ -17,14 +17,14 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     https://vufind.org
  */
 
 namespace VuFindSearch\Backend\Blender\Response\Json;
@@ -45,14 +45,14 @@ use function is_string;
  * @package  Search
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     http://vufind.org
+ * @link     https://vufind.org
  */
 class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCollection
 {
     /**
      * Blender configuration
      *
-     * @var \Laminas\Config\Config
+     * @var \VuFind\Config\Config
      */
     protected $config;
 
@@ -80,8 +80,8 @@ class RecordCollection extends \VuFindSearch\Backend\Solr\Response\Json\RecordCo
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $config   Configuration
-     * @param array                  $mappings Mappings configuration
+     * @param \VuFind\Config\Config $config   Configuration
+     * @param array                 $mappings Mappings configuration
      */
     public function __construct($config = null, $mappings = [])
     {

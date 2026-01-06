@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -48,6 +48,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $aliases = [
+        'channels' => Channels::class,
         'collectionhierarchytree' => CollectionHierarchyTree::class,
         'collectionlist' => CollectionList::class,
         'componentparts' => ComponentParts::class,
@@ -56,18 +57,19 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'formats' => Formats::class,
         'hierarchytree' => HierarchyTree::class,
         'holdingsils' => HoldingsILS::class,
-        'holdingsworldcat' => HoldingsWorldCat::class,
+        'holdingsworldcat2' => HoldingsWorldCat2::class,
         'map' => Map::class,
         'preview' => Preview::class,
         'reviews' => Reviews::class,
         'search2collectionlist' => Search2CollectionList::class,
-        'similaritemscarousel' => SimilarItemsCarousel::class,
         'staffviewarray' => StaffViewArray::class,
         'staffviewmarc' => StaffViewMARC::class,
         'staffviewoverdrive' => StaffViewOverdrive::class,
         'toc' => TOC::class,
         'usercomments' => UserComments::class,
         'versions' => Versions::class,
+        // Legacy backward compatibility:
+        'similaritemscarousel' => Channels::class,
     ];
 
     /**
@@ -76,6 +78,7 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
      * @var array
      */
     protected $factories = [
+        Channels::class => ChannelsFactory::class,
         CollectionHierarchyTree::class => CollectionHierarchyTreeFactory::class,
         CollectionList::class => CollectionListFactory::class,
         ComponentParts::class => ComponentPartsFactory::class,
@@ -84,12 +87,12 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Formats::class => InvokableFactory::class,
         HierarchyTree::class => HierarchyTreeFactory::class,
         HoldingsILS::class => HoldingsILSFactory::class,
-        HoldingsWorldCat::class => HoldingsWorldCatFactory::class,
+        HoldingsWorldCat2::class => HoldingsWorldCat2Factory::class,
         Map::class => MapFactory::class,
+        OverdriveHoldings::class => InvokableFactory::class,
         Preview::class => PreviewFactory::class,
         Reviews::class => ReviewsFactory::class,
         Search2CollectionList::class => CollectionListFactory::class,
-        SimilarItemsCarousel::class => SimilarItemsCarouselFactory::class,
         StaffViewArray::class => InvokableFactory::class,
         StaffViewMARC::class => InvokableFactory::class,
         StaffViewOverdrive::class => InvokableFactory::class,
@@ -112,9 +115,6 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         array $v3config = []
     ) {
         $this->addAbstractFactory(PluginFactory::class);
-        $this->addInitializer(
-            \LmcRbacMvc\Initializer\AuthorizationServiceInitializer::class
-        );
         parent::__construct($configOrContainerInstance, $v3config);
     }
 

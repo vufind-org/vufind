@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Sitemap
@@ -89,10 +89,12 @@ class Sitemap extends AbstractFile
             $link = $url['url'];
             $languages = $url['languages'] ?? [];
             $frequency = $url['frequency'] ?? '';
+            $lastmod = $url['lastmod'] ?? '';
         } else {
             $link = $url;
             $languages = [];
             $frequency = '';
+            $lastmod = '';
         }
         $alternativeLinks = '';
         if ($languages) {
@@ -109,14 +111,14 @@ class Sitemap extends AbstractFile
 
             $alternativeLinks = '  ' . implode("\n  ", $links) . "\n";
             $this->xhtmlNamespaceNeeded = true;
-        } else {
-            $locs[] = '<loc>' . htmlspecialchars($link) . '</loc>';
         }
         $link = htmlspecialchars($link);
         $freq = htmlspecialchars($frequency ?: $this->frequency);
+        $lastmod = htmlspecialchars($lastmod);
         return "<url>\n"
             . "  <loc>$link</loc>\n"
             . "  <changefreq>$freq</changefreq>\n"
+            . ($lastmod ? "  <lastmod>$lastmod</lastmod>\n" : '')
             . $alternativeLinks
             . "</url>\n";
     }

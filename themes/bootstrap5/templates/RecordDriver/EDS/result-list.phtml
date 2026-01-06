@@ -1,0 +1,170 @@
+<?php
+  $this->assetManager()->appendStyleLink('EDS.css');
+  $accessLevel = $this->driver->getAccessLevel();
+  $restrictedView = empty($accessLevel) ? false : true;
+  $recordLinker = $this->recordLinker($this->results);
+  $largeImage = $this->record($this->driver)->getThumbnail('large');
+  $linkAttributes = $largeImage ? ['href' => $largeImage, 'data-lightbox-image' => 'true'] : [];
+  $coverDetails = $this->record($this->driver)->getCoverDetails('result-list', 'medium', $linkAttributes);
+  $cover = $coverDetails['html'];
+  $edsConfig = $this->config()->get('EDS');
+  $supportsRtac = $this->driver->supportsAjaxStatus() && $this->driver->hasCatalog() && $this->driver->pubTypeRtacEnabled();
+?>
+<?php
+  $thumbnail = false;
+  $thumbnailAlignment = $this->record($this->driver)->getThumbnailAlignment('result');
+  ob_start(); ?>
+  <div class="media-<?=$thumbnailAlignment ?> <?=$this->escapeHtml($coverDetails['size'])?>">
+      <div class="media-<?=$thumbnailAlignment ?> <?=$this->escapeHtmlAttr($coverDetails['size'])?>">
+          <?=$cover ?>
+      </div>
+  </div>
+<?php $thumbnail = ob_get_contents(); ?>
+<?php ob_end_clean(); ?>
+
+<?php if ($supportsRtac): ?>
+  <input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueIDOverrideForRequest())?>" class="hiddenOverrideId">
+<?php else: ?>
+  <input type="hidden" value="" class="hiddenOverrideId">
+<?php endif; ?>
+<input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getUniqueID())?>" class="hiddenId">
+<input type="hidden" value="<?=$this->escapeHtmlAttr($this->driver->getSourceIdentifier())?>" class="hiddenSource">
+<div class="media<?=$this->driver->supportsAjaxStatus() ? ' ajaxItem' : ''?>">
+  <?php if ($thumbnail && $thumbnailAlignment == 'left'): ?>
+    <?=$thumbnail ?>
+  <?php endif; ?>
+  <div class="media-body">
+    <div class="result-body">
+      <?php
+        $formatter = $this->recordDataFormatter($this->driver);
+        $items = $formatter->getData($formatter->getDefaults('result-list'));
+      ?>
+      <?php if (!empty($items)): ?>
+        <?php foreach ($items as $item): ?>
+          <div class="resultItemLine1">
+            <?php if ('Title' == $item['label']): ?>
+              <h2>
+                <a href="<?=$this->escapeHtmlAttr($recordLinker->getUrl($this->driver))?>" class="title getFull _record_link"  data-view="<?=$this->escapeHtmlAttr($this->params->getOptions()->getListViewOption())?>">
+                <?=$item['value']?> </a>
+              </h2>
+            <?php else:?>
+              <p>
+                <b><?=$this->transEsc($item['label'])?>:</b>
+                <?=$item['value']?>
+              </p>
+            <?php endif;?>
+          </div>
+        <?php endforeach; ?>
+      <?php elseif ($restrictedView): ?>
+        <div class="resultItemLine1">
+          <p>
+            <?=$this->transEsc('This result is not displayed to guests')?>
+            <br>
+            <?=$this->render('error/loginForAccess.phtml')?>
+          </p>
+        </div>
+      <?php endif; ?>
+
+      <div class="resultItemLine4 custom-links">
+        <?php $customLinks = array_merge($this->driver->getFTCustomLinks(), $this->driver->getCustomLinks());
+        if (!empty($customLinks)): ?>
+          <?php foreach ($customLinks as $customLink): ?>
+            <?php
+              $url = $customLink['Url'] ?? '';
+              $mot = $customLink['MouseOverText'] ?? '';
+              $icon = $customLink['Icon'] ?? '';
+              $name = $customLink['Text'] ?? '';
+            ?>
+            <span>
+              <a href="<?=$this->escapeHtmlAttr($url)?>" target="_blank" title="<?=$this->escapeHtmlAttr($mot)?>" class="custom-link">
+                <?php if ($icon): ?><img alt="" src="<?=$this->escapeHtmlAttr($icon)?>"> <?php endif; ?><?=$this->escapeHtml($name)?>
+              </a>
+            </span>
+          <?php endforeach; ?>
+        <?php endif; ?>
+        <?php if ($labels = trim($this->record($this->driver)->getLabelList())): ?>
+          <?=$customLinks ? '<br>' : '' ?>
+          <?=$labels?>
+        <?php endif; ?>
+      </div>
+
+      <?=$this->record($this->driver)->renderTemplate(
+                'result-list/full-text-links.phtml',
+                ['recordLinker' => $recordLinker, 'newWindow' => true]
+            );
+      ?>
+
+      <?php /* Links from identifier linker */ ?>
+      <?php $identifierLinksHtml = $this->identifierLinker($this->driver, 'results'); ?>
+      <?php if ($identifierLinksHtml): ?>
+        <div><?=$identifierLinksHtml?></div>
+      <?php endif; ?>
+      <?php if (empty($urls) && $supportsRtac): ?>
+        <span class="status ajax-availability hidden">
+          <span class="label label-default"><?=$this->transEsc('loading_ellipsis')?></span>
+        </span>
+      <?php endif; ?>
+      <?php /* More Detailed RTAC */ ?>
+      <div class="callnumAndLocation ajax-availability hidden">
+        <?php if ($supportsRtac): ?>
+          <strong class="hideIfDetailed"><?=$this->transEsc('Call Number')?>:</strong>
+          <span class="callnumber ajax-availability hidden">
+            <?=$this->transEsc('loading_ellipsis')?><br>
+          </span>
+          <strong><?=$this->transEsc('Located')?>:</strong>
+          <span class="location ajax-availability hidden">
+            <?=$this->transEsc('loading_ellipsis')?>
+          </span>
+          <div class="locationDetails"></div>
+        <?php else: ?>
+          <?php $summCallNo = $this->driver->getCallNumber(); ?>
+          <?php if (!empty($summCallNo)): ?>
+            <strong><?=$this->transEsc('Call Number')?>:</strong> <?=$this->escapeHtml($summCallNo)?>
+          <?php endif; ?>
+        <?php endif; ?>
+      </div>
+    </div>
+    <div class="result-links hidden-print">
+      <?=$this->record($this->driver)->renderTemplate('controls/qrcode.phtml', ['driver' => $this->driver, 'context' => 'results'])?>
+
+      <?php if ($this->cart()->isActiveInSearch() && $this->params->getOptions()->supportsCart() && $this->cart()->isActive()): ?>
+        <?=$this->render('record/cart-buttons.phtml', ['id' => $this->driver->getUniqueId(), 'source' => $this->driver->getSourceIdentifier()]); ?><br>
+      <?php endif; ?>
+
+      <?php if ($this->userlist()->getMode() !== 'disabled'): ?>
+        <?php if ($this->permission()->allowDisplay('feature.Favorites')): ?>
+          <?php /* Add to favorites */ ?>
+          <a href="<?=$this->escapeHtmlAttr($recordLinker->getActionUrl($this->driver, 'Save'))?>" data-lightbox class="save-record result-link icon-link" data-id="<?=$this->escapeHtmlAttr($this->driver->getUniqueId()) ?>">
+            <?=$this->icon('user-favorites', 'icon-link__icon') ?>
+            <span class="result-link-label icon-link__label"><?=$this->transEsc('Add to favorites')?></span>
+          </a><br>
+        <?php elseif ($block = $this->permission()->getAlternateContent('feature.Favorites')): ?>
+          <?=$block?>
+        <?php endif; ?>
+        <?php /* Saved lists */ ?>
+        <div class="savedLists">
+          <strong><?=$this->transEsc('Saved in')?>:</strong>
+        </div>
+      <?php endif; ?>
+
+      <?php /* Hierarchy tree link */ ?>
+      <?php $trees = $this->driver->tryMethod('getHierarchyTrees'); ?>
+      <?php if (!empty($trees)): ?>
+        <?php foreach ($trees as $hierarchyID => $hierarchyTitle): ?>
+          <div class="hierarchyTreeLink">
+            <input type="hidden" value="<?=$this->escapeHtmlAttr($hierarchyID)?>" class="hiddenHierarchyId">
+            <?=$this->icon('tree-context') ?>
+            <a class="hierarchyTreeLinkText" data-lightbox href="<?=$this->escapeHtmlAttr($recordLinker->getTabUrl($this->driver, 'HierarchyTree', ['hierarchy' => $hierarchyID]))?>#tabnav" title="<?=$this->transEscAttr('hierarchy_tree')?>">
+              <?=$this->transEsc('hierarchy_view_context')?><?php if (count($trees) > 1): ?>: <?=$this->escapeHtml($hierarchyTitle)?><?php endif; ?>
+            </a>
+          </div>
+        <?php endforeach; ?>
+      <?php endif; ?>
+
+      <?=(!$restrictedView && $this->driver->supportsCoinsOpenUrl()) ? '<span class="Z3988" aria-hidden="true" title="' . $this->escapeHtmlAttr($this->driver->getCoinsOpenUrl()) . '"></span>' : ''?>
+    </div>
+  </div>
+  <?php if ($thumbnail && $thumbnailAlignment == 'right'): ?>
+    <?=$thumbnail ?>
+  <?php endif; ?>
+</div>

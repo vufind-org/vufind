@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -28,8 +28,6 @@
  */
 
 namespace VuFindTest\Mink;
-
-use VuFindTest\Feature\LiveDatabaseTrait;
 
 /**
  * Mink SSO test class.
@@ -44,6 +42,8 @@ use VuFindTest\Feature\LiveDatabaseTrait;
  */
 final class SsoTest extends \VuFindTest\Integration\MinkTestCase
 {
+    use \VuFindTest\Feature\FixtureTrait;
+    use \VuFindTest\Feature\HttpRequestTrait;
     use \VuFindTest\Feature\LiveDatabaseTrait;
 
     /**
@@ -51,7 +51,7 @@ final class SsoTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return array
      */
-    public function getConfigIniOverrides()
+    public function getConfigIniOverrides(): array
     {
         return [
             'config' => [
@@ -68,14 +68,38 @@ final class SsoTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
-     * Test changing a password.
+     * Data provider for testLogin()
+     *
+     * @return \Iterator
+     */
+    public static function loginConfigProvider(): \Iterator
+    {
+        yield 'with cat_username mapping' => [ // test for regression of #3992
+            [
+                'General' => [
+                    'attributes' => [
+                        'cat_username' => 'foo',
+                    ],
+                ],
+            ],
+        ];
+        yield 'defaults' => [];
+    }
+
+    /**
+     * Test SSO login
+     *
+     * @param array $extraSsoConfigs Extra configurations for SimulatedSSO.ini
      *
      * @return void
      */
-    public function testLogin()
+    #[\PHPUnit\Framework\Attributes\DataProvider('loginConfigProvider')]
+    public function testLogin(array $extraSsoConfigs = []): void
     {
         // Set up configs
-        $this->changeConfigs($this->getConfigIniOverrides());
+        $configs = $this->getConfigIniOverrides();
+        $configs['SimulatedSSO'] = array_merge_recursive($configs['SimulatedSSO'], $extraSsoConfigs);
+        $this->changeConfigs($configs);
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl());
         $page = $session->getPage();
@@ -92,7 +116,7 @@ final class SsoTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    public function testLightboxLogin()
+    public function testLightboxLogin(): void
     {
         // Set up configs
         $this->changeConfigs($this->getConfigIniOverrides());
@@ -125,11 +149,57 @@ final class SsoTest extends \VuFindTest\Integration\MinkTestCase
     }
 
     /**
+     * Test SSO external logout
+     *
+     * @return void
+     */
+    public function testExternalLogout(): void
+    {
+        // Set up configs
+        $this->changeConfigs(
+            $this->getConfigIniOverrides()
+            + [
+                'permissions' => [
+                    'api.ShibbolethLogoutNotification' => [
+                        'permission' => 'access.api.ShibbolethLogoutNotification',
+                        'require' => 'ANY',
+                        'ipRange' => [
+                            '127.0.0.1',
+                            '::1',
+                        ],
+                    ],
+                ],
+            ]
+        );
+        $session = $this->getMinkSession();
+        $session->visit($this->getVuFindUrl());
+        $page = $session->getPage();
+
+        // Login
+        $this->clickCss($page, '#loginOptions a');
+
+        // Check that logout link is visible:
+        $this->findCss($page, '.logoutOptions a.logout');
+
+        // Call the notification endpoint:
+        $result = $this->httpPost(
+            $this->getVuFindUrl() . '/soap/shiblogout',
+            $this->getFixture('shibboleth/logout_notification.xml'),
+            'application/xml'
+        );
+        $this->assertSame(200, $result->getStatusCode());
+
+        // Check that login link is back:
+        $session->reload();
+        $this->assertNotEmpty($this->findCss($page, '#loginOptions a'));
+    }
+
+    /**
      * Logs out on the current page and checks if logout was successful
      *
      * @return void
      */
-    protected function logoutAndAssertSuccess()
+    protected function logoutAndAssertSuccess(): void
     {
         $session = $this->getMinkSession();
         $page = $session->getPage();

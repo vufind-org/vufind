@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  OAuth2
@@ -66,7 +66,27 @@ class UserEntity implements OAuth2UserEntityInterface, ClaimSetInterface
         protected AccessTokenServiceInterface $accessTokenService,
         protected ILSAuthenticator $ilsAuthenticator
     ) {
-        $this->setIdentifier($user->getId());
+        $userIdentifierField = $oauth2Config['Server']['userIdentifierField'] ?? 'id';
+        switch ($userIdentifierField) {
+            case 'id':
+                $userIdentifier = $user->getId();
+                break;
+            case 'username':
+                $userIdentifier = $user->getUsername();
+                break;
+            case 'cat_id':
+                $userIdentifier = $user->getCatId();
+                break;
+            default:
+                $userIdentifier = null;
+        }
+        if ($userIdentifier === null) {
+            throw new \VuFind\Exception\BadConfig(
+                "$userIdentifierField empty for user {$user->getId()}."
+                . ' The configured user identifier field has to be required.'
+            );
+        }
+        $this->setIdentifier($userIdentifier);
     }
 
     /**

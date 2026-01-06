@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Console
@@ -34,6 +34,8 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Db\Service\RecordServiceInterface;
+use VuFind\Db\Service\ResourceServiceInterface;
 
 /**
  * Factory for Util/PurgeCachedRecord command.
@@ -63,11 +65,12 @@ class PurgeCachedRecordCommandFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
+        $serviceManager = $container->get(\VuFind\Db\Service\PluginManager::class);
         return new $requestedName(
-            $container->get(\VuFind\Db\Table\PluginManager::class)->get('Record'),
-            $container->get(\VuFind\Db\Table\PluginManager::class)->get('Resource'),
+            $serviceManager->get(RecordServiceInterface::class),
+            $serviceManager->get(ResourceServiceInterface::class),
             ...($options ?? [])
         );
     }

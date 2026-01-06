@@ -4,6 +4,8 @@ require __DIR__ . '/constants.config.php';
 
 // Set up modules:
 $modules = [
+    'DoctrineModule',
+    'DoctrineORMModule',
     'Laminas\Cache',
     'Laminas\Cache\Storage\Adapter\BlackHole',
     'Laminas\Cache\Storage\Adapter\Filesystem',
@@ -11,7 +13,8 @@ $modules = [
     'Laminas\Cache\Storage\Adapter\Memory',
     'Laminas\Form',
     'Laminas\Router',
-    'LmcRbacMvc',
+    'Lmc\Rbac',
+    'Lmc\Rbac\Mvc',
     'Laminas\I18n',
     'Laminas\Mvc\I18n',
     'SlmLocale',
@@ -28,8 +31,10 @@ if (!extension_loaded('intl')) {
 if (PHP_SAPI == 'cli' && APPLICATION_ENV !== 'testing') {
     $modules[] = 'VuFindConsole';
 }
-if (APPLICATION_ENV == 'development') {
-    $modules[] = 'WhoopsErrorHandler';
+if (APPLICATION_ENV === 'development' || APPLICATION_ENV === 'testing') {
+    if (!isset($_SERVER['HTTP_X_VUFIND_DISABLE_WHOOPS'])) {
+        $modules[] = 'WhoopsErrorHandler';
+    }
     $modules[] = 'VuFindDevTools';
 }
 if ($localModules = getenv('VUFIND_LOCAL_MODULES')) {
@@ -88,6 +93,7 @@ return [
             APPLICATION_PATH . '/module',
             APPLICATION_PATH . '/vendor',
         ],
+        'use_laminas_loader' => false,
     ],
     'service_manager' => [
         'use_defaults' => true,

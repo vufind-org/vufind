@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Content
@@ -29,9 +29,9 @@
 
 namespace VuFind\Content\Covers;
 
+use Psr\Http\Message\ResponseInterface;
 use VuFind\Exception\HttpDownloadException;
-
-use function is_callable;
+use VuFindCode\ISBN;
 
 /**
  * Google cover content loader.
@@ -63,33 +63,37 @@ class Google extends \VuFind\Content\AbstractCover implements \VuFind\Http\Cachi
      * @param array  $ids  Associative array of identifiers (keys may include 'isbn'
      * pointing to an ISBN object and 'issn' pointing to a string)
      *
-     * @return string|bool
+     * @return string|bool URL of the image, or false if no valid image is found
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getUrl($key, $size, $ids)
     {
-        // Don't bother trying if we can't read JSON or ISBN and OCLC are missing:
-        if (!is_callable('json_decode') || (!isset($ids['isbn']) && !isset($ids['oclc']))) {
+        // Get an array of ISBNs; note that (array) casting won't have the desired
+        // effect here, so we need to explicitly check for ISBN objects:
+        $isbns = $ids['isbns'] ?? $ids['isbn'] ?? [];
+        $isbns = $isbns instanceof ISBN ? [$isbns] : $isbns;
+
+        // Initialize the identifiers list from our ISBNs; add OCLC number if available:
+        $identifiers = array_map(fn ($isbn) => "ISBN:{$isbn->get13()}", $isbns);
+        if (isset($ids['oclc'])) {
+            $identifiers[] = "OCLC:{$ids['oclc']}";
+        }
+
+        if (empty($identifiers)) {
             return false;
         }
 
-        // Construct the request URL and make the HTTP request:
-        if (isset($ids['isbn']) && $ids['isbn']->isValid()) {
-            $ident = "ISBN:{$ids['isbn']->get13()}";
-        } elseif (isset($ids['oclc'])) {
-            $ident = "OCLC:{$ids['oclc']}";
-        } else {
-            return false;
-        }
-        $url = 'https://books.google.com/books?jscmd=viewapi&' .
-               'bibkeys=' . $ident . '&callback=addTheCover';
+        // Construct the request URL and make the HTTP request, using a single URL with all identifiers
+        $url = 'https://books.google.com/books?jscmd=viewapi&bibkeys='
+            . urlencode(implode(',', $identifiers)) . '&callback=addTheCover';
 
-        $decodeCallback = function (\Laminas\Http\Response $response, $url) {
+        $decodeCallback = function (ResponseInterface $response, string $url) {
+            $body = $response->getBody()->getContents();
             if (
                 !preg_match(
                     '/^[^{]*({.*})[^}]*$/',
-                    $response->getBody(),
+                    $body,
                     $matches
                 )
             ) {
@@ -98,7 +102,7 @@ class Google extends \VuFind\Content\AbstractCover implements \VuFind\Http\Cachi
                     $url,
                     $response->getStatusCode(),
                     $response->getHeaders(),
-                    $response->getBody()
+                    $body
                 );
             }
 
@@ -114,7 +118,7 @@ class Google extends \VuFind\Content\AbstractCover implements \VuFind\Http\Cachi
                     $url,
                     $response->getStatusCode(),
                     $response->getHeaders(),
-                    $response->getBody()
+                    $body
                 );
             }
 

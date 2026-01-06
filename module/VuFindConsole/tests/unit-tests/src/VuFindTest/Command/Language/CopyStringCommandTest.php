@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -97,17 +97,17 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
         $expectedPath = realpath($this->languageFixtureDir) . '/foo/en.ini';
         $normalizer = $this->getMockNormalizer();
         $normalizer->expects($this->once())->method('normalizeFile')
-            ->with($this->equalTo($expectedPath));
+            ->with($expectedPath);
         $reader = $this->getMockReader();
         $reader->expects($this->once())->method('getTextDomain')
-            ->with($this->equalTo($expectedPath), $this->equalTo(false))
-            ->will($this->returnValue(['bar' => 'baz']));
+            ->with($expectedPath, false)
+            ->willReturn(['bar' => 'baz']);
         $command = $this->getMockCommand($normalizer, $reader);
         $command->expects($this->once())->method('addLineToFile')
             ->with(
-                $this->equalTo($expectedPath),
-                $this->equalTo('xyzzy'),
-                $this->equalTo($expectedString)
+                $expectedPath,
+                'xyzzy',
+                $expectedString
             );
         return $command;
     }
@@ -122,11 +122,11 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
         $command = $this->getSuccessfulMockCommand();
         $commandTester = new CommandTester($command);
         $commandTester->execute(['source' => 'foo::bar', 'target' => 'foo::xyzzy']);
-        $this->assertEquals(
+        $this->assertSame(
             "Processing en.ini...\nProcessing en.ini...\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -145,11 +145,11 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
                 '--replace' => 'baz/transformed',
             ]
         );
-        $this->assertEquals(
+        $this->assertSame(
             "Processing en.ini...\nProcessing en.ini...\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -169,11 +169,11 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
                 '--replaceDelimiter' => '|',
             ]
         );
-        $this->assertEquals(
+        $this->assertSame(
             "Processing en.ini...\nProcessing en.ini...\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -188,26 +188,26 @@ class CopyStringCommandTest extends \PHPUnit\Framework\TestCase
         $commandTester->execute(
             ['source' => 'doesnotexist::bar', 'target' => 'foo::xyzzy']
         );
-        $this->assertEquals(
+        $this->assertSame(
             "Could not open directory {$this->languageFixtureDir}/doesnotexist\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertSame(1, $commandTester->getStatusCode());
     }
 
     /**
      * Get a mock command object
      *
-     * @param ExtendedIniNormalizer $normalizer  Normalizer for .ini files
-     * @param ExtendedIniReader     $reader      Reader for .ini files
-     * @param string                $languageDir Base language file directory
-     * @param array                 $methods     Methods to mock
+     * @param ?ExtendedIniNormalizer $normalizer  Normalizer for .ini files
+     * @param ?ExtendedIniReader     $reader      Reader for .ini files
+     * @param string                 $languageDir Base language file directory
+     * @param array                  $methods     Methods to mock
      *
      * @return CopyStringCommand
      */
     protected function getMockCommand(
-        ExtendedIniNormalizer $normalizer = null,
-        ExtendedIniReader $reader = null,
+        ?ExtendedIniNormalizer $normalizer = null,
+        ?ExtendedIniReader $reader = null,
         $languageDir = null,
         array $methods = ['addLineToFile']
     ) {

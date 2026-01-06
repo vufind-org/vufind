@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -110,7 +110,9 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
         $ti = $this->getThemeInfo();
         $ti->setTheme('child');
         $expectedChild = include "{$this->fixturePath}/child/theme.config.php";
+        $expectedChild['themeName'] = 'child';
         $expectedParent = include "{$this->fixturePath}/parent/theme.config.php";
+        $expectedParent['themeName'] = 'parent';
         $this->assertEquals('parent', $expectedChild['extends']);
         $this->assertEquals(false, $expectedParent['extends']);
         $this->assertEquals(
@@ -129,10 +131,12 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
         $ti = $this->getThemeInfo();
         $ti->setTheme('mixin_user');
         $expectedChild = include "{$this->fixturePath}/child/theme.config.php";
+        $expectedChild['themeName'] = 'child';
         $expectedParent = include "{$this->fixturePath}/parent/theme.config.php";
+        $expectedParent['themeName'] = 'parent';
         $expectedMixin = include "{$this->fixturePath}/mixin/mixin.config.php";
-        $expectedMixinUser
-            = include "{$this->fixturePath}/mixin_user/theme.config.php";
+        $expectedMixinUser = include "{$this->fixturePath}/mixin_user/theme.config.php";
+        $expectedMixinUser['themeName'] = 'mixin_user';
         $this->assertEquals('parent', $expectedChild['extends']);
         $this->assertEquals(false, $expectedParent['extends']);
         $this->assertEquals(
@@ -307,7 +311,7 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
         $config = $ti->getMergedConfig();
         $this->assertEquals('HTML5', $config['doctype']);
         $this->assertEqualsCanonicalizing(
-            ['doctype', 'extends', 'js', 'helpers'],
+            ['doctype', 'extends', 'js', 'helpers', 'themeName'],
             array_keys($config)
         );
     }
@@ -318,10 +322,9 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
      * @param array $test     Test data
      * @param array $expected Expected response
      *
-     * @dataProvider mergeEdgeCasesProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('mergeEdgeCasesProvider')]
     public function testMergeWithoutOverrideEdgeCases($test, $expected)
     {
         $ti = $this->getThemeInfo();
@@ -334,74 +337,66 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
     /**
      * Test cases for mergeWithoutOverride
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function mergeEdgeCasesProvider(): array
+    public static function mergeEdgeCasesProvider(): \Iterator
     {
-        return [
-            // string
+        // string
+        yield [
             [
-                [
-                    'override',
-                    'original',
-                ],
+                'override',
                 'original',
             ],
-
-            // array
+            'original',
+        ];
+        // array
+        yield [
             [
-                [
-                    ['override'],
-                    ['original'],
-                ],
-                ['override', 'original'],
+                ['override'],
+                ['original'],
             ],
-
-            // string-keyed arrays
+            ['override', 'original'],
+        ];
+        // string-keyed arrays
+        yield [
             [
-                [
-                    ['array' => [2], 'string' => 'override', 'sub' => ['a' => 2]],
-                    ['array' => [1], 'string' => 'original', 'sub' => ['a' => 1]],
-                ],
-                ['array' => [2, 1], 'string' => 'original', 'sub' => ['a' => 1]],
+                ['array' => [2], 'string' => 'override', 'sub' => ['a' => 2]],
+                ['array' => [1], 'string' => 'original', 'sub' => ['a' => 1]],
             ],
-
-            // string-keyed arrays: missing
+            ['array' => [2, 1], 'string' => 'original', 'sub' => ['a' => 1]],
+        ];
+        // string-keyed arrays: missing
+        yield [
             [
-                [
-                    ['shared' => [1], 'child' => 'only'],
-                    ['shared' => [1], 'parent' => 'only'],
-                ],
-                ['shared' => [1, 1], 'parent' => 'only', 'child' => 'only'],
+                ['shared' => [1], 'child' => 'only'],
+                ['shared' => [1], 'parent' => 'only'],
             ],
-
-            // string-keyed string -> array
+            ['shared' => [1, 1], 'parent' => 'only', 'child' => 'only'],
+        ];
+        // string-keyed string -> array
+        yield [
             [
-                [
-                    ['mixed' => 'string'],
-                    ['mixed' => ['array']],
-                ],
-                ['mixed' => ['string', 'array']],
+                ['mixed' => 'string'],
+                ['mixed' => ['array']],
             ],
-
-            // string-keyed array -> string
+            ['mixed' => ['string', 'array']],
+        ];
+        // string-keyed array -> string
+        yield [
             [
-                [
-                    ['mixed' => ['array']],
-                    ['mixed' => 'string'],
-                ],
-                ['mixed' => ['array', 'string']],
+                ['mixed' => ['array']],
+                ['mixed' => 'string'],
             ],
-
-            // arrays and strings
+            ['mixed' => ['array', 'string']],
+        ];
+        // arrays and strings
+        yield [
             [
-                [
-                    'not an array',
-                    ['mixed' => ['array']],
-                ],
-                [
-                    'mixed' => ['array'],
-                ],
+                'not an array',
+                ['mixed' => ['array']],
+            ],
+            [
+                'mixed' => ['array'],
             ],
         ];
     }
@@ -420,12 +415,12 @@ class ThemeInfoTest extends \PHPUnit\Framework\TestCase
         // the first call to getItem returns null, then it expects a call
         // to setItem, and then the second call to getItem will return an
         // expected value.
-        $cache = $this->getMockBuilder(StorageInterface::class)->getMock();
+        $cache = $this->createMock(StorageInterface::class);
         $cache->expects($this->exactly(2))->method('getItem')
-            ->with($this->equalTo($key))
+            ->with($key)
             ->willReturnOnConsecutiveCalls(null, $expected);
         $cache->expects($this->once())->method('setItem')
-            ->with($this->equalTo($key), $this->equalTo($expected));
+            ->with($key, $expected);
 
         // Set cache
         $ti = $this->getThemeInfo();

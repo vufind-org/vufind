@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -62,12 +62,12 @@ class Reserves extends AbstractPlugin
     /**
      * Constructor
      *
-     * @param bool    $useIndex      Do we need to use the Solr index for reserves
+     * @param bool     $useIndex      Do we need to use the Solr index for reserves
      * (true) or the ILS driver (false)?
-     * @param Service $searchService Search service (only required when $useIndex
+     * @param ?Service $searchService Search service (only required when $useIndex
      * is true).
      */
-    public function __construct($useIndex = false, Service $searchService = null)
+    public function __construct($useIndex = false, ?Service $searchService = null)
     {
         $this->useIndex = $useIndex;
         if ($useIndex && null === $searchService) {
@@ -90,9 +90,9 @@ class Reserves extends AbstractPlugin
     /**
      * Get reserve info from the catalog or Solr reserves index.
      *
-     * @param string $course Course ID to use as limit (optional)
-     * @param string $inst   Instructor ID to use as limit (optional)
-     * @param string $dept   Department ID to use as limit (optional)
+     * @param ?string $course Course ID to use as limit (optional)
+     * @param ?string $inst   Instructor ID to use as limit (optional)
+     * @param ?string $dept   Department ID to use as limit (optional)
      *
      * @return array
      */

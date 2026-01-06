@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -77,8 +77,8 @@ class ExtendServiceCommandTest extends \PHPUnit\Framework\TestCase
         $tools->expects($this->once())->method('setOutputInterface');
         $tools->expects($this->once())->method('extendService')
             ->with(
-                $this->equalTo('Foo'),
-                $this->equalTo('Bar')
+                'Foo',
+                'Bar'
             );
         $command = new ExtendServiceCommand($tools);
         $commandTester = new CommandTester($command);
@@ -88,7 +88,7 @@ class ExtendServiceCommandTest extends \PHPUnit\Framework\TestCase
                 'target_module' => 'Bar',
             ]
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -103,7 +103,7 @@ class ExtendServiceCommandTest extends \PHPUnit\Framework\TestCase
         );
         $tools->expects($this->once())->method('setOutputInterface');
         $tools->expects($this->once())->method('extendService')
-            ->will($this->throwException(new \Exception('Foo!')));
+            ->willThrowException(new \Exception('Foo!'));
         $command = new ExtendServiceCommand($tools);
         $commandTester = new CommandTester($command);
         $commandTester->execute(
@@ -112,8 +112,8 @@ class ExtendServiceCommandTest extends \PHPUnit\Framework\TestCase
                 'target_module' => 'Bar',
             ]
         );
-        $this->assertEquals("Foo!\n", $commandTester->getDisplay());
-        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertSame("Foo!\n", $commandTester->getDisplay());
+        $this->assertSame(1, $commandTester->getStatusCode());
     }
 
     /**

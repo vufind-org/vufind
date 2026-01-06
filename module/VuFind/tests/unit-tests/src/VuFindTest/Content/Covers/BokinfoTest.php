@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -58,18 +58,14 @@ class BokinfoTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockRequest(): Request
     {
-        $request = $this->getMockBuilder(Request::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $headers = $this->getMockBuilder(Headers::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $request = $this->createMock(Request::class);
+        $headers = $this->createMock(Headers::class);
         $request->expects($this->once())->method('getHeaders')
-            ->will($this->returnValue($headers));
+            ->willReturn($headers);
         $headers->expects($this->once())->method('addHeaderLine')
             ->with(
-                $this->equalTo('Ocp-Apim-Subscription-Key'),
-                $this->equalTo('mykey')
+                'Ocp-Apim-Subscription-Key',
+                'mykey'
             );
         return $request;
     }
@@ -81,9 +77,7 @@ class BokinfoTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockResponse(): Response
     {
-        return $this->getMockBuilder(Response::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(Response::class);
     }
 
     /**
@@ -93,11 +87,9 @@ class BokinfoTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockClient(): Client
     {
-        $client = $this->getMockBuilder(Client::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $client = $this->createMock(Client::class);
         $client->expects($this->once())->method('setOptions')
-            ->with($this->equalTo(['useragent' => 'VuFind', 'keepalive' => true]));
+            ->with(['useragent' => 'VuFind', 'keepalive' => true]);
         return $client;
     }
 
@@ -108,27 +100,25 @@ class BokinfoTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockService(): HttpService
     {
-        $service = $this->getMockBuilder(HttpService::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $service = $this->createMock(HttpService::class);
         $url1 = 'https://api.bokinfo.se/book/get/9789129697285';
         $url2 = 'https://fake-url';
         $client1 = $this->getMockClient();
         $client1->expects($this->once())->method('getRequest')
-            ->will($this->returnValue($this->getMockRequest()));
+            ->willReturn($this->getMockRequest());
         $response1 = $this->getMockResponse();
         $response1->expects($this->once())->method('getBody')
-            ->will(
-                $this->returnValue($this->getFixture('content/covers/bokinfo.xml'))
+            ->willReturn(
+                $this->getFixture('content/covers/bokinfo.xml')
             );
         $client1->expects($this->once())->method('send')
-            ->will($this->returnValue($response1));
+            ->willReturn($response1);
         $client2 = $this->getMockClient();
         $response2 = $this->getMockResponse();
         $response2->expects($this->once())->method('getHeaders')
-            ->will($this->returnValue(['foo: bar']));
+            ->willReturn(['foo: bar']);
         $client2->expects($this->once())->method('send')
-            ->will($this->returnValue($response2));
+            ->willReturn($response2);
         $this->expectConsecutiveCalls(
             $service,
             'createClient',

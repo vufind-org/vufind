@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -29,10 +29,12 @@
 
 namespace VuFind\Auth;
 
-use Laminas\Http\PhpEnvironment\RemoteAddress;
-use Laminas\Http\PhpEnvironment\Request;
-use VuFind\Db\Table\AuthHash as AuthHashTable;
+use Laminas\Http\Request;
+use Laminas\View\Renderer\PhpRenderer;
+use VuFind\Config\Feature\EmailSettingsTrait;
+use VuFind\Db\Service\AuthHashServiceInterface;
 use VuFind\Exception\Auth as AuthException;
+use VuFind\Net\UserIpReader;
 use VuFind\Validator\CsrfInterface;
 
 /**
@@ -50,48 +52,7 @@ use VuFind\Validator\CsrfInterface;
 class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
-
-    /**
-     * Session Manager
-     *
-     * @var \Laminas\Session\SessionManager
-     */
-    protected $sessionManager = null;
-
-    /**
-     * CSRF Validator
-     *
-     * @var CsrfInterface
-     */
-    protected $csrf = null;
-
-    /**
-     * Mailer
-     *
-     * @var \VuFind\Mailer\Mailer
-     */
-    protected $mailer = null;
-
-    /**
-     * View Renderer
-     *
-     * @var \Laminas\View\Renderer\RendererInterface
-     */
-    protected $viewRenderer = null;
-
-    /**
-     * Remote address
-     *
-     * @var RemoteAddress
-     */
-    protected $remoteAddress;
-
-    /**
-     * Configuration
-     *
-     * @var \Laminas\Config\Config
-     */
-    protected $config;
+    use EmailSettingsTrait;
 
     /**
      * How long a login request is considered to be valid (seconds)
@@ -101,39 +62,25 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
     protected $loginRequestValidTime = 600;
 
     /**
-     * Database table for authentication hashes
-     *
-     * @var AuthHashTable
-     */
-    protected $authHashTable;
-
-    /**
      * Constructor
      *
-     * @param \Laminas\Session\SessionManager          $session      Session Manager
-     * @param CsrfInterface                            $csrf         CSRF Validator
-     * @param \VuFind\Mailer\Mailer                    $mailer       Mailer
-     * @param \Laminas\View\Renderer\RendererInterface $viewRenderer View Renderer
-     * @param RemoteAddress                            $remoteAddr   Remote address
-     * @param \Laminas\Config\Config                   $config       Configuration
-     * @param AuthHashTable                            $authHash     AuthHash Table
+     * @param \Laminas\Session\SessionManager $sessionManager  Session Manager
+     * @param CsrfInterface                   $csrf            CSRF Validator
+     * @param \VuFind\Mailer\Mailer           $mailer          Mailer
+     * @param PhpRenderer                     $viewRenderer    View Renderer
+     * @param UserIpReader                    $userIpReader    User IP address reader
+     * @param \VuFind\Config\Config           $config          Configuration
+     * @param AuthHashServiceInterface        $authHashService AuthHash database service
      */
     public function __construct(
-        \Laminas\Session\SessionManager $session,
-        CsrfInterface $csrf,
-        \VuFind\Mailer\Mailer $mailer,
-        \Laminas\View\Renderer\RendererInterface $viewRenderer,
-        RemoteAddress $remoteAddr,
-        \Laminas\Config\Config $config,
-        AuthHashTable $authHash
+        protected \Laminas\Session\SessionManager $sessionManager,
+        protected CsrfInterface $csrf,
+        protected \VuFind\Mailer\Mailer $mailer,
+        protected PhpRenderer $viewRenderer,
+        protected UserIpReader $userIpReader,
+        protected \VuFind\Config\Config $config,
+        protected AuthHashServiceInterface $authHashService
     ) {
-        $this->sessionManager = $session;
-        $this->csrf = $csrf;
-        $this->mailer = $mailer;
-        $this->viewRenderer = $viewRenderer;
-        $this->remoteAddress = $remoteAddr;
-        $this->config = $config;
-        $this->authHashTable = $authHash;
     }
 
     /**
@@ -141,13 +88,14 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
      *
      * Stores the required information in the session.
      *
-     * @param string $email       Email address to send the link to
-     * @param array  $data        Information from the authentication request (such as user details)
-     * @param array  $urlParams   Default parameters for the generated URL
-     * @param string $linkRoute   The route to use as the base url for the login link
-     * @param array  $routeParams Route parameters
-     * @param string $subject     Email subject
-     * @param string $template    Email message template
+     * @param string $email          Email address to send the link to
+     * @param array  $data           Information from the authentication request (such as user details)
+     * @param array  $urlParams      Default parameters for the generated URL
+     * @param string $linkRoute      The route to use as the base url for the login link
+     * @param array  $routeParams    Route parameters
+     * @param string $subject        Email subject
+     * @param string $template       Email message template
+     * @param array  $templateParams Extra params for rendering the email message
      *
      * @return void
      */
@@ -158,15 +106,16 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
         $linkRoute = 'myresearch-home',
         $routeParams = [],
         $subject = 'email_login_subject',
-        $template = 'Email/login-link.phtml'
+        $template = 'Email/login-link.phtml',
+        $templateParams = []
     ) {
         // Make sure we've waited long enough
         $recoveryInterval = $this->config->Authentication->recover_interval ?? 60;
         $sessionId = $this->sessionManager->getId();
 
         if (
-            ($row = $this->authHashTable->getLatestBySessionId($sessionId))
-            && time() - strtotime($row['created']) < $recoveryInterval
+            ($row = $this->authHashService->getLatestBySessionId($sessionId))
+            && time() - $row->getCreated()->getTimestamp() < $recoveryInterval
         ) {
             throw new AuthException('authentication_error_in_progress');
         }
@@ -176,30 +125,27 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
             'timestamp' => time(),
             'data' => $data,
             'email' => $email,
-            'ip' => $this->remoteAddress->getIpAddress(),
+            'ip' => $this->userIpReader->getUserIp(),
         ];
         $hash = $this->csrf->getHash(true);
 
-        $row = $this->authHashTable
-            ->getByHashAndType($hash, AuthHashTable::TYPE_EMAIL);
+        $row = $this->authHashService->getByHashAndType($hash, AuthHashServiceInterface::TYPE_EMAIL);
 
-        $row['session_id'] = $sessionId;
-        $row['data'] = json_encode($linkData);
-        $row->save();
+        $row->setSessionId($sessionId)
+            ->setData(json_encode($linkData));
+        $this->authHashService->persistEntity($row);
 
         $serverHelper = $this->viewRenderer->plugin('serverurl');
         $urlHelper = $this->viewRenderer->plugin('url');
         $urlParams['hash'] = $hash;
-        $viewParams = $linkData;
+        $viewParams = $linkData + $templateParams;
         $viewParams['url'] = $serverHelper(
             $urlHelper($linkRoute, $routeParams, ['query' => $urlParams])
         );
         $viewParams['title'] = $this->config->Site->title;
 
         $message = $this->viewRenderer->render($template, $viewParams);
-        $from = !empty($this->config->Mail->user_email_in_from)
-            ? $email
-            : ($this->config->Mail->default_from ?? $this->config->Site->email);
+        $from = $this->getEmailSenderAddress($this->config, $email);
         $subject = $this->translator->translate($subject);
         $subject = str_replace('%%title%%', $viewParams['title'], $subject);
 
@@ -216,28 +162,27 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
      */
     public function authenticate($hash)
     {
-        $row = $this->authHashTable
-            ->getByHashAndType($hash, AuthHashTable::TYPE_EMAIL, false);
+        $row = $this->authHashService->getByHashAndType($hash, AuthHashServiceInterface::TYPE_EMAIL, false);
         if (!$row) {
             // Assume the hash has already been used or has expired
             throw new AuthException('authentication_error_expired');
         }
-        $linkData = json_decode($row['data'], true);
+        $linkData = json_decode($row->getData(), true);
 
         // Require same session id or IP address:
         $sessionId = $this->sessionManager->getId();
         if (
-            $row['session_id'] !== $sessionId
-            && $linkData['ip'] !== $this->remoteAddress->getIpAddress()
+            $row->getSessionId() !== $sessionId
+            && $linkData['ip'] !== $this->userIpReader->getUserIp()
         ) {
             throw new AuthException('authentication_error_session_ip_mismatch');
         }
 
         // Only delete the token now that we know the requester is correct. Otherwise
         // it may end up deleted due to e.g. safe link check by the email server.
-        $row->delete();
+        $this->authHashService->deleteAuthHash($row);
 
-        if (time() - strtotime($row['created']) > $this->loginRequestValidTime) {
+        if (time() - $row->getCreated()->getTimestamp() > $this->loginRequestValidTime) {
             throw new AuthException('authentication_error_expired');
         }
 
@@ -258,8 +203,7 @@ class EmailAuthenticator implements \VuFind\I18n\Translator\TranslatorAwareInter
             $request->getQuery()->get('hash', '')
         );
         if ($hash) {
-            $row = $this->authHashTable
-                ->getByHashAndType($hash, AuthHashTable::TYPE_EMAIL, false);
+            $row = $this->authHashService->getByHashAndType($hash, AuthHashServiceInterface::TYPE_EMAIL, false);
             return !empty($row);
         }
         return false;

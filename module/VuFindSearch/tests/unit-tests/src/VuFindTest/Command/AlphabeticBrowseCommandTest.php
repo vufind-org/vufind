@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -52,20 +52,18 @@ class AlphabeticBrowseCommandTest extends TestCase
     {
         $params = new \VuFindSearch\ParamBag([]);
         $backendId = 'bar';
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\Solr\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\Solr\Backend::class);
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue($backendId));
+            ->willReturn($backendId);
         $backend->expects($this->once())->method('alphabeticBrowse')
             ->with(
-                $this->equalTo('source'),
-                $this->equalTo('from'),
-                $this->equalTo(0),
-                $this->equalTo(10),
-                $this->equalTo($params),
-                $this->equalTo(-1)
-            )->will($this->returnValue('result'));  // not a realistic value!
+                'source',
+                'from',
+                0,
+                10,
+                $params,
+                -1
+            )->willReturn('result');  // not a realistic value!
         $command = new AlphabeticBrowseCommand(
             $backendId,
             'source',

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  VuFindTest\Auth
@@ -52,9 +52,9 @@ class AuthTokenTest extends \PHPUnit\Framework\TestCase
     public function testGetHeaderValue()
     {
         $token = new AuthToken('token', 10);
-        $this->assertEquals('Bearer token', $token->getHeaderValue());
+        $this->assertSame('Bearer token', $token->getHeaderValue());
         $token = new AuthToken('token', 10, 'Basic');
-        $this->assertEquals('Basic token', $token->getHeaderValue());
+        $this->assertSame('Basic token', $token->getHeaderValue());
     }
 
     /**
@@ -78,7 +78,7 @@ class AuthTokenTest extends \PHPUnit\Framework\TestCase
     public function testGetExpiresIn()
     {
         $token = new AuthToken('token', 11);
-        $this->assertEquals(11, $token->getExpiresIn());
+        $this->assertSame(11, $token->getExpiresIn());
         $token = new AuthToken('token', null);
         $this->assertNull($token->getExpiresIn());
     }

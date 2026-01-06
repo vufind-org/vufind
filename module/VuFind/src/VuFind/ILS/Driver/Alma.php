@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -35,7 +35,7 @@ use VuFind\Exception\ILS as ILSException;
 use VuFind\I18n\TranslatableString;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
-use VuFind\ILS\Logic\ItemStatus;
+use VuFind\ILS\Logic\AvailabilityStatusInterface;
 use VuFind\Marc\MarcReader;
 
 use function count;
@@ -54,7 +54,7 @@ use function is_callable;
  */
 class Alma extends AbstractBase implements
     \VuFindHttp\HttpServiceAwareInterface,
-    \Laminas\Log\LoggerAwareInterface,
+    \Psr\Log\LoggerAwareInterface,
     TranslatorAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
@@ -165,7 +165,7 @@ class Alma extends AbstractBase implements
             }
 
             // Create the API URL
-            $url = !str_contains($path, '://') ? $this->baseUrl . $path : $path;
+            $url = $this->baseUrl . $path;
 
             // Create client with API URL
             $client = $this->httpService->createClient($url);
@@ -248,8 +248,8 @@ class Alma extends AbstractBase implements
             $errorMsg = "Alma error for $method request '$url' (status code"
                 . " $statusCode): $almaErrorMsg";
             $this->logError(
-                $errorMsg . '. GET params: ' . var_export($paramsGet, true)
-                . '. POST params: ' . var_export($paramsPost, true)
+                $errorMsg . '. GET params: ' . $this->varDump($paramsGet)
+                . '. POST params: ' . $this->varDump($paramsPost)
                 . '. Result body: ' . $result->getBody()
             );
             throw new ILSException($errorMsg, $statusCode);
@@ -297,8 +297,8 @@ class Alma extends AbstractBase implements
         // Normal check for availability if no mapping found above:
         if (null === $available) {
             $available = (string)$item->item_data->base_status === '1'
-                ? ItemStatus::STATUS_AVAILABLE
-                : ItemStatus::STATUS_UNAVAILABLE;
+                ? AvailabilityStatusInterface::STATUS_AVAILABLE
+                : AvailabilityStatusInterface::STATUS_UNAVAILABLE;
         }
 
         return [$available, $status];
@@ -323,13 +323,13 @@ class Alma extends AbstractBase implements
         if (isset($parts[1])) {
             switch ($parts[1]) {
                 case 'unavailable':
-                    $available = ItemStatus::STATUS_UNAVAILABLE;
+                    $available = AvailabilityStatusInterface::STATUS_UNAVAILABLE;
                     break;
                 case 'uncertain':
-                    $available = ItemStatus::STATUS_UNCERTAIN;
+                    $available = AvailabilityStatusInterface::STATUS_UNCERTAIN;
                     break;
                 default:
-                    $available = ItemStatus::STATUS_AVAILABLE;
+                    $available = AvailabilityStatusInterface::STATUS_AVAILABLE;
                     break;
             }
         }
@@ -417,7 +417,7 @@ class Alma extends AbstractBase implements
                     'item_notes' => $itemNotes ?? null,
                     'item_id' => $itemId,
                     'holdings_id' => $holdingId,
-                    'holding_id' => $holdingId, // deprecated, retained for backward compatibility
+                    'holding_id' => $holdingId, // deprecated, retained for legacy backward compatibility
                     'holdtype' => 'auto',
                     'addLink' => $patron ? 'check' : false,
                     // For Alma title-level hold requests
@@ -464,7 +464,7 @@ class Alma extends AbstractBase implements
         $level = $data['level'] ?? 'copy';
         if ('copy' === $level) {
             // Call the request-options API for the logged-in user; note that holding_id
-            // is deprecated but retained for backward compatibility.
+            // is deprecated but retained for legacy backward compatibility.
             $requestOptionsPath = '/bibs/' . rawurlencode($id)
                 . '/holdings/' . rawurlencode($data['holdings_id'] ?? $data['holding_id'])
                 . '/items/' . rawurlencode($data['item_id']) . '/request-options?user_id='
@@ -505,8 +505,7 @@ class Alma extends AbstractBase implements
      *
      * @param array $patron The patron array with username and password
      *
-     * @return array|boolean    An array of block messages or false if there are no
-     *                          blocks
+     * @return array|bool    An array of block messages or false if there are no blocks
      * @author Michael Birkner
      */
     public function getRequestBlocks($patron)
@@ -519,8 +518,7 @@ class Alma extends AbstractBase implements
      *
      * @param array $patron The patron array with username and password
      *
-     * @return array|boolean    An array of block messages or false if there are no
-     *                          blocks
+     * @return array|bool    An array of block messages or false if there are no blocks
      * @author Michael Birkner
      */
     public function getAccountBlocks($patron)
@@ -573,15 +571,14 @@ class Alma extends AbstractBase implements
      * @param array  $fulfillmentUnits An array of fulfillment units with all its
      *                                 locations.
      *
-     * @return string|NULL              Null if the location was not found or a
-     *                                  string specifying the fulfillment unit of
-     *                                  the location that was found.
+     * @return ?string                 Null if the location was not found or a string specifying
+     *                                 the fulfillment unit of the location that was found.
      * @author Michael Birkner
      */
     protected function getFulfillmentUnitByLocation($locationCode, $fulfillmentUnits)
     {
         foreach ($fulfillmentUnits as $key => $val) {
-            if (array_search($locationCode, $val) !== false) {
+            if (in_array($locationCode, $val)) {
                 return $key;
             }
         }
@@ -595,7 +592,7 @@ class Alma extends AbstractBase implements
      *
      * @throws \VuFind\Exception\Auth
      *
-     * @return NULL|SimpleXMLElement
+     * @return ?SimpleXMLElement
      * @author Michael Birkner
      */
     public function createAlmaUser($formParams)
@@ -708,7 +705,7 @@ class Alma extends AbstractBase implements
      * @param string $username The patrons barcode or other username.
      * @param string $password The patrons password.
      *
-     * @return string[]|NULL
+     * @return ?array
      */
     public function patronLogin($username, $password)
     {
@@ -817,18 +814,15 @@ class Alma extends AbstractBase implements
             true
         );
 
-        if ($status != 400 && $response !== null) {
-            // We may already have some information, so just fill the gaps
-            $patron['id'] = (string)$response->primary_id;
-            $patron['cat_username'] = trim($username);
-            $patron['cat_password'] = trim($password);
-            $patron['firstname'] = (string)$response->first_name ?? '';
-            $patron['lastname'] = (string)$response->last_name ?? '';
-            $patron['email'] = $this->getPreferredEmail($response);
-            return $patron;
-        }
-
-        return null;
+        // We may already have some information, so just fill the gaps
+        return ($status !== 400 && $response !== null) ? $this->createPatronArray(
+            id: (string)$response->primary_id,
+            cat_username: $username,
+            cat_password: $password,
+            firstname: (string)$response?->first_name,
+            lastname: (string)$response?->last_name,
+            email: $this->getPreferredEmail($response)
+        ) : null;
     }
 
     /**
@@ -847,55 +841,28 @@ class Alma extends AbstractBase implements
         if (empty($xml)) {
             return [];
         }
-        $profile = [
-            'firstname' => (isset($xml->first_name))
-                ? (string)$xml->first_name
-                : null,
-            'lastname' => (isset($xml->last_name))
-                ? (string)$xml->last_name
-                : null,
-            'group' => isset($xml->user_group)
-                ? $this->getTranslatableString($xml->user_group)
-                : null,
-            'group_code' => (isset($xml->user_group))
-                ? (string)$xml->user_group
-                : null,
-        ];
-        $contact = $xml->contact_info;
-        if ($contact) {
-            if ($contact->addresses) {
-                $address = $contact->addresses[0]->address;
-                $profile['address1'] = (isset($address->line1))
-                    ? (string)$address->line1
-                    : null;
-                $profile['address2'] = (isset($address->line2))
-                    ? (string)$address->line2
-                    : null;
-                $profile['address3'] = (isset($address->line3))
-                    ? (string)$address->line3
-                    : null;
-                $profile['zip'] = (isset($address->postal_code))
-                    ? (string)$address->postal_code
-                    : null;
-                $profile['city'] = (isset($address->city))
-                    ? (string)$address->city
-                    : null;
-                $profile['country'] = (isset($address->country))
-                    ? (string)$address->country
-                    : null;
-            }
-            if ($contact->phones) {
-                $profile['phone'] = (isset($contact->phones[0]->phone->phone_number))
-                    ? (string)$contact->phones[0]->phone->phone_number
-                    : null;
-            }
-            $profile['email'] = $this->getPreferredEmail($xml);
-        }
-        if ($xml->birth_date) {
-            // Drop any time zone designator from the date:
-            $profile['birthdate'] = substr((string)$xml->birth_date, 0, 10);
-        }
 
+        $group = $xml?->user_group;
+        $contact = $xml?->contact_info;
+        $address = $contact?->addresses[0]?->address;
+
+        $profile = $this->createProfileArray(
+            firstname: (string)$xml?->first_name,
+            lastname: (string)$xml?->last_name,
+            address1: (string)$address?->line1,
+            address2: (string)$address?->line2,
+            city: (string)$address?->city,
+            zip: (string)$address?->postal_code,
+            country: (string)$address?->country,
+            group: $group ? $this->getTranslatableString($group) : null,
+            phone: (string)$contact?->phones[0]?->phone?->phone_number,
+            birthdate: $xml?->birth_date ? substr((string)$xml->birth_date, 0, 10) : '',
+            nonDefaultFields: [
+                'address3' => (string)$address?->line3,
+                'group_code' => (string)$group,
+                'email' => $this->getPreferredEmail($xml),
+            ]
+        );
         // Cache the user group code
         $cacheId = 'alma|user|' . $patronId . '|group_code';
         $this->putCachedData($cacheId, $profile['group_code'] ?? null);
@@ -1029,7 +996,6 @@ class Alma extends AbstractBase implements
             try {
                 // Delete the request in Alma
                 $apiResult = $this->makeRequest(
-                    $this->baseUrl .
                     '/users/' . rawurlencode($patronId) .
                     '/requests/' . rawurlencode($requestId),
                     ['reason' => 'CancelledAtPatronRequest'],
@@ -1088,7 +1054,7 @@ class Alma extends AbstractBase implements
         $results = [];
         $patronId = $patron['id'];
         foreach ($holdsDetails as $requestId) {
-            $requestUrl = $this->baseUrl . '/users/' . rawurlencode($patronId)
+            $requestUrl = '/users/' . rawurlencode($patronId)
                 . '/requests/' . rawurlencode($requestId);
             $requestDetails = $this->makeRequest($requestUrl);
 
@@ -1276,9 +1242,7 @@ class Alma extends AbstractBase implements
                 //$loan['volume'] = ;
                 $loan['publication_year'] = (string)$itemLoan->publication_year;
                 $loan['renewable']
-                    = (strtolower((string)$itemLoan->renewable) == 'true')
-                    ? true
-                    : false;
+                    = strtolower((string)$itemLoan->renewable) == 'true';
                 //$loan['message'] = ;
                 $loan['title'] = (string)$itemLoan->title;
                 $loan['item_id'] = (string)$itemLoan->loan_id;
@@ -1453,7 +1417,7 @@ class Alma extends AbstractBase implements
 
             // Set default value for "itemLimit" in Alma driver
             if ($function === 'Holdings') {
-                // Use itemLimit in Holds as fallback for backward compatibility
+                // Use itemLimit in Holds as fallback for backward compatibility with legacy configs
                 $functionConfig['itemLimit'] = ($functionConfig['itemLimit']
                     ?? $this->config['Holds']['itemLimit']
                     ?? 10) ?: 10;
@@ -1481,7 +1445,7 @@ class Alma extends AbstractBase implements
      * Place a hold request via Alma API. This could be a title level request or
      * an item level request.
      *
-     * @param array $holdDetails An associative array w/ atleast patron and item_id
+     * @param array $holdDetails An associative array w/ at least patron and item_id
      *
      * @return array success: bool, sysMessage: string
      *
@@ -1495,7 +1459,7 @@ class Alma extends AbstractBase implements
         // Get information that is valid for both, item level requests and title
         // level requests.
         $mmsId = $holdDetails['id'];
-        // The holding_id value is deprecated but retained for back-compatibility
+        // The holding_id value is deprecated but retained for legacy back-compatibility
         $holId = $holdDetails['holdings_id'] ?? $holdDetails['holding_id'];
         $itmId = $holdDetails['item_id'];
         $patronId = $holdDetails['patron']['id'];
@@ -1636,7 +1600,7 @@ class Alma extends AbstractBase implements
         $xml = $this->makeRequest('/courses');
         $courses = [];
         foreach ($xml as $course) {
-            $courses[$course->id] = $course->name;
+            $courses[(string)$course->id] = (string)$course->name;
         }
         return $courses;
     }
@@ -1676,8 +1640,8 @@ class Alma extends AbstractBase implements
     /**
      * Parse a date.
      *
-     * @param string  $date     Date to parse
-     * @param boolean $withTime Add time to return if available?
+     * @param string $date     Date to parse
+     * @param bool   $withTime Add time to return if available?
      *
      * @return string
      */
@@ -1910,7 +1874,7 @@ class Alma extends AbstractBase implements
      *
      * @param SimpleXMLElement $user User data
      *
-     * @return string|null
+     * @return ?string
      */
     protected function getPreferredEmail($user)
     {
@@ -1933,7 +1897,7 @@ class Alma extends AbstractBase implements
      *
      * @param SimpleXMLElement $element XML element
      *
-     * @return \VuFind\I18n\TranslatableString
+     * @return ?TranslatableString
      */
     protected function getTranslatableString($element)
     {
@@ -1951,7 +1915,7 @@ class Alma extends AbstractBase implements
      *
      * @param SimpleXMLElement $element XML element
      *
-     * @return TranslatableString
+     * @return ?TranslatableString
      */
     protected function getTranslatableStatusString($element)
     {
@@ -2044,13 +2008,25 @@ class Alma extends AbstractBase implements
     /**
      * Get list of funds
      *
-     * @return array with key = course ID, value = course name
+     * @return array with key = fund ID, value = fund name
      */
     public function getFunds()
     {
-        // TODO: implement me!
         // https://developers.exlibrisgroup.com/alma/apis/acq
         // GET /almaws/v1/acq/funds
-        return [];
+        try {
+            $xml = $this->makeRequest('/acq/funds');
+        } catch (ILSException $e) {
+            // API key not defined or not configured to allow this API.
+            // Required permission: Acquisition Read.
+            $xml = [];
+        }
+        $result = [];
+        foreach ($xml->fund ?? [] as $fund) {
+            $fundId = (string)$fund->id;
+            $fundName = (string)$fund->name;
+            $result[$fundId] = $fundName;
+        }
+        return $result;
     }
 }

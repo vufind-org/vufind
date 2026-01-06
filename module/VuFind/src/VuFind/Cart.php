@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Cart
@@ -275,7 +275,7 @@ class Cart
             $items = explode(self::CART_COOKIE_DELIM, $cookie);
 
             if (!isset($cookies[self::CART_COOKIE_SOURCES])) {
-                // Backward compatibility with VuFind 1.x -- if no source cookie, all
+                // Backward compatibility with VuFind 1.x legacy code -- if no source cookie, all
                 // items come from the default source:
                 for ($i = 0; $i < count($items); $i++) {
                     $items[$i] = DEFAULT_SEARCH_BACKEND . '|' . $items[$i];
@@ -327,36 +327,6 @@ class Cart
         $this->cookieManager->set(self::CART_COOKIE, $cookie, 0, false);
         $srcCookie = implode(self::CART_COOKIE_DELIM, $sources);
         $this->cookieManager->set(self::CART_COOKIE_SOURCES, $srcCookie, 0, false);
-    }
-
-    /**
-     * Get cookie domain context (null if unset).
-     *
-     * @return string
-     */
-    public function getCookieDomain()
-    {
-        return $this->cookieManager->getDomain();
-    }
-
-    /**
-     * Get cookie path ('/' if unset).
-     *
-     * @return string
-     */
-    public function getCookiePath()
-    {
-        return $this->cookieManager->getPath();
-    }
-
-    /**
-     * Get cookie SameSite attribute.
-     *
-     * @return string
-     */
-    public function getCookieSameSite()
-    {
-        return $this->cookieManager->getSameSite();
     }
 
     /**

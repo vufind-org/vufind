@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -50,14 +50,12 @@ class LookupIssnsCommandTest extends TestCase
      */
     public function testSupportedBackend(): void
     {
-        $backend = $this
-            ->getMockBuilder(\VuFindSearch\Backend\BrowZine\Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(\VuFindSearch\Backend\BrowZine\Backend::class);
         $backend->expects($this->once())->method('getIdentifier')
-            ->will($this->returnValue('BrowZine'));
+            ->willReturn('BrowZine');
         $backend->expects($this->once())->method('lookupIssns')
-            ->with($this->equalTo(['1111-1111']))
-            ->will($this->returnValue('foo'));
+            ->with(['1111-1111'])
+            ->willReturn('foo');
         $command = new LookupIssnsCommand('BrowZine', ['1111-1111']);
         $this->assertEquals('foo', $command->execute($backend)->getResult());
     }

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -91,11 +91,10 @@ class LocaleDetectorFactoryTest extends \PHPUnit\Framework\TestCase
      */
     public function testStrategyListWithBrowserDetection(): void
     {
-        $mockSettings = $this->getMockBuilder(LocaleSettings::class)
-            ->disableOriginalConstructor()->getMock();
+        $mockSettings = $this->createMock(LocaleSettings::class);
         $mockSettings->expects($this->once())
             ->method('browserLanguageDetectionEnabled')
-            ->will($this->returnValue(true));
+            ->willReturn(true);
         $this->assertEquals(
             [
                 LocaleDetectorParamStrategy::class,
@@ -115,11 +114,10 @@ class LocaleDetectorFactoryTest extends \PHPUnit\Framework\TestCase
      */
     public function testStrategyListWithoutBrowserDetection(): void
     {
-        $mockSettings = $this->getMockBuilder(LocaleSettings::class)
-            ->disableOriginalConstructor()->getMock();
+        $mockSettings = $this->createMock(LocaleSettings::class);
         $mockSettings->expects($this->once())
             ->method('browserLanguageDetectionEnabled')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
         $this->assertEquals(
             [
                 LocaleDetectorParamStrategy::class,

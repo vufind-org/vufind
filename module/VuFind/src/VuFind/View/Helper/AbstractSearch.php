@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -76,23 +76,19 @@ abstract class AbstractSearch extends AbstractHelper
             return '';
         }
 
-        $html = '<div class="' . $this->getContainerClass() . '">';
-        $html .= $msg;
+        $html = '<div class="spellingSuggestions ' . $this->getContainerClass() . '">';
+        $html .= '<h2>' . $msg . '</h2><ul class="terms">';
         $normalizer = $results->getOptions()->getSpellingNormalizer();
         foreach ($spellingSuggestions as $term => $details) {
-            $html .= '<br>' . $view->escapeHtml($term) . ' &raquo; ';
-            $i = 0;
+            $html .= '<li>' . $view->escapeHtml($term) . ' &raquo; <ul class="suggestions">';
             foreach ($details['suggestions'] as $word => $data) {
-                if ($i++ > 0) {
-                    $html .= ', ';
-                }
                 $href = $results->getUrlQuery()
                     ->replaceTerm(
                         $term,
                         $data['new_term'],
                         $normalizer
                     )->getParams();
-                $html .= '<a href="' . $href . '">' . $view->escapeHtml($word)
+                $html .= '<li><a href="' . $href . '">' . $view->escapeHtml($word)
                     . '</a>';
                 if (isset($data['expand_term']) && !empty($data['expand_term'])) {
                     $url = $results->getUrlQuery()
@@ -103,9 +99,11 @@ abstract class AbstractSearch extends AbstractHelper
                         )->getParams();
                     $html .= $this->renderExpandLink($url, $view);
                 }
+                $html .= '</li>';
             }
+            $html .= '</ul></li>';
         }
-        $html .= '</div>';
+        $html .= '</ul></div>';
         return $html;
     }
 }

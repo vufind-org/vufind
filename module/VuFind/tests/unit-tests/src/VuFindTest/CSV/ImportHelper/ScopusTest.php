@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -50,7 +50,7 @@ class ScopusTest extends \PHPUnit\Framework\TestCase
     public function testNameSplittingDefaultBehavior(): void
     {
         $input = 'Rai, P., Bajgai, Y., Rabgyal, J., Katwal, T.B., Delmond, A.R.';
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'Rai, P.',
                 'Bajgai, Y.',
@@ -70,7 +70,7 @@ class ScopusTest extends \PHPUnit\Framework\TestCase
     public function testNameSplittingWithHyphenatedInitials(): void
     {
         $input = 'Bellone, R., Failloux, A.-B.';
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'Bellone, R.',
                 'Failloux, A.-B.',
@@ -87,7 +87,7 @@ class ScopusTest extends \PHPUnit\Framework\TestCase
     public function testNameSplittingWithMissingInitials(): void
     {
         $input = 'Khan, M.Q., Yaseen, Zahid, H., Numan, M., da Silva Vaz, I.';
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'Khan, M.Q.',
                 'Yaseen',
@@ -107,7 +107,7 @@ class ScopusTest extends \PHPUnit\Framework\TestCase
     public function testNameSplittingWithFirstOnlyFlag(): void
     {
         $input = 'Rai, P., Bajgai, Y., Rabgyal, J., Katwal, T.B., Delmond, A.R.';
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'Rai, P.',
             ],

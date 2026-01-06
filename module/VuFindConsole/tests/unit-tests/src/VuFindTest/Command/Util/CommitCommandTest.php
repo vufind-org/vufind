@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -50,15 +50,13 @@ class CommitCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testSuccessWithOptions()
     {
-        $writer = $this->getMockBuilder(\VuFind\Solr\Writer::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $writer = $this->createMock(\VuFind\Solr\Writer::class);
         $writer->expects($this->once())->method('commit')
-            ->with($this->equalTo('foo'));
+            ->with('foo');
         $command = new CommitCommand($writer);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['core' => 'foo']);
-        $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals('', $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
+        $this->assertSame('', $commandTester->getDisplay());
     }
 }

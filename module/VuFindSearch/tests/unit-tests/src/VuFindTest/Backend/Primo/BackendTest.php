@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -30,7 +30,9 @@
 namespace VuFindTest\Backend\Primo;
 
 use InvalidArgumentException;
+use PHPUnit\Framework\MockObject\MockObject;
 use VuFindSearch\Backend\Primo\Backend;
+use VuFindSearch\Backend\Primo\ConnectorInterface;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Query\Query;
 
@@ -52,12 +54,12 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testRetrieve()
+    public function testRetrieve(): void
     {
         $conn = $this->getConnectorMock(['getRecord']);
         $conn->expects($this->once())
             ->method('getRecord')
-            ->will($this->returnValue($this->loadResponse('retrieve')));
+            ->willReturn($this->loadResponse('retrieve'));
 
         $back = new Backend($conn);
         $back->setIdentifier('test');
@@ -75,12 +77,12 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSearch()
+    public function testSearch(): void
     {
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
             ->method('query')
-            ->will($this->returnValue($this->loadResponse('search')));
+            ->willReturn($this->loadResponse('search'));
 
         $back = new Backend($conn);
         $back->setIdentifier('test');
@@ -109,7 +111,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSetQueryBuilder()
+    public function testSetQueryBuilder(): void
     {
         $qb = new \VuFindSearch\Backend\Primo\QueryBuilder();
         $back = new Backend($this->getConnectorMock());
@@ -122,7 +124,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testConstructorSetters()
+    public function testConstructorSetters(): void
     {
         $fact = $this->createMock(
             \VuFindSearch\Response\RecordCollectionFactoryInterface::class
@@ -138,7 +140,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSearchWrapsPrimoException()
+    public function testSearchWrapsPrimoException(): void
     {
         $this->expectException(
             \VuFindSearch\Backend\Exception\BackendException::class
@@ -147,7 +149,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
             ->method('query')
-            ->will($this->throwException(new \Exception()));
+            ->willThrowException(new \Exception());
         $back = new Backend($conn);
         $back->search(new Query(), 1, 1);
     }
@@ -157,7 +159,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testRetrieveWrapsPrimoException()
+    public function testRetrieveWrapsPrimoException(): void
     {
         $this->expectException(
             \VuFindSearch\Backend\Exception\BackendException::class
@@ -166,7 +168,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $conn = $this->getConnectorMock(['getRecord']);
         $conn->expects($this->once())
             ->method('getRecord')
-            ->will($this->throwException(new \Exception()));
+            ->willThrowException(new \Exception());
         $back = new Backend($conn);
         $back->retrieve('1234');
     }
@@ -176,7 +178,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMergedParamBag()
+    public function testMergedParamBag(): void
     {
         $myParams = new ParamBag(['foo' => 'bar']);
         $expectedParams = [
@@ -194,10 +196,10 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $conn->expects($this->once())
             ->method('query')
             ->with(
-                $this->equalTo('inst-id'),
-                $this->equalTo($expectedParams['query']),
-                $this->equalTo($expectedParams)
-            )->will($this->returnValue(['recordCount' => 0, 'documents' => []]));
+                'inst-id',
+                $expectedParams['query'],
+                $expectedParams
+            )->willReturn(['recordCount' => 0, 'documents' => []]);
         $back = new Backend($conn);
         $back->search(new Query('baz'), 0, 10, $myParams);
     }
@@ -205,61 +207,58 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testPcAvailabilityFilter
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getPcAvailabilityData(): array
+    public static function getPcAvailabilityData(): \Iterator
     {
-        return [
-            [
-                '',
-                true,
-            ],
-            [
-                true,
-                true,
-            ],
-            [
-                1,
-                true,
-            ],
-            [
-                '1',
-                true,
-            ],
-            [
-                'true',
-                true,
-            ],
-            [
-                false,
-                false,
-            ],
-            [
-                0,
-                false,
-            ],
-            [
-                '0',
-                false,
-            ],
-            [
-                'false',
-                false,
-            ],
+        yield [
+            '',
+            true,
+        ];
+        yield [
+            true,
+            true,
+        ];
+        yield [
+            1,
+            true,
+        ];
+        yield [
+            '1',
+            true,
+        ];
+        yield [
+            'true',
+            true,
+        ];
+        yield [
+            false,
+            false,
+        ];
+        yield [
+            0,
+            false,
+        ];
+        yield [
+            '0',
+            false,
+        ];
+        yield [
+            'false',
+            false,
         ];
     }
 
     /**
      * Test pcAvailability filter.
      *
-     * @param string $value    Input value of filter
-     * @param string $expected Expected output value of filter
-     *
-     * @dataProvider getPcAvailabilityData
+     * @param mixed $value    Input value of filter
+     * @param bool  $expected Expected output value of filter
      *
      * @return void
      */
-    public function testPcAvailabilityFilter($value, $expected): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('getPcAvailabilityData')]
+    public function testPcAvailabilityFilter(mixed $value, bool $expected): void
     {
         $params = new ParamBag(
             [
@@ -289,10 +288,10 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $conn->expects($this->once())
             ->method('query')
             ->with(
-                $this->equalTo('inst-id'),
-                $this->equalTo($expectedParams['query']),
-                $this->equalTo($expectedParams)
-            )->will($this->returnValue(['recordCount' => 0, 'documents' => []]));
+                'inst-id',
+                $expectedParams['query'],
+                $expectedParams
+            )->willReturn(['recordCount' => 0, 'documents' => []]);
         $back = new Backend($conn);
         $back->search(new Query('foo'), 0, 10, $params);
     }
@@ -308,7 +307,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @throws InvalidArgumentException Fixture files does not exist
      */
-    protected function loadResponse($fixture)
+    protected function loadResponse(string $fixture)
     {
         return unserialize(
             $this->getFixture("primo/response/$fixture", 'VuFindSearch')
@@ -320,14 +319,16 @@ class BackendTest extends \PHPUnit\Framework\TestCase
      *
      * @param array $mock Functions to mock
      *
-     * @return array
+     * @return MockObject&ConnectorInterface
      */
-    protected function getConnectorMock(array $mock = [])
+    protected function getConnectorMock(array $mock = []): MockObject&ConnectorInterface
     {
-        $client = $this->createMock(\Laminas\Http\Client::class);
-        return $this->getMockBuilder(\VuFindSearch\Backend\Primo\Connector::class)
+        $fakeUrl = 'http://fakeaddress.none';
+        $clientFactory = fn () => null;
+        $session = $this->createMock(\Laminas\Session\Container::class);
+        return $this->getMockBuilder(\VuFindSearch\Backend\Primo\RestConnector::class)
             ->onlyMethods($mock)
-            ->setConstructorArgs(['http://fakeaddress.none', 'inst-id', $client])
+            ->setConstructorArgs([$fakeUrl, $fakeUrl, 'inst-id', $clientFactory, $session])
             ->getMock();
     }
 }

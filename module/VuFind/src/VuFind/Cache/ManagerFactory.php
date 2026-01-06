@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Cache
@@ -34,6 +34,9 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Exception\ConfigException;
+
+use function is_array;
 
 /**
  * Cache Manager factory.
@@ -63,14 +66,27 @@ class ManagerFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
+        }
+        $configLoader = $container->get(\VuFind\Config\ConfigLoader::class);
+        $configLocation = $configLoader->getConfigLocation('config');
+        $config = ($configLocation !== null) ? $configLoader->loadConfigFromLocation($configLocation) : null;
+        if (!is_array($config)) {
+            throw new ConfigException('Failed to load cache configuration.');
+        }
+        // Load legacy configuration if new configuration is not present yet.
+        if (!isset($config['CacheConfigPath_searchspecs'])) {
+            $searchConfigLocation = $configLoader->getConfigLocation('searches');
+            $searchConfig = $configLoader->loadConfigFromLocation($searchConfigLocation);
+            $config['CacheConfigPath_searchspecs'] = [
+                'disabled' => ($searchConfig['Cache']['type'] ?? false) === false,
+            ];
         }
         return new $requestedName(
-            $container->get(\VuFind\Config\PluginManager::class)->get('config'),
-            $container->get(\VuFind\Config\PluginManager::class)->get('searches'),
+            $config,
             $container->get(\Laminas\Cache\Service\StorageAdapterFactory::class)
         );
     }

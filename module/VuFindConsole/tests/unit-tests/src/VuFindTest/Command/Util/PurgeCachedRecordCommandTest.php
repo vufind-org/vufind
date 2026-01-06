@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -32,6 +32,8 @@
 namespace VuFindTest\Command\Util;
 
 use Symfony\Component\Console\Tester\CommandTester;
+use VuFind\Db\Service\RecordServiceInterface;
+use VuFind\Db\Service\ResourceServiceInterface;
 use VuFindConsole\Command\Util\PurgeCachedRecordCommand;
 
 /**
@@ -49,16 +51,14 @@ class PurgeCachedRecordCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testBasicOperation
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function basicOperationProvider(): array
+    public static function basicOperationProvider(): \Iterator
     {
-        return [
-            ['Solr', '123', false, true, null],
-            ['Solr', '123', false, false, null],
-            ['Solr', '123', true, true, true],
-            ['Solr', '123', true, true, false],
-        ];
+        yield ['Solr', '123', false, true, null];
+        yield ['Solr', '123', false, false, null];
+        yield ['Solr', '123', true, true, true];
+        yield ['Solr', '123', true, true, false];
     }
 
     /**
@@ -71,9 +71,8 @@ class PurgeCachedRecordCommandTest extends \PHPUnit\Framework\TestCase
      * @param ?bool  $resourceRetVal What, if anything the resource delete method is expected to return
      *
      * @return void
-     *
-     * @dataProvider basicOperationProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('basicOperationProvider')]
     public function testBasicOperation(
         string $source,
         string $id,
@@ -81,16 +80,12 @@ class PurgeCachedRecordCommandTest extends \PHPUnit\Framework\TestCase
         bool $recordRetVal,
         ?bool $resourceRetVal
     ): void {
-        $recordTable = $this->getMockBuilder(\VuFind\Db\Table\Record::class)
-            ->disableOriginalConstructor()->getMock();
-        $recordTable->expects($this->once())->method('delete')
-            ->with($this->equalTo(['source' => 'Solr', 'record_id' => 123]))
-            ->willReturn($recordRetVal);
+        $recordService = $this->createMock(RecordServiceInterface::class);
+        $recordService->expects($this->once())->method('deleteRecord')->with('123', 'Solr')->willReturn($recordRetVal);
 
-        $resourceTable = $this->getMockBuilder(\VuFind\Db\Table\Resource::class)
-            ->disableOriginalConstructor()->getMock();
+        $resourceService = $this->createMock(ResourceServiceInterface::class);
         if (null !== $resourceRetVal) {
-            $resourceTable->expects($this->once())->method('delete')
+            $resourceService->expects($this->once())->method('deleteResourceByRecordId')->with('123', 'Solr')
                 ->willReturn($resourceRetVal);
         }
         $params = compact('source', 'id');
@@ -98,7 +93,7 @@ class PurgeCachedRecordCommandTest extends \PHPUnit\Framework\TestCase
             $params['--purge-resource'] = true;
         }
 
-        $command = new PurgeCachedRecordCommand($recordTable, $resourceTable);
+        $command = new PurgeCachedRecordCommand($recordService, $resourceService);
         $commandTester = new CommandTester($command);
         $commandTester->execute($params);
         $expected = $recordRetVal ? "Cached record deleted\n" : "No cached record found\n";
@@ -106,6 +101,6 @@ class PurgeCachedRecordCommandTest extends \PHPUnit\Framework\TestCase
             $expected .= $resourceRetVal ? "Resource deleted\n" : "No resource found\n";
         }
         $this->assertEquals($expected, $commandTester->getDisplay());
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 }

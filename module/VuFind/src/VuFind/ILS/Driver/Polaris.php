@@ -16,8 +16,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -31,6 +31,7 @@ namespace VuFind\ILS\Driver;
 use VuFind\Exception\ILS as ILSException;
 
 use function count;
+use function in_array;
 use function intval;
 use function strlen;
 
@@ -286,15 +287,10 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             //$holdings_response = $holdings_response_array[0];
             $copy_count++;
 
-            $availability = 0;
-            if (
-                ($holdings_response->CircStatus == 'In')
-                || ($holdings_response->CircStatus == 'Just Returned')
-                || ($holdings_response->CircStatus == 'On Shelf')
-                || ($holdings_response->CircStatus == 'Available - Check shelves')
-            ) {
-                $availability = 1;
-            }
+            $availability = in_array(
+                $holdings_response->CircStatus,
+                ['In', 'Just Returned', 'On Shelf', 'Available - Check shelves']
+            ) ? 1 : 0;
 
             $duedate = '';
             if ($holdings_response->DueDate) {
@@ -356,11 +352,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      */
     public function getConfig($function, $params = [])
     {
-        if (isset($this->config[$function])) {
-            $functionConfig = $this->config[$function];
-        } else {
-            $functionConfig = false;
-        }
+        $functionConfig = $this->config[$function] ?? false;
         return $functionConfig;
     }
 
@@ -371,7 +363,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      * record.
      *
      * @param string $id      The record id to retrieve the holdings for
-     * @param array  $patron  Patron data
+     * @param ?array $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
      * @return mixed         On success, an associative array with the following
@@ -380,7 +372,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null, array $options = [])
+    public function getHolding($id, ?array $patron = null, array $options = [])
     {
         return $this->getStatus($id);
     }
@@ -462,7 +454,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
     /**
      * Get Pick Up Locations
      *
-     * This is responsible for gettting a list of valid library locations for
+     * This is responsible for getting a list of valid library locations for
      * holds / recall retrieval
      *
      * @param array $patron      Patron information returned by the patronLogin
@@ -547,10 +539,10 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
      *
      * Retrieve the IDs of items recently added to the catalog.
      *
-     * @param int $page    Page number of results to retrieve (counting starts at 1)
-     * @param int $limit   The size of each page of results to retrieve
-     * @param int $daysOld The maximum age of records to retrieve in days (max. 30)
-     * @param int $fundId  optional fund ID to use for limiting results (use a value
+     * @param int     $page    Page number of results to retrieve (counting starts at 1)
+     * @param int     $limit   The size of each page of results to retrieve
+     * @param int     $daysOld The maximum age of records to retrieve in days (max. 30)
+     * @param ?string $fundId  optional fund ID to use for limiting results (use a value
      * returned by getFunds, or exclude for no limit); note that "fund" may be a
      * misnomer - if funds are not an appropriate way to limit your new item
      * results, you can return a different set of values from getFunds. The
@@ -603,19 +595,11 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
         if (!$response->ValidPatron) {
             return null;
         }
-
-        $user = [];
-
-        $user['id']           = $response->PatronID;
-        $user['firstname']    = null;
-        $user['lastname']     = null;
-        $user['cat_username'] = $response->PatronBarcode;
-        $user['cat_password'] = $password;
-        $user['email']        = null;
-        $user['major']        = null;
-        $user['college']      = null;
-
-        return $user;
+        return $this->createPatronArray(
+            id: $response->PatronID,
+            cat_username: $response->PatronBarcode,
+            cat_password: $password
+        );
     }
 
     /**
@@ -674,12 +658,11 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
             $patron['cat_password']
         );
         $profile_response = $response->PatronBasicData;
-        $profile = [
-          'firstname' => $profile_response->NameFirst,
-          'lastname'  => $profile_response->NameLast,
-          'phone'     => $profile_response->PhoneNumber,
-        ];
-        return $profile;
+        return $this->createProfileArray(
+            firstname:  $profile_response->NameFirst,
+            lastname:  $profile_response->NameLast,
+            phone:  $profile_response->PhoneNumber
+        );
     }
 
     /**
@@ -707,11 +690,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         foreach ($response->PatronItemsOutGetRows as $trResponse) {
             // any more renewals available?
-            if (($trResponse->RenewalLimit - $trResponse->RenewalCount) > 0) {
-                $renewable = true;
-            } else {
-                $renewable = false;
-            }
+            $renewable = $trResponse->RenewalLimit - $trResponse->RenewalCount > 0;
             $transactions[] = [
                 'duedate' => $this->formatJSONTime($trResponse->DueDate),
                 'id'      => $trResponse->BibID,
@@ -899,11 +878,7 @@ class Polaris extends AbstractBase implements \VuFindHttp\HttpServiceAwareInterf
 
         $penultimate_page = $pages - 1;
 
-        if ($penultimate_page > 0) {
-            $page_offset = $penultimate_page;
-        } else {
-            $page_offset = $pages;
-        }
+        $page_offset = $penultimate_page > 0 ? $penultimate_page : $pages;
 
         $checkouts = [];
         while ($page_offset <= $pages) {

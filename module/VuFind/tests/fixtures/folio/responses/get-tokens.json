@@ -5,7 +5,7 @@
     "expectedParams": "{\"tenant\":\"config_tenant\",\"username\":\"config_username\",\"password\":\"config_password\"}",
     "expectedPath": "/authn/login-with-expiry",
     "expectedHeaders": { "X-Okapi-Tenant": "config_tenant" },
-    "headers": { "Set-Cookie": "folioAccessToken=x-okapi-token-config-tenant; Max-Age=600; Expires=Fri, 22 Sep 2023 14:30:10 GMT; Path=/; Secure; HTTPOnly; SameSite=None" }
+    "headers": { "Set-Cookie": "folioAccessToken=x-okapi-token-config-tenant; Max-Age=600; Expires=Fri, 22 Sep 2090 14:30:10 GMT; Path=/; Secure; HTTPOnly; SameSite=None" }
   },
   {
     "expectedPath": "/users",

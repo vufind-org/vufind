@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -30,7 +30,7 @@
 namespace VuFindTest\Search\Blender;
 
 use VuFind\Search\Blender\Options;
-use VuFindTest\Feature\ConfigPluginManagerTrait;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
  * Blender Options Test
@@ -43,28 +43,26 @@ use VuFindTest\Feature\ConfigPluginManagerTrait;
  */
 class OptionsTest extends \PHPUnit\Framework\TestCase
 {
-    use ConfigPluginManagerTrait;
+    use ConfigRelatedServicesTrait;
 
     /**
      * Data provider for testOptions
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function optionsProvider(): array
+    public static function optionsProvider(): \Iterator
     {
-        return [
+        yield [
+            [],
+            false,
+        ];
+        yield [
             [
-                [],
-                false,
-            ],
-            [
-                [
-                    'Advanced_Searches' => [
-                        'foo' => 'bar',
-                    ],
+                'Advanced_Searches' => [
+                    'foo' => 'bar',
                 ],
-                'blender-advanced',
             ],
+            'blender-advanced',
         ];
     }
 
@@ -75,17 +73,16 @@ class OptionsTest extends \PHPUnit\Framework\TestCase
      * @param string|false $advAction Expected advanced search action
      *
      * @return void
-     *
-     * @dataProvider optionsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('optionsProvider')]
     public function testOptions(array $config, $advAction): void
     {
-        $configMgr = $this->getMockConfigPluginManager(
+        $mockConfigManager = $this->getMockConfigManager(
             [
                 'Blender' => $config,
             ]
         );
-        $options = new Options($configMgr);
+        $options = new Options($mockConfigManager);
         $this->assertEquals('blender-results', $options->getSearchAction());
         $this->assertEquals($advAction, $options->getAdvancedSearchAction());
         $this->assertFalse($options->getFacetListAction());

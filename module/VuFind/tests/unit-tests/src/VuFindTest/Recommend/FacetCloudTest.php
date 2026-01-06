@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -42,7 +42,7 @@ use VuFind\Recommend\FacetCloud;
  */
 class FacetCloudTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Test getEmptyResults()
@@ -53,40 +53,31 @@ class FacetCloudTest extends \PHPUnit\Framework\TestCase
     {
         $results = $this->getMockResults();
         $results->getParams()->expects($this->once())->method('getFacetSettings')
-            ->will($this->returnValue(['limit' => 50]));
-        $fc = $this->getFacetCloud(null, $results);
+            ->willReturn(['limit' => 50]);
+        $fc = $this->getFacetCloud($results);
         $this->assertEquals(49, $fc->getFacetLimit());
     }
 
     /**
      * Get a fully configured module
      *
-     * @param \VuFind\Config\PluginManager $configLoader config loader
-     * @param \VuFind\Search\Solr\Results  $results      populated results object
-     * @param \VuFind\Search\Solr\Results  $emptyResults empty results object
-     * @param string                       $settings     settings
-     * @param \Laminas\Stdlib\Parameters   $request      request
+     * @param ?\VuFind\Search\Solr\Results $results populated results object
      *
      * @return FacetCloud
      */
-    protected function getFacetCloud(
-        $configLoader = null,
-        $results = null,
-        $emptyResults = null,
-        $settings = '',
-        $request = null
-    ) {
+    protected function getFacetCloud(?\VuFind\Search\Solr\Results $results = null): FacetCloud
+    {
         if (null === $results) {
             $results = $this->getMockResults();
         }
         $fc = new FacetCloud(
-            $configLoader ?? $this->getMockConfigPluginManager([]),
-            $emptyResults ?? $this->getMockResults()
+            $this->getMockConfigManager(),
+            $this->getMockResults()
         );
-        $fc->setConfig($settings);
+        $fc->setConfig('');
         $fc->init(
             $results->getParams(),
-            $request ?? new \Laminas\Stdlib\Parameters([])
+            new \Laminas\Stdlib\Parameters([])
         );
         $fc->process($results);
         return $fc;
@@ -104,10 +95,8 @@ class FacetCloudTest extends \PHPUnit\Framework\TestCase
         if (null === $params) {
             $params = $this->getMockParams();
         }
-        $results = $this->getMockBuilder(\VuFind\Search\Solr\Results::class)
-            ->disableOriginalConstructor()->getMock();
-        $results->expects($this->any())->method('getParams')
-            ->will($this->returnValue($params));
+        $results = $this->createMock(\VuFind\Search\Solr\Results::class);
+        $results->method('getParams')->willReturn($params);
         return $results;
     }
 
@@ -123,10 +112,8 @@ class FacetCloudTest extends \PHPUnit\Framework\TestCase
         if (null === $query) {
             $query = new \VuFindSearch\Query\Query('foo', 'bar');
         }
-        $params = $this->getMockBuilder(\VuFind\Search\Solr\Params::class)
-            ->disableOriginalConstructor()->getMock();
-        $params->expects($this->any())->method('getQuery')
-            ->will($this->returnValue($query));
+        $params = $this->createMock(\VuFind\Search\Solr\Params::class);
+        $params->method('getQuery')->willReturn($query);
         return $params;
     }
 }

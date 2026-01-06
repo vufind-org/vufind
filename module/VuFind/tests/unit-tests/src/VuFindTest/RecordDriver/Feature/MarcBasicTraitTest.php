@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,7 +29,8 @@
 
 namespace VuFindTest\RecordDriver\Feature;
 
-use VuFind\RecordDriver\WorldCat;
+use PHPUnit\Framework\MockObject\MockObject;
+use VuFindTest\RecordDriver\MarcBasicTraitTestHarness;
 
 /**
  * Record Driver Marc Traits Test Class
@@ -110,17 +111,15 @@ class MarcBasicTraitTest extends \PHPUnit\Framework\TestCase
      *
      * @param string $fixture Record metadata fixture
      *
-     * @return MockObjec&WorldCat
+     * @return MarcBasicTraitTestHarness&MockObject
      */
-    protected function createMockRecord(string $fixture): WorldCat
+    protected function createMockRecord(string $fixture): MarcBasicTraitTestHarness&MockObject
     {
         $xml = $this->getFixture("marc/$fixture");
         $record = new \VuFind\Marc\MarcReader($xml);
-        $obj = $this->getMockBuilder(WorldCat::class)
+        $obj = $this->getMockBuilder(MarcBasicTraitTestHarness::class)
             ->onlyMethods(['getMarcReader'])->getMock();
-        $obj->expects($this->any())
-            ->method('getMarcReader')
-            ->will($this->returnValue($record));
+        $obj->method('getMarcReader')->willReturn($record);
         return $obj;
     }
 }

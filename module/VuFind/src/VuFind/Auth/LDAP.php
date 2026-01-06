@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -30,6 +30,7 @@
 
 namespace VuFind\Auth;
 
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Exception\Auth as AuthException;
 
 use function in_array;
@@ -66,16 +67,15 @@ class LDAP extends AbstractBase
     protected function validateConfig()
     {
         // Check for missing parameters:
-        $requiredParams = ['host', 'port', 'basedn', 'username'];
-        foreach ($requiredParams as $param) {
-            if (
-                !isset($this->config->LDAP->$param)
-                || empty($this->config->LDAP->$param)
-            ) {
-                throw new AuthException(
-                    'One or more LDAP parameters are missing. Check your config.ini!'
-                );
-            }
+        if (
+            empty($this->config->LDAP->basedn ?? '')
+            || empty($this->config->LDAP->username ?? '')
+            || (empty($this->config->LDAP->uri ?? '')
+                && empty($this->config->LDAP->host ?? ''))
+        ) {
+            throw new AuthException(
+                'One or more LDAP parameters are missing. Check your config.ini!'
+            );
         }
     }
 
@@ -104,7 +104,7 @@ class LDAP extends AbstractBase
      * account credentials.
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     public function authenticate($request)
     {
@@ -123,7 +123,7 @@ class LDAP extends AbstractBase
      * @param string $password Password
      *
      * @throws AuthException
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     protected function checkLdap($username, $password)
     {
@@ -158,10 +158,23 @@ class LDAP extends AbstractBase
         // will successfully return a resource from ldap_connect even if the server
         // is unavailable -- we need to check for bad return values again at search
         // time!
-        $host = $this->getSetting('host');
-        $port = $this->getSetting('port');
-        $this->debug("connecting to host=$host, port=$port");
-        $connection = @ldap_connect($host, $port);
+        $uri = $this->getSetting('uri');
+        if (!$uri) {
+            // Use deprecated old settings.
+            $host = $this->getSetting('host');
+            if (str_starts_with($host, 'ldap://') || str_starts_with($host, 'ldaps://')) {
+                $uri = $host;
+            } else {
+                $port = $this->getSetting('port');
+                if ($port === '') {
+                    $port = 389;
+                }
+                $uri = 'ldap://' . $host . ':' . $port;
+            }
+        }
+
+        $this->debug("connecting to URI=$uri");
+        $connection = @ldap_connect($uri);
         if (!$connection) {
             $this->debug('connection failed');
             throw new AuthException('authentication_error_technical');
@@ -172,12 +185,12 @@ class LDAP extends AbstractBase
             $this->debug('Failed to set protocol version 3');
         }
 
-        // if the host parameter is not specified as ldaps://
+        // if the uri parameter is not specified as ldaps://
         // then (unless TLS is disabled) we need to initiate TLS so we
         // can have a secure connection over the standard LDAP port.
         $disableTls = isset($this->config->LDAP->disable_tls)
             && $this->config->LDAP->disable_tls;
-        if (stripos($host, 'ldaps://') === false && !$disableTls) {
+        if (!str_starts_with($uri, 'ldaps://') && !$disableTls) {
             $this->debug('Starting TLS');
             if (!@ldap_start_tls($connection)) {
                 $this->debug('TLS failed');
@@ -270,7 +283,7 @@ class LDAP extends AbstractBase
      * @param string $username Username
      * @param array  $data     Details from ldap_get_entries call.
      *
-     * @return \VuFind\Db\Row\User Object representing logged-in user.
+     * @return UserEntityInterface Object representing logged-in user.
      */
     protected function processLDAPUser($username, $data)
     {
@@ -281,10 +294,10 @@ class LDAP extends AbstractBase
         ];
 
         // User object to populate from LDAP:
-        $user = $this->getUserTable()->getByUsername($username);
+        $user = $this->getOrCreateUserByUsername($username);
 
         // Variable to hold catalog password (handled separately from other
-        // attributes since we need to use saveCredentials method to store it):
+        // attributes since we need to pass it to saveUserAndCredentials method to store it):
         $catPassword = null;
 
         // Loop through LDAP response and map fields to database object based
@@ -308,7 +321,7 @@ class LDAP extends AbstractBase
                         }
 
                         if ($field != 'cat_password') {
-                            $user->$field = $value ?? '';
+                            $this->setUserValueByField($user, $field, $value ?? '');
                         } else {
                             $catPassword = $value;
                         }
@@ -317,23 +330,8 @@ class LDAP extends AbstractBase
             }
         }
 
-        // Save credentials if applicable. Note that we want to allow empty
-        // passwords (see https://github.com/vufind-org/vufind/pull/532), but
-        // we also want to be careful not to replace a non-blank password with a
-        // blank one in case the auth mechanism fails to provide a password on
-        // an occasion after the user has manually stored one. (For discussion,
-        // see https://github.com/vufind-org/vufind/pull/612). Note that in the
-        // (unlikely) scenario that a password can actually change from non-blank
-        // to blank, additional work may need to be done here.
-        if (!empty($user->cat_username)) {
-            $user->saveCredentials(
-                $user->cat_username,
-                empty($catPassword) ? $this->ilsAuthenticator->getCatPasswordForUser($user) : $catPassword
-            );
-        }
-
-        // Update the user in the database, then return it to the caller:
-        $user->save();
+        // Save and return user data:
+        $this->saveUserAndCredentials($user, $catPassword, $this->ilsAuthenticator);
         return $user;
     }
 }

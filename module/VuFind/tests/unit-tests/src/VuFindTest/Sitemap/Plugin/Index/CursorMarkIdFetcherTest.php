@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Sitemap\Command;
 
+use PHPUnit\Framework\MockObject\MockObject;
 use VuFind\Sitemap\Plugin\Index\CursorMarkIdFetcher;
 use VuFindSearch\Backend\Solr\Response\Json\RecordCollection;
 use VuFindSearch\Command\GetIdsCommand;
@@ -73,13 +74,11 @@ class CursorMarkIdFetcherTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock search service
      *
-     * @return Service
+     * @return MockObject&Service
      */
-    protected function getMockService(): Service
+    protected function getMockService(): MockObject&Service
     {
-        return $this->getMockBuilder(Service::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        return $this->createMock(Service::class);
     }
 
     /**
@@ -87,19 +86,23 @@ class CursorMarkIdFetcherTest extends \PHPUnit\Framework\TestCase
      *
      * @param RecordCollection $records Collection to add to
      * @param int              $offset  Offset for records
+     * @param ?string          $lastMod Last modification date (optional)
      *
      * @return int[]
      */
-    protected function addRecordsToCollection(RecordCollection $records, int $offset = 0): array
-    {
+    protected function addRecordsToCollection(
+        RecordCollection $records,
+        int $offset = 0,
+        ?string $lastMod = null
+    ): array {
         $expectedIds = [];
         for ($i = 0; $i < $this->countPerPage; $i++) {
-            $driver = $this
-                ->getMockBuilder(\VuFindSearch\Response\SimpleRecord::class)
-                ->disableOriginalConstructor()->getMock();
-            $driver->expects($this->once())->method('get')
-                ->with($this->equalTo($this->uniqueKey))
-                ->will($this->returnValue($i + $offset));
+            $driver = $this->createMock(\VuFindSearch\Response\SimpleRecord::class);
+            $map = [
+                [$this->uniqueKey, $i + $offset],
+                ['last_indexed', $lastMod],
+            ];
+            $driver->method('get')->willReturnMap($map);
             $expectedIds[] = $i + $offset;
             $records->add($driver);
         }
@@ -109,14 +112,13 @@ class CursorMarkIdFetcherTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a mock "GetUniqueKeyCommand" for testing purposes.
      *
-     * @return GetUniqueKeyCommand
+     * @return MockObject&GetUniqueKeyCommand
      */
-    protected function getMockKeyCommand(): GetUniqueKeyCommand
+    protected function getMockKeyCommand(): MockObject&GetUniqueKeyCommand
     {
-        $command = $this->getMockBuilder(GetUniqueKeyCommand::class)
-            ->disableOriginalConstructor()->getMock();
+        $command = $this->createMock(GetUniqueKeyCommand::class);
         $command->expects($this->once())->method('getResult')
-            ->will($this->returnValue($this->uniqueKey));
+            ->willReturn($this->uniqueKey);
         return $command;
     }
 
@@ -147,7 +149,7 @@ class CursorMarkIdFetcherTest extends \PHPUnit\Framework\TestCase
     protected function getIdsExpectation(
         string $expectedCursorMark,
         array $expectedFq = []
-    ) {
+    ): callable {
         return function ($command) use ($expectedCursorMark, $expectedFq) {
             $expectedParams = [
                 'q' => '*:*',
@@ -161,6 +163,7 @@ class CursorMarkIdFetcherTest extends \PHPUnit\Framework\TestCase
             if (!empty($expectedFq)) {
                 $expectedParams['fq'] = $expectedFq;
             }
+            $expectedParams['fl'] = 'last_indexed';
             $this->assertEquals(
                 new \VuFindSearch\ParamBag($expectedParams),
                 $command->getSearchParameters()
@@ -179,17 +182,17 @@ class CursorMarkIdFetcherTest extends \PHPUnit\Framework\TestCase
     {
         $records1 = new RecordCollection(['nextCursorMark' => 'nextCursor']);
         $expectedIds1 = $this->addRecordsToCollection($records1);
+        $nullify = function () {
+            return null;
+        };
+        $expectedMods1 = array_map($nullify, $expectedIds1);
         $records2 = new RecordCollection(['nextCursorMark' => 'nextCursor']);
         $expectedIds2 = $this->addRecordsToCollection($records2, $this->countPerPage);
+        $expectedMods2 = array_map($nullify, $expectedIds2);
         $service = $this->getMockService();
-        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
         $commandObj->expects($this->exactly(2))->method('getResult')
-            ->willReturnOnConsecutiveCalls(
-                $this->returnValue($records1),
-                $this->returnValue($records2)
-            );
+            ->willReturnOnConsecutiveCalls($records1, $records2);
 
         // Set up all the expected commands...
         $this->expectConsecutiveCalls(
@@ -212,7 +215,7 @@ class CursorMarkIdFetcherTest extends \PHPUnit\Framework\TestCase
         $fetcher = new CursorMarkIdFetcher($service);
         // Initial iteration
         $this->assertEquals(
-            ['ids' => $expectedIds1, 'nextOffset' => 'nextCursor'],
+            ['ids' => $expectedIds1, 'nextOffset' => 'nextCursor', 'lastmods' => $expectedMods1],
             $fetcher->getIdsFromBackend(
                 $this->backendId,
                 $fetcher->getInitialOffset(),
@@ -222,7 +225,7 @@ class CursorMarkIdFetcherTest extends \PHPUnit\Framework\TestCase
         );
         // Second iteration
         $this->assertEquals(
-            ['ids' => $expectedIds2, 'nextOffset' => 'nextCursor'],
+            ['ids' => $expectedIds2, 'nextOffset' => 'nextCursor', 'lastmods' => $expectedMods2],
             $fetcher->getIdsFromBackend(
                 $this->backendId,
                 'nextCursor',
@@ -231,7 +234,7 @@ class CursorMarkIdFetcherTest extends \PHPUnit\Framework\TestCase
             )
         );
         // If we send the same cursor mark a second time, we should get no results...
-        $this->assertEquals(
+        $this->assertSame(
             ['ids' => []],
             $fetcher->getIdsFromBackend(
                 $this->backendId,
@@ -250,14 +253,16 @@ class CursorMarkIdFetcherTest extends \PHPUnit\Framework\TestCase
     public function testWithFilters(): void
     {
         $records = new RecordCollection(['nextCursorMark' => 'nextCursor']);
-        $expectedIds = $this->addRecordsToCollection($records);
+        $lastMod = 'fake-date';
+        $expectedIds = $this->addRecordsToCollection($records, lastMod: $lastMod);
+        $injectDate = function () use ($lastMod) {
+            return $lastMod;
+        };
+        $expectedMods = array_map($injectDate, $expectedIds);
         $service = $this->getMockService();
         $fq = ['format:Book'];
-        $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $commandObj->expects($this->once())->method('getResult')
-            ->will($this->returnValue($records));
+        $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
+        $commandObj->expects($this->once())->method('getResult')->willReturn($records);
         // Set up all the expected commands...
         $this->expectConsecutiveCalls(
             $service,
@@ -275,7 +280,7 @@ class CursorMarkIdFetcherTest extends \PHPUnit\Framework\TestCase
         $fetcher = new CursorMarkIdFetcher($service);
         // Initial iteration
         $this->assertEquals(
-            ['ids' => $expectedIds, 'nextOffset' => 'nextCursor'],
+            ['ids' => $expectedIds, 'nextOffset' => 'nextCursor', 'lastmods' => $expectedMods],
             $fetcher->getIdsFromBackend(
                 $this->backendId,
                 $fetcher->getInitialOffset(),

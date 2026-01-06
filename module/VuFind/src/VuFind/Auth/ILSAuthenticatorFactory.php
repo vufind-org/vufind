@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Authentication
@@ -29,11 +29,15 @@
 
 namespace VuFind\Auth;
 
+use Closure;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Crypt\BlockCipher;
+use VuFind\Db\Service\AuditEventServiceInterface;
+use VuFind\Db\Service\PluginManager as DatabaseServiceManager;
 
 /**
  * ILS Authenticator factory.
@@ -63,20 +67,30 @@ class ILSAuthenticatorFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
         $service = new $requestedName(
             // Use a callback to retrieve authentication manager to break a circular reference:
-            function () use ($container) {
-                return $container->get(\VuFind\Auth\Manager::class);
-            },
+            Closure::fromCallable(
+                function () use ($container) {
+                    return $container->get(\VuFind\Auth\Manager::class);
+                }
+            ),
+            // Use a callback to build BlockCipher objects:
+            Closure::fromCallable(
+                function (string $algo) use ($container) {
+                    return $container->get(BlockCipher::class)->setAlgorithm($algo);
+                }
+            ),
             $container->get(\VuFind\ILS\Connection::class),
             $container->get(\VuFind\Auth\EmailAuthenticator::class),
-            $container->get(\VuFind\Config\PluginManager::class)->get('config')
+            $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config')
         );
+        $dbServiceManager = $container->get(DatabaseServiceManager::class);
+        $service->setAuditEventService($dbServiceManager->get(AuditEventServiceInterface::class));
         return $service;
     }
 }

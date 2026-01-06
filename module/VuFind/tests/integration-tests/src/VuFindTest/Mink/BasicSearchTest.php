@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -91,14 +91,12 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testDefaultTopPagination
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function topPaginationProvider(): array
+    public static function topPaginationProvider(): \Iterator
     {
-        return [
-            [false],
-            [true],
-        ];
+        yield [false];
+        yield [true];
     }
 
     /**
@@ -106,10 +104,9 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @param bool $jsResults Whether to update search results with JS
      *
-     * @dataProvider topPaginationProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('topPaginationProvider')]
     public function testDefaultTopPagination(bool $jsResults): void
     {
         // Change configuration:
@@ -144,10 +141,9 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
      *
      * @param bool $jsResults Whether to update search results with JS
      *
-     * @dataProvider topPaginationProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('topPaginationProvider')]
     public function testSimpleTopPagination(bool $jsResults): void
     {
         $config = [

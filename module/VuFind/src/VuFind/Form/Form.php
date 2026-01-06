@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Form
@@ -132,7 +132,7 @@ class Form extends \Laminas\Form\Form implements
      * @param YamlReader          $yamlReader        YAML reader
      * @param HelperPluginManager $viewHelperManager View helper manager
      * @param HandlerManager      $handlerManager    Handler plugin manager
-     * @param array               $config            VuFind main configuration
+     * @param ?array              $config            VuFind main configuration
      * (optional)
      *
      * @throws \Exception
@@ -141,7 +141,7 @@ class Form extends \Laminas\Form\Form implements
         YamlReader $yamlReader,
         HelperPluginManager $viewHelperManager,
         HandlerManager $handlerManager,
-        array $config = null
+        ?array $config = null
     ) {
         parent::__construct();
 
@@ -250,6 +250,16 @@ class Form extends \Laminas\Form\Form implements
     public function getFormElementConfig(): array
     {
         return $this->formElementConfig;
+    }
+
+    /**
+     * Return form action route if set in config
+     *
+     * @return string Form action route or feedback-form as default
+     */
+    public function getFormActionRoute(): string
+    {
+        return $this->formConfig['formActionRoute'] ?? 'feedback-form';
     }
 
     /**
@@ -463,6 +473,8 @@ class Form extends \Laminas\Form\Form implements
      * Retrieve input filter used by this form
      *
      * @return InputFilterInterface
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     public function getInputFilter(): InputFilterInterface
     {
@@ -753,7 +765,7 @@ class Form extends \Laminas\Form\Form implements
 
         $elements[] = [
             'type' => 'submit',
-            'name' => 'submit',
+            'name' => 'submitButton',
             'label' => 'Send',
         ];
 
@@ -849,6 +861,7 @@ class Form extends \Laminas\Form\Form implements
             'emailFrom',
             'emailSubject',
             'enabled',
+            'formActionRoute',
             'help',
             'onlyForLoggedUsers',
             'recipient',
@@ -941,7 +954,7 @@ class Form extends \Laminas\Form\Form implements
             'class' => [$el['settings']['class'] ?? null],
         ];
 
-        if ($type !== 'submit') {
+        if (!in_array($type, ['submit', 'radio', 'checkbox', 'select'], true)) {
             $attributes['class'][] = 'form-control';
         }
 
@@ -956,7 +969,7 @@ class Form extends \Laminas\Form\Form implements
             !empty($el['label']) && 'hidden' !== $type
             && !isset($attributes['aria-label'])
         ) {
-            $attributes['aria-label'] = $el['label'];
+            $attributes['aria-label'] = $this->translate($el['label']);
         }
 
         switch ($type) {
@@ -972,6 +985,7 @@ class Form extends \Laminas\Form\Form implements
                         'value' => $key,
                         'attributes' => [
                             'id' => $this->getElementId($el['name'] . '_' . $key),
+                            'class' => 'form-check-input',
                         ],
                     ];
                 }
@@ -1000,6 +1014,7 @@ class Form extends \Laminas\Form\Form implements
                         'label_attributes' => ['for' => $elemId],
                         'attributes' => [
                             'id' => $elemId,
+                            'class' => 'form-check-input',
                         ],
                         'selected' => $first,
                     ];
@@ -1008,6 +1023,7 @@ class Form extends \Laminas\Form\Form implements
                 $conf['options'] = ['value_options' => $optionElements];
                 break;
             case 'select':
+                $attributes['class'][] = 'form-select';
                 if (isset($el['options'])) {
                     $options = $el['options'];
                     foreach ($options as $key => &$option) {

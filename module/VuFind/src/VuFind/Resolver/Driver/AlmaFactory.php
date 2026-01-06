@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Resolver_Drivers
@@ -65,10 +65,9 @@ class AlmaFactory extends DriverWithHttpClientFactory
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
-        $configs = [$container->get(\VuFind\Config\PluginManager::class)
-            ->get('config')->OpenURL->toArray()];
+        $configs = [$container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config')['OpenURL']];
         if ($options) {
             array_unshift($options, $configs);
         } else {

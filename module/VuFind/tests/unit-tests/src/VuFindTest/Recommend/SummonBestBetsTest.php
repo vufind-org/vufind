@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -49,23 +49,17 @@ class SummonBestBetsTest extends \PHPUnit\Framework\TestCase
      */
     public function testGetResults(): void
     {
-        $pm = $this->getMockBuilder(\VuFind\Search\Results\PluginManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $pm = $this->createMock(\VuFind\Search\Results\PluginManager::class);
         $obj = new SummonBestBets($pm);
-        $results = $this->getMockBuilder(\VuFind\Search\Summon\Results::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $parms = $this->getMockBuilder(\VuFind\Search\Base\Params::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $results = $this->createMock(\VuFind\Search\Summon\Results::class);
+        $parms = $this->createMock(\VuFind\Search\Base\Params::class);
         $results->expects($this->once())->method('getParams')
-            ->will($this->returnValue($parms));
+            ->willReturn($parms);
         $parms->expects($this->once())->method('getSearchClassId')
-            ->will($this->returnValue('Summon'));
+            ->willReturn('Summon');
         $obj->process($results);
         $results->expects($this->once())->method('getBestBets')
-            ->will($this->returnValue(false));
+            ->willReturn(false);
         $this->assertFalse($obj->getResults());
     }
 }

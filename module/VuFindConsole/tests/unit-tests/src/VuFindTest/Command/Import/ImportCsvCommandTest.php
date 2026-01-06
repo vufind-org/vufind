@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -74,10 +74,10 @@ class ImportCsvCommandTest extends \PHPUnit\Framework\TestCase
         $importer = $this->getMockImporter();
         $importer->expects($this->once())->method('save')
             ->with(
-                $this->equalTo('foo.csv'),
-                $this->equalTo('bar.ini'),
-                $this->equalTo('Solr'),
-                $this->equalTo(false)
+                'foo.csv',
+                'bar.ini',
+                'Solr',
+                false
             );
         $command = new ImportCsvCommand($importer);
         $commandTester = new CommandTester($command);
@@ -87,11 +87,11 @@ class ImportCsvCommandTest extends \PHPUnit\Framework\TestCase
                 'ini_file' => 'bar.ini',
             ]
         );
-        $this->assertEquals(
+        $this->assertSame(
             "Successfully imported foo.csv...\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -105,11 +105,11 @@ class ImportCsvCommandTest extends \PHPUnit\Framework\TestCase
         $importer = $this->getMockImporter();
         $importer->expects($this->once())->method('save')
             ->with(
-                $this->equalTo('foo.csv'),
-                $this->equalTo('bar.ini'),
-                $this->equalTo('SolrTest'),
-                $this->equalTo(true)
-            )->will($this->throwException($e));
+                'foo.csv',
+                'bar.ini',
+                'SolrTest',
+                true
+            )->willThrowException($e);
         $command = new ImportCsvCommand($importer);
         $commandTester = new CommandTester($command);
         $commandTester->execute(
@@ -120,11 +120,11 @@ class ImportCsvCommandTest extends \PHPUnit\Framework\TestCase
                 '--test-only' => true,
             ]
         );
-        $this->assertEquals(
+        $this->assertSame(
             "Fatal error: foo\nPrevious exception: bar\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertSame(1, $commandTester->getStatusCode());
     }
 
     /**

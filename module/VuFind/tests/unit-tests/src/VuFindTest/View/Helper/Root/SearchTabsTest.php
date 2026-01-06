@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -31,6 +31,7 @@ namespace VuFindTest\View\Helper\Root;
 
 use Laminas\Http\Request;
 use Laminas\View\Helper\Url;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Record\Loader;
 use VuFind\Search\Results\PluginManager as ResultsPluginManager;
 use VuFind\Search\SearchTabsHelper;
@@ -56,40 +57,38 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetCurrentHiddenFilterParams
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getCurrentHiddenFilterParamsProvider(): array
+    public static function getCurrentHiddenFilterParamsProvider(): \Iterator
     {
-        return [
+        yield [
+            [],
+            2,
+            [],
+            1,
+            '',
+        ];
+        yield [
             [
-                [],
-                2,
-                [],
-                1,
-                '',
+                'first' => 'foo',
+                'second' => 'bar',
             ],
+            1,
             [
-                [
-                    'first' => 'foo',
-                    'second' => 'bar',
-                ],
-                1,
-                [
-                    'last' => ['foo'],
-                ],
-                0,
-                'hiddenFilters%5B%5D=first%3A%22foo%22'
-                . '&amp;hiddenFilters%5B%5D=second%3A%22bar%22',
+                'last' => ['foo'],
             ],
+            0,
+            'hiddenFilters%5B%5D=first%3A%22foo%22'
+            . '&amp;hiddenFilters%5B%5D=second%3A%22bar%22',
+        ];
+        yield [
+            [],
+            1,
             [
-                [],
-                1,
-                [
-                    'last' => ['foo'],
-                ],
-                1,
-                'hiddenFilters%5B%5D=last%3A%22foo%22',
+                'last' => ['foo'],
             ],
+            1,
+            'hiddenFilters%5B%5D=last%3A%22foo%22',
         ];
     }
 
@@ -103,9 +102,8 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
      * @param string $expected         Expected results
      *
      * @return void
-     *
-     * @dataProvider getCurrentHiddenFilterParamsProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getCurrentHiddenFilterParamsProvider')]
     public function testGetCurrentHiddenFilterParams(
         array $currentFilters,
         int $filtersCalls,
@@ -121,7 +119,7 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
         );
 
         $this->assertEquals(
-            "&amp;$expected",
+            $expected ? "&amp;$expected" : '',
             $helper->getCurrentHiddenFilterParams('Solr')
         );
         $this->assertEquals(
@@ -269,20 +267,12 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
         array $tabFilterConfig = [],
         int $tabFilterConfigCalls = 0
     ): SearchTabs {
-        $searchService = $this->getMockBuilder(SearchService::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $recordLoader = $this->getMockBuilder(Loader::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $searchService = $this->createMock(SearchService::class);
+        $recordLoader = $this->createMock(Loader::class);
         $solr = new Results($this->getSolrParams(), $searchService, $recordLoader);
 
-        $resultsPM = $this->getMockBuilder(ResultsPluginManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $resultsPM->expects($this->any())
-            ->method('get')
-            ->willReturn($solr);
+        $resultsPM = $this->createMock(ResultsPluginManager::class);
+        $resultsPM->method('get')->willReturn($solr);
 
         $request = Request::fromString('GET / HTTP/1.1');
         if ($filters) {
@@ -293,9 +283,7 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
             $request->getQuery()->hiddenFilters = $queryFilters;
         }
 
-        $url = $this->getMockBuilder(Url::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $url = $this->createMock(Url::class);
         $searchTabsHelper = new SearchTabsHelper(
             $resultsPM,
             $tabConfig,
@@ -305,9 +293,7 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
                 'Solr:filtered' => 'logged-in',
             ]
         );
-        $searchMemory = $this->getMockBuilder(SearchMemory::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $searchMemory = $this->createMock(SearchMemory::class);
         $searchMemory->expects($this->exactly($lastFiltersCalls))
             ->method('getLastHiddenFilters')
             ->willReturn($lastFilters);
@@ -324,16 +310,10 @@ class SearchTabsTest extends \PHPUnit\Framework\TestCase
      */
     protected function getSolrParams(): Params
     {
-        $solrOptions = $this->getMockBuilder(\VuFind\Search\Solr\Options::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $solrOptions->expects($this->any())
-            ->method('getSearchClassId')
-            ->willReturn('Solr');
-        $solrOptions->expects($this->any())
-            ->method('getDefaultLimit')
-            ->willReturn(20);
-        $configManager = $this->createMock(\VuFind\Config\PluginManager::class);
+        $solrOptions = $this->createMock(\VuFind\Search\Solr\Options::class);
+        $solrOptions->method('getSearchClassId')->willReturn('Solr');
+        $solrOptions->method('getDefaultLimit')->willReturn(20);
+        $configManager = $this->createMock(ConfigManagerInterface::class);
         return new \VuFind\Search\Solr\Params($solrOptions, $configManager);
     }
 }

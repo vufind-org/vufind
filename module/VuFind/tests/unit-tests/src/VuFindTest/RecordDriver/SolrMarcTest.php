@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -30,7 +30,10 @@
 
 namespace VuFindTest\RecordDriver;
 
-use function count;
+use VuFind\ILS\Connection;
+use VuFind\ILS\Logic\Holds;
+use VuFind\ILS\Logic\TitleHolds;
+
 use function in_array;
 
 /**
@@ -58,10 +61,10 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testBug1()
+    public function testBug1(): void
     {
         $configArr = ['Record' => ['marc_links' => '760,765,770,772,774,773,775,777,780,785']];
-        $config = new \Laminas\Config\Config($configArr);
+        $config = new \VuFind\Config\Config($configArr);
         $record = new \VuFind\RecordDriver\SolrMarc($config);
         $fixture = $this->getJsonFixture('misc/testbug1.json');
         $record->setRawData($fixture['response']['docs'][0]);
@@ -91,21 +94,21 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testBug2()
+    public function testBug2(): void
     {
         $record = new \VuFind\RecordDriver\SolrMarc();
         $fixture = $this->getJsonFixture('misc/testbug2.json');
         $record->setRawData($fixture['response']['docs'][0]);
 
         $this->assertEquals(
-            $record->getPrimaryAuthor(),
-            'Vico, Giambattista, 1668-1744.'
+            'Vico, Giambattista, 1668-1744.',
+            $record->getPrimaryAuthor()
         );
         $secondary = $record->getSecondaryAuthors();
-        $this->assertEquals(count($secondary), 1);
+        $this->assertCount(1, $secondary);
         $this->assertTrue(in_array('Pandolfi, Claudia.', $secondary));
         $series = $record->getSeries();
-        $this->assertEquals(count($series), 1);
+        $this->assertCount(1, $series);
         $this->assertEquals(
             'Vico, Giambattista, 1668-1744. Works. 1982 ;',
             $series[0]['name']
@@ -118,9 +121,9 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testSubjectHeadings()
+    public function testSubjectHeadings(): void
     {
-        $config = new \Laminas\Config\Config([]);
+        $config = new \VuFind\Config\Config([]);
         $record = new \VuFind\RecordDriver\SolrMarc($config);
         $fixture = $this->getJsonFixture('misc/testbug1.json');
         $record->setRawData($fixture['response']['docs'][0]);
@@ -142,14 +145,92 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Test regular and extended subject heading support for different possible config options.
+     *
+     * @param ?string $marcSubjectHeadingsSortConfig The config value for
+     * $this->mainConfig->Record->marcSubjectHeadingsSort
+     * @param array   $expectedResults               Array of the expected values returned from
+     * $record->getAllSubjectHeadings()
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('marcSubjectHeadingsSortOptionsProvider')]
+    public function testSubjectHeadingsOrder(?string $marcSubjectHeadingsSortConfig, array $expectedResults): void
+    {
+        $configArray = [
+            'Record' => [
+                'marcSubjectHeadingsSort' => $marcSubjectHeadingsSortConfig,
+            ],
+        ];
+        $marc = $this->getFixture('marc/subjectheadingsorder.xml');
+        $config = new \VuFind\Config\Config($configArray);
+        $record = new \VuFind\RecordDriver\SolrMarc($config);
+        $record->setRawData(['fullrecord' => $marc]);
+        $this->assertEquals($expectedResults, $record->getAllSubjectHeadings());
+    }
+
+    /**
+     * Config and data for assertion of Subject Headings Order (testSubjectHeadingsOrder)
+     *
+     * @return \Iterator
+     */
+    public static function marcSubjectHeadingsSortOptionsProvider(): \Iterator
+    {
+        // Record order is the default; save it to a variable so we
+        // can test both explicit and default configuration behaviors
+        // using the same values.
+        $recordOrderResults = [
+            [
+                'Guerrero (Mexico : State)',
+                'Social life and customs',
+                'Pictorial works.',
+            ],
+            [
+                'Street photography',
+                'Mexico',
+                'Guerrero (State)',
+            ],
+            [
+                'Photobooks.',
+            ],
+        ];
+        yield 'field config' => [
+            'numerical',
+            [
+                [
+                    'Street photography',
+                    'Mexico',
+                    'Guerrero (State)',
+                ],
+                [
+                    'Guerrero (Mexico : State)',
+                    'Social life and customs',
+                    'Pictorial works.',
+                ],
+                [
+                    'Photobooks.',
+                ],
+            ],
+        ];
+        yield 'record config' => [
+            'record',
+            $recordOrderResults,
+        ];
+        yield 'default config' => [
+            null,
+            $recordOrderResults,
+        ];
+    }
+
+    /**
      * Test table of contents support.
      *
      * @return void
      */
-    public function testTOC()
+    public function testTOC(): void
     {
         $marc = $this->getFixture('marc/toc1.xml');
-        $config = new \Laminas\Config\Config([]);
+        $config = new \VuFind\Config\Config([]);
         $record = new \VuFind\RecordDriver\SolrMarc($config);
         $record->setRawData(['fullrecord' => $marc]);
         $this->assertEquals(
@@ -200,13 +281,56 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
+     * Data provider for testGetSchemaOrgFormatsArray().
+     *
+     * @return \Iterator
+     */
+    public static function getSchemaOrgFormatsArrayProvider(): \Iterator
+    {
+        yield 'with ILS' => [true, ['CreativeWork', 'Product']];
+        yield 'without ILS' => [false, ['CreativeWork']];
+    }
+
+    /**
+     * Test getSchemaOrgFormatsArray().
+     *
+     * @param bool  $useIls          Should we attach an ILS to the record driver?
+     * @param array $expectedFormats The expected method output
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('getSchemaOrgFormatsArrayProvider')]
+    public function testGetSchemaOrgFormatsArray(bool $useIls, array $expectedFormats): void
+    {
+        // Set up record driver:
+        $config = new \VuFind\Config\Config([]);
+        $record = new \VuFind\RecordDriver\SolrMarc($config);
+
+        // Load data:
+        $fixture = $this->getJsonFixture('misc/testbug1.json');
+        $record->setRawData($fixture['response']['docs'][0]);
+
+        // Set up and activate ILS if requested:
+        if ($useIls) {
+            $record->attachILS(
+                $this->createMock(Connection::class),
+                $this->createMock(Holds::class),
+                $this->createMock(TitleHolds::class)
+            );
+            $record->setIlsBackends(['Solr']);
+        }
+
+        $this->assertEquals($expectedFormats, $record->getSchemaOrgFormatsArray());
+    }
+
+    /**
      * Test getFormattedMarcDetails() method.
      *
      * @return void
      */
-    public function testGetFormattedMarcDetails()
+    public function testGetFormattedMarcDetails(): void
     {
-        $config = new \Laminas\Config\Config([]);
+        $config = new \VuFind\Config\Config([]);
         $record = new \VuFind\RecordDriver\SolrMarc($config);
         $fixture = $this->getJsonFixture('misc/testbug1.json');
         $record->setRawData($fixture['response']['docs'][0]);
@@ -243,15 +367,13 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMarcReaderTrait()
+    public function testMarcReaderTrait(): void
     {
         $xml = $this->getFixture('marc/marctraits.xml');
         $record = new \VuFind\Marc\MarcReader($xml);
         $obj = $this->getMockBuilder(\VuFind\RecordDriver\SolrMarc::class)
             ->onlyMethods(['getMarcReader'])->getMock();
-        $obj->expects($this->any())
-            ->method('getMarcReader')
-            ->will($this->returnValue($record));
+        $obj->method('getMarcReader')->willReturn($record);
 
         $reflection = new \ReflectionObject($obj);
 

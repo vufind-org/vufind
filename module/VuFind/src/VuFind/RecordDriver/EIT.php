@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordDrivers
@@ -44,6 +44,8 @@ use function strlen;
  */
 class EIT extends DefaultRecord
 {
+    use \VuFind\Log\VarDumperTrait;
+
     /**
      * Used for identifying search backends
      *
@@ -324,7 +326,7 @@ class EIT extends DefaultRecord
     {
         if (!isset($this->fields['fields']['header']['@attributes']['uiTerm'])) {
             throw new \Exception(
-                'ID not set!' . print_r($this->fields['fields'], true)
+                'ID not set!' . $this->varDump($this->fields['fields'])
             );
         }
         return $this->fields['fields']['header']['@attributes']['uiTerm'];

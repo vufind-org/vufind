@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -43,7 +43,7 @@ use VuFind\Controller\Plugin\ResultScroller;
  */
 class ResultScrollerTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Test next_prev_nav bug
@@ -79,11 +79,8 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
      */
     public function testDisabled()
     {
-        $mockManager
-            = $this->getMockBuilder(\VuFind\Search\Results\PluginManager::class)
-            ->disableOriginalConstructor()->getMock();
-        $mockMemory = $this->getMockBuilder(\VuFind\Search\Memory::class)
-            ->disableOriginalConstructor()->getMock();
+        $mockManager = $this->createMock(\VuFind\Search\Results\PluginManager::class);
+        $mockMemory = $this->createMock(\VuFind\Search\Memory::class);
         $plugin = new ResultScroller(
             new Container('test'),
             $mockManager,
@@ -409,20 +406,18 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
         $firstLast = true,
         $sort = null
     ): \VuFindTest\Search\TestHarness\Results {
-        $pm = $this->getMockConfigPluginManager(
+        $mockConfigManager = $this->getMockConfigManager(
             ['config' => $firstLast ? $this->getFirstLastConfig() : []]
         );
-        $options = new \VuFindTest\Search\TestHarness\Options($pm);
-        $params = new \VuFindTest\Search\TestHarness\Params($options, $pm);
+        $options = new \VuFindTest\Search\TestHarness\Options($mockConfigManager);
+        $params = new \VuFindTest\Search\TestHarness\Params($options, $mockConfigManager);
         $params->setPage($page);
         $params->setLimit($limit);
         if (null !== $sort) {
             $params->setSort($sort, true);
         }
-        $ss = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->disableOriginalConstructor()->getMock();
-        $rl = $this->getMockBuilder(\VuFind\Record\Loader::class)
-            ->disableOriginalConstructor()->getMock();
+        $ss = $this->createMock(\VuFindSearch\Service::class);
+        $rl = $this->createMock(\VuFind\Record\Loader::class);
         $results = new \VuFindTest\Search\TestHarness\Results(
             $params,
             $ss,
@@ -441,14 +436,9 @@ class ResultScrollerTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockResultScroller($results): ResultScroller
     {
-        $mockManager = $this->getMockBuilder(
-            \VuFind\Search\Results\PluginManager::class
-        )->disableOriginalConstructor()->getMock();
-        $mockMemory = $this->getMockBuilder(\VuFind\Search\Memory::class)
-            ->disableOriginalConstructor()->getMock();
-        $mockMemory->expects($this->any())
-            ->method('getLastSearchId')
-            ->willReturn(-123);
+        $mockManager = $this->createMock(\VuFind\Search\Results\PluginManager::class);
+        $mockMemory = $this->createMock(\VuFind\Search\Memory::class);
+        $mockMemory->method('getLastSearchId')->willReturn(-123);
         $params = [
             new Container('test'),
             $mockManager,

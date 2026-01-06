@@ -6,7 +6,7 @@
  * PHP version 8
  *
  * Copyright (C) Villanova University 2010.
- * Copyright (C) The National Library of Finland 2023.
+ * Copyright (C) The National Library of Finland 2023-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -89,8 +89,21 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
      */
     public function __invoke($results = null)
     {
-        $this->results = $results;
+        // Avoid setting any existing results null:
+        if (null !== $results) {
+            $this->results = $results;
+        }
         return $this;
+    }
+
+    /**
+     * Reset any stored Results object.
+     *
+     * @return void
+     */
+    public function resetStoredResults(): void
+    {
+        $this->results = null;
     }
 
     /**
@@ -216,9 +229,9 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
         $driverId = is_string($driver)
             ? $driver
             : ($driver->getSourceIdentifier() . '|' . $driver->getUniqueID());
+        $recordUrlParams = $this->getRecordUrlParams($options);
         $cacheKey = md5(
-            $driverId . '|' . ($tab ?? '-') . '|' . var_export($query, true)
-            . var_export($options, true)
+            $driverId . '|' . ($tab ?? '-') . '|' . var_export($query, true) . var_export($recordUrlParams, true)
         );
         if (!isset($this->cachedDriverUrls[$cacheKey])) {
             // Build the URL:
@@ -229,7 +242,7 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
                 $details['params'],
                 array_merge_recursive(
                     $details['options'] ?? [],
-                    ['query' => $this->getRecordUrlParams($options)]
+                    ['query' => $recordUrlParams]
                 )
             );
         }
@@ -257,14 +270,31 @@ class RecordLinker extends \Laminas\View\Helper\AbstractHelper
      * @param AbstractRecord $driver Record to link to.
      *
      * @return string
+     *
+     * @deprecated Use getBreadcrumbParams()
      */
     public function getBreadcrumbHtml($driver)
     {
-        $truncateHelper = $this->getView()->plugin('truncate');
         $escapeHelper = $this->getView()->plugin('escapeHtml');
-        return '<a href="' . $this->getUrl($driver) . '">' .
-            $escapeHelper($truncateHelper($driver->getBreadcrumb(), 30))
-            . '</a>';
+        [$text, $url] = $this->getBreadcrumbParams($driver);
+        return '<a href="' . $url . '">' . $escapeHelper($text) . '</a>';
+    }
+
+    /**
+     * Given a record driver, generate an array of parameters that can be sent to
+     * a breadcrumb helper method ([text, href]).
+     *
+     * @param AbstractRecord $driver Record to link to.
+     *
+     * @return array
+     */
+    public function getBreadcrumbParams(AbstractRecord $driver): array
+    {
+        $breadcrumb = $driver->getBreadcrumb();
+        $breadcrumbText = empty($breadcrumb)
+            ? ($this->getView()->plugin('translate'))('Title not available')
+            : ($this->getView()->plugin('truncate'))($breadcrumb, 30);
+        return [$breadcrumbText, $this->getUrl($driver)];
     }
 
     /**

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -30,8 +30,6 @@
 namespace VuFindTest\OAuth2\Repository;
 
 use VuFind\OAuth2\Entity\ScopeEntity;
-use VuFind\OAuth2\Repository\AccessTokenRepository;
-use VuFind\OAuth2\Repository\AuthCodeRepository;
 
 /**
  * OAuth2 AccessTokenRepository tests.
@@ -51,7 +49,7 @@ class AccessTokenRepositoryTest extends AbstractTokenRepositoryTestCase
      */
     public function testAccessTokenRepository(): void
     {
-        $repo = new AccessTokenRepository($this->getMockAccessTokenService());
+        $repo = $this->getAccessTokenRepository();
 
         $token = $repo->getNewToken(
             $this->createClientEntity(),
@@ -61,7 +59,6 @@ class AccessTokenRepositoryTest extends AbstractTokenRepositoryTestCase
         $tokenId = $this->createTokenId();
         $token->setIdentifier($tokenId);
         $token->setExpiryDateTime($this->createExpiryDateTime());
-
         $repo->persistNewAccessToken($token);
         $this->assertEquals(
             [
@@ -70,7 +67,7 @@ class AccessTokenRepositoryTest extends AbstractTokenRepositoryTestCase
                     'type' => 'oauth2_access_token',
                     'revoked' => false,
                     'data' => json_encode($token),
-                    'user_id' => '1',
+                    'user_id' => 1,
                 ],
             ],
             $this->accessTokenTable
@@ -99,9 +96,8 @@ class AccessTokenRepositoryTest extends AbstractTokenRepositoryTestCase
      */
     public function testPersistInvalidTokenClass(): void
     {
-        $accessTokenRepo
-            = new AccessTokenRepository($this->getMockAccessTokenService());
-        $authCodeRepo = new AuthCodeRepository($this->getMockAccessTokenService());
+        $accessTokenRepo = $this->getAccessTokenRepository();
+        $authCodeRepo = $this->getAuthCodeRepository();
 
         $token = $authCodeRepo->getNewAuthCode();
         $this->expectExceptionMessage(

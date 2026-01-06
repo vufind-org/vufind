@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_EIT
@@ -30,7 +30,7 @@
 
 namespace VuFind\Search\EIT;
 
-use function count;
+use VuFind\Config\ConfigManagerInterface;
 
 /**
  * EBSCO EIT Search Options
@@ -48,43 +48,12 @@ class Options extends \VuFind\Search\Base\Options
     /**
      * Constructor
      *
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param ConfigManagerInterface $configManager Config manager
      */
-    public function __construct(\VuFind\Config\PluginManager $configLoader)
+    public function __construct(ConfigManagerInterface $configManager)
     {
-        parent::__construct($configLoader);
         $this->searchIni = $this->facetsIni = 'EIT';
-
-        // Load the configuration file:
-        $searchSettings = $configLoader->get($this->searchIni);
-        if (isset($searchSettings->Basic_Searches)) {
-            foreach ($searchSettings->Basic_Searches as $key => $value) {
-                $this->basicHandlers[$key] = $value;
-            }
-        }
-        if (isset($searchSettings->Advanced_Searches)) {
-            foreach ($searchSettings->Advanced_Searches as $key => $value) {
-                $this->advancedHandlers[$key] = $value;
-            }
-        }
-
-        // Load sort preferences:
-        if (isset($searchSettings->Sorting)) {
-            foreach ($searchSettings->Sorting as $key => $value) {
-                $this->sortOptions[$key] = $value;
-            }
-        }
-        if (isset($searchSettings->General->default_sort)) {
-            $this->defaultSort = $searchSettings->General->default_sort;
-        }
-        if (
-            isset($searchSettings->DefaultSortingByType)
-            && count($searchSettings->DefaultSortingByType) > 0
-        ) {
-            foreach ($searchSettings->DefaultSortingByType as $key => $val) {
-                $this->defaultSortByHandler[$key] = $val;
-            }
-        }
+        parent::__construct($configManager);
     }
 
     /**

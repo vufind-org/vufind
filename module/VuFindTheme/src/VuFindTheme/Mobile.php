@@ -23,8 +23,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Theme
@@ -56,18 +56,11 @@ class Mobile
     protected $detector;
 
     /**
-     * Are mobile themes enabled?
-     *
-     * @var bool
-     */
-    protected $enabled = false;
-
-    /**
      * Constructor
      *
-     * @param uagent_info $detector Detector object to wrap (null to create one)
+     * @param ?uagent_info $detector Detector object to wrap (null to create one)
      */
-    public function __construct(uagent_info $detector = null)
+    public function __construct(?uagent_info $detector = null)
     {
         $this->detector = $detector ?? new uagent_info();
     }
@@ -83,27 +76,5 @@ class Mobile
         // may be used instead of DetectMobileLong if you want to target a narrower
         // class of devices.
         return $this->detector->DetectMobileLong();
-    }
-
-    /**
-     * Function to set enabled status of mobile themes.
-     *
-     * @param bool $enabled Are mobile themes enabled?
-     *
-     * @return void
-     */
-    public function enable($enabled = true)
-    {
-        $this->enabled = $enabled;
-    }
-
-    /**
-     * Function to check whether mobile theme is configured.
-     *
-     * @return bool
-     */
-    public function enabled()
-    {
-        return $this->enabled;
     }
 }

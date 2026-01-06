@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -128,16 +128,15 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         $expectedLinkText = implode("\n", array_map($expectedCallback, $expected));
 
         // Compare the expected and actual strings:
-        $this->assertEquals($expectedLinkText, $linkText);
+        $this->assertSame($expectedLinkText, $linkText);
     }
 
     /**
      * Test that saving a search while logging in does not create a duplicate.
      *
-     * @depends testSaveSearch
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testSaveSearch')]
     public function testSavedSearchDeduplication(): void
     {
         // Perform the same search that was already done in testSaveSearch above,
@@ -161,10 +160,9 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test search history.
      *
-     * @depends testSaveSearch
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testSaveSearch')]
     public function testSearchHistory(): void
     {
         // Use "foo \ bar" as our search because the backslash has been known
@@ -222,10 +220,9 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that user A cannot delete user B's favorites.
      *
-     * @depends testSaveSearch
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testSaveSearch')]
     public function testSavedSearchSecurity(): void
     {
         // Log in as user A and get the ID of their saved search:
@@ -240,7 +237,9 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         $this->findAndAssertLink($page, 'Log Out')->click();
 
         // Use user A's delete link, but try to execute it as user B:
-        [$base, $params] = explode('?', $delete);
+        [, $params] = explode('?', $delete);
+        // We expect an error, so let's act like production mode for realistic testing:
+        $session->setWhoopsDisabled(true);
         $session->visit($this->getVuFindUrl() . '/MyResearch/SaveSearch?' . $params);
         $page = $session->getPage();
         $this->clickCss($page, '.createAccountLink');
@@ -252,6 +251,8 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->findAndAssertLink($page, 'Log Out')->click();
 
+        // Go back to stricter error handling:
+        $session->setWhoopsDisabled(false);
         // Go back in as user A -- see if the saved search still exists.
         $this->findAndAssertLink($page, 'Search History')->click();
         $this->clickCss($page, '#loginOptions a');
@@ -294,10 +295,9 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that notification settings work correctly.
      *
-     * @depends testSaveSearch
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testSaveSearch')]
     public function testNotificationSettings(): void
     {
         // Add a search to history...
@@ -350,10 +350,9 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test that notifications are accessible via the search toolbar
      *
-     * @depends testSaveSearch
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testSaveSearch')]
     public function testNotificationsInSearchToolbar()
     {
         // Add a search to history...
@@ -391,10 +390,9 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
      * Test that accessing the "manage schedule" screen properly deduplicates
      * existing saved searches if clicked prior to user login.
      *
-     * @depends testNotificationsInSearchToolbar
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testNotificationsInSearchToolbar')]
     public function testNotificationsInSearchToolbarDeduplication()
     {
         // Perform the same search as the previous test, and turn on notifications.
@@ -424,10 +422,9 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
      * Test that scheduling a search from the history screen properly deduplicates
      * existing saved searches if clicked prior to user login.
      *
-     * @depends testNotificationsInSearchToolbar
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testNotificationsInSearchToolbar')]
     public function testNotificationsInSearchHistoryDeduplication()
     {
         // Perform the same search as the previous test, and turn on notifications.

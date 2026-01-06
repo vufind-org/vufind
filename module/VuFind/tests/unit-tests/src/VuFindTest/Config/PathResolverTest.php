@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -30,8 +30,8 @@
 namespace VuFindTest\Config;
 
 use VuFind\Config\PathResolver;
+use VuFindTest\Feature\ConfigRelatedServicesTrait;
 use VuFindTest\Feature\FixtureTrait;
-use VuFindTest\Feature\PathResolverTrait;
 
 /**
  * Config Path Resolver Test Class
@@ -45,40 +45,7 @@ use VuFindTest\Feature\PathResolverTrait;
 class PathResolverTest extends \PHPUnit\Framework\TestCase
 {
     use FixtureTrait;
-    use PathResolverTrait;
-
-    /**
-     * Stacked path resolver
-     *
-     * @var PathResolver
-     */
-    protected $stackedResolver;
-
-    /**
-     * Setup method.
-     *
-     * @return void
-     */
-    public function setUp(): void
-    {
-        $fixtureDir = $this->getStackedFixtureDir();
-        $this->stackedResolver = new PathResolver(
-            [
-                'directory' => APPLICATION_PATH,
-                'defaultConfigSubdir' => PathResolver::DEFAULT_CONFIG_SUBDIR,
-            ],
-            [
-                [
-                    'directory' => $fixtureDir . 'secondary',
-                    'defaultConfigSubdir' => 'config/custom',
-                ],
-                [
-                    'directory' => $fixtureDir . 'primary',
-                    'defaultConfigSubdir' => PathResolver::DEFAULT_CONFIG_SUBDIR,
-                ],
-            ]
-        );
-    }
+    use ConfigRelatedServicesTrait;
 
     /**
      * Test PathResolver
@@ -94,11 +61,11 @@ class PathResolverTest extends \PHPUnit\Framework\TestCase
 
         $pathResolver = $this->getPathResolver();
 
-        $this->assertEquals(
+        $this->assertSame(
             $baseConfig,
             $pathResolver->getBaseConfigPath('config.ini')
         );
-        $this->assertEquals(
+        $this->assertSame(
             $localConfig,
             $pathResolver->getLocalConfigPath('config.ini', null, true)
         );
@@ -106,70 +73,57 @@ class PathResolverTest extends \PHPUnit\Framework\TestCase
             null,
             $pathResolver->getLocalConfigPath('non-existent-config.ini')
         );
-        $this->assertEquals(
+        $this->assertSame(
             file_exists($localConfig) ? $localConfig : $baseConfig,
             $pathResolver->getConfigPath('config.ini')
         );
     }
 
     /**
-     * Data provider for testPathStack
+     * Data provider for testPathStack.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getTestPathStackData(): array
+    public static function getTestPathStackData(): \Iterator
     {
-        return [
-            [
-                // A file that exists only in the primary path:
-                'only-primary.ini',
-                'primary/config/vufind/only-primary.ini',
-            ],
-            [
-                // A file that exists both in the primary and secondary paths:
-                'both.ini',
-                'primary/config/vufind/both.ini',
-            ],
-            [
-                // A file that exists in the secondary path as well as base path:
-                'facets.ini',
-                'secondary/config/custom/facets.ini',
-            ],
-            [
-                // A file that exists only in the base path:
-                'config.ini',
-                'config/vufind/config.ini',
-                APPLICATION_PATH . '/',
-            ],
+        yield [
+            // A file that exists only in the primary path:
+            'primary.ini',
+            'primary/config/vufind/primary.ini',
+        ];
+        yield [
+            // A file that exists in all paths:
+            'all.ini',
+            'primary/config/vufind/all.ini',
+        ];
+        yield [
+            // A file that exists in the secondary path as well as base path:
+            'base-secondary.ini',
+            'primary/../secondary/config/custom/base-secondary.ini',
+        ];
+        yield [
+            // A file that exists only in the base path:
+            'base.ini',
+            'base/config/vufind/base.ini',
         ];
     }
 
     /**
-     * Test stacked path resolution
+     * Test stacked path resolution.
      *
-     * @param string  $filename         Filename to check
-     * @param string  $expectedFilePath Expected result (minus base path)
-     * @param ?string $expectedBasePath Expected base path in result (null = use default fixture path)
-     *
-     * @dataProvider getTestPathStackData
+     * @param string $filename         Filename to check
+     * @param string $expectedFilePath Expected result (minus base path)
      *
      * @return void
      */
-    public function testPathStack(string $filename, string $expectedFilePath, ?string $expectedBasePath = null): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('getTestPathStackData')]
+    public function testPathStack(string $filename, string $expectedFilePath): void
     {
-        $this->assertEquals(
-            ($expectedBasePath ?? $this->getStackedFixtureDir()) . $expectedFilePath,
-            $this->stackedResolver->getConfigPath($filename)
+        $fixtureDir = realpath($this->getFixtureDir() . 'configs/pathstack') . '/';
+        $pathResolver = $this->getPathResolver(baseDir: $fixtureDir . 'base', localDir: $fixtureDir . 'primary');
+        $this->assertSame(
+            $fixtureDir . $expectedFilePath,
+            $pathResolver->getConfigPath($filename)
         );
-    }
-
-    /**
-     * Get path to stacked config fixtures
-     *
-     * @return string
-     */
-    public function getStackedFixtureDir(): string
-    {
-        return realpath($this->getFixtureDir() . 'configs/pathstack') . '/';
     }
 }

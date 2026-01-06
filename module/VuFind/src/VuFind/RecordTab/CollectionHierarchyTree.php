@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  RecordTabs
@@ -50,11 +50,11 @@ class CollectionHierarchyTree extends HierarchyTree
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $config Configuration
-     * @param \VuFind\Record\Loader  $loader Record loader
+     * @param \VuFind\Config\Config $config Configuration
+     * @param \VuFind\Record\Loader $loader Record loader
      */
     public function __construct(
-        \Laminas\Config\Config $config,
+        \VuFind\Config\Config $config,
         \VuFind\Record\Loader $loader
     ) {
         parent::__construct($config);
@@ -64,13 +64,13 @@ class CollectionHierarchyTree extends HierarchyTree
     /**
      * Render a hierarchy tree
      *
-     * @param string  $id      Hierarchy ID (omit to use active tree)
+     * @param ?string $id      Hierarchy ID (omit to use active tree)
      * @param ?string $context Context for use by renderer or null for default
      * @param array   $options Additional options (like previewElement)
      *
      * @return string
      */
-    public function renderTree(string $id = null, ?string $context = null, array $options = [])
+    public function renderTree(?string $id = null, ?string $context = null, array $options = [])
     {
         // Same as parent -- we just have a different default context:
         return parent::renderTree($id, $context ?? 'Collection', $options);

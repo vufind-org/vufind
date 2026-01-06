@@ -1,0 +1,15 @@
+<?php
+    // Load standard settings from the default search results screen:
+    echo $this->render('search/results.phtml');
+
+    // Override some details...
+
+    // Set up page title:
+    $this->headTitle($this->translate('Author Search Results'));
+
+    // Set up empty search box (we want Author search boxes to point at the Solr search screen):
+    $this->layout()->searchbox = $this->render('search/searchbox.phtml');
+
+    // Set up breadcrumbs:
+    $this->breadcrumbs()->set($this->translate('Author'), $this->url('author-home'))
+        ->add($this->params->getDisplayQuery(), active: true);

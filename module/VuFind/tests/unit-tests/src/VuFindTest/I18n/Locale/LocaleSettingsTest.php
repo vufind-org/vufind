@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -31,7 +31,7 @@
 
 namespace VuFindTest\I18n\Locale;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\I18n\Locale\LocaleSettings;
 
 /**
@@ -85,7 +85,7 @@ class LocaleSettingsTest extends \PHPUnit\Framework\TestCase
             )
         );
         $this->assertTrue($settings->browserLanguageDetectionEnabled());
-        $this->assertEquals(['en'], $settings->getFallbackLocales());
+        $this->assertSame(['en'], $settings->getFallbackLocales());
     }
 
     /**
@@ -149,46 +149,44 @@ class LocaleSettingsTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testFallbackLocalConfigs
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function fallbackLocalConfigsProvider(): array
+    public static function fallbackLocalConfigsProvider(): \Iterator
     {
-        return [
-            [
-                ['en'],
-                'en',
-                null,
-            ],
-            [
-                ['en'],
-                'en',
-                '',
-            ],
-            [
-                ['fi', 'en'],
-                'fi',
-                null,
-            ],
-            [
-                ['fi', 'en'],
-                'en',
-                'fi',
-            ],
-            [
-                ['fi', 'en'],
-                'en',
-                'fi, en',
-            ],
-            [
-                ['de', 'fi', 'en'],
-                'en',
-                'de,fi',
-            ],
-            [
-                ['de', 'fi', 'sv', 'en'],
-                'sv',
-                'de,fi',
-            ],
+        yield [
+            ['en'],
+            'en',
+            null,
+        ];
+        yield [
+            ['en'],
+            'en',
+            '',
+        ];
+        yield [
+            ['fi', 'en'],
+            'fi',
+            null,
+        ];
+        yield [
+            ['fi', 'en'],
+            'en',
+            'fi',
+        ];
+        yield [
+            ['fi', 'en'],
+            'en',
+            'fi, en',
+        ];
+        yield [
+            ['de', 'fi', 'en'],
+            'en',
+            'de,fi',
+        ];
+        yield [
+            ['de', 'fi', 'sv', 'en'],
+            'sv',
+            'de,fi',
         ];
     }
 
@@ -199,10 +197,9 @@ class LocaleSettingsTest extends \PHPUnit\Framework\TestCase
      * @param string  $language          Default language
      * @param ?string $fallbackLanguages Fallback languages or null for no setting
      *
-     * @dataProvider fallbackLocalConfigsProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('fallbackLocalConfigsProvider')]
     public function testFallbackLocaleConfigs(array $expected, string $language, ?string $fallbackLanguages): void
     {
         $config = [

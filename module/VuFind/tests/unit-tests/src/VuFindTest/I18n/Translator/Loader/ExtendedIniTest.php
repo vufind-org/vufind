@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -58,7 +58,7 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
         ];
         $loader = new ExtendedIni($pathStack);
         $result = $loader->load('en', null);
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'blank_line' =>
                     html_entity_decode('&#x200C;', ENT_NOQUOTES, 'UTF-8'),
@@ -81,7 +81,7 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
         ];
         $loader = new ExtendedIni($pathStack, 'en');
         $result = $loader->load('fake', null);
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'blank_line' =>
                     html_entity_decode('&#x200C;', ENT_NOQUOTES, 'UTF-8'),
@@ -105,7 +105,7 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
         ];
         $loader = new ExtendedIni($pathStack, 'fake');
         $result = $loader->load('fake', null);
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'test3' => 'test three',
             ],
@@ -125,7 +125,7 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
         ];
         $loader = new ExtendedIni($pathStack);
         $result = $loader->load('self-parent', null);
-        $this->assertEquals(
+        $this->assertSame(
             [
                 '@parent_ini' => 'self-parent.ini',
                 'string' => 'bad',
@@ -146,12 +146,12 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
         ];
         $loader = new ExtendedIni($pathStack);
         $result = $loader->load('child2', null);
-        $this->assertEquals(
+        $this->assertSame(
             [
-                '@parent_ini' => 'child1.ini',
-                'test1' => 'test 1',
-                'test2' => 'test 2',
                 'test3' => 'test three',
+                '@parent_ini' => 'child1.ini',
+                'test2' => 'test 2',
+                'test1' => 'test 1',
             ],
             (array)$result
         );
@@ -172,23 +172,44 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test alias behavior.
+     * Test alias behavior in default domain.
      *
      * @return void
      */
-    public function testAliasing(): void
+    public function testAliasingInDefaultDomain(): void
     {
         $pathStack = [
             realpath($this->getFixtureDir() . 'language/aliases'),
         ];
         $loader = new ExtendedIni($pathStack, 'en');
         $result = $loader->load('en', null);
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'bar' => 'Translation',
-                'baz' => 'Domain Translation',
                 'foo' => 'Translation',
+                'baz' => 'Domain Translation',
                 'xyzzy' => 'Domain Translation',
+                'foofoo' => 'Translation',
+            ],
+            (array)$result
+        );
+    }
+
+    /**
+     * Test alias behavior in non-default domain.
+     *
+     * @return void
+     */
+    public function testAliasingInNonDefaultDomain(): void
+    {
+        $pathStack = [
+            realpath($this->getFixtureDir() . 'language/aliases'),
+        ];
+        $loader = new ExtendedIni($pathStack, 'en');
+        $result = $loader->load('en', 'Domain');
+        $this->assertSame(
+            [
+                'bar' => 'Domain Translation',
                 'foofoo' => 'Translation',
             ],
             (array)$result
@@ -222,13 +243,13 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
         ];
         $loader = new ExtendedIni($pathStack, 'en');
         $result = $loader->load('en-gb', null);
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'bar' => 'Translation',
-                'baz' => 'Domain Translation',
-                'foo' => 'Translation',
-                'xyzzy' => 'Child Overriding Alias',
                 '@parent_ini' => 'en.ini',
+                'xyzzy' => 'Child Overriding Alias',
+                'foo' => 'Translation',
+                'baz' => 'Domain Translation',
                 'foofoo' => 'Translation',
             ],
             (array)$result
@@ -248,18 +269,18 @@ class ExtendedIniTest extends \PHPUnit\Framework\TestCase
         $loader = new ExtendedIni($pathStack, 'en');
         $loader->disableAliases();
         $result = $loader->load('en', null);
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'bar' => 'Translation',
             ],
             (array)$result
         );
         $result = $loader->load('en-gb', null);
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'bar' => 'Translation',
-                'xyzzy' => 'Child Overriding Alias',
                 '@parent_ini' => 'en.ini',
+                'xyzzy' => 'Child Overriding Alias',
             ],
             (array)$result
         );

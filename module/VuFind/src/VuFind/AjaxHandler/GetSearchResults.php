@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  AJAX
@@ -33,8 +33,7 @@ use Laminas\Mvc\Controller\Plugin\Params as ParamsHelper;
 use Laminas\Stdlib\Parameters;
 use Laminas\View\Model\ViewModel;
 use Laminas\View\Renderer\PhpRenderer;
-use VuFind\Db\Row\User as UserRow;
-use VuFind\Db\Table\Search;
+use VuFind\Db\Entity\UserEntityInterface;
 use VuFind\Record\Loader as RecordLoader;
 use VuFind\Search\Base\Results;
 use VuFind\Search\Memory;
@@ -54,7 +53,7 @@ use function call_user_func;
  * @link     https://vufind.org/wiki/development Wiki
  */
 class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
-    \Laminas\Log\LoggerAwareInterface,
+    \Psr\Log\LoggerAwareInterface,
     \VuFind\I18n\Translator\TranslatorAwareInterface
 {
     use \VuFind\I18n\Translator\TranslatorAwareTrait;
@@ -109,26 +108,24 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
     /**
      * Constructor
      *
-     * @param SessionSettings  $sessionSettings  Session settings
-     * @param ResultsManager   $resultsManager   Results Manager
-     * @param PhpRenderer      $renderer         View renderer
-     * @param RecordLoader     $recordLoader     Record loader
-     * @param ?UserRow         $user             Logged-in user
-     * @param string           $sessionId        Session ID
-     * @param SearchNormalizer $searchNormalizer Search normalizer
-     * @param Search           $searchTable      Search table
-     * @param array            $config           Main configuration
-     * @param Memory           $searchMemory     Search memory
+     * @param SessionSettings      $sessionSettings  Session settings
+     * @param ResultsManager       $resultsManager   Results Manager
+     * @param PhpRenderer          $renderer         View renderer
+     * @param RecordLoader         $recordLoader     Record loader
+     * @param ?UserEntityInterface $user             Logged-in user
+     * @param string               $sessionId        Session ID
+     * @param SearchNormalizer     $searchNormalizer Search normalizer
+     * @param array                $config           Main configuration
+     * @param Memory               $searchMemory     Search memory
      */
     public function __construct(
         SessionSettings $sessionSettings,
         protected ResultsManager $resultsManager,
         protected PhpRenderer $renderer,
         protected RecordLoader $recordLoader,
-        protected ?UserRow $user,
+        protected ?UserEntityInterface $user,
         protected string $sessionId,
         protected SearchNormalizer $searchNormalizer,
-        protected Search $searchTable,
         protected array $config,
         protected Memory $searchMemory
     ) {
@@ -171,6 +168,10 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
 
         if ($requestParams->fromQuery('history')) {
             $this->saveSearchToHistory($results);
+        }
+
+        if ($results->getOptions()->resultScrollerActive()) {
+            $requestParams->getController()->resultScroller()->init($results);
         }
 
         // Always save search parameters, since these are namespaced by search
@@ -241,6 +242,7 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
                 'showBulkOptions' => $showBulkOptions,
                 'showCartControls' => $showCartControls,
                 'showCheckboxes' => $showCheckboxes,
+                'saveToHistory' => (bool)$requestParams->fromQuery('history', false),
             ]
         );
     }
@@ -255,11 +257,13 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
      * @param string       $navClass      Additional class for the nav element
      *
      * @return ?string
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function renderPagination(
         ParamsHelper $requestParams,
         Results $results,
-        string $template = 'search/pagination.phtml',
+        string $template = 'Helpers/pagination.phtml',
         string $ulClass = '',
         string $navClass = ''
     ): ?string {
@@ -275,7 +279,7 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
             $results->getPaginator(),
             'Sliding',
             $template,
-            ['results' => $results, 'options' => $paginationOptions]
+            ['params' => ['results' => $results], 'options' => $paginationOptions]
         );
     }
 
@@ -289,7 +293,7 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
      */
     protected function renderPaginationSimple(ParamsHelper $requestParams, Results $results): ?string
     {
-        return $this->renderPagination($requestParams, $results, 'search/pagination_simple.phtml');
+        return $this->renderPagination($requestParams, $results, 'Helpers/pagination-simple.phtml');
     }
 
     /**
@@ -302,7 +306,7 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
      */
     protected function renderPaginationTop(ParamsHelper $requestParams, Results $results): ?string
     {
-        return $this->renderPagination($requestParams, $results, 'search/pagination-top.phtml');
+        return $this->renderPagination($requestParams, $results, 'Helpers/pagination-top.phtml');
     }
 
     /**
@@ -340,6 +344,8 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
      * @param Results      $results       Search results
      *
      * @return ?string
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
     protected function renderAnalytics(ParamsHelper $requestParams, Results $results): ?string
     {
@@ -360,11 +366,10 @@ class GetSearchResults extends \VuFind\AjaxHandler\AbstractBase implements
      */
     protected function saveSearchToHistory(Results $results): void
     {
-        $this->searchTable->saveSearch(
-            $this->searchNormalizer,
+        $this->searchNormalizer->saveNormalizedSearch(
             $results,
             $this->sessionId,
-            $this->user->id ?? null
+            $this->user?->getId()
         );
     }
 }

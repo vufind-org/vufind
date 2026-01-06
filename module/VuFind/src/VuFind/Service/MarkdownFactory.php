@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  VuFind\Service
@@ -36,11 +36,11 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use League\CommonMark\Environment\Environment;
 use League\CommonMark\Environment\EnvironmentBuilderInterface;
 use League\CommonMark\Extension\CommonMark\CommonMarkCoreExtension;
-use League\CommonMark\MarkdownConverter;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 use function count;
+use function sprintf;
 
 /**
  * VuFind Markdown Service factory.
@@ -119,10 +119,12 @@ class MarkdownFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
-        $this->config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('markdown')->toArray();
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options passed to factory.');
+        }
+        $this->config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('markdown');
         $this->extensions = isset($this->config['Markdown']['extensions'])
             ? array_map(
                 'trim',
@@ -132,7 +134,7 @@ class MarkdownFactory implements FactoryInterface
         $this->extensions = array_filter($this->extensions);
         $this->container = $container;
 
-        return new MarkdownConverter($this->getEnvironment());
+        return new $requestedName($this->getEnvironment());
     }
 
     /**

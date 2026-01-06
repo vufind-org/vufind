@@ -1,0 +1,9 @@
+<?php
+  $options = $this->searchOptions($this->driver->getSearchBackendIdentifier());
+  $searchRoute = $options->getSearchAction();
+  if ($searchRoute === 'search-results') { // override search-results with author module
+    $query = ['author' => $this->lookfor];
+    echo $this->url('author-home', [], compact('query'));
+  } else {
+    echo $this->render('RecordDriver/DefaultRecord/link-generic.phtml', compact('driver', 'lookfor', 'searchRoute') + ['type' => 'Author']);
+  }

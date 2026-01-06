@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Cart
@@ -63,23 +63,18 @@ class CartFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $active = isset($config->Site->showBookBag)
-            ? (bool)$config->Site->showBookBag : false;
-        $size = $config->Site->bookBagMaxSize ?? 100;
-        $activeInSearch = $config->Site->bookbagTogglesInSearch ?? true;
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config')['Site'];
         return new $requestedName(
             $container->get(\VuFind\Record\Loader::class),
             $container->get(\VuFind\Cookie\CookieManager::class),
-            $size,
-            $active,
-            $activeInSearch
+            $config['bookBagMaxSize'] ?? 100,
+            $config['showBookBag'] ?? false,
+            $config['bookbagTogglesInSearch'] ?? true
         );
     }
 }

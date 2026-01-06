@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -29,8 +29,8 @@
 
 namespace VuFind\Controller;
 
-use Laminas\Config\Config;
 use Laminas\ServiceManager\ServiceLocatorInterface;
+use VuFind\Config\Config;
 use VuFindSearch\Command\SearchCommand;
 use VuFindSearch\Query\Query;
 
@@ -55,7 +55,7 @@ class CollectionsController extends AbstractBase implements
     /**
      * VuFind configuration
      *
-     * @var \Laminas\Config\Config
+     * @var Config
      */
     protected $config;
 
@@ -180,8 +180,7 @@ class CollectionsController extends AbstractBase implements
 
         $browseField = 'hierarchy_browse';
 
-        $searchObject = $this->serviceLocator
-            ->get(\VuFind\Search\Results\PluginManager::class)->get('Solr');
+        $searchObject = $this->getService(\VuFind\Search\Results\PluginManager::class)->get('Solr');
         foreach ($appliedFilters as $filter) {
             $searchObject->getParams()->addFilter($filter);
         }
@@ -348,7 +347,7 @@ class CollectionsController extends AbstractBase implements
     {
         $title = addcslashes($title, '"');
         $query = new Query("is_hierarchy_title:\"$title\"", 'AllFields');
-        $searchService = $this->serviceLocator->get(\VuFindSearch\Service::class);
+        $searchService = $this->getService(\VuFindSearch\Service::class);
         $command = new SearchCommand(
             'Solr',
             $query,

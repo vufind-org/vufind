@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  AJAX
@@ -89,15 +89,18 @@ class CheckRequestIsValid extends AbstractIlsAndUserAction
     public function handleRequest(Params $params)
     {
         $this->disableSessionWrites();  // avoid session write timing bug
+
+        // process and validate input:
         $id = $params->fromQuery('id');
-        $data = $params->fromQuery('data');
+        $jsonData = $params->fromQuery('data');
         $requestType = $params->fromQuery('requestType');
-        if (empty($id) || empty($data)) {
+        if (empty($id) || empty($jsonData) || !($data = json_decode($jsonData, true))) {
             return $this->formatResponse(
                 $this->translate('bulk_error_missing'),
                 self::STATUS_HTTP_BAD_REQUEST
             );
         }
+
         // check if user is logged in
         if (!$this->user) {
             return $this->formatResponse(

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -74,10 +74,10 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $conn = $this->getConnectorMock(['search', 'show', 'stat']);
         $conn->expects($this->once())
             ->method('search')
-            ->will($this->returnValue($this->loadResponse('pp2search')));
+            ->willReturn($this->loadResponse('pp2search'));
         $conn->expects($this->once())
             ->method('show')
-            ->will($this->returnValue($this->loadResponse('pp2show')));
+            ->willReturn($this->loadResponse('pp2show'));
         $conn->expects($this->exactly(2))
             ->method('stat')
             ->willReturnOnConsecutiveCalls(
@@ -92,10 +92,10 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
         $this->assertEquals('test', $rec->getSourceIdentifier());
-        $this->assertEquals('content: author test title test medium book', (string)$rec->getXML()->recid);
+        $this->assertSame('content: author test title test medium book', (string)$rec->getXML()->recid);
         $recs = $coll->getRecords();
         $this->assertEquals('test', $recs[19]->getSourceIdentifier());
-        $this->assertEquals(
+        $this->assertSame(
             'content: author navalani k author gidwani n n title a practical guide to colon classification medium book',
             (string)$recs[19]->getXML()->recid
         );
@@ -111,7 +111,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     {
         $back = new Backend($this->getConnectorMock());
         $back->setSearchProgressTarget(0.75);
-        $this->assertEquals(0.75, $this->getProperty($back, 'progressTarget'));
+        $this->assertEqualsWithDelta(0.75, $this->getProperty($back, 'progressTarget'), PHP_FLOAT_EPSILON);
     }
 
     /**

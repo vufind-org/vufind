@@ -20,8 +20,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -56,13 +56,13 @@ class TranslatableStringTest extends \PHPUnit\Framework\TestCase
     public function testWithoutTranslate()
     {
         $s = new TranslatableString('foo', 'bar');
-        $this->assertEquals('foo', (string)$s);
+        $this->assertSame('foo', (string)$s);
         $this->assertEquals('bar', $s->getDisplayString());
         $this->assertTrue($s->isTranslatable());
 
         $s = new TranslatableString('foo', new TranslatableString('bar', 'baz'));
-        $this->assertEquals('foo', (string)$s);
-        $this->assertEquals('bar', (string)$s->getDisplayString());
+        $this->assertSame('foo', (string)$s);
+        $this->assertSame('bar', (string)$s->getDisplayString());
         $this->assertEquals('baz', $s->getDisplayString()->getDisplayString());
         $this->assertTrue($s->isTranslatable());
 

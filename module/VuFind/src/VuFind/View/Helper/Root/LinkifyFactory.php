@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -33,6 +33,7 @@ use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerInterface;
 use VStelmakh\UrlHighlight\Encoder\HtmlSpecialcharsEncoder;
 use VStelmakh\UrlHighlight\UrlHighlight;
+use VStelmakh\UrlHighlight\Validator\Validator;
 use VuFind\UrlHighlight\VuFindHighlighter;
 
 /**
@@ -60,18 +61,19 @@ class LinkifyFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
 
         $proxyUrl = $container->get('ViewHelperManager')->get('proxyUrl');
 
         $highlighter = new VuFindHighlighter($proxyUrl);
         $encoder = new HtmlSpecialcharsEncoder();
+        $validatorExceptEmail = new Validator(matchEmails: false);
         $urlHighlight = new UrlHighlight(null, $highlighter, $encoder);
-
-        return new Linkify($urlHighlight);
+        $urlHighlightExceptEmail = new UrlHighlight($validatorExceptEmail, $highlighter, $encoder);
+        return new $requestedName($urlHighlight, $urlHighlightExceptEmail);
     }
 }

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -50,23 +50,21 @@ class SitemapCommandTest extends \PHPUnit\Framework\TestCase
      */
     public function testSuccessWithOptions()
     {
-        $generator = $this->getMockBuilder(\VuFind\Sitemap\Generator::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $generator = $this->createMock(\VuFind\Sitemap\Generator::class);
         $generator->expects($this->once())->method('setBaseUrl')
-            ->with($this->equalTo('http://foo'));
+            ->with('http://foo');
         $generator->expects($this->once())->method('setBaseSitemapUrl')
-            ->with($this->equalTo('http://bar'));
+            ->with('http://bar');
         $generator->expects($this->once())->method('generate');
         $generator->expects($this->once())->method('getWarnings')
-            ->will($this->returnValue(['Sample warning']));
+            ->willReturn(['Sample warning']);
         $command = new SitemapCommand($generator);
         $commandTester = new CommandTester($command);
         $commandTester->execute(
             ['--baseurl' => 'http://foo', '--basesitemapurl' => 'http://bar']
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals(
+        $this->assertSame(0, $commandTester->getStatusCode());
+        $this->assertSame(
             "Sample warning\n",
             $commandTester->getDisplay()
         );

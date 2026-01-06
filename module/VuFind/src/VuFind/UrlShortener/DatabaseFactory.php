@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  UrlShortener
@@ -31,6 +31,7 @@ namespace VuFind\UrlShortener;
 
 use Exception;
 use Psr\Container\ContainerInterface;
+use VuFind\Db\Service\ShortlinksServiceInterface;
 
 /**
  * Factory for local database-driven URL shortener.
@@ -55,7 +56,7 @@ class DatabaseFactory
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
             throw new Exception('Unexpected options passed to factory.');
@@ -63,15 +64,14 @@ class DatabaseFactory
         $router = $container->get('HttpRouter');
         $serverUrl = $container->get('ViewRenderer')->plugin('serverurl');
         $baseUrl = $serverUrl($router->assemble([], ['name' => 'home']));
-        $table = $container->get(\VuFind\Db\Table\PluginManager::class)
-            ->get('shortlinks');
-        $config = $container->get(\VuFind\Config\PluginManager::class)
-            ->get('config');
-        $salt = $config->Security->HMACkey ?? '';
+        $service = $container->get(\VuFind\Db\Service\PluginManager::class)
+            ->get(ShortlinksServiceInterface::class);
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
+        $salt = $config['Security']['HMACkey'] ?? '';
         if (empty($salt)) {
             throw new Exception('HMACkey missing from configuration.');
         }
-        $hashType = $config->Mail->url_shortener_key_type ?? 'md5';
-        return new $requestedName(rtrim($baseUrl, '/'), $table, $salt, $hashType);
+        $hashType = $config['Mail']['url_shortener_key_type'] ?? 'md5';
+        return new $requestedName(rtrim($baseUrl, '/'), $service, $salt, $hashType);
     }
 }

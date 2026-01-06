@@ -1,5 +1,9 @@
 <li>
-  <button <?=$this->htmlAttributes($attributes)?>>
+  <?php
+    $htmlAttrs = $this->htmlAttributes($attributes);
+    $htmlAttrs->add('class', 'icon-link');
+  ?>
+  <button<?=$htmlAttrs?>>
     <?=$this->icon($icon, 'icon-link__icon')?> <span class="icon-link__label"><?=$this->transEsc($content)?></span>
   </button>
 </li>

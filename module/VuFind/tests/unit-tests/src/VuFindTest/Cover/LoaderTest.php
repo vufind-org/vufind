@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,7 +29,7 @@
 
 namespace VuFindTest\Cover;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\Cover\Loader;
 use VuFindTheme\ThemeInfo;
 
@@ -51,7 +51,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
      *
      * @var string
      */
-    protected $testTheme = 'bootstrap3';
+    protected $testTheme = 'bootstrap5';
 
     /**
      * Test that failure to load even the baseline image causes an exception.
@@ -67,8 +67,8 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
             ->setConstructorArgs(['foo', 'bar'])->getMock();
         $theme->expects($this->once())
             ->method('findContainingTheme')
-            ->with($this->equalTo(['images/noCover2.gif']))
-            ->will($this->returnValue(false));
+            ->with(['images/hidden-image.gif'])
+            ->willReturn(false);
         $loader = $this->getLoader([], null, $theme);
         $loader->getImage();
     }
@@ -82,7 +82,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
     {
         $loader = $this->getLoader();
         $this->assertEquals('image/gif', $loader->getContentType());
-        $this->assertEquals('368', strlen($loader->getImage()));
+        $this->assertSame(64, strlen($loader->getImage()));
     }
 
     /**
@@ -95,7 +95,35 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
     public function testDefaultLoadingForImage()
     {
         $loader = $this->getLoader();
-        $this->assertEquals('368', strlen($loader->getImage()));
+        $this->assertSame(64, strlen($loader->getImage()));
+        $this->assertEquals('image/gif', $loader->getContentType());
+    }
+
+    /**
+     * Test that requesting a content type causes configured default data to load.
+     *
+     * @return void
+     */
+    public function testConfiguredDefaultLoadingForContentType()
+    {
+        $cfg = ['Content' => ['noCoverAvailableImage' => 'images/noCover2.gif']];
+        $loader = $this->getLoader($cfg);
+        $this->assertEquals('image/gif', $loader->getContentType());
+        $this->assertSame(368, strlen($loader->getImage()));
+    }
+
+    /**
+     * Test that requesting an image causes configured default data to load.
+     * (same as above test, but with assertions in different order to
+     * force appropriate loading).
+     *
+     * @return void
+     */
+    public function testConfiguredDefaultLoadingForImage()
+    {
+        $cfg = ['Content' => ['noCoverAvailableImage' => 'images/noCover2.gif']];
+        $loader = $this->getLoader($cfg);
+        $this->assertSame(368, strlen($loader->getImage()));
         $this->assertEquals('image/gif', $loader->getContentType());
     }
 
@@ -111,9 +139,9 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $loader = $this->getLoader($cfg, null, null, null, ['debug']);
 
         // We expect the loader to complain about the bad filename and load the default image:
-        $loader->expects($this->once())->method('debug')->with($this->equalTo("Cannot access '$badfile'"));
+        $loader->expects($this->once())->method('debug')->with("Cannot access '$badfile'");
         $loader->loadUnavailable();
-        $this->assertEquals('368', strlen($loader->getImage()));
+        $this->assertSame(64, strlen($loader->getImage()));
     }
 
     /**
@@ -130,9 +158,9 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         // We expect the loader to complain about the bad filename and load the default image:
         $expected = "Illegal file-extension 'phtml' for image '" . $this->getThemeDir() . '/'
             . $this->testTheme . '/' . $badfile . "'";
-        $loader->expects($this->once())->method('debug')->with($this->equalTo($expected));
+        $loader->expects($this->once())->method('debug')->with($expected);
         $loader->loadUnavailable();
-        $this->assertEquals('368', strlen($loader->getImage()));
+        $this->assertSame(64, strlen($loader->getImage()));
     }
 
     /**
@@ -156,7 +184,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
             $theme = new ThemeInfo($this->getThemeDir(), $this->testTheme);
         }
         if (null === $httpService) {
-            $httpService = $this->getMockBuilder(\VuFindHttp\HttpService::class)->getMock();
+            $httpService = $this->createMock(\VuFindHttp\HttpService::class);
         }
         if ($mock) {
             $mock = array_unique(array_merge($mock, ['debug']));

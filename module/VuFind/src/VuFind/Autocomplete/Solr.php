@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Autocomplete
@@ -48,6 +48,13 @@ use function is_object;
 class Solr implements AutocompleteInterface
 {
     /**
+     * Parameter for mungeQuery
+     *
+     * @var string
+     */
+    protected const NO_WILDCARD = 'NO_WILDCARD';
+
+    /**
      * Autocomplete handler
      *
      * @var string
@@ -74,6 +81,13 @@ class Solr implements AutocompleteInterface
      * @var string
      */
     protected $sortField;
+
+    /**
+     * Max number of search result rows
+     *
+     * @var ?int
+     */
+    protected ?int $limit = null;
 
     /**
      * Filters to apply to Solr search
@@ -133,7 +147,13 @@ class Solr implements AutocompleteInterface
             $params[2] : null;
         $this->filters = [];
         if (count($params) > 3) {
-            for ($x = 3; $x < count($params); $x += 2) {
+            if (ctype_digit($params[3])) {
+                $this->setLimit((int)$params[3]);
+                $filterStartIndex = 4;
+            } else {
+                $filterStartIndex = 3;
+            }
+            for ($x = $filterStartIndex; $x < count($params); $x += 2) {
                 if (isset($params[$x + 1])) {
                     $this->filters[] = $params[$x] . ':' . $params[$x + 1];
                 }
@@ -171,19 +191,50 @@ class Solr implements AutocompleteInterface
     /**
      * Process the user query to make it suitable for a Solr query.
      *
-     * @param string $query Incoming user query
+     * @param string $query   Incoming user query
+     * @param array  $options Array of extra parameters
      *
-     * @return string       Processed query
+     * @return string        Processed query
      */
-    protected function mungeQuery($query)
+    protected function mungeQuery(string $query, array $options = []): string
     {
         // Modify the query so it makes a nice, truncated autocomplete query:
         $forbidden = [':', '(', ')', '*', '+', '"', "'"];
         $query = str_replace($forbidden, ' ', $query);
-        if (!str_ends_with($query, ' ')) {
+        if (!str_ends_with($query, ' ') && !($options[self::NO_WILDCARD] ?? false)) {
             $query .= '*';
         }
         return $query;
+    }
+
+    /**
+     * This method perform and returns the search for a query for the autocomplete box.
+     *
+     * @param string $query       The user query
+     * @param bool   $rerunSearch Force the search to avoid cached results
+     *
+     * @return array              The suggestions for the provided query
+     */
+    protected function getSearchResultsForSuggestions(string $query, bool $rerunSearch = false): array
+    {
+        $this->searchObject->getParams()->setBasicSearch(
+            $query,
+            $this->handler
+        );
+        $this->searchObject->getParams()->setSort($this->sortField);
+        if ($this->limit) {
+            $this->searchObject->getParams()->setLimit($this->limit);
+        }
+        foreach ($this->filters as $current) {
+            $this->searchObject->getParams()->addFilter($current);
+        }
+
+        if ($rerunSearch) {
+            // Perform the search (force the function, not to have cached results):
+            $this->searchObject->performAndProcessSearch();
+        }
+        // Perform and/or return the search:
+        return $this->searchObject->getResults();
     }
 
     /**
@@ -202,17 +253,13 @@ class Solr implements AutocompleteInterface
         }
 
         try {
-            $this->searchObject->getParams()->setBasicSearch(
-                $this->mungeQuery($query),
-                $this->handler
-            );
-            $this->searchObject->getParams()->setSort($this->sortField);
-            foreach ($this->filters as $current) {
-                $this->searchObject->getParams()->addFilter($current);
+            $mungedQuery = $this->mungeQuery($query);
+            $searchResults = $this->getSearchResultsForSuggestions($mungedQuery);
+            // Re-run without wildcard, if previously ran with wildcard
+            if (empty($searchResults) && str_ends_with($mungedQuery, '*')) {
+                $mungedQuery = $this->mungeQuery($query, [self::NO_WILDCARD => true]);
+                $searchResults = $this->getSearchResultsForSuggestions($mungedQuery, true);
             }
-
-            // Perform the search:
-            $searchResults = $this->searchObject->getResults();
 
             // Build the recommendation list -- first we'll try with exact matches;
             // if we don't get anything at all, we'll try again with a less strict
@@ -327,6 +374,19 @@ class Solr implements AutocompleteInterface
     protected function setSortField($new)
     {
         $this->sortField = $new;
+    }
+
+    /**
+     * Set the limit. Useful for child classes.
+     *
+     * @param ?int $limit Limit of search result rows. Can be null to default
+     * to the limit of the search class.
+     *
+     * @return void
+     */
+    protected function setLimit(?int $limit): void
+    {
+        $this->limit = $limit;
     }
 
     /**

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -244,7 +244,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
      * @param int     $selectAllGlobalCheckbox   Expected state of the select all global checkbox
      * @param int     $numberOfSelectedOnPage    Expected number of selected elements on page
      * @param int     $numberOfSelectedGlobal    Expected number of globally selected elements
-     * @param boolean $multiPageSelectionEnabled If multi page selection is enabled
+     * @param bool    $multiPageSelectionEnabled If multi page selection is enabled
      *
      * @return void
      */
@@ -256,6 +256,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
         $numberOfSelectedGlobal,
         $multiPageSelectionEnabled = false
     ) {
+        $this->waitForPageLoad($page);
         switch ($selectAllOnPageCheckbox) {
             case self::NONE:
                 $this->checkSelectAllOnPageDoesExists($page, false);
@@ -347,7 +348,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function gotoPrevPage($page)
     {
-        $this->clickCss($page, '.page-prev');
+        $this->clickCss($page, $this->pagePrevSelector);
     }
 
     /**
@@ -359,7 +360,7 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function gotoNextPage(Element $page)
     {
-        $this->clickCss($page, '.page-next');
+        $this->clickCss($page, $this->pageNextSelector);
     }
 
     /**
@@ -405,10 +406,9 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test with disabled multi page selection and no select all checkboxes
      *
-     * @depends testPrepareFavoriteList
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testPrepareFavoriteList')]
     public function testDisabledMultiPageSelectionCheckboxTypeNone()
     {
 
@@ -438,10 +438,9 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test with disabled multi page selection and select all on page checkbox
      *
-     * @depends testPrepareFavoriteList
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testPrepareFavoriteList')]
     public function testDisabledMultiPageSelectionCheckboxTypeOnPage()
     {
 
@@ -489,10 +488,9 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test with disabled multi page selection and select all global checkbox
      *
-     * @depends testPrepareFavoriteList
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testPrepareFavoriteList')]
     public function testDisabledMultiPageSelectionCheckboxTypeGlobal()
     {
 
@@ -508,10 +506,9 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test with disabled multi page selection and both select all checkboxes
      *
-     * @depends testPrepareFavoriteList
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testPrepareFavoriteList')]
     public function testDisabledMultiPageSelectionCheckboxTypeBoth()
     {
 
@@ -527,10 +524,9 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test with multi page selection and no select all checkboxes
      *
-     * @depends testPrepareFavoriteList
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testPrepareFavoriteList')]
     public function testMultiPageSelectionCheckboxTypeNone()
     {
 
@@ -569,10 +565,9 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test with multi page selection and select all on page checkbox
      *
-     * @depends testPrepareFavoriteList
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testPrepareFavoriteList')]
     public function testMultiPageSelectionCheckboxTypeOnPage()
     {
 
@@ -623,10 +618,9 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test with multi page selection and select all global checkbox
      *
-     * @depends testPrepareFavoriteList
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testPrepareFavoriteList')]
     public function testMultiPageSelectionCheckboxTypeGlobal()
     {
 
@@ -693,10 +687,9 @@ final class ListItemSelectionTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Test with multi page selection and both select all checkboxes
      *
-     * @depends testPrepareFavoriteList
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\Depends('testPrepareFavoriteList')]
     public function testMultiPageSelectionCheckboxTypeBoth()
     {
 

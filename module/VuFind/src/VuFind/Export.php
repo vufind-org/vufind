@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Export
@@ -29,8 +29,8 @@
 
 namespace VuFind;
 
-use Laminas\Config\Config;
 use Laminas\View\Renderer\PhpRenderer;
+use VuFind\RecordDriver\AbstractBase as RecordDriver;
 
 use function in_array;
 use function is_callable;
@@ -47,20 +47,6 @@ use function is_callable;
 class Export
 {
     /**
-     * Main VuFind configuration
-     *
-     * @var Config
-     */
-    protected $mainConfig;
-
-    /**
-     * Export-specific configuration
-     *
-     * @var Config
-     */
-    protected $exportConfig;
-
-    /**
      * Property to cache active formats
      * (initialized to empty array , populated later)
      *
@@ -71,32 +57,33 @@ class Export
     /**
      * Constructor
      *
-     * @param Config $mainConfig   Main VuFind configuration
-     * @param Config $exportConfig Export-specific configuration
+     * @param array       $mainConfig   Main VuFind configuration
+     * @param array       $exportConfig Export-specific configuration
+     * @param PhpRenderer $viewRenderer View renderer
      */
-    public function __construct(Config $mainConfig, Config $exportConfig)
-    {
-        $this->mainConfig = $mainConfig;
-        $this->exportConfig = $exportConfig;
+    public function __construct(
+        protected array $mainConfig,
+        protected array $exportConfig,
+        protected PhpRenderer $viewRenderer
+    ) {
     }
 
     /**
      * Get the URL for bulk export.
      *
-     * @param PhpRenderer $view   View object (needed for URL generation)
-     * @param string      $format Export format being used
-     * @param array       $ids    Array of IDs to export (in source|id format)
+     * @param string $format Export format being used
+     * @param array  $ids    Array of IDs to export (in source|id format)
      *
      * @return string
      */
-    public function getBulkUrl($view, $format, $ids)
+    public function getBulkUrl(string $format, array $ids): string
     {
         $params = ['f=' . urlencode($format)];
         foreach ($ids as $id) {
             $params[] = urlencode('i[]') . '=' . urlencode($id);
         }
-        $serverUrlHelper = $view->plugin('serverurl');
-        $urlHelper = $view->plugin('url');
+        $serverUrlHelper = $this->viewRenderer->plugin('serverurl');
+        $urlHelper = $this->viewRenderer->plugin('url');
         $url = $serverUrlHelper($urlHelper('cart-doexport'))
             . '?' . implode('&', $params);
 
@@ -112,21 +99,23 @@ class Export
      *
      * @return string
      */
-    public function getRedirectUrl($format, $callback)
+    public function getRedirectUrl(string $format, string $callback): string
     {
         // Fill in special tokens in template:
-        $template = $this->exportConfig->$format->redirectUrl;
+        $template = $this->exportConfig[$format]['redirectUrl'] ?? '';
         preg_match_all('/\{([^}]+)\}/', $template, $matches);
         foreach ($matches[1] as $current) {
             $parts = explode('|', $current);
             switch ($parts[0]) {
+                case 'route':
+                    $urlHelper = $this->viewRenderer->plugin('url');
+                    $template = str_replace('{' . $current . '}', $urlHelper($parts[1] ?? '??'), $template);
+                    break;
                 case 'config':
                 case 'encodedConfig':
-                    if (isset($this->mainConfig->{$parts[1]}->{$parts[2]})) {
-                        $value = $this->mainConfig->{$parts[1]}->{$parts[2]};
-                    } else {
-                        $value = $parts[3];
-                    }
+                    $value = null !== ($configValue = $this->mainConfig[$parts[1]][$parts[2]] ?? null)
+                        ? $configValue
+                        : $parts[3];
                     if ($parts[0] == 'encodedConfig') {
                         $value = urlencode($value);
                     }
@@ -151,9 +140,9 @@ class Export
      *
      * @return bool
      */
-    public function needsRedirect($format)
+    public function needsRedirect(string $format): bool
     {
-        return !empty($this->exportConfig->$format->redirectUrl)
+        return !empty($this->exportConfig[$format]['redirectUrl'])
             && 'link' === $this->getBulkExportType($format);
     }
 
@@ -165,22 +154,20 @@ class Export
      *
      * @return string
      */
-    public function processGroup($format, $parts)
+    public function processGroup(string $format, array $parts): string
     {
+        if (!$parts) {
+            return '';
+        }
+
         // If we're in XML mode, we need to do some special processing:
-        if (isset($this->exportConfig->$format->combineXpath)) {
-            $ns = isset($this->exportConfig->$format->combineNamespaces)
-                ? $this->exportConfig->$format->combineNamespaces->toArray()
-                : [];
+        if ($combineXpath = $this->exportConfig[$format]['combineXpath'] ?? null) {
             $ns = array_map(
                 function ($current) {
                     return explode('|', $current, 2);
                 },
-                $ns
+                $this->exportConfig[$format]['combineNamespaces'] ?? []
             );
-            if (empty($parts)) {
-                return '';
-            }
             foreach ($parts as $part) {
                 // Convert text into XML object:
                 $current = simplexml_load_string($part);
@@ -194,17 +181,18 @@ class Export
                     foreach ($ns as $n) {
                         $current->registerXPathNamespace($n[0], $n[1]);
                     }
-                    $matches = $current->xpath(
-                        $this->exportConfig->$format->combineXpath
-                    );
+                    $matches = $current->xpath($combineXpath);
                     foreach ($matches as $match) {
                         SimpleXML::appendElement($retVal, $match);
                     }
                 }
             }
             return $retVal->asXML();
+        } elseif (in_array('Content-type: application/json', $this->getHeaders($format))) {
+            // JSON mode -- create a JSON array from the individual JSON documents:
+            return json_encode(array_map('json_decode', $parts));
         } else {
-            // Not in XML mode -- just concatenate everything together:
+            // Not in XML or JSON mode -- just concatenate everything together:
             return implode('', $parts);
         }
     }
@@ -212,35 +200,34 @@ class Export
     /**
      * Does the specified record support the specified export format?
      *
-     * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
-     * @param string                            $format Format to check
+     * @param RecordDriver $driver Record driver
+     * @param string       $format Format to check
      *
      * @return bool
      */
-    public function recordSupportsFormat($driver, $format)
+    public function recordSupportsFormat(RecordDriver $driver, string $format): bool
     {
         // Check if the driver explicitly disallows the format:
         if ($driver->tryMethod('exportDisabled', [$format])) {
             return false;
         }
 
-        // Check the requirements for export in the requested format:
-        if (isset($this->exportConfig->$format)) {
-            if (isset($this->exportConfig->$format->requiredMethods)) {
-                foreach ($this->exportConfig->$format->requiredMethods as $method) {
-                    // If a required method is missing, give up now:
-                    if (!is_callable([$driver, $method])) {
-                        return false;
-                    }
-                }
-            }
-            // If we got this far, we didn't encounter a problem, and the
-            // requested export format is valid, so we can report success!
-            return true;
+        // Check if the format is configured:
+        if (empty($this->exportConfig[$format])) {
+            return false;
         }
 
-        // If we got this far, we couldn't find evidence of support:
-        return false;
+        // Check the requirements for export in the requested format:
+        foreach ($this->exportConfig[$format]['requiredMethods'] ?? [] as $method) {
+            // If a required method is missing, give up now:
+            if (!is_callable([$driver, $method])) {
+                return false;
+            }
+        }
+
+        // If we got this far, we didn't encounter a problem, and the
+        // requested export format is valid, so we can report success!
+        return true;
     }
 
     /**
@@ -248,11 +235,11 @@ class Export
      * data may be exported (empty if none). Legal values: "BibTeX", "EndNote",
      * "MARC", "MARCXML", "RDF", "RefWorks".
      *
-     * @param \VuFind\RecordDriver\AbstractBase $driver Record driver
+     * @param RecordDriver $driver Record driver
      *
      * @return array Strings representing export formats.
      */
-    public function getFormatsForRecord($driver)
+    public function getFormatsForRecord(RecordDriver $driver): array
     {
         // Get an array of enabled export formats (from config, or use defaults
         // if nothing in config array).
@@ -260,7 +247,7 @@ class Export
 
         // Loop through all possible formats:
         $formats = [];
-        foreach (array_keys($this->exportConfig->toArray()) as $format) {
+        foreach (array_keys($this->exportConfig) as $format) {
             if (
                 in_array($format, $active)
                 && $this->recordSupportsFormat($driver, $format)
@@ -281,7 +268,7 @@ class Export
      *
      * @return array
      */
-    public function getFormatsForRecords($drivers)
+    public function getFormatsForRecords(array $drivers): array
     {
         $formats = $this->getActiveFormats('bulk');
         foreach ($drivers as $driver) {
@@ -304,9 +291,9 @@ class Export
      *
      * @return array
      */
-    public function getHeaders($format)
+    public function getHeaders(string $format): array
     {
-        return $this->exportConfig->$format->headers ?? [];
+        return (array)($this->exportConfig[$format]['headers'] ?? []);
     }
 
     /**
@@ -316,9 +303,9 @@ class Export
      *
      * @return string
      */
-    public function getLabelForFormat($format)
+    public function getLabelForFormat(string $format): string
     {
-        return $this->exportConfig->$format->label ?? $format;
+        return $this->exportConfig[$format]['label'] ?? $format;
     }
 
     /**
@@ -328,12 +315,12 @@ class Export
      *
      * @return string
      */
-    public function getBulkExportType($format)
+    public function getBulkExportType(string $format): string
     {
         // if exportType is set on per-format basis in export.ini then use it
         // else check if export type is set in config.ini
-        return $this->exportConfig->$format->bulkExportType
-            ?? $this->mainConfig->BulkExport->defaultType ?? 'link';
+        return $this->exportConfig[$format]['bulkExportType']
+            ?? $this->mainConfig['BulkExport']['defaultType'] ?? 'link';
     }
 
     /**
@@ -343,12 +330,11 @@ class Export
      *
      * @return array
      */
-    public function getActiveFormats($context = 'record')
+    public function getActiveFormats(string $context = 'record'): array
     {
         if (!isset($this->activeFormats[$context])) {
-            $formatSettings = isset($this->mainConfig->Export)
-                ? $this->mainConfig->Export->toArray()
-                : ['RefWorks' => 'record,bulk', 'EndNote' => 'record,bulk'];
+            $formatSettings = $this->mainConfig['Export']
+                ?? ['RefWorks' => 'record,bulk', 'EndNote' => 'record,bulk'];
 
             $active = [];
             foreach ($formatSettings as $format => $allowedContexts) {
@@ -363,16 +349,12 @@ class Export
             // for legacy settings [BulkExport]
             if (
                 $context == 'bulk'
-                && isset($this->mainConfig->BulkExport->enabled)
-                && $this->mainConfig->BulkExport->enabled
-                && isset($this->mainConfig->BulkExport->options)
+                && ($this->mainConfig['BulkExport']['enabled'] ?? false)
+                && $bulkOptions = $this->mainConfig['BulkExport']['options'] ?? null
             ) {
-                $config = explode(':', $this->mainConfig->BulkExport->options);
+                $config = explode(':', $bulkOptions);
                 foreach ($config as $option) {
-                    if (
-                        isset($this->mainConfig->Export->$option)
-                        && $this->mainConfig->Export->$option == true
-                    ) {
+                    if ($this->mainConfig['Export'][$option] ?? false) {
                         $active[] = $option;
                     }
                 }
@@ -389,10 +371,10 @@ class Export
      *
      * @return string
      */
-    public function getPostField($format)
+    public function getPostField(string $format): string
     {
-        return !empty($this->exportConfig->$format->postField)
-            ? $this->exportConfig->$format->postField : 'ImportData';
+        $postField = $this->exportConfig[$format]['postField'] ?? null;
+        return $postField ?: 'ImportData';
     }
 
     /**
@@ -402,10 +384,9 @@ class Export
      *
      * @return string
      */
-    public function getTargetWindow($format)
+    public function getTargetWindow(string $format): string
     {
-        return !empty($this->exportConfig->$format->targetWindow)
-            ? $this->exportConfig->$format->targetWindow
-            : $format . 'Main';
+        $targetWindow = $this->exportConfig[$format]['targetWindow'] ?? null;
+        return $targetWindow ?: $format . 'Main';
     }
 }

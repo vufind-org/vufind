@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  ILS_Drivers
@@ -30,7 +30,7 @@
 
 namespace VuFind\ILS\Driver;
 
-use Laminas\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareInterface;
 use SoapClient;
 use SoapFault;
 use SoapHeader;
@@ -87,10 +87,10 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     /**
      * Constructor
      *
-     * @param Loader       $loader       Record loader
-     * @param CacheManager $cacheManager Cache manager (optional)
+     * @param Loader        $loader       Record loader
+     * @param ?CacheManager $cacheManager Cache manager (optional)
      */
-    public function __construct(Loader $loader, CacheManager $cacheManager = null)
+    public function __construct(Loader $loader, ?CacheManager $cacheManager = null)
     {
         $this->recordLoader = $loader;
         $this->cacheManager = $cacheManager;
@@ -1049,7 +1049,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      * record.
      *
      * @param string $id      The record id to retrieve the holdings for
-     * @param array  $patron  Patron data
+     * @param ?array $patron  Patron data
      * @param array  $options Extra options (not currently used)
      *
      * @throws ILSException
@@ -1059,7 +1059,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getHolding($id, array $patron = null, array $options = [])
+    public function getHolding($id, ?array $patron = null, array $options = [])
     {
         return $this->getStatus($id);
     }
@@ -1096,11 +1096,6 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
     {
         $usernameField = $this->config['Behaviors']['usernameField'];
 
-        $patron = [
-            'cat_username' => $username,
-            'cat_password' => $password,
-        ];
-
         try {
             $resp = $this->makeRequest(
                 'patron',
@@ -1124,13 +1119,12 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
             }
         }
 
-        $patron['id']      = $resp->patronInfo->$usernameField;
-        $patron['library'] = $resp->patronInfo->patronLibraryID;
-
         $regEx = '/([^,]*),\s([^\s]*)/';
+        $firstName = '';
+        $lastName = '';
         if (preg_match($regEx, $resp->patronInfo->displayName, $matches)) {
-            $patron['firstname'] = $matches[2];
-            $patron['lastname']  = $matches[1];
+            $firstName = $matches[2];
+            $lastName  = $matches[1];
         }
 
         // There may be an email address in any of three numbered addresses,
@@ -1141,6 +1135,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
             $primary_addr_n = $resp->patronAddressInfo->primaryAddress;
             array_unshift($addrinfo_check_order, $primary_addr_n);
         }
+        $email = '';
         foreach ($addrinfo_check_order as $n) {
             $AddressNInfo = "Address{$n}Info";
             if (isset($resp->patronAddressInfo->$AddressNInfo)) {
@@ -1152,7 +1147,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                         $addrinfo->addressPolicyID == 'EMAIL'
                         && !empty($addrinfo->addressValue)
                     ) {
-                        $patron['email'] = $addrinfo->addressValue;
+                        $email = $addrinfo->addressValue;
                         break;
                     }
                 }
@@ -1160,8 +1155,18 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
         }
 
         // @TODO: major, college
-
-        return $patron;
+        return $this->createPatronArray(
+            id: $resp->patronInfo->$usernameField,
+            firstname: $firstName,
+            lastname: $lastName,
+            email: $email,
+            cat_username: $username,
+            cat_password: $password,
+            nonDefaultFields: [
+                // Legacy support, see createProfileArray:home_library
+                'library' => $resp->patronInfo->patronLibraryID,
+            ]
+        );
     }
 
     /**
@@ -1227,22 +1232,21 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
                 $group = null;
             }
 
-            [$lastname, $firstname]
-                = explode(', ', $result->patronInfo->displayName);
-
-            $profile = [
-                'lastname' => $lastname,
-                'firstname' => $firstname,
-                'address1' => $address1,
-                'address2' => $address2,
-                'zip' => $zip,
-                'phone' => $phone,
-                'group' => $group,
-            ];
+            [$lastname, $firstname] = $this->getLastAndFirstName($result->patronInfo->displayName);
+            return $this->createProfileArray(
+                firstname: $firstname,
+                lastname: $lastname,
+                address1: $address1,
+                address2: $address2,
+                zip: $zip,
+                phone: $phone,
+                group: $group,
+                home_library: (string)($result->patronInfo->patronLibraryID ?: $patron['library']),
+            );
         } catch (\Exception $e) {
             $this->throwAsIlsException($e);
         }
-        return $profile;
+        return [];
     }
 
     /**
@@ -1491,11 +1495,7 @@ class Symphony extends AbstractBase implements LoggerAwareInterface
      */
     public function getConfig($function, $params = [])
     {
-        if (isset($this->config[$function])) {
-            $functionConfig = $this->config[$function];
-        } else {
-            $functionConfig = false;
-        }
+        $functionConfig = $this->config[$function] ?? false;
         return $functionConfig;
     }
 

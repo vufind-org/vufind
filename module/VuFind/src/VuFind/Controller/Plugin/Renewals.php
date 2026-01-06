@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller_Plugins
@@ -124,12 +124,30 @@ class Renewals extends AbstractPlugin
             );
             if ($renewResult !== false) {
                 // Assign Blocks to the Template
-                if (
-                    isset($renewResult['blocks'])
-                    && is_array($renewResult['blocks'])
-                ) {
+                if (is_array($renewResult['blocks'] ?? null)) {
                     foreach ($renewResult['blocks'] as $block) {
                         $flashMsg->addMessage($block, 'info');
+                    }
+                } elseif (is_array($renewResult['details'] ?? null)) {
+                    $bad = $good = 0;
+                    foreach ($renewResult['details'] as $next) {
+                        if ($next['success'] ?? false) {
+                            $good++;
+                        } else {
+                            $bad++;
+                        }
+                    }
+                    if ($good > 0) {
+                        $flashMsg->addMessage(
+                            ['msg' => 'renew_success_summary', 'tokens' => ['count' => $good], 'icu' => true],
+                            'success'
+                        );
+                    }
+                    if ($bad > 0) {
+                        $flashMsg->addMessage(
+                            ['msg' => 'renew_error_summary', 'tokens' => ['count' => $bad], 'icu' => true],
+                            'error'
+                        );
                     }
                 }
 

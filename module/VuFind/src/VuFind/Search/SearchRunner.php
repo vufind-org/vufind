@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -33,7 +33,7 @@ use Laminas\EventManager\EventManager;
 use Laminas\EventManager\EventManagerInterface;
 use Laminas\Stdlib\Parameters;
 use VuFind\Search\Results\PluginManager as ResultsManager;
-use VuFind\Search\Solr\AbstractErrorListener as ErrorListener;
+use VuFind\Search\Solr\ErrorListener;
 
 use function is_array;
 use function is_callable;
@@ -82,11 +82,11 @@ class SearchRunner
      * Constructor
      *
      * @param ResultsManager $resultsManager Results manager
-     * @param EventManager   $events         Event manager (optional)
+     * @param ?EventManager  $events         Event manager (optional)
      */
     public function __construct(
         ResultsManager $resultsManager,
-        EventManager $events = null
+        ?EventManager $events = null
     ) {
         $this->resultsManager = $resultsManager;
         if (null !== $events) {
@@ -135,7 +135,7 @@ class SearchRunner
         $params->initFromRequest($request);
 
         if (is_callable($setupCallback)) {
-            $setupCallback($this, $params, $runningSearchId);
+            $setupCallback($this, $params, $runningSearchId, $results);
         }
 
         // Trigger the "configuration done" event.

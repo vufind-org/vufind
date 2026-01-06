@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -29,7 +29,7 @@
 
 namespace VuFindTest\RecordDriver;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\DigitalContent\OverdriveConnector;
 use VuFind\RecordDriver\SolrOverdrive;
 
@@ -191,7 +191,7 @@ class SolrOverdriveTest extends \PHPUnit\Framework\TestCase
         $driver->setRawData(
             ['description' => '<tag>&#8217;&#8217;Summary.</tag>']
         );
-        $this->assertEquals(
+        $this->assertSame(
             ['Summary.'],
             array_values($driver->getSummary())
         );
@@ -236,16 +236,16 @@ class SolrOverdriveTest extends \PHPUnit\Framework\TestCase
     /**
      * Get a record driver to test with.
      *
-     * @param Config             $config       Main configuration
-     * @param Config             $recordConfig Record configuration
-     * @param OverdriveConnector $connector    Overdrive connector
+     * @param ?Config             $config       Main configuration
+     * @param ?Config             $recordConfig Record configuration
+     * @param ?OverdriveConnector $connector    Overdrive connector
      *
      * @return SolrOverdrive
      */
     protected function getDriver(
-        Config $config = null,
-        Config $recordConfig = null,
-        OverdriveConnector $connector = null
+        ?Config $config = null,
+        ?Config $recordConfig = null,
+        ?OverdriveConnector $connector = null
     ): SolrOverdrive {
         return new SolrOverdrive(
             $config ?? new Config([]),
@@ -263,10 +263,8 @@ class SolrOverdriveTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockConnector(string $config = '{}'): OverdriveConnector
     {
-        $connector = $this->getMockBuilder(OverdriveConnector::class)
-            ->disableOriginalConstructor()->getMock();
-        $connector->expects($this->any())->method('getConfig')
-            ->will($this->returnValue(json_decode($config)));
+        $connector = $this->createMock(OverdriveConnector::class);
+        $connector->method('getConfig')->willReturn(json_decode($config));
         return $connector;
     }
 }

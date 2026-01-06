@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -51,15 +51,13 @@ class QueryAdapterTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testConversions
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function conversionsProvider(): array
+    public static function conversionsProvider(): \Iterator
     {
-        return [
-            ['basic', true],
-            ['advanced', true],
-            ['workkeys', false],
-        ];
+        yield ['basic', true];
+        yield ['advanced', true];
+        yield ['workkeys', false];
     }
 
     /**
@@ -68,10 +66,9 @@ class QueryAdapterTest extends \PHPUnit\Framework\TestCase
      * @param string $type   Search type
      * @param bool   $legacy Whether to test legacy version deminification
      *
-     * @dataProvider conversionsProvider
-     *
      * @return void
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('conversionsProvider')]
     public function testConversions(string $type, bool $legacy)
     {
         // Load minified, unminified, and Query object data:
@@ -111,7 +108,7 @@ class QueryAdapterTest extends \PHPUnit\Framework\TestCase
         $callback = function ($carry, $item) {
             return $carry + (isset($item['o']) ? 1 : 0);
         };
-        $this->assertEquals(
+        $this->assertSame(
             count($minified[0]['g']),
             array_reduce($minified[0]['g'], $callback, 0)
         );

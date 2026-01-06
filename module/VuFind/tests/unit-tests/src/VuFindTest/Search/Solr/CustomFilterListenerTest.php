@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -56,11 +56,8 @@ class CustomFilterListenerTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockBackend(string $id = 'Solr'): Backend
     {
-        $backend = $this->getMockBuilder(Backend::class)
-            ->disableOriginalConstructor()->getMock();
-        $backend->expects($this->any())->method('getIdentifier')->will(
-            $this->returnValue($id)
-        );
+        $backend = $this->createMock(Backend::class);
+        $backend->method('getIdentifier')->willReturn($id);
         return $backend;
     }
 
@@ -89,9 +86,9 @@ class CustomFilterListenerTest extends \PHPUnit\Framework\TestCase
         $listener = $this->getListener();
         $mock = $this->createMock(\Laminas\EventManager\SharedEventManagerInterface::class);
         $mock->expects($this->once())->method('attach')->with(
-            $this->equalTo(\VuFindSearch\Service::class),
-            $this->equalTo('pre'),
-            $this->equalTo([$listener, 'onSearchPre'])
+            \VuFindSearch\Service::class,
+            'pre',
+            [$listener, 'onSearchPre']
         );
         $listener->attach($mock);
     }

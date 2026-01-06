@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -30,7 +30,7 @@
 
 namespace VuFindTest\View\Helper\Root;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 use VuFind\View\Helper\Root\OpenUrl;
 
 /**
@@ -234,8 +234,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockContext()
     {
-        return $this->getMockBuilder(\VuFind\View\Helper\Root\Context::class)
-            ->disableOriginalConstructor()->getMock();
+        return $this->createMock(\VuFind\View\Helper\Root\Context::class);
     }
 
     /**
@@ -254,14 +253,10 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
         $formats = ['ElectronicArticle', 'Article'],
         $issn = '1234-5678'
     ) {
-        $driver = $this->getMockBuilder($class)
-            ->disableOriginalConstructor()->getMock();
-        $driver->expects($this->any())->method('getOpenUrl')
-            ->will($this->returnValue($openUrl));
-        $driver->expects($this->any())->method('getCleanISSN')
-            ->will($this->returnValue($issn));
-        $driver->expects($this->any())->method('getFormats')
-            ->will($this->returnValue($formats));
+        $driver = $this->createMock($class);
+        $driver->method('getOpenUrl')->willReturn($openUrl);
+        $driver->method('getCleanISSN')->willReturn($issn);
+        $driver->method('getFormats')->willReturn($formats);
         return $driver;
     }
 
@@ -282,8 +277,7 @@ class OpenUrlTest extends \PHPUnit\Framework\TestCase
         if (null === $mockContext) {
             $mockContext = $this->getMockContext();
         }
-        $mockPm = $this->getMockBuilder(\VuFind\Resolver\Driver\PluginManager::class)
-            ->disableOriginalConstructor()->getMock();
+        $mockPm = $this->createMock(\VuFind\Resolver\Driver\PluginManager::class);
         $openUrl = new OpenUrl($mockContext, $rules, $mockPm, new Config($config));
         $openUrl->setView($this->getPhpRenderer());
         return $openUrl;

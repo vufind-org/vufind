@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Controller
@@ -43,6 +43,8 @@ use Psr\Container\ContainerInterface;
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
+ *
+ * @deprecated Use \VuFind\ServiceManager\Factory\AutowiringFactory
  */
 class RepositoryWithOAuth2ConfigFactory implements FactoryInterface
 {
@@ -63,10 +65,10 @@ class RepositoryWithOAuth2ConfigFactory implements FactoryInterface
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
-            throw new \Exception('Unexpected options sent to factory.');
+            throw new \Exception('Unexpected options passed to factory.');
         }
         $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
         return new $requestedName($yamlReader->get('OAuth2Server.yaml'));

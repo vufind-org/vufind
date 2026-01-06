@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -30,7 +30,6 @@
 namespace VuFindTest\View\Helper\Root;
 
 use Laminas\View\Helper\EscapeHtmlAttr;
-use Laminas\View\Helper\Layout;
 use Laminas\View\Helper\ServerUrl;
 use Laminas\View\Renderer\PhpRenderer;
 use Symfony\Component\Yaml\Yaml;
@@ -62,7 +61,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
     {
         $helper = $this->getCookieConsent([]);
         $this->assertFalse($helper->isEnabled());
-        $this->assertEquals('', $helper->render());
+        $this->assertSame('', $helper->render());
         $this->assertEquals($helper, $helper());
     }
 
@@ -86,8 +85,8 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
             ->willReturn('rendered_template');
 
         $this->assertTrue($helper->isEnabled());
-        $this->assertEquals('rendered_template', $helper->render());
-        $this->assertEquals(
+        $this->assertSame('rendered_template', $helper->render());
+        $this->assertSame(
             ['matomo' => ['matomo']],
             $helper->getControlledVuFindServices()
         );
@@ -135,7 +134,7 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
         $this->assertFalse($helper->isCategoryAccepted('nonexistent'));
         $this->assertTrue($helper->isCategoryAccepted('essential'));
         $this->assertTrue($helper->isServiceAllowed('matomo'));
-        $this->assertEquals('rendered_template', $helper->render());
+        $this->assertSame('rendered_template', $helper->render());
     }
 
     /**
@@ -185,10 +184,8 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
         array $cookies = [],
         string $consentConfigName = 'CookieConsent.yaml'
     ): CookieConsent {
-        $url = $this->getMockBuilder(Url::class)->getMock();
-        $url->expects($this->any())
-            ->method('__invoke')
-            ->will($this->returnValue('http://localhost/first/vufind'));
+        $url = $this->createMock(Url::class);
+        $url->method('__invoke')->willReturn('http://localhost/first/vufind');
         $serverUrl = new ServerUrl();
         $serverUrl->setHost('localhost');
 
@@ -213,29 +210,22 @@ class CookieConsentTest extends \PHPUnit\Framework\TestCase
         };
 
         $plugins = [
-            'escapeHtmlAttr' => new EscapeHtmlAttr(),
+            'escapeHtmlAttr' => new EscapeHtmlAttr(new \VuFind\Escaper\Escaper()),
             'layout' => $layout,
             'serverUrl' => $serverUrl,
             'url' => $url,
         ];
-        $view = $this->getMockBuilder(PhpRenderer::class)->getMock();
-        $view->expects($this->any())
-            ->method('plugin')
+        $view = $this->createMock(PhpRenderer::class);
+        $view->method('plugin')
             ->willReturnCallback(
                 function ($name) use ($plugins) {
                     return $plugins[$name] ?? null;
                 }
             );
 
-        $mockLoginTokenManager = $this->getMockBuilder(LoginTokenManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $mockLoginTokenManager->expects($this->any())
-            ->method('getCookieName')
-            ->willReturn('loginToken');
-        $mockLoginTokenManager->expects($this->any())
-            ->method('getCookieLifetime')
-            ->willReturn(321);
+        $mockLoginTokenManager = $this->createMock(LoginTokenManager::class);
+        $mockLoginTokenManager->method('getCookieName')->willReturn('loginToken');
+        $mockLoginTokenManager->method('getCookieLifetime')->willReturn(321);
 
         $helper = new CookieConsent(
             $config,

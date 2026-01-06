@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -85,8 +85,8 @@ class EdsTest extends \PHPUnit\Framework\TestCase
         $eds = new Eds($this->getSearchService($manager));
         $backend->expects($this->once())
             ->method('autocomplete')
-            ->with($this->equalTo('query'), $this->equalTo('rawqueries'))
-            ->will($this->returnValue([1, 2, 3]));
+            ->with('query', 'rawqueries')
+            ->willReturn([1, 2, 3]);
         $this->assertEquals([1, 2, 3], $eds->getSuggestions('query'));
     }
 
@@ -103,8 +103,8 @@ class EdsTest extends \PHPUnit\Framework\TestCase
         $eds->setConfig('holdings');
         $backend->expects($this->once())
             ->method('autocomplete')
-            ->with($this->equalTo('query'), $this->equalTo('holdings'))
-            ->will($this->returnValue([4, 5]));
+            ->with('query', 'holdings')
+            ->willReturn([4, 5]);
         $this->assertEquals([4, 5], $eds->getSuggestions('query'));
     }
 }

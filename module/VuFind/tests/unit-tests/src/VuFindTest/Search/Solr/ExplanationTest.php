@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -30,7 +30,7 @@
 
 namespace VuFindTest\Search\Solr;
 
-use VuFind\Config\PluginManager;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Solr\Explanation;
 use VuFind\Search\Solr\Options;
 use VuFind\Search\Solr\Params;
@@ -48,7 +48,7 @@ use VuFindSearch\Backend\Exception\BackendException;
  */
 class ExplanationTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\ConfigPluginManagerTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Solr 9 example response
@@ -393,33 +393,33 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
                             0.078125 = fieldNorm(doc=115379)
                     0.00135112 = (MATCH) max plus 0.1 times others of:
             EXPLANATION
-            . '          0.00135112 = (MATCH) weight(series_statement:evolution^0.01 in 115379) [DefaultSimilarity], '
-            . 'result of:'
-            . <<<EXPLANATION
-                            0.00135112 = score(doc=115379,freq=1.0), product of:
-                              4.3100747E-4 = queryWeight, product of:
-                                0.01 = boost
-                                10.031343 = idf(docFreq=2436, maxDocs=20375968)
-                                0.004296608 = queryNorm
-                              3.1347947 = fieldWeight in 115379, product of:
-                                1.0 = tf(freq=1.0), with freq of:
-                                  1.0 = termFreq=1.0
-                                10.031343 = idf(docFreq=2436, maxDocs=20375968)
-                                0.3125 = fieldNorm(doc=115379)
-                        2.4372259E-4 = (MATCH) max plus 0.1 times others of:
-                          2.4372259E-4 = (MATCH) weight(misc:species^0.01 in 115379) [DefaultSimilarity], result of:
-                            2.4372259E-4 = score(doc=115379,freq=2.0), product of:
-                              3.0786352E-4 = queryWeight, product of:
-                                0.01 = boost
-                                7.16527 = idf(docFreq=42812, maxDocs=20375968)
-                                0.004296608 = queryNorm
-                              0.7916579 = fieldWeight in 115379, product of:
-                                1.4142135 = tf(freq=2.0), with freq of:
-                                  2.0 = termFreq=2.0
-                                7.16527 = idf(docFreq=42812, maxDocs=20375968)
-                                0.078125 = fieldNorm(doc=115379)
-                      0.8 = coord(4/5)
-                EXPLANATION
+        . '          0.00135112 = (MATCH) weight(series_statement:evolution^0.01 in 115379) [DefaultSimilarity], '
+        . 'result of:'
+        . <<<EXPLANATION
+                        0.00135112 = score(doc=115379,freq=1.0), product of:
+                          4.3100747E-4 = queryWeight, product of:
+                            0.01 = boost
+                            10.031343 = idf(docFreq=2436, maxDocs=20375968)
+                            0.004296608 = queryNorm
+                          3.1347947 = fieldWeight in 115379, product of:
+                            1.0 = tf(freq=1.0), with freq of:
+                              1.0 = termFreq=1.0
+                            10.031343 = idf(docFreq=2436, maxDocs=20375968)
+                            0.3125 = fieldNorm(doc=115379)
+                    2.4372259E-4 = (MATCH) max plus 0.1 times others of:
+                      2.4372259E-4 = (MATCH) weight(misc:species^0.01 in 115379) [DefaultSimilarity], result of:
+                        2.4372259E-4 = score(doc=115379,freq=2.0), product of:
+                          3.0786352E-4 = queryWeight, product of:
+                            0.01 = boost
+                            7.16527 = idf(docFreq=42812, maxDocs=20375968)
+                            0.004296608 = queryNorm
+                          0.7916579 = fieldWeight in 115379, product of:
+                            1.4142135 = tf(freq=2.0), with freq of:
+                              2.0 = termFreq=2.0
+                            7.16527 = idf(docFreq=42812, maxDocs=20375968)
+                            0.078125 = fieldNorm(doc=115379)
+                  0.8 = coord(4/5)
+            EXPLANATION
         . '  1.0 = product(if(exists(query(id:HEBr*,def=0.0)=0.0),const(0.4),const(1)),sum(product(max(const(0),'
         . 'sum(product(abs(ms(const(1672531200000),date(pub_date_max)=1862-01-01T00:00:00Z)),const(-5.285E-13)),'
         . 'const(1))),const(6.5)),const(1)))';
@@ -454,8 +454,8 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(424332884, $explanation->getRecordId());
 
         $this->assertEquals(10, $explanation->getMaxScore());
-        $this->assertEquals(200575.50390625, $explanation->getTotalScore());
-        $this->assertEquals(200575.50390625, $explanation->getBaseScore());
+        $this->assertEqualsWithDelta(200575.50390625, $explanation->getTotalScore(), PHP_FLOAT_EPSILON);
+        $this->assertEqualsWithDelta(200575.50390625, $explanation->getBaseScore(), PHP_FLOAT_EPSILON);
         $this->assertEquals(null, $explanation->getBoost());
         $this->assertEquals(null, $explanation->getCoord());
         $this->assertEquals(-1, $explanation->getMaxFields());
@@ -643,7 +643,7 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
         );
         $explanation->performRequest($recordId);
         $this->assertEquals($recordId, $explanation->getRecordId());
-        $this->assertEquals(3794.7397, $explanation->getTotalScore());
+        $this->assertEqualsWithDelta(3794.7397, $explanation->getTotalScore(), PHP_FLOAT_EPSILON);
         $this->assertCount(5, $explanation->getExplanation());
     }
 
@@ -710,7 +710,7 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
         $explanation->performRequest($recordId);
 
         $this->assertEquals($recordId, $explanation->getRecordId());
-        $this->assertEquals(0.598864, $explanation->getTotalScore());
+        $this->assertEqualsWithDelta(0.598864, $explanation->getTotalScore(), PHP_FLOAT_EPSILON);
     }
 
     /**
@@ -782,30 +782,28 @@ class ExplanationTest extends \PHPUnit\Framework\TestCase
      */
     protected function getExplanation($result, $config = null)
     {
-        $mockConfig = $this->createMock(PluginManager::class);
+        $mockConfig = $this->createMock(ConfigManagerInterface::class);
         $paramsObj = new Params(
             new Options($mockConfig),
             $mockConfig
         );
-        $searchService = $this->getMockBuilder(\VuFindSearch\Service::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $searchService = $this->createMock(\VuFindSearch\Service::class);
         $commandObj = $this->getMockBuilder(\VuFindSearch\Command\AbstractBase::class)
             ->disableOriginalConstructor()
-            ->onlyMethods(['getResult'])
-            ->getMockForAbstractClass();
+            ->onlyMethods(['getResult', 'execute'])
+            ->getMock();
         $commandObj->expects($this->once())->method('getResult')
-            ->will($this->returnValue($result));
+            ->willReturn($result);
         $checkCommand = function ($command) {
             return $command::class === \VuFindSearch\Backend\Solr\Command\RawJsonSearchCommand::class;
         };
         $searchService->expects($this->once())->method('invoke')
             ->with($this->callback($checkCommand))
-            ->will($this->returnValue($commandObj));
+            ->willReturn($commandObj);
         return new Explanation(
             $paramsObj,
             $searchService,
-            $this->getMockConfigPluginManager(
+            $this->getMockConfigManager(
                 [
                     'searches' => $config ?? [
                         'Explain' => [

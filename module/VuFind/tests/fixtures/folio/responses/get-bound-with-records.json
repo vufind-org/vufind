@@ -1,7 +1,4 @@
 [
-  { 
-    "comment": "Initial request for token"
-  },
   {
     "expectedPath": "/inventory/items/bc3fd525-4254-4075-845b-1428986d811b",
     "expectedParams": {},

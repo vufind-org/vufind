@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -147,7 +147,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
         $helper = new Permission($this->getMockPm(false), $mockPmd);
         $helper->setView($this->getMockView());
 
-        $this->assertEquals(
+        $this->assertSame(
             '<span class="label label-success">Available</span>',
             trim($helper->getAlternateContent('permissionDeniedTemplate'))
         );
@@ -165,8 +165,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
         $mockPmd = $this->getMockBuilder(\VuFind\Role\PermissionDeniedManager::class)
             ->setConstructorArgs([$this->permissionDeniedConfig])
             ->getMock();
-        $mockPmd->expects($this->any())->method('getDeniedTemplateBehavior')
-            ->will($this->returnValue($config['deniedTemplateBehavior']));
+        $mockPmd->method('getDeniedTemplateBehavior')->willReturn($config['deniedTemplateBehavior']);
         return $mockPmd;
     }
 
@@ -179,13 +178,9 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockPm($isAuthorized = false)
     {
-        $mockPm = $this->getMockBuilder(\VuFind\Role\PermissionManager::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $mockPm->expects($this->any())->method('isAuthorized')
-            ->will($this->returnValue($isAuthorized));
-        $mockPm->expects($this->any())->method('permissionRuleExists')
-            ->will($this->returnValue(true));
+        $mockPm = $this->createMock(\VuFind\Role\PermissionManager::class);
+        $mockPm->method('isAuthorized')->willReturn($isAuthorized);
+        $mockPm->method('permissionRuleExists')->willReturn(true);
 
         return $mockPm;
     }
@@ -197,8 +192,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockContext()
     {
-        return $this->getMockBuilder(\VuFind\View\Helper\Root\Context::class)
-            ->disableOriginalConstructor()->getMock();
+        return $this->createMock(\VuFind\View\Helper\Root\Context::class);
     }
 
     /**

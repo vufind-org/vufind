@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -92,12 +92,12 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
         $target = realpath($this->languageFixtureDir);
         $normalizer = $this->getMockNormalizer();
         $normalizer->expects($this->once())->method('normalizeDirectory')
-            ->with($this->equalTo($target));
+            ->with($target);
         $command = new NormalizeCommand($normalizer);
         $commandTester = new CommandTester($command);
         $commandTester->execute(compact('target'));
-        $this->assertEquals('', $commandTester->getDisplay());
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame('', $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -130,12 +130,12 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
         $target = realpath($this->languageFixtureDir) . '/foo/en.ini';
         $normalizer = $this->getMockNormalizer();
         $normalizer->expects($this->once())->method('normalizeFile')
-            ->with($this->equalTo($target));
+            ->with($target);
         $command = new NormalizeCommand($normalizer);
         $commandTester = new CommandTester($command);
         $commandTester->execute(compact('target'));
-        $this->assertEquals('', $commandTester->getDisplay());
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame('', $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -149,11 +149,11 @@ class NormalizeCommandTest extends \PHPUnit\Framework\TestCase
         $command = new NormalizeCommand($this->getMockNormalizer());
         $commandTester = new CommandTester($command);
         $commandTester->execute(compact('target'));
-        $this->assertEquals(
+        $this->assertSame(
             "{$target} does not exist.\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertSame(1, $commandTester->getStatusCode());
     }
 
     /**

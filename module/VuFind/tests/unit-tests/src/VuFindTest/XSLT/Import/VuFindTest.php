@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -44,7 +44,7 @@ use function chr;
  */
 class VuFindTest extends \PHPUnit\Framework\TestCase
 {
-    use \VuFindTest\Feature\PathResolverTrait;
+    use \VuFindTest\Feature\ConfigRelatedServicesTrait;
 
     /**
      * Support method -- set up a mock container for testing the class.
@@ -54,12 +54,8 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
     protected function getMockContainer()
     {
         $container = new \VuFindTest\Container\MockContainer($this);
-        $tableManager = new \VuFindTest\Container\MockDbTablePluginManager($this);
-        $tableManager->set(
-            'ChangeTracker',
-            $tableManager->get(\VuFind\Db\Table\ChangeTracker::class)
-        );
-        $container->set(\VuFind\Db\Table\PluginManager::class, $tableManager);
+        $serviceManager = new \VuFindTest\Container\MockDbServicePluginManager($this);
+        $container->set(\VuFind\Db\Service\PluginManager::class, $serviceManager);
         return $container;
     }
 
@@ -71,9 +67,7 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
     public function testGetChangeTracker()
     {
         VuFind::setServiceLocator($this->getMockContainer());
-        $this->assertTrue(
-            VuFind::getChangeTracker() instanceof \VuFind\Db\Table\ChangeTracker
-        );
+        $this->assertInstanceOf(\VuFind\Db\Service\ChangeTrackerServiceInterface::class, VuFind::getChangeTracker());
     }
 
     /**
@@ -84,10 +78,8 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
     public function testGetConfig()
     {
         $container = $this->getMockContainer();
-        $this->addPathResolverToContainer($container);
-        $config = new \Laminas\Config\Config([]);
-        $container->get(\VuFind\Config\PluginManager::class)->expects($this->once())
-            ->method('get')->with('config')->will($this->returnValue($config));
+        $this->addConfigRelatedServicesToContainer($container);
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigObject('config');
         VuFind::setServiceLocator($container);
         $this->assertEquals($config, VuFind::getConfig());
     }
@@ -269,16 +261,14 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
     /**
      * DataProvider for testIsInvertedName().
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function isInvertedNameProvider(): array
+    public static function isInvertedNameProvider(): \Iterator
     {
-        return [
-            ['foo bar', false],
-            ['foo bar, jr.', false],
-            ['bar, foo', true],
-            ['bar, foo, jr.', true],
-        ];
+        yield ['foo bar', false];
+        yield ['foo bar, jr.', false];
+        yield ['bar, foo', true];
+        yield ['bar, foo, jr.', true];
     }
 
     /**
@@ -288,12 +278,11 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
      * @param bool   $output Expected output of test
      *
      * @return void
-     *
-     * @dataProvider isInvertedNameProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('isInvertedNameProvider')]
     public function testIsInvertedName(string $input, bool $output): void
     {
-        $this->assertEquals($output, VuFind::isInvertedName($input));
+        $this->assertSame($output, VuFind::isInvertedName($input));
     }
 
     /**
@@ -303,12 +292,11 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
      * @param string $output Expected output of test
      *
      * @return void
-     *
-     * @dataProvider nameProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('nameProvider')]
     public function testInvertName(string $input, string $output): void
     {
-        $this->assertEquals($output, VuFind::invertName($input));
+        $this->assertSame($output, VuFind::invertName($input));
     }
 
     /**
@@ -335,24 +323,22 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testTitleSortLower().
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function titleSortLowerProvider(): array
+    public static function titleSortLowerProvider(): \Iterator
     {
-        return [
-            'basic lowercasing' => ['ABCDEF', 'abcdef'],
-            'Latin accent stripping' => ['çèñüĂ', 'cenua'],
-            'Punctuation stripping' => ['this:that:...!>!the other', 'this that the other'],
-            'Japanese text' => ['日本語テキスト', '日本語テキスト'],
-            'Leading bracket' => ['[foo', 'foo'],
-            'Trailing bracket' => ['foo]', 'foo'],
-            'Outer brackets' => ['[foo]', 'foo'],
-            'Stacked outer brackets' => ['[[foo]]', 'foo'],
-            'Tons of brackets' => ['[]foo][[', 'foo'],
-            'Inner brackets' => ['foo[]foo', 'foo foo'],
-            'Trailing whitespace' => ['foo   ', 'foo'],
-            'Trailing punctuation' => ['foo /.', 'foo'],
-        ];
+        yield 'basic lowercasing' => ['ABCDEF', 'abcdef'];
+        yield 'Latin accent stripping' => ['çèñüĂ', 'cenua'];
+        yield 'Punctuation stripping' => ['this:that:...!>!the other', 'this that the other'];
+        yield 'Japanese text' => ['日本語テキスト', '日本語テキスト'];
+        yield 'Leading bracket' => ['[foo', 'foo'];
+        yield 'Trailing bracket' => ['foo]', 'foo'];
+        yield 'Outer brackets' => ['[foo]', 'foo'];
+        yield 'Stacked outer brackets' => ['[[foo]]', 'foo'];
+        yield 'Tons of brackets' => ['[]foo][[', 'foo'];
+        yield 'Inner brackets' => ['foo[]foo', 'foo foo'];
+        yield 'Trailing whitespace' => ['foo   ', 'foo'];
+        yield 'Trailing punctuation' => ['foo /.', 'foo'];
     }
 
     /**
@@ -362,9 +348,8 @@ class VuFindTest extends \PHPUnit\Framework\TestCase
      * @param string $expected Expected output of test
      *
      * @return void
-     *
-     * @dataProvider titleSortLowerProvider
      */
+    #[\PHPUnit\Framework\Attributes\DataProvider('titleSortLowerProvider')]
     public function testTitleSortLower($input, $expected): void
     {
         $this->assertEquals($expected, VuFind::titleSortLower($input));

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -47,7 +47,7 @@ class CspTest extends \PHPUnit\Framework\TestCase
      */
     public function testDisablePolicyWithCspEnabled(): void
     {
-        $config = new \Laminas\Config\Config(
+        $config = new \VuFind\Config\Config(
             [
                 'CSP' => [
                     'use_nonce' => true,
@@ -68,7 +68,7 @@ class CspTest extends \PHPUnit\Framework\TestCase
 
         $response = new \Laminas\Http\Response();
         $headers = $response->getHeaders();
-        $header = $cspHeaderGenerator->getHeader();
+        $header = $cspHeaderGenerator->getCspHeader();
         $this->assertInstanceOf(
             \Laminas\Http\Header\ContentSecurityPolicy::class,
             $header
@@ -89,7 +89,7 @@ class CspTest extends \PHPUnit\Framework\TestCase
      */
     public function testDisablePolicyWithCspReportOnly(): void
     {
-        $config = new \Laminas\Config\Config(
+        $config = new \VuFind\Config\Config(
             [
                 'CSP' => [
                     'use_nonce' => true,
@@ -110,7 +110,7 @@ class CspTest extends \PHPUnit\Framework\TestCase
 
         $response = new \Laminas\Http\Response();
         $headers = $response->getHeaders();
-        $header = $cspHeaderGenerator->getHeader();
+        $header = $cspHeaderGenerator->getCspHeader();
         $this->assertInstanceOf(
             \Laminas\Http\Header\ContentSecurityPolicyReportOnly::class,
             $header
@@ -131,7 +131,7 @@ class CspTest extends \PHPUnit\Framework\TestCase
      */
     public function testDisablePolicyWithCspDisabled(): void
     {
-        $config = new \Laminas\Config\Config(
+        $config = new \VuFind\Config\Config(
             [
                 'CSP' => [
                     'use_nonce' => true,
@@ -151,7 +151,7 @@ class CspTest extends \PHPUnit\Framework\TestCase
             = new \VuFind\Security\CspHeaderGenerator($config, $nonceGenerator);
 
         $response = new \Laminas\Http\Response();
-        $header = $cspHeaderGenerator->getHeader();
+        $header = $cspHeaderGenerator->getCspHeader();
         $this->assertNull($header);
 
         $csp = new \VuFind\View\Helper\Root\Csp($response, $nonceGenerator->getNonce());

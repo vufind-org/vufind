@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -30,7 +30,7 @@
 
 namespace VuFind\Search\Params;
 
-use Laminas\Config\Config;
+use VuFind\Config\Config;
 
 /**
  * Trait to add facet limiting settings to a Params object.
@@ -60,11 +60,11 @@ trait FacetRestrictionsTrait
     /**
      * Initialize facet prefix and matches from a Config object.
      *
-     * @param Config $config Configuration
+     * @param ?Config $config Configuration
      *
      * @return void
      */
-    protected function initFacetRestrictionsFromConfig(Config $config = null)
+    protected function initFacetRestrictionsFromConfig(?Config $config = null)
     {
         foreach ($config->facet_prefix_by_field ?? [] as $k => $v) {
             $this->facetPrefixByField[$k] = $v;

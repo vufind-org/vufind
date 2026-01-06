@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Theme
@@ -30,8 +30,7 @@
 
 namespace VuFindTheme;
 
-use Laminas\Config\Config;
-use VuFind\Config\Locator as ConfigLocator;
+use VuFind\Config\Config;
 use VuFind\Config\PathResolver;
 use VuFind\Config\Writer as ConfigWriter;
 
@@ -50,22 +49,14 @@ class ThemeGenerator extends AbstractThemeUtility implements GeneratorInterface
     use \VuFindConsole\ConsoleOutputTrait;
 
     /**
-     * Config file path resolver
-     *
-     * @var PathResolver
-     */
-    protected $pathResolver;
-
-    /**
      * Constructor
      *
      * @param ThemeInfo    $info         Theme info object
      * @param PathResolver $pathResolver Config file path resolver
      */
-    public function __construct(ThemeInfo $info, PathResolver $pathResolver = null)
+    public function __construct(ThemeInfo $info, protected PathResolver $pathResolver)
     {
         parent::__construct($info);
-        $this->pathResolver = $pathResolver;
     }
 
     /**
@@ -104,9 +95,7 @@ class ThemeGenerator extends AbstractThemeUtility implements GeneratorInterface
     public function configure(Config $config, $name)
     {
         // Enable theme
-        $configPath = $this->pathResolver
-            ? $this->pathResolver->getLocalConfigPath('config.ini', null, true)
-            : ConfigLocator::getLocalConfigPath('config.ini', null, true);
+        $configPath = $this->pathResolver->getLocalConfigPath('config.ini', null, true);
         if (!file_exists($configPath)) {
             return $this
                 ->setLastError("Expected configuration file missing: $configPath");
@@ -117,7 +106,7 @@ class ThemeGenerator extends AbstractThemeUtility implements GeneratorInterface
         $writer->set('Site', 'theme', $name);
         // Enable dropdown
         $settingPrefixes = [
-            'bootstrap' => 'bs3',
+            'bootstrap' => 'bs5',
             'custom' => strtolower(str_replace(' ', '', $name)),
         ];
         // - Set alternate_themes
@@ -127,7 +116,7 @@ class ThemeGenerator extends AbstractThemeUtility implements GeneratorInterface
             $alts = explode(',', $config->Site->alternate_themes);
             foreach ($alts as $a) {
                 $parts = explode(':', $a);
-                if ($parts[1] === 'bootstrap3') {
+                if ($parts[1] === 'bootstrap5') {
                     $settingPrefixes['bootstrap'] = $parts[0];
                 } elseif ($parts[1] === $name) {
                     $settingPrefixes['custom'] = $parts[0];
@@ -136,7 +125,7 @@ class ThemeGenerator extends AbstractThemeUtility implements GeneratorInterface
                 }
             }
         }
-        $altSetting[] = $settingPrefixes['bootstrap'] . ':bootstrap3';
+        $altSetting[] = $settingPrefixes['bootstrap'] . ':bootstrap5';
         $altSetting[] = $settingPrefixes['custom'] . ':' . $name;
         $writer->set('Site', 'alternate_themes', implode(',', $altSetting));
         // - Set selectable_themes

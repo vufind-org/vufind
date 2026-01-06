@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -208,13 +208,95 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Test getHighlightedSnippet for a record.
+     * Test getHighlightedSnippet for an empty record.
      *
      * @return void
      */
-    public function testGetHighlightedSnippet()
+    public function testEmptyGetHighlightedSnippet()
     {
         $this->assertEquals(false, $this->getDriver()->getHighlightedSnippet());
+    }
+
+    /**
+     * Test getHighlightedSnippet for a record when empty snippet data is given.
+     *
+     * @return void
+     */
+    public function testGetHighlightedSnippetAllEmpty()
+    {
+        $overrides = [
+            'General' => ['snippets' => true],
+        ];
+        $driver = $this->getDriver([], $overrides);
+        $details = ['topic' => ['']];
+        $driver->setHighlightDetails($details);
+        $this->assertEquals(false, $driver->getHighlightedSnippet());
+    }
+
+    /**
+     * Test getHighlightedSnippet for a record when the first snippet is empty.
+     *
+     * @return void
+     */
+    public function testGetHighlightedSnippetFirstEmpty()
+    {
+        $overrides = [
+            'General' => ['snippets' => true],
+        ];
+        $driver = $this->getDriver([], $overrides);
+        // Note that the first topic result is empty, it should return the first non-empty one
+        $details = ['topic' => ['', 'Testing {{{{START_HILITE}}}}Snippets{{{{END_HILITE}}}} highlighting']];
+        $driver->setHighlightDetails($details);
+        $this->assertEquals(
+            ['snippet' => 'Testing {{{{START_HILITE}}}}Snippets{{{{END_HILITE}}}} highlighting', 'caption' => false],
+            $driver->getHighlightedSnippet()
+        );
+    }
+
+    /**
+     * Test getHighlightedSnippet for a record when multiple preferred snippet fields exist.
+     *
+     * @return void
+     */
+    public function testGetHighlightedSnippetInPreferredFieldOrder()
+    {
+        $overrides = [
+            'General' => ['snippets' => true],
+        ];
+        $driver = $this->getDriver([], $overrides);
+        $details = [
+            'topic' => ['', 'Testing topic {{{{START_HILITE}}}}snippet{{{{END_HILITE}}}}'],
+            'contents' => ['Testing content {{{{START_HILITE}}}}snippet{{{{END_HILITE}}}}'],
+        ];
+        $driver->setHighlightDetails($details);
+        // Should return the snippet from contents since that is the first item in preferredSnippetFields
+        $this->assertEquals(
+            ['snippet' => 'Testing content {{{{START_HILITE}}}}snippet{{{{END_HILITE}}}}', 'caption' => false],
+            $driver->getHighlightedSnippet()
+        );
+    }
+
+    /**
+     * Test getHighlightedSnippet for a record when no preferred snippet fields exist.
+     *
+     * @return void
+     */
+    public function testGetHighlightedSnippetNonForbiddenField()
+    {
+        $overrides = [
+            'General' => ['snippets' => true],
+        ];
+        $driver = $this->getDriver([], $overrides);
+        $details = [
+            'author' => ['', 'Testing author {{{{START_HILITE}}}}snippet{{{{END_HILITE}}}}'],
+            'toast' => ['Testing toast {{{{START_HILITE}}}}snippet{{{{END_HILITE}}}}'],
+        ];
+        $driver->setHighlightDetails($details);
+        // Should ignore the 'author' snippet since that is forbidden, and return 'toast' instead
+        $this->assertEquals(
+            ['snippet' => 'Testing toast {{{{START_HILITE}}}}snippet{{{{END_HILITE}}}}', 'caption' => false],
+            $driver->getHighlightedSnippet()
+        );
     }
 
     /**
@@ -251,7 +333,7 @@ class SolrDefaultTest extends \PHPUnit\Framework\TestCase
     protected function getDriver($overrides = [], $searchConfig = [])
     {
         $fixture = $this->getJsonFixture('misc/testbug2.json');
-        $record = new SolrDefault(null, null, new \Laminas\Config\Config($searchConfig));
+        $record = new SolrDefault(null, null, new \VuFind\Config\Config($searchConfig));
         $record->setRawData($overrides + $fixture['response']['docs'][0]);
         return $record;
     }

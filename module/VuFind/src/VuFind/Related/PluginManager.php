@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Related_Records
@@ -51,9 +51,10 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         'channels' => Channels::class,
         'bookplate' => Bookplate::class,
         'editions' => Deprecated::class,
+        'morebyauthorsolr' => MoreByAuthorSolr::class,
         'similar' => Similar::class,
         'worldcateditions' => Deprecated::class,
-        'worldcatsimilar' => WorldCatSimilar::class,
+        'worldcat2similar' => WorldCat2Similar::class,
     ];
 
     /**
@@ -65,8 +66,9 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
         Channels::class => InvokableFactory::class,
         Bookplate::class => BookplateFactory::class,
         Deprecated::class => InvokableFactory::class,
+        MoreByAuthorSolr::class => SimilarFactory::class,
         Similar::class => SimilarFactory::class,
-        WorldCatSimilar::class => SimilarFactory::class,
+        WorldCat2Similar::class => WorldCat2SimilarFactory::class,
     ];
 
     /**

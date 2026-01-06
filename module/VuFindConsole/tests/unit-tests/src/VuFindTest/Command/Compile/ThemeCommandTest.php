@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -72,18 +72,18 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
         $compiler = $this->getMockCompiler(['compile']);
         $compiler->expects($this->once())->method('compile')
             ->with(
-                $this->equalTo('theme'),
-                $this->equalTo('theme_compiled'),
-                $this->equalTo(false)
-            )->will($this->returnValue(true));
+                'theme',
+                'theme_compiled',
+                false
+            )->willReturn(true);
         $command = new ThemeCommand($compiler);
         $commandTester = new CommandTester($command);
         $commandTester->execute(['source' => 'theme']);
-        $this->assertEquals(
+        $this->assertSame(
             "Success.\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -96,12 +96,12 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
         $compiler = $this->getMockCompiler(['compile', 'getLastError']);
         $compiler->expects($this->once())->method('compile')
             ->with(
-                $this->equalTo('theme'),
-                $this->equalTo('compiled_theme'),
-                $this->equalTo(false)
-            )->will($this->returnValue(false));
+                'theme',
+                'compiled_theme',
+                false
+            )->willReturn(false);
         $compiler->expects($this->once())->method('getLastError')
-            ->will($this->returnValue('Error!'));
+            ->willReturn('Error!');
         $command = new ThemeCommand($compiler);
         $commandTester = new CommandTester($command);
         $commandTester->execute(
@@ -110,11 +110,11 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
                 'target' => 'compiled_theme',
             ]
         );
-        $this->assertEquals(
+        $this->assertSame(
             "Error!\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertSame(1, $commandTester->getStatusCode());
     }
 
     /**
@@ -127,10 +127,10 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
         $compiler = $this->getMockCompiler(['compile']);
         $compiler->expects($this->once())->method('compile')
             ->with(
-                $this->equalTo('theme'),
-                $this->equalTo('compiled_theme'),
-                $this->equalTo(true)
-            )->will($this->returnValue(true));
+                'theme',
+                'compiled_theme',
+                true
+            )->willReturn(true);
         $command = new ThemeCommand($compiler);
         $commandTester = new CommandTester($command);
         $commandTester->execute(
@@ -140,11 +140,11 @@ class ThemeCommandTest extends \PHPUnit\Framework\TestCase
                 '--force' => true,
             ]
         );
-        $this->assertEquals(
+        $this->assertSame(
             "Success.\n",
             $commandTester->getDisplay()
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**

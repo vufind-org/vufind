@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search
@@ -32,7 +32,7 @@ namespace VuFindTest\Search\Primo;
 use Laminas\EventManager\Event;
 use VuFind\Search\Primo\InjectOnCampusListener;
 use VuFindSearch\Backend\Primo\Backend;
-use VuFindSearch\Backend\Primo\Connector;
+use VuFindSearch\Backend\Primo\ConnectorInterface;
 use VuFindSearch\ParamBag;
 use VuFindSearch\Service;
 
@@ -80,7 +80,7 @@ class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
      */
     protected function setUp(): void
     {
-        $connector      = new Connector('http://example.org/', 'sample', 'none');
+        $connector      = $this->createMock(ConnectorInterface::class);
         $this->backend  = new Backend($connector);
     }
 
@@ -89,14 +89,14 @@ class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testAttach()
+    public function testAttach(): void
     {
         $listener = new InjectOnCampusListener();
         $mock = $this->createMock(\Laminas\EventManager\SharedEventManagerInterface::class);
         $mock->expects($this->once())->method('attach')->with(
-            $this->equalTo(\VuFindSearch\Service::class),
-            $this->equalTo('pre'),
-            $this->equalTo([$listener, 'onSearchPre'])
+            \VuFindSearch\Service::class,
+            'pre',
+            [$listener, 'onSearchPre']
         );
         $listener->attach($mock);
     }
@@ -106,17 +106,15 @@ class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testAttachWithParameter()
+    public function testAttachWithParameter(): void
     {
-        $mockPermController = $this->getMockBuilder(\VuFind\Search\Primo\PrimoPermissionHandler::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $mockPermController = $this->createMock(\VuFind\Search\Primo\PrimoPermissionHandler::class);
         $listener = new InjectOnCampusListener($mockPermController);
         $mock = $this->createMock(\Laminas\EventManager\SharedEventManagerInterface::class);
         $mock->expects($this->once())->method('attach')->with(
-            $this->equalTo(\VuFindSearch\Service::class),
-            $this->equalTo('pre'),
-            $this->equalTo([$listener, 'onSearchPre'])
+            \VuFindSearch\Service::class,
+            'pre',
+            [$listener, 'onSearchPre']
         );
         $listener->attach($mock);
     }
@@ -127,7 +125,7 @@ class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testOnCampusWithoutAuthorizationService()
+    public function testOnCampusWithoutAuthorizationService(): void
     {
         $params   = new ParamBag([ ]);
         $listener = new InjectOnCampusListener();
@@ -144,15 +142,11 @@ class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testOnCampusDefaultSuccessfull()
+    public function testOnCampusDefaultSuccessfull(): void
     {
         $params   = new ParamBag([ ]);
-        $mockPermController = $this
-            ->getMockBuilder(\VuFind\Search\Primo\PrimoPermissionHandler::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $mockPermController->expects($this->any())->method('hasPermission')
-            ->will($this->returnValue(true));
+        $mockPermController = $this->createMock(\VuFind\Search\Primo\PrimoPermissionHandler::class);
+        $mockPermController->method('hasPermission')->willReturn(true);
 
         $listener = new InjectOnCampusListener($mockPermController);
 
@@ -172,13 +166,10 @@ class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testOnCampusDefaultNotSuccessfull()
+    public function testOnCampusDefaultNotSuccessfull(): void
     {
         $params   = new ParamBag([ ]);
-        $mockPermController
-            = $this->getMockBuilder(\VuFind\Search\Primo\PrimoPermissionHandler::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $mockPermController = $this->createMock(\VuFind\Search\Primo\PrimoPermissionHandler::class);
 
         $listener = new InjectOnCampusListener($mockPermController);
 
@@ -195,15 +186,11 @@ class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testOnCampusInsideNetwork()
+    public function testOnCampusInsideNetwork(): void
     {
         $params   = new ParamBag([ ]);
-        $mockPermController
-            = $this->getMockBuilder(\VuFind\Search\Primo\PrimoPermissionHandler::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $mockPermController->expects($this->any())->method('hasPermission')
-            ->will($this->returnValue(true));
+        $mockPermController = $this->createMock(\VuFind\Search\Primo\PrimoPermissionHandler::class);
+        $mockPermController->method('hasPermission')->willReturn(true);
 
         $listener = new InjectOnCampusListener($mockPermController);
 
@@ -220,15 +207,11 @@ class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testOnCampusOutsideNetwork()
+    public function testOnCampusOutsideNetwork(): void
     {
         $params   = new ParamBag([ ]);
-        $mockPermController = $this
-            ->getMockBuilder(\VuFind\Search\Primo\PrimoPermissionHandler::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $mockPermController->expects($this->any())->method('hasPermission')
-            ->will($this->returnValue(false));
+        $mockPermController = $this->createMock(\VuFind\Search\Primo\PrimoPermissionHandler::class);
+        $mockPermController->method('hasPermission')->willReturn(false);
 
         $listener = new InjectOnCampusListener($mockPermController);
 
@@ -244,7 +227,7 @@ class OnCampusListenerTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testOnCampusNoPermissionController()
+    public function testOnCampusNoPermissionController(): void
     {
         $params   = new ParamBag([ ]);
 

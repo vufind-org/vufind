@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Summon
@@ -30,6 +30,8 @@
 namespace VuFind\Search\Summon;
 
 use SerialsSolutions_Summon_Query as SummonQuery;
+use VuFind\Config\Config;
+use VuFind\Config\ConfigManagerInterface;
 use VuFind\Solr\Utils as SolrUtils;
 use VuFindSearch\ParamBag;
 
@@ -80,13 +82,16 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Constructor
      *
-     * @param \VuFind\Search\Base\Options  $options      Options to use
-     * @param \VuFind\Config\PluginManager $configLoader Config loader
+     * @param \VuFind\Search\Base\Options $options       Options to use
+     * @param ConfigManagerInterface      $configManager Config manager
      */
-    public function __construct($options, \VuFind\Config\PluginManager $configLoader)
+    public function __construct($options, ConfigManagerInterface $configManager)
     {
-        parent::__construct($options, $configLoader);
-        $config = $configLoader->get($options->getFacetsIni());
+        parent::__construct($options, $configManager);
+        $facetConfigName = $options->getFacetsIni();
+        $config = ($facetConfigName !== null)
+            ? $configManager->getConfigObject($facetConfigName)
+            : new Config([]);
         $this->initFacetLimitsFromConfig($config->Facet_Settings ?? null);
     }
 
@@ -153,31 +158,32 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Get a user-friendly string to describe the provided facet field.
      *
-     * @param string $field   Facet field name.
-     * @param string $value   Facet value.
-     * @param string $default Default field name (null for default behavior).
+     * @param string $field               Facet field name.
+     * @param string $value               Facet value.
+     * @param string $default             Default field name (null for default behavior).
+     * @param bool   $allowCheckboxFacets Should checkbox facet labels be allowed too?
      *
-     * @return string         Human-readable description of field.
+     * @return string Human-readable description of field.
      */
-    public function getFacetLabel($field, $value = null, $default = null)
+    public function getFacetLabel($field, $value = null, $default = null, $allowCheckboxFacets = true)
     {
         // The default use of "Other" for undefined facets doesn't work well with
         // checkbox facets -- we'll use field names as the default within the Summon
         // search object.
-        return parent::getFacetLabel($field, $value, $default ?: $field);
+        return parent::getFacetLabel($field, $value, $default ?: $field, $allowCheckboxFacets);
     }
 
     /**
      * Get information on the current state of the boolean checkbox facets.
      *
-     * @param array $include        List of checkbox filters to return (null for all)
-     * @param bool  $includeDynamic Should we include dynamically-generated
+     * @param ?array $include        List of checkbox filters to return (null for all)
+     * @param bool   $includeDynamic Should we include dynamically-generated
      * checkboxes that are not part of the include list above?
      *
      * @return array
      */
     public function getCheckboxFacets(
-        array $include = null,
+        ?array $include = null,
         bool $includeDynamic = true
     ) {
         // Grab checkbox facet details using the standard method:
@@ -393,8 +399,8 @@ class Params extends \VuFind\Search\Base\Params
      */
     protected function initFacetList($facetList, $facetSettings, $cfgFile = null)
     {
-        $config = $this->configLoader
-            ->get($cfgFile ?? $this->getOptions()->getFacetsIni());
+        $facetConfigName = $cfgFile ?? $this->getOptions()->getFacetsIni();
+        $config = ($facetConfigName !== null) ? $this->configManager->getConfigObject($facetConfigName) : [];
         // Special case -- when most settings are in Results_Settings, the limits
         // can be found in Facet_Settings.
         $limitSection = ($facetSettings === 'Results_Settings')

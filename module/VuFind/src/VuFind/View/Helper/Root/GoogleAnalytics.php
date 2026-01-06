@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  View_Helpers
@@ -28,8 +28,6 @@
  */
 
 namespace VuFind\View\Helper\Root;
-
-use Laminas\View\Helper\HeadScript;
 
 use function is_array;
 
@@ -62,17 +60,18 @@ class GoogleAnalytics extends \Laminas\View\Helper\AbstractHelper
      * Constructor
      *
      * @param string|bool $key     API key (false if disabled)
-     * @param bool|array  $options Configuration options (supported options:
-     * 'universal' and 'create_options_js'). If a boolean is provided instead of
-     * an array, that value is used as the 'universal' setting and no other options
-     * are set (for backward compatibility).
+     * @param bool|array  $options Configuration options (supported option:
+     * 'create_options_js'). If a Boolean is provided instead of an array,
+     * no options will be set (for backward compatibility).
      */
     public function __construct($key, $options = [])
     {
-        // The second constructor parameter used to be a boolean representing
-        // the "universal" setting, so convert to an array for back-compatibility:
+        // The second constructor parameter used to be a Boolean representing
+        // an obsolete setting, but that is no longer meaningful, so treat it as
+        // an empty array for legacy compatibility. We should remove Boolean
+        // support entirely in a future release.
         if (!is_array($options)) {
-            $options = ['universal' => (bool)$options];
+            $options = [];
         }
         $this->key = $key;
         $this->createOptions = $options['create_options_js'] ?? "'auto'";
@@ -81,11 +80,11 @@ class GoogleAnalytics extends \Laminas\View\Helper\AbstractHelper
     /**
      * Returns GA Javascript code.
      *
-     * @param string $customUrl override URL to send to Google Analytics
-     *
      * @return string
+     *
+     * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    protected function getRawJavascript($customUrl = false)
+    protected function getRawJavascript()
     {
         return <<<JS
             window.dataLayer = window.dataLayer || [];
@@ -98,20 +97,18 @@ class GoogleAnalytics extends \Laminas\View\Helper\AbstractHelper
     /**
      * Returns GA code (if active) or empty string if not.
      *
-     * @param string $customUrl override URL to send to Google Analytics
-     *
      * @return string
      */
-    public function __invoke($customUrl = false)
+    public function __invoke()
     {
         if (!$this->key) {
             return '';
         }
-        $inlineScript = $this->getView()->plugin('inlinescript');
+        $assetManager = $this->getView()->plugin('assetManager');
         $url = 'https://www.googletagmanager.com/gtag/js?id=' . urlencode($this->key);
-        $code = $this->getRawJavascript($customUrl);
+        $code = $this->getRawJavascript();
         return
-            $inlineScript(HeadScript::FILE, $url, 'SET', ['async' => true]) . "\n"
-            . $inlineScript(HeadScript::SCRIPT, $code, 'SET');
+            $assetManager->outputInlineScriptLink($url, attrs: ['async' => true]) . "\n"
+            . $assetManager->outputInlineScriptString($code);
     }
 }

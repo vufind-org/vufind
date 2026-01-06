@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  HierarchyTree_DataFormatter
@@ -64,13 +64,13 @@ class AbstractBaseFactory implements \Laminas\ServiceManager\Factory\FactoryInte
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if ($options !== null) {
             throw new \Exception('Unexpected options sent to factory!');
         }
-        $config = $container->get(\VuFind\Config\PluginManager::class)->get('config');
-        $treeDataFormatter = new $requestedName($config->Hierarchy->validateHierarchySequences ?? true);
+        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
+        $treeDataFormatter = new $requestedName($config['Hierarchy']['validateHierarchySequences'] ?? true);
         $treeDataFormatter->setSorter($container->get(\VuFind\I18n\Sorter::class));
         return $treeDataFormatter;
     }

@@ -18,8 +18,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Config
@@ -59,20 +59,6 @@ class YamlReader
     protected $cacheName = 'yaml';
 
     /**
-     * Cache manager
-     *
-     * @var \VuFind\Cache\Manager
-     */
-    protected $cacheManager;
-
-    /**
-     * Config file path resolver
-     *
-     * @var PathResolver
-     */
-    protected $pathResolver;
-
-    /**
      * Cache of loaded files.
      *
      * @var array
@@ -82,25 +68,21 @@ class YamlReader
     /**
      * Constructor
      *
-     * @param \VuFind\Cache\Manager $cacheManager Cache manager (optional)
-     * @param PathResolver          $pathResolver Config file path resolver
-     * (optional; defaults to \VuFind\Config\Locator)
+     * @param PathResolver           $pathResolver Config file path resolver
+     * @param ?\VuFind\Cache\Manager $cacheManager Cache manager (optional)
      */
     public function __construct(
-        \VuFind\Cache\Manager $cacheManager = null,
-        PathResolver $pathResolver = null
+        protected PathResolver $pathResolver,
+        protected ?\VuFind\Cache\Manager $cacheManager = null,
     ) {
-        $this->cacheManager = $cacheManager;
-        $this->pathResolver = $pathResolver;
     }
 
     /**
      * Return a configuration
      *
-     * @param string  $filename       Config file name
-     * @param boolean $useLocalConfig Use local configuration if available
-     * @param boolean $forceReload    Reload even if config has been internally
-     * cached in the class.
+     * @param string $filename       Config file name
+     * @param bool   $useLocalConfig Use local configuration if available
+     * @param bool   $forceReload    Reload even if config has been internally cached in the class.
      *
      * @return array
      */
@@ -111,21 +93,14 @@ class YamlReader
         // to pass $forceReload down another level to load an updated file if
         // something has changed -- it's enough to force a cache recheck).
         if ($forceReload || !isset($this->files[$filename])) {
-            if ($this->pathResolver) {
-                $localConfigPath = $useLocalConfig
-                    ? $this->pathResolver->getLocalConfigPath($filename)
-                    : null;
-            } else {
-                $localConfigPath = $useLocalConfig
-                    ? Locator::getLocalConfigPath($filename)
-                    : null;
-            }
-            $baseConfigPath = $this->pathResolver
-                ? $this->pathResolver->getBaseConfigPath($filename)
-                : Locator::getBaseConfigPath($filename);
+            $localConfigPath = $useLocalConfig
+                ? $this->pathResolver->getLocalConfigPath($filename)
+                : null;
+            $baseConfigPath = $this->pathResolver->getBaseConfigPath($filename);
             $this->files[$filename] = $this->getFromPaths(
                 $baseConfigPath,
-                $localConfigPath
+                $localConfigPath,
+                $useLocalConfig
             );
         }
 
@@ -135,29 +110,38 @@ class YamlReader
     /**
      * Given core and local filenames, retrieve the configuration data.
      *
-     * @param string $defaultFile Full path to file containing default YAML
-     * @param string $customFile  Full path to file containing local customizations
+     * @param string $defaultFile    Full path to file containing default YAML
+     * @param string $customFile     Full path to file containing local customizations
      * (may be null if no local file exists).
+     * @param bool   $useLocalConfig Use local configuration if available
      *
      * @return array
      */
-    protected function getFromPaths($defaultFile, $customFile = null)
+    protected function getFromPaths($defaultFile, $customFile = null, $useLocalConfig = true)
     {
         // Connect to the cache:
         $cache = (null !== $this->cacheManager)
             ? $this->cacheManager->getCache($this->cacheName) : false;
 
+        $cacheConfig = (null !== $this->cacheManager) ? $this->cacheManager->getConfig() : [];
+        $cacheOptions = array_merge(
+            $cacheConfig['ConfigCache'] ?? [],
+            $cacheConfig['CacheConfigName_' . $this->cacheName] ?? [],
+        );
+        $reloadOnFileChange = $cacheOptions['reloadOnFileChange'] ?? true;
+
         // Generate cache key:
-        $cacheKey = $defaultFile . '-'
-            . (file_exists($defaultFile) ? filemtime($defaultFile) : 0);
+        $cacheKey = $defaultFile .
+            (($reloadOnFileChange && file_exists($defaultFile)) ? '-' . filemtime($defaultFile) : '');
         if (!empty($customFile)) {
-            $cacheKey .= '-local-' . filemtime($customFile);
+            $cacheKey .= '-local-'
+                . (($reloadOnFileChange && file_exists($customFile)) ? '-' . filemtime($customFile) : '');
         }
         $cacheKey = md5($cacheKey);
 
         // Generate data if not found in cache:
         if ($cache === false || !($results = $cache->getItem($cacheKey))) {
-            $results = $this->parseYaml($customFile, $defaultFile);
+            $results = $this->parseYaml($customFile, $defaultFile, $useLocalConfig);
             if ($cache !== false) {
                 $cache->setItem($cacheKey, $results);
             }
@@ -169,19 +153,27 @@ class YamlReader
     /**
      * Process a YAML file (and its parent, if necessary).
      *
-     * @param string $file          YAML file to load (will evaluate to null
+     * @param string $file           YAML file to load (will evaluate to null
      * if file does not exist).
-     * @param string $defaultParent Parent YAML file from which $file should
+     * @param string $defaultParent  Parent YAML file from which $file should
      * inherit (unless overridden by a specific directive in $file). None by
      * default.
+     * @param bool   $useLocalConfig Use local configuration if available
      *
      * @return array
      */
-    protected function parseYaml($file, $defaultParent = null)
+    protected function parseYaml($file, $defaultParent = null, $useLocalConfig = true)
     {
         // First load current file:
         $results = (!empty($file) && file_exists($file))
             ? Yaml::parse(file_get_contents($file)) : [];
+
+        if (isset($results['@parent_yaml']) && isset($results['@parent_config_name'])) {
+            error_log(
+                'Cannot use both directives @parent_yaml and '
+                . '@parent_config_name at the same time in one file.'
+            );
+        }
 
         // Override default parent with explicitly-defined parent, if present:
         if (isset($results['@parent_yaml'])) {
@@ -195,6 +187,22 @@ class YamlReader
             }
             // Swallow the directive after processing it:
             unset($results['@parent_yaml']);
+        }
+        // Override default parent with a named configuration, if present:
+        if (isset($results['@parent_config_name'])) {
+            $parentConfigName = $results['@parent_config_name'] . '.yaml';
+            $defaultParent = $useLocalConfig
+                ? $this->pathResolver->getLocalConfigPath($parentConfigName)
+                : null;
+            if ($defaultParent === null || !file_exists($defaultParent)) {
+                $defaultParent = $this->pathResolver->getBaseConfigPath($parentConfigName);
+            }
+            if (!file_exists($defaultParent)) {
+                $defaultParent = null;
+                error_log('Cannot find parent config: ' . $parentConfigName);
+            }
+            // Swallow the directive after processing it:
+            unset($results['@parent_config_name']);
         }
         // Check for sections to merge instead of overriding:
         $mergedSections = [];

@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022-2023.
+ * Copyright (C) The National Library of Finland 2022-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -64,6 +64,9 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
                 ],
                 'blockSize' => 7,
             ],
+            'Record' => [
+                'next_prev_navigation' => true,
+            ],
             'Basic_Searches' => [
                 'AllFields' => 'adv_search_all',
                 'Title' => 'adv_search_title',
@@ -94,7 +97,19 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
      */
     public function testDisabledSearch()
     {
+        // Disable logging of a known exception:
+        $this->changeConfigs(
+            [
+                'config' => [
+                    'Logging' => [
+                        'file' => null,
+                    ],
+                ],
+            ]
+        );
         $session = $this->getMinkSession();
+        // We expect an error, so let's act like production mode for realistic testing:
+        $session->setWhoopsDisabled(true);
         $session->visit($this->getVuFindUrl() . '/Blender/Results');
         $page = $session->getPage();
         $this->assertEquals(
@@ -106,41 +121,48 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testSearch
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getSearchData(): array
+    public static function getSearchData(): \Iterator
     {
-        return [
-            [
-                ['page' => 1],
-                'Blender/Results',
-            ],
-            [
-                ['page' => 2],
-                'Blender/Results',
-            ],
-            [
-                ['page' => 1],
-                'Search/Blended', // legacy path
-            ],
-            [
-                ['page' => 2],
-                'Search/Blended', // legacy path
-            ],
+        yield [
+            ['page' => 1],
+            'Blender/Results',
+            'Blended',
+        ];
+        yield [
+            ['page' => 2],
+            'Blender/Results',
+            'Blended',
+        ];
+        yield [
+            ['page' => 1],
+            'Search/Blended', // legacy path
+            'Blended',
+        ];
+        yield [
+            ['page' => 2],
+            'Search/Blended', // legacy path
+            'Blended',
+        ];
+        yield [
+            ['page' => 1],
+            'Blender2/Results',
+            'Also Blended',
         ];
     }
 
     /**
      * Test blended search
      *
-     * @param array  $queryParams Query parameters
-     * @param string $path        URL path
-     *
-     * @dataProvider getSearchData
+     * @param array  $queryParams    Query parameters
+     * @param string $path           URL path
+     * @param string $searchBoxLabel Label of the active search box
      *
      * @return void
      */
-    public function testSearch(array $queryParams, string $path): void
+    #[\PHPUnit\Framework\Attributes\DataProvider('getSearchData')]
+    public function testSearch(array $queryParams, string $path, string $searchBoxLabel): void
     {
         $expectedLabels = $this->getExpectedLabels($queryParams['page']);
         $this->changeConfigs(
@@ -149,9 +171,11 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
                     'SearchTabs' => [
                         'Solr' => 'Catalog',
                         'Blender' => 'Blended',
+                        'Blender2' => 'Also Blended',
                     ],
                 ],
                 'Blender' => $this->getBlenderIniOverrides(),
+                'Blender2' => $this->getBlenderIniOverrides(),
             ],
             ['Blender']
         );
@@ -181,9 +205,38 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#result0 .title');
         $this->waitForPageLoad($page);
         $this->assertEquals(
-            'Blended',
-            $this->findCssAndGetText($page, '.searchbox li.active')
+            $searchBoxLabel,
+            $this->findCssAndGetText($page, '.searchbox li a.active')
         );
+
+        if (1 === $queryParams['page']) {
+            // Test next/prev navigation:
+            // Next record:
+            $this->clickCss($page, '.pager a', index: 1);
+            $this->assertStringContainsStringWithTimeout(
+                '/Record/0000183626-1',
+                fn () => $session->getCurrentUrl()
+            );
+            // Next record:
+            $this->clickCss($page, '.pager a', index: 1);
+            $this->assertStringContainsStringWithTimeout(
+                'AuthorityRecord/vtls000001429',
+                fn () => $session->getCurrentUrl()
+            );
+            // Back to previous record (using history because author record doesn't show navigation):
+            $session->back();
+            $this->assertStringContainsStringWithTimeout(
+                '/Record/0000183626-1',
+                fn () => $session->getCurrentUrl()
+            );
+            // Then once more back with pager:
+            $this->clickCss($page, '.pager a');
+            $this->waitForPageLoad($page);
+            $this->assertStringContainsStringWithTimeout(
+                '/Record/0000183626-0',
+                fn () => $session->getCurrentUrl()
+            );
+        }
     }
 
     /**

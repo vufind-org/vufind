@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  AJAX
@@ -53,7 +53,7 @@ class RelaisInfo extends AbstractRelaisAction
     {
         $this->disableSessionWrites();  // avoid session write timing bug
         $oclcNumber = $params->fromQuery('oclcNumber');
-        $lin = $this->user ? $this->user['cat_username'] : null;
+        $lin = $this->user?->getCatUsername();
 
         // Authenticate
         $authResponse = $this->relais->authenticatePatron($lin, true);

@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Recommendations
@@ -29,7 +29,8 @@
 
 namespace VuFind\Recommend;
 
-use Laminas\I18n\Translator\TranslatorInterface;
+use Exception;
+use Laminas\Translator\TranslatorInterface;
 use VuFind\Connection\Wikipedia;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFindSearch\Query\Query;
@@ -199,8 +200,12 @@ class AuthorInfo implements RecommendInterface, TranslatorAwareInterface
     public function getAuthorInfo()
     {
         // Don't load Wikipedia content if Wikipedia is disabled:
-        return stristr($this->sources, 'wikipedia')
-            ? $this->wikipedia->get($this->getAuthor()) : null;
+        try {
+            return stristr($this->sources, 'wikipedia') ? $this->wikipedia->get($this->getAuthor()) : null;
+        } catch (Exception $e) {
+            error_log("Unexpected error while loading author info: {$e->getMessage()}");
+            return null;
+        }
     }
 
     /**

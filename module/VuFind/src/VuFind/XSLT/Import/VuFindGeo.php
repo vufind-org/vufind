@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Import_Tools
@@ -31,6 +31,7 @@ namespace VuFind\XSLT\Import;
 
 use function call_user_func;
 use function count;
+use function sprintf;
 
 /**
  * XSLT importer support methods for geographic indexing.
@@ -44,7 +45,7 @@ use function count;
 class VuFindGeo
 {
     /**
-     * Method for logging errors (overrideable for testing purposes)
+     * Method for logging errors (overridable for testing purposes)
      *
      * @var callable
      */

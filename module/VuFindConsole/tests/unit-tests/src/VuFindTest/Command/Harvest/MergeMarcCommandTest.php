@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -90,8 +90,8 @@ class MergeMarcCommandTest extends \PHPUnit\Framework\TestCase
             </marc:collection>
 
             EXPECTED;
-        $this->assertEquals($expected, $commandTester->getDisplay());
-        $this->assertEquals(0, $commandTester->getStatusCode());
+        $this->assertSame($expected, $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
     }
 
     /**
@@ -123,7 +123,7 @@ class MergeMarcCommandTest extends \PHPUnit\Framework\TestCase
         $directory = $this->getFixtureDir('VuFindConsole') . 'does-not-exist';
         $commandTester->execute(compact('directory'));
         $expected = "Cannot open directory: $directory\n";
-        $this->assertEquals($expected, $commandTester->getDisplay());
-        $this->assertEquals(1, $commandTester->getStatusCode());
+        $this->assertSame($expected, $commandTester->getDisplay());
+        $this->assertSame(1, $commandTester->getStatusCode());
     }
 }

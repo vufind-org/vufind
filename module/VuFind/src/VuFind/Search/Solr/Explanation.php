@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Search_Solr
@@ -108,6 +108,13 @@ class Explanation extends \VuFind\Search\Base\Explanation
     protected $explanationForRest = [];
 
     /**
+     * Raw explanation.
+     *
+     * @var string
+     */
+    protected $rawExplanation = null;
+
+    /**
      * Get relevance value of best scoring title.
      *
      * @return float
@@ -185,6 +192,16 @@ class Explanation extends \VuFind\Search\Base\Explanation
     public function getExplanationForRest()
     {
         return $this->explanationForRest;
+    }
+
+    /**
+     * Get the raw explanation.
+     *
+     * @return string
+     */
+    public function getRawExplanation()
+    {
+        return $this->rawExplanation;
     }
 
     /**
@@ -280,7 +297,7 @@ class Explanation extends \VuFind\Search\Base\Explanation
             );
         }
 
-        $this->debug($lines);
+        $this->rawExplanation = $lines;
         $lines = $this->cleanLines($lines);
 
         // get basic values
@@ -294,7 +311,7 @@ class Explanation extends \VuFind\Search\Base\Explanation
         if (($response['responseHeader']['params']['boost'] ?? false) && count($lines) > 1) {
             $this->boost = $this->parseLine(array_pop($lines));
             if ($this->boost['value'] > 0) {
-                $this->baseScore = $this->baseScore / $this->boost['value'];
+                $this->baseScore /= $this->boost['value'];
             }
         }
 
@@ -302,7 +319,7 @@ class Explanation extends \VuFind\Search\Base\Explanation
         if (!empty($lines) && str_contains($this->parseLine(end($lines))['description'], 'coord')) {
             $this->coord = $this->parseLine(end($lines));
             if ($this->coord['value'] > 0) {
-                $this->baseScore = $this->baseScore / $this->coord['value'];
+                $this->baseScore /= $this->coord['value'];
             }
         }
 
@@ -405,7 +422,7 @@ class Explanation extends \VuFind\Search\Base\Explanation
         if (
             (
                 (str_contains($description, 'product of:') || str_contains($description, 'sum of') || $isMaxPlusOthers)
-                && !str_contains($description, 'weight')
+                && !str_contains($description, 'weight') && !str_contains($description, 'FunctionQuery')
             )
             || str_contains($description, 'weight(FunctionScoreQuery')
         ) {
@@ -418,14 +435,13 @@ class Explanation extends \VuFind\Search\Base\Explanation
                 }
             }
             // match in field
-        } elseif (str_contains($description, 'weight') && !str_contains($description, 'FunctionScoreQuery')) {
+        } elseif (
+            (str_contains($description, 'weight') || str_contains($description, 'FunctionQuery'))
+            && !str_contains($description, 'FunctionScoreQuery')
+        ) {
             // parse explaining element
             $currentValue = $value * $modifier;
-            if ($this->baseScore > 0) {
-                $percentage = 100 * $currentValue / $this->baseScore;
-            } else {
-                $percentage = 0;
-            }
+            $percentage = $this->baseScore > 0 ? 100 * $currentValue / $this->baseScore : 0;
 
             // get fieldModifier and remove unused higher level lines
             $fieldModifier = null;
@@ -553,6 +569,14 @@ class Explanation extends \VuFind\Search\Base\Explanation
             $res['fieldValue'] = [$fieldValue];
             // extra space to only exact match whole words
             $res['exactMatch'] = [str_contains($this->lookfor . ' ', $fieldValue . ' ') ? 'exact' : 'inexact'];
+        } elseif (
+            preg_match(
+                '/FunctionQuery\((?<function>.*)\), product of:/',
+                $description,
+                $matches
+            )
+        ) {
+            $res['function'] = $matches['function'];
         }
         if ($fieldModifier !== null) {
             $res['fieldModifier'] = $fieldModifier;

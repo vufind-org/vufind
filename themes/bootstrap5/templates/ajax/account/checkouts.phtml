@@ -1,0 +1,25 @@
+<?php
+echo $this->render(
+    'ajax/account/status-badge.phtml',
+    [
+        'title' => 'account_normal_checkouts',
+        'count' => $this->ok,
+        'class' => 'account-info',
+    ]
+);
+echo $this->render(
+    'ajax/account/status-badge.phtml',
+    [
+        'title' => 'account_checkouts_due',
+        'count' => $this->warn,
+        'class' => 'account-warning',
+    ]
+);
+echo $this->render(
+    'ajax/account/status-badge.phtml',
+    [
+        'title' => 'account_checkouts_overdue',
+        'count' => $this->overdue,
+        'class' => 'account-alert',
+    ]
+);

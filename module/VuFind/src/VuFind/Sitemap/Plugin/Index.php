@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Sitemap
@@ -112,6 +112,8 @@ class Index extends AbstractGeneratorPlugin
     /**
      * Generate urls for the sitemap.
      *
+     * May yield a string per URL or an array that defines lastmod in addition to url.
+     *
      * @return \Generator
      */
     public function getUrls(): \Generator
@@ -135,13 +137,17 @@ class Index extends AbstractGeneratorPlugin
                     $this->countPerPage,
                     $this->filters
                 );
-                foreach ($result['ids'] as $item) {
+                foreach ($result['ids'] as $index => $item) {
                     $loc = htmlspecialchars($recordUrl . urlencode($item));
                     if (!str_contains($loc, 'http')) {
                         $loc = 'http://' . $loc;
                     }
                     $recordCount++;
-                    yield $loc;
+                    if (isset($result['lastmods'][$index])) {
+                        yield ['url' => $loc, 'lastmod' => $result['lastmods'][$index]];
+                    } else {
+                        yield $loc;
+                    }
                 }
                 $currentPage++;
                 $this->verboseMsg("Page $currentPage, $recordCount processed");

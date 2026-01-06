@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Content
@@ -42,7 +42,7 @@ use function count;
  */
 class ObalkyKnihService implements
     \VuFindHttp\HttpServiceAwareInterface,
-    \Laminas\Log\LoggerAwareInterface
+    \Psr\Log\LoggerAwareInterface
 {
     use \VuFindHttp\HttpServiceAwareTrait;
     use \VuFind\Cache\CacheTrait;
@@ -87,9 +87,9 @@ class ObalkyKnihService implements
     /**
      * Constructor
      *
-     * @param \Laminas\Config\Config $config Configuration for service
+     * @param \VuFind\Config\Config $config Configuration for service
      */
-    public function __construct(\Laminas\Config\Config $config)
+    public function __construct(\VuFind\Config\Config $config)
     {
         if (
             !isset($config->base_url) || count($config->base_url) < 1
@@ -116,11 +116,11 @@ class ObalkyKnihService implements
     /**
      * Get an HTTP client
      *
-     * @param string $url URL for client to use
+     * @param ?string $url URL for client to use
      *
      * @return \Laminas\Http\Client
      */
-    protected function getHttpClient(string $url = null)
+    protected function getHttpClient(?string $url = null)
     {
         if (null === $this->httpService) {
             throw new \Exception('HTTP service missing.');
@@ -142,7 +142,7 @@ class ObalkyKnihService implements
      */
     protected function createCacheKey(array $ids)
     {
-        $key = $ids['recordid'];
+        $key = $ids['recordid'] ?? '';
         $key = !empty($key) ? $key
             : (isset($ids['isbn']) ? $ids['isbn']->get13() : null);
         $key = !empty($key) ? $key : sha1(json_encode($ids));
@@ -180,6 +180,38 @@ class ObalkyKnihService implements
     protected function getFromService(array $ids): ?\stdClass
     {
         $param = 'multi';
+        $query = $this->getServiceQuery($ids);
+
+        $url = $this->getBaseUrl();
+        if ($url === '') {
+            $this->logWarning('All ObalkyKnih servers are down.');
+            return null;
+        }
+        $url .= $this->endpoints['books'] . '?';
+        $url .= http_build_query([$param => json_encode([$query])]);
+        $client = $this->getHttpClient($url);
+        try {
+            $response = $client->send();
+        } catch (\Exception $e) {
+            $this->logError('Unexpected ' . $e::class . ': ' . $e->getMessage());
+            return null;
+        }
+        if ($response->isSuccess()) {
+            $json = json_decode($response->getBody());
+            return empty($json) ? null : $json[0];
+        }
+        return null;
+    }
+
+    /**
+     * Get query params for service
+     *
+     * @param array $ids Record identifiers
+     *
+     * @return array
+     */
+    protected function getServiceQuery(array $ids): array
+    {
         $query = [];
         $isbn = null;
         if (!empty($ids['isbns'])) {
@@ -203,31 +235,9 @@ class ObalkyKnihService implements
                 ? $ids['uuid']
                 : ('uuid:' . $ids['uuid']);
         }
-        foreach (['isbn', 'oclc', 'ismn', 'nbn', 'uuid'] as $identifier) {
-            if (isset($$identifier)) {
-                $query[$identifier] = $$identifier;
-            }
-        }
+        $query = array_filter(compact('isbn', 'oclc', 'ismn', 'nbn', 'uuid'), fn ($v) => null !== $v);
 
-        $url = $this->getBaseUrl();
-        if ($url === '') {
-            $this->logWarning('All ObalkyKnih servers are down.');
-            return null;
-        }
-        $url .= $this->endpoints['books'] . '?';
-        $url .= http_build_query([$param => json_encode([$query])]);
-        $client = $this->getHttpClient($url);
-        try {
-            $response = $client->send();
-        } catch (\Exception $e) {
-            $this->logError('Unexpected ' . $e::class . ': ' . $e->getMessage());
-            return null;
-        }
-        if ($response->isSuccess()) {
-            $json = json_decode($response->getBody());
-            return empty($json) ? null : $json[0];
-        }
-        return null;
+        return $query;
     }
 
     /**

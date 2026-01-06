@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Tests
@@ -48,7 +48,7 @@ class MemoryTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testBasicMemory()
+    public function testBasicMemory(): void
     {
         $mem = $this->getMemory();
         $this->assertEquals(null, $mem->retrieveSearch());
@@ -62,7 +62,7 @@ class MemoryTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testForgetting()
+    public function testForgetting(): void
     {
         $mem = $this->getMemory();
         $url = 'http://test';
@@ -77,7 +77,7 @@ class MemoryTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testEmptyURL()
+    public function testEmptyURL(): void
     {
         $mem = $this->getMemory();
         $mem->rememberSearch('', -123);
@@ -89,7 +89,7 @@ class MemoryTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testDisable()
+    public function testDisable(): void
     {
         $mem = $this->getMemory();
         $url = 'http://test';
@@ -107,21 +107,14 @@ class MemoryTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMemory(): Memory
     {
-        $mockRequest = $this->getMockBuilder(
-            \Laminas\Http\PhpEnvironment\Request::class
-        )->disableOriginalConstructor()
-            ->getMock();
-        $mockSearchTable = $this->getMockBuilder(\VuFind\Db\Table\Search::class)
-            ->disableOriginalConstructor()
-            ->getMock();
-        $mockManager = $this->getMockBuilder(
-            \VuFind\Search\Results\PluginManager::class
-        )->disableOriginalConstructor()->getMock();
+        $mockRequest = $this->createMock(\Laminas\Http\PhpEnvironment\Request::class);
+        $mockSearchService = $this->createMock(\VuFind\Db\Service\SearchServiceInterface::class);
+        $mockManager = $this->createMock(\VuFind\Search\Results\PluginManager::class);
         return new Memory(
             new Container('test'),
             'fake_session',
             $mockRequest,
-            $mockSearchTable,
+            $mockSearchService,
             $mockManager
         );
     }

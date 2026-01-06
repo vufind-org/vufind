@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2018-2023.
+ * Copyright (C) The National Library of Finland 2018-2024.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  AJAX
@@ -39,6 +39,7 @@ use VuFind\Search\RecommendListener;
 use VuFind\Search\SearchRunner;
 use VuFind\Session\Settings as SessionSettings;
 
+use function in_array;
 use function is_callable;
 
 /**
@@ -51,7 +52,7 @@ use function is_callable;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas\Log\LoggerAwareInterface
+class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Psr\Log\LoggerAwareInterface
 {
     use \VuFind\Log\LoggerAwareTrait;
 
@@ -171,7 +172,7 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
      */
     protected function getFacetResults(array $request, $index, $loc)
     {
-        $setupCallback = function ($runner, $params, $searchId) use ($index, $loc) {
+        $setupCallback = function ($runner, $params, $searchId) use ($index, $loc): void {
             $listener = new RecommendListener(
                 $this->recommendPluginManager,
                 $searchId
@@ -197,11 +198,16 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
         };
 
         $runner = $this->searchRunner;
-        return $runner->run(
+        $results = $runner->run(
             $request,
             $request['searchClassId'] ?? DEFAULT_SEARCH_BACKEND,
             $setupCallback
         );
+        // Restore limit overridden by the setup callback above:
+        if ($limit = $request['limit'] ?? null) {
+            $results->getParams()->setLimit($limit);
+        }
+        return $results;
     }
 
     /**
@@ -222,13 +228,14 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
     ) {
         $response = [];
         $facetSet = $recommend->getFacetSet();
+        $checkboxFacets = array_column($recommend->getCheckboxFacetSet(), 'filter');
         foreach ($facets as $facet) {
-            if (strpos($facet, ':')) {
-                $response[$facet]['checkboxCount']
-                    = $this->getCheckboxFacetCount($facet, $results);
+            if (in_array($facet, $checkboxFacets)) {
+                $response[$facet]['checkboxCount'] = $recommend->getCheckboxFacetCount($facet);
             } else {
                 $context['facet'] = $facet;
                 $context['cluster'] = $facetSet[$facet] ?? [
+                    'label' => $results->getParams()->getFacetLabel($facet),
                     'list' => [],
                 ];
                 $context['collapsedFacets'] = [];
@@ -239,19 +246,5 @@ class GetSideFacets extends \VuFind\AjaxHandler\AbstractBase implements \Laminas
             }
         }
         return $response;
-    }
-
-    /**
-     * Get the result count for a checkbox facet
-     *
-     * @param string  $facet   Facet
-     * @param Results $results Search results
-     *
-     * @return int|null
-     */
-    protected function getCheckboxFacetCount($facet, Results $results)
-    {
-        // There's currently no good way to return counts for checkbox filters.
-        return null;
     }
 }

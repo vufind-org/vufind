@@ -17,8 +17,8 @@
  * GNU General Public License for more details.
  *
  * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301  USA
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
  * @package  Translator
@@ -33,6 +33,7 @@ use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Config\PathResolver;
 use VuFind\I18n\Locale\LocaleSettings;
 
 /**
@@ -65,15 +66,20 @@ class ExtendedIniFactory implements \Laminas\ServiceManager\Factory\FactoryInter
     public function __invoke(
         ContainerInterface $container,
         $requestedName,
-        array $options = null
+        ?array $options = null
     ) {
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
         $pathStack = [
             APPLICATION_PATH . '/languages',
-            LOCAL_OVERRIDE_DIR . '/languages',
         ];
+        $localConfigDirStack = $container->get(PathResolver::class)->getLocalConfigDirStack();
+        $localPathStack = array_map(
+            fn ($localConfigDir) => $localConfigDir['directory'] . '/languages',
+            $localConfigDirStack
+        );
+        $pathStack = array_merge($pathStack, $localPathStack);
         $settings = $container->get(LocaleSettings::class);
         return new $requestedName($pathStack, $settings->getFallbackLocales());
     }

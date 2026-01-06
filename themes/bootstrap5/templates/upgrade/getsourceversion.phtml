@@ -1,0 +1,22 @@
+<?php
+    // Set up breadcrumbs:
+    $this->breadcrumbs()->set($this->translate('Upgrade'), $this->url('upgrade-home'))
+      ->add($this->translate('Upgrade VuFind'), active: true);
+?>
+<?=$this->component('page-title', ['title' => $this->translate('Upgrade VuFind')]);?>
+<?=$this->flashmessages()?>
+<form class="form-inline" method="post" action="<?=$this->url('upgrade-getsourceversion')?>">
+  <p>
+    Please enter the version number you are upgrading from (e.g. 10.1.1):
+    <input type="text" name="sourceversion" value="<?=$this->escapeHtmlAttr($oldVersion)?>">
+  </p>
+  <p>
+    Options:<br>
+    <input type="checkbox" name="skip[]" id="skip-config" value="config">
+    <label for="skip-config"><?=$this->transEsc('Skip Configuration Upgrade')?></label>
+    <br>
+    <input type="checkbox" name="skip[]" id="skip-database" value="database">
+    <label for="skip-database"><?=$this->transEsc('Skip Database Structure Upgrade')?></label>
+  </p>
+  <input class="btn btn-primary" type="submit">
+</form>
