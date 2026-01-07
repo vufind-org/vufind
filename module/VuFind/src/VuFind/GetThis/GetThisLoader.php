@@ -704,14 +704,14 @@ class GetThisLoader implements LoggerAwareInterface
      *
      * @return string|null $itemId for the selected item
      */
-    private function getItemId(?string $itemId = null): ?string
+    public function getItemId(?string $itemId = null): ?string
     {
         if (isset($itemId)) {
             return $itemId; // Use the one passed as a parameter first
         } elseif (isset($this->item['item_id'])) {
             return $this->item['item_id']; // Get the one set by the loader
-        } elseif (isset($this->items[0]['item_id'])) {
-            return $this->items[0]['item_id']; // Grab the first holding record
+        } elseif (is_array($this->items) && isset(current($this->items)['item_id'])) {
+            return current($this->items)['item_id']; // Grab the first holding record
         } else {
             return null; // This shouldn't happen, but we have no item id!
         }
