@@ -1009,6 +1009,7 @@ $staticRoutes = [
     'Search/History',
     'Search/Home',
     'Search/NewItem',
+    'Search/NewItemFacetList',
     'Search/OpenSearch',
     'Search/Reserves',
     'Search/ReservesFacetList',
