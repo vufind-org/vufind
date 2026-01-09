@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Interface for a configurable model class representing a section of the UI.
+ * Abstract base section.
  *
  * PHP version 8
  *
@@ -27,12 +27,12 @@
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Section;
-
-use VuFind\Config\Feature\ConfigSettingPropertiesInterface;
+namespace VuFind\Section\Plugin;
 
 /**
- * Interface for a configurable model class representing a section of the UI.
+ * Abstract base section.
+ *
+ * PHP version 8
  *
  * @category VuFind
  * @package  Section
@@ -40,44 +40,7 @@ use VuFind\Config\Feature\ConfigSettingPropertiesInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-interface SectionInterface extends ConfigSettingPropertiesInterface
+abstract class AbstractBase implements SectionInterface
 {
-    /**
-     * Set section key.
-     *
-     * @param string $sectionKey Section key
-     *
-     * @return $this
-     */
-    public function setSectionKey(string $sectionKey): static;
-
-    /**
-     * Return section key.
-     *
-     * @return string
-     */
-    public function getSectionKey(): string;
-
-    /**
-     * Set section configuration.
-     *
-     * @param array $sectionConfig Section configuration
-     *
-     * @return $this
-     */
-    public function setSectionConfig(array $sectionConfig): static;
-
-    /**
-     * Return section configuration.
-     *
-     * @return array
-     */
-    public function getSectionConfig(): array;
-
-    /**
-     * Return context variables that can be used to render the section.
-     *
-     * @return array
-     */
-    public function getSectionContext(): array;
+    use SectionTrait;
 }

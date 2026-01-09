@@ -27,7 +27,7 @@
  * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Section;
+namespace VuFind\Section\Plugin;
 
 /**
  * Section plugin manager.

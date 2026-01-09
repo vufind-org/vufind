@@ -30,6 +30,7 @@
 namespace VuFind\Section;
 
 use VuFind\Config\Feature\ConfigSettingPropertiesInterface;
+use VuFind\Section\Plugin\SectionInterface;
 
 /**
  * Section service interface.

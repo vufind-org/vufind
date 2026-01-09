@@ -29,7 +29,7 @@
 
 namespace VuFind\Navigation;
 
-use VuFind\Section\SectionInterface;
+use VuFind\Section\Plugin\SectionInterface;
 
 /**
  * Marker interface for VuFind navigation classes.

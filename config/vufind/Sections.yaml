@@ -2,34 +2,19 @@
 # navigation menus, which have their own configuration files, and other types of
 # user interface elements.
 #
-# All sections must have a type key. The value can be one of the documented built-in
-# types or a custom section plugin alias or class name. E.g.
+# All sections must have a 'container' key and a 'service' key specifying the plugin
+# manager and plugin to use. The values can be class names or aliases defined in the
+# service manager configuration.
 #
-#   ExampleAliasTypeSection:
-#     type: exampleSection
-#   ExampleClassTypeSection:
-#     type: VuFind\Section\ExampleSection
-#
-# Additional section keys are determined by the type. All section specific
-# configuration is passed to section plugins. Key names beginning with a double
-# underscore (e.g. __key) are reserved for internal use.
-#
-# Built-in section type values and type specific additional keys:
-#
-# - navigation: A navigation plugin section.
-#   Additional keys:
-#     - plugin: Navigation plugin alias or class name. Required.
-#
-# Section type keys reserved for future plugins:
-#
-# - container: A generic container for other sections.
-# - tabs: A tabbed container for other sections.
+# Additional section keys are determined by the service. All section specific
+# configuration is passed to the service. Key names beginning with a double
+# underscore (e.g. __key) are reserved for internal section service use.
 
 Sections:
   AccountMenu:
-    type: navigation
-    plugin: accountMenu
+    container: VuFind\Navigation\PluginManager
+    service: accountMenu
 
   AdminMenu:
-    type: navigation
-    plugin: adminMenu
+    container: VuFind\Navigation\PluginManager
+    service: adminMenu

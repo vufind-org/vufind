@@ -29,7 +29,8 @@
 
 namespace VuFindTest\Section;
 
-use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Error;
+use Laminas\ServiceManager\Exception\InvalidServiceException;
 use VuFind\Exception\BadConfig;
 use VuFind\Exception\ConfigException;
 use VuFind\Section\SectionServiceInterface;
@@ -98,25 +99,43 @@ class SectionServiceTest extends AbstractSectionTestCase
      */
     public static function sectionConfigurationProvider(): \Iterator
     {
-        yield 'Missing section type' => [
-            'MissingSectionType',
+        yield 'Missing container and service' => [
+            'MissingContainerAndService',
             [],
             BadConfig::class,
-            'Missing required setting: type',
+            'Missing required setting: container',
         ];
-        yield 'Navigation plugin with a missing plugin setting' => [
-            'MissingNavigationPluginSetting',
-            ['type' => 'navigation'],
-            BadConfig::class,
-            'Missing required setting: plugin',
-        ];
-        yield 'Nonexistent navigation plugin' => [
-            'NonexistentNavigationPlugin',
+        yield 'Missing container' => [
+            'MissingContainer',
             [
-                'type' => 'navigation',
-                'plugin' => 'nonexistentNavigationPlugin',
+                'service' => 'accountMenu',
             ],
-            ServiceNotFoundException::class,
+            BadConfig::class,
+            'Missing required setting: container',
+        ];
+        yield 'Missing service' => [
+            'MissingService',
+            [
+                'container' => 'VuFind\Navigation\PluginManager',
+            ],
+            BadConfig::class,
+            'Missing required setting: service',
+        ];
+        yield 'Nonexistent container' => [
+            'NonexistentContainer',
+            [
+                'container' => 'foobar',
+                'service' => 'accountMenu',
+            ],
+            Error::class,
+        ];
+        yield 'Nonexistent service' => [
+            'NonexistentService',
+            [
+                'container' => 'VuFind\Navigation\PluginManager',
+                'service' => 'foobar',
+            ],
+            InvalidServiceException::class,
         ];
     }
 

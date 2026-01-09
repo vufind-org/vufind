@@ -31,7 +31,7 @@ namespace VuFind\Navigation;
 
 use Exception;
 use VuFind\Exception\BadConfig;
-use VuFind\Section\AbstractBase;
+use VuFind\Section\Plugin\AbstractBase;
 use VuFind\Section\SectionServiceInterface;
 
 /**

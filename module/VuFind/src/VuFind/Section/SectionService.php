@@ -33,8 +33,8 @@ use VuFind\Config\Feature\ConfigSettingPropertiesInterface;
 use VuFind\Config\YamlReader;
 use VuFind\Exception\BadConfig;
 use VuFind\Exception\ConfigException;
-use VuFind\Navigation\PluginManager as NavigationManager;
-use VuFind\Section\PluginManager as SectionManager;
+use VuFind\Navigation\NavigationInterface;
+use VuFind\Section\Plugin\SectionInterface;
 
 /**
  * Section service.
@@ -48,21 +48,34 @@ use VuFind\Section\PluginManager as SectionManager;
 class SectionService implements SectionServiceInterface
 {
     /**
+     * Callback to get a plugin manager.
+     *
+     * @var callable
+     */
+    protected $getPluginManager;
+
+    /**
+     * Plugin managers.
+     *
+     * @var array
+     */
+    protected array $pluginManagers = [];
+
+    /**
      * Constructor.
      *
-     * @param YamlReader        $yamlReader        YAML reader
-     * @param SectionManager    $sectionManager    Section plugin manager
-     * @param NavigationManager $navigationManager Navigation plugin manager
-     * @param string            $userLocale        User locale
-     * @param array             $fallbackLocales   Fallback locales
+     * @param YamlReader $yamlReader       YAML reader
+     * @param string     $userLocale       User locale
+     * @param array      $fallbackLocales  Fallback locales
+     * @param callable   $getPluginManager Callback to get a plugin manager
      */
     public function __construct(
         protected YamlReader $yamlReader,
-        protected SectionManager $sectionManager,
-        protected NavigationManager $navigationManager,
         protected string $userLocale,
-        protected array $fallbackLocales
+        protected array $fallbackLocales,
+        callable $getPluginManager,
     ) {
+        $this->getPluginManager = $getPluginManager;
     }
 
     /**
@@ -111,28 +124,22 @@ class SectionService implements SectionServiceInterface
         if (null === $config) {
             $config = $this->getSectionConfig($key);
         }
-        if (!$type = ($config['type'] ?? false)) {
-            throw new BadConfig('Missing required setting: type');
+        if (!$container = ($config['container'] ?? false)) {
+            throw new BadConfig('Missing required setting: container');
+        }
+        if (!$service = ($config['service'] ?? false)) {
+            throw new BadConfig('Missing required setting: service');
         }
 
-        // Type specific configuration processing.
-        switch ($type) {
-            case 'navigation':
-                if (!$type = ($config['plugin'] ?? false)) {
-                    throw new BadConfig('Missing required setting: plugin');
-                }
-                $pluginManager = $this->navigationManager;
-                break;
-
-            default:
-                $pluginManager = $this->sectionManager;
+        if (!isset($this->pluginManagers[$container])) {
+            $this->pluginManagers[$container] = ($this->getPluginManager)($container);
         }
 
         // Get plugin and initialize with key and optionally configuration,
         // depending on plugin type.
-        $plugin = $pluginManager->get($type);
+        $plugin = $this->pluginManagers[$container]->get($service);
         $plugin->setSectionKey($key);
-        if (!$pluginManager instanceof NavigationManager) {
+        if (!$plugin instanceof NavigationInterface) {
             $plugin->setSectionConfig($config);
         }
 

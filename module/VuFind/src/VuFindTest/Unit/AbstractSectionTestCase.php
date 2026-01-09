@@ -39,8 +39,8 @@ use VuFind\Navigation\AccountMenu;
 use VuFind\Navigation\AdminMenu;
 use VuFind\Navigation\NavigationInterface;
 use VuFind\Navigation\PluginManager as NavigationManager;
-use VuFind\Section\PluginManager as SectionManager;
-use VuFind\Section\SectionInterface;
+use VuFind\Section\Plugin\PluginManager as SectionManager;
+use VuFind\Section\Plugin\SectionInterface;
 use VuFind\Section\SectionService;
 use VuFind\Section\SectionServiceInterface;
 use VuFindTest\Container\MockContainer;
@@ -97,10 +97,11 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         $container->set(NavigationManager::class, $navigationManager);
         $service = new SectionService(
             $container->get(YamlReader::class),
-            $sectionManager,
-            $navigationManager,
             $userLocale,
-            $fallbackLocales
+            $fallbackLocales,
+            function (string $classOrAlias) use ($container) {
+                return $container->get($classOrAlias);
+            }
         );
         $container->set(SectionServiceInterface::class, $service);
         $this->getAccountMenu($container);

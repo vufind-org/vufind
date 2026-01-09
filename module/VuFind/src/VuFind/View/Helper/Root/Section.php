@@ -30,7 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 use Laminas\View\Helper\AbstractHelper;
-use VuFind\Section\SectionInterface;
+use VuFind\Section\Plugin\SectionInterface;
 use VuFind\Section\SectionServiceInterface;
 
 use function call_user_func_array;

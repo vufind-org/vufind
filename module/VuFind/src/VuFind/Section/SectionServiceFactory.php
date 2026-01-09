@@ -34,6 +34,8 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Exception\BadConfig;
+use VuFind\ServiceManager\AbstractPluginManager;
 
 /**
  * Section service factory.
@@ -71,10 +73,15 @@ class SectionServiceFactory implements FactoryInterface
         $localeSettings = $container->get(\VuFind\I18n\Locale\LocaleSettings::class);
         return new $requestedName(
             $container->get(\VuFind\Config\YamlReader::class),
-            $container->get(\VuFind\Section\PluginManager::class),
-            $container->get(\VuFind\Navigation\PluginManager::class),
             $localeSettings->getUserLocale(),
-            $localeSettings->getFallbackLocales()
+            $localeSettings->getFallbackLocales(),
+            function (string $classOrAlias) use ($container) {
+                $pluginManager = $container->get($classOrAlias);
+                if (!$pluginManager instanceof AbstractPluginManager) {
+                    throw new BadConfig($classOrAlias . ' is not a plugin manager');
+                }
+                return $pluginManager;
+            }
         );
     }
 }
