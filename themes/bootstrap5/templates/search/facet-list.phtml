@@ -13,7 +13,7 @@
     $this->sortOptions = [ 'default' => 'default' ];
   }
   $urlBase = $this->url($facetLightbox) . $results->getUrlQuery()->getParams(false) . "&$facetLightboxParams";
-  $searchAction = $this->url($options->getSearchAction());
+  $searchAction ??= $this->url($options->getSearchAction());
   if (!empty($this->baseUriExtra)) {
     $searchAction .= urlencode($this->baseUriExtra);
     $urlBase .= '&baseUriExtra=' . urlencode($this->baseUriExtra);

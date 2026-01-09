@@ -213,6 +213,7 @@ class ResourceTagsService extends AbstractDbService implements
 
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
+        $query->setMaxResults(1); // There should only be at most one row, but to be safe...
         $result = $query->getOneOrNullResult();
 
         // Only create row if it does not already exist:
