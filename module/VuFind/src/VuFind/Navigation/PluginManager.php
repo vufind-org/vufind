@@ -43,16 +43,6 @@ namespace VuFind\Navigation;
 class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
 {
     /**
-     * Default plugin aliases.
-     *
-     * @var array
-     */
-    protected $aliases = [
-        'accountMenu' => AccountMenu::class,
-        'adminMenu' => AdminMenu::class,
-    ];
-
-    /**
      * Default plugin factories.
      *
      * @var array
