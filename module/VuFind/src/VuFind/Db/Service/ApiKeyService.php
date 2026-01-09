@@ -104,6 +104,7 @@ class ApiKeyService extends AbstractDbService implements ApiKeyServiceInterface
             . 'WHERE ak.token = :token';
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters(['token' => $token]);
+        $query->setMaxResults(1); // token SHOULD be unique, but just in case....
         return $query->getOneOrNullResult();
     }
 

@@ -85,7 +85,7 @@ class ChannelsTest extends \PHPUnit\Framework\TestCase
      */
     public function testSupportsAjax(): void
     {
-        $this->assertFalse($this->getChannels()->supportsAjax());
+        $this->assertTrue($this->getChannels()->supportsAjax());
     }
 
     /**

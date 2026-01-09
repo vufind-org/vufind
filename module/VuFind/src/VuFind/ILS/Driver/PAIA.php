@@ -867,10 +867,15 @@ class PAIA extends DAIA
     /**
      * This method queries the ILS for new items
      *
-     * @param string $page    page number of results to retrieve (counting starts @1)
-     * @param string $limit   the size of each page of results to retrieve
-     * @param string $daysOld the maximum age of records to retrieve in days (max 30)
-     * @param string $fundID  optional fund ID to use for limiting results
+     * @param string  $page    page number of results to retrieve (counting starts @1)
+     * @param string  $limit   the size of each page of results to retrieve
+     * @param string  $daysOld the maximum age of records to retrieve in days (max 30)
+     * @param ?string $fundId  optional fund ID to use for limiting results (use a value
+     * returned by getFunds, or exclude for no limit); note that "fund" may be a
+     * misnomer - if funds are not an appropriate way to limit your new item
+     * results, you can return a different set of values from getFunds. The
+     * important thing is that this parameter supports an ID returned by getFunds,
+     * whatever that may mean.
      *
      * @return array An associative array with two keys: 'count' (the number of items
      * in the 'results' array) and 'results' (an array of associative arrays, each
@@ -878,7 +883,7 @@ class PAIA extends DAIA
      *
      * @SuppressWarnings(PHPMD.UnusedFormalParameter)
      */
-    public function getNewItems($page, $limit, $daysOld, $fundID)
+    public function getNewItems($page, $limit, $daysOld, $fundId = null)
     {
         return [];
     }
