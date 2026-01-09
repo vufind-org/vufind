@@ -156,7 +156,7 @@ then
   if [ $? -eq 0 ]
   then
     echo "Bad symlinks found in $SOLRJ_DIR; regenerating directory..."
-    find $SOLRJ_DIR -type l ! -exec rm {} \;
+    find $SOLRJ_DIR -type l -exec rm {} \+
     REGENERATE_SOLRJ_DIR=1
   fi
 fi
