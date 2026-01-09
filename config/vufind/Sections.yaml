@@ -2,9 +2,8 @@
 # navigation menus, which have their own configuration files, and other types of
 # user interface elements.
 #
-# All sections must have a 'container' key and a 'service' key specifying the plugin
-# manager and plugin to use. The values can be class names or aliases defined in the
-# service manager configuration.
+# All sections must have a 'plugin' key specifying the section plugin to use. Values
+# can be class names or aliases defined in the service manager configuration.
 #
 # Additional section keys are determined by the service. All section specific
 # configuration is passed to the service. Key names beginning with a double
@@ -12,9 +11,7 @@
 
 Sections:
   AccountMenu:
-    container: VuFind\Navigation\PluginManager
-    service: accountMenu
+    plugin: accountMenu
 
   AdminMenu:
-    container: VuFind\Navigation\PluginManager
-    service: adminMenu
+    plugin: adminMenu

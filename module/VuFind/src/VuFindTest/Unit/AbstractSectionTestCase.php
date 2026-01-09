@@ -97,11 +97,9 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         $container->set(NavigationManager::class, $navigationManager);
         $service = new SectionService(
             $container->get(YamlReader::class),
+            $container->get(SectionManager::class),
             $userLocale,
             $fallbackLocales,
-            function (string $classOrAlias) use ($container) {
-                return $container->get($classOrAlias);
-            }
         );
         $container->set(SectionServiceInterface::class, $service);
         $this->getAccountMenu($container);

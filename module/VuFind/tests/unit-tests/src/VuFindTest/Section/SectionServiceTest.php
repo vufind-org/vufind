@@ -29,8 +29,7 @@
 
 namespace VuFindTest\Section;
 
-use Error;
-use Laminas\ServiceManager\Exception\InvalidServiceException;
+use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use VuFind\Exception\BadConfig;
 use VuFind\Exception\ConfigException;
 use VuFind\Section\SectionServiceInterface;
@@ -99,43 +98,16 @@ class SectionServiceTest extends AbstractSectionTestCase
      */
     public static function sectionConfigurationProvider(): \Iterator
     {
-        yield 'Missing container and service' => [
-            'MissingContainerAndService',
+        yield 'Missing plugin' => [
+            'MissingPlugin',
             [],
             BadConfig::class,
-            'Missing required setting: container',
+            'Missing required setting: plugin',
         ];
-        yield 'Missing container' => [
-            'MissingContainer',
-            [
-                'service' => 'accountMenu',
-            ],
-            BadConfig::class,
-            'Missing required setting: container',
-        ];
-        yield 'Missing service' => [
-            'MissingService',
-            [
-                'container' => 'VuFind\Navigation\PluginManager',
-            ],
-            BadConfig::class,
-            'Missing required setting: service',
-        ];
-        yield 'Nonexistent container' => [
-            'NonexistentContainer',
-            [
-                'container' => 'foobar',
-                'service' => 'accountMenu',
-            ],
-            Error::class,
-        ];
-        yield 'Nonexistent service' => [
-            'NonexistentService',
-            [
-                'container' => 'VuFind\Navigation\PluginManager',
-                'service' => 'foobar',
-            ],
-            InvalidServiceException::class,
+        yield 'Nonexistent plugin' => [
+            'NonexistentPlugin',
+            ['plugin' => 'foobar'],
+            ServiceNotFoundException::class,
         ];
     }
 
