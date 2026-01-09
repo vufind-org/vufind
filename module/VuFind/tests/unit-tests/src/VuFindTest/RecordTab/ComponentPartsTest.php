@@ -70,11 +70,12 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testIsActive.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function isActiveProvider(): array
+    public static function isActiveProvider(): \Iterator
     {
-        return ['no children' => [0, false], 'children' => [10, true]];
+        yield 'no children' => [0, false];
+        yield 'children' => [10, true];
     }
 
     /**
@@ -92,7 +93,7 @@ class ComponentPartsTest extends \PHPUnit\Framework\TestCase
         $obj = new ComponentParts($searchObj);
         $recordDriver = $this->createMock(\VuFind\RecordDriver\DefaultRecord::class);
         $recordDriver->method('tryMethod')
-            ->with($this->equalTo('getChildRecordCount'))
+            ->with('getChildRecordCount')
             ->willReturn($childCount);
         $obj->setRecordDriver($recordDriver);
         $this->assertSame($expectedResult, $obj->isActive());

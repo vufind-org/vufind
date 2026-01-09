@@ -58,7 +58,7 @@ class UpdateDocumentTest extends TestCase
             ->willReturn(['id' => 'ID', 'field' => 'FIELD']);
         $document = new UpdateDocument();
         $document->addRecord($record, ['boost' => '2.0']);
-        $this->assertEquals(
+        $this->assertSame(
             'text/xml; charset=UTF-8',
             $document->getContentType()
         );

@@ -196,7 +196,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
         $response = [];
         $driver = $this->getMockDriver();
         $driver->expects($this->once())->method('patronLogin')
-            ->with($this->equalTo('testuser'), $this->equalTo('testpass'))
+            ->with('testuser', 'testpass')
             ->willReturn($response);
         $this->getAuth($driver)->authenticate($this->getLoginRequest());
     }
@@ -214,7 +214,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
         ];
         $driver = $this->getMockDriver();
         $driver->expects($this->once())->method('patronLogin')
-            ->with($this->equalTo('testuser'), $this->equalTo('testpass'))
+            ->with('testuser', 'testpass')
             ->willReturn($response);
         $user = $this->getAuth($driver)->authenticate($this->getLoginRequest());
         $this->assertEquals('testuser', $user->getUsername());
@@ -237,7 +237,7 @@ final class ILSTest extends \PHPUnit\Framework\TestCase
         ];
         $driver = $this->getMockDriver();
         $driver->expects($this->once())->method('patronLogin')
-            ->with($this->equalTo('testuser'), $this->equalTo('testpass'))
+            ->with('testuser', 'testpass')
             ->willReturn($response);
         $auth = $this->getAuth($driver);
         // Configure the authenticator to look for a cat_id; since there is no

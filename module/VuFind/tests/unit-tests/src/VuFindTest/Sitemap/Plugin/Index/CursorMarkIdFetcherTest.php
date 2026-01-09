@@ -234,7 +234,7 @@ class CursorMarkIdFetcherTest extends \PHPUnit\Framework\TestCase
             )
         );
         // If we send the same cursor mark a second time, we should get no results...
-        $this->assertEquals(
+        $this->assertSame(
             ['ids' => []],
             $fetcher->getIdsFromBackend(
                 $this->backendId,

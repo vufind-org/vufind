@@ -76,64 +76,62 @@ class AssetPipelineTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testIsPipelineEnabledForType().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function isPipelineEnabledForTypeProvider(): array
+    public static function isPipelineEnabledForTypeProvider(): \Iterator
     {
-        return [
-            'globally enabled (wildcard), available, js' => ['*', 'js', true, true],
-            'globally enabled (wildcard), available, css' => ['*', 'css', true, true],
-            'globally enabled (wildcard), unavailable, js' => ['*', 'js', false, false],
-            'globally enabled (wildcard), unavailable, css' => ['*', 'css', false, false],
-            'globally enabled (on), available, js' => ['on', 'js', true, true],
-            'globally enabled (on), available, css' => ['on', 'css', true, true],
-            'globally enabled (on), unavailable, js' => ['on', 'js', false, false],
-            'globally enabled (on), unavailable, css' => ['on', 'css', false, false],
-            'globally enabled (boolean), available, js' => [true, 'js', true, true],
-            'globally enabled (boolean), available, css' => [true, 'css', true, true],
-            'globally enabled (boolean), unavailable, js' => [true, 'js', false, false],
-            'globally enabled (boolean), unavailable, css' => [true, 'css', false, false],
-            'globally enabled (boolean string), available, js' => ['true', 'js', true, true],
-            'globally enabled (boolean string), available, css' => ['true', 'css', true, true],
-            'globally enabled (boolean string), unavailable, js' => ['true', 'js', false, false],
-            'globally enabled (boolean string), unavailable, css' => ['true', 'css', false, false],
-            'globally enabled (1), available, js' => ['1', 'js', true, true],
-            'globally enabled (1), available, css' => ['1', 'css', true, true],
-            'globally enabled (1), unavailable, js' => ['1', 'js', false, false],
-            'globally enabled (1), unavailable, css' => ['1', 'css', false, false],
-            'globally enabled (delimited list), available, js' => ['js,css', 'js', true, true],
-            'globally enabled (delimited list), available, css' => ['js,css', 'css', true, true],
-            'globally enabled (delimited list), unavailable, js' => ['js,css', 'js', false, false],
-            'globally enabled (delimited list), unavailable, css' => ['js,css', 'css', false, false],
-            'globally enabled (delimited list with space), available, js' => ['css, js', 'js', true, true],
-            'globally enabled (delimited list with space), available, css' => ['css, js', 'css', true, true],
-            'globally enabled (delimited list with space), unavailable, js' => ['css, js', 'js', false, false],
-            'globally enabled (delimited list with space), unavailable, css' => ['css, js', 'css', false, false],
-            'globally disabled (boolean), available, js' => [false, 'js', true, false],
-            'globally disabled (boolean), available, css' => [false, 'css', true, false],
-            'globally disabled (boolean), unavailable, js' => [false, 'js', false, false],
-            'globally disabled (boolean), unavailable, css' => [false, 'css', false, false],
-            'globally disabled (off), available, js' => ['off', 'js', true, false],
-            'globally disabled (off), available, css' => ['off', 'css', true, false],
-            'globally disabled (off), unavailable, js' => ['off', 'js', false, false],
-            'globally disabled (off), unavailable, css' => ['off', 'css', false, false],
-            'globally disabled (boolean string), available, js' => ['false', 'js', true, false],
-            'globally disabled (boolean string), available, css' => ['false', 'css', true, false],
-            'globally disabled (boolean string), unavailable, js' => ['false', 'js', false, false],
-            'globally disabled (boolean string), unavailable, css' => ['false', 'css', false, false],
-            'globally disabled (0), available, js' => ['0', 'js', true, false],
-            'globally disabled (0), available, css' => ['0', 'css', true, false],
-            'globally disabled (0), unavailable, js' => ['0', 'js', false, false],
-            'globally disabled (0), unavailable, css' => ['0', 'css', false, false],
-            'css only, available, js' => ['css', 'js', true, false],
-            'css only, available, css' => ['css', 'css', true, true],
-            'css only, unavailable, js' => ['css', 'js', false, false],
-            'css only, unavailable, css' => ['css', 'css', false, false],
-            'js only, available, js' => ['js', 'js', true, true],
-            'js only, available, css' => ['js', 'css', true, false],
-            'js only, unavailable, js' => ['js', 'js', false, false],
-            'js only, unavailable, css' => ['js', 'css', false, false],
-        ];
+        yield 'globally enabled (wildcard), available, js' => ['*', 'js', true, true];
+        yield 'globally enabled (wildcard), available, css' => ['*', 'css', true, true];
+        yield 'globally enabled (wildcard), unavailable, js' => ['*', 'js', false, false];
+        yield 'globally enabled (wildcard), unavailable, css' => ['*', 'css', false, false];
+        yield 'globally enabled (on), available, js' => ['on', 'js', true, true];
+        yield 'globally enabled (on), available, css' => ['on', 'css', true, true];
+        yield 'globally enabled (on), unavailable, js' => ['on', 'js', false, false];
+        yield 'globally enabled (on), unavailable, css' => ['on', 'css', false, false];
+        yield 'globally enabled (boolean), available, js' => [true, 'js', true, true];
+        yield 'globally enabled (boolean), available, css' => [true, 'css', true, true];
+        yield 'globally enabled (boolean), unavailable, js' => [true, 'js', false, false];
+        yield 'globally enabled (boolean), unavailable, css' => [true, 'css', false, false];
+        yield 'globally enabled (boolean string), available, js' => ['true', 'js', true, true];
+        yield 'globally enabled (boolean string), available, css' => ['true', 'css', true, true];
+        yield 'globally enabled (boolean string), unavailable, js' => ['true', 'js', false, false];
+        yield 'globally enabled (boolean string), unavailable, css' => ['true', 'css', false, false];
+        yield 'globally enabled (1), available, js' => ['1', 'js', true, true];
+        yield 'globally enabled (1), available, css' => ['1', 'css', true, true];
+        yield 'globally enabled (1), unavailable, js' => ['1', 'js', false, false];
+        yield 'globally enabled (1), unavailable, css' => ['1', 'css', false, false];
+        yield 'globally enabled (delimited list), available, js' => ['js,css', 'js', true, true];
+        yield 'globally enabled (delimited list), available, css' => ['js,css', 'css', true, true];
+        yield 'globally enabled (delimited list), unavailable, js' => ['js,css', 'js', false, false];
+        yield 'globally enabled (delimited list), unavailable, css' => ['js,css', 'css', false, false];
+        yield 'globally enabled (delimited list with space), available, js' => ['css, js', 'js', true, true];
+        yield 'globally enabled (delimited list with space), available, css' => ['css, js', 'css', true, true];
+        yield 'globally enabled (delimited list with space), unavailable, js' => ['css, js', 'js', false, false];
+        yield 'globally enabled (delimited list with space), unavailable, css' => ['css, js', 'css', false, false];
+        yield 'globally disabled (boolean), available, js' => [false, 'js', true, false];
+        yield 'globally disabled (boolean), available, css' => [false, 'css', true, false];
+        yield 'globally disabled (boolean), unavailable, js' => [false, 'js', false, false];
+        yield 'globally disabled (boolean), unavailable, css' => [false, 'css', false, false];
+        yield 'globally disabled (off), available, js' => ['off', 'js', true, false];
+        yield 'globally disabled (off), available, css' => ['off', 'css', true, false];
+        yield 'globally disabled (off), unavailable, js' => ['off', 'js', false, false];
+        yield 'globally disabled (off), unavailable, css' => ['off', 'css', false, false];
+        yield 'globally disabled (boolean string), available, js' => ['false', 'js', true, false];
+        yield 'globally disabled (boolean string), available, css' => ['false', 'css', true, false];
+        yield 'globally disabled (boolean string), unavailable, js' => ['false', 'js', false, false];
+        yield 'globally disabled (boolean string), unavailable, css' => ['false', 'css', false, false];
+        yield 'globally disabled (0), available, js' => ['0', 'js', true, false];
+        yield 'globally disabled (0), available, css' => ['0', 'css', true, false];
+        yield 'globally disabled (0), unavailable, js' => ['0', 'js', false, false];
+        yield 'globally disabled (0), unavailable, css' => ['0', 'css', false, false];
+        yield 'css only, available, js' => ['css', 'js', true, false];
+        yield 'css only, available, css' => ['css', 'css', true, true];
+        yield 'css only, unavailable, js' => ['css', 'js', false, false];
+        yield 'css only, unavailable, css' => ['css', 'css', false, false];
+        yield 'js only, available, js' => ['js', 'js', true, true];
+        yield 'js only, available, css' => ['js', 'css', true, false];
+        yield 'js only, unavailable, js' => ['js', 'js', false, false];
+        yield 'js only, unavailable, css' => ['js', 'css', false, false];
     }
 
     /**
@@ -168,96 +166,94 @@ class AssetPipelineTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGroupAssets().
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function groupAssetsProvider(): array
+    public static function groupAssetsProvider(): \Iterator
     {
-        return [
-            'empty css array' => [[], 'css', []],
-            'empty js array' => [[], 'js', []],
-            'simple css links' => [
+        yield 'empty css array' => [[], 'css', []];
+        yield 'empty js array' => [[], 'js', []];
+        yield 'simple css links' => [
+            [
+                ['href' => 'foo.css'],
+                ['href' => 'bar.css'],
+            ],
+            'css',
+            [
                 [
-                    ['href' => 'foo.css'],
-                    ['href' => 'bar.css'],
-                ],
-                'css',
-                [
-                    [
-                        'items' => [
-                            ['href' => 'foo.css'],
-                            ['href' => 'bar.css'],
-                        ],
-                        'key' => '/theme/css/foo.css/theme/css/bar.css',
+                    'items' => [
+                        ['href' => 'foo.css'],
+                        ['href' => 'bar.css'],
                     ],
+                    'key' => '/theme/css/foo.css/theme/css/bar.css',
                 ],
             ],
-            'complex css links' => [
+        ];
+        yield 'complex css links' => [
+            [
+                ['href' => 'foo.css'],
+                ['href' => 'http://bar.css'],
+                ['href' => 'baz.css', 'options' => ['exclude_from_pipeline' => true]],
+            ],
+            'css',
+            [
                 [
-                    ['href' => 'foo.css'],
-                    ['href' => 'http://bar.css'],
-                    ['href' => 'baz.css', 'options' => ['exclude_from_pipeline' => true]],
+                    'items' => [
+                        ['href' => 'foo.css'],
+                    ],
+                    'key' => '/theme/css/foo.css',
                 ],
-                'css',
                 [
-                    [
-                        'items' => [
-                            ['href' => 'foo.css'],
-                        ],
-                        'key' => '/theme/css/foo.css',
-                    ],
-                    [
-                        'other' => true,
-                        'item' => ['href' => 'http://bar.css'],
-                    ],
-                    [
-                        'other' => true,
-                        'item' => ['href' => 'baz.css', 'options' => ['exclude_from_pipeline' => true]],
-                    ],
+                    'other' => true,
+                    'item' => ['href' => 'http://bar.css'],
+                ],
+                [
+                    'other' => true,
+                    'item' => ['href' => 'baz.css', 'options' => ['exclude_from_pipeline' => true]],
                 ],
             ],
-            'simple js links' => [
+        ];
+        yield 'simple js links' => [
+            [
+                ['src' => 'foo.js'],
+                ['src' => 'bar.js'],
+            ],
+            'js',
+            [
                 [
-                    ['src' => 'foo.js'],
-                    ['src' => 'bar.js'],
-                ],
-                'js',
-                [
-                    [
-                        'items' => [
-                            ['src' => 'foo.js'],
-                            ['src' => 'bar.js'],
-                        ],
-                        'key' => '/theme/js/foo.js/theme/js/bar.js',
+                    'items' => [
+                        ['src' => 'foo.js'],
+                        ['src' => 'bar.js'],
                     ],
+                    'key' => '/theme/js/foo.js/theme/js/bar.js',
                 ],
             ],
-            'complex js links' => [
+        ];
+        yield 'complex js links' => [
+            [
+                ['src' => 'foo.js'],
+                ['src' => 'http://bar.js'],
+                ['src' => 'baz.js', 'options' => ['exclude_from_pipeline' => true]],
+                ['src' => 'xyzzy.js', 'attrs' => ['conditional' => 'foo']],
+            ],
+            'js',
+            [
                 [
-                    ['src' => 'foo.js'],
-                    ['src' => 'http://bar.js'],
-                    ['src' => 'baz.js', 'options' => ['exclude_from_pipeline' => true]],
-                    ['src' => 'xyzzy.js', 'attrs' => ['conditional' => 'foo']],
+                    'items' => [
+                        ['src' => 'foo.js'],
+                    ],
+                    'key' => '/theme/js/foo.js',
                 ],
-                'js',
                 [
-                    [
-                        'items' => [
-                            ['src' => 'foo.js'],
-                        ],
-                        'key' => '/theme/js/foo.js',
-                    ],
-                    [
-                        'other' => true,
-                        'item' => ['src' => 'http://bar.js'],
-                    ],
-                    [
-                        'other' => true,
-                        'item' => ['src' => 'baz.js', 'options' => ['exclude_from_pipeline' => true]],
-                    ],
-                    [
-                        'other' => true,
-                        'item' => ['src' => 'xyzzy.js', 'attrs' => ['conditional' => 'foo']],
-                    ],
+                    'other' => true,
+                    'item' => ['src' => 'http://bar.js'],
+                ],
+                [
+                    'other' => true,
+                    'item' => ['src' => 'baz.js', 'options' => ['exclude_from_pipeline' => true]],
+                ],
+                [
+                    'other' => true,
+                    'item' => ['src' => 'xyzzy.js', 'attrs' => ['conditional' => 'foo']],
                 ],
             ],
         ];
@@ -295,95 +291,92 @@ class AssetPipelineTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testProcessGroupedAssets().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function processGroupedAssetsProvider(): array
+    public static function processGroupedAssetsProvider(): \Iterator
     {
-        return [
-            'simple css links' => [
+        yield 'simple css links' => [
+            [
                 [
-                    [
-                        'items' => [
-                            ['href' => 'foo.css'],
-                            ['href' => 'bar.css'],
-                        ],
-                        'key' => '/theme/css/foo.css/theme/css/bar.css',
+                    'items' => [
+                        ['href' => 'foo.css'],
+                        ['href' => 'bar.css'],
                     ],
-                ],
-                'css',
-                [
-                    ['href' => '2-css'],
+                    'key' => '/theme/css/foo.css/theme/css/bar.css',
                 ],
             ],
-            'complex css links' => [
+            'css',
+            [
+                ['href' => '2-css'],
+            ],
+        ];
+        yield 'complex css links' => [
+            [
                 [
-                    [
-                        'items' => [
-                            ['href' => 'foo.css'],
-                        ],
-                        'key' => '/theme/css/foo.css',
+                    'items' => [
+                        ['href' => 'foo.css'],
                     ],
-                    [
-                        'other' => true,
-                        'item' => ['href' => 'http://bar.css'],
-                    ],
-                    [
-                        'other' => true,
-                        'item' => ['href' => 'baz.css', 'options' => ['exclude_from_pipeline' => true]],
-                    ],
+                    'key' => '/theme/css/foo.css',
                 ],
-                'css',
                 [
-                    ['href' => '1-css'],
-                    ['href' => 'http://bar.css'],
-                    ['href' => 'baz.css', 'options' => ['exclude_from_pipeline' => true]],
+                    'other' => true,
+                    'item' => ['href' => 'http://bar.css'],
+                ],
+                [
+                    'other' => true,
+                    'item' => ['href' => 'baz.css', 'options' => ['exclude_from_pipeline' => true]],
                 ],
             ],
-            'simple js links' => [
+            'css',
+            [
+                ['href' => '1-css'],
+                ['href' => 'http://bar.css'],
+                ['href' => 'baz.css', 'options' => ['exclude_from_pipeline' => true]],
+            ],
+        ];
+        yield 'simple js links' => [
+            [
                 [
-                    [
-                        'items' => [
-                            ['src' => 'foo.js'],
-                            ['src' => 'bar.js'],
-                        ],
-                        'key' => '/theme/js/foo.js/theme/js/bar.js',
+                    'items' => [
+                        ['src' => 'foo.js'],
+                        ['src' => 'bar.js'],
                     ],
-                ],
-                'js',
-                [
-                    ['src' => '2-js'],
+                    'key' => '/theme/js/foo.js/theme/js/bar.js',
                 ],
             ],
-            'complex js links' => [
+            'js',
+            [
+                ['src' => '2-js'],
+            ],
+        ];
+        yield 'complex js links' => [
+            [
                 [
-                    [
-                        'items' => [
-                            ['src' => 'foo.js'],
-                        ],
-                        'key' => '/theme/js/foo.js',
+                    'items' => [
+                        ['src' => 'foo.js'],
                     ],
-                    [
-                        'other' => true,
-                        'item' => ['src' => 'http://bar.js'],
-                    ],
-                    [
-                        'other' => true,
-                        'item' => ['src' => 'baz.js', 'options' => ['exclude_from_pipeline' => true]],
-                    ],
-                    [
-                        'other' => true,
-                        'item' => ['src' => 'xyzzy.js', 'attrs' => ['conditional' => 'foo']],
-                    ],
+                    'key' => '/theme/js/foo.js',
                 ],
-                'js',
                 [
-                    ['src' => '1-js'],
-                    ['src' => 'http://bar.js'],
-                    ['src' => 'baz.js', 'options' => ['exclude_from_pipeline' => true]],
-                    ['src' => 'xyzzy.js', 'attrs' => ['conditional' => 'foo']],
+                    'other' => true,
+                    'item' => ['src' => 'http://bar.js'],
+                ],
+                [
+                    'other' => true,
+                    'item' => ['src' => 'baz.js', 'options' => ['exclude_from_pipeline' => true]],
+                ],
+                [
+                    'other' => true,
+                    'item' => ['src' => 'xyzzy.js', 'attrs' => ['conditional' => 'foo']],
                 ],
             ],
-
+            'js',
+            [
+                ['src' => '1-js'],
+                ['src' => 'http://bar.js'],
+                ['src' => 'baz.js', 'options' => ['exclude_from_pipeline' => true]],
+                ['src' => 'xyzzy.js', 'attrs' => ['conditional' => 'foo']],
+            ],
         ];
     }
 

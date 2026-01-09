@@ -1,12 +1,11 @@
 <?php
 
 /**
- * Deprecated legacy factory for instantiating Mailer objects
+ * Autowiring factory test class
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2009.
- * Copyright (C) The National Library of Finland 2024.
+ * Copyright (C) The National Library of Finland 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,27 +21,34 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Mailer
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Tests
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
 
-namespace VuFind\Mailer;
+declare(strict_types=1);
+
+namespace VuFindTest\ServiceManager\Factory\TestHarness;
 
 /**
- * Deprecated legacy factory for instantiating Mailer objects
+ * Autowiring factory test class
  *
  * @category VuFind
- * @package  Mailer
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Tests
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
- *
- * @deprecated Use MailerFactory
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class Factory extends MailerFactory
+class InvalidAutowiredClass2
 {
+    /**
+     * Constructor
+     *
+     * @param mixed $ilsConnection ILS Connection
+     */
+    public function __construct(
+        protected $ilsConnection,
+    ) {
+    }
 }

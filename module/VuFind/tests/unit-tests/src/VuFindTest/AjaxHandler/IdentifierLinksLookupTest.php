@@ -84,7 +84,7 @@ class IdentifierLinksLookupTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         $mockPlugin = $this->container
             ->createMock(IdentifierLinkerInterface::class, ['getLinks']);
         $mockPlugin->expects($this->$times())->method('getLinks')
-            ->with($this->equalTo($expected))
+            ->with($expected)
             ->willReturn(
                 [
                     $key => [

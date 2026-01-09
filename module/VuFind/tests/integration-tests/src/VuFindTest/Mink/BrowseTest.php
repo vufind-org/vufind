@@ -73,33 +73,31 @@ class BrowseTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testFirstColumnConfig().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function firstColumnConfigProvider(): array
+    public static function firstColumnConfigProvider(): \Iterator
     {
         $allOff = array_map(fn () => false, self::$allOn);
         // Confirm that we differentiate call number types when multiples
         // are enabled, but we do not when there is only one option.
-        return [
-            'everything on' => [
-                [
-                    'Tag',
-                    'Call Number (Dewey)',
-                    'Call Number (LC)',
-                    'Author',
-                    'Topic',
-                    'Genre',
-                    'Region',
-                    'Era',
-                ],
-                self::$allOn,
+        yield 'everything on' => [
+            [
+                'Tag',
+                'Call Number (Dewey)',
+                'Call Number (LC)',
+                'Author',
+                'Topic',
+                'Genre',
+                'Region',
+                'Era',
             ],
-            'only LCC' => [
-                ['Call Number'], ['lcc' => true] + $allOff,
-            ],
-            'only Dewey' => [
-                ['Call Number'], ['dewey' => true] + $allOff,
-            ],
+            self::$allOn,
+        ];
+        yield 'only LCC' => [
+            ['Call Number'], ['lcc' => true] + $allOff,
+        ];
+        yield 'only Dewey' => [
+            ['Call Number'], ['dewey' => true] + $allOff,
         ];
     }
 
@@ -129,23 +127,22 @@ class BrowseTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testSecondColumnBehavior().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function secondColumnConfigProvider(): array
+    public static function secondColumnConfigProvider(): \Iterator
     {
-        return [
-            'Tag' => [['By Alphabetical', 'By Popularity', 'By Recent'], 'Tag'],
-            'Call Number (Dewey)' => [['100 - Philosophy & psychology 1'], 'Call Number (Dewey)'],
-            'Call Number (LC)' => [[], 'Call Number (LC)'],         // skips directly to list3
-            'Author' => [
-                ['By Alphabetical', 'By Call Number', 'By Topic', 'By Genre', 'By Region', 'By Era'],
-                'Author',
-            ],
-            'Topic' => [['By Alphabetical', 'By Genre', 'By Region','By Era'], 'Topic'],
-            'Genre' => [['By Alphabetical', 'By Topic', 'By Region','By Era'], 'Genre'],
-            'Region' => [['By Alphabetical', 'By Topic', 'By Genre','By Era'], 'Region'],
-            'Era' => [['By Alphabetical', 'By Topic', 'By Genre','By Region'], 'Era'],
+        yield 'Tag' => [['By Alphabetical', 'By Popularity', 'By Recent'], 'Tag'];
+        yield 'Call Number (Dewey)' => [['100 - Philosophy & psychology 1'], 'Call Number (Dewey)'];
+        yield 'Call Number (LC)' => [[], 'Call Number (LC)'];
+        // skips directly to list3
+        yield 'Author' => [
+            ['By Alphabetical', 'By Call Number', 'By Topic', 'By Genre', 'By Region', 'By Era'],
+            'Author',
         ];
+        yield 'Topic' => [['By Alphabetical', 'By Genre', 'By Region','By Era'], 'Topic'];
+        yield 'Genre' => [['By Alphabetical', 'By Topic', 'By Region','By Era'], 'Genre'];
+        yield 'Region' => [['By Alphabetical', 'By Topic', 'By Genre','By Era'], 'Region'];
+        yield 'Era' => [['By Alphabetical', 'By Topic', 'By Genre','By Region'], 'Era'];
     }
 
     /**
@@ -195,10 +192,10 @@ class BrowseTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->goToBrowse();
         $page->clickLink('Call Number');
         $values = array_map(fn ($item) => $item->getText(), $page->findAll('css', '#list3 .browse-item'));
-        $this->assertEquals(['H - Social Science 1', 'P - Language and Literature 7'], $values);
+        $this->assertSame(['H - Social Science 1', 'P - Language and Literature 7'], $values);
         $page->clickLink($values[0]);
         $values2 = array_map(fn ($item) => $item->getText(), $page->findAll('css', '#list4 .browse-item'));
-        $this->assertEquals(['HG - Finance 1'], $values2);
+        $this->assertSame(['HG - Finance 1'], $values2);
         $page->clickLink($values2[0]);
         // We should now be on search results with a filter applied:
         $this->assertEquals('HG - Finance', $this->findCssAndGetText($page, '.filter-value .text'));
@@ -226,14 +223,14 @@ class BrowseTest extends \VuFindTest\Integration\MinkTestCase
         $page->clickLink('Call Number');
         $page->clickLink('100 - Philosophy & psychology 1');
         $values = array_map(fn ($item) => $item->getText(), $page->findAll('css', '#list3 .browse-item'));
-        $this->assertEquals(['120 - Epistemology, causation, humankind 1', 'View Records'], $values);
+        $this->assertSame(['120 - Epistemology, causation, humankind 1', 'View Records'], $values);
         $page->clickLink($values[1]);
         // We should now be on search results with a filter applied:
         $values2 = array_map(
             fn ($item) => $item->getText(),
             $page->findAll('css', '.active-filters--uncollapsible .filter-value .text')
         );
-        $this->assertEquals(
+        $this->assertSame(
             [
                 '120 - Epistemology, causation, humankind',
                 '100 - Philosophy & psychology',
@@ -265,17 +262,17 @@ class BrowseTest extends \VuFindTest\Integration\MinkTestCase
         $page->clickLink('Call Number');
         $page->clickLink('100 - Philosophy & psychology 1');
         $values = array_map(fn ($item) => $item->getText(), $page->findAll('css', '#list3 .browse-item'));
-        $this->assertEquals(['120 - Epistemology, causation, humankind 1', 'View Records'], $values);
+        $this->assertSame(['120 - Epistemology, causation, humankind 1', 'View Records'], $values);
         $page->clickLink($values[0]);
         $values2 = array_map(fn ($item) => $item->getText(), $page->findAll('css', '#list4 .browse-item'));
-        $this->assertEquals(['123 - Determinism and indeterminism 1'], $values2);
+        $this->assertSame(['123 - Determinism and indeterminism 1'], $values2);
         $page->clickLink($values2[0]);
         // We should now be on search results with a filter applied:
         $values3 = array_map(
             fn ($item) => $item->getText(),
             $page->findAll('css', '.active-filters--uncollapsible .filter-value .text')
         );
-        $this->assertEquals(
+        $this->assertSame(
             [
                 '120 - Epistemology, causation, humankind',
                 '100 - Philosophy & psychology',
@@ -318,7 +315,7 @@ class BrowseTest extends \VuFindTest\Integration\MinkTestCase
         $page->clickLink('Author');
         $page->clickLink('By Alphabetical');
         $page->clickLink('A');
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'Author, Primary 1795 - 1881 11',
                 'Author, Secondary 1875 - 1950 11',
@@ -369,9 +366,9 @@ class BrowseTest extends \VuFindTest\Integration\MinkTestCase
             'Labor unions 1',
             'View Records',
         ];
-        $this->assertEquals($expected, $values);
+        $this->assertSame($expected, $values);
         $page->clickLink('Labor unions 1');
-        $this->assertEquals(
+        $this->assertSame(
             ['The Study and Scor_ng of Dots.and-Dashes:Colons 1', 'Weird IDs 1'],
             array_map(fn ($item) => $item->getText(), $page->findAll('css', '#list4 .browse-item'))
         );
@@ -380,6 +377,6 @@ class BrowseTest extends \VuFindTest\Integration\MinkTestCase
             fn ($item) => $item->getText(),
             $page->findAll('css', '.active-filters--uncollapsible .filter-value .text')
         );
-        $this->assertEquals(['Labor unions', 'Weird IDs'], $filters);
+        $this->assertSame(['Labor unions', 'Weird IDs'], $filters);
     }
 }

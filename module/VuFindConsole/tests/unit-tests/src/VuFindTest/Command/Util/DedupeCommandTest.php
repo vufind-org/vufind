@@ -78,7 +78,7 @@ class DedupeCommandTest extends \PHPUnit\Framework\TestCase
     {
         $fakeHandle = 7;    // arbitrary number for test purposes
         $command->expects($this->once())->method('openOutputFile')
-            ->with($this->equalTo($output))
+            ->with($output)
             ->willReturn($fakeHandle);
         $this->expectConsecutiveCalls(
             $command,
@@ -90,7 +90,7 @@ class DedupeCommandTest extends \PHPUnit\Framework\TestCase
             ]
         );
         $command->expects($this->once())->method('closeOutputFile')
-            ->with($this->equalTo($fakeHandle));
+            ->with($fakeHandle);
     }
 
     /**
@@ -103,8 +103,8 @@ class DedupeCommandTest extends \PHPUnit\Framework\TestCase
         $command = new DedupeCommand();
         $commandTester = new CommandTester($command);
         $commandTester->execute(['input' => '/does/not/exist']);
-        $this->assertEquals(1, $commandTester->getStatusCode());
-        $this->assertEquals(
+        $this->assertSame(1, $commandTester->getStatusCode());
+        $this->assertSame(
             "Could not open input file: /does/not/exist\n",
             $commandTester->getDisplay()
         );
@@ -128,8 +128,8 @@ class DedupeCommandTest extends \PHPUnit\Framework\TestCase
                 'output' => $outputFilename,
             ]
         );
-        $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals('', $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
+        $this->assertSame('', $commandTester->getDisplay());
     }
 
     /**
@@ -162,7 +162,7 @@ class DedupeCommandTest extends \PHPUnit\Framework\TestCase
         $this->setSuccessfulExpectations($command, $outputFilename);
         $commandTester = new CommandTester($command);
         $commandTester->execute([]);
-        $this->assertEquals(0, $commandTester->getStatusCode());
-        $this->assertEquals('', $commandTester->getDisplay());
+        $this->assertSame(0, $commandTester->getStatusCode());
+        $this->assertSame('', $commandTester->getDisplay());
     }
 }

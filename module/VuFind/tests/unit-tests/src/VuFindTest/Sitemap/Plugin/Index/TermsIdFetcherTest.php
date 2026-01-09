@@ -200,7 +200,7 @@ class TermsIdFetcherTest extends \PHPUnit\Framework\TestCase
                 []
             )
         );
-        $this->assertEquals(
+        $this->assertSame(
             ['ids' => $expectedIds2],
             $fetcher->getIdsFromBackend(
                 'foo',

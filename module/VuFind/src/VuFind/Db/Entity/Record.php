@@ -221,7 +221,7 @@ class Record implements RecordEntityInterface
      */
     public function getUpdated(): DateTime
     {
-        // Return to a clone to avoid indirect modification of the entity:
+        // Return a clone to avoid indirect modification of the entity:
         return $this->getDateTimeClone($this->updated);
     }
 

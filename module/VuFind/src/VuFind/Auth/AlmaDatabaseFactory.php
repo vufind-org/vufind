@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Factory for repositories requiring OAuth2 configuration.
+ * Factory for AlmaDatabase authentication module.
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022.
+ * Copyright (C) AK Bibliothek Wien für Sozialwissenschaften 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,30 +21,30 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Controller
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  Authentication
+ * @author   Michael Birkner-Tröger <michael.birkner@akwien.at>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\OAuth2\Repository;
+namespace VuFind\Auth;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
-use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
+use VuFind\Crypt\PasswordHasher;
 
 /**
- * Factory for repositories requiring OAuth2 configuration.
+ * Factory for AlmaDatabase authentication module.
  *
  * @category VuFind
- * @package  OAuth2
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  Authentication
+ * @author   Michael Birkner-Tröger <michael.birkner@akwien.at>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class RepositoryWithOAuth2ConfigFactory implements FactoryInterface
+class AlmaDatabaseFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
 {
     /**
      * Create an object
@@ -68,7 +68,10 @@ class RepositoryWithOAuth2ConfigFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
-        return new $requestedName($yamlReader->get('OAuth2Server.yaml'));
+        return new $requestedName(
+            $container->get(\VuFind\ILS\Connection::class),
+            $container->get(ILSAuthenticator::class),
+            $container->get(PasswordHasher::class)
+        );
     }
 }

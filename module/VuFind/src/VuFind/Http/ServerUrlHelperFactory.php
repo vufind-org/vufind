@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Factory for repositories requiring the access token service.
+ * Server URL Helper factory.
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2022-2024.
+ * Copyright (C) Villanova University 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,14 +21,15 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Controller
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  Http
+ * @author   Maccabee Levine <msl321@lehigh.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development Wiki
  */
 
-namespace VuFind\OAuth2\Repository;
+namespace VuFind\Http;
 
+use Closure;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Laminas\ServiceManager\Factory\FactoryInterface;
@@ -36,15 +37,15 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for repositories requiring the access token service.
+ * Server URL Helper factory.
  *
  * @category VuFind
- * @package  OAuth2
- * @author   Ere Maijala <ere.maijala@helsinki.fi>
+ * @package  Http
+ * @author   Maccabee Levine <msl321@lehigh.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Site
+ * @link     https://vufind.org/wiki/development Wiki
  */
-class TokenRepositoryFactory implements FactoryInterface
+class ServerUrlHelperFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -68,12 +69,10 @@ class TokenRepositoryFactory implements FactoryInterface
         if (!empty($options)) {
             throw new \Exception('Unexpected options passed to factory.');
         }
-        $yamlReader = $container->get(\VuFind\Config\YamlReader::class);
-        $dbPluginManager = $container->get(\VuFind\Db\Service\PluginManager::class);
+
+        $viewRenderer = $container->get('ViewRenderer');
         return new $requestedName(
-            $yamlReader->get('OAuth2Server.yaml'),
-            $dbPluginManager->get(\VuFind\Db\Service\AccessTokenServiceInterface::class),
-            $dbPluginManager->get(\VuFind\Db\Service\UserServiceInterface::class)
+            Closure::fromCallable($viewRenderer->plugin('serverurl'))
         );
     }
 }
