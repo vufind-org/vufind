@@ -150,6 +150,7 @@ final class EmailAuthenticationTest extends \VuFindTest\Integration\MinkTestCase
                 'config' => [
                     'Authentication' => [
                         'method' => 'ILS',
+                        'recover_interval' => 0,
                     ],
                     'Catalog' => [
                         'driver' => 'Demo',
@@ -174,17 +175,20 @@ final class EmailAuthenticationTest extends \VuFindTest\Integration\MinkTestCase
         $session->visit($this->getVuFindUrl());
         $page = $session->getPage();
 
-        // Request login:
-        $this->clickCss($page, '#loginOptions a');
-        $this->findCssAndSetValue($page, '.modal-body [name="username"]', 'catuser@vufind.org');
-        $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->assertEquals(
-            'We have sent a login link to your email address. It may take a few moments for the link to arrive.'
-            . " If you don't receive the link shortly, please check also your spam filter.",
-            $this->findCssAndGetText($page, '.alert-success')
-        );
+        // Request login three times to ensure that repeated requests work:
+        for ($i = 1; $i <= 3; $i++) {
+            $this->clickCss($page, '#loginOptions a');
+            $this->findCssAndSetValue($page, '.modal-body [name="username"]', 'catuser@vufind.org');
+            $this->clickCss($page, '.modal-body .btn.btn-primary');
+            $this->assertEquals(
+                'We have sent a login link to your email address. It may take a few moments for the link to arrive.'
+                . " If you don't receive the link shortly, please check also your spam filter.",
+                $this->findCssAndGetText($page, '.alert-success')
+            );
+            $this->closeLightbox($page);
+        }
 
-        // Extract the link from the provided message:
+        // Extract the link from the first provided message:
         $email = $this->getLoggedEmail();
         $headers = $email->getHeaders();
         $body = $email->getBody()->getBody();
