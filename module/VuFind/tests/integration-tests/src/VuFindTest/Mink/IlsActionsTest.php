@@ -196,7 +196,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Test that control is disabled upon empty selection
         $this->clickCss($page, '#cancelSelected');
-        $this->assertNotInstanceOf(\Behat\Mink\Element\NodeElement::class, $page->find('css', '.btn-group.open'));
+        $this->unFindCss($page, '.btn-group.open');
 
         // Test that control becomes active if we click a checkbox (but don't
         // actually cancel anything yet).
@@ -216,7 +216,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
             '1 request(s) were successfully canceled',
             $this->findCssAndGetText($page, '.alert.alert-success')
         );
-        $this->assertNotInstanceOf(\Behat\Mink\Element\NodeElement::class, $page->find('css', 'a.title'));
+        $this->unFindCss($page, 'a.title');
     }
 
     /**
@@ -253,7 +253,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
             '1 request(s) were successfully canceled',
             $this->findCssAndGetText($page, '.alert.alert-success')
         );
-        $this->assertNotInstanceOf(\Behat\Mink\Element\NodeElement::class, $page->find('css', 'a.title'));
+        $this->unFindCss($page, 'a.title');
     }
 
     /**
