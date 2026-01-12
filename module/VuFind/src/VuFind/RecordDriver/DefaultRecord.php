@@ -1236,7 +1236,10 @@ class DefaultRecord extends AbstractBase
      */
     public function getShortTitle()
     {
-        return $this->fields['title_short'] ?? '';
+        // title_short is a single-valued field in the default schema, but tolerating
+        // multi-values improves compatibility with custom schemas (e.g. K10plus-Zentral)
+        $titles = (array)($this->fields['title_short'] ?? []);
+        return $titles[0] ?? '';
     }
 
     /**
@@ -1257,7 +1260,10 @@ class DefaultRecord extends AbstractBase
      */
     public function getSubtitle()
     {
-        return $this->fields['title_sub'] ?? '';
+        // title_sub is a single-valued field in the default schema, but tolerating
+        // multi-values improves compatibility with custom schemas (e.g. K10plus-Zentral)
+        $titles = (array)($this->fields['title_sub'] ?? []);
+        return $titles[0] ?? '';
     }
 
     /**
@@ -1362,7 +1368,10 @@ class DefaultRecord extends AbstractBase
      */
     public function getTitle()
     {
-        return $this->fields['title'] ?? '';
+        // title is a single-valued field in the default schema, but tolerating multi-
+        // values improves compatibility with custom schemas (e.g. K10plus-Zentral)
+        $titles = (array)($this->fields['title'] ?? []);
+        return $titles[0] ?? '';
     }
 
     /**

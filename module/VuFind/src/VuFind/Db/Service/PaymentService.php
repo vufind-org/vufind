@@ -105,6 +105,7 @@ class PaymentService extends AbstractDbService implements PaymentServiceInterfac
         $parameters = compact('localIdentifier');
         $query = $this->entityManager->createQuery($dql);
         $query->setParameters($parameters);
+        $query->setMaxResults(1); // SHOULD be unique, but just in case...
         return $query->getOneOrNullResult();
     }
 

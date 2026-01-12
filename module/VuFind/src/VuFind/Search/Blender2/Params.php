@@ -1,12 +1,11 @@
 <?php
 
 /**
- * Deprecated legacy factory for instantiating Mailer objects
+ * Blender2 Search Parameters
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2009.
- * Copyright (C) The National Library of Finland 2024.
+ * Copyright (C) The National Library of Finland 2015-2022.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -22,27 +21,24 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Mailer
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Search_Blender
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org Main Page
  */
 
-namespace VuFind\Mailer;
+namespace VuFind\Search\Blender2;
 
 /**
- * Deprecated legacy factory for instantiating Mailer objects
+ * Blender2 Search Parameters
  *
  * @category VuFind
- * @package  Mailer
- * @author   Demian Katz <demian.katz@villanova.edu>
+ * @package  Search_Blender
  * @author   Ere Maijala <ere.maijala@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
- *
- * @deprecated Use MailerFactory
+ * @link     https://vufind.org Main Page
  */
-class Factory extends MailerFactory
+class Params extends \VuFind\Search\Blender\Params
 {
+    // This class exists because its factory is different than Blender\ParamsFactory.
 }

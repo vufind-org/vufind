@@ -1108,7 +1108,7 @@ class EDSTest extends \PHPUnit\Framework\TestCase
     public function testRelevancyScorePresent(): void
     {
         $driver = $this->getDriver('valid-eds-record');
-        $this->assertEquals(908.217102050781, $driver->getScore());
+        $this->assertEqualsWithDelta(908.217102050781, $driver->getScore(), PHP_FLOAT_EPSILON);
     }
 
     /**

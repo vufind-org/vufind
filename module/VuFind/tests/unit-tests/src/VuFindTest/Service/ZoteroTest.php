@@ -104,7 +104,9 @@ class ZoteroTest extends \PHPUnit\Framework\TestCase
         // Emulate return from Zotero authorization:
         $this->assertSame(1, $zotero->handleAuthCallback($user, $this->oauthParams));
         // Subsequent call does export directly:
-        $this->assertSame(1, $zotero->export($user, 'https://localhost/callback'));
+        $result = $zotero->export($user, 'https://localhost/callback');
+        $this->assertIsInt($result);
+        $this->assertSame(1, $result);
     }
 
     /**

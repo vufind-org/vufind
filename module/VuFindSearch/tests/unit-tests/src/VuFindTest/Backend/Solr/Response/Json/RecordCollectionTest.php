@@ -55,7 +55,7 @@ class RecordCollectionTest extends TestCase
     public function testDefaults()
     {
         $coll = new RecordCollection([]);
-        $this->assertTrue($coll->getSpellcheck() instanceof Spellcheck);
+        $this->assertInstanceOf(Spellcheck::class, $coll->getSpellcheck());
         $this->assertEquals(0, $coll->getTotal());
         $this->assertIsArray($coll->getFacets());
         $this->assertIsArray($coll->getQueryFacets());
@@ -74,7 +74,7 @@ class RecordCollectionTest extends TestCase
     public function testDefaultsWithNullResponse()
     {
         $coll = new RecordCollection(['response' => null]);
-        $this->assertTrue($coll->getSpellcheck() instanceof Spellcheck);
+        $this->assertInstanceOf(Spellcheck::class, $coll->getSpellcheck());
         $this->assertEquals(0, $coll->getTotal());
         $this->assertIsArray($coll->getFacets());
         $this->assertIsArray($coll->getQueryFacets());
@@ -229,11 +229,11 @@ class RecordCollectionTest extends TestCase
         for ($i = 0; $i < 4; $i++) {
             $coll->add($this->createMock(\VuFindSearch\Response\RecordInterface::class));
         }
-        $this->assertSame(5, $coll->count());
+        $this->assertCount(5, $coll);
         $coll->add($record);
-        $this->assertSame(5, $coll->count());
+        $this->assertCount(5, $coll);
         $coll->add($record, false);
-        $this->assertSame(6, $coll->count());
+        $this->assertCount(6, $coll);
     }
 
     /**

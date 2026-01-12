@@ -32,8 +32,6 @@ namespace VuFindTest\Controller\Plugin;
 use Laminas\Session\Container;
 use VuFind\Controller\Plugin\Followup;
 
-use function get_class;
-
 /**
  * Followup controller plugin tests.
  *
@@ -73,7 +71,7 @@ class FollowupTest extends \PHPUnit\Framework\TestCase
         // standard controller-provided URL retrieval:
         $this->assertEquals('http://localhost/default-url', $f->retrieve('url'));
         // no parameters retrieves session object:
-        $this->assertSame(Container::class, get_class($f->retrieve()));
+        $this->assertInstanceOf(Container::class, $f->retrieve());
         // test defaulting behavior:
         $this->assertEquals('foo', $f->retrieve('bar', 'foo'));
     }
