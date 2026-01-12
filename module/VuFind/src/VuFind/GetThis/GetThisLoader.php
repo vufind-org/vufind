@@ -50,7 +50,7 @@ class GetThisLoader implements LoggerAwareInterface, \VuFind\I18n\Translator\Tra
     protected $items;
 
     /**
-     * id for holding item to default to when no id is passed
+     * Id for holding item to default to when no id is passed
      *
      * @var ?string
      */
