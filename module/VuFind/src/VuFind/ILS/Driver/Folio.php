@@ -2279,15 +2279,30 @@ class Folio extends AbstractAPI implements
         $cacheKey = 'module_version:' . $moduleName;
         $version = $this->getCachedData($cacheKey);
         if ($version === null) {
-            // get latest version of a module enabled for a tenant
+            // Get latest version of a module enabled for a tenant.
+            // Allow 403 to not trigger an error because that means we need to try the next call
+            // that is compatible with Sunflower.
             $response = $this->makeRequest(
                 'GET',
-                '/_/proxy/tenants/' . $this->tenant . '/modules?filter=' . $moduleName . '&latest=1'
+                '/_/proxy/tenants/' . $this->tenant . '/modules?filter=' . $moduleName . '&latest=1',
+                allowedFailureCodes:[403]
             );
 
+            // If there was a failure with the first method, attempt the second
+            // endpoint to get the version.
+            $json = json_decode($response->getBody());
+            if (isset($json->errors) && !empty($json->errors)) {
+                $response = $this->makeRequest(
+                    'GET',
+                    '/modules/discovery?query=(name==' . $moduleName . ')'
+                );
+                $json = json_decode($response->getBody());
+                $latest = $json->discovery[0]->id ?? '0';
+            } else {
+                $latest = $json[0]->id ?? '0';
+            }
+
             // get version major from json result
-            $versions = json_decode($response->getBody());
-            $latest = $versions[0]->id ?? '0';
             preg_match_all('!\d+!', $latest, $matches);
             $version = (int)($matches[0][0] ?? 0);
             if ($version === 0) {
