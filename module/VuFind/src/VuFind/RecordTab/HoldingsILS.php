@@ -75,7 +75,7 @@ class HoldingsILS extends AbstractBase
      */
     public function __construct(
         protected ?Connection $catalog = null,
-        string $template = null,
+        ?string $template = null,
         protected bool $hideWhenEmpty = false,
         protected ?Closure $getThisLoaderGetter = null
     ) {

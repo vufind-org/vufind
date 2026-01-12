@@ -667,7 +667,6 @@ class GetThisLoaderTest extends TestCase
      *
      * @return array[]
      */
-
     public static function provideShowCopyNumberData(): array
     {
         return [

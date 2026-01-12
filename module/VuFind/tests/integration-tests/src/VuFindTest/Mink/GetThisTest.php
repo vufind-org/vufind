@@ -381,7 +381,8 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
                     'CallNumberThree',
                     'CallNumberFour',
                 ]
-            ),);
+            )
+        );
         $this->setCommentBlockConfig(false);
 
         $page = $this->openGetThisLoaderForSearch(self::SEARCH);
