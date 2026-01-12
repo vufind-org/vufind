@@ -663,7 +663,7 @@ class GetThisLoaderTest extends TestCase
     }
 
     /**
-     * testShowCopyNumber data provider
+     * Data provider testShowCopyNumber
      *
      * @return array[]
      */
@@ -683,10 +683,14 @@ class GetThisLoaderTest extends TestCase
     /**
      * Test method showCopyNumber
      *
+     * @param bool|null $showCopyNumber Value for the config property of the same name
+     * @param array     $holdings       Holdings available for the record
+     * @param bool      $result         Expected result whether the copy number should be shown
+     *
      * @return void
      */
     #[DataProvider('provideShowCopyNumberData')]
-    public function testShowCopyNumber($showCopyNumber, $holdings, $result)
+    public function testShowCopyNumber(?bool $showCopyNumber, array $holdings, bool $result)
     {
         $config = $this->config;
         $config['showCopyNumber'] = $showCopyNumber;
