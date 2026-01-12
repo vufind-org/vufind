@@ -14,7 +14,9 @@ use Rector\PHPUnit\CodeQuality\Rector\Class_\TestWithToDataProviderRector;
 use Rector\PHPUnit\CodeQuality\Rector\Class_\TypeWillReturnCallableArrowFunctionRector;
 use Rector\PHPUnit\CodeQuality\Rector\Class_\YieldDataProviderRector;
 use Rector\PHPUnit\CodeQuality\Rector\ClassMethod\AddInstanceofAssertForNullableInstanceRector;
+use Rector\PHPUnit\CodeQuality\Rector\ClassMethod\DataProviderArrayItemsNewLinedRector;
 use Rector\PHPUnit\CodeQuality\Rector\ClassMethod\EntityDocumentCreateMockToDirectNewRector;
+use Rector\PHPUnit\CodeQuality\Rector\ClassMethod\ReplaceTestAnnotationWithPrefixedFunctionRector;
 use Rector\PHPUnit\CodeQuality\Rector\Expression\AssertArrayCastedObjectToAssertSameRector;
 use Rector\PHPUnit\CodeQuality\Rector\Foreach_\SimplifyForeachInstanceOfRector;
 use Rector\PHPUnit\CodeQuality\Rector\FuncCall\AssertFuncCallToPHPUnitAssertRector;
@@ -78,6 +80,7 @@ return RectorConfig::configure()
         AssertSameTrueFalseToAssertTrueFalseRector::class,
         AssertTrueFalseToSpecificMethodRector::class,
         ConstructClassMethodToSetUpTestCaseRector::class,
+        DataProviderArrayItemsNewLinedRector::class,
         EntityDocumentCreateMockToDirectNewRector::class,
         FlipAssertRector::class,
         GetMockBuilderGetMockToCreateMockRector::class,
@@ -89,6 +92,7 @@ return RectorConfig::configure()
         RemoveDataProviderTestPrefixRector::class,
         RemoveExpectAnyFromMockRector::class,
         ReplaceAtMethodWithDesiredMatcherRector::class,
+        ReplaceTestAnnotationWithPrefixedFunctionRector::class,
         ScalarArgumentToExpectedParamTypeRector::class,
         SimplifyForeachInstanceOfRector::class,
         SingleMockPropertyTypeRector::class,

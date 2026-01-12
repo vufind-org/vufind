@@ -118,7 +118,11 @@ class NewSearchItemsTest extends \PHPUnit\Framework\TestCase
         $recordRouter = $this->getConfiguredRecordRouterMock($recordDriver);
         $newSearchItems->setCoverRouter($coverRouter);
         $newSearchItems->setRecordRouter($recordRouter);
-        return [$newSearchItems, $expectedResult, $params];
+        return [
+            $newSearchItems,
+            $expectedResult,
+            $params,
+        ];
     }
 
     /**
