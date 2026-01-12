@@ -297,7 +297,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
             trim($this->findCssAndGetText($page, '.search-stats')),
             $matches
         );
-        $this->assertTrue($matches[1] > 0);
+        $this->assertGreaterThan(0, $matches[1]);
     }
 
     /**

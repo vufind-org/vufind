@@ -281,7 +281,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
             . ' the journal of the Institute for Rational-Emotive Therapy.',
             $this->findCssAndGetText($page, 'a.title')
         );
-        $this->assertTrue(false !== strstr($page->getContent(), 'Main Desk'));
+        $this->assertNotFalse(strstr($page->getContent(), 'Main Desk'));
     }
 
     /**
@@ -309,7 +309,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
             . ' the journal of the Institute for Rational-Emotive Therapy.',
             $this->findCssAndGetText($page, 'a.title')
         );
-        $this->assertTrue(false !== strstr($page->getContent(), 'Campus C'));
+        $this->assertNotFalse(strstr($page->getContent(), 'Campus C'));
     }
 
     /**

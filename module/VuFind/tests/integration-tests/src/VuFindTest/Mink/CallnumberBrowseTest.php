@@ -176,7 +176,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performSearch('id:' . $this->id);
         // No link
         $link = $page->find('css', '.callnumber a,.groupCallnumber a,.fullCallnumber a');
-        $this->assertTrue(null === $link);
+        $this->assertNotInstanceOf(\Behat\Mink\Element\NodeElement::class, $link);
         // With dewey links
         $this->activateAndTestLinks('dewey', $page, $expectLinks);
         // With lcc links

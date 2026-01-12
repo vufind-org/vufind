@@ -7,6 +7,7 @@ use Rector\Config\RectorConfig;
 use Rector\PHPUnit\CodeQuality\Rector\Class_\TypeWillReturnCallableArrowFunctionRector;
 use Rector\PHPUnit\CodeQuality\Rector\Class_\YieldDataProviderRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertCompareOnCountableWithMethodToAssertCountRector;
+use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertComparisonToSpecificMethodRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertEmptyNullableObjectToAssertInstanceofRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertEqualsOrAssertSameFloatParameterToSpecificMethodsTypeRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertEqualsToSameRector;
@@ -15,6 +16,7 @@ use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertFalseStrposToContainsRect
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertInstanceOfComparisonRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertNotOperatorRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertRegExpRector;
+use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertSameBoolNullToSpecificMethodRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertTrueFalseToSpecificMethodRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\FlipAssertRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\MatchAssertSameExpectedTypeRector;
@@ -45,6 +47,7 @@ return RectorConfig::configure()
     ])
     ->withRules([
         AssertCompareOnCountableWithMethodToAssertCountRector::class,
+        AssertComparisonToSpecificMethodRector::class,
         AssertEqualsOrAssertSameFloatParameterToSpecificMethodsTypeRector::class,
         AssertEqualsToSameRector::class,
         AssertFalseStrposToContainsRector::class,
@@ -52,6 +55,7 @@ return RectorConfig::configure()
         AssertEmptyNullableObjectToAssertInstanceofRector::class,
         AssertNotOperatorRector::class,
         AssertRegExpRector::class,
+        AssertSameBoolNullToSpecificMethodRector::class,
         AssertTrueFalseToSpecificMethodRector::class,
         FlipAssertRector::class,
         GetMockBuilderGetMockToCreateMockRector::class,

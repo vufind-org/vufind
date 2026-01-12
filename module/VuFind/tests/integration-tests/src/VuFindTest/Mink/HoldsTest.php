@@ -302,9 +302,9 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCssAndGetText($page, 'a.title')
         );
         $pageContent = $page->getContent();
-        $this->assertTrue(false !== strstr($pageContent, 'Campus B'));
-        $this->assertTrue(false !== strstr($pageContent, 'Created:'));
-        $this->assertTrue(false !== strstr($pageContent, 'Expires:'));
+        $this->assertNotFalse(strstr($pageContent, 'Campus B'));
+        $this->assertNotFalse(strstr($pageContent, 'Created:'));
+        $this->assertNotFalse(strstr($pageContent, 'Expires:'));
     }
 
     /**
@@ -352,9 +352,9 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCssAndGetText($page, 'a.title')
         );
         $pageContent = $page->getContent();
-        $this->assertTrue(false !== strstr($pageContent, 'Campus B'));
-        $this->assertTrue(false !== strstr($pageContent, 'Created:'));
-        $this->assertTrue(false !== strstr($pageContent, 'Expires:'));
+        $this->assertNotFalse(strstr($pageContent, 'Campus B'));
+        $this->assertNotFalse(strstr($pageContent, 'Created:'));
+        $this->assertNotFalse(strstr($pageContent, 'Expires:'));
     }
 
     /**
@@ -423,8 +423,8 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
             $this->findCssAndGetText($page, 'a.title')
         );
         $pageContent = $page->getContent();
-        $this->assertTrue(false !== strstr($pageContent, 'Campus B'));
-        $this->assertTrue(false !== strstr($pageContent, 'Created:'));
+        $this->assertNotFalse(strstr($pageContent, 'Campus B'));
+        $this->assertNotFalse(strstr($pageContent, 'Created:'));
         $this->assertFalse(strstr($pageContent, 'Expires:'));
 
         // Confirm that no cancel buttons appear, since they are not configured:
@@ -547,8 +547,8 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         // when the hold will start, and the freeze ends on the previous day):
         $expected = "Frozen (temporarily suspended) through $expectedDate";
         $elementText = $this->findCssAndGetText($page, '.media-body');
-        $this->assertTrue(
-            false !== strstr($elementText, $expected),
+        $this->assertNotFalse(
+            strstr($elementText, $expected),
             "Missing expected text: '$expected' in '$elementText'"
         );
 
@@ -618,7 +618,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Confirm that the values have changed
         $this->waitForPageLoad($page);
-        $this->assertTrue(false !== strstr($page->getContent(), 'Campus A'));
+        $this->assertNotFalse(strstr($page->getContent(), 'Campus A'));
         $this->assertFalse(
             strstr($page->getContent(), 'Frozen (temporarily suspended) through ')
         );
@@ -671,7 +671,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Locations should now match:
         $this->waitForPageLoad($page);
-        $this->assertTrue(false !== strstr($page->getContent(), 'Campus C'));
+        $this->assertNotFalse(strstr($page->getContent(), 'Campus C'));
         $this->assertFalse(strstr($page->getContent(), 'Campus B'));
 
         // Place a third hold:
@@ -688,7 +688,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Confirm that it worked:
         $this->waitForPageLoad($page);
-        $this->assertTrue(false !== strstr($page->getContent(), 'Campus C'));
+        $this->assertNotFalse(strstr($page->getContent(), 'Campus C'));
         $this->assertFalse(strstr($page->getContent(), 'Campus A'));
         $this->assertFalse(strstr($page->getContent(), 'Campus B'));
     }
@@ -724,8 +724,8 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $expected = "Frozen (temporarily suspended) through $futureDate";
         $elementText = $this->findCssAndGetText($page, '.media-body');
-        $this->assertTrue(
-            false !== strstr($elementText, $expected),
+        $this->assertNotFalse(
+            strstr($elementText, $expected),
             "Missing expected text: '$expected' in '$elementText'"
         );
 

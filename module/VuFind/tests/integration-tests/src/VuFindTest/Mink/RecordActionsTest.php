@@ -420,7 +420,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         // from the text of the list).
         $firstTag = $this->findCss($page, 'td')->getText();
         $tagId = preg_replace('/five \((.*)\)/', '$1', $firstTag);
-        $this->assertTrue(intval($tagId) > 0, "Could not extract integer from '$firstTag'");
+        $this->assertGreaterThan(0, intval($tagId), "Could not extract integer from '$firstTag'");
         $this->findCss($page, '#tag_id')->setValue($tagId);
         $this->clickCss($page, '#taglistsubmit');
         $this->waitForPageLoad($page);
