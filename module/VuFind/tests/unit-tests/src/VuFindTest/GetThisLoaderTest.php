@@ -15,6 +15,7 @@
 namespace VuFindTest;
 
 use Exception;
+use Laminas\Mvc\I18n\Translator;
 use Laminas\View\HelperPluginManager;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -78,16 +79,16 @@ class GetThisLoaderTest extends TestCase
     public function setUp(): void
     {
         $this->yamlReader = new YamlReader($this->getPathResolver());
-        $this->config = $this->yamlReader->get(GetThisLoader::CONFIG_FILENAME);
+        $this->config = $this->yamlReader->get('GetThis.yaml');
         $regexConfig = $this->yamlReader->get('Regex.yaml');
         $regexConfig['LOCATION_EXCLUSIVE'][] = '/OUR CAMPUS/i';
-        $translator = $this->createMock(Translate::class);
-        $translator->method('translate')->willReturnCallback(fn ($p) => $p);
         $this->getThis = new GetThisLoader(
             $this->config,
             new Regex($regexConfig),
-            $translator
         );
+        $translator = $this->createMock(Translator::class);
+        $translator->method('translate')->willReturnCallback(fn ($p) => $p);
+        $this->getThis->setTranslator($translator);
     }
 
     /**
@@ -179,7 +180,7 @@ class GetThisLoaderTest extends TestCase
         $this->getThis->setItems(self::getItems());
         $this->assertEquals(self::getItems(), $this->getThis->getItems());
         $this->assertEquals(1, $this->getThis->getItem()['item_id']);
-        $this->getThis->setItemById(2);
+        $this->getThis->setItemId(2);
         $this->assertEquals(2, $this->getThis->getItem()['item_id']);
         $this->assertEquals(1, $this->getThis->getItem(1)['item_id']);
     }
@@ -514,11 +515,11 @@ class GetThisLoaderTest extends TestCase
         $item = $this->getThis->getItem(2);
         $this->assertEquals($item, self::getItems()[1]);
 
-        $this->getThis->setItemById(5);
+        $this->getThis->setItemId(5);
         $item = $this->getThis->getItem();
         $this->assertEquals($item, self::getItems()[2]);
 
-        $this->getThis->setItemById(null);
+        $this->getThis->setItemId(null);
         $item = $this->getThis->getItem();
         $this->assertEquals($item, self::getItems()[0]);
     }
@@ -662,28 +663,36 @@ class GetThisLoaderTest extends TestCase
     }
 
     /**
+     * testShowCopyNumber data provider
+     *
+     * @return array[]
+     */
+
+    public static function provideShowCopyNumberData(): array
+    {
+        return [
+            'showCopyNumber unset && no holdings' => [null, [], false],
+            'showCopyNumber unset && with holdings' => [null, self::getItems(), false],
+            'showCopyNumber true && no holdings' => [true, [], false],
+            'showCopyNumber true && with holdings' => [true, self::getItems(), true],
+            'showCopyNumber false && no holdings' => [false, [], false],
+            'showCopyNumber false && with holdings' => [false, self::getItems(), false],
+        ];
+    }
+
+    /**
      * Test method showCopyNumber
      *
      * @return void
      */
-    public function testShowCopyNumber()
+    #[DataProvider('provideShowCopyNumberData')]
+    public function testShowCopyNumber($showCopyNumber, $holdings, $result)
     {
-        $this->assertFalse($this->getThis->showCopyNumber());
-
-        $this->getThis->setItems(self::getItems());
-        $this->assertTrue($this->getThis->showCopyNumber());
-
         $config = $this->config;
-        $config['showCopyNumber'] = false;
+        $config['showCopyNumber'] = $showCopyNumber;
         $this->setGetThisConfig($config);
-        $this->getThis->setItems(self::getItems());
-        $this->assertFalse($this->getThis->showCopyNumber());
-
-        $config = $this->config;
-        unset($config['showCopyNumber']);
-        $this->setGetThisConfig($config);
-        $this->getThis->setItems(self::getItems());
-        $this->assertFalse($this->getThis->showCopyNumber());
+        $this->getThis->setItems($holdings);
+        $this->assertEquals($result, $this->getThis->showCopyNumber());
     }
 
     /**
@@ -693,6 +702,9 @@ class GetThisLoaderTest extends TestCase
      */
     public function testGetCopyNumber()
     {
+        $config = $this->config;
+        $config['showCopyNumber'] = true;
+        $this->setGetThisConfig($config);
         $this->getThis->setItems(self::getItems());
         $this->assertEquals(1, $this->getThis->getCopyNumber(1));
         $this->assertEquals(2, $this->getThis->getCopyNumber(2));
@@ -909,17 +921,10 @@ class GetThisLoaderTest extends TestCase
 
         $regex = $this->createMock(Regex::class);
 
-        $translator = $this->createMock(Translate::class);
-        $translator->method('translate')->willReturnCallback(fn ($p) => $p);
-
-        $viewHelperManager = $this->createMock(HelperPluginManager::class);
-        $viewHelperManager->expects($this->once())->method('get')->willReturn($translator);
-
         $container = $this->createMock(MockContainer::class);
         $container->method('get')->willReturnMap([
             [Regex::class, $regex],
             [YamlReader::class, $yaml],
-            ['ViewHelperManager', $viewHelperManager],
         ]);
 
         $factory = new GetThisLoaderFactory();

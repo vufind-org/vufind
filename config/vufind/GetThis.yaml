@@ -3,10 +3,10 @@
 # See Regex.yaml for comments related to regex
 
 # Whether to display the copy number (next to the call number), default false
-showCopyNumber: true
+#showCopyNumber: false
 
-# Whether to comment in the HTML code the displayed template name, default true
-commentTemplateName: true
+# Whether to comment in the HTML code the displayed template name for troubleshooting/debugging, default false
+#commentTemplateName: false
 
 templates:
   # Elements here correspond to .phtml template files within templates/record/get-this

@@ -70,7 +70,7 @@ class RegexFactory implements \Laminas\ServiceManager\Factory\FactoryInterface
     ) {
         $yamlReader = $container->get(YamlReader::class);
         return new $requestedName(
-            $yamlReader->get($requestedName::CONFIG_FILENAME),
+            $yamlReader->get('Regex.yaml'),
         );
     }
 }

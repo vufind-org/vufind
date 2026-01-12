@@ -84,7 +84,7 @@ class RecordController extends AbstractRecord
             $getThis->setRecord($view->driver);
         }
         $getThis->setItems($items['holdings']);
-        $getThis->setItemById($itemId);
+        $getThis->setItemId($itemId);
 
         $view->setVariable('getThis', $getThis);
         $view->setTemplate('record/get-this');

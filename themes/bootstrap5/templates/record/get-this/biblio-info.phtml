@@ -10,7 +10,7 @@ $callNum = $this->escapeHtml($callNum);
   <p>
     <strong><?= $this->transEsc('Call Number') ?> :</strong>
     <span><?= $callNum ?></span>
-    <?php if ($this->getThis->showCopyNumber() && $copyNumber = $this->getThis->getCopyNumber()): ?>
+    <?php if ($copyNumber = $this->getThis->getCopyNumber()): ?>
       <span> (<?= $this->transEscAttr('copy_number', ['%%number%%' => $copyNumber]) ?>)</span>
     <?php endif; ?>
   </p>

@@ -80,7 +80,7 @@ class HoldingsILSFactory implements \Laminas\ServiceManager\Factory\FactoryInter
         return new $requestedName(
             $catalog,
             (string)($config['Site']['holdingsTemplate'] ?? 'standard'),
-            (string)($config['Site']['hideHoldingsTabWhenEmpty'] ?? false),
+            (bool)($config['Site']['hideHoldingsTabWhenEmpty'] ?? false),
             $getThisLoaderGetter
         );
     }

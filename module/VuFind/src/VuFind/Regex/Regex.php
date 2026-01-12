@@ -30,13 +30,6 @@ use function array_key_exists;
 class Regex
 {
     /**
-     * Config file name
-     *
-     * @var string
-     */
-    public const CONFIG_FILENAME = 'Regex.yaml';
-
-    /**
      * Initializes the loader
      *
      * @param array $config Regular expression configuration

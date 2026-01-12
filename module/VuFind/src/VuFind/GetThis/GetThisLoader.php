@@ -6,7 +6,7 @@
  * PHP version 8
  *
  * @category VuFind
- * @package  Get_This
+ * @package  GetThis
  * @author   MSUL Public Catalog Team <LIB.DL.pubcat@msu.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/vufind/ Main page
@@ -17,10 +17,11 @@ namespace VuFind\GetThis;
 use Exception;
 use Psr\Log\LoggerAwareInterface;
 use Throwable;
+use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\ILS\Logic\AvailabilityStatusInterface;
 use VuFind\Log\LoggerAwareTrait;
+use VuFind\RecordDriver\DefaultRecord;
 use VuFind\Regex\Regex;
-use VuFind\View\Helper\Root\Translate;
 
 use function array_key_exists;
 use function call_user_func;
@@ -31,68 +32,60 @@ use function is_array;
  * Class to hold data for the Get This button
  *
  * @category VuFind
- * @package  Get_This
+ * @package  GetThis
  * @author   MSUL Public Catalog Team <LIB.DL.pubcat@msu.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/vufind/ Main page
  */
-class GetThisLoader implements LoggerAwareInterface
+class GetThisLoader implements LoggerAwareInterface, \VuFind\I18n\Translator\TranslatorAwareInterface
 {
+    use TranslatorAwareTrait;
     use LoggerAwareTrait;
-
-    /**
-     * Config file name
-     *
-     * @var string
-     */
-    public const CONFIG_FILENAME = 'GetThis.yaml';
 
     /**
      * Items
      *
-     * @var
+     * @var ?array
      */
     protected $items;
 
     /**
-     * Holding current item
+     * id for holding item to default to when no id is passed
      *
-     * @var
+     * @var ?string
      */
-    protected $item;
+    protected $itemId;
 
     /**
      * Sub-templates to display
      *
-     * @var
+     * @var ?array
      */
     protected $subTemplates;
 
     /**
      * Sub-templates params from config
      *
-     * @var
+     * @var ?array
      */
     protected $subTemplatesParams;
 
     /**
      * Record driver
      *
-     * @var
+     * @var DefaultRecord
      */
-    protected $record;
+    protected DefaultRecord $record;
 
     /**
      * Initializes the loader
      *
-     * @param array     $config     Config pulled from the config file defined above
-     * @param Regex     $regex      Regex service
-     * @param Translate $translator Translator plugin
+     * @param array $config Config pulled from the config file defined above
+     * @param Regex $regex  Regex service
      */
     public function __construct(
         protected array $config,
-        protected Regex $regex,
-        protected Translate $translator
+        protected Regex $regex
     ) {
     }
 
@@ -271,9 +264,10 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Return the template parameters in the config for the given template or all of them if none passed
+     * Return the template parameters in the config for the given template or all of them if none
+     * passed
      *
-     * @param string|null $templateName Template name you want the params for
+     * @param ?string $templateName Template name you want the params for
      *
      * @return array
      */
@@ -288,7 +282,8 @@ class GetThisLoader implements LoggerAwareInterface
     /**
      * Get the status for a holding item
      *
-     * @param string|null $itemId The holding item UUID. If null (default) will return status for first item
+     * @param ?string $itemId The holding item UUID. If null (default) will return status for first
+     *                        item
      *
      * @return string The status string
      */
@@ -328,7 +323,8 @@ class GetThisLoader implements LoggerAwareInterface
     /**
      * Get the location for a holding item
      *
-     * @param string|null $itemId The holding item UUID. If null (default) will return status for first item
+     * @param ?string $itemId The holding item UUID. If null (default) will return status for first
+     *                        item
      *
      * @return string The location string
      */
@@ -340,7 +336,8 @@ class GetThisLoader implements LoggerAwareInterface
     /**
      * Get the location code for a holding item
      *
-     * @param string|null $itemId The holding item UUID. If null (default) will return status for first item
+     * @param ?string $itemId The holding item UUID. If null (default) will return status for first
+     *                        item
      *
      * @return string The location code
      */
@@ -352,7 +349,8 @@ class GetThisLoader implements LoggerAwareInterface
     /**
      * Get the link data for requesting the item
      *
-     * @param string|null $itemId The holding item UUID. If null (default) will return status for first item
+     * @param ?string $itemId The holding item UUID. If null (default) will return status for first
+     *                        item
      *
      * @return array|string The data required to build a request URL for the item
      */
@@ -391,9 +389,9 @@ class GetThisLoader implements LoggerAwareInterface
     /**
      * Get the call number for the record
      *
-     * @param string|null $itemId Item to filter the result for
+     * @param ?string $itemId Item to filter the result for
      *
-     * @return string|null The description string
+     * @return ?string The description string
      */
     public function getCallNumber(?string $itemId = null): ?string
     {
@@ -427,6 +425,9 @@ class GetThisLoader implements LoggerAwareInterface
      */
     public function getCopyNumber(?string $itemId = null): ?string
     {
+        if ($this->showCopyNumber() === false) {
+            return null;
+        }
         $item = $this->getItem($itemId);
         if (isset($item['number'])) {
             return $item['number'];
@@ -447,7 +448,7 @@ class GetThisLoader implements LoggerAwareInterface
     /**
      * Determine if the given item is an online resource
      *
-     * @param string|null $itemId Item ID to filter for
+     * @param ?string $itemId Item ID to filter for
      *
      * @return bool  If the item is an online resource
      */
@@ -475,7 +476,7 @@ class GetThisLoader implements LoggerAwareInterface
     /**
      * Determine if the given item is checked or not
      *
-     * @param string|null $itemId Item ID to filter for
+     * @param ?string $itemId Item ID to filter for
      *
      * @return bool  If the item is out or not
      */
@@ -500,7 +501,7 @@ class GetThisLoader implements LoggerAwareInterface
     /**
      * Determine if the given item is media of audio/video form
      *
-     * @param string|null $itemId Item ID to filter for
+     * @param ?string $itemId Item ID to filter for
      *
      * @return bool  Whether the item is audio or video media item or not
      */
@@ -515,7 +516,7 @@ class GetThisLoader implements LoggerAwareInterface
     /**
      * Determine if the given item is for library use only or not
      *
-     * @param string|null $itemId Item ID to filter for
+     * @param ?string $itemId Item ID to filter for
      *
      * @return bool  If the item is for library use only or not
      */
@@ -540,7 +541,7 @@ class GetThisLoader implements LoggerAwareInterface
     /**
      * Determine if the given item is unavailable (false if uncertain)
      *
-     * @param string|null $itemId Item ID to filter for
+     * @param ?string $itemId Item ID to filter for
      *
      * @return bool  If the item is unavailable
      */
@@ -557,7 +558,7 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Either to display or not copy number
+     * Whether to display the copy number (next to the call number), default false
      *
      * @return bool
      */
@@ -579,7 +580,7 @@ class GetThisLoader implements LoggerAwareInterface
     /**
      * Determine if the faculty delivery template should display
      *
-     * @param string|null $itemId Item ID to filter for
+     * @param ?string $itemId Item ID to filter for
      *
      * @return bool  If the template should display
      */
@@ -603,7 +604,7 @@ class GetThisLoader implements LoggerAwareInterface
     /**
      * Determine if the remote parton template should display
      *
-     * @param string|null $itemId Item ID to filter for
+     * @param ?string $itemId Item ID to filter for
      *
      * @return bool  If the template should display
      */
@@ -626,7 +627,7 @@ class GetThisLoader implements LoggerAwareInterface
     /**
      * Determine if the other library links template should display
      *
-     * @param string|null $itemId Item ID to filter for
+     * @param ?string $itemId Item ID to filter for
      *
      * @return bool  If the template should display
      */
@@ -651,7 +652,7 @@ class GetThisLoader implements LoggerAwareInterface
     /**
      * Determine if the microform template should display
      *
-     * @param string|null $itemId Item ID to filter for
+     * @param ?string $itemId Item ID to filter for
      *
      * @return bool  If the template should display
      */
@@ -664,11 +665,11 @@ class GetThisLoader implements LoggerAwareInterface
     /**
      * Setter for record
      *
-     * @param object $record Record driver object
+     * @param DefaultRecord $record Record driver object
      *
      * @return void
      */
-    public function setRecord(object $record): void
+    public function setRecord(DefaultRecord $record): void
     {
         $this->record = $record;
         $this->subTemplates = null;
@@ -677,9 +678,9 @@ class GetThisLoader implements LoggerAwareInterface
     /**
      * Getter for items
      *
-     * @return object|array
+     * @return array
      */
-    public function getItems(): object|array
+    public function getItems(): array
     {
         return $this->items ?? [];
     }
@@ -687,11 +688,11 @@ class GetThisLoader implements LoggerAwareInterface
     /**
      * Setter for items
      *
-     * @param object|array $items Array of holding items
+     * @param array $items Array of holding items
      *
      * @return void
      */
-    public function setItems(object|array $items): void
+    public function setItems(array $items): void
     {
         $this->items = $items;
         $this->subTemplates = null;
@@ -700,16 +701,16 @@ class GetThisLoader implements LoggerAwareInterface
     /**
      * Logic used to determine which item id to use
      *
-     * @param string|null $itemId The holding item UUID.
+     * @param ?string $itemId The holding item UUID.
      *
-     * @return string|null $itemId for the selected item
+     * @return ?string $itemId for the selected item
      */
-    public function getItemId(?string $itemId = null): ?string
+    protected function getItemId(?string $itemId = null): ?string
     {
         if (isset($itemId)) {
             return $itemId; // Use the one passed as a parameter first
-        } elseif (isset($this->item['item_id'])) {
-            return $this->item['item_id']; // Get the one set by the loader
+        } elseif (isset($this->itemId)) {
+            return $this->itemId; // Get the one set by the loader
         } elseif (is_array($this->items) && isset(current($this->items)['item_id'])) {
             return current($this->items)['item_id']; // Grab the first holding record
         } else {
@@ -721,41 +722,22 @@ class GetThisLoader implements LoggerAwareInterface
      * Get the holding record for the given item id. If none is provided, the first holding
      * record will be returned.
      *
-     * @param string|null $itemId The holding item UUID. If null (default) will return for what
-     *                            is set in the class if available, else the first item
+     * @param ?string $itemId The holding item UUID. If null (default) will return for what is set
+     *                        in the class if available, else the first item
      *
-     * @return array The data for with the holding information of the given item
+     * @return ?array The data for with the holding information of the given item
      */
-    public function getItem(?string $itemId = null)
+    public function getItem(?string $itemId = null): ?array
     {
-        if (
-            !isset($this->item)
-            || (isset($itemId, $this->item['item_id']) && $this->item['item_id'] != $itemId)
-        ) {
-            $this->cacheItem($itemId);
-        }
-        return $this->item;
-    }
-
-    /**
-     * Will cache the item passed as parameter if it exists
-     *
-     * @param string|null $itemId The holding item UUID. If null (default) will return for what
-     *                            is set in the class if available, else the first item
-     *
-     * @return void
-     */
-    protected function cacheItem(?string $itemId = null): void
-    {
-        $this->item = null;
-        if ($itemId = $this->getItemId($itemId)) {
-            foreach ($this->getItems() as $hold_item) {
-                if (isset($hold_item['item_id']) && $hold_item['item_id'] == $itemId) {
-                    $this->item = $hold_item;
-                    break;
-                }
+        $item = null;
+        $itemId = $this->getItemId($itemId);
+        foreach ($this->getItems() as $hold_item) {
+            if (isset($hold_item['item_id']) && $hold_item['item_id'] == $itemId) {
+                $item = $hold_item;
+                break;
             }
         }
+        return $item;
     }
 
     /**
@@ -765,9 +747,9 @@ class GetThisLoader implements LoggerAwareInterface
      *
      * @return void
      */
-    public function setItemById(?string $itemId): void
+    public function setItemId(?string $itemId): void
     {
-        $this->cacheItem($itemId);
+        $this->itemId = $itemId;
     }
 
     /**
@@ -793,12 +775,13 @@ class GetThisLoader implements LoggerAwareInterface
     }
 
     /**
-     * Whether to display the template name in a HTML comment (default to true)
+     * Whether to comment in the HTML code the displayed template name for
+     * troubleshooting/debugging, default false
      *
      * @return bool
      */
     public function commentTemplateName(): bool
     {
-        return $this->config['commentTemplateName'] ?? true;
+        return $this->config['commentTemplateName'] ?? false;
     }
 }

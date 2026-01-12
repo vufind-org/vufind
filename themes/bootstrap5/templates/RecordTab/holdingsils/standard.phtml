@@ -5,7 +5,6 @@
     $checkILLRequest = $holding['checkILLRequest'] ?? false;
     $availabilityStatus = $holding['availability'];
     $getThisLoader = $tab->getGetThisLoader();
-    $getThisEnabled = $getThisLoader?->areItemsSupported([$holding]);
     if ($getThisEnabled = $getThisLoader?->areItemsSupported([$holding])) {
         $getThisLoader->setItems([$holding]);
         $getThisLoader->setRecord($this->record($this->driver));
@@ -84,7 +83,7 @@
             </a>
           <?php endif; ?>
           <?php if (isset($getThisURI)): ?>
-            <a data-lightbox href="<?= $getThisURI ?>" rel="nofollow">
+            <a data-lightbox href="<?= $this->escapeHtmlAttr($getThisURI) ?>" rel="nofollow">
               <?=$this->transEsc('Get This')?>
             </a>
           <?php endif; ?>

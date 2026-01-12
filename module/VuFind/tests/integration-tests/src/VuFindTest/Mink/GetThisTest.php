@@ -198,7 +198,6 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
             [
                 'holdings' => true,
                 'biblio-info' => true,
-                'place-request' => true,
                 'inter-library' => false,
                 'micro-form' => false,
                 'remote-delivery' => true,
@@ -220,7 +219,6 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
             [
                 'holdings' => false,
                 'biblio-info' => true,
-                'place-request' => true,
                 'inter-library' => true,
                 'micro-form' => true,
                 'remote-delivery' => false,
@@ -245,6 +243,7 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
     public function testGetThisStandardStatus(array $config, array $expectedPresence, string $search): void
     {
         $this->changeConfigs($config);
+        $this->setCommentBlockConfig(true);
 
         $page = $this->openGetThisLoaderForSearch($search);
         foreach ($expectedPresence as $blockName => $presence) {
@@ -283,7 +282,6 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
             [
                 'holdings' => true,
                 'biblio-info' => true,
-                'place-request' => true,
                 'inter-library' => true,
                 'micro-form' => false,
                 'remote-delivery' => false,
@@ -313,7 +311,6 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
             [
                 'holdings' => false,
                 'biblio-info' => true,
-                'place-request' => true,
                 'inter-library' => true,
                 'micro-form' => true,
                 'remote-delivery' => false,
@@ -353,6 +350,7 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
         string $callNumberSelected
     ): void {
         $this->changeConfigs($config);
+        $this->setCommentBlockConfig(true);
 
         $page = $this->openGetThisLinkByCallNumber($search, $callNumberSelected);
         foreach ($expectedBlockPresence as $blockName => $presence) {
@@ -362,6 +360,34 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
         foreach ($expectedTerms as $term) {
             $this->assertStringContainsString($term, $lightboxText);
         }
+    }
+
+    /**
+     * For the feature to comment the HTML with the template block name in the lightbox
+     * Testing if the disabling of the feature in the config works (the enabling is tested through other tests)
+     *
+     * @return void
+     * @throws Exception
+     */
+    public function testBlockCommentNotPresent(): void
+    {
+        $this->changeConfigs(
+            self::getVufindConfigArray(
+                'autocomplete1',
+                false,
+                [
+                    'CallNumberOne',
+                    'CallNumberTwo',
+                    'CallNumberThree',
+                    'CallNumberFour',
+                ]
+            ),);
+        $this->setCommentBlockConfig(false);
+
+        $page = $this->openGetThisLoaderForSearch(self::SEARCH);
+        $lightbox = $this->getLightbox($page);
+        $presence = str_contains($lightbox->getHtml(), '<!-- Get-This: ');
+        $this->assertFalse($presence);
     }
 
     /**
@@ -506,7 +532,7 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
     public function assertBlockPresence(Element $page, string $blockName, bool $expectedPresence): void
     {
         $lightbox = $this->getLightbox($page);
-        $presence = str_contains($lightbox->getHtml(), '<!-- Get-this: ' . $blockName . ' -->');
+        $presence = str_contains($lightbox->getHtml(), '<!-- Get-This: ' . $blockName . ' -->');
         if ($expectedPresence) {
             $this->assertTrue(
                 $presence,
@@ -518,5 +544,21 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
                 'GetThis modal : The "' . $blockName . '" block is present and should not be'
             );
         }
+    }
+
+    /**
+     * Set the value for commentTemplateName in the GetThis config to whether comment the displayed block
+     *
+     * @param bool $value Either to enable the comment feature
+     *
+     * @return void
+     */
+    public function setCommentBlockConfig(bool $value): void
+    {
+        $this->changeYamlConfigs([
+            'GetThis' => [
+                'commentTemplateName' => $value,
+            ]
+        ]);
     }
 }
