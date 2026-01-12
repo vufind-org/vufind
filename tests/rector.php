@@ -4,8 +4,12 @@ declare(strict_types=1);
 
 use Rector\Caching\ValueObject\Storage\FileCacheStorage;
 use Rector\Config\RectorConfig;
+use Rector\PHPUnit\CodeQuality\Rector\Class_\AddParamTypeFromDependsRector;
+use Rector\PHPUnit\CodeQuality\Rector\Class_\ConstructClassMethodToSetUpTestCaseRector;
+use Rector\PHPUnit\CodeQuality\Rector\Class_\NarrowUnusedSetUpDefinedPropertyRector;
 use Rector\PHPUnit\CodeQuality\Rector\Class_\PreferPHPUnitThisCallRector;
 use Rector\PHPUnit\CodeQuality\Rector\Class_\SingleMockPropertyTypeRector;
+use Rector\PHPUnit\CodeQuality\Rector\Class_\TestWithToDataProviderRector;
 use Rector\PHPUnit\CodeQuality\Rector\Class_\TypeWillReturnCallableArrowFunctionRector;
 use Rector\PHPUnit\CodeQuality\Rector\Class_\YieldDataProviderRector;
 use Rector\PHPUnit\CodeQuality\Rector\Expression\AssertArrayCastedObjectToAssertSameRector;
@@ -54,6 +58,7 @@ return RectorConfig::configure()
         PHPUnitSetList::ANNOTATIONS_TO_ATTRIBUTES,
     ])
     ->withRules([
+        AddParamTypeFromDependsRector::class,
         AssertCompareOnCountableWithMethodToAssertCountRector::class,
         AssertComparisonToSpecificMethodRector::class,
         AssertEqualsOrAssertSameFloatParameterToSpecificMethodsTypeRector::class,
@@ -67,11 +72,13 @@ return RectorConfig::configure()
         AssertSameBoolNullToSpecificMethodRector::class,
         AssertSameTrueFalseToAssertTrueFalseRector::class,
         AssertTrueFalseToSpecificMethodRector::class,
+        ConstructClassMethodToSetUpTestCaseRector::class,
         FlipAssertRector::class,
         GetMockBuilderGetMockToCreateMockRector::class,
         MatchAssertSameExpectedTypeRector::class,
         NarrowIdenticalWithConsecutiveRector::class,
         NarrowSingleWillReturnCallbackRector::class,
+        NarrowUnusedSetUpDefinedPropertyRector::class,
         PreferPHPUnitThisCallRector::class,
         RemoveDataProviderTestPrefixRector::class,
         RemoveExpectAnyFromMockRector::class,
@@ -81,6 +88,7 @@ return RectorConfig::configure()
         SingleMockPropertyTypeRector::class,
         SingleWithConsecutiveToWithRector::class,
         StringCastAssertStringContainsStringRector::class,
+        TestWithToDataProviderRector::class,
         TypeWillReturnCallableArrowFunctionRector::class,
         UseSpecificWillMethodRector::class,
         UseSpecificWithMethodRector::class,
