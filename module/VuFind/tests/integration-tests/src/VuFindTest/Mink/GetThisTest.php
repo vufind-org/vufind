@@ -559,7 +559,7 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
         $this->changeYamlConfigs([
             'GetThis' => [
                 'commentTemplateName' => $value,
-            ]
+            ],
         ]);
     }
 }
