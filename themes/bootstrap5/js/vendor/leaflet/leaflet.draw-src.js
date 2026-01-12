@@ -353,7 +353,7 @@ L.Draw.Event.EDITVERTEX = 'draw:editvertex';
  *
  * The type of edit this is. One of: `edit`
  *
- * Triggered when the user has finished editing (edit mode) and saves edits.
+ * Triggered when the user has finshed editing (edit mode) and saves edits.
  */
 L.Draw.Event.EDITSTOP = 'draw:editstop';
 
@@ -1893,7 +1893,7 @@ L.Edit.PolyVerticesEdit = L.Handler.extend({
 
 	},
 
-	// @method initialize(): void
+	// @method intialize(): void
 	initialize: function (poly, latlngs, options) {
 		// if touch, switch to touch icon
 		if (L.Browser.touch) {
@@ -2337,7 +2337,7 @@ L.Edit.SimpleShape = L.Handler.extend({
 		}),
 	},
 
-	// @method initialize(): void
+	// @method intialize(): void
 	initialize: function (shape, options) {
 		// if touch, switch to touch icon
 		if (L.Browser.touch) {
@@ -2499,7 +2499,7 @@ L.Edit.SimpleShape = L.Handler.extend({
 
 			marker.setOpacity(0);
 
-			// Copied from Edit.Rectangle.js line 23 _onMarkerDragStart()
+			// Copyed from Edit.Rectangle.js line 23 _onMarkerDragStart()
 			// Latlng is null otherwise.
 			this._oppositeCorner = corners[(currentCornerIndex + 2) % 4];
 			this._toggleCornerMarkers(0, currentCornerIndex);
@@ -4154,7 +4154,7 @@ L.EditToolbar = L.Toolbar.extend({
 		featureGroup: null /* REQUIRED! TODO: perhaps if not set then all layers on the map are selectable? */
 	},
 
-	// @method initialize(): void
+	// @method intialize(): void
 	initialize: function (options) {
 		// Need to set this manually since null is an acceptable value here
 		if (options.edit) {
@@ -4330,7 +4330,7 @@ L.EditToolbar.Edit = L.Handler.extend({
 		TYPE: 'edit'
 	},
 
-	// @method initialize(): void
+	// @method intialize(): void
 	initialize: function (map, options) {
 		L.Handler.prototype.initialize.call(this, map);
 
@@ -4623,7 +4623,7 @@ L.EditToolbar.Delete = L.Handler.extend({
 		TYPE: 'remove' // not delete as delete is reserved in js
 	},
 
-	// @method initialize(): void
+	// @method intialize(): void
 	initialize: function (map, options) {
 		L.Handler.prototype.initialize.call(this, map);
 
