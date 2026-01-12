@@ -59,7 +59,7 @@
 
 <?php if ($saveSupported): ?>
   <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-    <?=$this->accountMenu()->render('history')?>
+    <?=$this->section('AccountMenu', template: 'myresearch/menu.phtml')->render(['active' => 'history'])?>
   </div>
 <?php endif; ?>
 
