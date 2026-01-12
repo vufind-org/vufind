@@ -16,7 +16,6 @@ namespace VuFindTest;
 
 use Exception;
 use Laminas\Mvc\I18n\Translator;
-use Laminas\View\HelperPluginManager;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
 use PHPUnit\Framework\TestCase;
@@ -28,7 +27,6 @@ use VuFind\GetThis\GetThisLoaderFactory;
 use VuFind\ILS\Logic\AvailabilityStatus;
 use VuFind\RecordDriver\SolrDefault;
 use VuFind\Regex\Regex;
-use VuFind\View\Helper\Root\Translate;
 use VuFindTest\Container\MockContainer;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 use VuFindTest\Feature\FixtureTrait;
