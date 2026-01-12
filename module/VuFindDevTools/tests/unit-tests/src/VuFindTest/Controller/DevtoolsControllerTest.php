@@ -72,7 +72,7 @@ class DevtoolsControllerTest extends \PHPUnit\Framework\TestCase
 
         // Did we load help files correctly?
         $this->assertGreaterThan(3, count($en['helpFiles']));
-        $this->assertTrue(in_array('search.phtml', $en['helpFiles']));
+        $this->assertContains('search.phtml', $en['helpFiles']);
 
         // Did we put the object in the right place?
         $this->assertInstanceOf(TextDomain::class, $en['object']);

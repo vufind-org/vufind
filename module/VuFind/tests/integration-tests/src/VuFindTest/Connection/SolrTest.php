@@ -74,8 +74,8 @@ class SolrTest extends \PHPUnit\Framework\TestCase
         $item = $result['Browse']['items'][0];
         $this->assertCount($item['count'], $item['extras']['id']);
         $this->assertEmpty($item['useInstead']);
-        $this->assertTrue(in_array(['vtls000013187'], $item['extras']['id']));
-        $this->assertTrue(in_array('Royal Dublin Society', $item['seeAlso']));
+        $this->assertContains(['vtls000013187'], $item['extras']['id']);
+        $this->assertContains('Royal Dublin Society', $item['seeAlso']);
         $this->assertEquals('Dublin Society', $item['heading']);
     }
 
@@ -95,7 +95,7 @@ class SolrTest extends \PHPUnit\Framework\TestCase
         $this->assertCount($item['count'], $item['extras']['id']);
         $this->assertEquals('Dublin Society, Royal', $item['heading']);
         $this->assertEmpty($item['seeAlso']);
-        $this->assertTrue(in_array('Royal Dublin Society', $item['useInstead']));
+        $this->assertContains('Royal Dublin Society', $item['useInstead']);
     }
 
     /**

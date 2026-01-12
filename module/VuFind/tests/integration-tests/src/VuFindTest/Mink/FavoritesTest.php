@@ -167,7 +167,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         // The order of tags may differ by database platform, but as long as they
         // all show up, it is okay:
         foreach (['test1', 'test2', 'test 3'] as $tag) {
-            $this->assertTrue(in_array($tag, $tags));
+            $this->assertContains($tag, $tags);
         }
         // Now make sure link circles back to record:
         $this->clickCss($page, '.resultItemLine1 a');

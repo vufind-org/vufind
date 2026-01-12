@@ -106,7 +106,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
         );
         $secondary = $record->getSecondaryAuthors();
         $this->assertCount(1, $secondary);
-        $this->assertTrue(in_array('Pandolfi, Claudia.', $secondary));
+        $this->assertContains('Pandolfi, Claudia.', $secondary);
         $series = $record->getSeries();
         $this->assertCount(1, $series);
         $this->assertEquals(
