@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 use Rector\Caching\ValueObject\Storage\FileCacheStorage;
 use Rector\Config\RectorConfig;
+use Rector\PHPUnit\CodeQuality\Rector\Class_\PreferPHPUnitThisCallRector;
+use Rector\PHPUnit\CodeQuality\Rector\Class_\SingleMockPropertyTypeRector;
 use Rector\PHPUnit\CodeQuality\Rector\Class_\TypeWillReturnCallableArrowFunctionRector;
 use Rector\PHPUnit\CodeQuality\Rector\Class_\YieldDataProviderRector;
 use Rector\PHPUnit\CodeQuality\Rector\Expression\AssertArrayCastedObjectToAssertSameRector;
@@ -70,11 +72,13 @@ return RectorConfig::configure()
         MatchAssertSameExpectedTypeRector::class,
         NarrowIdenticalWithConsecutiveRector::class,
         NarrowSingleWillReturnCallbackRector::class,
+        PreferPHPUnitThisCallRector::class,
         RemoveDataProviderTestPrefixRector::class,
         RemoveExpectAnyFromMockRector::class,
         ReplaceAtMethodWithDesiredMatcherRector::class,
         ScalarArgumentToExpectedParamTypeRector::class,
         SimplifyForeachInstanceOfRector::class,
+        SingleMockPropertyTypeRector::class,
         SingleWithConsecutiveToWithRector::class,
         StringCastAssertStringContainsStringRector::class,
         TypeWillReturnCallableArrowFunctionRector::class,
