@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Rector\Caching\ValueObject\Storage\FileCacheStorage;
 use Rector\Config\RectorConfig;
+use Rector\PHPUnit\CodeQuality\Rector\Class_\TypeWillReturnCallableArrowFunctionRector;
 use Rector\PHPUnit\CodeQuality\Rector\Class_\YieldDataProviderRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertCompareOnCountableWithMethodToAssertCountRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertEmptyNullableObjectToAssertInstanceofRector;
@@ -54,6 +55,7 @@ return RectorConfig::configure()
         RemoveExpectAnyFromMockRector::class,
         ReplaceAtMethodWithDesiredMatcherRector::class,
         SingleWithConsecutiveToWithRector::class,
+        TypeWillReturnCallableArrowFunctionRector::class,
         UseSpecificWillMethodRector::class,
         UseSpecificWithMethodRector::class,
         YieldDataProviderRector::class,
