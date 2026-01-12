@@ -232,7 +232,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
             $email = $this->getLoggedEmail();
             $this->assertStringContainsString(
                 'A receipt for your payment is attached as a PDF file',
-                $email->getBody()->getParts()[0]->getBody()
+                (string) $email->getBody()->getParts()[0]->getBody()
             );
         }
 

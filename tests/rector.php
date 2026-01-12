@@ -21,6 +21,7 @@ use Rector\PHPUnit\CodeQuality\Rector\MethodCall\MatchAssertSameExpectedTypeRect
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\NarrowIdenticalWithConsecutiveRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\RemoveExpectAnyFromMockRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\SingleWithConsecutiveToWithRector;
+use Rector\PHPUnit\CodeQuality\Rector\MethodCall\StringCastAssertStringContainsStringRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\UseSpecificWillMethodRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\UseSpecificWithMethodRector;
 use Rector\PHPUnit\PHPUnit60\Rector\MethodCall\GetMockBuilderGetMockToCreateMockRector;
@@ -59,6 +60,7 @@ return RectorConfig::configure()
         RemoveExpectAnyFromMockRector::class,
         ReplaceAtMethodWithDesiredMatcherRector::class,
         SingleWithConsecutiveToWithRector::class,
+        StringCastAssertStringContainsStringRector::class,
         TypeWillReturnCallableArrowFunctionRector::class,
         UseSpecificWillMethodRector::class,
         UseSpecificWithMethodRector::class,
