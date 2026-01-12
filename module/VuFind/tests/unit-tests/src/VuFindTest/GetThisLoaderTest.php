@@ -15,6 +15,7 @@
 namespace VuFindTest;
 
 use Exception;
+use Iterator;
 use Laminas\Mvc\I18n\Translator;
 use PHPUnit\Framework\Attributes\DataProvider;
 use PHPUnit\Framework\MockObject\MockObject;
@@ -186,9 +187,9 @@ class GetThisLoaderTest extends TestCase
     /**
      * Data provider
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return Iterator<(int | string), array<mixed>>
      */
-    public static function provideConfigConditionsFunctionsData(): \Iterator
+    public static function provideConfigConditionsFunctionsData(): Iterator
     {
         yield [
             [
@@ -320,9 +321,9 @@ class GetThisLoaderTest extends TestCase
     /**
      * Data provider
      *
-     * @return \Iterator<(int | string), array<mixed>>
+     * @return Iterator<(int | string), array<mixed>>
      */
-    public static function provideAdvancedConfigConditionsFunctionsData(): \Iterator
+    public static function provideAdvancedConfigConditionsFunctionsData(): Iterator
     {
         yield [
             [
@@ -429,9 +430,9 @@ class GetThisLoaderTest extends TestCase
     /**
      * Data provider
      *
-     * @return \Iterator<(int | string), mixed>
+     * @return Iterator<(int | string), mixed>
      */
-    public static function provideSubTemplateParamsData(): \Iterator
+    public static function provideSubTemplateParamsData(): Iterator
     {
         yield [
             [
@@ -663,18 +664,16 @@ class GetThisLoaderTest extends TestCase
     /**
      * Data provider testShowCopyNumber
      *
-     * @return array[]
+     * @return Iterator<?bool, array, bool>
      */
-    public static function provideShowCopyNumberData(): array
+    public static function provideShowCopyNumberData(): Iterator
     {
-        return [
-            'showCopyNumber unset && no holdings' => [null, [], false],
-            'showCopyNumber unset && with holdings' => [null, self::getItems(), false],
-            'showCopyNumber true && no holdings' => [true, [], false],
-            'showCopyNumber true && with holdings' => [true, self::getItems(), true],
-            'showCopyNumber false && no holdings' => [false, [], false],
-            'showCopyNumber false && with holdings' => [false, self::getItems(), false],
-        ];
+        yield 'showCopyNumber unset && no holdings' => [null, [], false];
+        yield 'showCopyNumber unset && with holdings' => [null, self::getItems(), false];
+        yield 'showCopyNumber true && no holdings' => [true, [], false];
+        yield 'showCopyNumber true && with holdings' => [true, self::getItems(), true];
+        yield 'showCopyNumber false && no holdings' => [false, [], false];
+        yield 'showCopyNumber false && with holdings' => [false, self::getItems(), false];
     }
 
     /**
@@ -693,7 +692,7 @@ class GetThisLoaderTest extends TestCase
         $config['showCopyNumber'] = $showCopyNumber;
         $this->setGetThisConfig($config);
         $this->getThis->setItems($holdings);
-        $this->assertEquals($result, $this->getThis->showCopyNumber());
+        $this->assertSame($result, $this->getThis->showCopyNumber());
     }
 
     /**
