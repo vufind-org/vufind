@@ -154,7 +154,7 @@ class TermsIdFetcherTest extends \PHPUnit\Framework\TestCase
         $fetcher = new TermsIdFetcher($this->getMockService());
         $fetcher->getIdsFromBackend(
             'foo',
-            0,
+            '0',
             $this->countPerPage,
             ['format:Book']
         );
@@ -204,7 +204,7 @@ class TermsIdFetcherTest extends \PHPUnit\Framework\TestCase
             ['ids' => $expectedIds2],
             $fetcher->getIdsFromBackend(
                 'foo',
-                99,
+                '99',
                 $this->countPerPage,
                 []
             )

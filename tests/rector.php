@@ -17,12 +17,14 @@ use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertInstanceOfComparisonRecto
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertNotOperatorRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertRegExpRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertSameBoolNullToSpecificMethodRector;
+use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertSameTrueFalseToAssertTrueFalseRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertTrueFalseToSpecificMethodRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\FlipAssertRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\MatchAssertSameExpectedTypeRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\NarrowIdenticalWithConsecutiveRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\NarrowSingleWillReturnCallbackRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\RemoveExpectAnyFromMockRector;
+use Rector\PHPUnit\CodeQuality\Rector\MethodCall\ScalarArgumentToExpectedParamTypeRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\SingleWithConsecutiveToWithRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\StringCastAssertStringContainsStringRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\UseSpecificWillMethodRector;
@@ -56,6 +58,7 @@ return RectorConfig::configure()
         AssertNotOperatorRector::class,
         AssertRegExpRector::class,
         AssertSameBoolNullToSpecificMethodRector::class,
+        AssertSameTrueFalseToAssertTrueFalseRector::class,
         AssertTrueFalseToSpecificMethodRector::class,
         FlipAssertRector::class,
         GetMockBuilderGetMockToCreateMockRector::class,
@@ -65,6 +68,7 @@ return RectorConfig::configure()
         RemoveDataProviderTestPrefixRector::class,
         RemoveExpectAnyFromMockRector::class,
         ReplaceAtMethodWithDesiredMatcherRector::class,
+        ScalarArgumentToExpectedParamTypeRector::class,
         SingleWithConsecutiveToWithRector::class,
         StringCastAssertStringContainsStringRector::class,
         TypeWillReturnCallableArrowFunctionRector::class,
