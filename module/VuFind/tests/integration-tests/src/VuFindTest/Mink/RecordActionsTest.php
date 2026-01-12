@@ -232,8 +232,8 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
 
         // Flat tags
-        $this->assertNull($page->find('css', '.tagList .tag.selected'));
-        $this->assertNull($page->find('css', '.tagList .tag .tag-submit'));
+        $this->assertNotInstanceOf(\Behat\Mink\Element\NodeElement::class, $page->find('css', '.tagList .tag.selected'));
+        $this->assertNotInstanceOf(\Behat\Mink\Element\NodeElement::class, $page->find('css', '.tagList .tag .tag-submit'));
         // Login with second account
         $this->clickCss($page, '#loginOptions a');
         $this->findCss($page, $this->openModalUsernameFieldSelector);

@@ -156,7 +156,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
             $this->checkLink($link, $type);
         } else {
             $link = $page->find('css', $callnumberSelector);
-            $this->assertNull($link);
+            $this->assertNotInstanceOf(\Behat\Mink\Element\NodeElement::class, $link);
         }
     }
 

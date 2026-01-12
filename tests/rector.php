@@ -6,8 +6,10 @@ use Rector\Caching\ValueObject\Storage\FileCacheStorage;
 use Rector\Config\RectorConfig;
 use Rector\PHPUnit\CodeQuality\Rector\Class_\YieldDataProviderRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertCompareOnCountableWithMethodToAssertCountRector;
+use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertEmptyNullableObjectToAssertInstanceofRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertEqualsOrAssertSameFloatParameterToSpecificMethodsTypeRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertEqualsToSameRector;
+use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertIssetToSpecificMethodRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertFalseStrposToContainsRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertInstanceOfComparisonRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertNotOperatorRector;
@@ -40,6 +42,7 @@ return RectorConfig::configure()
         AssertEqualsToSameRector::class,
         AssertFalseStrposToContainsRector::class,
         AssertInstanceOfComparisonRector::class,
+        AssertEmptyNullableObjectToAssertInstanceofRector::class,
         AssertNotOperatorRector::class,
         FlipAssertRector::class,
         GetMockBuilderGetMockToCreateMockRector::class,
@@ -50,6 +53,9 @@ return RectorConfig::configure()
         UseSpecificWillMethodRector::class,
         UseSpecificWithMethodRector::class,
         YieldDataProviderRector::class,
+    ])
+    ->withSkip([
+        AssertIssetToSpecificMethodRector::class,
     ])
     ->withTypeCoverageLevel(0)
     ->withDeadCodeLevel(6)

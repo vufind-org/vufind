@@ -255,8 +255,8 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertStringContainsString('Expires:', $pageContent);
 
         // Confirm that no cancel buttons appear, since they are not configured:
-        $this->assertNull($page->find('css', '#cancelSelected'));
-        $this->assertNull($page->find('css', '#cancelAll'));
+        $this->assertNotInstanceOf(\Behat\Mink\Element\NodeElement::class, $page->find('css', '#cancelSelected'));
+        $this->assertNotInstanceOf(\Behat\Mink\Element\NodeElement::class, $page->find('css', '#cancelAll'));
     }
 
     /**
@@ -428,8 +428,8 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertFalse(strstr($pageContent, 'Expires:'));
 
         // Confirm that no cancel buttons appear, since they are not configured:
-        $this->assertNull($page->find('css', '#cancelSelected'));
-        $this->assertNull($page->find('css', '#cancelAll'));
+        $this->assertNotInstanceOf(\Behat\Mink\Element\NodeElement::class, $page->find('css', '#cancelSelected'));
+        $this->assertNotInstanceOf(\Behat\Mink\Element\NodeElement::class, $page->find('css', '#cancelAll'));
     }
 
     /**
@@ -459,7 +459,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     {
         // Test that control is disabled upon empty selection
         $this->clickCss($page, '#cancelSelected');
-        $this->assertNull($page->find('css', '.btn-group.open'));
+        $this->assertNotInstanceOf(\Behat\Mink\Element\NodeElement::class, $page->find('css', '.btn-group.open'));
 
         // Test "cancel all" button -- first make sure item is there before
         // cancel is pushed:
@@ -485,7 +485,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
             '1 request(s) were successfully canceled',
             $this->findCssAndGetText($page, '.alert.alert-success')
         );
-        $this->assertNull($page->find('css', 'a.title'));
+        $this->assertNotInstanceOf(\Behat\Mink\Element\NodeElement::class, $page->find('css', 'a.title'));
     }
 
     /**
@@ -573,13 +573,13 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->setUpFrozenHold();
 
         // Confirm that no cancel buttons appear, since they are not configured:
-        $this->assertNull($page->find('css', '#cancelSelected'));
-        $this->assertNull($page->find('css', '#cancelAll'));
+        $this->assertNotInstanceOf(\Behat\Mink\Element\NodeElement::class, $page->find('css', '#cancelSelected'));
+        $this->assertNotInstanceOf(\Behat\Mink\Element\NodeElement::class, $page->find('css', '#cancelAll'));
 
         // Confirm that there are no edit controls on the page, since we didn't
         // enable them:
-        $this->assertNull($page->find('css', '#update_selected'));
-        $this->assertNull($page->find('css', '.hold-edit'));
+        $this->assertNotInstanceOf(\Behat\Mink\Element\NodeElement::class, $page->find('css', '#update_selected'));
+        $this->assertNotInstanceOf(\Behat\Mink\Element\NodeElement::class, $page->find('css', '.hold-edit'));
     }
 
     /**
@@ -602,11 +602,11 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->setUpFrozenHold();
 
         // Confirm that no cancel buttons appear, since they are not configured:
-        $this->assertNull($page->find('css', '#cancelSelected'));
-        $this->assertNull($page->find('css', '#cancelAll'));
+        $this->assertNotInstanceOf(\Behat\Mink\Element\NodeElement::class, $page->find('css', '#cancelSelected'));
+        $this->assertNotInstanceOf(\Behat\Mink\Element\NodeElement::class, $page->find('css', '#cancelAll'));
 
         // Confirm that there are edit controls on the page:
-        $this->assertNotNull($page->find('css', '#update_selected'));
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $page->find('css', '#update_selected'));
 
         // Open the edit dialog box using the link:
         $this->clickCss($page, '.hold-edit');
@@ -738,7 +738,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
             '1 request(s) were successfully canceled',
             $this->findCssAndGetText($page, '.alert.alert-success')
         );
-        $this->assertNull($page->find('css', 'a.title'));
+        $this->assertNotInstanceOf(\Behat\Mink\Element\NodeElement::class, $page->find('css', 'a.title'));
     }
 
     /**
@@ -763,7 +763,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $this->gotoRecordById('dollar$ign/slashcombo');
         // No login at top
-        $this->assertNull($page->find('css', '.alert.alert-info a'));
+        $this->assertNotInstanceOf(\Behat\Mink\Element\NodeElement::class, $page->find('css', '.alert.alert-info a'));
         // Hold links should be visible
         $element = $this->findCss($page, 'a.placehold');
         $element->click();

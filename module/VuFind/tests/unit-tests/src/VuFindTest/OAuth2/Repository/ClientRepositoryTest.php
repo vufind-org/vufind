@@ -110,7 +110,7 @@ class ClientRepositoryTest extends \PHPUnit\Framework\TestCase
             )
         );
 
-        $this->assertNull($repo->getClientEntity('foo'));
+        $this->assertNotInstanceOf(\League\OAuth2\Server\Entities\ClientEntityInterface::class, $repo->getClientEntity('foo'));
 
         $client = $repo->getClientEntity('openid_test');
         $this->assertInstanceOf(ClientEntity::class, $client);

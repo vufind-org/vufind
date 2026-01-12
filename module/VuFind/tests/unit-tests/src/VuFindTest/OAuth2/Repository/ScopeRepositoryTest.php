@@ -115,7 +115,7 @@ class ScopeRepositoryTest extends AbstractTokenRepositoryTestCase
         ];
         $repo = new ScopeRepository($config);
 
-        $this->assertNull($repo->getScopeEntityByIdentifier('foo'));
+        $this->assertNotInstanceOf(\League\OAuth2\Server\Entities\ScopeEntityInterface::class, $repo->getScopeEntityByIdentifier('foo'));
     }
 
     /**
