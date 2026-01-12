@@ -354,10 +354,14 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     {
         $upgrader = $this->runAndGetConfigUpgrader('googlewarnings');
         $warnings = $upgrader->getWarnings();
-        $this->assertContains('The [GoogleSearch] section of config.ini is no '
-        . 'longer supported due to changes in Google APIs.', $warnings);
-        $this->assertContains('Google Maps is no longer a supported Content/recordMap option;'
-        . ' please review your config.ini.', $warnings);
+        $this->assertContains(
+            'The [GoogleSearch] section of config.ini is no longer supported due to changes in Google APIs.',
+            $warnings
+        );
+        $this->assertContains(
+            'Google Maps is no longer a supported Content/recordMap option; please review your config.ini.',
+            $warnings
+        );
         $results = $upgrader->getNewConfigs();
         $this->assertFalse(isset($results['config']['Content']['recordMap']));
         $this->assertFalse(
@@ -374,8 +378,11 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     {
         $upgrader = $this->runAndGetConfigUpgrader('worldcatwarnings');
         $warnings = $upgrader->getWarnings();
-        $this->assertContains('The [WorldCat] section of config.ini has been removed following'
-        . ' the shutdown of the v1 WorldCat search API; use WorldCat2.ini instead.', $warnings);
+        $this->assertContains(
+            'The [WorldCat] section of config.ini has been removed following'
+            . ' the shutdown of the v1 WorldCat search API; use WorldCat2.ini instead.',
+            $warnings
+        );
     }
 
     /**
