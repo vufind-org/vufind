@@ -6,6 +6,8 @@ use Rector\Caching\ValueObject\Storage\FileCacheStorage;
 use Rector\Config\RectorConfig;
 use Rector\PHPUnit\CodeQuality\Rector\Class_\TypeWillReturnCallableArrowFunctionRector;
 use Rector\PHPUnit\CodeQuality\Rector\Class_\YieldDataProviderRector;
+use Rector\PHPUnit\CodeQuality\Rector\Expression\AssertArrayCastedObjectToAssertSameRector;
+use Rector\PHPUnit\CodeQuality\Rector\Foreach_\SimplifyForeachInstanceOfRector;
 use Rector\PHPUnit\CodeQuality\Rector\FuncCall\AssertFuncCallToPHPUnitAssertRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertCompareOnCountableWithMethodToAssertCountRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertComparisonToSpecificMethodRector;
@@ -72,6 +74,7 @@ return RectorConfig::configure()
         RemoveExpectAnyFromMockRector::class,
         ReplaceAtMethodWithDesiredMatcherRector::class,
         ScalarArgumentToExpectedParamTypeRector::class,
+        SimplifyForeachInstanceOfRector::class,
         SingleWithConsecutiveToWithRector::class,
         StringCastAssertStringContainsStringRector::class,
         TypeWillReturnCallableArrowFunctionRector::class,
@@ -80,6 +83,7 @@ return RectorConfig::configure()
         YieldDataProviderRector::class,
     ])
     ->withSkip([
+        AssertArrayCastedObjectToAssertSameRector::class,
         AssertIssetToSpecificMethodRector::class,
         DeclareStrictTypesTestsRector::class,
     ])
