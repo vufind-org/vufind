@@ -6,6 +6,7 @@ use Rector\Caching\ValueObject\Storage\FileCacheStorage;
 use Rector\Config\RectorConfig;
 use Rector\PHPUnit\CodeQuality\Rector\Class_\TypeWillReturnCallableArrowFunctionRector;
 use Rector\PHPUnit\CodeQuality\Rector\Class_\YieldDataProviderRector;
+use Rector\PHPUnit\CodeQuality\Rector\FuncCall\AssertFuncCallToPHPUnitAssertRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertCompareOnCountableWithMethodToAssertCountRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertComparisonToSpecificMethodRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertEmptyNullableObjectToAssertInstanceofRector;
@@ -29,6 +30,7 @@ use Rector\PHPUnit\CodeQuality\Rector\MethodCall\SingleWithConsecutiveToWithRect
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\StringCastAssertStringContainsStringRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\UseSpecificWillMethodRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\UseSpecificWithMethodRector;
+use Rector\PHPUnit\CodeQuality\Rector\StmtsAwareInterface\DeclareStrictTypesTestsRector;
 use Rector\PHPUnit\PHPUnit60\Rector\MethodCall\GetMockBuilderGetMockToCreateMockRector;
 use Rector\PHPUnit\PHPUnit70\Rector\Class_\RemoveDataProviderTestPrefixRector;
 use Rector\PHPUnit\PHPUnit90\Rector\MethodCall\ReplaceAtMethodWithDesiredMatcherRector;
@@ -53,6 +55,7 @@ return RectorConfig::configure()
         AssertEqualsOrAssertSameFloatParameterToSpecificMethodsTypeRector::class,
         AssertEqualsToSameRector::class,
         AssertFalseStrposToContainsRector::class,
+        AssertFuncCallToPHPUnitAssertRector::class,
         AssertInstanceOfComparisonRector::class,
         AssertEmptyNullableObjectToAssertInstanceofRector::class,
         AssertNotOperatorRector::class,
@@ -78,6 +81,7 @@ return RectorConfig::configure()
     ])
     ->withSkip([
         AssertIssetToSpecificMethodRector::class,
+        DeclareStrictTypesTestsRector::class,
     ])
     ->withTypeCoverageLevel(0)
     ->withDeadCodeLevel(6)
