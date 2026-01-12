@@ -180,7 +180,7 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
             $this->accessTokenTable[$i]['type'] = $type;
             return $mock;
         });
-        $mock->method('setUser')->willReturnCallback(function (?\VuFind\Db\Entity\UserEntityInterface $user) use ($i, $mock) {
+        $mock->method('setUser')->willReturnCallback(function (?UserEntityInterface $user) use ($i, $mock) {
             $this->accessTokenTable[$i]['user_id'] = $user?->getId();
             return $mock;
         });
@@ -329,7 +329,7 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
         $mockUserService = $this->createMock(UserServiceInterface::class);
         $mockUserService
             ->method('getUserByField')
-            ->willReturnCallback(function (string $fieldName, int|string|null $fieldValue): ?\VuFind\Db\Entity\UserEntityInterface {
+            ->willReturnCallback(function (string $fieldName, int|string|null $fieldValue): ?UserEntityInterface {
                 $this->assertSame('id', $fieldName);
                 return $this->createMockUserEntity($fieldValue, 'test');
             });

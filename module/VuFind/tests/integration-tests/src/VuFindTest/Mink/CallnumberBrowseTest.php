@@ -86,7 +86,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
     {
         $this->assertIsObject($link);
         $href = $link->getAttribute('href');
-        $this->assertStringContainsString($type, (string) $href);
+        $this->assertStringContainsString($type, (string)$href);
         $this->assertNotEquals('', $link->getText());
         $hrefCallnum = explode('&from=', $href)[1];
         $this->assertStringEndsWith($hrefCallnum, $link->getText());

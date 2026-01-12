@@ -33,7 +33,6 @@ use Laminas\I18n\Translator\TextDomain;
 use VuFindDevTools\Controller\DevtoolsController as Controller;
 
 use function count;
-use function in_array;
 
 /**
  * Unit tests for DevTools controller.

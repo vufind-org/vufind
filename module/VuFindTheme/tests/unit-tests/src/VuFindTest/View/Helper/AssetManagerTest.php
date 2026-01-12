@@ -140,12 +140,14 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
             ->setConstructorArgs([$themeInfo, $pipeline])
             ->onlyMethods(['outputInlineScriptLink', 'outputInlineScriptString', 'outputStyleAssets'])
             ->getMock();
-        $manager->method('outputInlineScriptLink')->willReturnCallback(function (string $src, array $attrs, array $arbitrary): string {
-            return $src . '/' . implode('|', $attrs) . '/' . ($arbitrary ? 1 : 0);
-        });
-        $manager->method('outputInlineScriptString')->willReturnCallback(function (string $script, array $attrs, array $arbitrary): string {
-            return $script . '/' . implode('|', $attrs) . '/' . ($arbitrary ? 1 : 0);
-        });
+        $manager->method('outputInlineScriptLink')
+            ->willReturnCallback(function (string $src, array $attrs, array $arbitrary): string {
+                return $src . '/' . implode('|', $attrs) . '/' . ($arbitrary ? 1 : 0);
+            });
+        $manager->method('outputInlineScriptString')
+            ->willReturnCallback(function (string $script, array $attrs, array $arbitrary): string {
+                return $script . '/' . implode('|', $attrs) . '/' . ($arbitrary ? 1 : 0);
+            });
         $manager->method('outputStyleAssets')->willReturn('');
         $manager->setView($this->getPhpRenderer());
         $manager->appendScriptString('foo')

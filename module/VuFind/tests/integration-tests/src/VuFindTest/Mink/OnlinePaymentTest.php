@@ -45,7 +45,6 @@ use VuFindTest\Feature\EmailTrait;
 use VuFindTest\Feature\LiveDatabaseTrait;
 use VuFindTest\Feature\UserCreationTrait;
 
-use function assert;
 use function count;
 
 /**
@@ -232,7 +231,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
             $email = $this->getLoggedEmail();
             $this->assertStringContainsString(
                 'A receipt for your payment is attached as a PDF file',
-                (string) $email->getBody()->getParts()[0]->getBody()
+                (string)$email->getBody()->getParts()[0]->getBody()
             );
         }
 

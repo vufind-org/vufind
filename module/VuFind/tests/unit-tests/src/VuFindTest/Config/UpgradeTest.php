@@ -34,8 +34,6 @@ use VuFind\Config\PathResolver;
 use VuFind\Config\Upgrade;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
-use function in_array;
-
 /**
  * Config Upgrade Test Class
  *

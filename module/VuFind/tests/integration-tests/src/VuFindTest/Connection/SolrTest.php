@@ -31,8 +31,6 @@ namespace VuFindTest\Integration\Connection;
 
 use VuFindSearch\ParamBag;
 
-use function in_array;
-
 /**
  * Solr Connection Test Class
  *
