@@ -88,6 +88,7 @@ class ScopeRepositoryTest extends AbstractTokenRepositoryTestCase
         $repo = new ScopeRepository($config);
 
         $scope = $repo->getScopeEntityByIdentifier($scopeId);
+        $this->assertInstanceOf(\League\OAuth2\Server\Entities\ScopeEntityInterface::class, $scope);
         $this->assertEquals($desc, $scope->getDescription());
         $this->assertEquals($hidden, $scope->gethidden());
         $this->assertEquals($ils, $scope->getILSNeeded());

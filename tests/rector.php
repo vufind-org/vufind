@@ -5,6 +5,7 @@ declare(strict_types=1);
 use Rector\Caching\ValueObject\Storage\FileCacheStorage;
 use Rector\Config\RectorConfig;
 use Rector\PHPUnit\CodeQuality\Rector\Class_\AddParamTypeFromDependsRector;
+use Rector\PHPUnit\CodeQuality\Rector\Class_\AddReturnTypeToDependedRector;
 use Rector\PHPUnit\CodeQuality\Rector\Class_\ConstructClassMethodToSetUpTestCaseRector;
 use Rector\PHPUnit\CodeQuality\Rector\Class_\NarrowUnusedSetUpDefinedPropertyRector;
 use Rector\PHPUnit\CodeQuality\Rector\Class_\PreferPHPUnitThisCallRector;
@@ -12,6 +13,8 @@ use Rector\PHPUnit\CodeQuality\Rector\Class_\SingleMockPropertyTypeRector;
 use Rector\PHPUnit\CodeQuality\Rector\Class_\TestWithToDataProviderRector;
 use Rector\PHPUnit\CodeQuality\Rector\Class_\TypeWillReturnCallableArrowFunctionRector;
 use Rector\PHPUnit\CodeQuality\Rector\Class_\YieldDataProviderRector;
+use Rector\PHPUnit\CodeQuality\Rector\ClassMethod\AddInstanceofAssertForNullableInstanceRector;
+use Rector\PHPUnit\CodeQuality\Rector\ClassMethod\EntityDocumentCreateMockToDirectNewRector;
 use Rector\PHPUnit\CodeQuality\Rector\Expression\AssertArrayCastedObjectToAssertSameRector;
 use Rector\PHPUnit\CodeQuality\Rector\Foreach_\SimplifyForeachInstanceOfRector;
 use Rector\PHPUnit\CodeQuality\Rector\FuncCall\AssertFuncCallToPHPUnitAssertRector;
@@ -58,7 +61,9 @@ return RectorConfig::configure()
         PHPUnitSetList::ANNOTATIONS_TO_ATTRIBUTES,
     ])
     ->withRules([
+        AddInstanceofAssertForNullableInstanceRector::class,
         AddParamTypeFromDependsRector::class,
+        AddReturnTypeToDependedRector::class,
         AssertCompareOnCountableWithMethodToAssertCountRector::class,
         AssertComparisonToSpecificMethodRector::class,
         AssertEqualsOrAssertSameFloatParameterToSpecificMethodsTypeRector::class,
@@ -73,6 +78,7 @@ return RectorConfig::configure()
         AssertSameTrueFalseToAssertTrueFalseRector::class,
         AssertTrueFalseToSpecificMethodRector::class,
         ConstructClassMethodToSetUpTestCaseRector::class,
+        EntityDocumentCreateMockToDirectNewRector::class,
         FlipAssertRector::class,
         GetMockBuilderGetMockToCreateMockRector::class,
         MatchAssertSameExpectedTypeRector::class,
