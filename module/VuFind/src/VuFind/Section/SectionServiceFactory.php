@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Account menu factory
+ * Section service factory.
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2024.
+ * Copyright (C) The National Library of Finland 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,29 +21,30 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Navigation
+ * @package  Section
  * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\Navigation;
+namespace VuFind\Section;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
+use Laminas\ServiceManager\Factory\FactoryInterface;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Account menu factory
+ * Section service factory.
  *
  * @category VuFind
- * @package  Navigation
+ * @package  Section
  * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org Main Site
  */
-class AccountMenuFactory extends AbstractMenuFactory
+class SectionServiceFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -64,27 +65,15 @@ class AccountMenuFactory extends AbstractMenuFactory
         $requestedName,
         ?array $options = null
     ) {
-        // Only load the connector if we need to show
-        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('Overdrive');
-        $connector = null;
-        if (($config['Overdrive']['showMyContent'] ?? '') != 'never') {
-            $connector = $container->get(
-                \VuFind\DigitalContent\OverdriveConnector::class
-            );
+        if (!empty($options)) {
+            throw new \Exception('Unexpected options passed to factory.');
         }
-
-        return parent::__invoke(
-            $container,
-            $requestedName,
-            [
-                'AccountMenu.yaml',
-                $container->get(\VuFind\Config\AccountCapabilities::class),
-                $container->get(\VuFind\Auth\Manager::class),
-                $container->get(\VuFind\ILS\Connection::class),
-                $container->get(\VuFind\Auth\ILSAuthenticator::class),
-                $connector,
-                ...($options ?? []),
-            ]
+        $localeSettings = $container->get(\VuFind\I18n\Locale\LocaleSettings::class);
+        return new $requestedName(
+            $container->get(\VuFind\Config\YamlReader::class),
+            $container->get(\VuFind\Section\Plugin\PluginManager::class),
+            $localeSettings->getUserLocale(),
+            $localeSettings->getFallbackLocales(),
         );
     }
 }

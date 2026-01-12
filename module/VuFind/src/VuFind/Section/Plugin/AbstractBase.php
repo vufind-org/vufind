@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Admin menu view helper
+ * Abstract base section.
  *
  * PHP version 8
  *
- * Copyright (C) The National Library of Finland 2024.
+ * Copyright (C) The National Library of Finland 2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,42 +21,26 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  Section
  * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
+ * @link     https://vufind.org Main Site
  */
 
-namespace VuFind\View\Helper\Root;
+namespace VuFind\Section\Plugin;
 
 /**
- * Admin menu view helper
+ * Abstract base section.
+ *
+ * PHP version 8
  *
  * @category VuFind
- * @package  View_Helpers
+ * @package  Section
  * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development Wiki
- *
- * @deprecated Use \VuFind\View\Helper\Root\Section instead
+ * @link     https://vufind.org Main Site
  */
-class AdminMenu extends AbstractMenuHelper
+abstract class AbstractBase implements SectionInterface
 {
-    /**
-     * Render menu
-     *
-     * @param ?string $activeItem The name of current active item (optional)
-     * @param string  $idPrefix   Element ID prefix
-     *
-     * @return string
-     */
-    public function render(?string $activeItem = null, string $idPrefix = ''): string
-    {
-        return $this->getView()->render(
-            'admin/menu.phtml',
-            [
-                'items' => $this->getMenu()['Admin']['MenuItems'],
-            ]
-        );
-    }
+    use SectionTrait;
 }

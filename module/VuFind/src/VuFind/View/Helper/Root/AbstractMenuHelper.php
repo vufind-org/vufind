@@ -39,8 +39,9 @@ use VuFind\Navigation\AbstractMenu;
  * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
+ *
+ * @deprecated Use \VuFind\View\Helper\Root\Section instead
  */
-
 abstract class AbstractMenuHelper extends \Laminas\View\Helper\AbstractHelper
 {
     /**
