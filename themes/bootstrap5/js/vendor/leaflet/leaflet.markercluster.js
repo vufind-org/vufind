@@ -590,7 +590,7 @@ var MarkerClusterGroup = L.MarkerClusterGroup = L.FeatureGroup.extend({
 		};
 
 		if (layer._icon && this._map.getBounds().contains(layer.getLatLng())) {
-			//Layer is visible ond on screen, immediate return
+			//Layer is visible and on screen, immediate return
 			callback();
 		} else if (layer.__parent._zoom < Math.round(this._map._zoom)) {
 			//Layer should be visible at this zoom level. It must not be on screen so just pan over to it
@@ -1394,7 +1394,7 @@ L.MarkerClusterGroup.include({
 	//Force a browser layout of stuff in the map
 	// Should apply the current opacity and location to all elements so we can update them again for an animation
 	_forceLayout: function () {
-		//In my testing this works, infact offsetWidth of any element seems to work.
+		//In my testing this works, in fact offsetWidth of any element seems to work.
 		//Could loop all this._layers and do this for each _icon if it stops working
 
 		L.Util.falseFn(document.body.offsetWidth);
@@ -2518,7 +2518,7 @@ L.MarkerClusterGroup.include({
 			this._map.getRenderer(this);
 			//Needs to happen in the pageload, not after, or animations don't work in webkit
 			//  http://stackoverflow.com/questions/8455200/svg-animate-with-dynamically-added-elements
-			//Disable on touch browsers as the animation messes up on a touch zoom and isn't very noticable
+			//Disable on touch browsers as the animation messes up on a touch zoom and isn't very noticeable
 		}
 	},
 
