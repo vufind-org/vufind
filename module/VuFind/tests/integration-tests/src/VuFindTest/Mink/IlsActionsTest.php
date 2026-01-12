@@ -196,7 +196,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Test that control is disabled upon empty selection
         $this->clickCss($page, '#cancelSelected');
-        $this->assertNull($page->find('css', '.btn-group.open'));
+        $this->assertNotInstanceOf(\Behat\Mink\Element\NodeElement::class, $page->find('css', '.btn-group.open'));
 
         // Test that control becomes active if we click a checkbox (but don't
         // actually cancel anything yet).
@@ -216,7 +216,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
             '1 request(s) were successfully canceled',
             $this->findCssAndGetText($page, '.alert.alert-success')
         );
-        $this->assertNull($page->find('css', 'a.title'));
+        $this->assertNotInstanceOf(\Behat\Mink\Element\NodeElement::class, $page->find('css', 'a.title'));
     }
 
     /**
@@ -253,7 +253,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
             '1 request(s) were successfully canceled',
             $this->findCssAndGetText($page, '.alert.alert-success')
         );
-        $this->assertNull($page->find('css', 'a.title'));
+        $this->assertNotInstanceOf(\Behat\Mink\Element\NodeElement::class, $page->find('css', 'a.title'));
     }
 
     /**
@@ -281,7 +281,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
             . ' the journal of the Institute for Rational-Emotive Therapy.',
             $this->findCssAndGetText($page, 'a.title')
         );
-        $this->assertTrue(false !== strstr($page->getContent(), 'Main Desk'));
+        $this->assertNotFalse(strstr($page->getContent(), 'Main Desk'));
     }
 
     /**
@@ -309,7 +309,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
             . ' the journal of the Institute for Rational-Emotive Therapy.',
             $this->findCssAndGetText($page, 'a.title')
         );
-        $this->assertTrue(false !== strstr($page->getContent(), 'Campus C'));
+        $this->assertNotFalse(strstr($page->getContent(), 'Campus C'));
     }
 
     /**

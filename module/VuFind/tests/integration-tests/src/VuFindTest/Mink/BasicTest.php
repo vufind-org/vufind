@@ -48,7 +48,7 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
     public function testHomePage(): void
     {
         $page = $this->getSearchHomePage();
-        $this->assertStringContainsString('VuFind', $page->getContent());
+        $this->assertStringContainsString('VuFind', (string)$page->getContent());
     }
 
     /**
@@ -164,7 +164,7 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         $page = $this->getSearchHomePage();
-        $this->assertStringContainsString('An error has occurred', $page->getContent());
+        $this->assertStringContainsString('An error has occurred', (string)$page->getContent());
     }
 
     /**
@@ -190,8 +190,8 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $this->getSearchHomePage();
         $this->assertEquals('200', $this->getMinkSession()->getStatusCode());
-        $this->assertStringNotContainsString('Other Search', $page->getContent());
-        $this->assertStringNotContainsString('ServiceNotFoundException', $page->getContent());
+        $this->assertStringNotContainsString('Other Search', (string)$page->getContent());
+        $this->assertStringNotContainsString('ServiceNotFoundException', (string)$page->getContent());
         $this->assertEquals(
             'Catalog',
             $this->findCssAndGetHtml($page, '#searchForm .nav-link')

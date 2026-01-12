@@ -36,7 +36,6 @@ use Behat\Mink\Exception\UnsupportedDriverActionException;
 use InvalidArgumentException;
 
 use function count;
-use function in_array;
 
 /**
  * Mink favorites test class.
@@ -167,7 +166,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         // The order of tags may differ by database platform, but as long as they
         // all show up, it is okay:
         foreach (['test1', 'test2', 'test 3'] as $tag) {
-            $this->assertTrue(in_array($tag, $tags));
+            $this->assertContains($tag, $tags);
         }
         // Now make sure link circles back to record:
         $this->clickCss($page, '.resultItemLine1 a');
@@ -307,7 +306,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '#list_title', 'Test List');
         $this->findCssAndSetValue($page, '#list_desc', 'Just. THE BEST.');
         // Confirm that tags are disabled by default:
-        $this->assertNull($page->find('css', '#list_tags'));
+        $this->assertNotInstanceOf(\Behat\Mink\Element\NodeElement::class, $page->find('css', '#list_tags'));
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->assertSame(
             'Test List',
@@ -348,7 +347,10 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->fillInLoginForm($page, 'username2', 'test');
         $this->submitLoginForm($page);
         // Make sure we don't have Favorites because we have another populated list
-        $this->assertNull($page->find('css', '.modal-body #save_list'));
+        $this->assertNotInstanceOf(
+            \Behat\Mink\Element\NodeElement::class,
+            $page->find('css', '.modal-body #save_list')
+        );
         // Make Two Lists
         // - One for the next test
         $this->clickCss($page, '#make-list');

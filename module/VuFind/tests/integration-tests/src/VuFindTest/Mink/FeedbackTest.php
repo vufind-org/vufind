@@ -161,7 +161,7 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
         if ($expectEmail) {
             $this->assertStringContainsString(
                 'Comments',
-                $this->getLoggedEmail()->getBody()->getBody()
+                (string)$this->getLoggedEmail()->getBody()->getBody()
             );
         } else {
             $this->expectExceptionMessage('No serialized email message data found');

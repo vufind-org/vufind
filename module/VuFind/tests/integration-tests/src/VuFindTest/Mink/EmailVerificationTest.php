@@ -188,7 +188,7 @@ final class EmailVerificationTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertSame('To: username1@ignore.com', $notifyEmail->getHeaders()->get('to')->toString());
         $this->assertStringContainsString(
             'A request was just made to change your email address at Library Catalog.',
-            $notifyEmail->getBody()->getBody()
+            (string)$notifyEmail->getBody()->getBody()
         );
 
         // Follow the verification link:

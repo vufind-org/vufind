@@ -45,7 +45,6 @@ use VuFindTest\Feature\EmailTrait;
 use VuFindTest\Feature\LiveDatabaseTrait;
 use VuFindTest\Feature\UserCreationTrait;
 
-use function assert;
 use function count;
 
 /**
@@ -232,7 +231,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
             $email = $this->getLoggedEmail();
             $this->assertStringContainsString(
                 'A receipt for your payment is attached as a PDF file',
-                $email->getBody()->getParts()[0]->getBody()
+                (string)$email->getBody()->getParts()[0]->getBody()
             );
         }
 
@@ -242,7 +241,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
             $payment->getAmount()
         );
         $paymentFeeService = $this->getDbService(PaymentFeeServiceInterface::class);
-        assert($paymentFeeService instanceof PaymentFeeServiceInterface);
+        $this->assertInstanceOf(PaymentFeeServiceInterface::class, $paymentFeeService);
         $this->assertSame(
             [
                 'demo1',
@@ -251,13 +250,13 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
             $paymentFeeService->getFineIdsForPayment($payment)
         );
         $paymentService = $this->getDbService(PaymentServiceInterface::class);
-        assert($paymentService instanceof PaymentServiceInterface);
+        $this->assertInstanceOf(PaymentServiceInterface::class, $paymentService);
         $this->assertSame(
             $payment,
             $paymentService->getLastPaidPaymentForPatron($multibackend ? 'pay.catuser' : 'catuser')
         );
         $auditEventService = $this->getDbService(AuditEventServiceInterface::class);
-        assert($auditEventService instanceof AuditEventServiceInterface);
+        $this->assertInstanceOf(AuditEventServiceInterface::class, $auditEventService);
         $events = array_map(
             function (AuditEventEntityInterface $event) {
                 return [$event->getSubType(), $event->getMessage()];
@@ -331,7 +330,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
 
         // Check payment status again:
         $paymentService = $this->getDbService(PaymentServiceInterface::class);
-        assert($paymentService instanceof PaymentServiceInterface);
+        $this->assertInstanceOf(PaymentServiceInterface::class, $paymentService);
         $paymentService->refreshEntity($payment);
         $this->assertSame(
             PaymentStatus::Paid,
@@ -542,7 +541,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         $auditEventService = $this->getDbService(AuditEventServiceInterface::class);
-        assert($auditEventService instanceof AuditEventServiceInterface);
+        $this->assertInstanceOf(AuditEventServiceInterface::class, $auditEventService);
         $events = array_map(
             function (AuditEventEntityInterface $event) {
                 $data = $event->getData();
@@ -824,7 +823,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
     protected function getPaymentByLocalIdentifier(string $localIdentifier): PaymentEntityInterface
     {
         $paymentService = $this->getDbService(PaymentServiceInterface::class);
-        assert($paymentService instanceof PaymentServiceInterface);
+        $this->assertInstanceOf(PaymentServiceInterface::class, $paymentService);
         return $paymentService->getPaymentByLocalIdentifier($localIdentifier);
     }
 

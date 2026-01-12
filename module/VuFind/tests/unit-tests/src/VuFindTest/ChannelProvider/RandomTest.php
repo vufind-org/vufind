@@ -117,7 +117,11 @@ class RandomTest extends \PHPUnit\Framework\TestCase
         $recordRouter = $this->getConfiguredRecordRouterMock($recordDriver);
         $random->setCoverRouter($coverRouter);
         $random->setRecordRouter($recordRouter);
-        return [$random, $expectedResult, $params];
+        return [
+            $random,
+            $expectedResult,
+            $params,
+        ];
     }
 
     /**

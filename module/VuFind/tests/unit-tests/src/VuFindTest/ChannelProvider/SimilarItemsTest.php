@@ -234,7 +234,10 @@ class SimilarItemsTest extends \PHPUnit\Framework\TestCase
                 'channels-record',
             ]
         );
-        return [$similar, $expectedResult];
+        return [
+            $similar,
+            $expectedResult,
+        ];
     }
 
     /**

@@ -99,7 +99,7 @@ class UserListServiceTest extends \PHPUnit\Framework\TestCase
             function ($dql) use ($expected, $queryObject) {
                 // Assert that all the set parameters have been added to the dql properly in form of :param
                 foreach (array_keys($expected['params']) as $key) {
-                    $this->assertStringContainsString(":$key", $dql);
+                    $this->assertStringContainsString(":$key", (string)$dql);
                 }
                 return $queryObject;
             }
