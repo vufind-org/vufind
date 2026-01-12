@@ -14,6 +14,7 @@ use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertIssetToSpecificMethodRect
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertFalseStrposToContainsRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertInstanceOfComparisonRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertNotOperatorRector;
+use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertRegExpRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertTrueFalseToSpecificMethodRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\FlipAssertRector;
 use Rector\PHPUnit\CodeQuality\Rector\MethodCall\MatchAssertSameExpectedTypeRector;
@@ -48,6 +49,7 @@ return RectorConfig::configure()
         AssertInstanceOfComparisonRector::class,
         AssertEmptyNullableObjectToAssertInstanceofRector::class,
         AssertNotOperatorRector::class,
+        AssertRegExpRector::class,
         AssertTrueFalseToSpecificMethodRector::class,
         FlipAssertRector::class,
         GetMockBuilderGetMockToCreateMockRector::class,
