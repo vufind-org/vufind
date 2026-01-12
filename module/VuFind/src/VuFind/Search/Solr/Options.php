@@ -256,4 +256,18 @@ class Options extends \VuFind\Search\Base\Options implements DateRangeOptionsInt
     {
         return (array)($this->facetSettings['SpecialFacets']['dateRangeFieldType'] ?? []);
     }
+
+    /**
+     * Get filters for new items facets.
+     *
+     * @return array
+     */
+    public function getNewItemsFacetFilters(): array
+    {
+        $result = [];
+        foreach ($this->newItemsFacetRanges as $days) {
+            $result[$days] = "[NOW-{$days}DAYS/DAY TO *]";
+        }
+        return $result;
+    }
 }

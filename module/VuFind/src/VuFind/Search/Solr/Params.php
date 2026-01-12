@@ -32,6 +32,8 @@ namespace VuFind\Search\Solr;
 
 use VuFind\Config\Config;
 use VuFind\Config\ConfigManagerInterface;
+use VuFind\Date\Converter as DateConverter;
+use VuFind\Solr\Utils;
 use VuFindSearch\ParamBag;
 
 use function count;
@@ -106,13 +108,6 @@ class Params extends \VuFind\Search\Base\Params
     protected $pivotFacets = null;
 
     /**
-     * Hierarchical Facet Helper
-     *
-     * @var HierarchicalFacetHelper
-     */
-    protected $facetHelper;
-
-    /**
      * Are we searching by ID only (instead of a normal query)?
      *
      * @var bool
@@ -149,14 +144,15 @@ class Params extends \VuFind\Search\Base\Params
      * @param \VuFind\Search\Base\Options $options       Options to use
      * @param ConfigManagerInterface      $configManager Config manager
      * @param ?HierarchicalFacetHelper    $facetHelper   Hierarchical facet helper
+     * @param ?DateConverter              $dateConverter Date converter
      */
     public function __construct(
         $options,
         ConfigManagerInterface $configManager,
-        ?HierarchicalFacetHelper $facetHelper = null
+        protected ?HierarchicalFacetHelper $facetHelper = null,
+        protected ?DateConverter $dateConverter = null
     ) {
         parent::__construct($options, $configManager);
-        $this->facetHelper = $facetHelper;
 
         // Use basic facet limit by default, if set:
         $facetConfigName = $options->getFacetsIni();
@@ -680,6 +676,10 @@ class Params extends \VuFind\Search\Base\Params
      */
     protected function formatFilterListEntry($field, $value, $operator, $translate)
     {
+        if (isset($this->options->getNewItemsFacets()[$field])) {
+            return $this->formatNewItemsFilterListEntry($field, $value, $operator, $translate);
+        }
+
         $filter = parent::formatFilterListEntry(
             $field,
             $value,
@@ -740,6 +740,65 @@ class Params extends \VuFind\Search\Base\Params
         }
 
         return $filter;
+    }
+
+    /**
+     * Format a new items filter for use in getFilterList().
+     *
+     * @param string $field     Field name
+     * @param string $value     Field value
+     * @param string $operator  Operator (AND/OR/NOT)
+     * @param bool   $translate Should we translate the label?
+     *
+     * @return array
+     */
+    protected function formatNewItemsFilterListEntry($field, $value, $operator, $translate): array
+    {
+        $range = Utils::parseRange($value);
+        $domain = $this->getOptions()->getTextDomainForTranslatedFacet($field);
+        [$from, $fromDate] = $this->formatNewItemsDateForDisplay(
+            $range['from'],
+            $domain
+        );
+        [$to, $toDate] = $this->formatNewItemsDateForDisplay(
+            $range['to'],
+            $domain
+        );
+        $ndash = html_entity_decode('&#x2013;', ENT_NOQUOTES, 'UTF-8');
+        if ($fromDate && $toDate) {
+            $displayText = $from ? "$from $ndash" : $ndash;
+            $displayText .= $to ? " $to" : '';
+        } else {
+            $displayText = $from;
+            $displayText .= $to ? " $ndash $to" : '';
+        }
+        return compact('value', 'displayText', 'field', 'operator');
+    }
+
+    /**
+     * Format a Solr date for display
+     *
+     * @param string $date   Date
+     * @param string $domain Translation domain
+     *
+     * @return string
+     */
+    protected function formatNewItemsDateForDisplay($date, $domain)
+    {
+        if ($date == '' || $date == '*') {
+            return ['', true];
+        }
+        if (preg_match('/^NOW-(\d+)DAY/', $date, $matches)) {
+            return [
+                $this->translate('past_days', ['range' => $matches[1]], useIcuFormatter: true),
+                false,
+            ];
+        }
+        $date = substr($date, 0, 10);
+        return [
+            $this->dateConverter?->convertToDisplayDate('Y-m-d', $date) ?? $date,
+            true,
+        ];
     }
 
     /**

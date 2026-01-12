@@ -469,6 +469,20 @@ abstract class Options implements TranslatorAwareInterface
     protected string $advancedFacetSettingsSection = 'Advanced_Settings';
 
     /**
+     * New items facets
+     *
+     * @var array
+     */
+    protected array $newItemsFacets;
+
+    /**
+     * Ranges for new items facets
+     *
+     * @var array
+     */
+    protected array $newItemsFacetRanges;
+
+    /**
      * Constructor
      *
      * @param ConfigManagerInterface $configManager Config manager
@@ -528,6 +542,19 @@ abstract class Options implements TranslatorAwareInterface
         $this->hierarchicalFacetFilters = $this->facetSettings['HierarchicalFacetFilters'] ?? [];
         $this->setTranslatedFacets((array)($advancedFacetSettings['translated_facets'] ?? []));
         $this->specialAdvancedFacets = $advancedFacetSettings['special_facets'] ?? '';
+        $this->newItemsFacets = array_map(
+            function ($v) {
+                return true;
+            },
+            array_flip((array)($this->facetSettings['SpecialFacets']['newItems'] ?? []))
+        );
+        // Find out if there are user configured range options; if not, default to the standard 1/5/30 days:
+        $this->newItemsFacetRanges = array_filter(
+            array_map(
+                'intval',
+                explode(',', $this->searchSettings['NewItem']['ranges'] ?? '')
+            )
+        ) ?: [1, 5, 30];
 
         // Result display options:
         $this->resultScrollerActive = (bool)(
@@ -983,6 +1010,26 @@ abstract class Options implements TranslatorAwareInterface
     public function getHierarchicalFacetSortSettings()
     {
         return $this->hierarchicalFacetSortSettings;
+    }
+
+    /**
+     * Get new items facets.
+     *
+     * @return array
+     */
+    public function getNewItemsFacets(): array
+    {
+        return $this->newItemsFacets;
+    }
+
+    /**
+     * Get filters for new items facets.
+     *
+     * @return array
+     */
+    public function getNewItemsFacetFilters(): array
+    {
+        return [];
     }
 
     /**

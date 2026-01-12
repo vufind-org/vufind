@@ -1990,18 +1990,27 @@ class Params
     /**
      * Translate a string (or string-castable object)
      *
-     * @param string|object|array $target  String to translate or an array of text
-     * domain and string to translate
-     * @param array               $tokens  Tokens to inject into the translated
-     * string
-     * @param string              $default Default value to use if no translation is
-     * found (null for no default).
+     * @param string|object|array $target          String to translate or an array of text
+     *                                             domain and string to translate
+     * @param array               $tokens          Tokens to inject into the translated
+     *                                             string
+     * @param string              $default         Default value to use if no translation is
+     *                                             found (null for no default).
+     * @param bool                $useIcuFormatter Should we use an ICU message formatter instead
+     * of the default behavior?
+     * @param string[]            $fallbackDomains Text domains to check if no match is found in
+     * the domain specified in $target
      *
      * @return string
      */
-    public function translate($target, $tokens = [], $default = null)
-    {
-        return $this->getOptions()->translate($target, $tokens, $default);
+    public function translate(
+        $target,
+        $tokens = [],
+        $default = null,
+        $useIcuFormatter = false,
+        $fallbackDomains = []
+    ) {
+        return $this->getOptions()->translate($target, $tokens, $default, $useIcuFormatter, $fallbackDomains);
     }
 
     /**

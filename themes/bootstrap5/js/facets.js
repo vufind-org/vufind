@@ -289,7 +289,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     }
     return newParams;
   }
-  
+
   /**
    * Compile modified facets into lists of added and removed URL parameters.
    */
@@ -316,7 +316,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
       }
     }
   }
-  
+
   /**
    * Compile current parameters and newly added / removed to return the URL to redirect to
    * @returns {string} The new URL to redirect to.
@@ -355,8 +355,9 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
   /**
    * Toggle the visual selected style of a facet element.
    * @param {HTMLElement} elem The facet element to toggle.
+   * @param {boolean} [checkExclusiveFacets] Whether to handle exclusive facets (default = true).
    */
-  function toggleSelectedFacetStyle(elem) {
+  function toggleSelectedFacetStyle(elem, checkExclusiveFacets = true) {
     let excluded = elem.classList.contains('exclude');
     let facet;
     if (elem.classList.contains('facet')) {
@@ -377,6 +378,21 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
       attrs.class = 'icon-link__icon';
       attrs['data-checked'] = (newCheckedState ? 'true' : 'false');
       icon.outerHTML = VuFind.icon(newCheckedState ? 'facet-checked' : 'facet-unchecked', attrs);
+    }
+
+    // Make sure any siblings of an active exclusive filter are not active:
+    if (checkExclusiveFacets && facet.classList.contains('active') && 'exclusive' in facet.dataset) {
+      const facetList = facet.closest('.facet__list');
+      if (facetList) {
+        facetList.querySelectorAll('.facet').forEach(otherFacet => {
+          if (otherFacet !== facet && otherFacet.classList.contains('active')) {
+            const facetLink = otherFacet.querySelector('a.main-link');
+            if (facetLink) {
+              facetLink.click();
+            }
+          }
+        });
+      }
     }
   }
 
@@ -453,7 +469,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
     }
     elem.setAttribute('data-multi-filters-modified', isOriginalState);
     updateCountText();
-    toggleSelectedFacetStyle(elem);
+    toggleSelectedFacetStyle(elem, true);
   }
 
   /**
@@ -494,7 +510,7 @@ VuFind.register('multiFacetsSelection', function multiFacetsSelection() {
       const elems = document.querySelectorAll('[data-multi-filters-modified="true"]');
       for (const elem of elems) {
         elem.setAttribute('data-multi-filters-modified', "false");
-        toggleSelectedFacetStyle(elem);
+        toggleSelectedFacetStyle(elem, false);
       }
     }
     toggleCountText(isMultiFacetsSelectionActivated);
@@ -851,7 +867,7 @@ VuFind.register('lightbox_facets', function LightboxFacets() {
    */
   function lightboxFacetSorting() {
     var sortButtons = $('.js-facet-sort');
-    
+
     /**
      * Trigger an AJAX call to update the facet list with a new sort order.
      * @param {HTMLElement} button The button element that was clicked to trigger the sort.
