@@ -312,7 +312,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
 
         // By default, there should be no alert option at all:
         $scheduleSelector = 'select[name="schedule"]';
-        $this->assertNotInstanceOf(\Behat\Mink\Element\NodeElement::class, $page->find('css', $scheduleSelector));
+        $this->unFindCss($page, $scheduleSelector);
 
         // Now reconfigure to allow notifications, and refresh the page:
         $page = $this->activateNotifications();

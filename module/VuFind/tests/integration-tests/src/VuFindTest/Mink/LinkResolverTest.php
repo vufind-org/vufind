@@ -190,7 +190,7 @@ class LinkResolverTest extends \VuFindTest\Integration\MinkTestCase
     {
         // By default, no OpenURL on record page:
         $page = $this->setupRecordPage();
-        $this->assertNotInstanceOf(\Behat\Mink\Element\NodeElement::class, $page->find('css', '.fulltext'));
+        $this->unFindCss($page, '.fulltext');
     }
 
     /**
