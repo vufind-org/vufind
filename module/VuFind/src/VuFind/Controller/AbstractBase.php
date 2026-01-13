@@ -67,11 +67,7 @@ use function is_object;
  * @method FlashMessenger flashMessenger() FlashMessenger plugin
  * @method Plugin\Holds holds() Holds plugin
  * @method Plugin\ILLRequests ILLRequests() ILLRequests plugin
- * @method Plugin\IlsRecords ilsRecords() IlsRecords plugin
- * @method Plugin\NewItems newItems() NewItems plugin
  * @method Plugin\Permission permission() Permission plugin
- * @method Plugin\Renewals renewals() Renewals plugin
- * @method Plugin\Reserves reserves() Reserves plugin
  * @method Plugin\ResultScroller resultScroller() ResultScroller plugin
  * @method Plugin\StorageRetrievalRequests storageRetrievalRequests()
  * StorageRetrievalRequests plugin
