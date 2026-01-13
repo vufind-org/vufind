@@ -46,29 +46,13 @@ use VuFind\Http\ServerUrlHelper;
 class FollowupHelper
 {
     /**
-     * Session container
-     *
-     * @var Container
-     */
-    protected $session;
-
-    /**
-     * Server URL helper
-     *
-     * @var ServerUrlHelper
-     */
-    protected $serverUrlHelper;
-
-    /**
      * Constructor
      *
      * @param Container       $session         Session container
      * @param ServerUrlHelper $serverUrlHelper Server URL helper
      */
-    public function __construct(Container $session, ServerUrlHelper $serverUrlHelper)
+    public function __construct(protected Container $session, protected ServerUrlHelper $serverUrlHelper)
     {
-        $this->session = $session;
-        $this->serverUrlHelper = $serverUrlHelper;
     }
 
     /**
@@ -78,7 +62,7 @@ class FollowupHelper
      *
      * @return bool       True if cleared, false if never set.
      */
-    public function clear($key)
+    public function clear(string $key)
     {
         if (isset($this->session->$key)) {
             unset($this->session->$key);
@@ -97,7 +81,7 @@ class FollowupHelper
      *
      * @return mixed
      */
-    public function retrieve($key = null, $default = null)
+    public function retrieve(?string $key = null, $default = null)
     {
         if (null === $key) {
             return $this->session;
@@ -113,7 +97,7 @@ class FollowupHelper
      *
      * @return mixed
      */
-    public function retrieveAndClear($key, $default = null)
+    public function retrieveAndClear(string $key, $default = null)
     {
         $value = $this->retrieve($key, $default);
         $this->clear($key);
@@ -130,7 +114,7 @@ class FollowupHelper
      *
      * @return void
      */
-    public function store($extras = [], $overrideUrl = null)
+    public function store(array $extras = [], ?string $overrideUrl = null)
     {
         // Store the current URL:
         $url = new Http(
