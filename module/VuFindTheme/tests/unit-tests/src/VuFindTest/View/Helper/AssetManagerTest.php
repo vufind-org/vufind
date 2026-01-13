@@ -132,20 +132,22 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
     {
         $themeInfo = $this->createMock(ThemeInfo::class);
         $pipeline = $this->createMock(AssetPipeline::class);
-        $pipeline->method('process')->willReturnCallback(function ($scripts, $type) {
-            $this->assertEquals('js', $type);
+        $pipeline->method('process')->willReturnCallback(function (array $scripts, string $type): array {
+            $this->assertSame('js', $type);
             return $scripts;
         });
         $manager = $this->getMockBuilder(AssetManager::class)
             ->setConstructorArgs([$themeInfo, $pipeline])
             ->onlyMethods(['outputInlineScriptLink', 'outputInlineScriptString', 'outputStyleAssets'])
             ->getMock();
-        $manager->method('outputInlineScriptLink')->willReturnCallback(function ($src, $attrs, $arbitrary) {
-            return $src . '/' . implode('|', $attrs) . '/' . ($arbitrary ? 1 : 0);
-        });
-        $manager->method('outputInlineScriptString')->willReturnCallback(function ($script, $attrs, $arbitrary) {
-            return $script . '/' . implode('|', $attrs) . '/' . ($arbitrary ? 1 : 0);
-        });
+        $manager->method('outputInlineScriptLink')
+            ->willReturnCallback(function (string $src, array $attrs, array $arbitrary): string {
+                return $src . '/' . implode('|', $attrs) . '/' . ($arbitrary ? 1 : 0);
+            });
+        $manager->method('outputInlineScriptString')
+            ->willReturnCallback(function (string $script, array $attrs, array $arbitrary): string {
+                return $script . '/' . implode('|', $attrs) . '/' . ($arbitrary ? 1 : 0);
+            });
         $manager->method('outputStyleAssets')->willReturn('');
         $manager->setView($this->getPhpRenderer());
         $manager->appendScriptString('foo')
@@ -231,8 +233,8 @@ class AssetManagerTest extends \PHPUnit\Framework\TestCase
     {
         $themeInfo = $this->createMock(ThemeInfo::class);
         $pipeline = $this->createMock(AssetPipeline::class);
-        $pipeline->method('process')->willReturnCallback(function ($styles, $type) {
-            $this->assertEquals('css', $type);
+        $pipeline->method('process')->willReturnCallback(function (array $styles, string $type): array {
+            $this->assertSame('css', $type);
             return $styles;
         });
         $manager = $this->getMockBuilder(AssetManager::class)

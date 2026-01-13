@@ -39,7 +39,7 @@
                 <?php if ($account->dropdownEnabled()): ?>
                   <a class="nav-link account-dropdown-toggle" href="#" data-bs-toggle="dropdown"><?=$this->icon('dropdown-caret') ?></a>
                   <div class="dropdown-menu">
-                    <?=$this->accountMenu()->render('', 'header_')?>
+                    <?=$this->section('AccountMenu', template: 'myresearch/menu.phtml')->render(['active' => '', 'idPrefix' => 'header_'])?>
                   </div>
                 <?php endif; ?>
               </li>

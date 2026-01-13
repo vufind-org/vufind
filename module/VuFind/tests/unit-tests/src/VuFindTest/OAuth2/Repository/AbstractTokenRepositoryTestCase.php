@@ -161,30 +161,30 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
             $this->accessTokenTable[] = $fields;
         }
         $mock = $this->createMock(AccessTokenEntityInterface::class);
-        $mock->method('getId')->willReturnCallback(fn () => (string)$this->accessTokenTable[$i]['id']);
-        $mock->method('getType')->willReturnCallback(fn () => $this->accessTokenTable[$i]['type'] ?? null);
-        $mock->method('getUser')->willReturnCallback(function () use ($i) {
+        $mock->method('getId')->willReturnCallback(fn (): ?string => (string)$this->accessTokenTable[$i]['id']);
+        $mock->method('getType')->willReturnCallback(fn (): ?string => $this->accessTokenTable[$i]['type'] ?? null);
+        $mock->method('getUser')->willReturnCallback(function () use ($i): ?\VuFind\Db\Entity\UserEntityInterface {
             $userId = $this->accessTokenTable[$i]['user_id'] ?? null;
             if ($userId) {
                 return $this->getMockUserService()->getUserByField('id', $userId);
             }
             return null;
         });
-        $mock->method('getData')->willReturnCallback(fn () => $this->accessTokenTable[$i]['data'] ?? null);
-        $mock->method('isRevoked')->willReturnCallback(fn () => $this->accessTokenTable[$i]['revoked'] ?? false);
-        $mock->method('setData')->willReturnCallback(function ($data) use ($i, $mock) {
+        $mock->method('getData')->willReturnCallback(fn (): ?string => $this->accessTokenTable[$i]['data'] ?? null);
+        $mock->method('isRevoked')->willReturnCallback(fn (): bool => $this->accessTokenTable[$i]['revoked'] ?? false);
+        $mock->method('setData')->willReturnCallback(function (?string $data) use ($i, $mock) {
             $this->accessTokenTable[$i]['data'] = $data;
             return $mock;
         });
-        $mock->method('setType')->willReturnCallback(function ($type) use ($i, $mock) {
+        $mock->method('setType')->willReturnCallback(function (?string $type) use ($i, $mock) {
             $this->accessTokenTable[$i]['type'] = $type;
             return $mock;
         });
-        $mock->method('setUser')->willReturnCallback(function ($user) use ($i, $mock) {
+        $mock->method('setUser')->willReturnCallback(function (?UserEntityInterface $user) use ($i, $mock) {
             $this->accessTokenTable[$i]['user_id'] = $user?->getId();
             return $mock;
         });
-        $mock->method('setRevoked')->willReturnCallback(function ($revoked) use ($i, $mock) {
+        $mock->method('setRevoked')->willReturnCallback(function (bool $revoked) use ($i, $mock) {
             $this->accessTokenTable[$i]['revoked'] = $revoked;
             return $mock;
         });
@@ -329,7 +329,7 @@ abstract class AbstractTokenRepositoryTestCase extends \PHPUnit\Framework\TestCa
         $mockUserService = $this->createMock(UserServiceInterface::class);
         $mockUserService
             ->method('getUserByField')
-            ->willReturnCallback(function (string $fieldName, $fieldValue) {
+            ->willReturnCallback(function (string $fieldName, int|string|null $fieldValue): ?UserEntityInterface {
                 $this->assertSame('id', $fieldName);
                 return $this->createMockUserEntity($fieldValue, 'test');
             });

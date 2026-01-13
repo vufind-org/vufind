@@ -51,9 +51,7 @@ class AuthTest extends \PHPUnit\Framework\TestCase
     public function testEmptyInput(): void
     {
         $auth = $this->getAuth();
-        $this->assertTrue(
-            str_contains($auth->getResponse(), '<error code="badVerb">Missing Verb Argument</error>')
-        );
+        $this->assertStringContainsString('<error code="badVerb">Missing Verb Argument</error>', $auth->getResponse());
     }
 
     /**

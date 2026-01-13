@@ -222,7 +222,7 @@ class ConfigManagerTest extends \PHPUnit\Framework\TestCase
     {
         // This should retrieve sms.ini, which should include a Carriers array.
         $config = $this->getConfig('sms');
-        $this->assertTrue(count($config['Carriers'] ?? []) > 0);
+        $this->assertGreaterThan(0, count($config['Carriers'] ?? []));
     }
 
     /**

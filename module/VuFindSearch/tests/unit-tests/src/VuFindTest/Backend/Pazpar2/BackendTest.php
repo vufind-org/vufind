@@ -91,6 +91,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $this->assertCount(20, $coll);
         $this->assertEquals('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
+        $this->assertInstanceOf(\VuFindSearch\Response\RecordInterface::class, $rec);
         $this->assertEquals('test', $rec->getSourceIdentifier());
         $this->assertSame('content: author test title test medium book', (string)$rec->getXML()->recid);
         $recs = $coll->getRecords();

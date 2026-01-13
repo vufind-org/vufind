@@ -146,16 +146,16 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
         $this->assertStringContainsString(
             '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"'
             . ' xmlns="http://www.loc.gov/mods/v3">',
-            $rdfXml
+            (string)$rdfXml
         );
-        $this->assertStringContainsString('<nonSort>The </nonSort>', $rdfXml);
+        $this->assertStringContainsString('<nonSort>The </nonSort>', (string)$rdfXml);
         $this->assertStringContainsString(
             '<namePart>Author, Test</namePart>',
-            $rdfXml
+            (string)$rdfXml
         );
         $this->assertStringContainsString(
             '<identifier type="isbn">978-3-16-148410-0</identifier>',
-            $rdfXml
+            (string)$rdfXml
         );
     }
 

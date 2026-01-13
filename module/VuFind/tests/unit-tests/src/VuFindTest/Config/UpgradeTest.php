@@ -34,8 +34,6 @@ use VuFind\Config\PathResolver;
 use VuFind\Config\Upgrade;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
-use function in_array;
-
 /**
  * Config Upgrade Test Class
  *
@@ -382,19 +380,13 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     {
         $upgrader = $this->runAndGetConfigUpgrader('googlewarnings');
         $warnings = $upgrader->getWarnings();
-        $this->assertTrue(
-            in_array(
-                'The [GoogleSearch] section of config.ini is no '
-                . 'longer supported due to changes in Google APIs.',
-                $warnings
-            )
+        $this->assertContains(
+            'The [GoogleSearch] section of config.ini is no longer supported due to changes in Google APIs.',
+            $warnings
         );
-        $this->assertTrue(
-            in_array(
-                'Google Maps is no longer a supported Content/recordMap option;'
-                . ' please review your config.ini.',
-                $warnings
-            )
+        $this->assertContains(
+            'Google Maps is no longer a supported Content/recordMap option; please review your config.ini.',
+            $warnings
         );
         $results = $upgrader->getNewConfigs();
         $this->assertFalse(isset($results['config']['Content']['recordMap']));
@@ -578,12 +570,10 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $upgrader = $this->runAndGetConfigUpgrader('amazoncover');
         $warnings = $upgrader->getWarnings();
         foreach (['Amazon', 'Booksite'] as $service) {
-            $this->assertTrue(
-                in_array(
-                    "WARNING: You have $service content enabled, but VuFind no longer sup"
-                    . "ports it. You should remove $service references from config.ini.",
-                    $warnings
-                ),
+            $this->assertContains(
+                "WARNING: You have $service content enabled, but VuFind no longer sup"
+                . "ports it. You should remove $service references from config.ini.",
+                $warnings,
                 "Missing $service warning"
             );
         }
@@ -599,12 +589,10 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $upgrader = $this->runAndGetConfigUpgrader('amazonreview');
         $warnings = $upgrader->getWarnings();
         foreach (['Amazon', 'Booksite'] as $service) {
-            $this->assertTrue(
-                in_array(
-                    "WARNING: You have $service content enabled, but VuFind no longer sup"
-                    . "ports it. You should remove $service references from config.ini.",
-                    $warnings
-                ),
+            $this->assertContains(
+                "WARNING: You have $service content enabled, but VuFind no longer sup"
+                . "ports it. You should remove $service references from config.ini.",
+                $warnings,
                 "Missing $service warning"
             );
         }
