@@ -58,6 +58,7 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
         $page = $session->getPage();
         $this->waitForPageLoad($page);
         $staffViewTab = $this->findCss($page, '.record-tabs .details a');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $staffViewTab);
         $this->assertEquals('Staff View', $staffViewTab->getText());
         $staffViewTab->click();
         $this->assertEqualsWithTimeout(
@@ -65,6 +66,7 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
             [$session, 'getCurrentUrl']
         );
         $staffViewTable = $this->findCss($page, '.record-tabs .details-tab table.staff-view--marc');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $staffViewTable);
         $this->assertSame('LEADER', substr($staffViewTable->getText(), 0, 6));
     }
 
@@ -92,6 +94,7 @@ class RecordTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $session->getPage();
         $staffViewTab = $this->findCss($page, '.record-tabs .holdings a');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $staffViewTab);
         $this->assertEquals('Holdings', $staffViewTab->getText());
         $staffViewTab->click();
         $this->assertEquals(

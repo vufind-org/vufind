@@ -174,6 +174,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
         // If successful, we should now have a link to review the hold:
         $link = $this->findCss($page, '.modal-body a');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $link);
         $this->assertEquals('Your Holds and Recalls', $link->getText());
         $link->click();
 
@@ -200,6 +201,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         // Use search to find a record to simulate a typical use case:
         $page = $this->gotoRecordWithSearch();
         $element = $this->findCss($page, '.alert.alert-info a');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $element);
         $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
         $this->clickCss($page, '.createAccountLink');
@@ -279,7 +281,9 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         // Use search to find a record to simulate a typical use case:
         $page = $this->gotoRecordWithSearch();
         $element = $this->findCss($page, '.alert.alert-info a');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $element);
         $this->assertEquals('Login for hold and recall information', $element->getText());
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $element);
         $element->click();
 
         // Log in:
@@ -328,7 +332,9 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         // Use search to find a record to simulate a typical use case:
         $page = $this->gotoRecordWithSearch('testsample2');
         $element = $this->findCss($page, '.alert.alert-info a');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $element);
         $this->assertEquals('Login for hold and recall information', $element->getText());
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $element);
         $element->click();
 
         // Log in:
@@ -381,6 +387,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         // Use search to find a record to simulate a typical use case:
         $page = $this->gotoRecordWithSearch();
         $element = $this->findCss($page, '.alert.alert-info a');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $element);
         $this->assertEquals(
             'Login for hold and recall information',
             $element->getText()
@@ -509,6 +516,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         // Log in the user on the record page:
         $page = $this->gotoRecordById();
         $element = $this->findCss($page, '.alert.alert-info a');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $element);
         $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
         $this->fillInLoginForm($page, 'username1', 'test', false);
@@ -766,6 +774,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->unFindCss($page, '.alert.alert-info a');
         // Hold links should be visible
         $element = $this->findCss($page, 'a.placehold');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $element);
         $element->click();
         // Since we're not logged in...
         $this->clickCss($page, '.createAccountLink');
@@ -788,6 +797,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         // If successful, we should now have a link to review the hold:
         $this->waitForPageLoad($page);
         $link = $this->findCss($page, '.modal-body a');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $link);
         $this->assertEquals('Your Holds and Recalls', $link->getText());
         $link->click();
 
@@ -818,6 +828,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         // Create account and log in the user on the record page:
         $page = $this->gotoRecordById();
         $element = $this->findCss($page, '.alert.alert-info a');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $element);
         $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
         $this->clickCss($page, '.modal-body .createAccountLink');
@@ -867,6 +878,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         // Create account and log in the user on the record page:
         $page = $this->gotoRecordById();
         $element = $this->findCss($page, '.alert.alert-info a');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $element);
         $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
         $this->fillInLoginForm($page, 'username3', 'test');

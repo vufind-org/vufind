@@ -221,6 +221,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         );
         // Make sure the link in the success message contains a valid list ID:
         $result = $this->findCss($page, '.modal-body .alert-success a');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $result);
         $this->assertMatchesRegularExpression(
             '|href="[^"]*/MyResearch/MyList/[0-9]+"|',
             $result->getOuterHtml()
@@ -438,8 +439,10 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#ribbon-export');
         $this->waitForPageLoad($page);
         $select = $this->findCss($page, '#format');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $select);
         $select->selectOption('EndNote');
         $submit = $this->findCss($page, '.modal-body input[name=submitButton]');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $submit);
         $submit->click();
         $this->checkForLimitExceededMessage($page, 2, 1);
         $this->closeLightbox($page);
@@ -449,8 +452,10 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#ribbon-export');
         $this->waitForPageLoad($page);
         $select = $this->findCss($page, '#format');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $select);
         $select->selectOption('MARC');
         $submit = $this->findCss($page, '.modal-body input[name=submitButton]');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $submit);
         $submit->click();
         $this->assertEquals(
             'Download File',

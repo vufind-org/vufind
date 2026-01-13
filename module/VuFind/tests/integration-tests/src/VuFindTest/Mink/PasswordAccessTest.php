@@ -174,7 +174,7 @@ final class PasswordAccessTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.logoutOptions a.logout');
 
         // Check that login link is back
-        $this->assertNotEmpty($this->findCss($page, '#loginOptions a'));
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $this->findCss($page, '#loginOptions a'));
     }
 
     /**

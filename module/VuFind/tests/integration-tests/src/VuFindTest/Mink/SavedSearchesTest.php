@@ -332,7 +332,8 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         // At this point, our journals search should be in the unsaved list; let's
         // set it up for alerts and confirm that this auto-saves it.
         $select = $this->findCss($page, '#recent-searches ' . $scheduleSelector);
-        $select->selectOption(7);
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $select);
+        $select->selectOption('7');
         $this->waitForPageLoad($page);
         $this->assertCount(
             2,
@@ -344,6 +345,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         $this->findAndAssertLink($page, 'Delete')->click();
         $this->waitForPageLoad($page);
         $select = $this->findCss($page, '#recent-searches ' . $scheduleSelector);
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $select);
         $this->assertEquals(0, $select->getValue());
     }
 
@@ -366,6 +368,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
 
         // Now confirm that we have the expected text:
         $link = $this->findCss($page, '.searchtools .manageSchedule');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $link);
         $this->assertEquals('Alert schedule: None', $link->getText());
         $link->click();
         $this->waitForPageLoad($page);
@@ -378,7 +381,8 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         // We should now be on a page with a schedule selector; let's pick something:
         $scheduleSelector = 'select[name="schedule"]';
         $select = $this->findCss($page, $scheduleSelector);
-        $select->selectOption(7);
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $select);
+        $select->selectOption('7');
         $this->waitForPageLoad($page);
 
         // Let's confirm that if we repeat the search, the alert will now be set:
@@ -402,6 +406,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         // We are not logged in, so we won't see the appropriate alert schedule yet
         // (it's always "None" for logged-out users).
         $link = $this->findCss($page, '.searchtools .manageSchedule');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $link);
         $this->assertEquals('Alert schedule: None', $link->getText());
         $link->click();
         $this->waitForPageLoad($page);
@@ -449,7 +454,8 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
 
         // Let's set up our search for alerts and make sure it's handled correctly:
         $select = $this->findCss($page, '#recent-searches ' . $scheduleSelector);
-        $select->selectOption(1);
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $select);
+        $select->selectOption('1');
         $this->waitForPageLoad($page);
 
         // We should now be prompted to log in:

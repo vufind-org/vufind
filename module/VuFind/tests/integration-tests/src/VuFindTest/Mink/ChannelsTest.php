@@ -117,6 +117,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         );
         // Similar record drop-down menu contains appropriate view record link:
         $link = $this->findCss($page, '.channel-options a');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $link);
         $this->assertEquals('View Record', $link->getText());
         $this->assertStringEndsWith("/$id", $link->getAttribute('href'));
     }
@@ -152,6 +153,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         $channel = $this->findCss($page, $this->channelSelector);
         // Initial counts
         $this->assertCount(6, $page->findAll('css', $this->channelSelector));
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $channel);
         $this->assertCount(8, $channel->findAll('css', '.channel-add-link'));
         // Click first add button
         $this->clickCss($channel, '.channel-add-more-btn');
@@ -162,6 +164,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertCount(6, $channel->findAll('css', '.channel-add-link'));
         // Click last add button (and assert that it's the one we expect it to be)
         $lastChannel = $this->findCss($page, 'div.channel', index: 7);
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $lastChannel);
         $this->assertEquals('Similar Items: Movie Quotes Thru The Ages', $lastChannel->find('css', 'h2')->getText());
         $this->clickCss($lastChannel, '.channel-add-more-btn');
         // Post count
@@ -284,6 +287,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals($popoverContents, $popoverContents3);
         // Finally, click through to the record page.
         $link = $this->findCss($page, '.ql-view-record-btn');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $link);
         $this->assertEquals('View Record', $link->getText());
         $link->click();
         $this->waitForPageLoad($page);

@@ -116,6 +116,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
         // If successful, we should now have a link to review the request:
         $this->waitForPageLoad($page);
         $link = $this->findCss($page, '.modal-body a');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $link);
         $this->assertEquals('Interlibrary Loan Requests', $link->getText());
         $link->click();
 
@@ -151,6 +152,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
 
         // If successful, we should now have a link to review the request:
         $link = $this->findCss($page, '.modal-body a');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $link);
         $this->assertEquals('Storage Retrieval Requests', $link->getText());
         $link->click();
 
@@ -266,6 +268,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     protected function illRequestProcedure(Element $page): void
     {
         $element = $this->findCss($page, '.alert.alert-info a');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $element);
         $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
         $this->fillInLoginForm($page, 'username1', 'test', false);
@@ -294,6 +297,7 @@ final class IlsActionsTest extends \VuFindTest\Integration\MinkTestCase
     protected function storageRetrievalRequestProcedure(Element $page): void
     {
         $element = $this->findCss($page, '.alert.alert-info a');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $element);
         $this->assertEquals('Login for hold and recall information', $element->getText());
         $element->click();
         $this->fillInLoginForm($page, 'username1', 'test', false);

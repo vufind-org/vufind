@@ -193,6 +193,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
 
         // Clear test
         $multiSel = $this->findCss($page, '#limit_callnumber-first');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $multiSel);
         $multiSel->selectOption('~callnumber-first:"A - General Works"', true);
         $multiSel->selectOption('~callnumber-first:"D - World History"', true);
         $this->assertCount(2, $multiSel->getValue());

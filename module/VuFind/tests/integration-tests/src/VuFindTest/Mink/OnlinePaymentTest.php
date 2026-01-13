@@ -528,6 +528,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         // Wait for the registration error message to appear:
         $alert = $this->findCss($page, '.alert.alert-danger');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $alert);
         $this->assertEquals(
             'The payment has been charged from your bank account, but registration in your library account has been'
             . ' delayed. The paid items are still displayed until the registration has been completed.',

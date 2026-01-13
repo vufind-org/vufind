@@ -620,6 +620,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
     {
         $selectAll = $this
             ->findCss($page, '[name=bulkActionForm] .checkbox-select-all');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $selectAll);
         $selectAll->check();
     }
 
@@ -664,6 +665,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
 
         // First try clicking without selecting anything:
         $button = $this->findCss($page, '[name=bulkActionForm] [name=export]');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $button);
         $button->click();
         $this->checkForNonSelectedMessage($page);
 
@@ -673,10 +675,12 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
 
         // Select EndNote option
         $select = $this->findCss($page, '#format');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $select);
         $select->selectOption('EndNote');
 
         // Do the export:
         $submit = $this->findCss($page, '.modal-body input[name=submitButton]');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $submit);
         $submit->click();
         $this->assertEquals('Download File', $this->findCssAndGetText($page, '.modal-body .alert .text-center .btn'));
     }
@@ -978,6 +982,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
 
         // First try clicking without selecting anything:
         $button = $this->findCss($page, '[name=bulkActionForm] [name=delete]');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $button);
         $button->click();
         $this->checkForNonSelectedMessage($page);
 

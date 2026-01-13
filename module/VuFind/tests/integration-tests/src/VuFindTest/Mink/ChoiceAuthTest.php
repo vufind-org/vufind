@@ -154,7 +154,9 @@ final class ChoiceAuthTest extends \VuFindTest\Integration\MinkTestCase
 
         // Create account
         $element = $this->findCss($page, '#loginOptions a');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $element);
         $this->assertEquals('Login', $element->getText());
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $element);
         $element->click();
         $this->clickCss($page, '.createAccountLink');
         $this->fillInAccountForm($page);

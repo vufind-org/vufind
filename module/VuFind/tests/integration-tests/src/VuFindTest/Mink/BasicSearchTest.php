@@ -209,6 +209,7 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals('1', $this->findCssAndGetText($page, $this->topActivePageSelector));
         $this->assertEquals('1', $this->findCssAndGetText($page, $this->topAriaCurrentPageSelector));
         $secondPage = $this->findCss($page, '.pagination-top li', null, 1);
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $secondPage);
         $secondPage->find('css', 'a')->click();
         $this->waitForPageLoad($page);
 
@@ -240,6 +241,7 @@ class BasicSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals('1', $this->findCssAndGetText($page, $this->activePageSelector));
         $this->assertEquals('1', $this->findCssAndGetText($page, $this->ariaCurrentPageSelector));
         $secondPage = $this->findCss($page, '.pagination li', null, 1);
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $secondPage);
         $secondPage->find('css', 'a')->click();
         $this->waitForPageLoad($page);
 

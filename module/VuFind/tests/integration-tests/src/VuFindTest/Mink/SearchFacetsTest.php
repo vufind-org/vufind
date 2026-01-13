@@ -1348,7 +1348,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 
         // format:Book is also a normal facet, but count should still be empty unless enabled:
         $filter = $this->findCss($page, '.checkbox-filter');
-        $this->assertNotNull($filter);
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $filter);
         $this->assertEquals('Books', $this->findCssAndGetText($filter->getParent(), '.icon-link__label'));
         $this->assertEqualsWithTimeout(
             $counts ? '9' : '',
@@ -1359,7 +1359,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 
         // illustrated:Illustrated is only a checkbox facet:
         $filter2 = $this->findCss($page, '.checkbox-filter', null, 1);
-        $this->assertNotNull($filter2);
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $filter2);
         $this->assertEquals('Illustrated', $this->findCssAndGetText($filter2->getParent(), '.icon-link__label'));
         $illustratedCount = $this->findCssAndGetText($filter2->getParent(), '.avail-count');
         $this->assertEquals($counts ? '2' : '', $illustratedCount);
@@ -1639,12 +1639,14 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performSearch('building:weird_ids.mrc OR building:journals.mrc');
         $sidebar = $this->findCss($page, '.sidebar');
         $checkbox = $this->findCss($sidebar, '.js-user-selection-multi-filters');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $checkbox);
         $this->assertFalse($checkbox->isChecked()); // unchecked by default
         $this->activateMultiFilterSelection($sidebar);
 
         $page = $this->performSearch('building:weird_ids.mrc OR building:journals.mrc');
         $sidebar = $this->findCss($page, '.sidebar');
         $checkbox = $this->findCss($sidebar, '.js-user-selection-multi-filters');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $checkbox);
         $this->assertTrue($checkbox->isChecked()); // checked state remembered from last page
         $this->deactivateMultiFilterSelection($sidebar);
     }
@@ -1669,6 +1671,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performSearch('building:weird_ids.mrc OR building:journals.mrc');
         $sidebar = $this->findCss($page, '.sidebar');
         $checkbox = $this->findCss($sidebar, '.js-user-selection-multi-filters');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $checkbox);
         $this->assertTrue($checkbox->isChecked());
     }
 
@@ -1692,7 +1695,8 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performSearch('building:weird_ids.mrc OR building:journals.mrc');
         $sidebar = $this->findCss($page, '.sidebar');
         $this->assertFalse($this->findCss($sidebar, '.js-user-selection-multi-filters')->isVisible());
-        $this->assertNotNull($sidebar->find('css', '.js-apply-multi-facets-selection'));
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $sidebar);
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $sidebar->find('css', '.js-apply-multi-facets-selection'));
     }
 
     /**
@@ -1716,6 +1720,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Make sure the active filters show up:
         $filterArea = $this->findCss($page, '.active-filters');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $filterArea);
         $filters = $filterArea->findAll('css', '.filter-value');
         $this->assertCount(3, $filters);
 

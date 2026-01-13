@@ -117,6 +117,7 @@ class CollectionsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $this->goToCollection();
         $input = $this->findCss($page, '#keywordFilter_lookfor');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $input);
         $input->setValue('Subcollection 2');
         $this->findCss($page, '#keywordFilterForm .btn')->press();
 

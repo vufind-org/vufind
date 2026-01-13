@@ -103,6 +103,7 @@ class ContainerLinksTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performSearch('id:jnl1-1');
         // Check parent link:
         $parentLink = $this->findCss($page, '.result-body a.container-link');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $parentLink);
         $this->assertMatchesRegularExpression(
             '{.*/Record/jnl1\?checkRoute=1&sid=\d+}',
             $parentLink->getAttribute('href')

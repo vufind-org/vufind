@@ -208,7 +208,9 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
         // Confirm the presence of a library card selector on the page:
         $firstCard = $this->findCss($page, '#library_card option:nth-child(1)');
         $secondCard = $this->findCss($page, '#library_card option:nth-child(2)');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $secondCard);
         $card2Value = $secondCard->getValue();
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $firstCard);
         $this->assertEquals('card 1', $firstCard->getText());
         $this->assertEquals('card 2', $secondCard->getText());
 
@@ -329,6 +331,7 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Click the delete button
         $button = $this->findCss($page, 'tr:nth-child(3)')->findLink('Delete');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $button);
         $button->click();
         $this->waitForPageLoad($page);
         $this->clickCss($page, $this->firstOpenDropdownMenuItemSelector);

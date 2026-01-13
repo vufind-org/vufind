@@ -169,6 +169,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         string $selectAllId = '#addFormCheckboxSelectAll'
     ): void {
         $selectAll = $this->findCss($page, $selectAllId);
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $selectAll);
         $selectAll->check();
         // Make sure all items are checked:
         $checkboxCount = count($page->findAll('css', '.checkbox-select-item'));
@@ -248,6 +249,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
     protected function checkEmptyCart(Element $page, bool $inLightbox = true): void
     {
         $info = $this->findCss($page, ($inLightbox ? '.modal-body ' : '') . '.form-inline .alert-info');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $info);
         $this->assertEquals('Your Book Bag is empty.', $info->getText());
     }
 
@@ -263,6 +265,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
     protected function checkForNonSelectedMessage(Element $page, bool $inLightbox = true): void
     {
         $warning = $this->findCss($page, $inLightbox ? '.modal-body .alert' : '.alert');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $warning);
         $this->assertEquals(
             'No items were selected. '
             . 'Please click on a checkbox next to an item and try again.',
@@ -409,10 +412,15 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         $cartItems = $this->findCss($page, '#cartItems');
         $add = $this->findCss($page, '.cart-add');
         $remove = $this->findCss($page, '.cart-remove');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $add);
         $add->click();
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $cartItems);
         $this->assertEquals('Book Bag: 1 items (Full)', $cartItems->getText());
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $remove);
         $remove->click();
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $cartItems);
         $this->assertEquals('Book Bag: 0 items', $cartItems->getText());
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $add);
         $add->click();
         $this->assertEquals('Book Bag: 1 items (Full)', $cartItems->getText());
 
@@ -506,8 +514,10 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
 
         // Activate the "empty" control:
         $empty = $this->findCss($page, '#cart-empty-label');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $empty);
         $empty->click();
         $emptyConfirm = $this->findCss($page, '#cart-confirm-empty');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $emptyConfirm);
         $emptyConfirm->click();
         $this->checkEmptyCart($page);
 
@@ -569,8 +579,10 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Cart');
         $empty = $this->findCss($page, '#cart-empty-label');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $empty);
         $empty->click();
         $emptyConfirm = $this->findCss($page, '#cart-confirm-empty');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $emptyConfirm);
         $emptyConfirm->click();
 
         // Confirm that the cart has truly been emptied:
@@ -588,6 +600,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
             ['config' => ['Mail' => ['testOnly' => 1]]]
         );
         $button = $this->findCss($page, '.cart-controls button[name=email]');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $button);
 
         // First try clicking without selecting anything:
         $button->click();
@@ -629,6 +642,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
     {
         $page = $this->setUpGenericCartTest();
         $button = $this->findCss($page, '.cart-controls button[name=saveCart]');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $button);
 
         // First try clicking without selecting anything:
         $button->click();
@@ -652,6 +666,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         );
         // Make sure the link in the success message contains a valid list ID:
         $result = $this->findCss($page, '.modal-body .alert-success a');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $result);
         $this->assertMatchesRegularExpression(
             '|href="[^"]*/MyResearch/MyList/[0-9]+"|',
             $result->getOuterHtml()
@@ -670,6 +685,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
     {
         $page = $this->setUpGenericCartTest();
         $button = $this->findCss($page, '.cart-controls button[name=export]');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $button);
 
         // First try clicking without selecting anything:
         $button->click();
@@ -681,12 +697,15 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
 
         // Select EndNote option
         $select = $this->findCss($page, '#format');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $select);
         $select->selectOption('EndNote');
 
         // Do the export:
         $submit = $this->findCss($page, '.modal-body input[name=submitButton]');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $submit);
         $submit->click();
         $result = $this->findCss($page, '.modal-body .alert .text-center .btn');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $result);
         $this->assertEquals('Download File', $result->getText());
     }
 
@@ -721,10 +740,12 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
 
         // Go to export option list:
         $this->selectAllItemsInCart($page);
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $button);
         $button->click();
 
         // Select EndNote option
         $select = $this->findCss($page, '#format');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $select);
         $select->selectOption('VuFind');
 
         // Do the export:
@@ -732,6 +753,7 @@ final class CartTest extends \VuFindTest\Integration\MinkTestCase
         $windowNames = $session->getWindowNames();
         $windowCount = count($session->getWindowNames());
         $submit = $this->findCss($page, '.modal-body input[name=submitButton]');
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $submit);
         $submit->click();
         $this->assertEqualsWithTimeout(
             $windowCount + 1,
