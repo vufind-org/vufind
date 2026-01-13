@@ -1,6 +1,9 @@
 # If this file is empty or missing, default settings will be used, matching
 # the examples provided below.
 #
+# Please note that the current implementation of AdminMenu only supports a subset of
+# the options supported by AccountMenu.
+#
 # Array keys for every menu item could be:
 #   - name: name of an item
 #   - label: the text shown as link, will be translated - required
@@ -8,7 +11,7 @@
 #   - icon: icon used for the item, has to be defined in theme config
 #   - iconMethod: method to dynamically create the icon name; ignored when
 #     icon is explicitly set.
-#   - checkMethod: the name of an AdminMenu section plugin method to perform
+#   - checkMethod: the name of an AdminMenu navigation plugin method to perform
 #     a check whether to show the item. If omitted, item will always display.
 #   - status: whether to show status label, defaults to false
 
