@@ -37,6 +37,8 @@ use VuFind\ILS\Connection;
 use VuFind\Navigation\AbstractMenu;
 use VuFind\Navigation\AccountMenu;
 use VuFind\Navigation\AdminMenu;
+use VuFind\Navigation\Footer;
+use VuFind\Navigation\Header;
 use VuFind\Navigation\NavigationInterface;
 use VuFind\Navigation\PluginManager as NavigationManager;
 use VuFind\Section\Plugin\PluginManager as SectionManager;
@@ -104,6 +106,8 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         $container->set(SectionServiceInterface::class, $service);
         $this->getAccountMenu($container);
         $this->getAdminMenu($container);
+        $this->getFooter($container);
+        $this->getHeader($container);
     }
 
     /**
@@ -249,6 +253,102 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
     {
         return [
             'checkShowOverdrive' => $value,
+        ];
+    }
+
+    /**
+     * Get a mock Footer.
+     *
+     * @param MockContainer $container    Mock container
+     * @param array         $config       Configuration to use
+     * @param array         $checkMethods Values to return for specific check methods
+     *
+     * @return Footer
+     */
+    protected function getFooter(
+        MockContainer $container,
+        array $config = [],
+        array $checkMethods = []
+    ): Footer {
+        $footer = $this->getMockBuilder(Footer::class)
+            ->setConstructorArgs(
+                [
+                    $config,
+                    true,
+                ]
+            )
+            ->onlyMethods(array_keys($this->getFooterCheckMethods()))
+            ->getMock();
+        foreach ($this->getFooterCheckMethods() as $checkMethod => $default) {
+            $footer->method($checkMethod)->willReturn($checkMethods[$checkMethod] ?? $default);
+        }
+        $this->setSectionPlugin($container, $footer, 'footer');
+        return $footer;
+    }
+
+    /**
+     * Get all Footer check methods.
+     *
+     * @param bool $value Value for the check methods to return
+     *
+     * @return array
+     */
+    protected function getFooterCheckMethods(bool $value = true): array
+    {
+        return [
+            'checkCookieSettings' => $value,
+        ];
+    }
+
+    /**
+     * Get a mock Header.
+     *
+     * @param MockContainer $container    Mock container
+     * @param array         $config       Configuration to use
+     * @param array         $checkMethods Values to return for specific check methods
+     *
+     * @return Header
+     */
+    protected function getHeader(
+        MockContainer $container,
+        array $config = [],
+        array $checkMethods = []
+    ): Header {
+        $header = $this->getMockBuilder(Header::class)
+            ->setConstructorArgs(
+                [
+                    $config,
+                    true,
+                    true,
+                    true,
+                    true,
+                    true,
+                ]
+            )
+            ->onlyMethods(array_keys($this->getHeaderCheckMethods()))
+            ->getMock();
+        foreach ($this->getHeaderCheckMethods() as $checkMethod => $default) {
+            $header->method($checkMethod)->willReturn($checkMethods[$checkMethod] ?? $default);
+        }
+        $this->setSectionPlugin($container, $header, 'header');
+        return $header;
+    }
+
+    /**
+     * Get all Header check methods.
+     *
+     * @param bool $value Value for the check methods to return
+     *
+     * @return array
+     */
+    protected function getHeaderCheckMethods(bool $value = true): array
+    {
+        return [
+            'checkFeedback' => $value,
+            'checkCart' => $value,
+            'checkAccount' => $value,
+            'checkThemeOptions' => $value,
+            'checkAllLangs' => $value,
         ];
     }
 }

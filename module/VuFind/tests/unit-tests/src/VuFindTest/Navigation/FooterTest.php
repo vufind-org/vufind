@@ -1,0 +1,75 @@
+<?php
+
+/**
+ * Footer tests.
+ *
+ * PHP version 8
+ *
+ * Copyright (C) The National Library of Finland 2026.
+ *
+ * This program is free software; you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License version 2,
+ * as published by the Free Software Foundation.
+ *
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU General Public License for more details.
+ *
+ * You should have received a copy of the GNU General Public License
+ * along with this program; if not, see
+ * <https://www.gnu.org/licenses/>.
+ *
+ * @category VuFind
+ * @package  Tests
+ * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
+ */
+
+namespace VuFindTest\Navigation;
+
+use VuFind\Navigation\Footer;
+use VuFindTest\Unit\AbstractSectionTestCase;
+
+/**
+ * Footer tests.
+ *
+ * @category VuFind
+ * @package  Tests
+ * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
+ * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
+ * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
+ */
+class FooterTest extends AbstractSectionTestCase
+{
+    /**
+     * Test that the menu is the default menu if configuration is missing.
+     *
+     * @return void
+     */
+    public function testMissingConfiguration()
+    {
+        $container = $this->getContainerWithSectionRelatedServices();
+        $this->assertEquals(
+            $this->getFooter($container)->getMenu(),
+            $this->getFooter($container, Footer::getDefaultMenuConfig())->getMenu()
+        );
+    }
+
+    /**
+     * Test the default menu when all check methods return false.
+     *
+     * @return void
+     */
+    public function testDefaultMenuAllCheckMethodsReturnFalse()
+    {
+        $container = $this->getContainerWithSectionRelatedServices();
+        $menu = $this->getFooter(
+            $container,
+            Footer::getDefaultMenuConfig(),
+            $this->getFooterCheckMethods(false)
+        )->getMenu();
+        $this->assertCount(3, $menu['FooterRight']['MenuItems']);
+    }
+}

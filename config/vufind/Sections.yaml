@@ -19,3 +19,9 @@ Sections:
 
   AdminMenu:
     plugin: adminMenu
+
+  Header:
+    plugin: header
+
+  Footer:
+    plugin: footer
