@@ -5,7 +5,7 @@
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010-25.
+ * Copyright (C) Villanova University 2010-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -42,7 +42,7 @@ use Psr\Container\ContainerInterface;
  * @package  Session_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org Main Page
+ * @link     https://vufind.org
  */
 class FollowupHelperFactory implements FactoryInterface
 {
