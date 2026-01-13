@@ -2,11 +2,11 @@
 # the examples provided below. The format of this configuration is as follows:
 # array keys for every group are:
 #   - name: name of a group
-#   - label: text shown as group header - required
+#   - label: text shown as group header, will be translated - required
 #   - id: html id for the group - required
 #   - class: class for the list of items
 #   - MenuItems: items shown in the menu - required
-#   - checkMethod: the name of an AccountMenu view helper method to perform
+#   - checkMethod: the name of an AccountMenu section plugin method to perform
 #     a check whether to show the group. If omitted, group will always display.
 # array keys for every menu item could be:
 #   - name: name of an item
@@ -18,7 +18,7 @@
 #   - icon: icon used for the item, has to be defined in theme config
 #   - iconMethod: method to dynamically create the icon name; ignored when
 #     icon is explicitly set.
-#   - checkMethod: the name of an AccountMenu navigation plugin method to perform
+#   - checkMethod: the name of an AccountMenu section plugin method to perform
 #     a check whether to show the item. If omitted, item will always display.
 #   - status: whether to show status label, defaults to false
 

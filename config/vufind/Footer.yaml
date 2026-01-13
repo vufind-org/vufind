@@ -1,17 +1,19 @@
 # If this file is empty or missing, default settings will be used, matching
 # the examples provided below. The format of this configuration is as follows:
 # array keys for every group are:
-#   - label: text shown as group header - required
+#   - label: text shown as group header, will be translated - required
 #   - MenuItems: items shown in the menu - required
+#   - checkMethod: the name of a Footer section plugin method to perform
+#     a check whether to show the group. If omitted, group will always display.
 # array keys for every menu item could be:
 #   - name: name of an item
 #   - label: the text shown as link, will be translated - required
 #   - route: route name used to generate link target - route or url required
 #   - routeParams: parameters for dynamic routes
 #   - url: target url, alternative to route - route or url required
-#   - checkMethod: the name of a Footer navigation plugin method to perform
+#   - checkMethod: the name of a Footer section plugin method to perform
 #     a check whether to show the item. If omitted, item will always display.
-#   - attributes: additional attributes for the menu item
+#   - attributes: additional attributes for the menu item's <a> tag
 
 FooterLeft:
   label: footer_header_search_options

@@ -1,12 +1,8 @@
 # If this file is empty or missing, default settings will be used, matching
 # the examples provided below. The format of this configuration is as follows:
 # array keys for every group are:
-#   - name: name of a group
-#   - label: text shown as group header - required
-#   - id: html id for the group - required
-#   - class: class for the list of items
 #   - MenuItems: items shown in the menu - required
-#   - checkMethod: the name of an AccountMenu view helper method to perform
+#   - checkMethod: the name of a Header section plugin method to perform
 #     a check whether to show the group. If omitted, group will always display.
 # array keys for every menu item could be:
 #   - name: name of an item
@@ -16,16 +12,13 @@
 #   - url: target url, alternative to route - route, url or template required
 #   - template: template to render the item with
 #   - icon: icon used for the item, has to be defined in theme config
-#   - iconMethod: method to dynamically create the icon name; ignored when
-#     icon is explicitly set.
-#   - checkMethod: the name of an AccountMenu navigation plugin method to perform
+#   - checkMethod: the name of a Header section plugin method to perform
 #     a check whether to show the item. If omitted, item will always display.
-#   - status: whether to show status label, defaults to false
-#   - attributes: additional attributes for the menu item
-#   - below: items to be shown in a dropdown menu. Example:
+#   - attributes: additional attributes for the menu item's <a> tag
+#   - submenuItems: items to be shown in a dropdown menu. Example:
 #       - label: 'Main item label'
 #         url: '#'
-#         below:
+#         submenuItems:
 #           - label: 'Dropdown item 1'
 #             route: item-1-route
 #             description: 'Optional item description'
