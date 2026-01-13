@@ -37,8 +37,8 @@ use VuFind\ILS\Connection;
 use VuFind\Navigation\AbstractMenu;
 use VuFind\Navigation\AccountMenu;
 use VuFind\Navigation\AdminMenu;
-use VuFind\Navigation\Footer;
-use VuFind\Navigation\Header;
+use VuFind\Navigation\FooterMenu;
+use VuFind\Navigation\HeaderMenu;
 use VuFind\Navigation\NavigationInterface;
 use VuFind\Navigation\PluginManager as NavigationManager;
 use VuFind\Section\Plugin\PluginManager as SectionManager;
@@ -263,14 +263,14 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
      * @param array         $config       Configuration to use
      * @param array         $checkMethods Values to return for specific check methods
      *
-     * @return Footer
+     * @return FooterMenu
      */
     protected function getFooter(
         MockContainer $container,
         array $config = [],
         array $checkMethods = []
-    ): Footer {
-        $footer = $this->getMockBuilder(Footer::class)
+    ): FooterMenu {
+        $footer = $this->getMockBuilder(FooterMenu::class)
             ->setConstructorArgs(
                 [
                     $config,
@@ -307,14 +307,14 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
      * @param array         $config       Configuration to use
      * @param array         $checkMethods Values to return for specific check methods
      *
-     * @return Header
+     * @return HeaderMenu
      */
     protected function getHeader(
         MockContainer $container,
         array $config = [],
         array $checkMethods = []
-    ): Header {
-        $header = $this->getMockBuilder(Header::class)
+    ): HeaderMenu {
+        $header = $this->getMockBuilder(HeaderMenu::class)
             ->setConstructorArgs(
                 [
                     $config,

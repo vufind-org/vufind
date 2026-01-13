@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Header tests.
+ * Header menu tests.
  *
  * PHP version 8
  *
@@ -29,11 +29,11 @@
 
 namespace VuFindTest\Navigation;
 
-use VuFind\Navigation\Header;
+use VuFind\Navigation\HeaderMenu;
 use VuFindTest\Unit\AbstractSectionTestCase;
 
 /**
- * Header tests.
+ * Header menu tests.
  *
  * @category VuFind
  * @package  Tests
@@ -41,7 +41,7 @@ use VuFindTest\Unit\AbstractSectionTestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class HeaderTest extends AbstractSectionTestCase
+class HeaderMenuTest extends AbstractSectionTestCase
 {
     /**
      * Test that the menu is the default menu if configuration is missing.
@@ -53,7 +53,7 @@ class HeaderTest extends AbstractSectionTestCase
         $container = $this->getContainerWithSectionRelatedServices();
         $this->assertEquals(
             $this->getHeader($container)->getMenu(),
-            $this->getHeader($container, Header::getDefaultMenuConfig())->getMenu()
+            $this->getHeader($container, HeaderMenu::getDefaultMenuConfig())->getMenu()
         );
     }
 
@@ -67,7 +67,7 @@ class HeaderTest extends AbstractSectionTestCase
         $container = $this->getContainerWithSectionRelatedServices();
         $menu = $this->getHeader(
             $container,
-            Header::getDefaultMenuConfig(),
+            HeaderMenu::getDefaultMenuConfig(),
             $this->getHeaderCheckMethods(false)
         )->getMenu();
         $this->assertCount(0, $menu);

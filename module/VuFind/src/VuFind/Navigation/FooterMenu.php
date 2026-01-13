@@ -38,7 +38,7 @@ namespace VuFind\Navigation;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class Footer extends AbstractMenu
+class FooterMenu extends AbstractMenu
 {
     /**
      * Is cookie consent enabled?

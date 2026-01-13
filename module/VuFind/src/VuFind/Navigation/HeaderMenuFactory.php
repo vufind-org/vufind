@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Footer factory
+ * Header factory
  *
  * PHP version 8
  *
@@ -34,8 +34,10 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
+use function count;
+
 /**
- * Footer factory
+ * Header factory
  *
  * @category VuFind
  * @package  Navigation
@@ -43,7 +45,7 @@ use Psr\Container\ContainerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class FooterFactory extends AbstractMenuFactory
+class HeaderMenuFactory extends AbstractMenuFactory
 {
     /**
      * Create an object
@@ -65,12 +67,21 @@ class FooterFactory extends AbstractMenuFactory
         ?array $options = null
     ) {
         $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
+        $cart = $container->get(\VuFind\Cart::class);
+        $manager = $container->get(\VuFind\Auth\Manager::class);
+        $viewModel = $container->get('ViewManager')->getViewModel();
         return parent::__invoke(
             $container,
             $requestedName,
             [
-                'Footer.yaml',
+                'HeaderMenu.yaml',
                 $config,
+                $cart->isActive(),
+                $manager->loginEnabled(),
+                $viewModel->getVariable('themeOptions')
+                    && (count($viewModel->getVariable('themeOptions')) > 1),
+                $viewModel->getVariable('allLangs')
+                    && (count($viewModel->getVariable('allLangs')) > 1),
                 ...($options ?? []),
             ]
         );

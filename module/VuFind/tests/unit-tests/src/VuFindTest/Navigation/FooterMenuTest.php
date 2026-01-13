@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Footer tests.
+ * Footer menu tests.
  *
  * PHP version 8
  *
@@ -29,11 +29,11 @@
 
 namespace VuFindTest\Navigation;
 
-use VuFind\Navigation\Footer;
+use VuFind\Navigation\FooterMenu;
 use VuFindTest\Unit\AbstractSectionTestCase;
 
 /**
- * Footer tests.
+ * Footer menu tests.
  *
  * @category VuFind
  * @package  Tests
@@ -41,7 +41,7 @@ use VuFindTest\Unit\AbstractSectionTestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class FooterTest extends AbstractSectionTestCase
+class FooterMenuTest extends AbstractSectionTestCase
 {
     /**
      * Test that the menu is the default menu if configuration is missing.
@@ -53,7 +53,7 @@ class FooterTest extends AbstractSectionTestCase
         $container = $this->getContainerWithSectionRelatedServices();
         $this->assertEquals(
             $this->getFooter($container)->getMenu(),
-            $this->getFooter($container, Footer::getDefaultMenuConfig())->getMenu()
+            $this->getFooter($container, FooterMenu::getDefaultMenuConfig())->getMenu()
         );
     }
 
@@ -67,7 +67,7 @@ class FooterTest extends AbstractSectionTestCase
         $container = $this->getContainerWithSectionRelatedServices();
         $menu = $this->getFooter(
             $container,
-            Footer::getDefaultMenuConfig(),
+            FooterMenu::getDefaultMenuConfig(),
             $this->getFooterCheckMethods(false)
         )->getMenu();
         $this->assertCount(3, $menu['FooterRight']['MenuItems']);
