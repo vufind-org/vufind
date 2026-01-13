@@ -70,7 +70,7 @@ class FooterFactory extends AbstractMenuFactory
             $requestedName,
             [
                 'Footer.yaml',
-                !empty($config['Cookies']['consent']),
+                $config,
                 ...($options ?? []),
             ]
         );

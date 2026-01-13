@@ -274,7 +274,7 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
             ->setConstructorArgs(
                 [
                     $config,
-                    true,
+                    [],
                 ]
             )
             ->onlyMethods(array_keys($this->getFooterCheckMethods()))
@@ -318,7 +318,7 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
             ->setConstructorArgs(
                 [
                     $config,
-                    true,
+                    [],
                     true,
                     true,
                     true,

@@ -41,10 +41,17 @@ namespace VuFind\Navigation;
 class Header extends AbstractMenu
 {
     /**
+     * Is feedback enabled?
+     *
+     * @var bool
+     */
+    protected bool $feedbackEnabled;
+
+    /**
      * Constructor
      *
      * @param array $sectionConfig       Menu configuration
-     * @param bool  $feedbackEnabled     Is feedback enabled?
+     * @param array $config              Main configuration
      * @param bool  $cartEnabled         Is cart enabled?
      * @param bool  $accountEnabled      Is account enabled?
      * @param bool  $themeOptionsEnabled Is theme options enabled?
@@ -52,13 +59,14 @@ class Header extends AbstractMenu
      */
     public function __construct(
         array $sectionConfig,
-        protected bool $feedbackEnabled,
+        array $config,
         protected bool $cartEnabled,
         protected bool $accountEnabled,
         protected bool $themeOptionsEnabled,
         protected bool $allLangsEnabled
     ) {
         parent::__construct($sectionConfig);
+        $this->feedbackEnabled = (bool)($config['Feedback']['tab_enabled'] ?? false);
     }
 
     /**

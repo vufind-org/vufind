@@ -75,7 +75,7 @@ class HeaderFactory extends AbstractMenuFactory
             $requestedName,
             [
                 'Header.yaml',
-                $config['Feedback']['tab_enabled'] ?? false,
+                $config,
                 $cart->isActive(),
                 $manager->loginEnabled(),
                 $viewModel->getVariable('themeOptions')
