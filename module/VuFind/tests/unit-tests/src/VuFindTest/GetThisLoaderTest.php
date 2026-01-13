@@ -179,9 +179,9 @@ class GetThisLoaderTest extends TestCase
         $this->getThis->setItems(self::getItems());
         $this->assertEquals(self::getItems(), $this->getThis->getItems());
         $this->assertEquals(1, $this->getThis->getItem()['item_id']);
-        $this->getThis->setItemId(2);
+        $this->getThis->setItemId('2');
         $this->assertEquals(2, $this->getThis->getItem()['item_id']);
-        $this->assertEquals(1, $this->getThis->getItem(1)['item_id']);
+        $this->assertEquals(1, $this->getThis->getItem('1')['item_id']);
     }
 
     /**
@@ -511,10 +511,10 @@ class GetThisLoaderTest extends TestCase
         $this->assertNull($item);
 
         $this->getThis->setItems(self::getItems());
-        $item = $this->getThis->getItem(2);
+        $item = $this->getThis->getItem('2');
         $this->assertEquals($item, self::getItems()[1]);
 
-        $this->getThis->setItemId(5);
+        $this->getThis->setItemId('5');
         $item = $this->getThis->getItem();
         $this->assertEquals($item, self::getItems()[2]);
 
@@ -532,15 +532,15 @@ class GetThisLoaderTest extends TestCase
     {
         $this->getThis->setItems(self::getItems());
 
-        $status = $this->getThis->getStatus(5);
+        $status = $this->getThis->getStatus('5');
         $this->assertSame('Unknown', $status);
 
-        $this->getThis->getItem(1);
-        $status = $this->getThis->getStatus(1);
+        $this->getThis->getItem('1');
+        $status = $this->getThis->getStatus('1');
         $this->assertEquals($status, self::getItems()[0]['availability']->getStatusDescription());
 
-        $this->getThis->getItem(2);
-        $status = $this->getThis->getStatus(2);
+        $this->getThis->getItem('2');
+        $status = $this->getThis->getStatus('2');
         $this->assertEquals($status, self::getItems()[1]['availability']->getStatusDescription());
     }
 
@@ -554,9 +554,9 @@ class GetThisLoaderTest extends TestCase
         $this->assertSame('', $this->getThis->getLocation());
 
         $this->getThis->setItems(self::getItems());
-        $this->assertSame('Main Library', $this->getThis->getLocation(1));
+        $this->assertSame('Main Library', $this->getThis->getLocation('1'));
 
-        $this->assertSame('ML', $this->getThis->getLocationCode(1));
+        $this->assertSame('ML', $this->getThis->getLocationCode('1'));
     }
 
     /**
@@ -609,7 +609,7 @@ class GetThisLoaderTest extends TestCase
         ]);
         $this->setProperty($this->getThis, 'record', $driver);
         $this->assertSame('https://what_a_great_link.com', $this->getThis->getLink());
-        $this->assertSame('https://what_another_great_link.com', $this->getThis->getLink(3));
+        $this->assertSame('https://what_another_great_link.com', $this->getThis->getLink('3'));
     }
 
     /**
@@ -655,10 +655,10 @@ class GetThisLoaderTest extends TestCase
                 'callnumber_prefix' => 'call',
             ],
         ]);
-        $this->assertSame('Online', $this->getThis->getCallNumber(9));
-        $this->assertNull($this->getThis->getCallNumber(16));
-        $this->assertSame('call_me', $this->getThis->getCallNumber(18));
-        $this->assertSame('call on me', $this->getThis->getCallNumber(42));
+        $this->assertSame('Online', $this->getThis->getCallNumber('9'));
+        $this->assertNull($this->getThis->getCallNumber('16'));
+        $this->assertSame('call_me', $this->getThis->getCallNumber('18'));
+        $this->assertSame('call on me', $this->getThis->getCallNumber('42'));
     }
 
     /**
@@ -693,9 +693,9 @@ class GetThisLoaderTest extends TestCase
         $this->setGetThisConfig($config);
         $this->getThis->setItems($holdings);
         if ($result) {
-            $this->assertNotNull($this->getThis->getCopyNumber(1));
+            $this->assertNotNull($this->getThis->getCopyNumber('1'));
         } else {
-            $this->assertNull($this->getThis->getCopyNumber(1));
+            $this->assertNull($this->getThis->getCopyNumber('1'));
         }
     }
 
@@ -710,9 +710,9 @@ class GetThisLoaderTest extends TestCase
         $config['showCopyNumber'] = true;
         $this->setGetThisConfig($config);
         $this->getThis->setItems(self::getItems());
-        $this->assertEquals(1, $this->getThis->getCopyNumber(1));
-        $this->assertEquals(2, $this->getThis->getCopyNumber(2));
-        $this->assertNull($this->getThis->getCopyNumber(3));
+        $this->assertEquals(1, $this->getThis->getCopyNumber('1'));
+        $this->assertEquals(2, $this->getThis->getCopyNumber('2'));
+        $this->assertNull($this->getThis->getCopyNumber('3'));
     }
 
     /**
@@ -739,7 +739,7 @@ class GetThisLoaderTest extends TestCase
      */
     public function testIsOnlineResource()
     {
-        $this->assertFalse($this->getThis->isOnlineResource(456));
+        $this->assertFalse($this->getThis->isOnlineResource('456'));
         $this->getThis->setItems([
             [
                 'item_id' => 9,
@@ -758,8 +758,8 @@ class GetThisLoaderTest extends TestCase
                 'callnumber' => null,
             ],
         ]);
-        $this->assertTrue($this->getThis->isOnlineResource(9));
-        $this->assertFalse($this->getThis->isOnlineResource(16));
+        $this->assertTrue($this->getThis->isOnlineResource('9'));
+        $this->assertFalse($this->getThis->isOnlineResource('16'));
     }
 
     /**
@@ -794,7 +794,7 @@ class GetThisLoaderTest extends TestCase
      */
     public function testIsOut()
     {
-        $this->assertFalse($this->getThis->isOut(123));
+        $this->assertFalse($this->getThis->isOut('123'));
 
         $this->getThis->setItems([
             [
@@ -804,12 +804,12 @@ class GetThisLoaderTest extends TestCase
                 'callnumber' => 'callnumber00',
             ],
         ]);
-        $this->assertFalse($this->getThis->isOut(1));
+        $this->assertFalse($this->getThis->isOut('1'));
 
         $this->getThis->setItems(self::getItems());
-        $this->assertFalse($this->getThis->isOut(1));
-        $this->assertFalse($this->getThis->isOut(2));
-        $this->assertFalse($this->getThis->isOut(5));
+        $this->assertFalse($this->getThis->isOut('1'));
+        $this->assertFalse($this->getThis->isOut('2'));
+        $this->assertFalse($this->getThis->isOut('5'));
 
         $this->getThis->setItems([
             [
@@ -828,8 +828,8 @@ class GetThisLoaderTest extends TestCase
                 'availability' => new AvailabilityStatus(false, 'Checked out'),
             ],
         ]);
-        $this->assertTrue($this->getThis->isOut(1));
-        $this->assertTrue($this->getThis->isOut(2));
+        $this->assertTrue($this->getThis->isOut('1'));
+        $this->assertTrue($this->getThis->isOut('2'));
     }
 
     /**
@@ -839,10 +839,10 @@ class GetThisLoaderTest extends TestCase
      */
     public function testIsAudioVideoMedia()
     {
-        $this->assertFalse($this->getThis->isAudioVideoMedia(123));
+        $this->assertFalse($this->getThis->isAudioVideoMedia('123'));
 
         $this->getThis->setItems(self::getItems());
-        $this->assertFalse($this->getThis->isAudioVideoMedia(1));
+        $this->assertFalse($this->getThis->isAudioVideoMedia('1'));
 
         $this->getThis->setItems([
             [
@@ -861,8 +861,8 @@ class GetThisLoaderTest extends TestCase
                 'availability' => new AvailabilityStatus(false, 'Checked out'),
             ],
         ]);
-        $this->assertFalse($this->getThis->isAudioVideoMedia(1));
-        $this->assertTrue($this->getThis->isAudioVideoMedia(2));
+        $this->assertFalse($this->getThis->isAudioVideoMedia('1'));
+        $this->assertTrue($this->getThis->isAudioVideoMedia('2'));
     }
 
     /**
@@ -872,11 +872,11 @@ class GetThisLoaderTest extends TestCase
      */
     public function testIsLibUseOnly()
     {
-        $this->assertFalse($this->getThis->isLibUseOnly(123));
+        $this->assertFalse($this->getThis->isLibUseOnly('123'));
 
         $this->getThis->setItems(self::getItems());
-        $this->assertTrue($this->getThis->isLibUseOnly(1));
-        $this->assertFalse($this->getThis->isLibUseOnly(2));
+        $this->assertTrue($this->getThis->isLibUseOnly('1'));
+        $this->assertFalse($this->getThis->isLibUseOnly('2'));
     }
 
     /**
@@ -886,12 +886,12 @@ class GetThisLoaderTest extends TestCase
      */
     public function testIsUnavailable()
     {
-        $this->assertFalse($this->getThis->isUnavailable(123));
+        $this->assertFalse($this->getThis->isUnavailable('123'));
 
         $this->getThis->setItems(self::getItems());
-        $this->assertFalse($this->getThis->isUnavailable(1));
-        $this->assertTrue($this->getThis->isUnavailable(2));
-        $this->assertFalse($this->getThis->isUnavailable(5));
+        $this->assertFalse($this->getThis->isUnavailable('1'));
+        $this->assertTrue($this->getThis->isUnavailable('2'));
+        $this->assertFalse($this->getThis->isUnavailable('5'));
     }
 
     /**
