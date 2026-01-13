@@ -1,11 +1,11 @@
 <?php
 
 /**
- * VuFind Action Helper - Followup
+ * VuFind Session Helper - Followup
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2010.
+ * Copyright (C) Villanova University 2010-2025.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,29 +21,29 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Controller_Plugins
+ * @package  Session_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
 
-namespace VuFind\Controller\Plugin;
+namespace VuFind\Session\Helper;
 
-use Laminas\Mvc\Controller\Plugin\AbstractPlugin;
 use Laminas\Session\Container;
 use Laminas\Uri\Http;
+use VuFind\Http\ServerUrlHelper;
 
 /**
- * Action helper to deal with login followup; responsible for remembering URLs
+ * Session helper to deal with login followup; responsible for remembering URLs
  * before login and then redirecting the user to the appropriate place afterwards.
  *
  * @category VuFind
- * @package  Controller_Plugins
+ * @package  Session_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
-class Followup extends AbstractPlugin
+class FollowupHelper
 {
     /**
      * Session container
@@ -53,13 +53,22 @@ class Followup extends AbstractPlugin
     protected $session;
 
     /**
+     * Server URL helper
+     *
+     * @var ServerUrlHelper
+     */
+    protected $serverUrlHelper;
+
+    /**
      * Constructor
      *
-     * @param Container $session Session container
+     * @param Container       $session         Session container
+     * @param ServerUrlHelper $serverUrlHelper Server URL helper
      */
-    public function __construct(Container $session)
+    public function __construct(Container $session, ServerUrlHelper $serverUrlHelper)
     {
         $this->session = $session;
+        $this->serverUrlHelper = $serverUrlHelper;
     }
 
     /**
@@ -126,7 +135,7 @@ class Followup extends AbstractPlugin
         // Store the current URL:
         $url = new Http(
             !empty($overrideUrl)
-            ? $overrideUrl : $this->getController()->getServerUrl()
+            ? $overrideUrl : $this->serverUrlHelper->getCurrentUrl()
         );
         $query = $url->getQueryAsArray();
         unset($query['lightboxParent']);

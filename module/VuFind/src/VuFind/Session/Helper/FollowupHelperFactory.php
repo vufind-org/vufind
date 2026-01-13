@@ -1,11 +1,11 @@
 <?php
 
 /**
- * Factory for Followup controller plugin.
+ * Factory for FollowupHelper.
  *
  * PHP version 8
  *
- * Copyright (C) Villanova University 2019.
+ * Copyright (C) Villanova University 2010-25.
  *
  * This program is free software; you can redistribute it and/or modify
  * it under the terms of the GNU General Public License version 2,
@@ -21,13 +21,13 @@
  * <https://www.gnu.org/licenses/>.
  *
  * @category VuFind
- * @package  Controller_Plugins
+ * @package  Session_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Page
  */
 
-namespace VuFind\Controller\Plugin;
+namespace VuFind\Session\Helper;
 
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
@@ -36,15 +36,15 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Factory for Followup controller plugin.
+ * Factory for FollowupHelper.
  *
  * @category VuFind
- * @package  Controller_Plugins
+ * @package  Session_Helpers
  * @author   Demian Katz <demian.katz@villanova.edu>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
- * @link     https://vufind.org/wiki/development:plugins:recommendation_modules Wiki
+ * @link     https://vufind.org Main Page
  */
-class FollowupFactory implements FactoryInterface
+class FollowupHelperFactory implements FactoryInterface
 {
     /**
      * Create an object
@@ -72,7 +72,8 @@ class FollowupFactory implements FactoryInterface
             new \Laminas\Session\Container(
                 'Followup',
                 $container->get(\Laminas\Session\SessionManager::class)
-            )
+            ),
+            $container->get(\VuFind\Http\ServerUrlHelper::class)
         );
     }
 }

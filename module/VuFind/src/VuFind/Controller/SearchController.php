@@ -35,6 +35,7 @@ use VuFind\Exception\Mail as MailException;
 use VuFind\Search\Factory\UrlQueryHelperFactory;
 use VuFind\Search\NewItemsHelper;
 use VuFind\Search\ReservesHelper;
+use VuFind\Session\Helper\FollowupHelper;
 
 use function array_slice;
 use function count;
@@ -156,7 +157,7 @@ class SearchController extends AbstractSolrSearch
 
         // Check if we have a URL in login followup data -- this should override
         // any existing referer to avoid emailing a login-related URL!
-        $followupUrl = $this->followup()->retrieveAndClear('emailurl');
+        $followupUrl = $this->getService(FollowupHelper::class)->retrieveAndClear('emailurl');
         if (!empty($followupUrl)) {
             $view->url = $followupUrl;
         }

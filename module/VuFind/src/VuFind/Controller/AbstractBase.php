@@ -48,6 +48,7 @@ use VuFind\Http\PhpEnvironment\Request as HttpRequest;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\Service\GetServiceTrait;
+use VuFind\Session\Helper\FollowupHelper;
 
 use function intval;
 use function is_object;
@@ -64,7 +65,6 @@ use function is_object;
  *
  * @method Plugin\Captcha captcha() Captcha plugin
  * @method FlashMessenger flashMessenger() FlashMessenger plugin
- * @method Plugin\Followup followup() Followup plugin
  * @method Plugin\Holds holds() Holds plugin
  * @method Plugin\ILLRequests ILLRequests() ILLRequests plugin
  * @method Plugin\IlsRecords ilsRecords() IlsRecords plugin
@@ -357,7 +357,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         $extras['lightboxParent'] = $this->getRequest()->getQuery('lightboxParent');
 
         // Store the current URL as a login followup action
-        $this->followup()->store($extras);
+        $this->getService(FollowupHelper::class)->store($extras);
         if (!empty($msg)) {
             $this->flashMessenger()->addMessage($msg, 'error');
         }
@@ -747,10 +747,11 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
         }
 
         // Clear previously stored lightboxParent.
-        $this->followup()->clear('lightboxParent');
+        $followupHelper = $this->getService(FollowupHelper::class);
+        $followupHelper->clear('lightboxParent');
 
         // If we got this far, we want to store the referer:
-        $this->followup()->store($extras, $referer);
+        $followupHelper->store($extras, $referer);
     }
 
     /**
@@ -774,7 +775,7 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     protected function hasFollowupUrl()
     {
-        return null !== $this->followup()->retrieve('url');
+        return null !== $this->getService(FollowupHelper::class)->retrieve('url');
     }
 
     /**
@@ -788,8 +789,8 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     protected function getAndClearFollowupUrl($checkRedirect = false)
     {
-        if ($url = $this->followup()->retrieveAndClear('url')) {
-            $lightboxParent = $this->followup()->retrieveAndClear('lightboxParent');
+        if ($url = $this->getService(FollowupHelper::class)->retrieveAndClear('url')) {
+            $lightboxParent = $this->getService(FollowupHelper::class)->retrieveAndClear('lightboxParent');
             // If a user clicks on the "Your Account" link, we want to be sure
             // they get to their account rather than being redirected to an old
             // followup URL. We'll use a redirect=0 GET flag to indicate this:
@@ -814,9 +815,10 @@ class AbstractBase extends AbstractActionController implements AccessPermissionI
      */
     protected function clearFollowupUrl()
     {
-        $this->followup()->clear('isReferrer');
-        $this->followup()->clear('lightboxParent');
-        $this->followup()->clear('url');
+        $followupHelper = $this->getService(FollowupHelper::class);
+        $followupHelper->clear('isReferrer');
+        $followupHelper->clear('lightboxParent');
+        $followupHelper->clear('url');
     }
 
     /**

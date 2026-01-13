@@ -37,6 +37,7 @@ use VuFind\Exception\Mail as MailException;
 use VuFind\Ratings\RatingsService;
 use VuFind\Record\ResourcePopulator;
 use VuFind\RecordDriver\AbstractBase as AbstractRecordDriver;
+use VuFind\Session\Helper\FollowupHelper;
 use VuFind\Tags\TagsService;
 use VuFindSearch\ParamBag;
 
@@ -155,7 +156,7 @@ class AbstractRecord extends AbstractBase
         // Save comment:
         $comment = $this->params()->fromPost('comment');
         if (empty($comment)) {
-            $comment = $this->followup()->retrieveAndClear('comment');
+            $comment = $this->getService(FollowupHelper::class)->retrieveAndClear('comment');
         } else {
             // Validate CAPTCHA now only if we're not coming back post-login:
             if (!$this->formWasSubmitted('comment', $captchaActive)) {
