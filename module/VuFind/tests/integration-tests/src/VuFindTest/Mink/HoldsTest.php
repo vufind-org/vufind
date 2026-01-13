@@ -607,7 +607,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->unFindCss($page, '#cancelAll');
 
         // Confirm that there are edit controls on the page:
-        $this->unFindCss($page, '#update_selected');
+        $this->findCss($page, '#update_selected');
 
         // Open the edit dialog box using the link:
         $this->clickCss($page, '.hold-edit');
