@@ -241,7 +241,7 @@ abstract class AbstractMenu extends AbstractBase implements NavigationInterface
     {
         $items = $group['MenuItems'] ?? [];
         // Skip items with below setting but without below items to display.
-        $items = $this->processItemBelowKey($items);
+        $items = $this->processItemSubmenuItemsKey($items);
         // Process remaining menu items.
         $items = $this->processItems($items);
         // Skip groups without items to display.
@@ -265,19 +265,19 @@ abstract class AbstractMenu extends AbstractBase implements NavigationInterface
     }
 
     /**
-     * Process any items with a below key.
+     * Process any items with a 'submenuItems' key.
      *
      * @param array $items Items to process
      *
      * @return array
      */
-    protected function processItemBelowKey(array $items): array
+    protected function processItemSubmenuItemsKey(array $items): array
     {
         // Skip items with below setting but without below items to display.
         foreach ($items as $i => $item) {
-            if (isset($item['below'])) {
-                $items[$i]['below'] = $this->filterAvailable($item['below']);
-                if (empty($items[$i]['below'])) {
+            if (isset($item['submenuItems'])) {
+                $items[$i]['submenuItems'] = $this->filterAvailable($item['submenuItems']);
+                if (empty($items[$i]['submenuItems'])) {
                     unset($items[$i]);
                 }
             }
