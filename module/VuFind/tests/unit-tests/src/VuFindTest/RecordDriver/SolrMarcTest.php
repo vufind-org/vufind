@@ -34,8 +34,6 @@ use VuFind\ILS\Connection;
 use VuFind\ILS\Logic\Holds;
 use VuFind\ILS\Logic\TitleHolds;
 
-use function in_array;
-
 /**
  * SolrMarc Record Driver Test Class
  *
@@ -106,7 +104,7 @@ class SolrMarcTest extends \PHPUnit\Framework\TestCase
         );
         $secondary = $record->getSecondaryAuthors();
         $this->assertCount(1, $secondary);
-        $this->assertTrue(in_array('Pandolfi, Claudia.', $secondary));
+        $this->assertContains('Pandolfi, Claudia.', $secondary);
         $series = $record->getSeries();
         $this->assertCount(1, $series);
         $this->assertEquals(

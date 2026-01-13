@@ -184,7 +184,7 @@ class SearchApiControllerTest extends \PHPUnit\Framework\TestCase
             fn () => $apiKeyMode
         );
         $developerSettingsService->method('isApiKeyAllowed')->willReturnCallback(
-            function ($token) use ($apiKeyMode, $apiKeysEnabled) {
+            function (?string $token) use ($apiKeyMode, $apiKeysEnabled): bool {
                 if (!$apiKeysEnabled) {
                     return true;
                 }

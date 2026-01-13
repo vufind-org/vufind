@@ -86,7 +86,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
     {
         $this->assertIsObject($link);
         $href = $link->getAttribute('href');
-        $this->assertStringContainsString($type, $href);
+        $this->assertStringContainsString($type, (string)$href);
         $this->assertNotEquals('', $link->getText());
         $hrefCallnum = explode('&from=', $href)[1];
         $this->assertStringEndsWith($hrefCallnum, $link->getText());
@@ -155,8 +155,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
             $link = $this->findCss($page, $callnumberSelector);
             $this->checkLink($link, $type);
         } else {
-            $link = $page->find('css', $callnumberSelector);
-            $this->assertNull($link);
+            $this->unFindCss($page, $callnumberSelector);
         }
     }
 
@@ -175,8 +174,7 @@ class CallnumberBrowseTest extends \VuFindTest\Integration\MinkTestCase
         $this->changeCallnumberSettings($nos, $locs, $full);
         $page = $this->performSearch('id:' . $this->id);
         // No link
-        $link = $page->find('css', '.callnumber a,.groupCallnumber a,.fullCallnumber a');
-        $this->assertTrue(null === $link);
+        $this->unFindCss($page, '.callnumber a,.groupCallnumber a,.fullCallnumber a');
         // With dewey links
         $this->activateAndTestLinks('dewey', $page, $expectLinks);
         // With lcc links

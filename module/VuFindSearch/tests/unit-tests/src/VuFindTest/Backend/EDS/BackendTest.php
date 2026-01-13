@@ -114,6 +114,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $this->assertCount(1, $coll);
         $this->assertEquals('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
+        $this->assertInstanceOf(\VuFindSearch\Response\RecordInterface::class, $rec);
         $this->assertEquals('test', $rec->getSourceIdentifier());
         $this->assertEquals('bwh,201407212251PR.NEWS.USPR.MM73898', $rec->getUniqueID());
     }
@@ -147,6 +148,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $this->assertCount(1, $coll);
         $this->assertEquals('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
+        $this->assertInstanceOf(\VuFindSearch\Response\RecordInterface::class, $rec);
         $this->assertEquals('test', $rec->getSourceIdentifier());
         $this->assertEquals('edp297646', $rec->getUniqueID());
     }
@@ -179,6 +181,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $this->assertCount(3, $coll);
         $this->assertEquals('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
+        $this->assertInstanceOf(\VuFindSearch\Response\RecordInterface::class, $rec);
         $this->assertEquals('test', $rec->getSourceIdentifier());
         $this->assertEquals('bwh,201407212251PR.NEWS.USPR.MM73898', $rec->getUniqueID());
         $recs = $coll->getRecords();

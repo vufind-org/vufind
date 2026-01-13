@@ -1,0 +1,21 @@
+# Sections are specific configurable parts of the user interface. Sections include
+# navigation menus and other types of user interface elements.
+#
+# All sections must have a 'plugin' key specifying the section plugin to use. Values
+# can be class names or aliases defined in the \VuFind\Section\Plugin\PluginManager
+# service manager configuration.
+#
+# Additional section keys are determined by the plugin. All section specific
+# configuration is passed to the plugin by the section service, with the exception of
+# plugins implementing \VuFind\Navigation\NavigationInterface, which use plugin
+# specific configuration files.
+#
+# Key names beginning with a double underscore (e.g. __key) are reserved for internal
+# section service use.
+
+Sections:
+  AccountMenu:
+    plugin: accountMenu
+
+  AdminMenu:
+    plugin: adminMenu

@@ -196,7 +196,7 @@ class RecordCoverImageTest extends \VuFindTest\Integration\MinkTestCase
 
         // Verify path
         $expectedPath = $expectedImageParts[0];
-        $this->assertStringContainsString($expectedPath, $imageSrc);
+        $this->assertStringContainsString($expectedPath, (string)$imageSrc);
 
         // Verify query except timestamp hash for deactivated browser cache
         $imageSrcQuery = explode('&', explode('?', $imageSrc)[1] ?? '');

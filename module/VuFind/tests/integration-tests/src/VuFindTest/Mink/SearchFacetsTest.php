@@ -1162,8 +1162,8 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Facets should be ordered in descending order by count, and should have
         // non-zero counts...
-        $this->assertTrue($firstFacetCount >= $secondFacetCount);
-        $this->assertTrue($secondFacetCount > 0);
+        $this->assertGreaterThanOrEqual($secondFacetCount, $firstFacetCount);
+        $this->assertGreaterThan(0, $secondFacetCount);
 
         // Clicking the second facet should restrict the result list:
         $this->clickCss(

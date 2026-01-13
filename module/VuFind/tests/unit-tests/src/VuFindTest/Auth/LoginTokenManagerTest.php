@@ -102,7 +102,7 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
         $tokenTable->expects($this->once())->method('getByUser')
             ->willReturn([$mockToken]);
         $loginToken = $this->getLoginToken($cookieManager, $tokenTable, $userService, true);
-        $this->assertNull($loginToken->tokenLogin('123'));
+        $this->assertNotInstanceOf(\VuFind\Db\Entity\UserEntityInterface::class, $loginToken->tokenLogin('123'));
     }
 
     /**
@@ -122,7 +122,7 @@ class LoginTokenManagerTest extends \PHPUnit\Framework\TestCase
         $tokenTable->expects($this->once())->method('matchToken')
             ->willReturn(null);
         $loginToken = $this->getLoginToken($cookieManager, $tokenTable, $userService, true);
-        $this->assertNull($loginToken->tokenLogin('123'));
+        $this->assertNotInstanceOf(\VuFind\Db\Entity\UserEntityInterface::class, $loginToken->tokenLogin('123'));
     }
 
     /**

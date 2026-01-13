@@ -283,7 +283,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
         $this->assertStringContainsString(
             'Unable to load data. No data found for: '
             . 'instructors, courses, departments, reserves',
-            $commandTester->getDisplay()
+            (string)$commandTester->getDisplay()
         );
     }
 
@@ -364,7 +364,7 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(0, $commandTester->getStatusCode());
         $this->assertStringContainsString(
             'Successfully loaded 3 rows.',
-            $commandTester->getDisplay()
+            (string)$commandTester->getDisplay()
         );
     }
 
@@ -411,19 +411,19 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(0, $commandTester->getStatusCode());
         $this->assertStringContainsString(
             'Successfully loaded 1 rows.',
-            $commandTester->getDisplay()
+            (string)$commandTester->getDisplay()
         );
         $this->assertStringContainsString(
             'WARNING! The instructor (ID: inst2)',
-            $commandTester->getDisplay()
+            (string)$commandTester->getDisplay()
         );
         $this->assertStringContainsString(
             'WARNING! The department (ID: dept2)',
-            $commandTester->getDisplay()
+            (string)$commandTester->getDisplay()
         );
         $this->assertStringContainsString(
             'WARNING! The course (ID: course2)',
-            $commandTester->getDisplay()
+            (string)$commandTester->getDisplay()
         );
     }
 
@@ -470,11 +470,11 @@ class IndexReservesCommandTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals(0, $commandTester->getStatusCode());
         $this->assertStringContainsString(
             'Successfully loaded 1 rows.',
-            $commandTester->getDisplay()
+            (string)$commandTester->getDisplay()
         );
         $this->assertStringNotContainsString(
             'WARNING',
-            $commandTester->getDisplay()
+            (string)$commandTester->getDisplay()
         );
     }
 

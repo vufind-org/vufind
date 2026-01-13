@@ -58,7 +58,7 @@ class WikipediaTest extends \PHPUnit\Framework\TestCase
         $response = $wiki->get('Jane Austen');
         $this->assertEquals('en', $response['wiki_lang']);
         $this->assertEquals('Jane Austen', $response['name']);
-        $this->assertTrue(false !== strstr($response['description'], '16 December 1775'));
+        $this->assertNotFalse(strstr($response['description'], '16 December 1775'));
     }
 
     /**
