@@ -459,7 +459,6 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
     {
         // Test that control is disabled upon empty selection
         $this->clickCss($page, '#cancelSelected');
-
         $this->unFindCss($page, '.btn-group.open');
 
         // Test "cancel all" button -- first make sure item is there before
