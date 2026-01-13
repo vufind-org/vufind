@@ -298,7 +298,7 @@ class MultiILSTest extends \PHPUnit\Framework\TestCase
         $mockUserService->method('getUserByUsername')->willReturn($mockUser);
         $mockUserService->method('updateUserEmail')
             ->willReturnCallback(
-                function ($mockUser, $email): void {
+                function ($mockUser, string $email): void {
                     $mockUser->setEmail($email);
                 }
             );

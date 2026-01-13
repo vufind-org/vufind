@@ -78,6 +78,7 @@ class BackendTest extends TestCase
         $this->assertCount(1, $coll);
         $this->assertEquals('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
+        $this->assertInstanceOf(\VuFindSearch\Response\RecordInterface::class, $rec);
         $this->assertEquals('test', $rec->getSourceIdentifier());
         $this->assertEquals('690250223', $rec->id);
     }
@@ -113,6 +114,7 @@ class BackendTest extends TestCase
         $this->assertCount(3, $coll);
         $this->assertEquals('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
+        $this->assertInstanceOf(\VuFindSearch\Response\RecordInterface::class, $rec);
         $this->assertEquals('test', $rec->getSourceIdentifier());
         $this->assertEquals('12345', $rec->id);
         $recs = $coll->getRecords();
@@ -161,6 +163,7 @@ class BackendTest extends TestCase
         $this->assertCount(5, $coll);
         $this->assertEquals('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
+        $this->assertInstanceOf(\VuFindSearch\Response\RecordInterface::class, $rec);
         $this->assertEquals('test', $rec->getSourceIdentifier());
         $this->assertEquals('704635', $rec->id);
     }

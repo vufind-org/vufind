@@ -131,7 +131,7 @@ class IdentityRepositoryTest extends AbstractTokenRepositoryTestCase
             $this->getMockILSAuthenticator()
         );
 
-        $this->assertNull($repo->getUserEntityByIdentifier(1));
+        $this->assertNotInstanceOf(UserEntity::class, $repo->getUserEntityByIdentifier(1));
         $user = $repo->getUserEntityByIdentifier(2);
         $this->assertInstanceOf(UserEntity::class, $user);
 

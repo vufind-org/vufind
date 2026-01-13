@@ -94,7 +94,7 @@ class HideFacetValueListenerTest extends \PHPUnit\Framework\TestCase
             );
         $result->method('setFacets')
             ->willReturnCallback(
-                function ($new) use (&$facets): void {
+                function (array $new) use (&$facets): void {
                     $facets = $new;
                 }
             );

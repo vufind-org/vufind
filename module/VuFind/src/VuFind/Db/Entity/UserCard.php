@@ -280,7 +280,7 @@ class UserCard implements UserCardEntityInterface
      */
     public function getCreated(): DateTime
     {
-        // Return to a clone to avoid indirect modification of the entity:
+        // Return a clone to avoid indirect modification of the entity:
         return $this->getDateTimeClone($this->created);
     }
 
@@ -304,7 +304,7 @@ class UserCard implements UserCardEntityInterface
      */
     public function getSaved(): DateTime
     {
-        // Return to a clone to avoid indirect modification of the entity:
+        // Return a clone to avoid indirect modification of the entity:
         return $this->getDateTimeClone($this->saved);
     }
 

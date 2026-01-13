@@ -268,7 +268,10 @@ class AlphaBrowseTest extends \PHPUnit\Framework\TestCase
                 'id' => 'foo_id'],
             ],
         ]];
-        return [$alpha, $expectedResult];
+        return [
+            $alpha,
+            $expectedResult,
+        ];
     }
 
     /**

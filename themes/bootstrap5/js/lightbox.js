@@ -12,7 +12,7 @@ VuFind.register('lightbox', function Lightbox() {
   var _modalParams = {};
   // Elements
   var _modal, _modalBody, _clickedButton = null;
-  // Boostrap modal
+  // Bootstrap modal
   var _bsModal = null;
 
   /**

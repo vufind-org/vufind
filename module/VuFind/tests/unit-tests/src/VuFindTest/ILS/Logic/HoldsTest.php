@@ -233,7 +233,7 @@ class HoldsTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals('Hold', $result['action']);
         $this->assertEquals('test123', $result['record']);
         $this->assertEquals('Solr', $result['source']);
-        $this->assertStringContainsString('hashKey=test-hash-key', $result['query']);
+        $this->assertStringContainsString('hashKey=test-hash-key', (string)$result['query']);
         $this->assertEquals('#tabnav', $result['anchor']);
 
         // Test with link overrides

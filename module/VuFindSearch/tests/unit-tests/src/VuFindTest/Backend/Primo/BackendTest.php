@@ -68,6 +68,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $this->assertCount(1, $coll);
         $this->assertEquals('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
+        $this->assertInstanceOf(\VuFindSearch\Response\RecordInterface::class, $rec);
         $this->assertEquals('test', $rec->getSourceIdentifier());
         $this->assertEquals('crossref10.5755/j01.ss.71.1.377', $rec->recordid);
     }
@@ -91,6 +92,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $this->assertCount(3, $coll);
         $this->assertEquals('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
+        $this->assertInstanceOf(\VuFindSearch\Response\RecordInterface::class, $rec);
         $this->assertEquals('test', $rec->getSourceIdentifier());
         $this->assertEquals('crossref10.5755/j01.ss.71.1.377', $rec->recordid);
         $recs = $coll->getRecords();
