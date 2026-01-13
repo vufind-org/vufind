@@ -2280,12 +2280,12 @@ class Folio extends AbstractAPI implements
         $version = $this->getCachedData($cacheKey);
         if ($version === null) {
             // Get latest version of a module enabled for a tenant.
-            // Allow 403 to not trigger an error because that means we need to try the next call
-            // that is compatible with Sunflower.
+            // Allow failure response codes to not trigger an error because that
+            // means we need to try the next call that is compatible with Sunflower.
             $response = $this->makeRequest(
                 'GET',
                 '/_/proxy/tenants/' . $this->tenant . '/modules?filter=' . $moduleName . '&latest=1',
-                allowedFailureCodes:[403, 500]
+                allowedFailureCodes:[400, 403, 404, 500]
             );
 
             // If there was a failure with the first method, attempt the second
