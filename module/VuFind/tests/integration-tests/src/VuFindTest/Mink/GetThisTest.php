@@ -387,6 +387,7 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
 
         $page = $this->openGetThisLoaderForSearch(self::SEARCH);
         $lightbox = $this->getLightbox($page);
+        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $lightbox);
         $presence = str_contains($lightbox->getHtml(), '<!-- Get-This: ');
         $this->assertFalse($presence);
     }
