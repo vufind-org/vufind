@@ -1696,7 +1696,10 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $sidebar = $this->findCss($page, '.sidebar');
         $this->assertFalse($this->findCss($sidebar, '.js-user-selection-multi-filters')->isVisible());
         $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $sidebar);
-        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $sidebar->find('css', '.js-apply-multi-facets-selection'));
+        $this->assertInstanceOf(
+            \Behat\Mink\Element\NodeElement::class,
+            $sidebar->find('css', '.js-apply-multi-facets-selection')
+        );
     }
 
     /**
