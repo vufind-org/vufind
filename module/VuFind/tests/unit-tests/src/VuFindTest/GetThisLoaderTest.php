@@ -81,13 +81,13 @@ class GetThisLoaderTest extends TestCase
         $this->config = $this->yamlReader->get('GetThis.yaml');
         $regexConfig = $this->yamlReader->get('Regex.yaml');
         $regexConfig['LOCATION_EXCLUSIVE'][] = '/OUR CAMPUS/i';
+        $translator = $this->createMock(Translator::class);
+        $translator->method('translate')->willReturnCallback(fn ($p) => $p);
         $this->getThis = new GetThisLoader(
             $this->config,
             new Regex($regexConfig),
+            $translator
         );
-        $translator = $this->createMock(Translator::class);
-        $translator->method('translate')->willReturnCallback(fn ($p) => $p);
-        $this->getThis->setTranslator($translator);
     }
 
     /**
@@ -185,7 +185,7 @@ class GetThisLoaderTest extends TestCase
     }
 
     /**
-     * Data provider
+     * Data provider for testConfigConditionsFunctions().
      *
      * @return Iterator<(int | string), array<mixed>>
      */
@@ -662,7 +662,7 @@ class GetThisLoaderTest extends TestCase
     }
 
     /**
-     * Data provider testShowCopyNumber
+     * Data provider for testShowCopyNumber().
      *
      * @return Iterator<?bool, array, bool>
      */
@@ -692,7 +692,11 @@ class GetThisLoaderTest extends TestCase
         $config['showCopyNumber'] = $showCopyNumber;
         $this->setGetThisConfig($config);
         $this->getThis->setItems($holdings);
-        $this->assertSame($result, $this->getThis->showCopyNumber());
+        if ($result) {
+            $this->assertNotNull($this->getThis->getCopyNumber(1));
+        } else {
+            $this->assertNull($this->getThis->getCopyNumber(1));
+        }
     }
 
     /**

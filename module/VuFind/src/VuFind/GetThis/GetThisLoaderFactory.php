@@ -28,6 +28,7 @@
 
 namespace VuFind\GetThis;
 
+use Laminas\Mvc\I18n\Translator;
 use Laminas\ServiceManager\Exception\ServiceNotCreatedException;
 use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
@@ -72,6 +73,7 @@ class GetThisLoaderFactory implements \Laminas\ServiceManager\Factory\FactoryInt
         return new $requestedName(
             $container->get(YamlReader::class)->get('GetThis.yaml'),
             $container->get(Regex::class),
+            $container->get(Translator::class)
         );
     }
 }

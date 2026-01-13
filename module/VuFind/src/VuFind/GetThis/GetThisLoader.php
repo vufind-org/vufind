@@ -15,12 +15,12 @@
 namespace VuFind\GetThis;
 
 use Exception;
+use Laminas\Mvc\I18n\Translator;
 use Psr\Log\LoggerAwareInterface;
 use Throwable;
-use VuFind\I18n\Translator\TranslatorAwareTrait;
 use VuFind\ILS\Logic\AvailabilityStatusInterface;
 use VuFind\Log\LoggerAwareTrait;
-use VuFind\RecordDriver\DefaultRecord;
+use VuFind\RecordDriver\DefaultRecord as RecordDriver;
 use VuFind\Regex\Regex;
 
 use function array_key_exists;
@@ -37,9 +37,8 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/vufind/ Main page
  */
-class GetThisLoader implements LoggerAwareInterface, \VuFind\I18n\Translator\TranslatorAwareInterface
+class GetThisLoader implements LoggerAwareInterface
 {
-    use TranslatorAwareTrait;
     use LoggerAwareTrait;
 
     /**
@@ -73,19 +72,21 @@ class GetThisLoader implements LoggerAwareInterface, \VuFind\I18n\Translator\Tra
     /**
      * Record driver
      *
-     * @var DefaultRecord
+     * @var RecordDriver
      */
-    protected DefaultRecord $record;
+    protected RecordDriver $record;
 
     /**
      * Initializes the loader
      *
-     * @param array $config Config pulled from the config file defined above
-     * @param Regex $regex  Regex service
+     * @param array       $config     Config pulled from the config file defined above
+     * @param Regex       $regex      Regex service
+     * @param ?Translator $translator Translator
      */
     public function __construct(
         protected array $config,
-        protected Regex $regex
+        protected Regex $regex,
+        protected ?Translator $translator
     ) {
     }
 
@@ -398,7 +399,11 @@ class GetThisLoader implements LoggerAwareInterface, \VuFind\I18n\Translator\Tra
         $item = $this->getItem($itemId);
 
         if ($this->isOnlineResource($itemId)) {
-            return $this->translator->translate('Online');
+            $callNumber = 'Online';
+            if (isset($this->translator)) {
+                $callNumber = $this->translator->translate($callNumber);
+            }
+            return $callNumber;
         }
 
         $callNum = '';
@@ -562,7 +567,7 @@ class GetThisLoader implements LoggerAwareInterface, \VuFind\I18n\Translator\Tra
      *
      * @return bool
      */
-    public function showCopyNumber(): bool
+    protected function showCopyNumber(): bool
     {
         return ($this->config['showCopyNumber'] ?? false) && $this->showHoldings();
     }
@@ -665,11 +670,11 @@ class GetThisLoader implements LoggerAwareInterface, \VuFind\I18n\Translator\Tra
     /**
      * Setter for record
      *
-     * @param DefaultRecord $record Record driver object
+     * @param RecordDriver $record Record driver object
      *
      * @return void
      */
-    public function setRecord(DefaultRecord $record): void
+    public function setRecord(RecordDriver $record): void
     {
         $this->record = $record;
         $this->subTemplates = null;

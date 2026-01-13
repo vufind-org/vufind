@@ -12,13 +12,17 @@ function getDisplay($view, $item)
         $location = '';
     }
     $copyNumber = $view->getThis->getCopyNumber($item['item_id']);
+    if (!empty($copyNumber)) {
+        $copyNumber = $view->transEscAttr('copy_number', ['%%number%%' => $copyNumber]) . ' ';
+    } else {
+        $copyNumber = '';
+    }
     if ($callNumber = $view->getThis->getCallNumber($item['item_id'])) {
-        $callNumber = ' (' . $callNumber . ')';
+        $callNumber = '(' . $callNumber . ')';
     } else {
         $callNumber = '';
     }
-    # TODO we assume we always have a copy number
-    return $location . $view->transEscAttr('copy_number', ['%%number%%' => $copyNumber]) . $callNumber;
+    return $location . $copyNumber . $callNumber;
 }
 
 function getLink($view, $item)
