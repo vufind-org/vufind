@@ -91,6 +91,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $this->assertCount(20, $coll);
         $this->assertEquals('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
+        $this->assertInstanceOf(\VuFindSearch\Response\RecordInterface::class, $rec);
         $this->assertEquals('test', $rec->getSourceIdentifier());
         $this->assertSame('content: author test title test medium book', (string)$rec->getXML()->recid);
         $recs = $coll->getRecords();
@@ -111,7 +112,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     {
         $back = new Backend($this->getConnectorMock());
         $back->setSearchProgressTarget(0.75);
-        $this->assertEquals(0.75, $this->getProperty($back, 'progressTarget'));
+        $this->assertEqualsWithDelta(0.75, $this->getProperty($back, 'progressTarget'), PHP_FLOAT_EPSILON);
     }
 
     /**

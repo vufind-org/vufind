@@ -244,7 +244,7 @@ class Search implements SearchEntityInterface
      */
     public function getCreated(): DateTime
     {
-        // Return to a clone to avoid indirect modification of the entity:
+        // Return a clone to avoid indirect modification of the entity:
         return $this->getDateTimeClone($this->created);
     }
 
@@ -409,7 +409,7 @@ class Search implements SearchEntityInterface
      */
     public function getLastNotificationSent(): DateTime
     {
-        // Return to a clone to avoid indirect modification of the entity:
+        // Return a clone to avoid indirect modification of the entity:
         return $this->getDateTimeClone($this->lastNotificationSent);
     }
 

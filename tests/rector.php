@@ -4,11 +4,13 @@ declare(strict_types=1);
 
 use Rector\Caching\ValueObject\Storage\FileCacheStorage;
 use Rector\Config\RectorConfig;
+
+use Rector\PHPUnit\CodeQuality\Rector\Class_\RemoveDataProviderParamKeysRector;
+use Rector\PHPUnit\CodeQuality\Rector\Expression\AssertArrayCastedObjectToAssertSameRector;
+use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertIssetToSpecificMethodRector;
+use Rector\PHPUnit\CodeQuality\Rector\StmtsAwareInterface\DeclareStrictTypesTestsRector;
 use Rector\PHPUnit\Set\PHPUnitSetList;
-use Rector\PHPUnit\CodeQuality\Rector\MethodCall\RemoveExpectAnyFromMockRector;
-use Rector\PHPUnit\PHPUnit60\Rector\MethodCall\GetMockBuilderGetMockToCreateMockRector;
-use Rector\PHPUnit\CodeQuality\Rector\MethodCall\AssertEqualsToSameRector;
-use Rector\PHPUnit\CodeQuality\Rector\MethodCall\UseSpecificWithMethodRector;
+use Rector\Privatization\Rector\Class_\FinalizeTestCaseClassRector;
 
 return RectorConfig::configure()
     ->withCache(
@@ -22,12 +24,14 @@ return RectorConfig::configure()
     ->withSets([
         PHPUnitSetList::PHPUNIT_110,
         PHPUnitSetList::ANNOTATIONS_TO_ATTRIBUTES,
+        PHPUnitSetList::PHPUNIT_CODE_QUALITY,
     ])
-    ->withRules([
-        RemoveExpectAnyFromMockRector::class,
-        GetMockBuilderGetMockToCreateMockRector::class,
-        UseSpecificWithMethodRector::class,
-        AssertEqualsToSameRector::class,
+    ->withSkip([
+        AssertArrayCastedObjectToAssertSameRector::class,
+        AssertIssetToSpecificMethodRector::class,
+        DeclareStrictTypesTestsRector::class,
+        FinalizeTestCaseClassRector::class,
+        RemoveDataProviderParamKeysRector::class,
     ])
     ->withTypeCoverageLevel(0)
     ->withDeadCodeLevel(6)

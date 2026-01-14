@@ -732,7 +732,7 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
             $this->snooze();
         }
 
-        throw new \Exception('Failed to set value after ' . $retries . ' attempts.');
+        throw new \Exception('Failed to set value using ' . $selector . ' after ' . $retries . ' attempts.');
     }
 
     /**

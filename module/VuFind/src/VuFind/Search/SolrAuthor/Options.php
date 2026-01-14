@@ -56,12 +56,12 @@ class Options extends \VuFind\Search\Solr\Options
     }
 
     /**
-     * Return the route name for the facet list action. Returns false to cover
+     * Return the route name for the facet list action. Returns null to cover
      * unimplemented support.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getFacetListAction(): string|bool
+    public function getFacetListAction(): ?string
     {
         return 'author-facetlist';
     }
@@ -82,7 +82,7 @@ class Options extends \VuFind\Search\Solr\Options
      * or side) and the value is the settings found in the file (which may be either
      * a single string or an array of strings).
      *
-     * @param ?string $handler Name of handler for which to load specific settings.
+     * @param ?string $handler Name of handler for which to load specific settings (null to load generic defaults).
      *
      * @return array associative: location (top/side/etc.) => search settings
      */

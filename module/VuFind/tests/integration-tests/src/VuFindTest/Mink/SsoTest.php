@@ -70,22 +70,20 @@ final class SsoTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testLogin()
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function loginConfigProvider(): array
+    public static function loginConfigProvider(): \Iterator
     {
-        return [
-            'with cat_username mapping' => [ // test for regression of #3992
-                [
-                    'General' => [
-                        'attributes' => [
-                            'cat_username' => 'foo',
-                        ],
+        yield 'with cat_username mapping' => [ // test for regression of #3992
+            [
+                'General' => [
+                    'attributes' => [
+                        'cat_username' => 'foo',
                     ],
                 ],
             ],
-            'defaults' => [],
         ];
+        yield 'defaults' => [];
     }
 
     /**

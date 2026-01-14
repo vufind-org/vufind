@@ -104,23 +104,23 @@ class Options extends \VuFind\Search\Solr\Options
 
     /**
      * Return the route name of the action used for performing advanced searches.
-     * Returns false if the feature is not supported.
+     * Returns null if the feature is not supported.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getAdvancedSearchAction(): string|bool
+    public function getAdvancedSearchAction(): ?string
     {
-        return $this->advancedHandlers ? $this->advancedSearchAction : false;
+        return $this->advancedHandlers ? $this->advancedSearchAction : null;
     }
 
     /**
-     * Return the route name for the facet list action. Returns false to cover
+     * Return the route name for the facet list action. Returns null to cover
      * unimplemented support.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getFacetListAction(): string|bool
+    public function getFacetListAction(): ?string
     {
-        return false;
+        return null;
     }
 }

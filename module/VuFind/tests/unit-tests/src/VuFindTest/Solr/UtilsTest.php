@@ -67,39 +67,44 @@ class UtilsTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testSanitizeDate
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function sanitizeDateProvider(): array
+    public static function sanitizeDateProvider(): \Iterator
     {
-        return [
-            ['[2014]', false, '2014-01-01T00:00:00Z'],
-            ['n.d.', false, null],
-            ['may 7, 1981', false, '1981-05-07T00:00:00Z'],
-            ['July 1570', false, '1570-07-01T00:00:00Z'],
-            ['incomprehensible garbage', false, null],
-            ['1930/12/21', false, '1930-12-21T00:00:00Z'],
-            ['1964?', false, '1964-01-01T00:00:00Z'],
-            ['1947-3', false, '1947-03-01T00:00:00Z'],
-            ['1973-02-31', false, '1973-02-01T00:00:00Z'],        // illegal day
-            ['1973-31-31', false, '1973-01-01T00:00:00Z'],        // illegal month
-            ['1964-zz', false, '1964-01-01T00:00:00Z'],
-            ['1964-01-zz', false, '1964-01-01T00:00:00Z'],
-            ['Winter 2012', false, '2012-01-01T00:00:00Z'],
-            ['05-1901', false, '1901-05-01T00:00:00Z'],
-            ['5-1901', false, '1901-05-01T00:00:00Z'],
-            ['05/1901', false, '1901-05-01T00:00:00Z'],
-            ['5/1901', false, '1901-05-01T00:00:00Z'],
-            ['2nd Quarter 2004', false, '2004-01-01T00:00:00Z'],
-            ['Nov 2009 and Dec 2009', false, '2009-01-01T00:00:00Z'],
-            ['29.02.2024', false, '2024-02-29T00:00:00Z'],        // leap year
-            ['29.02.2024', true, '2024-02-29T23:59:59Z'],         // leap year
-            ['29.02.2023', false, '2023-03-01T00:00:00Z'],        // not a leap year
-            ['29.02.2023', true, '2023-03-01T23:59:59Z'],         // not a leap year
-            ['2024', true, '2024-12-31T23:59:59Z'],
-            ['2024-11', true, '2024-11-30T23:59:59Z'],
-            ['2024-02', true, '2024-02-29T23:59:59Z'],            // leap year
-            ['2023-02', true, '2023-02-28T23:59:59Z'],            // not a leap year
-        ];
+        yield ['[2014]', false, '2014-01-01T00:00:00Z'];
+        yield ['n.d.', false, null];
+        yield ['may 7, 1981', false, '1981-05-07T00:00:00Z'];
+        yield ['July 1570', false, '1570-07-01T00:00:00Z'];
+        yield ['incomprehensible garbage', false, null];
+        yield ['1930/12/21', false, '1930-12-21T00:00:00Z'];
+        yield ['1964?', false, '1964-01-01T00:00:00Z'];
+        yield ['1947-3', false, '1947-03-01T00:00:00Z'];
+        yield ['1973-02-31', false, '1973-02-01T00:00:00Z'];
+        // illegal day
+        yield ['1973-31-31', false, '1973-01-01T00:00:00Z'];
+        // illegal month
+        yield ['1964-zz', false, '1964-01-01T00:00:00Z'];
+        yield ['1964-01-zz', false, '1964-01-01T00:00:00Z'];
+        yield ['Winter 2012', false, '2012-01-01T00:00:00Z'];
+        yield ['05-1901', false, '1901-05-01T00:00:00Z'];
+        yield ['5-1901', false, '1901-05-01T00:00:00Z'];
+        yield ['05/1901', false, '1901-05-01T00:00:00Z'];
+        yield ['5/1901', false, '1901-05-01T00:00:00Z'];
+        yield ['2nd Quarter 2004', false, '2004-01-01T00:00:00Z'];
+        yield ['Nov 2009 and Dec 2009', false, '2009-01-01T00:00:00Z'];
+        yield ['29.02.2024', false, '2024-02-29T00:00:00Z'];
+        // leap year
+        yield ['29.02.2024', true, '2024-02-29T23:59:59Z'];
+        // leap year
+        yield ['29.02.2023', false, '2023-03-01T00:00:00Z'];
+        // not a leap year
+        yield ['29.02.2023', true, '2023-03-01T23:59:59Z'];
+        // not a leap year
+        yield ['2024', true, '2024-12-31T23:59:59Z'];
+        yield ['2024-11', true, '2024-11-30T23:59:59Z'];
+        yield ['2024-02', true, '2024-02-29T23:59:59Z'];
+        // leap year
+        yield ['2023-02', true, '2023-02-28T23:59:59Z'];
     }
 
     /**

@@ -162,17 +162,16 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testSortTieBreakerParameter.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function sortValueProvider(): array
+    public static function sortValueProvider(): \Iterator
     {
-        return ['Test1' => ['year', 'id', 'publishDateSort desc,id asc'],
-                'Test2' => ['year', 'id desc', 'publishDateSort desc,id desc'],
-                'Test3' => ['year', '', 'publishDateSort desc'],
-                'Test4' => ['year', 'title desc,id asc', 'publishDateSort desc,title_sort desc,id asc'],
-                'Test5' => ['year', 'title desc,id', 'publishDateSort desc,title_sort desc,id asc'],
-                'Test6' => ['year,id', 'id desc', 'publishDateSort desc,id asc'],
-            ];
+        yield 'Test1' => ['year', 'id', 'publishDateSort desc,id asc'];
+        yield 'Test2' => ['year', 'id desc', 'publishDateSort desc,id desc'];
+        yield 'Test3' => ['year', '', 'publishDateSort desc'];
+        yield 'Test4' => ['year', 'title desc,id asc', 'publishDateSort desc,title_sort desc,id asc'];
+        yield 'Test5' => ['year', 'title desc,id', 'publishDateSort desc,title_sort desc,id asc'];
+        yield 'Test6' => ['year,id', 'id desc', 'publishDateSort desc,id asc'];
     }
 
     /**
@@ -203,9 +202,9 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testSortList
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function sortListDataProvider(): array
+    public static function sortListDataProvider(): \Iterator
     {
         $searchConfig = [
             'Sorting' => [
@@ -247,160 +246,157 @@ class ParamsTest extends \PHPUnit\Framework\TestCase
                 ],
             ],
         ];
-
-        return [
-            'relevance' => [
-                $searchConfig,
-                'relevance',
-                [
-                    'relevance' => [
-                        'desc' => 'Relevance',
-                        'selected' => true,
-                        'default' => true,
-                    ],
-                    'title' => [
-                        'desc' => 'Title',
-                        'selected' => false,
-                        'default' => false,
-                    ],
+        yield 'relevance' => [
+            $searchConfig,
+            'relevance',
+            [
+                'relevance' => [
+                    'desc' => 'Relevance',
+                    'selected' => true,
+                    'default' => true,
+                ],
+                'title' => [
+                    'desc' => 'Title',
+                    'selected' => false,
+                    'default' => false,
                 ],
             ],
-            'title' => [
-                $searchConfig,
-                'title',
-                [
-                    'relevance' => [
-                        'desc' => 'Relevance',
-                        'selected' => false,
-                        'default' => true,
-                    ],
-                    'title' => [
-                        'desc' => 'Title',
-                        'selected' => true,
-                        'default' => false,
-                    ],
+        ];
+        yield 'title' => [
+            $searchConfig,
+            'title',
+            [
+                'relevance' => [
+                    'desc' => 'Relevance',
+                    'selected' => false,
+                    'default' => true,
+                ],
+                'title' => [
+                    'desc' => 'Title',
+                    'selected' => true,
+                    'default' => false,
                 ],
             ],
-            'invalid' => [
-                $searchConfig,
-                'foobar',
-                [
-                    'relevance' => [
-                        'desc' => 'Relevance',
-                        'selected' => true,
-                        'default' => true,
-                    ],
-                    'title' => [
-                        'desc' => 'Title',
-                        'selected' => false,
-                        'default' => false,
-                    ],
+        ];
+        yield 'invalid' => [
+            $searchConfig,
+            'foobar',
+            [
+                'relevance' => [
+                    'desc' => 'Relevance',
+                    'selected' => true,
+                    'default' => true,
+                ],
+                'title' => [
+                    'desc' => 'Title',
+                    'selected' => false,
+                    'default' => false,
                 ],
             ],
-            'first hidden' => [
-                $searchConfig,
-                'testfirst',
-                [
-                    'relevance' => [
-                        'desc' => 'Relevance',
-                        'selected' => false,
-                        'default' => true,
-                    ],
-                    'title' => [
-                        'desc' => 'Title',
-                        'selected' => false,
-                        'default' => false,
-                    ],
-                    'testfirst' => [
-                        'desc' => 'unrecognized_sort_option',
-                        'selected' => true,
-                        'default' => false,
-                    ],
+        ];
+        yield 'first hidden' => [
+            $searchConfig,
+            'testfirst',
+            [
+                'relevance' => [
+                    'desc' => 'Relevance',
+                    'selected' => false,
+                    'default' => true,
+                ],
+                'title' => [
+                    'desc' => 'Title',
+                    'selected' => false,
+                    'default' => false,
+                ],
+                'testfirst' => [
+                    'desc' => 'unrecognized_sort_option',
+                    'selected' => true,
+                    'default' => false,
                 ],
             ],
-            'second hidden' => [
-                $searchConfig,
-                'testsecond',
-                [
-                    'relevance' => [
-                        'desc' => 'Relevance',
-                        'selected' => false,
-                        'default' => true,
-                    ],
-                    'title' => [
-                        'desc' => 'Title',
-                        'selected' => false,
-                        'default' => false,
-                    ],
-                    'testsecond' => [
-                        'desc' => 'unrecognized_sort_option',
-                        'selected' => true,
-                        'default' => false,
-                    ],
+        ];
+        yield 'second hidden' => [
+            $searchConfig,
+            'testsecond',
+            [
+                'relevance' => [
+                    'desc' => 'Relevance',
+                    'selected' => false,
+                    'default' => true,
+                ],
+                'title' => [
+                    'desc' => 'Title',
+                    'selected' => false,
+                    'default' => false,
+                ],
+                'testsecond' => [
+                    'desc' => 'unrecognized_sort_option',
+                    'selected' => true,
+                    'default' => false,
                 ],
             ],
-            'first hidden with label in key' => [
-                $searchConfigKeyLabel,
-                'testfirst',
-                [
-                    'relevance' => [
-                        'desc' => 'Relevance',
-                        'selected' => false,
-                        'default' => true,
-                    ],
-                    'testfirst' => [
-                        'desc' => 'FIRST',
-                        'selected' => true,
-                        'default' => false,
-                    ],
+        ];
+        yield 'first hidden with label in key' => [
+            $searchConfigKeyLabel,
+            'testfirst',
+            [
+                'relevance' => [
+                    'desc' => 'Relevance',
+                    'selected' => false,
+                    'default' => true,
+                ],
+                'testfirst' => [
+                    'desc' => 'FIRST',
+                    'selected' => true,
+                    'default' => false,
                 ],
             ],
-            'second hidden with label in key' => [
-                $searchConfigKeyLabel,
-                'testsecond',
-                [
-                    'relevance' => [
-                        'desc' => 'Relevance',
-                        'selected' => false,
-                        'default' => true,
-                    ],
-                    'testsecond' => [
-                        'desc' => 'SECOND',
-                        'selected' => true,
-                        'default' => false,
-                    ],
+        ];
+        yield 'second hidden with label in key' => [
+            $searchConfigKeyLabel,
+            'testsecond',
+            [
+                'relevance' => [
+                    'desc' => 'Relevance',
+                    'selected' => false,
+                    'default' => true,
+                ],
+                'testsecond' => [
+                    'desc' => 'SECOND',
+                    'selected' => true,
+                    'default' => false,
                 ],
             ],
-            'first hidden with label in separate array' => [
-                $searchConfigLabel,
-                'firsttest',
-                [
-                    'relevance' => [
-                        'desc' => 'Relevance',
-                        'selected' => false,
-                        'default' => true,
-                    ],
-                    'firsttest' => [
-                        'desc' => 'FIRST',
-                        'selected' => true,
-                        'default' => false,
-                    ],
+        ];
+        yield 'first hidden with label in separate array' => [
+            $searchConfigLabel,
+            'firsttest',
+            [
+                'relevance' => [
+                    'desc' => 'Relevance',
+                    'selected' => false,
+                    'default' => true,
+                ],
+                'firsttest' => [
+                    'desc' => 'FIRST',
+                    'selected' => true,
+                    'default' => false,
                 ],
             ],
-            'second hidden with label in separate array' => [
-                $searchConfigLabel,
-                'secondtest',
-                [
-                    'relevance' => [
-                        'desc' => 'Relevance',
-                        'selected' => false,
-                        'default' => true,
-                    ],
-                    'secondtest' => [
-                        'desc' => 'SECOND',
-                        'selected' => true,
-                        'default' => false,
-                    ],
+        ];
+        yield 'second hidden with label in separate array' => [
+            $searchConfigLabel,
+            'secondtest',
+            [
+                'relevance' => [
+                    'desc' => 'Relevance',
+                    'selected' => false,
+                    'default' => true,
+                ],
+                'secondtest' => [
+                    'desc' => 'SECOND',
+                    'selected' => true,
+                    'default' => false,
                 ],
             ],
         ];

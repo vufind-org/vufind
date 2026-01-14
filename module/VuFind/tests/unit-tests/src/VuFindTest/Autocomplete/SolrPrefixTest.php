@@ -63,16 +63,14 @@ class SolrPrefixTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetSuggestions().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function getSuggestionsProvider(): array
+    public static function getSuggestionsProvider(): \Iterator
     {
         $autocompleteField = 'auto_str';
         $facetField = 'facet_str';
-        return [
-            'default limit' => [$autocompleteField, $facetField, "$autocompleteField:$facetField", 10],
-            'non-default limit' => [$autocompleteField, $facetField, "$autocompleteField:$facetField:20", 20],
-        ];
+        yield 'default limit' => [$autocompleteField, $facetField, "$autocompleteField:$facetField", 10];
+        yield 'non-default limit' => [$autocompleteField, $facetField, "$autocompleteField:$facetField:20", 20];
     }
 
     /**

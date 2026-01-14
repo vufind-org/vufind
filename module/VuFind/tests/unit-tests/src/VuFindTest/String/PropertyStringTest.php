@@ -81,46 +81,44 @@ class PropertyStringTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testFromHtml
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function fromHtmlProvider(): array
+    public static function fromHtmlProvider(): \Iterator
     {
-        return [
-            'plain string, no attributes' => [
-                'Plain string',
-                [],
-                'Plain string',
-                'Plain string',
-                [],
-            ],
-            'plain string, attributes' => [
-                'Plain string',
-                ['foo' => 'bar', 'bar' => 'baz'],
-                'Plain string',
-                'Plain string',
-                ['foo' => 'bar', 'bar' => 'baz'],
-            ],
-            'HTML string, array attributes' => [
-                '<strong>HTML</strong> string',
-                ['foo' => ['bar', 'baz']],
-                'HTML string',
-                '<strong>HTML</strong> string',
-                ['foo' => ['bar', 'baz']],
-            ],
-            'HTML string, reserved array attributes' => [
-                '<strong>HTML</strong> string',
-                ['__html' => ['bar', 'baz']],
-                'HTML string',
-                '<strong>HTML</strong> string',
-                ['__html' => '<strong>HTML</strong> string'],
-            ],
-            'HTML string containing entities' => [
-                '<i>Dungeons &amp; Dragons</i>',
-                [],
-                'Dungeons & Dragons',
-                '<i>Dungeons &amp; Dragons</i>',
-                ['__html' => '<i>Dungeons &amp; Dragons</i>'],
-            ],
+        yield 'plain string, no attributes' => [
+            'Plain string',
+            [],
+            'Plain string',
+            'Plain string',
+            [],
+        ];
+        yield 'plain string, attributes' => [
+            'Plain string',
+            ['foo' => 'bar', 'bar' => 'baz'],
+            'Plain string',
+            'Plain string',
+            ['foo' => 'bar', 'bar' => 'baz'],
+        ];
+        yield 'HTML string, array attributes' => [
+            '<strong>HTML</strong> string',
+            ['foo' => ['bar', 'baz']],
+            'HTML string',
+            '<strong>HTML</strong> string',
+            ['foo' => ['bar', 'baz']],
+        ];
+        yield 'HTML string, reserved array attributes' => [
+            '<strong>HTML</strong> string',
+            ['__html' => ['bar', 'baz']],
+            'HTML string',
+            '<strong>HTML</strong> string',
+            ['__html' => '<strong>HTML</strong> string'],
+        ];
+        yield 'HTML string containing entities' => [
+            '<i>Dungeons &amp; Dragons</i>',
+            [],
+            'Dungeons & Dragons',
+            '<i>Dungeons &amp; Dragons</i>',
+            ['__html' => '<i>Dungeons &amp; Dragons</i>'],
         ];
     }
 

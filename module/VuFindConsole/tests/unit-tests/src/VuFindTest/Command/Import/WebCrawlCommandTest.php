@@ -54,25 +54,23 @@ class WebCrawlCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testSuccessWithMinimalParameters()
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function successWithMinimalParametersProvider(): array
+    public static function successWithMinimalParametersProvider(): \Iterator
     {
-        return [
-            'not verbose, no cache' => [false, false, ''],
-            'verbose, no cache' => [
-                true,
-                false,
-                'Harvesting http://foo... Harvesting http://bar... '
-                . 'Deleting old records (prior to DATE)... Committing... Optimizing...',
-            ],
-            'verbose, cache' => [
-                true,
-                true,
-                'Harvesting http://foo... Harvesting http://bar... '
-                . 'Wrote results to transform cache. '
-                . 'Deleting old records (prior to DATE)... Committing... Optimizing...',
-            ],
+        yield 'not verbose, no cache' => [false, false, ''];
+        yield 'verbose, no cache' => [
+            true,
+            false,
+            'Harvesting http://foo... Harvesting http://bar... '
+            . 'Deleting old records (prior to DATE)... Committing... Optimizing...',
+        ];
+        yield 'verbose, cache' => [
+            true,
+            true,
+            'Harvesting http://foo... Harvesting http://bar... '
+            . 'Wrote results to transform cache. '
+            . 'Deleting old records (prior to DATE)... Committing... Optimizing...',
         ];
     }
 

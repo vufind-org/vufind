@@ -35,8 +35,6 @@ use VuFind\Config\YamlReader;
 use VuFind\Form\Form;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
-use function get_class;
-
 /**
  * Form Test Class
  *
@@ -84,9 +82,9 @@ class FormTest extends \PHPUnit\Framework\TestCase
         $this->assertEquals([[], 'Email/form.phtml'], $form->formatEmailMessage([]));
         $this->assertSame([], $form->mapRequestParamsToFieldValues([]));
 
-        $this->assertSame(
-            'Laminas\InputFilter\InputFilter',
-            get_class($form->getInputFilter())
+        $this->assertInstanceOf(
+            \Laminas\InputFilter\InputFilter::class,
+            $form->getInputFilter()
         );
         $this->assertCount(0, $form->getSecondaryHandlers());
     }
@@ -237,9 +235,9 @@ class FormTest extends \PHPUnit\Framework\TestCase
             $expectedFields,
             $form->mapRequestParamsToFieldValues($postParams)
         );
-        $this->assertSame(
-            'Laminas\InputFilter\InputFilter',
-            get_class($form->getInputFilter())
+        $this->assertInstanceOf(
+            \Laminas\InputFilter\InputFilter::class,
+            $form->getInputFilter()
         );
 
         // Validators: Required field problems
@@ -801,19 +799,17 @@ class FormTest extends \PHPUnit\Framework\TestCase
     /**
      * Function to get testEmailSubjects data.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getEmailSubjectsData(): array
+    public static function getEmailSubjectsData(): \Iterator
     {
-        return [
-            'with placeholders' => [
-                'TestSubjectEmailWithPlaceholders',
-                'Subject One Two option-1',
-            ],
-            'without placeholders' => [
-                'TestSubjectEmailWithoutPlaceholders',
-                'Subject without placeholders',
-            ],
+        yield 'with placeholders' => [
+            'TestSubjectEmailWithPlaceholders',
+            'Subject One Two option-1',
+        ];
+        yield 'without placeholders' => [
+            'TestSubjectEmailWithoutPlaceholders',
+            'Subject without placeholders',
         ];
     }
 
@@ -848,19 +844,17 @@ class FormTest extends \PHPUnit\Framework\TestCase
     /**
      * Function to get form action route test data
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getFormActionRouteData(): array
+    public static function getFormActionRouteData(): \Iterator
     {
-        return [
-            'with no route set' => [
-                'TestWithNoFormActionRouteSet',
-                'feedback-form',
-            ],
-            'with route set' => [
-                'TestWithFormActionRouteSet',
-                'test-action',
-            ],
+        yield 'with no route set' => [
+            'TestWithNoFormActionRouteSet',
+            'feedback-form',
+        ];
+        yield 'with route set' => [
+            'TestWithFormActionRouteSet',
+            'test-action',
         ];
     }
 

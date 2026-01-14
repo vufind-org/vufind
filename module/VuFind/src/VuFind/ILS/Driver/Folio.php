@@ -1268,19 +1268,7 @@ class Folio extends AbstractAPI implements
             // fill it with data from the FOLIO holdings record, and make it not appear in
             // the full record display using a non-visible AvailabilityStatus.
             if ($number == 0 && $showHoldingsNoItems) {
-                $locAndHoldings = $this->getItemFieldsFromNonItemData($holding->effectiveLocationId, $holdingDetails);
-                $invisibleAvailabilityStatus = new AvailabilityStatus(
-                    true,
-                    'HoldingStatus::holding_no_items_availability_message'
-                );
-                $invisibleAvailabilityStatus->setVisibilityInHoldings(false);
-                $nextBatch[] = $locAndHoldings + [
-                    'id' => $bibId,
-                    'callnumber' => $holdingDetails['holdingCallNumber'],
-                    'callnumber_prefix' => $holdingDetails['holdingCallNumberPrefix'],
-                    'reserve' => 'N',
-                    'availability' => $invisibleAvailabilityStatus,
-                ];
+                $nextBatch[] = $this->buildHoldingsNoItemsData($bibId, $holdingDetails, $holding);
             }
             $items = array_merge(
                 $items,
@@ -1293,6 +1281,33 @@ class Folio extends AbstractAPI implements
             'total' => count($items),
             'holdings' => $items,
             'electronic_holdings' => [],
+        ];
+    }
+
+    /**
+     * Support method for getHoldings() -- create a fake item for holdings with no items
+     * from FOLIO.
+     *
+     * @param string $bibId          Bib-level id
+     * @param array  $holdingDetails Holding details produced by getHoldingDetailsForItem()
+     * @param object $holding        FOLIO holding record (decoded from JSON)
+     *
+     * @return array An associative array with the item keys
+     */
+    protected function buildHoldingsNoItemsData(string $bibId, array $holdingDetails, object $holding): array
+    {
+        $locAndHoldings = $this->getItemFieldsFromNonItemData($holding->effectiveLocationId, $holdingDetails);
+        $invisibleAvailabilityStatus = new AvailabilityStatus(
+            true,
+            'HoldingStatus::holding_no_items_availability_message'
+        );
+        $invisibleAvailabilityStatus->setVisibilityInHoldings(false);
+        return $locAndHoldings + [
+            'id' => $bibId,
+            'callnumber' => $holdingDetails['holdingCallNumber'],
+            'callnumber_prefix' => $holdingDetails['holdingCallNumberPrefix'],
+            'reserve' => 'N',
+            'availability' => $invisibleAvailabilityStatus,
         ];
     }
 

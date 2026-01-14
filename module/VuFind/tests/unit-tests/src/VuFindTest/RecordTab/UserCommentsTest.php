@@ -56,11 +56,12 @@ class UserCommentsTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testIsActive.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function isActiveProvider(): array
+    public static function isActiveProvider(): \Iterator
     {
-        return ['Enabled' => [true, true], 'Not Enabled' => [false, false]];
+        yield 'Enabled' => [true, true];
+        yield 'Not Enabled' => [false, false];
     }
 
     /**
@@ -81,11 +82,12 @@ class UserCommentsTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testIsCaptchaActive.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function isCaptchaActiveProvider(): array
+    public static function isCaptchaActiveProvider(): \Iterator
     {
-        return ['Active' => [true, true], 'InActive' => [false, false]];
+        yield 'Active' => [true, true];
+        yield 'InActive' => [false, false];
     }
 
     /**

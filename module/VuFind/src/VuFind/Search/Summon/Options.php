@@ -45,11 +45,11 @@ class Options extends \VuFind\Search\Base\Options
     use \VuFind\Search\Options\ViewOptionsTrait;
 
     /**
-     * Maximum number of topic recommendations to show (false for none)
+     * Maximum number of topic recommendations to show (null for none)
      *
-     * @var int|bool
+     * @var ?int
      */
-    protected int|bool $maxTopicRecommendations = false;
+    protected ?int $maxTopicRecommendations = null;
 
     /**
      * Relevance sort override for empty searches
@@ -105,22 +105,22 @@ class Options extends \VuFind\Search\Base\Options
 
     /**
      * Return the route name of the action used for performing advanced searches.
-     * Returns false if the feature is not supported.
+     * Returns null if the feature is not supported.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getAdvancedSearchAction(): string|bool
+    public function getAdvancedSearchAction(): ?string
     {
         return 'summon-advanced';
     }
 
     /**
-     * Return the route name for the facet list action. Returns false to cover
+     * Return the route name for the facet list action. Returns null to cover
      * unimplemented support.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getFacetListAction(): string|bool
+    public function getFacetListAction(): ?string
     {
         return 'summon-facetlist';
     }
@@ -138,9 +138,9 @@ class Options extends \VuFind\Search\Base\Options
     /**
      * Get the maximum number of topic recommendations (false for none)
      *
-     * @return bool|int
+     * @return ?int
      */
-    public function getMaxTopicRecommendations(): bool|int
+    public function getMaxTopicRecommendations(): ?int
     {
         return $this->maxTopicRecommendations;
     }
@@ -148,11 +148,11 @@ class Options extends \VuFind\Search\Base\Options
     /**
      * Set the maximum number of topic recommendations (false for none)
      *
-     * @param bool|int $max New maximum setting
+     * @param ?int $max New maximum setting
      *
      * @return void
      */
-    public function setMaxTopicRecommendations(bool|int $max): void
+    public function setMaxTopicRecommendations(?int $max): void
     {
         $this->maxTopicRecommendations = $max;
     }

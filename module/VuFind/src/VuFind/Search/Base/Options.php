@@ -643,7 +643,7 @@ abstract class Options implements TranslatorAwareInterface
     /**
      * Get an array of limit options.
      *
-     * @return array
+     * @return int[]
      */
     public function getLimitOptions(): array
     {
@@ -699,7 +699,7 @@ abstract class Options implements TranslatorAwareInterface
     /**
      * Override the limit options.
      *
-     * @param array $options New options to set.
+     * @param int[] $options New options to set.
      *
      * @return void
      */
@@ -751,7 +751,7 @@ abstract class Options implements TranslatorAwareInterface
     /**
      * Get the default sort option for the specified search handler.
      *
-     * @param ?string $handler Search handler being used
+     * @param ?string $handler Search handler being used (null for default)
      *
      * @return string
      */
@@ -1123,56 +1123,56 @@ abstract class Options implements TranslatorAwareInterface
 
     /**
      * Return the route name of the action used for performing advanced searches.
-     * Returns false if the feature is not supported.
+     * Returns null if the feature is not supported.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getAdvancedSearchAction(): string|bool
+    public function getAdvancedSearchAction(): ?string
     {
         // Assume unsupported by default:
-        return false;
+        return null;
     }
 
     /**
-     * Return the route name for the facet list action. Returns false to cover
+     * Return the route name for the facet list action. Returns null to cover
      * unimplemented support.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getFacetListAction(): string|bool
+    public function getFacetListAction(): ?string
     {
-        return false;
+        return null;
     }
 
     /**
-     * Return the route name for the versions search action. Returns false to cover
+     * Return the route name for the versions search action. Returns null to cover
      * unimplemented support.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getVersionsAction(): string|bool
+    public function getVersionsAction(): ?string
     {
-        return false;
+        return null;
     }
 
     /**
-     * Return the route name for the "cites" search action. Returns false to cover
+     * Return the route name for the "cites" search action. Returns null to cover
      * unimplemented support.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getCitesAction(): string|bool
+    public function getCitesAction(): ?string
     {
-        return false;
+        return null;
     }
 
     /**
-     * Return the route name for the "cited by" search action. Returns false to cover
+     * Return the route name for the "cited by" search action. Returns null to cover
      * unimplemented support.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getCitedByAction(): string|bool
+    public function getCitedByAction(): ?string
     {
         return false;
     }
@@ -1288,7 +1288,7 @@ abstract class Options implements TranslatorAwareInterface
      * or side) and the value is the settings found in the file (which may be either
      * a single string or an array of strings).
      *
-     * @param ?string $handler Name of handler for which to load specific settings.
+     * @param ?string $handler Name of handler for which to load specific settings (null to load generic defaults).
      *
      * @return array associative: location (top/side/etc.) => search settings
      */

@@ -54,24 +54,25 @@ class Options extends \VuFind\Search\Solr\Options
     }
 
     /**
-     * Return the route name for the facet list action. Returns false to cover
+     * Return the route name for the facet list action. Returns null to cover
      * unimplemented support.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getFacetListAction(): string|bool
+    public function getFacetListAction(): ?string
     {
         return 'search2-facetlist';
     }
 
     /**
-     * Return the route name for the versions search action or false if disabled.
+     * Return the route name for the versions search action. Returns null to cover
+     * unimplemented support.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getVersionsAction(): string|bool
+    public function getVersionsAction(): ?string
     {
-        return $this->displayRecordVersions ? 'search2-versions' : false;
+        return $this->displayRecordVersions ? 'search2-versions' : null;
     }
 
     /**
@@ -86,11 +87,11 @@ class Options extends \VuFind\Search\Solr\Options
 
     /**
      * Return the route name of the action used for performing advanced searches.
-     * Returns false if the feature is not supported.
+     * Returns null if the feature is not supported.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getAdvancedSearchAction(): string|bool
+    public function getAdvancedSearchAction(): ?string
     {
         return 'search2-advanced';
     }

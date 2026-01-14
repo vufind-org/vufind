@@ -34,8 +34,6 @@ use VuFind\Config\PathResolver;
 use VuFind\Config\Upgrade;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
-use function in_array;
-
 /**
  * Config Upgrade Test Class
  *
@@ -96,58 +94,56 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testDatabaseUpgrade().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function databaseUpgradeProvider(): array
+    public static function databaseUpgradeProvider(): \Iterator
     {
-        return [
-            'legacy and new formats' => [
-                'database-both-formats',
-                // New format should take precedence:
-                [
-                    'use_ssl' => '',
-                    'verify_server_certificate' => '',
-                    'database_driver' => 'mysql',
-                    'database_username' => 'notroot',
-                    'database_password' => 'password',
-                    'database_host' => 'localhost',
-                    'database_port' => '3306',
-                    'database_name' => 'vufind',
-                ],
+        yield 'legacy and new formats' => [
+            'database-both-formats',
+            // New format should take precedence:
+            [
+                'use_ssl' => '',
+                'verify_server_certificate' => '',
+                'database_driver' => 'mysql',
+                'database_username' => 'notroot',
+                'database_password' => 'password',
+                'database_host' => 'localhost',
+                'database_port' => '3306',
+                'database_name' => 'vufind',
             ],
-            'legacy format only' => [
-                'database-legacy-format',
-                [
-                    'use_ssl' => '',
-                    'verify_server_certificate' => '',
-                    'database' => 'mysql://user:pass@localhost/vufind_custom',
-                ],
+        ];
+        yield 'legacy format only' => [
+            'database-legacy-format',
+            [
+                'use_ssl' => '',
+                'verify_server_certificate' => '',
+                'database' => 'mysql://user:pass@localhost/vufind_custom',
             ],
-            'new format only' => [
-                'database-new-format',
-                [
-                    'use_ssl' => '',
-                    'verify_server_certificate' => '',
-                    'database_driver' => 'mysql',
-                    'database_username' => 'notroot',
-                    'database_password' => 'password',
-                    'database_host' => 'localhost',
-                    'database_port' => '3306',
-                    'database_name' => 'vufind',
-                ],
+        ];
+        yield 'new format only' => [
+            'database-new-format',
+            [
+                'use_ssl' => '',
+                'verify_server_certificate' => '',
+                'database_driver' => 'mysql',
+                'database_username' => 'notroot',
+                'database_password' => 'password',
+                'database_host' => 'localhost',
+                'database_port' => '3306',
+                'database_name' => 'vufind',
             ],
-            'new format only, with file-based password' => [
-                'database-new-format-password-file',
-                [
-                    'use_ssl' => '',
-                    'verify_server_certificate' => '',
-                    'database_driver' => 'mysql',
-                    'database_username' => 'notroot',
-                    'database_password_file' => '/path/to/secret',
-                    'database_host' => 'localhost',
-                    'database_port' => '3306',
-                    'database_name' => 'vufind',
-                ],
+        ];
+        yield 'new format only, with file-based password' => [
+            'database-new-format-password-file',
+            [
+                'use_ssl' => '',
+                'verify_server_certificate' => '',
+                'database_driver' => 'mysql',
+                'database_username' => 'notroot',
+                'database_password_file' => '/path/to/secret',
+                'database_host' => 'localhost',
+                'database_port' => '3306',
+                'database_name' => 'vufind',
             ],
         ];
     }
@@ -228,14 +224,12 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testSyndetics.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function syndeticsProvider(): array
+    public static function syndeticsProvider(): \Iterator
     {
-        return [
-            'syndeticsurl' => ['syndeticsurl'],
-            'syndeticsplus' => ['syndeticsplus'],
-        ];
+        yield 'syndeticsurl' => ['syndeticsurl'];
+        yield 'syndeticsplus' => ['syndeticsplus'];
     }
 
     /**
@@ -342,25 +336,23 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testSimpleWarnings().
      *
-     * @return array[]
+     * @return \Iterator<(int | string), array<mixed>>
      */
-    public static function simpleWarningsProvider(): array
+    public static function simpleWarningsProvider(): \Iterator
     {
-        return [
-            'booksite' => [
-                'booksite',
-                'The [Booksite] section of config.ini is no longer supported.',
-            ],
-            'umask' => [
-                'umaskwarning',
-                'The Cache umask setting never worked as intended and is no longer supported; '
-                . 'if you need a custom umask, please configure it at the operating system level.',
-            ],
-            'worldcat' => [
-                'worldcatwarnings',
-                'The [WorldCat] section of config.ini has been removed following'
-                . ' the shutdown of the v1 WorldCat search API; use WorldCat2.ini instead.',
-            ],
+        yield 'booksite' => [
+            'booksite',
+            'The [Booksite] section of config.ini is no longer supported.',
+        ];
+        yield 'umask' => [
+            'umaskwarning',
+            'The Cache umask setting never worked as intended and is no longer supported; '
+            . 'if you need a custom umask, please configure it at the operating system level.',
+        ];
+        yield 'worldcat' => [
+            'worldcatwarnings',
+            'The [WorldCat] section of config.ini has been removed following'
+            . ' the shutdown of the v1 WorldCat search API; use WorldCat2.ini instead.',
         ];
     }
 
@@ -388,19 +380,13 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     {
         $upgrader = $this->runAndGetConfigUpgrader('googlewarnings');
         $warnings = $upgrader->getWarnings();
-        $this->assertTrue(
-            in_array(
-                'The [GoogleSearch] section of config.ini is no '
-                . 'longer supported due to changes in Google APIs.',
-                $warnings
-            )
+        $this->assertContains(
+            'The [GoogleSearch] section of config.ini is no longer supported due to changes in Google APIs.',
+            $warnings
         );
-        $this->assertTrue(
-            in_array(
-                'Google Maps is no longer a supported Content/recordMap option;'
-                . ' please review your config.ini.',
-                $warnings
-            )
+        $this->assertContains(
+            'Google Maps is no longer a supported Content/recordMap option; please review your config.ini.',
+            $warnings
         );
         $results = $upgrader->getNewConfigs();
         $this->assertFalse(isset($results['config']['Content']['recordMap']));
@@ -412,19 +398,17 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testEbscoUpgrades
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function ebscoUpgradeProvider(): array
+    public static function ebscoUpgradeProvider(): \Iterator
     {
-        return [
-            [
-                'eds',
-                'EDS',
-            ],
-            [
-                'epf',
-                'EPF',
-            ],
+        yield [
+            'eds',
+            'EDS',
+        ];
+        yield [
+            'epf',
+            'EPF',
         ];
     }
 
@@ -586,12 +570,10 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $upgrader = $this->runAndGetConfigUpgrader('amazoncover');
         $warnings = $upgrader->getWarnings();
         foreach (['Amazon', 'Booksite'] as $service) {
-            $this->assertTrue(
-                in_array(
-                    "WARNING: You have $service content enabled, but VuFind no longer sup"
-                    . "ports it. You should remove $service references from config.ini.",
-                    $warnings
-                ),
+            $this->assertContains(
+                "WARNING: You have $service content enabled, but VuFind no longer sup"
+                . "ports it. You should remove $service references from config.ini.",
+                $warnings,
                 "Missing $service warning"
             );
         }
@@ -607,12 +589,10 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
         $upgrader = $this->runAndGetConfigUpgrader('amazonreview');
         $warnings = $upgrader->getWarnings();
         foreach (['Amazon', 'Booksite'] as $service) {
-            $this->assertTrue(
-                in_array(
-                    "WARNING: You have $service content enabled, but VuFind no longer sup"
-                    . "ports it. You should remove $service references from config.ini.",
-                    $warnings
-                ),
+            $this->assertContains(
+                "WARNING: You have $service content enabled, but VuFind no longer sup"
+                . "ports it. You should remove $service references from config.ini.",
+                $warnings,
                 "Missing $service warning"
             );
         }
@@ -637,14 +617,12 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testMailRequireLoginMigration().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function mailRequireLoginProvider(): array
+    public static function mailRequireLoginProvider(): \Iterator
     {
-        return [
-            'false' => ['email-require-login-false', 'enabled'],
-            'true' => ['email-require-login-true', 'require_login'],
-        ];
+        yield 'false' => ['email-require-login-false', 'enabled'];
+        yield 'true' => ['email-require-login-true', 'require_login'];
     }
 
     /**
@@ -667,16 +645,14 @@ class UpgradeTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testLdapUriMigration.
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function ldapUriMigrationProvider(): array
+    public static function ldapUriMigrationProvider(): \Iterator
     {
-        return [
-            'host and port' => ['ldaphostandport', 'ldap://foo:123'],
-            'uri already present' => ['ldapuri', 'ldap://foo'],
-            'host only' => ['ldaphost', 'ldap://foo:389'],
-            'port only' => ['ldapport', 'ldap://localhost:123'],
-        ];
+        yield 'host and port' => ['ldaphostandport', 'ldap://foo:123'];
+        yield 'uri already present' => ['ldapuri', 'ldap://foo'];
+        yield 'host only' => ['ldaphost', 'ldap://foo:389'];
+        yield 'port only' => ['ldapport', 'ldap://localhost:123'];
     }
 
     /**

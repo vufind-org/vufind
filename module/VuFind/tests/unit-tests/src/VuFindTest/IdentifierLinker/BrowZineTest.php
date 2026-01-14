@@ -93,123 +93,121 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testDOIApiSuccess()
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function doiProvider(): array
+    public static function doiProvider(): \Iterator
     {
-        return [
-            'unfiltered' => [
-                [],
-                [],
-                [],
-                [
-                    0 => [
-                        [
-                            'link' => 'https://weblink',
-                            'label' => 'View Complete Issue',
-                            'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-open-book-icon.svg',
-                            'linkType' => 'browzineWebLink',
-                        ],
-                        [
-                            'link' => 'https://fulltext',
-                            'label' => 'PDF Full Text',
-                            'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
-                            'linkType' => 'fullTextFile',
-                        ],
+        yield 'unfiltered' => [
+            [],
+            [],
+            [],
+            [
+                0 => [
+                    [
+                        'link' => 'https://weblink',
+                        'label' => 'View Complete Issue',
+                        'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-open-book-icon.svg',
+                        'linkType' => 'browzineWebLink',
+                    ],
+                    [
+                        'link' => 'https://fulltext',
+                        'label' => 'PDF Full Text',
+                        'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
+                        'linkType' => 'fullTextFile',
                     ],
                 ],
             ],
-            'exclude filter' => [
-                ['filterType' => 'exclude', 'filter' => ['browzineWebLink']],
-                [],
-                [],
-                [
-                    0 => [
-                        [
-                            'link' => 'https://fulltext',
-                            'label' => 'PDF Full Text',
-                            'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
-                            'linkType' => 'fullTextFile',
-                        ],
+        ];
+        yield 'exclude filter' => [
+            ['filterType' => 'exclude', 'filter' => ['browzineWebLink']],
+            [],
+            [],
+            [
+                0 => [
+                    [
+                        'link' => 'https://fulltext',
+                        'label' => 'PDF Full Text',
+                        'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
+                        'linkType' => 'fullTextFile',
                     ],
                 ],
             ],
-            'include filter' => [
-                ['filterType' => 'include', 'filter' => ['browzineWebLink']],
-                [],
-                [],
-                [
-                    0 => [
-                        [
-                            'link' => 'https://weblink',
-                            'label' => 'View Complete Issue',
-                            'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-open-book-icon.svg',
-                            'linkType' => 'browzineWebLink',
-                        ],
+        ];
+        yield 'include filter' => [
+            ['filterType' => 'include', 'filter' => ['browzineWebLink']],
+            [],
+            [],
+            [
+                0 => [
+                    [
+                        'link' => 'https://weblink',
+                        'label' => 'View Complete Issue',
+                        'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-open-book-icon.svg',
+                        'linkType' => 'browzineWebLink',
                     ],
                 ],
             ],
-            'best integrator link with no section in config' => [
-                [],
-                ['bestIntegratorLink' => 'Get full text|browzine-best'],
-                null,
-                [
-                    0 => [
-                        [
-                            'link' => 'https://fulltext',
-                            'label' => 'PDF Full Text',
-                            'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
-                            'linkType' => 'fullTextFile',
-                        ],
+        ];
+        yield 'best integrator link with no section in config' => [
+            [],
+            ['bestIntegratorLink' => 'Get full text|browzine-best'],
+            null,
+            [
+                0 => [
+                    [
+                        'link' => 'https://fulltext',
+                        'label' => 'PDF Full Text',
+                        'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
+                        'linkType' => 'fullTextFile',
                     ],
                 ],
             ],
-            'best integrator link with empty config section' => [
-                [],
-                ['bestIntegratorLink' => 'Get full text|browzine-best'],
-                [],
-                [
-                    0 => [
-                        [
-                            'link' => 'https://fulltext',
-                            'label' => 'Get full text',
-                            'localIcon' => 'browzine-best',
-                            'linkType' => 'fullTextFile',
-                        ],
+        ];
+        yield 'best integrator link with empty config section' => [
+            [],
+            ['bestIntegratorLink' => 'Get full text|browzine-best'],
+            [],
+            [
+                0 => [
+                    [
+                        'link' => 'https://fulltext',
+                        'label' => 'Get full text',
+                        'localIcon' => 'browzine-best',
+                        'linkType' => 'fullTextFile',
                     ],
                 ],
             ],
-            'best integrator link with configured label' => [
-                [],
-                ['bestIntegratorLink' => 'Get full text|browzine-best'],
-                ['fullTextFile' =>
-                    'Fancy Full Text|browzine-pdf|' .
-                    'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg'],
-                [
-                    0 => [
-                        [
-                            'link' => 'https://fulltext',
-                            'label' => 'Fancy Full Text',
-                            'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
-                            'linkType' => 'fullTextFile',
-                        ],
+        ];
+        yield 'best integrator link with configured label' => [
+            [],
+            ['bestIntegratorLink' => 'Get full text|browzine-best'],
+            ['fullTextFile' =>
+                'Fancy Full Text|browzine-pdf|' .
+                'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg'],
+            [
+                0 => [
+                    [
+                        'link' => 'https://fulltext',
+                        'label' => 'Fancy Full Text',
+                        'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
+                        'linkType' => 'fullTextFile',
                     ],
                 ],
             ],
-            'best integrator link with browzine label override' => [
-                ['useBrowzineLabel' => true],
-                ['bestIntegratorLink' => 'Get full text|browzine-best'],
-                ['fullTextFile' =>
-                    'PDF Full Text|browzine-pdf|' .
-                    'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg'],
-                [
-                    0 => [
-                        [
-                            'link' => 'https://fulltext',
-                            'label' => 'Download Best PDF Ever',
-                            'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
-                            'linkType' => 'fullTextFile',
-                        ],
+        ];
+        yield 'best integrator link with browzine label override' => [
+            ['useBrowzineLabel' => true],
+            ['bestIntegratorLink' => 'Get full text|browzine-best'],
+            ['fullTextFile' =>
+                'PDF Full Text|browzine-pdf|' .
+                'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg'],
+            [
+                0 => [
+                    [
+                        'link' => 'https://fulltext',
+                        'label' => 'Download Best PDF Ever',
+                        'icon' => 'https://assets.thirdiron.com/images/integrations/browzine-pdf-download-icon.svg',
+                        'linkType' => 'fullTextFile',
                     ],
                 ],
             ],

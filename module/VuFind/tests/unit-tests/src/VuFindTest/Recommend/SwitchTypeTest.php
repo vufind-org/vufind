@@ -45,13 +45,12 @@ class SwitchTypeTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetNewHandlerName.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function newHandlerNameProvider(): array
+    public static function newHandlerNameProvider(): \Iterator
     {
-        return ['Test1' => ['foo:bar', 'bar'],
-                'Test2' => ['foo', 'All Fields'],
-            ];
+        yield 'Test1' => ['foo:bar', 'bar'];
+        yield 'Test2' => ['foo', 'All Fields'];
     }
 
     /**
@@ -73,14 +72,13 @@ class SwitchTypeTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testGetNewHandler.
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function newHandlerProvider(): array
+    public static function newHandlerProvider(): \Iterator
     {
-        return ['Test1' => ['foo:bar', 'foo', false],
-                'Test2' => ['', 'foo', 'AllFields'],
-                'Test3' => ['foo:bar', 'abc', 'foo'],
-            ];
+        yield 'Test1' => ['foo:bar', 'foo', false];
+        yield 'Test2' => ['', 'foo', 'AllFields'];
+        yield 'Test3' => ['foo:bar', 'abc', 'foo'];
     }
 
     /**

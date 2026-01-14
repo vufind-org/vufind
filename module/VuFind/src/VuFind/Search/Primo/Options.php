@@ -82,33 +82,33 @@ class Options extends \VuFind\Search\Base\Options
 
     /**
      * Return the route name of the action used for performing advanced searches.
-     * Returns false if the feature is not supported.
+     * Returns null if the feature is not supported.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getAdvancedSearchAction(): string|bool
+    public function getAdvancedSearchAction(): ?string
     {
         return 'primo-advanced';
     }
 
     /**
-     * Return the route name for the "cites" search action. Returns false to cover
+     * Return the route name for the "cites" search action. Returns null to cover
      * unimplemented support.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getCitesAction(): string|bool
+    public function getCitesAction(): ?string
     {
         return 'primo-cites';
     }
 
     /**
-     * Return the route name for the "cited by" search action. Returns false to cover
+     * Return the route name for the "cited by" search action. Returns null to cover
      * unimplemented support.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getCitedByAction(): string|bool
+    public function getCitedByAction(): ?string
     {
         return 'primo-citedby';
     }

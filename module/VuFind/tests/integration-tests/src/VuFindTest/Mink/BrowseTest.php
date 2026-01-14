@@ -73,33 +73,31 @@ class BrowseTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testFirstColumnConfig().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function firstColumnConfigProvider(): array
+    public static function firstColumnConfigProvider(): \Iterator
     {
         $allOff = array_map(fn () => false, self::$allOn);
         // Confirm that we differentiate call number types when multiples
         // are enabled, but we do not when there is only one option.
-        return [
-            'everything on' => [
-                [
-                    'Tag',
-                    'Call Number (Dewey)',
-                    'Call Number (LC)',
-                    'Author',
-                    'Topic',
-                    'Genre',
-                    'Region',
-                    'Era',
-                ],
-                self::$allOn,
+        yield 'everything on' => [
+            [
+                'Tag',
+                'Call Number (Dewey)',
+                'Call Number (LC)',
+                'Author',
+                'Topic',
+                'Genre',
+                'Region',
+                'Era',
             ],
-            'only LCC' => [
-                ['Call Number'], ['lcc' => true] + $allOff,
-            ],
-            'only Dewey' => [
-                ['Call Number'], ['dewey' => true] + $allOff,
-            ],
+            self::$allOn,
+        ];
+        yield 'only LCC' => [
+            ['Call Number'], ['lcc' => true] + $allOff,
+        ];
+        yield 'only Dewey' => [
+            ['Call Number'], ['dewey' => true] + $allOff,
         ];
     }
 
@@ -129,23 +127,22 @@ class BrowseTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testSecondColumnBehavior().
      *
-     * @return array[]
+     * @return \Iterator
      */
-    public static function secondColumnConfigProvider(): array
+    public static function secondColumnConfigProvider(): \Iterator
     {
-        return [
-            'Tag' => [['By Alphabetical', 'By Popularity', 'By Recent'], 'Tag'],
-            'Call Number (Dewey)' => [['100 - Philosophy & psychology 1'], 'Call Number (Dewey)'],
-            'Call Number (LC)' => [[], 'Call Number (LC)'],         // skips directly to list3
-            'Author' => [
-                ['By Alphabetical', 'By Call Number', 'By Topic', 'By Genre', 'By Region', 'By Era'],
-                'Author',
-            ],
-            'Topic' => [['By Alphabetical', 'By Genre', 'By Region','By Era'], 'Topic'],
-            'Genre' => [['By Alphabetical', 'By Topic', 'By Region','By Era'], 'Genre'],
-            'Region' => [['By Alphabetical', 'By Topic', 'By Genre','By Era'], 'Region'],
-            'Era' => [['By Alphabetical', 'By Topic', 'By Genre','By Region'], 'Era'],
+        yield 'Tag' => [['By Alphabetical', 'By Popularity', 'By Recent'], 'Tag'];
+        yield 'Call Number (Dewey)' => [['100 - Philosophy & psychology 1'], 'Call Number (Dewey)'];
+        yield 'Call Number (LC)' => [[], 'Call Number (LC)'];
+        // skips directly to list3
+        yield 'Author' => [
+            ['By Alphabetical', 'By Call Number', 'By Topic', 'By Genre', 'By Region', 'By Era'],
+            'Author',
         ];
+        yield 'Topic' => [['By Alphabetical', 'By Genre', 'By Region','By Era'], 'Topic'];
+        yield 'Genre' => [['By Alphabetical', 'By Topic', 'By Region','By Era'], 'Genre'];
+        yield 'Region' => [['By Alphabetical', 'By Topic', 'By Genre','By Era'], 'Region'];
+        yield 'Era' => [['By Alphabetical', 'By Topic', 'By Genre','By Region'], 'Era'];
     }
 
     /**

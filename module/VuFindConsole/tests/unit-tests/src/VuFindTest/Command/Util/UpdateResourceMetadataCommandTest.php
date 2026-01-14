@@ -55,19 +55,17 @@ class UpdateResourceMetadataCommandTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testUpdate
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function updateProvider(): array
+    public static function updateProvider(): \Iterator
     {
-        return [
-            [
-                [],
-                [null, 100, null, []],
-            ],
-            [
-                ['--min-age' => '30', '--backend' => ['solr'], '--batch' => '10'],
-                [null, 10, 30, ['solr']],
-            ],
+        yield [
+            [],
+            [null, 100, null, []],
+        ];
+        yield [
+            ['--min-age' => '30', '--backend' => ['solr'], '--batch' => '10'],
+            [null, 10, 30, ['solr']],
         ];
     }
 

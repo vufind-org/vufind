@@ -46,6 +46,13 @@ class Options extends \VuFind\Search\Base\Options implements DateRangeOptionsInt
     use \VuFind\Search\Options\ViewOptionsTrait;
 
     /**
+     * Facet list action route
+     *
+     * @var string
+     */
+    protected string $facetListAction = 'search-facetlist';
+
+    /**
      * Available sort options for facets
      *
      * @var array
@@ -166,34 +173,47 @@ class Options extends \VuFind\Search\Base\Options implements DateRangeOptionsInt
 
     /**
      * Return the route name of the action used for performing advanced searches.
-     * Returns false if the feature is not supported.
+     * Returns null if the feature is not supported.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getAdvancedSearchAction(): string|bool
+    public function getAdvancedSearchAction(): ?string
     {
         return 'search-advanced';
     }
 
     /**
-     * Return the route name for the facet list action. Returns false to cover
+     * Return the route name for the facet list action. Returns null to cover
      * unimplemented support.
      *
-     * @return string|bool
+     * @return ?string
      */
-    public function getFacetListAction(): string|bool
+    public function getFacetListAction(): ?string
     {
-        return 'search-facetlist';
+        return $this->facetListAction;
     }
 
     /**
-     * Return the route name for the versions search action or false if disabled.
+     * Override the facet list action (needed for new items).
      *
-     * @return string|bool
+     * @param string $action New facet list action
+     *
+     * @return void
      */
-    public function getVersionsAction(): string|bool
+    public function setFacetListAction(string $action): void
     {
-        return $this->displayRecordVersions ? 'search-versions' : false;
+        $this->facetListAction = $action;
+    }
+
+    /**
+     * Return the route name for the versions search action. Returns null to cover
+     * unimplemented support.
+     *
+     * @return ?string
+     */
+    public function getVersionsAction(): ?string
+    {
+        return $this->displayRecordVersions ? 'search-versions' : null;
     }
 
     /**

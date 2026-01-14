@@ -1162,8 +1162,8 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Facets should be ordered in descending order by count, and should have
         // non-zero counts...
-        $this->assertTrue($firstFacetCount >= $secondFacetCount);
-        $this->assertTrue($secondFacetCount > 0);
+        $this->assertGreaterThanOrEqual($secondFacetCount, $firstFacetCount);
+        $this->assertGreaterThan(0, $secondFacetCount);
 
         // Clicking the second facet should restrict the result list:
         $this->clickCss(
@@ -1669,7 +1669,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performSearch('building:weird_ids.mrc OR building:journals.mrc');
         $sidebar = $this->findCss($page, '.sidebar');
         $checkbox = $this->findCss($sidebar, '.js-user-selection-multi-filters');
-        $this->assertStringContainsString($checkbox->isChecked(), true);
+        $this->assertTrue($checkbox->isChecked());
     }
 
     /**
