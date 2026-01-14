@@ -29,7 +29,7 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * AbstractJsStrings helper for passing transformed text to Javascript
@@ -40,7 +40,7 @@ use Laminas\View\Helper\AbstractHelper;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-abstract class AbstractJsStrings extends AbstractHelper
+abstract class AbstractJsStrings 
 {
     /**
      * Variable name to store values
@@ -61,9 +61,19 @@ abstract class AbstractJsStrings extends AbstractHelper
      *
      * @param string $varName Variable name to store values
      */
-    public function __construct($varName = 'vufindString')
+    public function __construct(string $varName = 'vufindString')
     {
         $this->varName = $varName;
+    }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke(): static
+    {
+        return $this;
     }
 
     /**

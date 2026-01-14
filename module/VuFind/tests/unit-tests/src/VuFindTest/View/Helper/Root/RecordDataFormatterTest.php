@@ -88,6 +88,9 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             return $this->createMock($service);
         });
         $record->setDbServiceManager($serviceManager);
+
+        $translate = new \VuFind\View\Helper\Root\Translate();
+        $transEsc = new \VuFind\View\Helper\Root\TransEsc($translate, new \Laminas\View\Helper\EscapeHtml());
         return [
             'auth' => new \VuFind\View\Helper\Root\Auth(
                 $this->createMock(\VuFind\Auth\Manager::class),
@@ -118,8 +121,8 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
                 new \VuFind\Search\Options\PluginManager($container)
             ),
             'searchTabs' => $this->createMock(\VuFind\View\Helper\Root\SearchTabs::class),
-            'transEsc' => new \VuFind\View\Helper\Root\TransEsc(),
-            'translate' => new \VuFind\View\Helper\Root\Translate(),
+            'transEsc' => $transEsc,
+            'translate' => $translate,
             'usertags' => new \VuFind\View\Helper\Root\UserTags(),
         ];
     }
@@ -298,7 +301,9 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         // Inject the view object into all of the helpers:
         $formatter->setView($view);
         foreach ($helpers as $helper) {
-            $helper->setView($view);
+            if(method_exists($helper, 'setView')){
+                $helper->setView($view);
+            }
         }
 
         return $formatter;
