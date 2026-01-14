@@ -45,14 +45,14 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @var bool
      */
-    protected $fuzzy = false;
+    protected bool $fuzzy = false;
 
     /**
      * Is this a fuzzy search?
      *
      * @return bool
      */
-    public function isFuzzyTagSearch()
+    public function isFuzzyTagSearch(): bool
     {
         return $this->fuzzy;
     }
@@ -65,7 +65,7 @@ class Params extends \VuFind\Search\Base\Params
      *
      * @return void
      */
-    public function initFromRequest($request)
+    public function initFromRequest(\Laminas\Stdlib\Parameters $request): void
     {
         parent::initFromRequest($request);
         $this->fuzzy = ('true' == $request->get('fuzzy', 'false'));

@@ -48,7 +48,7 @@ class Params extends \VuFind\Search\Solr\Params
      *
      * @return void
      */
-    public function initFromRequest($request)
+    public function initFromRequest(\Laminas\Stdlib\Parameters $request): void
     {
         parent::initFromRequest($request);
 
@@ -74,7 +74,7 @@ class Params extends \VuFind\Search\Solr\Params
      *
      * @return bool True if search settings were found, false if not.
      */
-    protected function initBasicSearch($request)
+    protected function initBasicSearch(\Laminas\Stdlib\Parameters $request): bool
     {
         // If no lookfor parameter was found, we have no search terms to
         // add to our array!
@@ -95,7 +95,7 @@ class Params extends \VuFind\Search\Solr\Params
      *
      * @return void
      */
-    protected function initView($request)
+    protected function initView(\Laminas\Stdlib\Parameters $request): void
     {
         $this->view = 'authorfacets';
     }
