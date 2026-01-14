@@ -29,16 +29,10 @@
 
 namespace VuFindTest\Resolver\Driver;
 
-use GuzzleHttp\Handler\MockHandler;
-use GuzzleHttp\HandlerStack;
 use GuzzleHttp\Psr7\Response;
 use InvalidArgumentException;
-use Laminas\Http\Client\Adapter\Test as TestAdapter;
-use Laminas\Http\Response as HttpResponse;
 use PHPUnit\Framework\Attributes\DataProvider;
 use VuFind\Http\GuzzleService;
-use VuFind\Resolver\Driver\AbstractBase;
-use VuFind\Resolver\Driver\Alma;
 use VuFind\Resolver\Driver\LinkIq;
 use VuFindTest\Feature\FixtureTrait;
 use VuFindTest\Feature\TranslatorTrait;
@@ -103,7 +97,7 @@ class LinkIqTest extends \PHPUnit\Framework\TestCase
                     'service_type' => 'getFullTxt',
                     'coverage' => '01-01-1997 – 12-31-1999, 01-01-2001 –  (Not published during year 2000)',
                     'embargo' => '(Embargo: 3 weeks)',
-                ]
+                ],
             ],
             $results
         );

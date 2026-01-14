@@ -29,12 +29,10 @@
 
 namespace VuFind\Resolver\Driver;
 
-use Psr\Log\LoggerAwareInterface;
 use VuFind\Date\Converter as DateConverter;
 use VuFind\Http\GuzzleService;
 use VuFind\I18n\Translator\TranslatorAwareInterface;
 use VuFind\I18n\Translator\TranslatorAwareTrait;
-use VuFind\Log\LoggerAwareTrait;
 
 /**
  * EBSCO LinkIQ Resolver Driver
