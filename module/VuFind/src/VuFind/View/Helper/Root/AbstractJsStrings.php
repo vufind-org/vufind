@@ -29,8 +29,6 @@
 
 namespace VuFind\View\Helper\Root;
 
-use VuFind\ServiceManager\Factory\Autowire;
-
 /**
  * AbstractJsStrings helper for passing transformed text to Javascript
  *
@@ -40,7 +38,7 @@ use VuFind\ServiceManager\Factory\Autowire;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-abstract class AbstractJsStrings 
+abstract class AbstractJsStrings
 {
     /**
      * Variable name to store values

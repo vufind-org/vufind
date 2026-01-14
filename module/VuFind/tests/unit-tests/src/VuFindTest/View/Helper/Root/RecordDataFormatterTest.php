@@ -301,7 +301,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         // Inject the view object into all of the helpers:
         $formatter->setView($view);
         foreach ($helpers as $helper) {
-            if(method_exists($helper, 'setView')){
+            if (method_exists($helper, 'setView')) {
                 $helper->setView($view);
             }
         }
