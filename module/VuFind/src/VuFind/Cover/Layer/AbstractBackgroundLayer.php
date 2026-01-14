@@ -46,15 +46,15 @@ abstract class AbstractBackgroundLayer extends AbstractLayer
     /**
      * Generates a dynamic cover image from elements of the book
      *
-     * @param ?string $title      Title of the book
-     * @param ?string $callnumber Callnumber of the book
+     * @param string $title      Title of the book
+     * @param string $callnumber Callnumber of the book
      *
      * @return int unique number for this record
      */
     protected function createSeed($title, $callnumber)
     {
         // Pick text for seeding the algorithm:
-        $textSeed = $callnumber ?? $title ?? '';
+        $textSeed = $callnumber ?: $title ?: '';
         $cv = 0;
         // Add up the values of the characters in the seed string:
         for ($i = 0; $i < strlen($textSeed); $i++) {
