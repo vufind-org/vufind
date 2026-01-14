@@ -114,7 +114,7 @@ class FollowupHelper
      *
      * @return void
      */
-    public function store(array $extras = [], ?string $overrideUrl = null)
+    public function store(array $extras = [], ?string $overrideUrl = null): void
     {
         // Store the current URL:
         $url = new Http(
