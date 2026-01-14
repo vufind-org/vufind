@@ -211,7 +211,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         // but saved search is still present:
         $this->findAndAssertLink($page, 'Purge unsaved searches')->click();
         $this->waitForPageLoad($page);
-        $this->assertNotInstanceOf(\Behat\Mink\Element\NodeElement::class, $page->findLink('foo \ bar'));
+        $this->assertNotInstanceOf(NodeElement::class, $page->findLink('foo \ bar'));
         $this->assertEquals(
             'test',
             $this->findAndAssertLink($page, 'test')->getText()
