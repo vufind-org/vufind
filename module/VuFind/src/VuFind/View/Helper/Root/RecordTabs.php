@@ -55,7 +55,7 @@ class RecordTabs extends \Laminas\View\Helper\AbstractHelper
     }
 
     /**
-     * Render record tabs.
+     * Transform record tabs to general tabs array.
      *
      * @param \VuFind\RecordDriver\AbstractBase $driver    Record driver
      * @param array                             $tabs      Tabs
@@ -63,7 +63,7 @@ class RecordTabs extends \Laminas\View\Helper\AbstractHelper
      *
      * @return array
      */
-    public function __invoke(
+    public function getTabs(
         \VuFind\RecordDriver\AbstractBase $driver,
         array $tabs,
         string $activeTab
@@ -100,5 +100,15 @@ class RecordTabs extends \Laminas\View\Helper\AbstractHelper
             $tabArray[$tabName] = $tabItem;
         }
         return $tabArray;
+    }
+
+    /**
+     * Get extra JS scripts required by the record tabs.
+     *
+     * @return array
+     */
+    public function getExtraScripts(): array
+    {
+        return array_merge(...array_values($this->tabManager->getExtraScripts()));
     }
 }

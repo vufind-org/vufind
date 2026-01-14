@@ -50,7 +50,7 @@
       <a id="tabnav"></a>
       <div class="record-tabs">
         <?= $this->tabs(
-          $this->recordTabs($this->driver, $this->tabs, $this->activeTab),
+          $this->recordTabs()->getTabs($this->driver, $this->tabs, $this->activeTab),
           $this->activeTab,
         )?>
       </div>
