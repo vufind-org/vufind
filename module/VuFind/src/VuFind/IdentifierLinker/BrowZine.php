@@ -211,7 +211,7 @@ class BrowZine implements IdentifierLinkerInterface, TranslatorAwareInterface
                 $result[$key] = [];
             } else {
                 $parts = explode('|', $configLine);
-                $result[$key] = [
+                $result[$key] = count($parts) < 2 ? [] : [
                     'linkText' => $parts[0],
                     'localIcon' => $parts[1],
                     'icon' => $parts[2] ?? null,
