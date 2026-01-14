@@ -77,6 +77,20 @@ abstract class AbstractBase implements DriverInterface
     }
 
     /**
+     * Get Resolver Url for more options link
+     *
+     * Transform the OpenURL as needed to get a working link to the resolver.
+     *
+     * @param string $openURL openURL (url-encoded)
+     *
+     * @return string Returns resolver specific url
+     */
+    public function getResolverUrlForMoreOptions(string $openURL): string
+    {
+        return $this->getResolverUrl($openURL);
+    }
+
+    /**
      * This controls whether a "More options" link will be shown below the fetched
      * resolver links eventually linking to the resolver page previously being
      * parsed.
