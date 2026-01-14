@@ -62,7 +62,7 @@ class FollowupHelper
      *
      * @return bool       True if cleared, false if never set.
      */
-    public function clear(string $key)
+    public function clear(string $key): bool
     {
         if (isset($this->session->$key)) {
             unset($this->session->$key);
