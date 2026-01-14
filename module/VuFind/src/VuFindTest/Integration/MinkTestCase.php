@@ -357,11 +357,11 @@ abstract class MinkTestCase extends \PHPUnit\Framework\TestCase
     /**
      * Sleep if necessary.
      *
-     * @param int $secs Seconds to sleep
+     * @param int|float $secs Seconds to sleep
      *
      * @return void
      */
-    protected function snooze(int $secs = 1): void
+    protected function snooze(int|float $secs = 1): void
     {
         $snoozeMultiplier = $this->getSnoozeMultiplier();
         if ($snoozeMultiplier <= 0) {
