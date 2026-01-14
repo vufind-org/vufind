@@ -30,6 +30,7 @@
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
+use Behat\Mink\Element\NodeElement;
 
 /**
  * Mink saved searches test class.
@@ -181,7 +182,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
             $this->hasElementsMatchingText($page, 'a', 'log in')
         );
         $this->waitForPageLoad($page);
-        $this->assertNotInstanceOf(\Behat\Mink\Element\NodeElement::class, $page->findLink('test'));
+        $this->assertNotInstanceOf(NodeElement::class, $page->findLink('test'));
 
         // Now log in and see if our saved search shows up (without making the
         // unsaved search go away):

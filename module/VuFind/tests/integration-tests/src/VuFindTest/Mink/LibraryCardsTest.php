@@ -30,6 +30,7 @@
 namespace VuFindTest\Mink;
 
 use Behat\Mink\Element\Element;
+use Behat\Mink\Element\NodeElement;
 
 /**
  * Mink library card actions test class.
@@ -329,7 +330,7 @@ final class LibraryCardsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Click the delete button
         $button = $this->findCss($page, 'tr:nth-child(3)')->findLink('Delete');
-        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $button);
+        $this->assertInstanceOf(NodeElement::class, $button);
         $button->click();
         $this->waitForPageLoad($page);
         $this->clickCss($page, $this->firstOpenDropdownMenuItemSelector);
