@@ -279,7 +279,7 @@ class BrowZineTest extends \PHPUnit\Framework\TestCase
         array $identifierLinksConfig,
         array $doiServicesConfig,
         ?array $bestIntegratorLinksConfig,
-        ?array $expectedResponse
+        array $expectedResponse
     ): void {
         $rawData = $this->getJsonFixture('browzine/doi.json');
         $ids = [['doi' => '10.1155/2020/8690540']];
