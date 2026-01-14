@@ -793,10 +793,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
         $this->auditEventService->addEvent(
             AuditEventType::User,
             AuditEventSubType::PasswordReset,
-            data: [
-                'recoveryData' => $recoveryData,
-                'params' => $params,
-            ]
+            data: compact('recoveryData', 'params')
         );
     }
 
