@@ -59,7 +59,7 @@ class Between
      *
      * @return array An array containing a placement index (or false to hide) for each between recommendation.
      */
-    public function getPlacements(array $recommendations, Results $results)
+    public function getPlacements(array $recommendations, Results $results): array
     {
         if (empty($recommendations)) {
             return [];
@@ -81,7 +81,7 @@ class Between
      *
      * @return ?int The index of the second of the pair of results with the biggest diff score
      */
-    public function getMaxScoreDiffIndex(array $scores)
+    public function getMaxScoreDiffIndex(array $scores): ?int
     {
         $maxDiff = 0;
         $maxDiffIndex = 0;

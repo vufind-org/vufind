@@ -47,7 +47,7 @@ class BetweenTest extends \PHPUnit\Framework\TestCase
      *
      * @return void
      */
-    public function testMaxScoreDiff()
+    public function testMaxScoreDiff(): void
     {
         $between = $this->getBetween();
         $this->assertEquals(3, $between->getMaxScoreDiffIndex([100, null, 98, 50, 49, null, 48]));
@@ -58,7 +58,7 @@ class BetweenTest extends \PHPUnit\Framework\TestCase
      *
      * @return Between
      */
-    protected function getBetween()
+    protected function getBetween(): Between
     {
         return new Between();
     }

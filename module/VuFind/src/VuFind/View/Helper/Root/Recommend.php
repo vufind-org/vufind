@@ -88,7 +88,7 @@ class Recommend extends \Laminas\View\Helper\AbstractHelper
      *
      * @return Between
      */
-    public function getBetweenHelper()
+    public function getBetweenHelper(): Between
     {
         return $this->between;
     }
