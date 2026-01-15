@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Header menu tests.
+ * Header bar tests.
  *
  * PHP version 8
  *
@@ -29,11 +29,11 @@
 
 namespace VuFindTest\Navigation;
 
-use VuFind\Navigation\HeaderMenu;
+use VuFind\Navigation\HeaderBar;
 use VuFindTest\Unit\AbstractSectionTestCase;
 
 /**
- * Header menu tests.
+ * Header bar tests.
  *
  * @category VuFind
  * @package  Tests
@@ -41,7 +41,7 @@ use VuFindTest\Unit\AbstractSectionTestCase;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development:testing:unit_tests Wiki
  */
-class HeaderMenuTest extends AbstractSectionTestCase
+class HeaderBarTest extends AbstractSectionTestCase
 {
     /**
      * Test that the menu is the default menu if configuration is missing.
@@ -52,8 +52,8 @@ class HeaderMenuTest extends AbstractSectionTestCase
     {
         $container = $this->getContainerWithSectionRelatedServices();
         $this->assertEquals(
-            $this->getHeader($container)->getMenu(),
-            $this->getHeader($container, HeaderMenu::getDefaultMenuConfig())->getMenu()
+            $this->getHeaderBar($container)->getMenu(),
+            $this->getHeaderBar($container, HeaderBar::getDefaultMenuConfig())->getMenu()
         );
     }
 
@@ -65,10 +65,10 @@ class HeaderMenuTest extends AbstractSectionTestCase
     public function testDefaultMenuAllCheckMethodsReturnFalse()
     {
         $container = $this->getContainerWithSectionRelatedServices();
-        $menu = $this->getHeader(
+        $menu = $this->getHeaderBar(
             $container,
-            HeaderMenu::getDefaultMenuConfig(),
-            $this->getHeaderCheckMethods(false)
+            HeaderBar::getDefaultMenuConfig(),
+            $this->getHeaderBarCheckMethods(false)
         )->getMenu();
         $this->assertCount(0, $menu);
     }

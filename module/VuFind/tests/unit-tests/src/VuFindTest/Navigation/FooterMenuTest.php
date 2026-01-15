@@ -52,8 +52,8 @@ class FooterMenuTest extends AbstractSectionTestCase
     {
         $container = $this->getContainerWithSectionRelatedServices();
         $this->assertEquals(
-            $this->getFooter($container)->getMenu(),
-            $this->getFooter($container, FooterMenu::getDefaultMenuConfig())->getMenu()
+            $this->getFooterMenu($container)->getMenu(),
+            $this->getFooterMenu($container, FooterMenu::getDefaultMenuConfig())->getMenu()
         );
     }
 
@@ -65,10 +65,10 @@ class FooterMenuTest extends AbstractSectionTestCase
     public function testDefaultMenuAllCheckMethodsReturnFalse()
     {
         $container = $this->getContainerWithSectionRelatedServices();
-        $menu = $this->getFooter(
+        $menu = $this->getFooterMenu(
             $container,
             FooterMenu::getDefaultMenuConfig(),
-            $this->getFooterCheckMethods(false)
+            $this->getFooterMenuCheckMethods(false)
         )->getMenu();
         $this->assertCount(3, $menu['FooterRight']['MenuItems']);
     }

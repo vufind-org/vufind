@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Header factory
+ * Header bar factory
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use Psr\Container\ContainerInterface;
 use function count;
 
 /**
- * Header factory
+ * Header bar factory
  *
  * @category VuFind
  * @package  Navigation
@@ -45,7 +45,7 @@ use function count;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class HeaderMenuFactory extends AbstractMenuFactory
+class HeaderBarFactory extends AbstractMenuFactory
 {
     /**
      * Create an object
@@ -74,7 +74,7 @@ class HeaderMenuFactory extends AbstractMenuFactory
             $container,
             $requestedName,
             [
-                'HeaderMenu.yaml',
+                'HeaderBar.yaml',
                 $config,
                 $cart->isActive(),
                 $manager->loginEnabled(),

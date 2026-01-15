@@ -35,14 +35,14 @@ Header:
         id: feedbackLink
         data-lightbox: data-lightbox
 
-    - template: Navigation/header-cart.phtml
+    - template: Navigation/headerBar-cart.phtml
       checkMethod: checkCart
 
-    - template: Navigation/header-account.phtml
+    - template: Navigation/headerBar-account.phtml
       checkMethod: checkAccount
 
-    - template: Navigation/header-themeOptions.phtml
+    - template: Navigation/headerBar-themeOptions.phtml
       checkMethod: checkThemeOptions
 
-    - template: Navigation/header-allLangs.phtml
+    - template: Navigation/headerBar-allLangs.phtml
       checkMethod: checkAllLangs

@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Abstract base class for navigation plugin tests.
+ * Abstract base class for section plugin tests.
  *
  * PHP version 8
  *
@@ -38,7 +38,7 @@ use VuFind\Navigation\AbstractMenu;
 use VuFind\Navigation\AccountMenu;
 use VuFind\Navigation\AdminMenu;
 use VuFind\Navigation\FooterMenu;
-use VuFind\Navigation\HeaderMenu;
+use VuFind\Navigation\HeaderBar;
 use VuFind\Navigation\NavigationInterface;
 use VuFind\Navigation\PluginManager as NavigationManager;
 use VuFind\Section\Plugin\PluginManager as SectionManager;
@@ -49,7 +49,7 @@ use VuFindTest\Container\MockContainer;
 use VuFindTest\Feature\ConfigRelatedServicesTrait;
 
 /**
- * Abstract base class for navigation plugin tests.
+ * Abstract base class for section plugin tests.
  *
  * @category VuFind
  * @package  Tests
@@ -106,8 +106,8 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         $container->set(SectionServiceInterface::class, $service);
         $this->getAccountMenu($container);
         $this->getAdminMenu($container);
-        $this->getFooter($container);
-        $this->getHeader($container);
+        $this->getFooterMenu($container);
+        $this->getHeaderBar($container);
     }
 
     /**
@@ -257,7 +257,7 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock Footer.
+     * Get a mock FooterMenu.
      *
      * @param MockContainer $container    Mock container
      * @param array         $config       Configuration to use
@@ -265,7 +265,7 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
      *
      * @return FooterMenu
      */
-    protected function getFooter(
+    protected function getFooterMenu(
         MockContainer $container,
         array $config = [],
         array $checkMethods = []
@@ -277,9 +277,9 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
                     [],
                 ]
             )
-            ->onlyMethods(array_keys($this->getFooterCheckMethods()))
+            ->onlyMethods(array_keys($this->getFooterMenuCheckMethods()))
             ->getMock();
-        foreach ($this->getFooterCheckMethods() as $checkMethod => $default) {
+        foreach ($this->getFooterMenuCheckMethods() as $checkMethod => $default) {
             $footer->method($checkMethod)->willReturn($checkMethods[$checkMethod] ?? $default);
         }
         $this->setSectionPlugin($container, $footer, 'footer');
@@ -287,13 +287,13 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get all Footer check methods.
+     * Get all FooterMenu check methods.
      *
      * @param bool $value Value for the check methods to return
      *
      * @return array
      */
-    protected function getFooterCheckMethods(bool $value = true): array
+    protected function getFooterMenuCheckMethods(bool $value = true): array
     {
         return [
             'checkCookieSettings' => $value,
@@ -301,20 +301,20 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get a mock Header.
+     * Get a mock HeaderBar.
      *
      * @param MockContainer $container    Mock container
      * @param array         $config       Configuration to use
      * @param array         $checkMethods Values to return for specific check methods
      *
-     * @return HeaderMenu
+     * @return HeaderBar
      */
-    protected function getHeader(
+    protected function getHeaderBar(
         MockContainer $container,
         array $config = [],
         array $checkMethods = []
-    ): HeaderMenu {
-        $header = $this->getMockBuilder(HeaderMenu::class)
+    ): HeaderBar {
+        $header = $this->getMockBuilder(HeaderBar::class)
             ->setConstructorArgs(
                 [
                     $config,
@@ -325,9 +325,9 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
                     true,
                 ]
             )
-            ->onlyMethods(array_keys($this->getHeaderCheckMethods()))
+            ->onlyMethods(array_keys($this->getHeaderBarCheckMethods()))
             ->getMock();
-        foreach ($this->getHeaderCheckMethods() as $checkMethod => $default) {
+        foreach ($this->getHeaderBarCheckMethods() as $checkMethod => $default) {
             $header->method($checkMethod)->willReturn($checkMethods[$checkMethod] ?? $default);
         }
         $this->setSectionPlugin($container, $header, 'header');
@@ -335,13 +335,13 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get all Header check methods.
+     * Get all HeaderBar check methods.
      *
      * @param bool $value Value for the check methods to return
      *
      * @return array
      */
-    protected function getHeaderCheckMethods(bool $value = true): array
+    protected function getHeaderBarCheckMethods(bool $value = true): array
     {
         return [
             'checkFeedback' => $value,

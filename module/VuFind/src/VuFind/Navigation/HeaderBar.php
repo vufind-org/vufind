@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Header navigation
+ * Header bar navigation
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Navigation;
 
 /**
- * Header navigation
+ * Header bar navigation
  *
  * @category VuFind
  * @package  Navigation
@@ -38,7 +38,7 @@ namespace VuFind\Navigation;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org Main Site
  */
-class HeaderMenu extends AbstractMenu
+class HeaderBar extends AbstractMenu
 {
     /**
      * Is feedback enabled?
