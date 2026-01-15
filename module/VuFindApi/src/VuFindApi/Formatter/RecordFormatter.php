@@ -165,7 +165,7 @@ class RecordFormatter extends BaseFormatter
     protected function getRecordPageAbsoluteLink($record)
     {
         if (!$this->serverUrlHelper) {
-            throw new ApiException('Cannot generate absolute link to record.');
+            throw new ApiException('ServerUrlHelper missing: Cannot generate absolute link to record.');
         }
         $recordPage = $this->getRecordPageRelativeLink($record);
         return $this->serverUrlHelper->getUrlForPath($recordPage);
