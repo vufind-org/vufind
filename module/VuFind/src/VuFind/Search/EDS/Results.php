@@ -152,7 +152,7 @@ class Results extends \VuFind\Search\Base\Results
      *
      * @return bool
      */
-    protected function paramsIncludeLimiter(ParamBag $params): bool
+    public function paramsIncludeLimiter(ParamBag $params): bool
     {
         return (bool)array_filter(
             $params->get('filters') ?? [],
