@@ -163,11 +163,11 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
             if ('group' === $multipleLocations) {
                 if (AvailabilityStatusInterface::STATUS_AVAILABLE === $availability) {
                     // For this case we have available items in both locations:
-                    $this->assertEquals(
+                    $this->assertSame(
                         'Test Location',
                         $this->findCssAndGetText($page, '.result-body .callnumAndLocation .groupLocation .text-success')
                     );
-                    $this->assertEquals(
+                    $this->assertSame(
                         'Main Library',
                         $this->findCssAndGetText(
                             $page,
@@ -177,11 +177,11 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
                         )
                     );
                 } else {
-                    $this->assertEquals(
+                    $this->assertSame(
                         'Test Location',
                         $this->findCssAndGetText($page, '.result-body .callnumAndLocation .groupLocation .text-danger')
                     );
-                    $this->assertEquals(
+                    $this->assertSame(
                         'Main Library',
                         $this->findCssAndGetText(
                             $page,
@@ -204,7 +204,7 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
             } else {
                 $selector = '.result-body .callnumAndLocation .location';
             }
-            $this->assertEquals('Main Library', $this->findCssAndGetText($page, $selector));
+            $this->assertSame('Main Library', $this->findCssAndGetText($page, $selector));
         }
     }
 
@@ -253,18 +253,18 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
 
         $page = $this->goToSearchResults();
 
-        $this->assertEquals(
+        $this->assertSame(
             $expected,
             $this->findCssAndGetText($page, ".result-body .fullAvailability .text-$expectedType")
         );
 
         if ($availability) {
             // Extra items, check both:
-            $this->assertEquals('Test Location', $this->findCssAndGetText($page, '.result-body .fullLocation'));
-            $this->assertEquals('Main Library', $this->findCssAndGetText($page, '.result-body .fullLocation', null, 1));
+            $this->assertSame('Test Location', $this->findCssAndGetText($page, '.result-body .fullLocation'));
+            $this->assertSame('Main Library', $this->findCssAndGetText($page, '.result-body .fullLocation', null, 1));
         } else {
             // No extra items to care for:
-            $this->assertEquals('Main Library', $this->findCssAndGetText($page, '.result-body .fullLocation'));
+            $this->assertSame('Main Library', $this->findCssAndGetText($page, '.result-body .fullLocation'));
         }
         // If testing with the custom template, be sure its custom script executed as expected:
         if ($customTemplate) {
@@ -288,7 +288,7 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         $page = $this->goToSearchResults();
-        $this->assertEquals(
+        $this->assertSame(
             'Simulated failure',
             $this->findCssAndGetText($page, '.result-body .callnumAndLocation.text-danger')
         );
@@ -321,7 +321,7 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         $page = $this->goToRecord();
-        $this->assertEquals($expected, $this->findCssAndGetText($page, ".holdings-tab span.text-$expectedType"));
+        $this->assertSame($expected, $this->findCssAndGetText($page, ".holdings-tab span.text-$expectedType"));
     }
 
     /**
@@ -369,7 +369,7 @@ class HoldingsTest extends \VuFindTest\Integration\MinkTestCase
         );
 
         $page = $this->goToSearchResults();
-        $this->assertEquals($expectedCallNo, $this->findCssAndGetText($page, '.callnumAndLocation .callnumber'));
+        $this->assertSame($expectedCallNo, $this->findCssAndGetText($page, '.callnumAndLocation .callnumber'));
     }
 
     /**

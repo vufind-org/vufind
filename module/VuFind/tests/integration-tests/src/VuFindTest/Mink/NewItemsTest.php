@@ -61,7 +61,7 @@ class NewItemsTest extends \VuFindTest\Integration\MinkTestCase
         $session->visit($this->getVuFindUrl() . '/Search/NewItem');
         $page = $session->getPage();
         // Confirm custom ranges display correctly:
-        $this->assertEquals(
+        $this->assertSame(
             $expectedRanges,
             $this->findCssAndGetText($page, '.form-search-newitem .btn-group')
         );
@@ -165,7 +165,7 @@ class NewItemsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->submitNewItemSearch(expectedRanges: 'Yesterday Past 15 Days Past 60 Days');
 
         // Confirm that we've reached the custom results page:
-        $this->assertEquals(
+        $this->assertSame(
             'Showing 1 - 20 results of 20 New Items',
             $this->findCssAndGetText($page, '.search-stats')
         );
@@ -189,7 +189,7 @@ class NewItemsTest extends \VuFindTest\Integration\MinkTestCase
         $recordLink = $this->findAndAssertLink($page, $title);
         $recordLink->click();
         $this->waitForPageLoad($page);
-        $this->assertEquals($title, $this->findCssAndGetText($page, 'h1'));
+        $this->assertSame($title, $this->findCssAndGetText($page, 'h1'));
         $recordAuthorLink = $this->findAndAssertLink($page, 'Shakespeare, William 1564 - 1616');
         $this->assertStringEndsWith(
             '/Author/Home?author=Shakespeare,%20William%201564%20-%201616',

@@ -89,7 +89,7 @@ final class EmailVerificationTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.modal-body .createAccountLink');
         $this->fillInAccountForm($page);
         $this->clickCss($page, '.modal-body .btn.btn-primary');
-        $this->assertEquals(
+        $this->assertSame(
             'Email address verification instructions have been sent to the email address registered with this account.',
             $this->findCssAndGetText($page, '.alert-info')
         );
@@ -105,7 +105,7 @@ final class EmailVerificationTest extends \VuFindTest\Integration\MinkTestCase
 
         // Follow the verification link:
         $session->visit($verifyLink);
-        $this->assertEquals(
+        $this->assertSame(
             'Your email address has been verified successfully.',
             $this->findCssAndGetText($page, '.alert-info')
         );
@@ -159,7 +159,7 @@ final class EmailVerificationTest extends \VuFindTest\Integration\MinkTestCase
 
         // Request the email change:
         $this->clickCss($page, '.fa-envelope');
-        $this->assertEquals(
+        $this->assertSame(
             'Submitting this form will send an email to the new address; '
             . 'you will have to click on a link in the email before the change will take effect.',
             $this->findCssAndGetText($page, '.alert-info')
@@ -193,7 +193,7 @@ final class EmailVerificationTest extends \VuFindTest\Integration\MinkTestCase
 
         // Follow the verification link:
         $session->visit($verifyLink);
-        $this->assertEquals(
+        $this->assertSame(
             'Your email address has been verified successfully.',
             $this->findCssAndGetText($page, '.alert-info')
         );

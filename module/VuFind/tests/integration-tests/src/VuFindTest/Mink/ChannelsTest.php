@@ -111,7 +111,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         $channels = $page->findAll('css', $this->channelSelector);
         $this->assertCount(4, $channels);
         // Make sure appropriate similar records are displayed:
-        $this->assertEquals(
+        $this->assertSame(
             'Similar Items: Journal of rational emotive therapy :',
             $this->findCssAndGetText($page, 'h2.channel-title')
         );
@@ -135,7 +135,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         $channels = $page->findAll('css', $this->channelSelector);
         $this->assertCount(6, $channels);
         // Make sure search input matches url
-        $this->assertEquals(
+        $this->assertSame(
             'building:"weird_ids.mrc"',
             $this->findCssAndGetValue($page, '[action*="Channels/Search"] .form-control')
         );
@@ -183,16 +183,16 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         // Click link to go to search results
         $this->clickCss($channel, '.channel-options .fa-search');
         // Make sure the search translated
-        $this->assertEquals(
+        $this->assertSame(
             'building:"weird_ids.mrc"',
             $this->findCssAndGetValue($page, '#searchForm_lookfor')
         );
         // Check facet
-        $this->assertEquals(
+        $this->assertSame(
             'Suggested Topics:',
             $this->findCssAndGetText($page, '.filters .filters-title')
         );
-        $this->assertEquals(
+        $this->assertSame(
             'Remove Filter Adult children of aging parents',
             $this->findCssAndGetText($page, '.filters .filter-value')
         );
@@ -281,13 +281,13 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         // Now click back to the original record; the popover should contain the same contents.
         $this->clickCss($page, '.channel-item[data-record-id="' . $record1 . '"] .channel-quick-look-btn');
         $popoverContents3 = $this->findCssAndGetText($page, '.channels-quick-look');
-        $this->assertEquals($popoverContents, $popoverContents3);
+        $this->assertSame($popoverContents, $popoverContents3);
         // Finally, click through to the record page.
         $link = $this->findCss($page, '.ql-view-record-btn');
         $this->assertEquals('View Record', $link->getText());
         $link->click();
         $this->waitForPageLoad($page);
-        $this->assertEquals($title1, $this->findCssAndGetText($page, 'h1'));
+        $this->assertSame($title1, $this->findCssAndGetText($page, 'h1'));
     }
 
     /**
@@ -336,7 +336,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
             ],
         );
         $page = $this->getChannelsHomePage();
-        $this->assertEquals($expectedTitle, $this->findCssAndGetText($page, 'h2.channel-title'));
+        $this->assertSame($expectedTitle, $this->findCssAndGetText($page, 'h2.channel-title'));
         $this->assertCount(2, $page->findAll('css', 'li.channel-item'));
         $this->assertCount(1, $page->findAll('css', 'li.channel-item[data-record-id="' . $bibId1 . '"]'));
         $this->assertCount(1, $page->findAll('css', 'li.channel-item[data-record-id="' . $bibId2 . '"]'));
@@ -362,7 +362,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
             ],
         );
         $page = $this->getChannelsHomePage();
-        $this->assertEquals('New Items', $this->findCssAndGetText($page, 'h2.channel-title'));
+        $this->assertSame('New Items', $this->findCssAndGetText($page, 'h2.channel-title'));
         // In case test data changes, we won't make specific assertions about specific records,
         // but we can assume that we'll get at least two pages worth of them!
         $this->assertCount(6, $page->findAll('css', 'li.channel-item:not(.hidden-batch-item)'));
@@ -390,7 +390,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
             ],
         );
         $page = $this->getChannelsHomePage();
-        $this->assertEquals('Random items from your results', $this->findCssAndGetText($page, 'h2.channel-title'));
+        $this->assertSame('Random items from your results', $this->findCssAndGetText($page, 'h2.channel-title'));
         // Since selected records are random, we can't make specific assertions about specific records,
         // but we can assume that we'll get at least four pages worth of them!
         $this->assertCount(6, $page->findAll('css', 'li.channel-item:not(.hidden-batch-item)'));
@@ -429,7 +429,7 @@ class ChannelsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $this->getChannelsHomePage();
         $channel = $this->findCss($page, 'div.channel', index: 1);
-        $this->assertEquals('Format: Book Chapter', $this->findCssAndGetText($channel, 'h2.channel-title'));
+        $this->assertSame('Format: Book Chapter', $this->findCssAndGetText($channel, 'h2.channel-title'));
         // Let's get more than 48 items on the page to ensure that we call back to the server for more results:
         $this->assertCount(6, $channel->findAll('css', 'li.channel-item:not(.hidden-batch-item)'));
         for ($i = 0; $i < 8; $i++) {

@@ -55,7 +55,7 @@ class HomePageFacetsTest extends \VuFindTest\Integration\MinkTestCase
     {
         $page = $this->getSearchHomePage();
         $this->waitForPageLoad($page);
-        $this->assertEquals('A - General Works', $this->findCssAndGetText($page, '.home-facet.callnumber-first a'));
+        $this->assertSame('A - General Works', $this->findCssAndGetText($page, '.home-facet.callnumber-first a'));
         $this->clickCss($page, '.home-facet.callnumber-first a');
         $this->waitForPageLoad($page);
         $this->assertStringEndsWith(

@@ -89,7 +89,7 @@ class WebSearchTest extends \VuFindTest\Integration\MinkTestCase
 
         // Confirm highlighting:
         if ($expectedFirstHighlight) {
-            $this->assertEquals($expectedFirstHighlight, $this->findCssAndGetText($page, '#result0 mark'));
+            $this->assertSame($expectedFirstHighlight, $this->findCssAndGetText($page, '#result0 mark'));
         }
 
         // Confirm facet values:

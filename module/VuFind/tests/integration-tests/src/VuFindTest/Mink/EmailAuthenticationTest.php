@@ -83,7 +83,7 @@ final class EmailAuthenticationTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#loginOptions a');
         $this->findCssAndSetValue($page, '.modal-body #login_Email_username', 'username1@ignore.com');
         $this->clickCss($page, '.modal-body .btn.btn-primary', null, 1);
-        $this->assertEquals(
+        $this->assertSame(
             'We have sent a login link to your email address. It may take a few moments for the link to arrive.'
             . " If you don't receive the link shortly, please check also your spam filter.",
             $this->findCssAndGetText($page, '.alert-success')
@@ -127,7 +127,7 @@ final class EmailAuthenticationTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#loginOptions a');
         $this->findCssAndSetValue($page, '.modal-body #login_Email_username', 'username1@foo.bar');
         $this->clickCss($page, '.modal-body .btn.btn-primary', null, 1);
-        $this->assertEquals(
+        $this->assertSame(
             'We have sent a login link to your email address. It may take a few moments for the link to arrive.'
             . " If you don't receive the link shortly, please check also your spam filter.",
             $this->findCssAndGetText($page, '.alert-success')
@@ -180,7 +180,7 @@ final class EmailAuthenticationTest extends \VuFindTest\Integration\MinkTestCase
             $this->clickCss($page, '#loginOptions a');
             $this->findCssAndSetValue($page, '.modal-body [name="username"]', 'catuser@vufind.org');
             $this->clickCss($page, '.modal-body .btn.btn-primary');
-            $this->assertEquals(
+            $this->assertSame(
                 'We have sent a login link to your email address. It may take a few moments for the link to arrive.'
                 . " If you don't receive the link shortly, please check also your spam filter.",
                 $this->findCssAndGetText($page, '.alert-success')
