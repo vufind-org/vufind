@@ -106,6 +106,6 @@ class ResultsTest extends \PHPUnit\Framework\TestCase
             $this->createMock(Loader::class),
             $this->createMock(Config::class)
         );
-        $this->assertEquals($includesLimiter, $results->paramsIncludeLimiter($params));
+        $this->assertSame($includesLimiter, $results->paramsIncludeLimiter($params));
     }
 }
