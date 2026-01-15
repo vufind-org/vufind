@@ -11,11 +11,10 @@
 #     a check whether to show the group. If omitted, group will always display.
 #
 # Array keys for every menu item could be:
-#   - name: name of an item
 #   - label: the text shown as link, will be translated - required
-#   - route: route name used to generate link target - route or url required
+#   - route: route name used to generate link target - required unless url is set
 #   - routeParams: parameters for dynamic routes
-#   - url: target url, alternative to route - route or url required
+#   - url: target url, alternative to route - required unless route is set
 #   - checkMethod: the name of a FooterMenu section plugin method to perform
 #     a check whether to show the item. If omitted, item will always display.
 #   - attributes: additional attributes for the menu item's <a> tag
