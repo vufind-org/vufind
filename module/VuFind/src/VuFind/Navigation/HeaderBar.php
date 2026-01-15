@@ -90,19 +90,19 @@ class HeaderBar extends AbstractMenu
                         ],
                     ],
                     [
-                        'template' => 'Navigation/header-cart.phtml',
+                        'template' => 'Section/HeaderBar/HeaderBar-cart.phtml',
                         'checkMethod' => 'checkCart',
                     ],
                     [
-                        'template' => 'Navigation/header-account.phtml',
+                        'template' => 'Section/HeaderBar/HeaderBar-account.phtml',
                         'checkMethod' => 'checkAccount',
                     ],
                     [
-                        'template' => 'Navigation/header-themeOptions.phtml',
+                        'template' => 'Section/HeaderBar/HeaderBar-themeOptions.phtml',
                         'checkMethod' => 'checkThemeOptions',
                     ],
                     [
-                        'template' => 'Navigation/header-allLangs.phtml',
+                        'template' => 'Section/HeaderBar/HeaderBar-allLangs.phtml',
                         'checkMethod' => 'checkAllLangs',
                     ],
                 ],

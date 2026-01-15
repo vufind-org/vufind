@@ -20,8 +20,8 @@ Sections:
   AdminMenu:
     plugin: adminMenu
 
-  Header:
+  HeaderBar:
     plugin: header
 
-  Footer:
+  FooterMenu:
     plugin: footer

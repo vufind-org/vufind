@@ -152,7 +152,7 @@
         <span class="visually-hidden" role="heading" aria-level="1"><?=$this->layout()->srmessage ?></span>
       <?php endif; ?>
       <a class="visually-hidden-focusable" href="#content"><?=$this->transEsc('Skip to content') ?></a>
-      <?=$this->section('Header', template: 'header.phtml')->render()?>
+      <?=$this->render('header.phtml')?>
     </header>
     <?=$this->breadcrumbs()->render()?>
     <div role="main" class="main">
@@ -160,7 +160,7 @@
         <?=$this->layout()->content ?>
       </div>
     </div>
-    <?=$this->section('Footer', template: 'footer.phtml')->render()?>
+    <?=$this->render('footer.phtml')?>
     <!-- MODAL IN CASE WE NEED ONE -->
     <div id="modal" class="modal fade hidden-print" tabindex="-1" role="dialog" aria-hidden="true">
       <div class="modal-dialog">
