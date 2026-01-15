@@ -50,7 +50,7 @@ class BetweenTest extends \PHPUnit\Framework\TestCase
     public function testMaxScoreDiff(): void
     {
         $between = $this->getBetween();
-        $this->assertEquals(3, $between->getMaxScoreDiffIndex([100, null, 98, 50, 49, null, 48]));
+        $this->assertSame(3, $between->getMaxScoreDiffIndex([100, null, 98, 50, 49, null, 48]));
     }
 
     /**
