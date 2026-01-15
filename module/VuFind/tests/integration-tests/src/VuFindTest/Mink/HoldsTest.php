@@ -178,7 +178,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $link->click();
 
         // Make sure we arrived where we expected to:
-        $this->assertEquals(
+        $this->assertSame(
             'Your Holds and Recalls',
             $this->findCssAndGetText($page, 'h2')
         );
@@ -211,7 +211,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Test invalid patron login
         $this->submitCatalogLoginForm($page, 'bad', 'incorrect');
-        $this->assertEquals(
+        $this->assertSame(
             'Invalid Patron Login',
             $this->findCssAndGetText($page, '.alert.alert-danger')
         );
@@ -221,7 +221,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Test placing a hold with an empty "required by" date:
         $this->placeHold($page, ['#requiredByDate' => '']);
-        $this->assertEquals(
+        $this->assertSame(
             "Please enter a valid 'required by' date",
             $this->findCssAndGetText($page, '.alert.alert-danger')
         );
@@ -229,12 +229,12 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Test placing a hold with an invalid "required by" date:
         $this->placeHold($page, ['#requiredByDate' => '01-01-2023']);
-        $this->assertEquals(
+        $this->assertSame(
             "Please enter a valid 'required by' date",
             $this->findCssAndGetText($page, '.alert.alert-danger')
         );
         // Verify the label for the "required by" field:
-        $this->assertEquals(
+        $this->assertSame(
             'No longer required after:',
             $this->findCssAndGetText($page, '.hold-required-by label')
         );
@@ -244,7 +244,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->placeHoldAndGoToHoldsScreen($page);
 
         // Verify the hold is correct:
-        $this->assertEquals(
+        $this->assertSame(
             'Journal of rational emotive therapy :'
             . ' the journal of the Institute for Rational-Emotive Therapy.',
             $this->findCssAndGetText($page, 'a.title')
@@ -296,7 +296,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->placeHoldAndGoToHoldsScreen($page);
 
         // Verify the hold is correct:
-        $this->assertEquals(
+        $this->assertSame(
             'Journal of rational emotive therapy :'
             . ' the journal of the Institute for Rational-Emotive Therapy.',
             $this->findCssAndGetText($page, 'a.title')
@@ -347,7 +347,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->placeHoldAndGoToHoldsScreen($page);
 
         // Verify the hold is correct:
-        $this->assertEquals(
+        $this->assertSame(
             'Rational living.',
             $this->findCssAndGetText($page, 'a.title')
         );
@@ -402,12 +402,12 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Test placing a hold with an invalid "required by" date:
         $this->placeHold($page, ['#requiredByDate' => '01-01-2023'], 'Available');
-        $this->assertEquals(
+        $this->assertSame(
             "Please enter a valid 'required by' date",
             $this->findCssAndGetText($page, '.alert.alert-danger')
         );
         // Verify the label for the "required by" field:
-        $this->assertEquals(
+        $this->assertSame(
             'No longer required after (optional):',
             $this->findCssAndGetText($page, '.hold-required-by label')
         );
@@ -417,7 +417,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->placeHoldAndGoToHoldsScreen($page, ['#requiredByDate' => ''], 'Available');
 
         // Verify the hold is correct:
-        $this->assertEquals(
+        $this->assertSame(
             'Journal of rational emotive therapy :'
             . ' the journal of the Institute for Rational-Emotive Therapy.',
             $this->findCssAndGetText($page, 'a.title')
@@ -463,7 +463,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Test "cancel all" button -- first make sure item is there before
         // cancel is pushed:
-        $this->assertEquals(
+        $this->assertSame(
             'Journal of rational emotive therapy :'
             . ' the journal of the Institute for Rational-Emotive Therapy.',
             $this->findCssAndGetText($page, 'a.title')
@@ -472,7 +472,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         // Click cancel but bail out with no... item should still be there.
         $this->clickCss($page, '#cancelAll');
         $this->clickButtonGroupLink($page, 'No');
-        $this->assertEquals(
+        $this->assertSame(
             'Journal of rational emotive therapy :'
             . ' the journal of the Institute for Rational-Emotive Therapy.',
             $this->findCssAndGetText($page, 'a.title')
@@ -481,7 +481,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         // Now cancel for real:
         $this->clickCss($page, '#cancelAll');
         $this->clickButtonGroupLink($page, 'Yes');
-        $this->assertEquals(
+        $this->assertSame(
             '1 request(s) were successfully canceled',
             $this->findCssAndGetText($page, '.alert.alert-success')
         );
@@ -734,7 +734,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.checkbox-select-all');
         $this->clickCss($page, '#cancelSelected');
         $this->clickButtonGroupLink($page, 'Yes');
-        $this->assertEquals(
+        $this->assertSame(
             '1 request(s) were successfully canceled',
             $this->findCssAndGetText($page, '.alert.alert-success')
         );
@@ -793,7 +793,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
 
         // Make sure we arrived where we expected to:
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertSame(
             'Your Holds and Recalls',
             $this->findCssAndGetText($page, 'h2')
         );
@@ -838,7 +838,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $this->clickCss($page, 'a.placehold');
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertSame(
             'No pickup locations available',
             $this->findCssAndGetText($page, '.alert.alert-danger')
         );
@@ -876,7 +876,7 @@ final class HoldsTest extends \VuFindTest\Integration\MinkTestCase
         $this->placeHoldAndGoToHoldsScreen($page, ['#proxiedUser' => 'user2']);
 
         // Make sure the item shows the appropriate proxy user:
-        $this->assertEquals(
+        $this->assertSame(
             'Proxy User 2',
             $this->findCssAndGetText($page, '.hold-proxied-for')
         );

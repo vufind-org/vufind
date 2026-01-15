@@ -79,11 +79,11 @@ class ContentControllerTest extends \VuFindTest\Integration\MinkTestCase
         $session->visit($this->getVuFindUrl() . $basePath . '/example');
         $page = $session->getPage();
         // Confirm that the Markdown was converted into appropriate h1/a tags:
-        $this->assertEquals(
+        $this->assertSame(
             'Static Content Example',
             $this->findCssAndGetText($page, 'h1')
         );
-        $this->assertEquals(
+        $this->assertSame(
             'Static Pages documentation',
             $this->findCssAndGetText($page, '#content a')
         );
@@ -181,7 +181,7 @@ class ContentControllerTest extends \VuFindTest\Integration\MinkTestCase
         $session->visit($this->getVuFindUrl() . "/Content/$path");
         $page = $session->getPage();
         // Confirm that the correct page was retrieved:
-        $this->assertEquals($expected, $this->findCssAndGetText($page, 'h1'));
+        $this->assertSame($expected, $this->findCssAndGetText($page, 'h1'));
         // Confirm that we have the correct footer:
         if ('html' === $pageType) {
             $this->findCss($page, 'body.template-dir-content.template-name-content');
