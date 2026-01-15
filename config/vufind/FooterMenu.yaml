@@ -1,5 +1,7 @@
-# If this file is empty or missing, default settings will be used, matching
-# the examples provided below. The format of this configuration is as follows:
+# This file configures the FooterMenu section plugin, which renders menus at the
+# bottom of every page. If this file is empty or missing, default settings will be
+# used, matching the examples provided below. The format of this configuration is
+# as follows:
 # array keys for every group are:
 #   - label: text shown as group header, will be translated - required
 #   - MenuItems: items shown in the menu - required

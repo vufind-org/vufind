@@ -1,6 +1,7 @@
-# If this file is empty or missing, default settings will be used, matching
-# the examples provided below. The format of this configuration is as follows:
-# array keys for every group are:
+# This file configures the HeaderBar section plugin, which renders menus at the
+# top of every page. If this file is empty or missing, default settings will be
+# used, matching the examples provided below. The format of this configuration is
+# as follows:
 #   - MenuItems: items shown in the menu - required
 #   - checkMethod: the name of a Header section plugin method to perform
 #     a check whether to show the group. If omitted, group will always display.
