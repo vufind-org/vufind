@@ -112,7 +112,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $session->setWhoopsDisabled(true);
         $session->visit($this->getVuFindUrl() . '/Blender/Results');
         $page = $session->getPage();
-        $this->assertEquals(
+        $this->assertSame(
             'An error has occurred',
             $this->findCssAndGetText($page, '.alert-danger p')
         );
@@ -204,7 +204,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
         // Go to record screen and check active tab:
         $this->clickCss($page, '#result0 .title');
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertSame(
             $searchBoxLabel,
             $this->findCssAndGetText($page, '.searchbox li a.active')
         );
@@ -344,7 +344,7 @@ class BlendedSearchTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '#search_type0_1', 'Author');
         $this->clickCss($page, '.adv-submit .btn-primary');
 
-        $this->assertEquals(
+        $this->assertSame(
             'Your search - (All Fields:Dublin AND Author:Award) - did not match any resources.',
             $this->findCssAndGetText($page, '.mainbody p')
         );

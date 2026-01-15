@@ -201,7 +201,7 @@ class AutocompleteTest extends \VuFindTest\Integration\MinkTestCase
         );
         $acItem->click();
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertSame(
             '"Fake DOI test 1"',
             $this->findCssAndGetValue($page, '#searchForm_lookfor')
         );
