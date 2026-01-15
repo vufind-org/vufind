@@ -2017,7 +2017,7 @@ class Params
     /**
      * Set the override query
      *
-     * @param ?string $q Override query
+     * @param ?string $q Override query (null to clear)
      *
      * @return void
      */
