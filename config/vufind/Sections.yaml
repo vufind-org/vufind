@@ -21,7 +21,7 @@ Sections:
     plugin: adminMenu
 
   HeaderBar:
-    plugin: header
+    plugin: headerBar
 
   FooterMenu:
-    plugin: footer
+    plugin: footerMenu

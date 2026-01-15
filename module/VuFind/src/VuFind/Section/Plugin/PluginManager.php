@@ -57,8 +57,8 @@ class PluginManager extends \VuFind\ServiceManager\AbstractPluginManager
     protected $aliases = [
         'accountMenu' => AccountMenu::class,
         'adminMenu' => AdminMenu::class,
-        'footer' => FooterMenu::class,
-        'header' => HeaderBar::class,
+        'footerMenu' => FooterMenu::class,
+        'headerBar' => HeaderBar::class,
         // Reserved for future plugins.
         // 'container' => Container::class,
         // 'tabs' => Tabs::class,
