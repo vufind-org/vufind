@@ -20,7 +20,7 @@
 #     a check whether to show the item. If omitted, item will always display.
 #   - attributes: additional attributes for the menu item's <a> tag
 
-FooterLeft:
+FooterFirst:
   label: footer_header_search_options
   MenuItems:
     - label: 'Search History'
@@ -29,7 +29,7 @@ FooterLeft:
     - label: 'Advanced Search'
       route: search-advanced
 
-FooterCenter:
+FooterSecond:
   label: footer_header_find_more
   MenuItems:
     - label: 'Browse the Catalog'
@@ -47,7 +47,7 @@ FooterCenter:
     - label: 'New Items'
       route: search-newitem
 
-FooterRight:
+FooterThird:
   label: footer_header_need_help
   MenuItems:
     - label: 'Search Tips'

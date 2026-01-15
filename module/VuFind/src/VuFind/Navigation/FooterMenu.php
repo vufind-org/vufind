@@ -69,7 +69,7 @@ class FooterMenu extends AbstractMenu
     public static function getDefaultMenuConfig(): array
     {
         return [
-            'FooterLeft' => [
+            'FooterFirst' => [
                 'label' => 'footer_header_search_options',
                 'MenuItems' => [
                     [
@@ -82,7 +82,7 @@ class FooterMenu extends AbstractMenu
                     ],
                 ],
             ],
-            'FooterCenter' => [
+            'FooterSecond' => [
                 'label' => 'footer_header_find_more',
                 'MenuItems' => [
                     [
@@ -107,7 +107,7 @@ class FooterMenu extends AbstractMenu
                     ],
                 ],
             ],
-            'FooterRight' => [
+            'FooterThird' => [
                 'label' => 'footer_header_need_help',
                 'MenuItems' => [
                     [
