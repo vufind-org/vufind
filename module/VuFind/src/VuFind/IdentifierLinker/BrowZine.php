@@ -34,6 +34,7 @@ use VuFindSearch\Backend\BrowZine\Command\LookupDoiCommand;
 use VuFindSearch\Backend\BrowZine\Command\LookupIssnsCommand;
 use VuFindSearch\Service;
 
+use function count;
 use function in_array;
 use function is_array;
 
