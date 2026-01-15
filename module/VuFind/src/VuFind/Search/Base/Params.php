@@ -614,7 +614,7 @@ class Params
     /**
      * Set the last value of the view parameter (if available in session).
      *
-     * @param ?string $view Last valid view parameter value
+     * @param ?string $view Last valid view parameter value (null to clear)
      *
      * @return void
      */
