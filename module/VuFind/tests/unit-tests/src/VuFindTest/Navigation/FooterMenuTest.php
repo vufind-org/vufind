@@ -70,6 +70,6 @@ class FooterMenuTest extends AbstractSectionTestCase
             FooterMenu::getDefaultMenuConfig(),
             $this->getFooterMenuCheckMethods(false)
         )->getMenu();
-        $this->assertCount(3, $menu['FooterRight']['MenuItems']);
+        $this->assertCount(3, $menu['FooterThird']['MenuItems']);
     }
 }
