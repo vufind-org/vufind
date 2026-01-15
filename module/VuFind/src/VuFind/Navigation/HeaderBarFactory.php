@@ -70,6 +70,7 @@ class HeaderBarFactory extends AbstractMenuFactory
         $cart = $container->get(\VuFind\Cart::class);
         $manager = $container->get(\VuFind\Auth\Manager::class);
         $viewModel = $container->get('ViewManager')->getViewModel();
+        $settings = $container->get(\VuFind\I18n\Locale\LocaleSettings::class);
         return parent::__invoke(
             $container,
             $requestedName,
@@ -80,8 +81,7 @@ class HeaderBarFactory extends AbstractMenuFactory
                 $manager->loginEnabled(),
                 $viewModel->getVariable('themeOptions')
                     && (count($viewModel->getVariable('themeOptions')) > 1),
-                $viewModel->getVariable('allLangs')
-                    && (count($viewModel->getVariable('allLangs')) > 1),
+                count($settings->getEnabledLocales()) > 1,
                 ...($options ?? []),
             ]
         );
