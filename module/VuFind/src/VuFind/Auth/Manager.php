@@ -790,6 +790,11 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     public function resetPassword(array $recoveryData, array $params)
     {
         $this->getAuth()->resetPassword($recoveryData, $params);
+        $this->auditEventService->addEvent(
+            AuditEventType::User,
+            AuditEventSubType::PasswordReset,
+            data: compact('recoveryData', 'params')
+        );
     }
 
     /**

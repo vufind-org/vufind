@@ -59,8 +59,8 @@ class SimilarCommandTest extends TestCase
             ->willReturn($backendId);
         $backend->expects($this->once())->method('similar')
             ->with(
-                $this->equalTo('id'),
-                $this->equalTo($params)
+                'id',
+                $params
             )->willReturn('result');
         $command = $this->getCommand();
         $this->assertEquals('result', $command->execute($backend)->getResult());
@@ -157,8 +157,7 @@ class SimilarCommandTest extends TestCase
      */
     public function getBackend()
     {
-        $backend = $this->getMockBuilder(Backend::class)
-            ->disableOriginalConstructor()->getMock();
+        $backend = $this->createMock(Backend::class);
         return $backend;
     }
 }

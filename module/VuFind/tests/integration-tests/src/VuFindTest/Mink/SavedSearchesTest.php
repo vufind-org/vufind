@@ -128,7 +128,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
         $expectedLinkText = implode("\n", array_map($expectedCallback, $expected));
 
         // Compare the expected and actual strings:
-        $this->assertEquals($expectedLinkText, $linkText);
+        $this->assertSame($expectedLinkText, $linkText);
     }
 
     /**
@@ -312,7 +312,7 @@ final class SavedSearchesTest extends \VuFindTest\Integration\MinkTestCase
 
         // By default, there should be no alert option at all:
         $scheduleSelector = 'select[name="schedule"]';
-        $this->assertNull($page->find('css', $scheduleSelector));
+        $this->unFindCss($page, $scheduleSelector);
 
         // Now reconfigure to allow notifications, and refresh the page:
         $page = $this->activateNotifications();

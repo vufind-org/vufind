@@ -61,6 +61,6 @@
 <?php if ($this->auth()->getIdentity() && $this->layout()->getTemplate() !== 'layout/lightbox') :?>
   </div>
   <div class="<?=$this->layoutClass('sidebar')?>" id="myresearch-sidebar" role="navigation" aria-label="<?=$this->transEsc('account_menu_label')?>">
-    <?=$this->accountMenu()->render(empty($listId) ? 'editlist/NEW' : 'list' . $listId)?>
+    <?=$this->section('AccountMenu', template: 'myresearch/menu.phtml')->render(['active' => empty($listId) ? 'editlist/NEW' : 'list' . $listId])?>
   </div>
 <?php endif; ?>

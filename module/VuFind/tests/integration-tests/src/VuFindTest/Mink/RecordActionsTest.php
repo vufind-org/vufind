@@ -213,7 +213,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->addTagsToRecord($page, 'one 2 "three 4" five', 'username2', 'test');
         // Count tags
         $this->waitForPageLoad($page);
-        $this->assertEquals(['2', 'five', 'one', 'three 4'], $this->getTagsFromPage($page));
+        $this->assertSame(['2', 'five', 'one', 'three 4'], $this->getTagsFromPage($page));
         // Remove a tag
         $this->clickCss($page, '.tagList .tag button');
         $this->waitForPageLoad($page);
@@ -226,14 +226,14 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
                 $sum += intval($link->getText());
             }
         }
-        $this->assertEquals(3, $sum);
+        $this->assertSame(3, $sum);
         // Log out
         $this->clickCss($page, '.logoutOptions a.logout');
         $this->waitForPageLoad($page);
 
         // Flat tags
-        $this->assertNull($page->find('css', '.tagList .tag.selected'));
-        $this->assertNull($page->find('css', '.tagList .tag .tag-submit'));
+        $this->unFindCss($page, '.tagList .tag.selected');
+        $this->unFindCss($page, '.tagList .tag .tag-submit');
         // Login with second account
         $this->clickCss($page, '#loginOptions a');
         $this->findCss($page, $this->openModalUsernameFieldSelector);
@@ -281,15 +281,13 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testTagSearchSort
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getTagSearchSortData(): array
+    public static function getTagSearchSortData(): \Iterator
     {
-        return [
-            [1, 'author', 'Fake Record 1 with multiple relators/', 'Dewey browse test'],
-            [2, 'year DESC', '<HTML> The Basics', 'Fake Record 1 with multiple relators/'],
-            [3, 'year', 'Fake Record 1 with multiple relators/', '<HTML> The Basics'],
-        ];
+        yield [1, 'author', 'Fake Record 1 with multiple relators/', 'Dewey browse test'];
+        yield [2, 'year DESC', '<HTML> The Basics', 'Fake Record 1 with multiple relators/'];
+        yield [3, 'year', 'Fake Record 1 with multiple relators/', '<HTML> The Basics'];
     }
 
     /**
@@ -327,7 +325,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     {
         $session = $this->getMinkSession();
         $page = $this->getSearchHomePage($session);
-        $acItem = $this->assertAutocompleteValueAndReturnItem($page, 'fiv', 'five', 'tag');
+        $acItem = $this->assertAutocompleteValueAndReturnItem($page, 'fiv', 'five', 'fiv', 'tag');
         $acItem->click();
         $this->waitForPageLoad($page);
         $this->assertEquals(
@@ -335,7 +333,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
             $session->getCurrentUrl()
         );
         $expected = 'Showing 1 - 3 results of 3';
-        $this->assertEquals(
+        $this->assertSame(
             $expected,
             substr(
                 $this->findCssAndGetText($page, '.search-stats'),
@@ -413,7 +411,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals('All username2', $this->findCss($page, '#user_id')->getText());
         // We need to do a case-insensitive comparison here because different database engines
         // may make different decisions about uppercase-first vs. lowercase-first:
-        $this->assertEquals(
+        $this->assertSame(
             strtolower('All five new tag ONE one THREE 4 three 4'),
             strtolower($this->findCss($page, '#tag_id')->getText())
         );
@@ -422,7 +420,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         // from the text of the list).
         $firstTag = $this->findCss($page, 'td')->getText();
         $tagId = preg_replace('/five \((.*)\)/', '$1', $firstTag);
-        $this->assertTrue(intval($tagId) > 0, "Could not extract integer from '$firstTag'");
+        $this->assertGreaterThan(0, intval($tagId), "Could not extract integer from '$firstTag'");
         $this->findCss($page, '#tag_id')->setValue($tagId);
         $this->clickCss($page, '#taglistsubmit');
         $this->waitForPageLoad($page);
@@ -465,7 +463,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         // We need to do a case-insensitive comparison here because different database engines
         // may make different decisions about uppercase-first vs. lowercase-first:
-        $this->assertEquals(
+        $this->assertSame(
             strtolower('new tag ONE one THREE 4 three 4'),
             strtolower($this->findCss($page, '#tag_id')->getText())
         );
@@ -477,7 +475,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $this->assertStringContainsString(
             'Tag: new tag (',
-            $this->findCss($page, '.alert-info', index: 1)->getText()
+            (string)$this->findCss($page, '.alert-info', index: 1)->getText()
         );
         $this->clickCss($page, 'input[value="Yes"]');
         $this->waitForPageLoad($page);
@@ -502,7 +500,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $this->assertStringContainsString(
             'You are using the following filter - Username: All, Tag: All, Resource: Dewey browse test (',
-            $this->findCss($page, '.alert-info', index: 1)->getText()
+            (string)$this->findCss($page, '.alert-info', index: 1)->getText()
         );
         $this->clickCss($page, 'input[value="No"]');
         $this->waitForPageLoad($page);
@@ -523,7 +521,7 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
         );
         $this->assertStringContainsString(
             'You are using the following filter - Username: username2 (',
-            $this->findCss($page, '.alert-info', index: 1)->getText()
+            (string)$this->findCss($page, '.alert-info', index: 1)->getText()
         );
         $this->clickCss($page, 'input[value="Yes"]');
         $this->waitForPageLoad($page);
@@ -694,14 +692,12 @@ final class RecordActionsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testRating
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function getTestRatingData(): array
+    public static function getTestRatingData(): \Iterator
     {
-        return [
-            [true],
-            [false],
-        ];
+        yield [true];
+        yield [false];
     }
 
     /**

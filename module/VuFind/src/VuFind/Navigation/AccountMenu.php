@@ -38,6 +38,8 @@ use VuFind\DigitalContent\OverdriveConnector;
 use VuFind\Exception\ILS as ILSException;
 use VuFind\ILS\Connection;
 
+use function array_key_exists;
+use function count;
 use function in_array;
 
 /**
@@ -55,7 +57,7 @@ class AccountMenu extends AbstractMenu
     /**
      * Constructor.
      *
-     * @param array               $config              Menu configuration
+     * @param array               $sectionConfig       Menu configuration
      * @param AccountCapabilities $accountCapabilities Account capabilities
      * @param Manager             $authManager         Authentication manager
      * @param Connection          $ilsConnection       ILS connection
@@ -63,20 +65,89 @@ class AccountMenu extends AbstractMenu
      * @param ?OverdriveConnector $overdriveConnector  Overdrive connector
      */
     public function __construct(
-        array $config,
+        array $sectionConfig,
         protected AccountCapabilities $accountCapabilities,
         protected Manager $authManager,
         protected Connection $ilsConnection,
         protected ILSAuthenticator $ilsAuthenticator,
         protected ?OverdriveConnector $overdriveConnector,
     ) {
-        if (isset($config['MenuItems'])) {
+        if (isset($sectionConfig['MenuItems'])) {
             // backward compatibility for outdated legacy AccountMenu configurations
             $default = static::getDefaultMenuConfig();
-            $default['Account']['MenuItems'] = $config['MenuItems'];
-            $config = $default;
+            $default['Account']['MenuItems'] = $sectionConfig['MenuItems'];
+            $sectionConfig = $default;
         }
-        parent::__construct($config);
+        $this->addRequiredSettings(
+            [
+                'label',
+                'MenuItems',
+            ],
+            self::GROUP_CONTEXT
+        );
+        $this->addRequiredSettings(
+            [
+                'label',
+                'route',
+                'url',
+                'template',
+            ],
+            self::ITEM_CONTEXT
+        );
+        $this->addLocalizableSettings(
+            [
+                'url',
+            ],
+            self::ITEM_CONTEXT
+        );
+        parent::__construct($sectionConfig);
+    }
+
+    /**
+     * Is the setting required?
+     *
+     * The optional context and context key parameters are used to evaluate if a
+     * conditionally required setting is required. If context is omitted returns
+     * true for both required and conditionally required settings.
+     *
+     * @param string               $setting    Setting key
+     * @param array<string, mixed> $context    Setting keys and values to be used in evaluation (optional)
+     * @param string               $contextKey Key identifying the context (optional)
+     *
+     * @return bool
+     */
+    public function isRequiredSetting(
+        string $setting,
+        array $context = [],
+        string $contextKey = self::DEFAULT_CONTEXT
+    ): bool {
+        if ($contextKey === self::ITEM_CONTEXT) {
+            // Conditional requirement checks.
+            $diff = array_diff(['route', 'url', 'template'], [$setting]);
+            if (count($diff) === 2) {
+                // Setting is one of the three. If one of the two other settings
+                // exists then this setting is optional.
+                return count(array_intersect($diff, array_keys($context))) === 0;
+            }
+            if ($setting === 'label' && array_key_exists('template', $context)) {
+                // Label is not required when a template setting exists.
+                return false;
+            }
+        }
+        return parent::isRequiredSetting($setting, $context, $contextKey);
+    }
+
+    /**
+     * Return context variables that can be used to render the section.
+     *
+     * @return array
+     */
+    public function getSectionContext(): array
+    {
+        $context = parent::getSectionContext();
+        // set items for legacy backward compatibility, might be removed in future releases
+        $context['items'] = $this->getMenu()['Account']['MenuItems'] ?? [];
+        return $context;
     }
 
     /**

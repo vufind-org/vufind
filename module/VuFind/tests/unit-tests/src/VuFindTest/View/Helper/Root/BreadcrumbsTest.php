@@ -83,10 +83,10 @@ class BreadcrumbsTest extends \PHPUnit\Framework\TestCase
         $helper->add('a', 'b');
         $helper->add('c', active: true);
         $helper->prepend('d');
-        $this->assertEquals('d|-|F>a|b|F>c|-|T>', $layoutModel->breadcrumbs);
+        $this->assertSame('d|-|F>a|b|F>c|-|T>', $layoutModel->breadcrumbs);
         $helper->set('z', 'y', true);
-        $this->assertEquals('z|y|T>', $layoutModel->breadcrumbs);
+        $this->assertSame('z|y|T>', $layoutModel->breadcrumbs);
         $helper->reset();
-        $this->assertEquals('', $layoutModel->breadcrumbs);
+        $this->assertSame('', $layoutModel->breadcrumbs);
     }
 }

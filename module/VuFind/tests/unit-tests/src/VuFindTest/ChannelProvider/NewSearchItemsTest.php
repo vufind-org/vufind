@@ -89,7 +89,7 @@ class NewSearchItemsTest extends \PHPUnit\Framework\TestCase
         $options = ['mode' => 'notRetain'];
         $newSearchItems =  new NewSearchItems($search, $paramManager, $newItemsHelper, $options);
         $paramManager->expects($this->once())->method('get')
-            ->with($this->equalTo('Solr'))
+            ->with('Solr')
             ->willReturn($params);
         $commandObj = $this->createMock(\VuFindSearch\Command\AbstractBase::class);
         $rci = $this->createMock(\VuFindSearch\Response\RecordCollectionInterface::class);
@@ -118,7 +118,11 @@ class NewSearchItemsTest extends \PHPUnit\Framework\TestCase
         $recordRouter = $this->getConfiguredRecordRouterMock($recordDriver);
         $newSearchItems->setCoverRouter($coverRouter);
         $newSearchItems->setRecordRouter($recordRouter);
-        return [$newSearchItems, $expectedResult, $params];
+        return [
+            $newSearchItems,
+            $expectedResult,
+            $params,
+        ];
     }
 
     /**
@@ -132,7 +136,7 @@ class NewSearchItemsTest extends \PHPUnit\Framework\TestCase
     {
         $coverRouter = $this->createMock(\VuFind\Cover\Router::class);
         $coverRouter->expects($this->once())->method('getUrl')
-            ->with($this->equalTo($recordDriver), $this->equalTo('medium'))
+            ->with($recordDriver, 'medium')
             ->willReturn('foo_Thumbnail');
         return $coverRouter;
     }
@@ -149,7 +153,7 @@ class NewSearchItemsTest extends \PHPUnit\Framework\TestCase
     {
         $recordRouter = $this->createMock(\VuFind\Record\Router::class);
         $recordRouter->expects($this->once())->method('getTabRouteDetails')
-            ->with($this->equalTo($recordDriver))
+            ->with($recordDriver)
             ->willReturn('foo_Route');
         return $recordRouter;
     }
@@ -169,7 +173,7 @@ class NewSearchItemsTest extends \PHPUnit\Framework\TestCase
         $target = 'Solr'
     ) {
         return function ($command) use ($class, $args, $target) {
-            $this->assertSame($class, $command::class);
+            $this->assertSame($command::class, $class);
             $this->assertEquals($args, $command->getArguments());
             $this->assertSame($target, $command->getTargetIdentifier());
             return true;

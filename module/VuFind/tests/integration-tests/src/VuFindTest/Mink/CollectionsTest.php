@@ -153,7 +153,7 @@ class CollectionsTest extends \VuFindTest\Integration\MinkTestCase
 
         $page = $this->goToCollectionHierarchy();
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertSame(
             'Subcollection 1',
             trim($this->findCssAndGetText($page, '#tree-preview h2'))
         );

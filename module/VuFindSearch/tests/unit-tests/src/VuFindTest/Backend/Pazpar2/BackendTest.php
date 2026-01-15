@@ -91,11 +91,12 @@ class BackendTest extends \PHPUnit\Framework\TestCase
         $this->assertCount(20, $coll);
         $this->assertEquals('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
+        $this->assertInstanceOf(\VuFindSearch\Response\RecordInterface::class, $rec);
         $this->assertEquals('test', $rec->getSourceIdentifier());
-        $this->assertEquals('content: author test title test medium book', (string)$rec->getXML()->recid);
+        $this->assertSame('content: author test title test medium book', (string)$rec->getXML()->recid);
         $recs = $coll->getRecords();
         $this->assertEquals('test', $recs[19]->getSourceIdentifier());
-        $this->assertEquals(
+        $this->assertSame(
             'content: author navalani k author gidwani n n title a practical guide to colon classification medium book',
             (string)$recs[19]->getXML()->recid
         );
@@ -111,7 +112,7 @@ class BackendTest extends \PHPUnit\Framework\TestCase
     {
         $back = new Backend($this->getConnectorMock());
         $back->setSearchProgressTarget(0.75);
-        $this->assertEquals(0.75, $this->getProperty($back, 'progressTarget'));
+        $this->assertEqualsWithDelta(0.75, $this->getProperty($back, 'progressTarget'), PHP_FLOAT_EPSILON);
     }
 
     /**

@@ -107,7 +107,7 @@ class CheckRequestIsValidTest extends \VuFindTest\Unit\AjaxHandlerTestCase
         $ilsAuth->expects($this->once())->method('storedCatalogLogin')->willReturn([3]);
         $ils = $this->container->createMock(Connection::class, [$ilsMethod]);
         $ils->expects($this->once())->method($ilsMethod)
-            ->with($this->equalTo(1), $this->equalTo(2), $this->equalTo([3]))
+            ->with(1, 2, [3])
             ->willReturn(true);
         $this->container->set(Connection::class, $ils);
         $this->container->set(ILSAuthenticator::class, $ilsAuth);

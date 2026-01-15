@@ -31,8 +31,8 @@ namespace VuFindTest\Mailer;
 
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Address;
-use VuFind\Mailer\Factory as MailerFactory;
 use VuFind\Mailer\Mailer;
+use VuFind\Mailer\MailerFactory;
 use VuFindTest\Container\MockContainer;
 
 use function count;
@@ -396,7 +396,7 @@ class MailerTest extends \PHPUnit\Framework\TestCase
         try {
             $mailer->send('to@example.com', 'from@example.com', 'subject', 'body');
         } catch (\VuFind\Exception\Mail $e) {
-            $this->assertEquals('email_failure', $e->getDisplayMessage());
+            $this->assertSame('email_failure', $e->getDisplayMessage());
         }
     }
 

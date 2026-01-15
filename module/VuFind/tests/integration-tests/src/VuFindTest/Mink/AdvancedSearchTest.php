@@ -297,7 +297,7 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
             trim($this->findCssAndGetText($page, '.search-stats')),
             $matches
         );
-        $this->assertTrue($matches[1] > 0);
+        $this->assertGreaterThan(0, $matches[1]);
     }
 
     /**
@@ -364,51 +364,49 @@ class AdvancedSearchTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Data provider for testHierarchicalFacetsFilters
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function hierarchicalFacetFiltersProvider(): array
+    public static function hierarchicalFacetFiltersProvider(): \Iterator
     {
-        return [
-            'default sort' => [
-                null,
-                null,
-                'top',
-            ],
-            'top level alphabetical' => [
-                'top',
-                'all',
-                'top',
-            ],
-            'all alphabetical' => [
-                'all',
-                'top',
-                'all',
-            ],
-            'count' => [
-                'count',
-                'all',
-                'count',
-            ],
-            'default sort (inherited)' => [
-                null,
-                'top',
-                'top',
-            ],
-            'top level alphabetical (inherited)' => [
-                null,
-                'top',
-                'top',
-            ],
-            'all alphabetical (inherited)' => [
-                null,
-                'all',
-                'all',
-            ],
-            'count (inherited)' => [
-                null,
-                'count',
-                'count',
-            ],
+        yield 'default sort' => [
+            null,
+            null,
+            'top',
+        ];
+        yield 'top level alphabetical' => [
+            'top',
+            'all',
+            'top',
+        ];
+        yield 'all alphabetical' => [
+            'all',
+            'top',
+            'all',
+        ];
+        yield 'count' => [
+            'count',
+            'all',
+            'count',
+        ];
+        yield 'default sort (inherited)' => [
+            null,
+            'top',
+            'top',
+        ];
+        yield 'top level alphabetical (inherited)' => [
+            null,
+            'top',
+            'top',
+        ];
+        yield 'all alphabetical (inherited)' => [
+            null,
+            'all',
+            'all',
+        ];
+        yield 'count (inherited)' => [
+            null,
+            'count',
+            'count',
         ];
     }
 

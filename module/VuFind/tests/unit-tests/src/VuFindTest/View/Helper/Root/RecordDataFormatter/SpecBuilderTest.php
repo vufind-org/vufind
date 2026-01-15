@@ -92,6 +92,6 @@ class SpecBuilderTest extends \PHPUnit\Framework\TestCase
         // Test that we can remove lines from the spec:
         $builder->removeLine('bar');
         $builder->removeLine('foo');
-        $this->assertEquals(['xyzzy' => $expected['xyzzy']], $builder->getArray());
+        $this->assertSame(['xyzzy' => $expected['xyzzy']], $builder->getArray());
     }
 }

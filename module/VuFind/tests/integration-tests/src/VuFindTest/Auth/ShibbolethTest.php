@@ -306,7 +306,7 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
      */
     public function testSessionInitiator(): void
     {
-        $this->assertEquals(
+        $this->assertSame(
             'http://myserver?target=http%3A%2F%2Ftarget%3Fauth_method%3DShibboleth',
             $this->getAuthObject()->getSessionInitiator('http://target')
         );
@@ -333,8 +333,8 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
     {
         $user = $this->getAuthObject(null, $this->getShibbolethConfig())
             ->authenticate($this->getLoginRequest($this->user1, false));
-        $this->assertEquals($user->getCatUsername(), 'example1.testuser1');
-        $this->assertEquals($user->getUsername(), 'testuser1');
+        $this->assertEquals('example1.testuser1', $user->getCatUsername());
+        $this->assertEquals('testuser1', $user->getUsername());
     }
 
     /**
@@ -346,8 +346,8 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
     {
         $user = $this->getAuthObject(null, $this->getShibbolethConfig())
             ->authenticate($this->getLoginRequest($this->user2, false));
-        $this->assertEquals($user->getCatUsername(), 'example2.12345');
-        $this->assertEquals($user->getUsername(), 'testuser2');
+        $this->assertEquals('example2.12345', $user->getCatUsername());
+        $this->assertEquals('testuser2', $user->getUsername());
     }
 
     /**
@@ -371,8 +371,8 @@ final class ShibbolethTest extends \PHPUnit\Framework\TestCase
     {
         $user = $this->getAuthObject(null, $this->getShibbolethConfig(), true, false)
             ->authenticate($this->getLoginRequest($this->proxyUser, true));
-        $this->assertEquals($user->getCatUsername(), 'example1.testuser3');
-        $this->assertEquals($user->getUsername(), 'testuser3');
+        $this->assertEquals('example1.testuser3', $user->getCatUsername());
+        $this->assertEquals('testuser3', $user->getUsername());
     }
 
     /**

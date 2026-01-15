@@ -72,7 +72,7 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
     {
         $flash = $this->createMock(\Laminas\Mvc\Plugin\FlashMessenger\FlashMessenger::class);
         $flash->expects($this->once())->method('addMessage')
-            ->with($this->equalTo('too_many_new_items'), $this->equalTo('info'));
+            ->with('too_many_new_items', 'info');
         $config = new Config(['result_pages' => 10]);
         $newItems = new NewItems($config);
         $bibs = $newItems->getBibIDsFromCatalog(
@@ -94,13 +94,12 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
     {
         $catalog = $this->createMock(\VuFind\ILS\Connection::class);
         $catalog->expects($this->once())->method('checkCapability')
-            ->with($this->equalTo('getFunds'))->willReturn(true);
+            ->with('getFunds')->willReturn(true);
         $catalog->expects($this->once())->method('__call')
             ->willReturnCallback(
                 fn ($method) => $method === 'getFunds' ? ['a', 'b', 'c'] : null
             );
-        $controller = $this->getMockBuilder(\VuFind\Controller\SearchController::class)
-            ->disableOriginalConstructor()->getMock();
+        $controller = $this->createMock(\VuFind\Controller\SearchController::class);
         $controller->expects($this->once())->method('getILS')
             ->willReturn($catalog);
         $newItems = new NewItems(new Config([]));
@@ -245,8 +244,7 @@ class NewItemsTest extends \PHPUnit\Framework\TestCase
      */
     protected function getMockParams($idLimit = 1024)
     {
-        $params = $this->getMockBuilder(\VuFind\Search\Solr\Params::class)
-            ->disableOriginalConstructor()->getMock();
+        $params = $this->createMock(\VuFind\Search\Solr\Params::class);
         $params->expects($this->once())->method('getLimit')
             ->willReturn(20);
         $params->expects($this->once())->method('getQueryIDLimit')

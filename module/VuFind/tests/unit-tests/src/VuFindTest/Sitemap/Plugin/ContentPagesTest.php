@@ -160,12 +160,11 @@ class ContentPagesTest extends \PHPUnit\Framework\TestCase
         // parameters, and to convert them into a format we can test:
         $callback = function () {
             [$params, $options] = func_get_args();
-            $this->assertEquals(['page'], array_keys($params));
-            $this->assertEquals(['name'], array_keys($options));
+            $this->assertSame(['page'], array_keys($params));
+            $this->assertSame(['name'], array_keys($options));
             return $options['name'] . '/' . $params['page'];
         };
-        $router->expects($this->any())->method('assemble')
-            ->willReturnCallback($callback);
+        $router->method('assemble')->willReturnCallback($callback);
         return $router;
     }
 
@@ -196,7 +195,7 @@ class ContentPagesTest extends \PHPUnit\Framework\TestCase
         $plugin = $this->getContentPages([]);
         // Without language settings, asklibrary_en and asklibrary are
         // treated as separate pages:
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'content-page/asklibrary_en',
                 'content-page/asklibrary',
@@ -219,7 +218,7 @@ class ContentPagesTest extends \PHPUnit\Framework\TestCase
         $plugin = $this->getContentPages(['Languages' => ['en' => 'English']]);
         // With language settings, asklibrary_en and asklibrary are
         // treated as the same page:
-        $this->assertEquals(
+        $this->assertSame(
             [
                 'content-page/asklibrary',
                 'content-page/faq',

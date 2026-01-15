@@ -76,7 +76,7 @@ class FacetFormatter extends BaseFormatter
      * @param array $facet   Facet
      * @param array $filters Facet filters
      *
-     * @return boolean
+     * @return bool
      */
     protected function matchFacetItem($facet, $filters)
     {

@@ -96,7 +96,7 @@ class DeveloperSettingsServiceTest extends \PHPUnit\Framework\TestCase
     {
         $mockObject = $this->createMock($name);
         foreach ($methodsAndReturns as $method => $return) {
-            $mockObject->expects($this->any())->method($method)->willReturn($return);
+            $mockObject->method($method)->willReturn($return);
         }
         return $mockObject;
     }
@@ -243,7 +243,7 @@ class DeveloperSettingsServiceTest extends \PHPUnit\Framework\TestCase
         if (is_bool($result)) {
             $this->assertEquals($expected['result'], $result);
         } else {
-            $this->assertEquals('test', $result->getTitle());
+            $this->assertSame('test', $result->getTitle());
         }
     }
 
@@ -360,7 +360,7 @@ class DeveloperSettingsServiceTest extends \PHPUnit\Framework\TestCase
         $apiKey = $apiKey ? $this->createMockWithMethods(ApiKeyEntityInterface::class, $apiKey) : null;
         $apiKeyService = $this->createMockWithMethods(ApiKeyServiceInterface::class, ['getByToken' => $apiKey]);
         $result = $this->getService($config, $apiKeyService)->isApiKeyAllowed($token);
-        $this->assertEquals($expected, $result);
+        $this->assertSame($expected, $result);
     }
 
     /**

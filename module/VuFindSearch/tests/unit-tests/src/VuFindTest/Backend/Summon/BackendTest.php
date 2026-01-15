@@ -80,6 +80,7 @@ class BackendTest extends TestCase
         $this->assertCount(1, $coll);
         $this->assertEquals('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
+        $this->assertInstanceOf(\VuFindSearch\Response\RecordInterface::class, $rec);
         $this->assertEquals('test', $rec->getSourceIdentifier());
         $this->assertEquals('FETCH-gale_primary_3281657081', $rec->ID[0]);
     }
@@ -107,6 +108,7 @@ class BackendTest extends TestCase
         $this->assertCount(60, $coll);
         $this->assertEquals('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
+        $this->assertInstanceOf(\VuFindSearch\Response\RecordInterface::class, $rec);
         $this->assertEquals('test', $rec->getSourceIdentifier());
         $this->assertEquals('FETCH-gale_primary_3281657083', $rec->ID[0]);
         $recs = $coll->getRecords();
@@ -151,6 +153,7 @@ class BackendTest extends TestCase
         $this->assertCount(3, $coll);
         $this->assertEquals('test', $coll->getSourceIdentifier());
         $rec  = $coll->first();
+        $this->assertInstanceOf(\VuFindSearch\Response\RecordInterface::class, $rec);
         $this->assertEquals('test', $rec->getSourceIdentifier());
         $this->assertEquals('FETCH-proquest_dll_23240310011', $rec->ID[0]);
         $recs = $coll->getRecords();
@@ -197,7 +200,7 @@ class BackendTest extends TestCase
         $conn = $this->getConnectorMock(['query']);
         $conn->expects($this->once())
             ->method('query')
-            ->with($this->equalTo($expectedParams))
+            ->with($expectedParams)
             ->willReturn(['recordCount' => 0, 'documents' => []]);
         $back = new Backend($conn);
         $back->search(new Query('baz', 'boo'), 0, 10, $myParams);

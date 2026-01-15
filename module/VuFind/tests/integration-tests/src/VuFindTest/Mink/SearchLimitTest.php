@@ -89,7 +89,7 @@ class SearchLimitTest extends \VuFindTest\Integration\MinkTestCase
     {
         $text = $this->findCssAndGetText($page, '.search-stats strong');
         [, $actualSize] = explode(' - ', $text);
-        $this->assertEquals($size, intval($actualSize));
+        $this->assertSame($size, intval($actualSize));
     }
 
     /**

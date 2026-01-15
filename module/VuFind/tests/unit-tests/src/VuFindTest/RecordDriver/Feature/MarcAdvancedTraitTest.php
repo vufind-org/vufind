@@ -56,12 +56,8 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
         $record = new \VuFind\Marc\MarcReader($this->getFixture($fixture));
         $obj = $this->getMockBuilder(SolrMarc::class)
             ->onlyMethods(['getMarcReader', 'getUniqueId'])->getMock();
-        $obj->expects($this->any())
-            ->method('getMarcReader')
-            ->willReturn($record);
-        $obj->expects($this->any())
-            ->method('getUniqueId')
-            ->willReturn('123');
+        $obj->method('getMarcReader')->willReturn($record);
+        $obj->method('getUniqueId')->willReturn('123');
         return $obj;
     }
 
@@ -150,16 +146,16 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
         $this->assertStringContainsString(
             '<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"'
             . ' xmlns="http://www.loc.gov/mods/v3">',
-            $rdfXml
+            (string)$rdfXml
         );
-        $this->assertStringContainsString('<nonSort>The </nonSort>', $rdfXml);
+        $this->assertStringContainsString('<nonSort>The </nonSort>', (string)$rdfXml);
         $this->assertStringContainsString(
             '<namePart>Author, Test</namePart>',
-            $rdfXml
+            (string)$rdfXml
         );
         $this->assertStringContainsString(
             '<identifier type="isbn">978-3-16-148410-0</identifier>',
-            $rdfXml
+            (string)$rdfXml
         );
     }
 
@@ -183,23 +179,23 @@ class MarcAdvancedTraitTest extends \PHPUnit\Framework\TestCase
     {
         $obj = $this->getMockDriverFromFixture('marc/altscript.xml');
 
-        $this->assertEquals(
+        $this->assertSame(
             ['Русская народная поэзия : лирическая поэзия /'],
             $obj->getTitlesAltScript()
         );
-        $this->assertEquals(
+        $this->assertSame(
             ['Русская народная поэзия : лирическая поэзия / 1'],
             $obj->getFullTitlesAltScript()
         );
-        $this->assertEquals(
+        $this->assertSame(
             ['Русская народная поэзия :'],
             $obj->getShortTitlesAltScript()
         );
-        $this->assertEquals(
+        $this->assertSame(
             ['лирическая поэзия /'],
             $obj->getSubTitlesAltScript()
         );
-        $this->assertEquals(
+        $this->assertSame(
             ['1'],
             $obj->getTitleSectionsAltScript()
         );

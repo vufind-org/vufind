@@ -601,9 +601,7 @@ class BackendTest extends TestCase
         $edsParams = new ParamBag();
         $collection = new \VuFindSearch\Backend\EDS\Response\RecordCollection([]);
 
-        $eds = $this->getMockBuilder(\VuFindSearch\Backend\EDS\Backend::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $eds = $this->createMock(\VuFindSearch\Backend\EDS\Backend::class);
         $this->expectConsecutiveCalls(
             $eds,
             'search',
@@ -707,9 +705,7 @@ class BackendTest extends TestCase
         $records = $result->getRecords();
         $this->assertIsArray($records);
         $this->assertCount(20, $records);
-        foreach ($records as $record) {
-            $this->assertInstanceOf(SolrRecord::class, $record);
-        }
+        $this->assertContainsOnlyInstancesOf(SolrRecord::class, $records);
     }
 
     /**
@@ -1016,21 +1012,15 @@ class BackendTest extends TestCase
      */
     protected function getBackendForFacetsAndErrors($facets, $errors)
     {
-        $collection = $this->getMockBuilder(SolrRecordCollection::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $collection = $this->createMock(SolrRecordCollection::class);
         $collection->expects($this->once())
             ->method('getErrors')
             ->willReturn($errors);
         $collection->expects($this->once())
             ->method('getRecords')
             ->willReturn([]);
-        $collection->expects($this->any())
-            ->method('getFacets')
-            ->willReturn($facets);
-        $backend = $this->getMockBuilder(\VuFindSearch\Backend\EDS\Backend::class)
-            ->disableOriginalConstructor()
-            ->getMock();
+        $collection->method('getFacets')->willReturn($facets);
+        $backend = $this->createMock(\VuFindSearch\Backend\EDS\Backend::class);
         $backend->expects($this->once())
             ->method('search')
             ->willReturn($collection);
@@ -1145,9 +1135,7 @@ class BackendTest extends TestCase
                 ]
             )
             ->getMock();
-        $connector->expects($this->any())
-            ->method('query')
-            ->willReturnCallback($callback);
+        $connector->method('query')->willReturnCallback($callback);
 
         return $connector;
     }
@@ -1237,13 +1225,10 @@ class BackendTest extends TestCase
             ->onlyMethods(['call'])
             ->setConstructorArgs([[], $client])
             ->getMock();
-        $connector->expects($this->any())
-            ->method('call')
-            ->willReturnCallback($callback);
+        $connector->method('call')->willReturnCallback($callback);
 
         $cache = $this->createMock(\Laminas\Cache\Storage\StorageInterface::class);
-        $container = $this->getMockBuilder(\Laminas\Session\Container::class)
-            ->disableOriginalConstructor()->getMock();
+        $container = $this->createMock(\Laminas\Session\Container::class);
         $params = [
             $connector,
             $this->getEDSRecordCollectionFactory(),
@@ -1256,12 +1241,8 @@ class BackendTest extends TestCase
             ->setConstructorArgs($params)
             ->getMock();
 
-        $backend->expects($this->any())
-            ->method('getAuthenticationToken')
-            ->willReturn('auth1234');
-        $backend->expects($this->any())
-            ->method('getSessionToken')
-            ->willReturn('sess1234');
+        $backend->method('getAuthenticationToken')->willReturn('auth1234');
+        $backend->method('getSessionToken')->willReturn('sess1234');
 
         $backend->setIdentifier('EDS');
         return $backend;

@@ -47,99 +47,97 @@ class SorterTest extends \PHPUnit\Framework\TestCase
     /**
      * Data Provider for compare tests
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function compareProvider(): array
+    public static function compareProvider(): \Iterator
     {
-        return [
+        yield [
             [
-                [
-                    'strings' => ['a', 'b'],
-                    'locale' => 'en',
-                    'respectLocale' => false,
-                ],
-                -1,
+                'strings' => ['a', 'b'],
+                'locale' => 'en',
+                'respectLocale' => false,
             ],
+            -1,
+        ];
+        yield [
             [
-                [
-                    'strings' => ['a', 'a'],
-                    'locale' => 'en',
-                    'respectLocale' => false,
-                ],
-                0,
+                'strings' => ['a', 'a'],
+                'locale' => 'en',
+                'respectLocale' => false,
             ],
+            0,
+        ];
+        yield [
             [
-                [
-                    'strings' => ['b', 'a'],
-                    'locale' => 'en',
-                    'respectLocale' => false,
-                ],
-                1,
+                'strings' => ['b', 'a'],
+                'locale' => 'en',
+                'respectLocale' => false,
             ],
+            1,
+        ];
+        yield [
             [
-                [
-                    'strings' => ['a', 'A'],
-                    'locale' => 'en',
-                    'respectLocale' => false,
-                ],
-                0,
+                'strings' => ['a', 'A'],
+                'locale' => 'en',
+                'respectLocale' => false,
             ],
+            0,
+        ];
+        yield [
             [
-                [
-                    'strings' => ['a', 'b'],
-                    'locale' => 'en',
-                    'respectLocale' => true,
-                ],
-                -1,
+                'strings' => ['a', 'b'],
+                'locale' => 'en',
+                'respectLocale' => true,
             ],
+            -1,
+        ];
+        yield [
             [
-                [
-                    'strings' => ['a', 'a'],
-                    'locale' => 'en',
-                    'respectLocale' => true,
-                ],
-                0,
+                'strings' => ['a', 'a'],
+                'locale' => 'en',
+                'respectLocale' => true,
             ],
+            0,
+        ];
+        yield [
             [
-                [
-                    'strings' => ['b', 'a'],
-                    'locale' => 'en',
-                    'respectLocale' => true,
-                ],
-                1,
+                'strings' => ['b', 'a'],
+                'locale' => 'en',
+                'respectLocale' => true,
             ],
+            1,
+        ];
+        yield [
             [
-                [
-                    'strings' => ['a', 'A'],
-                    'locale' => 'en',
-                    'respectLocale' => true,
-                ],
-                0,
+                'strings' => ['a', 'A'],
+                'locale' => 'en',
+                'respectLocale' => true,
             ],
+            0,
+        ];
+        yield [
             [
-                [
-                    'strings' => ['č', 'd'],
-                    'locale' => 'cs',
-                    'respectLocale' => false,
-                ],
-                1,
+                'strings' => ['č', 'd'],
+                'locale' => 'cs',
+                'respectLocale' => false,
             ],
+            1,
+        ];
+        yield [
             [
-                [
-                    'strings' => ['č', 'd'],
-                    'locale' => 'cs',
-                    'respectLocale' => true,
-                ],
-                -1,
+                'strings' => ['č', 'd'],
+                'locale' => 'cs',
+                'respectLocale' => true,
             ],
+            -1,
+        ];
+        yield [
             [
-                [
-                    'strings' => ['č', 'Č'],
-                    'locale' => 'cs',
-                    'respectLocale' => true,
-                ],
-                0,
+                'strings' => ['č', 'Č'],
+                'locale' => 'cs',
+                'respectLocale' => true,
             ],
+            0,
         ];
     }
 
@@ -168,75 +166,73 @@ class SorterTest extends \PHPUnit\Framework\TestCase
     /**
      * Data Provider for sort tests
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function sortProvider(): array
+    public static function sortProvider(): \Iterator
     {
-        return [
+        yield [
             [
-                [
-                    'input' => ['a', 'c', 'b'],
-                    'locale' => 'en',
-                    'respectLocale' => false,
-                ],
-                ['a', 'b', 'c'],
+                'input' => ['a', 'c', 'b'],
+                'locale' => 'en',
+                'respectLocale' => false,
             ],
+            ['a', 'b', 'c'],
+        ];
+        yield [
             [
-                [
-                    'input' => ['a', 'c', 'b'],
-                    'locale' => 'en',
-                    'respectLocale' => true,
-                ],
-                ['a', 'b', 'c'],
+                'input' => ['a', 'c', 'b'],
+                'locale' => 'en',
+                'respectLocale' => true,
             ],
+            ['a', 'b', 'c'],
+        ];
+        yield [
             [
-                [
-                    'input' => ['a', 'č', 'd', 'c'],
-                    'locale' => 'cs',
-                    'respectLocale' => false,
-                ],
-                ['a', 'c', 'd', 'č'],
+                'input' => ['a', 'č', 'd', 'c'],
+                'locale' => 'cs',
+                'respectLocale' => false,
             ],
+            ['a', 'c', 'd', 'č'],
+        ];
+        yield [
             [
-                [
-                    'input' => ['a', 'č', 'd', 'c', 'C'],
-                    'locale' => 'cs',
-                    'respectLocale' => true,
-                ],
-                ['a', 'c', 'C', 'č', 'd'],
+                'input' => ['a', 'č', 'd', 'c', 'C'],
+                'locale' => 'cs',
+                'respectLocale' => true,
             ],
+            ['a', 'c', 'C', 'č', 'd'],
+        ];
+        yield [
             [
-                [
-                    'input' => ['100', '3', '10', '2', '1'],
-                    'locale' => 'cs',
-                    'respectLocale' => true,
-                ],
-                ['1', '2', '3', '10', '100'],
+                'input' => ['100', '3', '10', '2', '1'],
+                'locale' => 'cs',
+                'respectLocale' => true,
             ],
+            ['1', '2', '3', '10', '100'],
+        ];
+        yield [
             [
-                [
-                    'input' => ['100', '3', '10', '2', '1'],
-                    'locale' => 'cs',
-                    'respectLocale' => false,
-                ],
-                ['1', '2', '3', '10', '100'],
+                'input' => ['100', '3', '10', '2', '1'],
+                'locale' => 'cs',
+                'respectLocale' => false,
             ],
+            ['1', '2', '3', '10', '100'],
+        ];
+        yield [
             [
-                [
-                    'input' => ['a100', 'a3', 'a10', 'a2', 'a1'],
-                    'locale' => 'cs',
-                    'respectLocale' => true,
-                ],
-                ['a1', 'a10', 'a100', 'a2', 'a3'],
+                'input' => ['a100', 'a3', 'a10', 'a2', 'a1'],
+                'locale' => 'cs',
+                'respectLocale' => true,
             ],
+            ['a1', 'a10', 'a100', 'a2', 'a3'],
+        ];
+        yield [
             [
-                [
-                    'input' => ['a100', 'a3', 'a10', 'a2', 'a1'],
-                    'locale' => 'cs',
-                    'respectLocale' => false,
-                ],
-                ['a1', 'a10', 'a100', 'a2', 'a3'],
+                'input' => ['a100', 'a3', 'a10', 'a2', 'a1'],
+                'locale' => 'cs',
+                'respectLocale' => false,
             ],
+            ['a1', 'a10', 'a100', 'a2', 'a3'],
         ];
     }
 
@@ -260,59 +256,57 @@ class SorterTest extends \PHPUnit\Framework\TestCase
     /**
      * Data Provider for asort tests
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function asortProvider(): array
+    public static function asortProvider(): \Iterator
     {
-        return [
+        yield [
             [
-                [
-                    'input' => ['a' => 'a', 'c' => 'c', 'b' => 'b'],
-                    'locale' => 'en',
-                    'respectLocale' => false,
-                ],
-                ['a' => 'a', 'b' => 'b', 'c' => 'c'],
+                'input' => ['a' => 'a', 'c' => 'c', 'b' => 'b'],
+                'locale' => 'en',
+                'respectLocale' => false,
             ],
+            ['a' => 'a', 'b' => 'b', 'c' => 'c'],
+        ];
+        yield [
             [
-                [
-                    'input' => ['a' => 'a', 'c' => 'c', 'b' => 'b'],
-                    'locale' => 'en',
-                    'respectLocale' => true,
-                ],
-                ['a' => 'a', 'b' => 'b', 'c' => 'c'],
+                'input' => ['a' => 'a', 'c' => 'c', 'b' => 'b'],
+                'locale' => 'en',
+                'respectLocale' => true,
             ],
+            ['a' => 'a', 'b' => 'b', 'c' => 'c'],
+        ];
+        yield [
             [
-                [
-                    'input' => ['a' => 'a', 'č' => 'č', 'd' => 'd', 'c' => 'c'],
-                    'locale' => 'cs',
-                    'respectLocale' => false,
-                ],
-                ['a' => 'a', 'c' => 'c', 'd' => 'd', 'č' => 'č'],
+                'input' => ['a' => 'a', 'č' => 'č', 'd' => 'd', 'c' => 'c'],
+                'locale' => 'cs',
+                'respectLocale' => false,
             ],
+            ['a' => 'a', 'c' => 'c', 'd' => 'd', 'č' => 'č'],
+        ];
+        yield [
             [
-                [
-                    'input' => ['a' => 'a', 'č' => 'č', 'd' => 'd', 'c' => 'c'],
-                    'locale' => 'cs',
-                    'respectLocale' => true,
-                ],
-                ['a' => 'a', 'c' => 'c', 'č' => 'č', 'd' => 'd'],
+                'input' => ['a' => 'a', 'č' => 'č', 'd' => 'd', 'c' => 'c'],
+                'locale' => 'cs',
+                'respectLocale' => true,
             ],
+            ['a' => 'a', 'c' => 'c', 'č' => 'č', 'd' => 'd'],
+        ];
+        yield [
             [
-                [
-                    'input' => ['a' => '100', 'b' => '3', 'c' => '10', 'd' => '2', 'e' => '1'],
-                    'locale' => 'cs',
-                    'respectLocale' => true,
-                ],
-                ['e' => '1', 'd' => '2', 'b' => '3', 'c' => '10', 'a' => '100'],
+                'input' => ['a' => '100', 'b' => '3', 'c' => '10', 'd' => '2', 'e' => '1'],
+                'locale' => 'cs',
+                'respectLocale' => true,
             ],
+            ['e' => '1', 'd' => '2', 'b' => '3', 'c' => '10', 'a' => '100'],
+        ];
+        yield [
             [
-                [
-                    'input' => ['a' => '100', 'b' => '3', 'c' => '10', 'd' => '2', 'e' => '1'],
-                    'locale' => 'cs',
-                    'respectLocale' => false,
-                ],
-                ['e' => '1', 'd' => '2', 'b' => '3', 'c' => '10', 'a' => '100'],
+                'input' => ['a' => '100', 'b' => '3', 'c' => '10', 'd' => '2', 'e' => '1'],
+                'locale' => 'cs',
+                'respectLocale' => false,
             ],
+            ['e' => '1', 'd' => '2', 'b' => '3', 'c' => '10', 'a' => '100'],
         ];
     }
 
@@ -337,27 +331,25 @@ class SorterTest extends \PHPUnit\Framework\TestCase
     /**
      * Data provider for testNatsort()
      *
-     * @return array
+     * @return \Iterator
      */
-    public static function natsortProvider(): array
+    public static function natsortProvider(): \Iterator
     {
-        return [
+        yield [
             [
-                [
-                    'input' => ['a' => 'img100', 'b' => 'img3', 'c' => 'img10', 'd' => 'img2', 'e' => 'img1'],
-                    'locale' => 'cs',
-                    'respectLocale' => true,
-                ],
-                ['e' => 'img1', 'd' => 'img2', 'b' => 'img3', 'c' => 'img10', 'a' => 'img100'],
+                'input' => ['a' => 'img100', 'b' => 'img3', 'c' => 'img10', 'd' => 'img2', 'e' => 'img1'],
+                'locale' => 'cs',
+                'respectLocale' => true,
             ],
+            ['e' => 'img1', 'd' => 'img2', 'b' => 'img3', 'c' => 'img10', 'a' => 'img100'],
+        ];
+        yield [
             [
-                [
-                    'input' => ['a' => 'img100', 'b' => 'img3', 'c' => 'img10', 'd' => 'img2', 'e' => 'img1'],
-                    'locale' => 'cs',
-                    'respectLocale' => false,
-                ],
-                ['e' => 'img1', 'd' => 'img2', 'b' => 'img3', 'c' => 'img10', 'a' => 'img100'],
+                'input' => ['a' => 'img100', 'b' => 'img3', 'c' => 'img10', 'd' => 'img2', 'e' => 'img1'],
+                'locale' => 'cs',
+                'respectLocale' => false,
             ],
+            ['e' => 'img1', 'd' => 'img2', 'b' => 'img3', 'c' => 'img10', 'a' => 'img100'],
         ];
     }
 

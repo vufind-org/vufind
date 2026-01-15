@@ -67,7 +67,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
             ->setConstructorArgs(['foo', 'bar'])->getMock();
         $theme->expects($this->once())
             ->method('findContainingTheme')
-            ->with($this->equalTo(['images/hidden-image.gif']))
+            ->with(['images/hidden-image.gif'])
             ->willReturn(false);
         $loader = $this->getLoader([], null, $theme);
         $loader->getImage();
@@ -82,7 +82,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
     {
         $loader = $this->getLoader();
         $this->assertEquals('image/gif', $loader->getContentType());
-        $this->assertEquals('64', strlen($loader->getImage()));
+        $this->assertSame(64, strlen($loader->getImage()));
     }
 
     /**
@@ -95,7 +95,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
     public function testDefaultLoadingForImage()
     {
         $loader = $this->getLoader();
-        $this->assertEquals('64', strlen($loader->getImage()));
+        $this->assertSame(64, strlen($loader->getImage()));
         $this->assertEquals('image/gif', $loader->getContentType());
     }
 
@@ -109,7 +109,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $cfg = ['Content' => ['noCoverAvailableImage' => 'images/noCover2.gif']];
         $loader = $this->getLoader($cfg);
         $this->assertEquals('image/gif', $loader->getContentType());
-        $this->assertEquals('368', strlen($loader->getImage()));
+        $this->assertSame(368, strlen($loader->getImage()));
     }
 
     /**
@@ -123,7 +123,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
     {
         $cfg = ['Content' => ['noCoverAvailableImage' => 'images/noCover2.gif']];
         $loader = $this->getLoader($cfg);
-        $this->assertEquals('368', strlen($loader->getImage()));
+        $this->assertSame(368, strlen($loader->getImage()));
         $this->assertEquals('image/gif', $loader->getContentType());
     }
 
@@ -139,9 +139,9 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         $loader = $this->getLoader($cfg, null, null, null, ['debug']);
 
         // We expect the loader to complain about the bad filename and load the default image:
-        $loader->expects($this->once())->method('debug')->with($this->equalTo("Cannot access '$badfile'"));
+        $loader->expects($this->once())->method('debug')->with("Cannot access '$badfile'");
         $loader->loadUnavailable();
-        $this->assertEquals('64', strlen($loader->getImage()));
+        $this->assertSame(64, strlen($loader->getImage()));
     }
 
     /**
@@ -158,9 +158,9 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
         // We expect the loader to complain about the bad filename and load the default image:
         $expected = "Illegal file-extension 'phtml' for image '" . $this->getThemeDir() . '/'
             . $this->testTheme . '/' . $badfile . "'";
-        $loader->expects($this->once())->method('debug')->with($this->equalTo($expected));
+        $loader->expects($this->once())->method('debug')->with($expected);
         $loader->loadUnavailable();
-        $this->assertEquals('64', strlen($loader->getImage()));
+        $this->assertSame(64, strlen($loader->getImage()));
     }
 
     /**
@@ -184,7 +184,7 @@ class LoaderTest extends \PHPUnit\Framework\TestCase
             $theme = new ThemeInfo($this->getThemeDir(), $this->testTheme);
         }
         if (null === $httpService) {
-            $httpService = $this->getMockBuilder(\VuFindHttp\HttpService::class)->getMock();
+            $httpService = $this->createMock(\VuFindHttp\HttpService::class);
         }
         if ($mock) {
             $mock = array_unique(array_merge($mock, ['debug']));

@@ -233,7 +233,7 @@ class LoginToken implements LoginTokenEntityInterface
      */
     public function getLastLogin(): DateTime
     {
-        // Return to a clone to avoid indirect modification of the entity:
+        // Return a clone to avoid indirect modification of the entity:
         return $this->getDateTimeClone($this->lastLogin);
     }
 
