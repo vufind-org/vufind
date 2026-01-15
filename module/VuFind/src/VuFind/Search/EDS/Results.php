@@ -156,7 +156,7 @@ class Results extends \VuFind\Search\Base\Results
     {
         return (bool)array_filter(
             $params->get('filters') ?? [],
-            fn ($filter) => str_starts_with($filter, 'LIMIT')
+            fn ($filter) => !str_starts_with($filter, 'EXPAND')
         );
     }
 
