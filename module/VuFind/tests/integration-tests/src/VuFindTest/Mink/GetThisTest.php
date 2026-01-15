@@ -387,7 +387,7 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
 
         $page = $this->openGetThisLoaderForSearch(self::SEARCH);
         $lightbox = $this->getLightbox($page);
-        $this->assertInstanceOf(\Behat\Mink\Element\NodeElement::class, $lightbox);
+        $this->assertInstanceOf(NodeElement::class, $lightbox);
         $presence = str_contains($lightbox->getHtml(), '<!-- Get-This: ');
         $this->assertFalse($presence);
     }
@@ -502,7 +502,7 @@ class GetThisTest extends \VuFindTest\Integration\MinkTestCase
             }
         }
 
-        $this->assertNotNull($callNumberLink);
+        $this->assertInstanceOf(NodeElement::class, $callNumberLink);
         $callNumberLink->click();
 
         $this->unFindCss($page, '.loading-overlay,.loading-spinner');
