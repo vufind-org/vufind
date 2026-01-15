@@ -31,6 +31,7 @@
 
 namespace VuFind\Search\Base;
 
+use Laminas\Stdlib\Parameters;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\I18n\TranslatableStringInterface;
 use VuFind\Search\Minified;
@@ -358,12 +359,12 @@ class Params
     /**
      * Pull the search parameters
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    public function initFromRequest(\Laminas\Stdlib\Parameters $request): void
+    public function initFromRequest(Parameters $request): void
     {
         // We should init view first, since RSS view may cause certain variant
         // behaviors:
@@ -383,12 +384,12 @@ class Params
     /**
      * Pull shard parameters from the request or set defaults
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    protected function initShards(\Laminas\Stdlib\Parameters $request): void
+    protected function initShards(Parameters $request): void
     {
         $legalShards = array_keys($this->getOptions()->getShards());
         $requestShards = $request->get('shard', []);
@@ -414,12 +415,12 @@ class Params
     /**
      * Pull the page size parameter or set to default
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    protected function initLimit(\Laminas\Stdlib\Parameters $request): void
+    protected function initLimit(Parameters $request): void
     {
         // Check for a limit parameter in the url.
         $defaultLimit = $this->getOptions()->getDefaultLimit();
@@ -452,12 +453,12 @@ class Params
     /**
      * Pull the page parameter
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    protected function initPage(\Laminas\Stdlib\Parameters $request): void
+    protected function initPage(Parameters $request): void
     {
         $this->page = intval($request->get('page'));
         if ($this->page < 1) {
@@ -468,12 +469,12 @@ class Params
     /**
      * Initialize the object's search settings from a request object.
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    protected function initSearch(\Laminas\Stdlib\Parameters $request): void
+    protected function initSearch(Parameters $request): void
     {
         // Try to initialize a basic search; if that fails, try for an advanced
         // search next!
@@ -485,12 +486,12 @@ class Params
     /**
      * Support method for initSearch() -- handle basic settings.
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return bool True if search settings were found, false if not.
      */
-    protected function initBasicSearch(\Laminas\Stdlib\Parameters $request): bool
+    protected function initBasicSearch(Parameters $request): bool
     {
         // If no lookfor parameter was found, we have no search terms to
         // add to our array!
@@ -565,12 +566,12 @@ class Params
      * searches have numeric subscripts on the lookfor and type parameters --
      * this is how they are distinguished from basic searches.
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    protected function initAdvancedSearch(\Laminas\Stdlib\Parameters $request): void
+    protected function initAdvancedSearch(Parameters $request): void
     {
         $this->query = $this->getQueryAdapter()->fromRequest(
             $request,
@@ -597,12 +598,12 @@ class Params
     /**
      * Get the value for which type of sorting to use
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    protected function initSort(\Laminas\Stdlib\Parameters $request): void
+    protected function initSort(Parameters $request): void
     {
         // Check for special parameter only relevant in RSS mode:
         if ($request->get('skip_rss_sort', 'unset') != 'unset') {
@@ -626,12 +627,12 @@ class Params
     /**
      * Get the value for which results view to use
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    protected function initView(\Laminas\Stdlib\Parameters $request): void
+    protected function initView(Parameters $request): void
     {
         // Check for a view parameter in the url.
         $view = $request->get('view');
@@ -1406,12 +1407,12 @@ class Params
     /**
      * Initialize all range filters.
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    protected function initRangeFilters(\Laminas\Stdlib\Parameters $request): void
+    protected function initRangeFilters(Parameters $request): void
     {
         $this->initDateFilters($request);
         $this->initFullDateFilters($request);
@@ -1505,19 +1506,23 @@ class Params
      * out as a separate method so that it can be more easily overridden by child
      * classes.
      *
-     * @param \Laminas\Stdlib\Parameters $request         Parameter object
+     * @param Parameters $request         Parameter object
      * representing user request.
-     * @param string                     $requestParam    Name of parameter
-     * containing names of range filter fields.
-     * @param ?callable                  $valueFilter     Optional callback to
-     * process values in the range.
-     * @param ?callable                  $filterGenerator Optional callback to create
-     * a filter query from the range values.
+     * @param string     $requestParam    Name of parameter
+     *                                    containing names
+     *                                    of range filter
+     *                                    fields.
+     * @param ?callable  $valueFilter     Optional callback to
+     *                                    process values in
+     *                                    the range.
+     * @param ?callable  $filterGenerator Optional callback to create
+     *                                    a filter query from the
+     *                                    range values.
      *
      * @return void
      */
     protected function initGenericRangeFilters(
-        \Laminas\Stdlib\Parameters $request,
+        Parameters $request,
         string $requestParam = 'genericrange',
         ?callable $valueFilter = null,
         ?callable $filterGenerator = null
@@ -1612,12 +1617,12 @@ class Params
      * Factored out as a separate method so that it can be more easily overridden
      * by child classes.
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    protected function initDateFilters(\Laminas\Stdlib\Parameters $request): void
+    protected function initDateFilters(Parameters $request): void
     {
         $this->initGenericRangeFilters(
             $request,
@@ -1632,12 +1637,12 @@ class Params
      * filters. Factored out as a separate method so that it can be more easily
      * overridden by child classes.
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    protected function initFullDateFilters(\Laminas\Stdlib\Parameters $request): void
+    protected function initFullDateFilters(Parameters $request): void
     {
         $this->initGenericRangeFilters(
             $request,
@@ -1652,12 +1657,12 @@ class Params
      * out as a separate method so that it can be more easily overridden by child
      * classes.
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    protected function initNumericRangeFilters(\Laminas\Stdlib\Parameters $request): void
+    protected function initNumericRangeFilters(Parameters $request): void
     {
         $this->initGenericRangeFilters(
             $request,
@@ -1670,12 +1675,12 @@ class Params
     /**
      * Add filters to the object based on values found in the request object.
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    protected function initFilters(\Laminas\Stdlib\Parameters $request): void
+    protected function initFilters(Parameters $request): void
     {
         // Handle standard filters:
         $filter = $request->get('filter');
@@ -1710,12 +1715,12 @@ class Params
     /**
      * Add hidden filters to the object based on values found in the request object.
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    protected function initHiddenFilters(\Laminas\Stdlib\Parameters $request): void
+    protected function initHiddenFilters(Parameters $request): void
     {
         $hiddenFilters = $request->get('hiddenFilters');
         if (!empty($hiddenFilters) && is_array($hiddenFilters)) {

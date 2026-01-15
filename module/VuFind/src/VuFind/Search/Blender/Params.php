@@ -29,6 +29,7 @@
 
 namespace VuFind\Search\Blender;
 
+use Laminas\Stdlib\Parameters;
 use VuFind\Config\ConfigManagerInterface;
 use VuFind\Search\Base\Params as BaseParams;
 use VuFind\Search\Solr\HierarchicalFacetHelper;
@@ -87,12 +88,12 @@ class Params extends \VuFind\Search\Solr\Params
     /**
      * Pull the search parameters
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    public function initFromRequest(\Laminas\Stdlib\Parameters $request): void
+    public function initFromRequest(Parameters $request): void
     {
         $this->unsupportedFilters = [];
 
@@ -122,12 +123,12 @@ class Params extends \VuFind\Search\Solr\Params
     /**
      * Initialize the object's search settings from a request object.
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    protected function initSearch(\Laminas\Stdlib\Parameters $request): void
+    protected function initSearch(Parameters $request): void
     {
         foreach ($this->searchParams as $params) {
             $backendId = $params->getSearchClassId();
@@ -183,12 +184,12 @@ class Params extends \VuFind\Search\Solr\Params
     /**
      * Get the value for which type of sorting to use
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    protected function initSort(\Laminas\Stdlib\Parameters $request): void
+    protected function initSort(Parameters $request): void
     {
         foreach ($this->searchParams as $params) {
             $backendId = $params->getSearchClassId();

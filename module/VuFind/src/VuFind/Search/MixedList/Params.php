@@ -29,6 +29,8 @@
 
 namespace VuFind\Search\MixedList;
 
+use Laminas\Stdlib\Parameters;
+
 use function count;
 
 /**
@@ -52,12 +54,12 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Initialize the object's search settings from a request object.
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    protected function initSearch(\Laminas\Stdlib\Parameters $request): void
+    protected function initSearch(Parameters $request): void
     {
         // Convert special 'id' parameter into a standard hidden filter:
         $idParam = $request->get('id', []);
