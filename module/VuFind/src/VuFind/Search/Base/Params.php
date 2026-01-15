@@ -132,9 +132,9 @@ class Params
     /**
      * Search options
      *
-     * @var Options
+     * @var \VuFind\Search\Base\Options
      */
-    protected Options $options;
+    protected \VuFind\Search\Base\Options $options;
 
     /**
      * Main facet configuration
