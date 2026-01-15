@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Footer factory
+ * FooterMenu section plugin factory
  *
  * PHP version 8
  *
@@ -35,7 +35,7 @@ use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
 /**
- * Footer factory
+ * FooterMenu section plugin factory
  *
  * @category VuFind
  * @package  Navigation

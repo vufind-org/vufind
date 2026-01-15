@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Footer navigation
+ * FooterMenu section plugin
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Navigation;
 
 /**
- * Footer navigation
+ * FooterMenu section plugin
  *
  * @category VuFind
  * @package  Navigation

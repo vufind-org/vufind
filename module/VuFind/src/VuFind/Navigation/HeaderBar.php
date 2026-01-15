@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Header bar navigation
+ * HeaderBar section plugin
  *
  * PHP version 8
  *
@@ -30,7 +30,7 @@
 namespace VuFind\Navigation;
 
 /**
- * Header bar navigation
+ * HeaderBar section plugin
  *
  * @category VuFind
  * @package  Navigation

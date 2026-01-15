@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Header bar factory
+ * HeaderBar section plugin factory
  *
  * PHP version 8
  *
@@ -37,7 +37,7 @@ use Psr\Container\ContainerInterface;
 use function count;
 
 /**
- * Header bar factory
+ * HeaderBar section plugin factory
  *
  * @category VuFind
  * @package  Navigation
