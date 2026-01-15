@@ -69,11 +69,11 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
         // only appear after AJAX returns):
         $this->unFindCss($page, '.callnumber.ajax-availability');
         $this->unFindCss($page, '.location.ajax-availability');
-        $this->assertEquals(
+        $this->assertSame(
             'A1234.567',
             $this->findCssAndGetText($page, '.callnumber')
         );
-        $this->assertEquals(
+        $this->assertSame(
             '3rd Floor Main Library',
             $this->findCssAndGetText($page, '.location')
         );
@@ -88,7 +88,7 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
     {
         $page = $this->getSearchHomePage();
         // Check footer help-link
-        $this->assertEquals(
+        $this->assertSame(
             'Search Tips',
             $this->findCssAndGetHtml($page, 'footer .help-link')
         );
@@ -97,7 +97,7 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.language.dropdown li a:not(.active)');
         $this->waitForPageLoad($page);
         // Check footer help-link
-        $this->assertNotEquals(
+        $this->assertNotSame(
             'Search Tips',
             $this->findCssAndGetHtml($page, 'footer .help-link')
         );
@@ -136,7 +136,7 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
 
         // Check h1 again -- it should exist now
-        $this->assertEquals(
+        $this->assertSame(
             'Welcome to your custom theme!',
             $this->findCssAndGetHtml($page, 'h1')
         );
@@ -192,7 +192,7 @@ class BasicTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertEquals('200', $this->getMinkSession()->getStatusCode());
         $this->assertStringNotContainsString('Other Search', (string)$page->getContent());
         $this->assertStringNotContainsString('ServiceNotFoundException', (string)$page->getContent());
-        $this->assertEquals(
+        $this->assertSame(
             'Catalog',
             $this->findCssAndGetHtml($page, '#searchForm .nav-link')
         );
