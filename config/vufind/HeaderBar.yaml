@@ -31,6 +31,10 @@
 #             description: 'Optional item description'
 #           - label: 'Dropdown item 2'
 #             route: item-2-route
+#
+# If you wish to completely override the default configuration with your local
+# configuration you can disable configuration inheritance by adding a
+# "@parent_yaml": false entry at the very top of your local configuration file.
 
 Header:
   MenuItems:

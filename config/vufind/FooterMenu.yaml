@@ -18,6 +18,10 @@
 #   - checkMethod: the name of a FooterMenu section plugin method to perform
 #     a check whether to show the item. If omitted, item will always display.
 #   - attributes: additional attributes for the menu item's <a> tag
+#
+# If you wish to completely override the default configuration with your local
+# configuration you can disable configuration inheritance by adding a
+# "@parent_yaml": false entry at the very top of your local configuration file.
 
 FooterFirst:
   label: footer_header_search_options
