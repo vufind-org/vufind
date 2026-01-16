@@ -29,6 +29,8 @@
 
 namespace VuFindSearch;
 
+use JsonSerializable;
+
 use function count;
 use function is_array;
 
@@ -41,7 +43,7 @@ use function is_array;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org
  */
-class ParamBagBag extends ParamBag
+class ParamBagBag extends ParamBag implements JsonSerializable
 {
     /**
      * Transform any ParamBag into a ParamBagBag.
@@ -185,14 +187,14 @@ class ParamBagBag extends ParamBag
     }
 
     /**
-     * Return JSON string of params ready to be used in a HTTP POST body.
+     * Return a serializable object, for json_encode use into a POST body.
      *
      * @return string
      */
-    public function json(): string
+    public function jsonSerialize(): mixed
     {
-        $jsonObject = $this->jsonObject($this->items);
-        return json_encode($jsonObject);
+        $serializable = $this->jsonSerializeItems($this->items);
+        return $serializable;
     }
 
     /**
@@ -202,7 +204,7 @@ class ParamBagBag extends ParamBag
      *
      * @return array
      */
-    protected function jsonObject($items)
+    protected function jsonSerializeItems($items)
     {
         $jsonObject = [];
         foreach ($items as $name => $values) {
@@ -220,7 +222,7 @@ class ParamBagBag extends ParamBag
                     $value = $values[0];
                     if ($value instanceof ParamBag) {
                         $nestedValues = $value->getArrayCopy();
-                        $jsonObject[$name] = $this->jsonObject($nestedValues);
+                        $jsonObject[$name] = $this->jsonSerializeItems($nestedValues);
                     } else {
                         $jsonObject[$name] = $value;
                     }
