@@ -47,16 +47,16 @@ class Params extends \VuFind\Search\Solr\Params
      * this is usually either hierarchy_parent_id or
      * hierarchy_top_id
      *
-     * @var string
+     * @var ?string
      */
-    protected $collectionField = null;
+    protected ?string $collectionField = null;
 
     /**
      * The ID of the collection being searched
      *
-     * @var string
+     * @var ?string
      */
-    protected $collectionID = null;
+    protected ?string $collectionID = null;
 
     /**
      * Pull the search parameters from the query and set up additional options using
@@ -67,7 +67,7 @@ class Params extends \VuFind\Search\Solr\Params
      *
      * @return void
      */
-    public function initFromRecordDriver($driver, bool $hasSearch = false)
+    public function initFromRecordDriver(\VuFind\RecordDriver\AbstractBase $driver, bool $hasSearch = false): void
     {
         $this->collectionID = $driver->tryMethod('getCollectionSearchId') ?? $driver->getUniqueID();
         if ($hierarchyDriver = $driver->getHierarchyDriver()) {
@@ -108,7 +108,7 @@ class Params extends \VuFind\Search\Solr\Params
      *
      * @return string
      */
-    public function getCollectionField()
+    public function getCollectionField(): string
     {
         return $this->collectionField;
     }
@@ -118,7 +118,7 @@ class Params extends \VuFind\Search\Solr\Params
      *
      * @return string
      */
-    public function getCollectionId()
+    public function getCollectionId(): string
     {
         return $this->collectionID;
     }
