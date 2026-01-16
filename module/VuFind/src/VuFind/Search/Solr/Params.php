@@ -254,11 +254,17 @@ class Params extends \VuFind\Search\Base\Params
                     $facetFieldName = $facetField;
                     $fieldLimit = $this->getFacetLimitForField($facetField);
 
-                    // TODO Deal with prefix and suffix
+                    $facet = [
+                        'type' => 'terms',
+                        'field' => $facetField,
+                        'limit' => $fieldLimit,
+                    ];
+
                     $fieldPrefix = $this->getFacetPrefixForField($facetField);
                     if (!empty($fieldPrefix)) {
-                        $facetSet["f.{$facetField}.facet.prefix"] = $fieldPrefix;
+                        $facet['prefix'] = $fieldPrefix;
                     }
+                    // TODO Deal with matches
                     $fieldMatches = $this->getFacetMatchesForField($facetField);
                     if (!empty($fieldMatches)) {
                         $facetSet["f.{$facetField}.facet.matches"] = $fieldMatches;
@@ -269,11 +275,7 @@ class Params extends \VuFind\Search\Base\Params
                     //     $facetField = '{!ex=' . $facetField . '_filter}' . $facetField;
                     // }
 
-                    $facetSet[$facetFieldName] = [
-                        'type' => 'terms',
-                        'field' => $facetField,
-                        'limit' => $fieldLimit,
-                    ];
+                    $facetSet[$facetFieldName] = $facet;
                 }
             }
             if ($this->facetContains != null) {
