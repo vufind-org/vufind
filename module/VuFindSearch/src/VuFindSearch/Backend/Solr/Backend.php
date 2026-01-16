@@ -136,7 +136,7 @@ class Backend extends AbstractBackend implements
         $limit,
         ?ParamBag $params = null
     ) {
-        $params = ParamBagBag::from($params);
+        $params = ParamBagBag::from($params, false);
         if ($query instanceof WorkKeysQuery) {
             return $this->workKeysSearch($query, $offset, $limit, $params);
         }
@@ -163,7 +163,6 @@ class Backend extends AbstractBackend implements
         $limit,
         ?ParamBagBag $params = null
     ) {
-        $params = $params ?: new ParamBagBag();
         $params = ParamBagBag::from($params);
         $this->injectResponseWriter($params);
 
@@ -264,8 +263,7 @@ class Backend extends AbstractBackend implements
      */
     public function retrieve($id, ?ParamBag $params = null)
     {
-        $params = $params ?: new ParamBagBag();
-        $params = ParamBagBag::from($params);
+        $params = ParamBagBag::from($params, false);
         $this->injectResponseWriter($params);
 
         $response   = $this->connector->retrieve($id, $params);
@@ -358,7 +356,6 @@ class Backend extends AbstractBackend implements
         }
 
         // Create empty ParamBag if none provided:
-        $params = $params ?: new ParamBagBag();
         $params = ParamBagBag::from($params);
         $this->injectResponseWriter($params);
 

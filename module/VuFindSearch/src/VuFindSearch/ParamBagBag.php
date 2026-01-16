@@ -47,13 +47,14 @@ class ParamBagBag extends ParamBag
      * Transform any ParamBag into a ParamBagBag.
      *
      * @param ?ParamBag $original The original ParamBag
+     * @param bool $createIfNull Create an empty ParamBag if $original is null
      *
      * @return ?ParamBagBag
      */
-    public static function from(ParamBag $original): ?ParamBagBag
+    public static function from(ParamBag $original, bool $createIfNull = true): ?ParamBagBag
     {
         if (!$original) {
-            return null;
+            return $createIfNull ? new ParamBagBag() : null;
         }
         if ($original instanceof ParamBagBag) {
             return $original;
