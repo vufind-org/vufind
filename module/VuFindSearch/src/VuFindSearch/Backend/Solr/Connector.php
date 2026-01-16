@@ -309,7 +309,7 @@ class Connector implements \Psr\Log\LoggerAwareInterface
     public function query($handler, ParamBagBag $params, bool $cacheable = false)
     {
         $urlSuffix = '/' . $handler;
-        $body = json_encode($params);
+        $body = json_encode($params, JSON_THROW_ON_ERROR);
         $method = Request::METHOD_POST;
         $callback = function ($client) use ($body): void {
             $client->setRawBody($body);
