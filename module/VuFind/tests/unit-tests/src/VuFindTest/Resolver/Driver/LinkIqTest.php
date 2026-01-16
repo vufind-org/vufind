@@ -92,7 +92,7 @@ class LinkIqTest extends \PHPUnit\Framework\TestCase
         $this->assertSame(
             [
                 [
-                    'title' => 'Test Package',
+                    'title' => 'Test Publisher',
                     'href' => 'http://localhost/public/linkout/v1/ftf?ref=121212',
                     'service_type' => 'getFullTxt',
                     'coverage' => '01-01-1997 – 12-31-1999, 01-01-2001 –  (Not published during year 2000)',

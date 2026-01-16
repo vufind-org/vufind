@@ -136,17 +136,9 @@ class LinkIq extends AbstractBase implements TranslatorAwareInterface
         $results = [];
         foreach ($json['contextObjects'] as $contextObject) {
             foreach ($contextObject['targetLinks'] ?? [] as $link) {
-                if (!($serviceType = $this->mapServiceType($link['category']))) {
-                    continue;
+                if ($result = $this->parseTargetLink($link)) {
+                    $results[] = $result;
                 }
-                $result = [
-                    'title' => ($link['packageInfo']['packageName'] ?? null) ?: ($link['linkName'] ?? ''),
-                    'href' => $link['targetUrl'] ?? '',
-                    'service_type' => $serviceType,
-                    'coverage' => $this->getCoverage($link),
-                    'embargo' => $this->getEmbargo($link),
-                ];
-                $results[] = $result;
             }
         }
 
@@ -154,13 +146,34 @@ class LinkIq extends AbstractBase implements TranslatorAwareInterface
     }
 
     /**
-     * Map LinkIQ link categories to VuFind. Returns an empty string for an unmapped value.
+     * Get link text.
      *
-     * @param string $category Link category
+     * @param array $link Link
      *
-     * @return ?string
+     * @return string
      */
-    protected function mapServiceType(string $category): ?string
+    protected function parseTargetLink(array $link): ?array
+    {
+        if (!($serviceType = $this->getServiceType($link))) {
+            return null;
+        }
+        return [
+            'title' => $this->getLinkText($link),
+            'href' => $this->getLinkUrl($link),
+            'service_type' => $serviceType,
+            'coverage' => $this->getCoverage($link),
+            'embargo' => $this->getEmbargo($link),
+        ];
+    }
+
+    /**
+     * Get VuFind link category for a LinkIQ link.
+     *
+     * @param array $link Link
+     *
+     * @return ?string Link category, or null to skip the link
+     */
+    protected function getServiceType(array $link): ?string
     {
         $map = [
             'FullText' => 'getFullTxt',
@@ -174,7 +187,31 @@ class LinkIq extends AbstractBase implements TranslatorAwareInterface
             'SmartLinks' => 'getWebService',
             'SectionLabel' => null,
         ];
-        return $map[$category] ?? null;
+        return $map[$link['category']] ?? null;
+    }
+
+    /**
+     * Get link text.
+     *
+     * @param array $link Link
+     *
+     * @return string
+     */
+    protected function getLinkText(array $link): string
+    {
+        return $link['linkText'] ?? '';
+    }
+
+    /**
+     * Get link URL.
+     *
+     * @param array $link Link
+     *
+     * @return string
+     */
+    protected function getLinkUrl(array $link): string
+    {
+        return $link['targetUrl'] ?? '';
     }
 
     /**
