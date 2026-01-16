@@ -46,8 +46,8 @@ class ParamBagBag extends ParamBag
     /**
      * Transform any ParamBag into a ParamBagBag.
      *
-     * @param ?ParamBag $original The original ParamBag
-     * @param bool $createIfNull Create an empty ParamBag if $original is null
+     * @param ?ParamBag $original     The original ParamBag
+     * @param bool      $createIfNull Create an empty ParamBag if $original is null
      *
      * @return ?ParamBagBag
      */
@@ -204,22 +204,29 @@ class ParamBagBag extends ParamBag
      */
     protected function jsonObject($items)
     {
+        $jsonObject = [];
         foreach ($items as $name => $values) {
-            if (is_array($values) && count($values) > 1) {
-                throw new \Exception('got more than one value for ' . $name);
-            }
-            if (count($values) == 1) {
-                $value = $values[0];
-                if ($value instanceof ParamBag) {
-                    $nestedValues = $value->getArrayCopy();
-                    $jsonObject[$name] = $this->jsonObject($nestedValues);
-                } else {
-                    $jsonObject[$name] = $value;
+            if (is_array($values)) {
+                if (
+                    count($values) > 1 &&
+                    array_filter($values, fn ($value) => $value instanceof ParamBag)
+                ) {
+                    throw new \Exception('More than one value for name ' . $name . ' including at least one ParamBag.');
+                }
+
+                if (count($values) > 1) {
+                    $jsonObject[$name] = $values;
+                } elseif (count($values) == 1) {
+                    $value = $values[0];
+                    if ($value instanceof ParamBag) {
+                        $nestedValues = $value->getArrayCopy();
+                        $jsonObject[$name] = $this->jsonObject($nestedValues);
+                    } else {
+                        $jsonObject[$name] = $value;
+                    }
                 }
             } else {
-                // TODO This can't work properly...need unique names?
-                // But will JSON ever require non-unique?  If not, then using the array-based parambag is not needed?
-                $jsonObject[$name] = $values;
+                throw new \Exception('ParamBag values for ' . $name . ' is not an array.');
             }
         }
         return $jsonObject;

@@ -161,8 +161,6 @@ class ParamBag implements \Countable
         }
         if (is_array($value)) {
             $this->items[$name] = array_merge_recursive($this->items[$name], $value);
-        } elseif ($value instanceof ParamBag) {
-            $bar = 1;
         } else {
             $this->items[$name][] = $value;
         }
