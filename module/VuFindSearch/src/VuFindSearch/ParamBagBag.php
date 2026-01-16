@@ -67,6 +67,22 @@ class ParamBagBag extends ParamBag implements JsonSerializable
     }
 
     /**
+     * Transform a potentially nested array of values into a ParamBagBag.
+     *
+     * @param array $values Source values
+     *
+     * @return ParamBagBag
+     */
+    public static function fromArray(array $values): ParamBagBag
+    {
+        $bag = new ParamBagBag();
+        foreach ($values as $name => $value) {
+            $bag->addMultiNested($name, $value);
+        }
+        return $bag;
+    }
+
+    /**
      * Return nested parameter value.
      *
      * @param string $name       Parameter name

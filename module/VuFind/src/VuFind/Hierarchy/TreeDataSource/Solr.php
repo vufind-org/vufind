@@ -31,7 +31,7 @@ namespace VuFind\Hierarchy\TreeDataSource;
 
 use VuFind\Hierarchy\TreeDataFormatter\PluginManager as FormatterManager;
 use VuFindSearch\Backend\Solr\Command\RawJsonSearchCommand;
-use VuFindSearch\ParamBag;
+use VuFindSearch\ParamBagBag;
 use VuFindSearch\Query\Query;
 use VuFindSearch\Service;
 
@@ -151,14 +151,15 @@ class Solr extends AbstractBase
      */
     protected function getDefaultSearchParams(): array
     {
-        // TODO Needs adjustment
         return [
-            'fq' => $this->filters,
-            'hl' => ['false'],
-            'fl' => ['title,id,hierarchy_parent_id,hierarchy_top_id,'
+            'filter' => $this->filters,
+            'fields' => ['title,id,hierarchy_parent_id,hierarchy_top_id,'
                 . 'is_hierarchy_id,hierarchy_sequence,title_in_hierarchy'],
-            'wt' => ['json'],
-            'json.nl' => ['arrarr'],
+            'params' => [
+                'hl' => ['false'],
+                'wt' => ['json'],
+                'json.nl' => ['arrarr'],
+            ],
         ];
     }
 
@@ -173,7 +174,7 @@ class Solr extends AbstractBase
      */
     protected function searchSolrLegacy(Query $query, $rows): array
     {
-        $params = new ParamBag($this->getDefaultSearchParams());
+        $params = ParamBagBag::fromArray($this->getDefaultSearchParams());
         $command = new RawJsonSearchCommand(
             $this->backendId,
             $query,
@@ -199,15 +200,16 @@ class Solr extends AbstractBase
         $cursorMark = '*';
         $records = [];
         while ($cursorMark !== $prevCursorMark) {
-            $params = new ParamBag(
-                // TODO Needs adjustment
+            $params = ParamBagBag::fromArray(
                 $this->getDefaultSearchParams() + [
                     // Sort is required
                     'sort' => ['id asc'],
-                    // Override any default timeAllowed since it cannot be used with
-                    // cursorMark
-                    'timeAllowed' => -1,
-                    'cursorMark' => $cursorMark,
+                    'params' => [
+                        // Override any default timeAllowed since it cannot be used with
+                        // cursorMark
+                        'timeAllowed' => -1,
+                        'cursorMark' => $cursorMark,
+                    ],
                 ]
             );
             $command = new RawJsonSearchCommand(
