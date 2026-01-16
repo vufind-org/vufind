@@ -32,6 +32,7 @@ namespace VuFind\Search\Solr;
 use Laminas\EventManager\EventInterface;
 use Laminas\EventManager\SharedEventManagerInterface;
 use VuFindSearch\Backend\BackendInterface;
+use VuFindSearch\ParamBag;
 use VuFindSearch\ParamBagBag;
 use VuFindSearch\Service;
 
@@ -148,9 +149,16 @@ class MultiIndexListener
                 $fields = $this->getFields($shards);
                 $specs  = $this->getSearchSpecs($fields);
                 $this->backend->getQueryBuilder()->setSpecs($specs);
-                // TODO This will need an update for the JSON Facet API
-                $facets = $params->get('facet.field') ?: [];
-                $params->set('facet.field', array_diff($facets, $fields));
+                if ($params->get('facet')) {
+                    $facets = $params->get('facet')[0]->getArrayCopy();
+                    $facets = array_filter(
+                        $facets,
+                        fn ($facet) =>
+                            (!($facet[0] instanceof ParamBag))
+                            || !in_array($facet[0]->getArrayCopy()['field'][0], $fields)
+                    );
+                    $params->set('facet', new ParamBag($facets));
+                }
             }
         }
         return $event;
