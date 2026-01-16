@@ -29,6 +29,13 @@
 
 namespace VuFind\Navigation;
 
+use Laminas\View\Model\ViewModel;
+use VuFind\Auth\Manager;
+use VuFind\Cart;
+use VuFind\I18n\Locale\LocaleSettings;
+
+use function count;
+
 /**
  * HeaderBar section plugin
  *
@@ -41,32 +48,38 @@ namespace VuFind\Navigation;
 class HeaderBar extends AbstractMenu
 {
     /**
-     * Is feedback enabled?
-     *
-     * @var bool
-     */
-    protected bool $feedbackEnabled;
-
-    /**
      * Constructor
      *
-     * @param array $sectionConfig       Menu configuration
-     * @param array $config              Main configuration
-     * @param bool  $cartEnabled         Is cart enabled?
-     * @param bool  $accountEnabled      Is account enabled?
-     * @param bool  $themeOptionsEnabled Is theme options enabled?
-     * @param bool  $allLangsEnabled     Is all langs enabled?
+     * @param array          $sectionConfig  Menu configuration
+     * @param array          $config         Main configuration
+     * @param Cart           $cart           Cart
+     * @param Manager        $authManager    Authentication manager
+     * @param ViewModel      $viewModel      View model
+     * @param LocaleSettings $localeSettings Locale settings
      */
     public function __construct(
         array $sectionConfig,
-        array $config,
-        protected bool $cartEnabled,
-        protected bool $accountEnabled,
-        protected bool $themeOptionsEnabled,
-        protected bool $allLangsEnabled
+        protected array $config,
+        protected Cart $cart,
+        protected Manager $authManager,
+        protected ViewModel $viewModel,
+        protected LocaleSettings $localeSettings
     ) {
         parent::__construct($sectionConfig);
-        $this->feedbackEnabled = (bool)($config['Feedback']['tab_enabled'] ?? false);
+    }
+
+    /**
+     * Return context variables that can be used to render the section.
+     *
+     * @return array
+     */
+    public function getSectionContext(): array
+    {
+        $context = parent::getSectionContext();
+        $context['userLang'] = $this->localeSettings->getUserLocale();
+        $context['allLangs'] = $this->localeSettings->getEnabledLocales();
+        $context['requestUri'] = $_SERVER['REQUEST_URI'];
+        return $context;
     }
 
     /**
@@ -117,7 +130,7 @@ class HeaderBar extends AbstractMenu
      */
     public function checkFeedback(): bool
     {
-        return $this->feedbackEnabled;
+        return (bool)($this->config['Feedback']['tab_enabled'] ?? false);
     }
 
     /**
@@ -127,7 +140,7 @@ class HeaderBar extends AbstractMenu
      */
     public function checkCart(): bool
     {
-        return $this->cartEnabled;
+        return $this->cart->isActive();
     }
 
     /**
@@ -137,7 +150,7 @@ class HeaderBar extends AbstractMenu
      */
     public function checkAccount(): bool
     {
-        return $this->accountEnabled;
+        return $this->authManager->loginEnabled();
     }
 
     /**
@@ -147,7 +160,8 @@ class HeaderBar extends AbstractMenu
      */
     public function checkThemeOptions(): bool
     {
-        return $this->themeOptionsEnabled;
+        return $this->viewModel->getVariable('themeOptions')
+            && (count($this->viewModel->getVariable('themeOptions')) > 1);
     }
 
     /**
@@ -157,6 +171,6 @@ class HeaderBar extends AbstractMenu
      */
     public function checkAllLangs(): bool
     {
-        return $this->allLangsEnabled;
+        return count($this->localeSettings->getEnabledLocales()) > 1;
     }
 }

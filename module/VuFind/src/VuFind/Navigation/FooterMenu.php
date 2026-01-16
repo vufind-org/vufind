@@ -55,10 +55,9 @@ class FooterMenu extends AbstractMenu
      */
     public function __construct(
         array $sectionConfig,
-        array $config
+        protected array $config
     ) {
         parent::__construct($sectionConfig);
-        $this->cookieConsentEnabled = !empty($config['Cookies']['consent']);
     }
 
     /**
@@ -156,6 +155,6 @@ class FooterMenu extends AbstractMenu
      */
     public function checkCookieSettings(): bool
     {
-        return $this->cookieConsentEnabled;
+        return !empty($this->config['Cookies']['consent']);
     }
 }

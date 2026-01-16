@@ -29,10 +29,13 @@
 
 namespace VuFindTest\Unit;
 
+use Laminas\View\Model\ViewModel;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Auth\Manager;
+use VuFind\Cart;
 use VuFind\Config\AccountCapabilities;
 use VuFind\Config\YamlReader;
+use VuFind\I18n\Locale\LocaleSettings;
 use VuFind\ILS\Connection;
 use VuFind\Navigation\AbstractMenu;
 use VuFind\Navigation\AccountMenu;
@@ -270,18 +273,12 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         array $config = [],
         array $checkMethods = []
     ): FooterMenu {
-        $footer = $this->getMockBuilder(FooterMenu::class)
-            ->setConstructorArgs(
-                [
-                    $config,
-                    [],
-                ]
-            )
-            ->onlyMethods(array_keys($this->getFooterMenuCheckMethods()))
-            ->getMock();
-        foreach ($this->getFooterMenuCheckMethods() as $checkMethod => $default) {
-            $footer->method($checkMethod)->willReturn($checkMethods[$checkMethod] ?? $default);
-        }
+        $checkCookieSettings = $checkMethods['checkCookieSettings'] ?? true;
+
+        $footer = new FooterMenu(
+            $config,
+            ['Cookies' => ['consent' => $checkCookieSettings]],
+        );
         $this->setSectionPlugin($container, $footer, 'footer');
         return $footer;
     }
@@ -314,22 +311,32 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
         array $config = [],
         array $checkMethods = []
     ): HeaderBar {
-        $header = $this->getMockBuilder(HeaderBar::class)
-            ->setConstructorArgs(
-                [
-                    $config,
-                    [],
-                    true,
-                    true,
-                    true,
-                    true,
-                ]
-            )
-            ->onlyMethods(array_keys($this->getHeaderBarCheckMethods()))
-            ->getMock();
-        foreach ($this->getHeaderBarCheckMethods() as $checkMethod => $default) {
-            $header->method($checkMethod)->willReturn($checkMethods[$checkMethod] ?? $default);
-        }
+        $mockCart = $this->createMock(Cart::class);
+        $mockCart->method('isActive')
+            ->willReturn($checkMethods['checkCart'] ?? true);
+
+        $mockAuthManager = $this->createMock(Manager::class);
+        $mockAuthManager->method('loginEnabled')
+            ->willReturn($checkMethods['checkAccount'] ?? true);
+
+        $checkThemeOptions = $checkMethods['checkThemeOptions'] ?? true;
+        $mockViewModel = $this->createMock(ViewModel::class);
+        $mockViewModel->method('getVariable')->with('themeOptions')
+            ->willReturn($checkThemeOptions ? [[], []] : []);
+
+        $checkAllLangs = $checkMethods['checkAllLangs'] ?? true;
+        $mockLocaleSettings = $this->createMock(LocaleSettings::class);
+        $mockLocaleSettings->method('getEnabledLocales')
+            ->willReturn($checkAllLangs ? [[], []] : []);
+
+        $header = new HeaderBar(
+            $config,
+            ['Feedback' => ['tab_enabled' => $checkMethods['checkFeedback'] ?? true]],
+            $mockCart,
+            $mockAuthManager,
+            $mockViewModel,
+            $mockLocaleSettings
+        );
         $this->setSectionPlugin($container, $header, 'header');
         return $header;
     }

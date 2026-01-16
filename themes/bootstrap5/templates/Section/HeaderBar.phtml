@@ -10,6 +10,13 @@
           <ul class="nav navbar-nav">
             <?php foreach ($group['MenuItems'] as $item): ?>
               <?php if (isset($item['template'])): ?>
+                <?php
+                  // Pass section context to template.
+                  $item = array_merge(
+                      $this->{\VuFind\View\Helper\Root\Section::SECTION_CONTEXT_KEY},
+                      $item
+                  );
+               ?>
                 <?= $this->render($item['template'], $item) ?>
               <?php elseif (isset($item['submenuItems'])): ?>
                 <?= $this->component('menu-button', [
@@ -28,7 +35,7 @@
                           'label' => $belowItem['label'],
                           'url' => $url,
                           'description' => $belowItem['description'] ?? false,
-                          'selected' => $_SERVER['REQUEST_URI'] === $url,
+                          'selected' => $this->requestUri === $url,
                         ];
                       },
                       $item['submenuItems'],

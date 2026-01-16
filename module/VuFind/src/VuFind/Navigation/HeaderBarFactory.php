@@ -34,8 +34,6 @@ use Laminas\ServiceManager\Exception\ServiceNotFoundException;
 use Psr\Container\ContainerExceptionInterface as ContainerException;
 use Psr\Container\ContainerInterface;
 
-use function count;
-
 /**
  * HeaderBar section plugin factory
  *
@@ -66,22 +64,16 @@ class HeaderBarFactory extends AbstractMenuFactory
         $requestedName,
         ?array $options = null
     ) {
-        $config = $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config');
-        $cart = $container->get(\VuFind\Cart::class);
-        $manager = $container->get(\VuFind\Auth\Manager::class);
-        $viewModel = $container->get('ViewManager')->getViewModel();
-        $settings = $container->get(\VuFind\I18n\Locale\LocaleSettings::class);
         return parent::__invoke(
             $container,
             $requestedName,
             [
                 'HeaderBar.yaml',
-                $config,
-                $cart->isActive(),
-                $manager->loginEnabled(),
-                $viewModel->getVariable('themeOptions')
-                    && (count($viewModel->getVariable('themeOptions')) > 1),
-                count($settings->getEnabledLocales()) > 1,
+                $container->get(\VuFind\Config\ConfigManagerInterface::class)->getConfigArray('config'),
+                $container->get(\VuFind\Cart::class),
+                $container->get(\VuFind\Auth\Manager::class),
+                $container->get('ViewManager')->getViewModel(),
+                $container->get(\VuFind\I18n\Locale\LocaleSettings::class),
                 ...($options ?? []),
             ]
         );

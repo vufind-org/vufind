@@ -10,10 +10,10 @@
           return [
             'label' => $this->displayLanguageOption($langName),
             'url' => $this->url()->addQueryParameters(['lng' => $langCode]),
-            'selected' => $this->layout()->userLang == $langCode,
+            'selected' => $this->userLang == $langCode,
           ];
       },
-      array_keys($this->layout()->allLangs),
-      array_values($this->layout()->allLangs),
+      array_keys($this->allLangs),
+      array_values($this->allLangs),
   ),
 ]);
