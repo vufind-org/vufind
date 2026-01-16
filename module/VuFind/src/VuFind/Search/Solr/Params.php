@@ -66,7 +66,7 @@ class Params extends \VuFind\Search\Base\Params
      * Ignore Case when using facet.contains
      * cf. https://lucene.apache.org/solr/guide/7_3/faceting.html
      *
-     * @var bool
+     * @var ?bool
      */
     protected ?bool $facetContainsIgnoreCase = null;
 
