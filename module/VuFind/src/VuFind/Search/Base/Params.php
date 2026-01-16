@@ -1508,16 +1508,9 @@ class Params
      *
      * @param Parameters $request         Parameter object
      * representing user request.
-     * @param string     $requestParam    Name of parameter
-     *                                    containing names
-     *                                    of range filter
-     *                                    fields.
-     * @param ?callable  $valueFilter     Optional callback to
-     *                                    process values in
-     *                                    the range.
-     * @param ?callable  $filterGenerator Optional callback to create
-     *                                    a filter query from the
-     *                                    range values.
+     * @param string     $requestParam    Name of parameter containing names of range filter fields.
+     * @param ?callable  $valueFilter     Optional callback to process values in the range.
+     * @param ?callable  $filterGenerator Optional callback to create a filter query from the range values.
      *
      * @return void
      */
