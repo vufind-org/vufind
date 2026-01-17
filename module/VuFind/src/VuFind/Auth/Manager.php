@@ -174,7 +174,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
             // need to be replaced by "getLogoutRedirectUrl" and "clearLoginState".
             if (is_callable([$this->auth[$name], 'logout']) || is_callable([$this->auth[$name], 'resetState'])) {
                 throw new \Exception(
-                    'Deprecated methods "logout" and "resetState" need'
+                    'Deprecated methods "logout" and "resetState" need '
                     . 'to be replaced by "getLogoutRedirectUrl" and "clearLoginState"'
                 );
             }
