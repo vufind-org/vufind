@@ -371,7 +371,7 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
      *
      * @return string Redirect URL (modified for OpenIDConnect logout).
      */
-    public function logout($url)
+    public function getLogoutRedirectUrl(string $url): string
     {
         $redirectUrl = $url;
         $endSessionEndpoint = false;
