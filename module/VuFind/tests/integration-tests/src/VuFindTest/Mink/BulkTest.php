@@ -103,7 +103,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function checkForNonSelectedMessage(Element $page): void
     {
-        $this->assertEquals(
+        $this->assertSame(
             'No items were selected. '
             . 'Please click on a checkbox next to an item and try again.',
             $this->findCssAndGetText($page, '.modal-body .alert-danger')
@@ -122,7 +122,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function checkForLimitExceededMessage(Element $page, $count, $limit): void
     {
-        $this->assertEquals(
+        $this->assertSame(
             'Selection of ' . $count . ' items exceeds the limit of '
             . $limit . ' for this action. Please select fewer items.',
             $this->findCssAndGetText($page, '.modal-body .alert-danger')
@@ -181,7 +181,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         );
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertSame(
             'Your item(s) were emailed',
             $this->findCssAndGetText($page, '.modal-body .alert-success')
         );
@@ -215,7 +215,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         // Save the favorites.
         $this->waitForPageLoad($page);
         $this->clickCss($page, '.modal-body input[name=submitButton]');
-        $this->assertEquals(
+        $this->assertSame(
             'Your item(s) were saved successfully. Go to List.',
             $this->findCssAndGetText($page, '.modal-body .alert-success')
         );
@@ -261,7 +261,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
 
         // Confirm contents of confirmation box:
-        $this->assertEquals(
+        $this->assertSame(
             'Title: Journal of rational emotive therapy : Title: Rational living.',
             $this->findCssAndGetText($page, '#modal ul.record-list')
         );
@@ -271,7 +271,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         // If all records were deleted, success message should be visible, and delete button should be gone after
         // lightbox is closed.
         $this->waitForLightboxHidden();
-        $this->assertEquals(
+        $this->assertSame(
             'Your saved item(s) were deleted.',
             $this->findCssAndGetText($page, '.alert-success')
         );
@@ -329,7 +329,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         // Do the export:
         $this->clickCss($page, '.form-cart-export input[name=submitButton]');
         $buttonText = $this->findCssAndGetText($page, '.alert .text-center .btn');
-        $this->assertEquals('Download File', $buttonText);
+        $this->assertSame('Download File', $buttonText);
     }
 
     /**
@@ -429,7 +429,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         // Save the favorites.
         $this->waitForPageLoad($page);
         $this->clickCss($page, '.modal-body input[name=submitButton]');
-        $this->assertEquals(
+        $this->assertSame(
             'Your item(s) were saved successfully. Go to List.',
             $this->findCssAndGetText($page, '.modal-body .alert-success')
         );
@@ -452,7 +452,7 @@ final class BulkTest extends \VuFindTest\Integration\MinkTestCase
         $select->selectOption('MARC');
         $submit = $this->findCss($page, '.modal-body input[name=submitButton]');
         $submit->click();
-        $this->assertEquals(
+        $this->assertSame(
             'Download File',
             $this->findCssAndGetText($page, '.modal-body .alert .text-center .btn')
         );

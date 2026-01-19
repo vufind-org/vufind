@@ -106,7 +106,7 @@ class MigrationManagerTest extends \PHPUnit\Framework\TestCase
             array_keys($testData)
         );
         $loader->method('getMigrationsFromDir')->willReturnCallback(
-            fn ($version) => array_map(fn ($file) => "$version/$file.sql", $testData[$version])
+            fn (string $version): array => array_map(fn ($file) => "$version/$file.sql", $testData[$version])
         );
         $manager = $this->getMockMigrationManager(['getAppliedMigrations'], loader: $loader);
         $manager->method('getAppliedMigrations')->willReturn([]);

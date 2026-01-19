@@ -353,7 +353,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $db = $pm->get('Database');
         $db->expects($this->once())->method('create')->with($request)->willReturn($user);
         $manager = $this->getManager([], null, null, $pm);
-        $this->assertNull($manager->getUserObject());
+        $this->assertNotInstanceOf(\VuFind\Db\Entity\UserEntityInterface::class, $manager->getUserObject());
         $this->assertEquals($user, $manager->create($request));
         $this->assertEquals($user, $manager->getUserObject());
     }
@@ -372,7 +372,7 @@ class ManagerTest extends \PHPUnit\Framework\TestCase
         $db->expects($this->once())->method('authenticate')->with($request)->willReturn($user);
         $manager = $this->getManager([], null, null, $pm);
         $request->getPost()->set('csrf', $manager->getCsrfHash());
-        $this->assertNull($manager->getUserObject());
+        $this->assertNotInstanceOf(\VuFind\Db\Entity\UserEntityInterface::class, $manager->getUserObject());
         $this->assertEquals($user, $manager->login($request));
         $this->assertEquals($user, $manager->getUserObject());
     }

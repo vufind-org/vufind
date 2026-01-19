@@ -46,6 +46,13 @@ class Options extends \VuFind\Search\Base\Options implements DateRangeOptionsInt
     use \VuFind\Search\Options\ViewOptionsTrait;
 
     /**
+     * Facet list action route
+     *
+     * @var string
+     */
+    protected string $facetListAction = 'search-facetlist';
+
+    /**
      * Available sort options for facets
      *
      * @var array
@@ -183,7 +190,19 @@ class Options extends \VuFind\Search\Base\Options implements DateRangeOptionsInt
      */
     public function getFacetListAction()
     {
-        return 'search-facetlist';
+        return $this->facetListAction;
+    }
+
+    /**
+     * Override the facet list action (needed for new items).
+     *
+     * @param string $action New facet list action
+     *
+     * @return void
+     */
+    public function setFacetListAction(string $action): void
+    {
+        $this->facetListAction = $action;
     }
 
     /**

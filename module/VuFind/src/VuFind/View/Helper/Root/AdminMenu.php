@@ -37,6 +37,8 @@ namespace VuFind\View\Helper\Root;
  * @author   Aleksi Peebles <aleksi.peebles@helsinki.fi>
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
+ *
+ * @deprecated Use \VuFind\View\Helper\Root\Section instead
  */
 class AdminMenu extends AbstractMenuHelper
 {

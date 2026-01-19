@@ -104,11 +104,11 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
             // only appear after AJAX returns):
             $this->unFindCss($page, '.callnumber.ajax-availability');
             $this->unFindCss($page, '.location.ajax-availability');
-            $this->assertEquals(
+            $this->assertSame(
                 'A1234.567',
                 $this->findCssAndGetText($page, "$container .callnumber")
             );
-            $this->assertEquals(
+            $this->assertSame(
                 '3rd Floor Main Library',
                 $this->findCssAndGetText($page, "$container .location")
             );
@@ -213,11 +213,11 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
         // The author link in each column should have an appropriate hidden filter applied:
         $this->assertStringContainsString(
             'hiddenFilters%5B%5D=building%3A%22author_relators.mrc%22',
-            $this->findCss($page, '#combined_Solr____one .result-author')->getAttribute('href')
+            (string)$this->findCss($page, '#combined_Solr____one .result-author')->getAttribute('href')
         );
         $this->assertStringContainsString(
             'hiddenFilters%5B%5D=building%3A%22weird_ids.mrc%22',
-            $this->findCss($page, '#combined_Solr____two .result-author')->getAttribute('href')
+            (string)$this->findCss($page, '#combined_Solr____two .result-author')->getAttribute('href')
         );
     }
 
@@ -307,7 +307,7 @@ class CombinedSearchTest extends \VuFindTest\Integration\MinkTestCase
         // The AJAX count may not load right away, so wait to be sure we assert on the final value:
         $getText = "document.getElementsByClassName('combined-jump-links')[0].textContent.replace(/\s+/g, ' ').trim()";
         $this->waitStatement("$getText === '$expectedContent'");
-        $this->assertEquals(
+        $this->assertSame(
             $expectedContent,
             $this->findCssAndGetText($page, '.combined-jump-links')
         );

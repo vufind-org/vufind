@@ -174,7 +174,7 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
             // need to be replaced by "getLogoutRedirectUrl" and "clearLoginState".
             if (is_callable([$this->auth[$name], 'logout']) || is_callable([$this->auth[$name], 'resetState'])) {
                 throw new \Exception(
-                    'Deprecated methods "logout" and "resetState" need'
+                    'Deprecated methods "logout" and "resetState" need '
                     . 'to be replaced by "getLogoutRedirectUrl" and "clearLoginState"'
                 );
             }
@@ -790,6 +790,11 @@ class Manager implements IdentityProviderInterface, LoggerAwareInterface
     public function resetPassword(array $recoveryData, array $params)
     {
         $this->getAuth()->resetPassword($recoveryData, $params);
+        $this->auditEventService->addEvent(
+            AuditEventType::User,
+            AuditEventSubType::PasswordReset,
+            data: compact('recoveryData', 'params')
+        );
     }
 
     /**

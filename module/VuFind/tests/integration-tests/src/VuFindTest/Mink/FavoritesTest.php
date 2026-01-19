@@ -36,7 +36,6 @@ use Behat\Mink\Exception\UnsupportedDriverActionException;
 use InvalidArgumentException;
 
 use function count;
-use function in_array;
 
 /**
  * Mink favorites test class.
@@ -167,7 +166,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         // The order of tags may differ by database platform, but as long as they
         // all show up, it is okay:
         foreach (['test1', 'test2', 'test 3'] as $tag) {
-            $this->assertTrue(in_array($tag, $tags));
+            $this->assertContains($tag, $tags);
         }
         // Now make sure link circles back to record:
         $this->clickCss($page, '.resultItemLine1 a');
@@ -266,7 +265,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.save-record');
         $this->waitForPageLoad($page);
         $this->assertLightboxTitle($page, 'Login');
-        $this->assertEquals('Login', $this->findCssAndGetText($page, '#lightbox-title'));
+        $this->assertSame('Login', $this->findCssAndGetText($page, '#lightbox-title'));
         $this->clickCss($page, '.modal-body .createAccountLink');
         // Empty
         $this->waitForPageLoad($page);
@@ -307,7 +306,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '#list_title', 'Test List');
         $this->findCssAndSetValue($page, '#list_desc', 'Just. THE BEST.');
         // Confirm that tags are disabled by default:
-        $this->assertNull($page->find('css', '#list_tags'));
+        $this->unFindCss($page, '#list_tags');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->assertSame(
             'Test List',
@@ -348,7 +347,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->fillInLoginForm($page, 'username2', 'test');
         $this->submitLoginForm($page);
         // Make sure we don't have Favorites because we have another populated list
-        $this->assertNull($page->find('css', '.modal-body #save_list'));
+        $this->unFindCss($page, '.modal-body #save_list');
         // Make Two Lists
         // - One for the next test
         $this->clickCss($page, '#make-list');
@@ -603,7 +602,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
      */
     protected function checkForNonSelectedMessage(Element $page): void
     {
-        $this->assertEquals(
+        $this->assertSame(
             'No items were selected. Please click on a checkbox next to an item and try again.',
             $this->findCssAndGetText($page, '.modal-body .alert')
         );
@@ -647,7 +646,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCssAndSetValue($page, '.modal #email_message', 'message');
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         // Check for confirmation message
-        $this->assertEquals(
+        $this->assertSame(
             'Your item(s) were emailed',
             $this->findCssAndGetText($page, '.modal .alert-success')
         );
@@ -679,7 +678,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         // Do the export:
         $submit = $this->findCss($page, '.modal-body input[name=submitButton]');
         $submit->click();
-        $this->assertEquals('Download File', $this->findCssAndGetText($page, '.modal-body .alert .text-center .btn'));
+        $this->assertSame('Download File', $this->findCssAndGetText($page, '.modal-body .alert .text-center .btn'));
     }
 
     /**
@@ -694,7 +693,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
 
         // First try clicking without selecting anything:
         $this->clickCss($page, '[name=bulkActionForm] [name=print]');
-        $this->assertEquals(
+        $this->assertSame(
             'No items were selected. Please click on a checkbox next to an item and try again.',
             $this->findCssAndGetText($page, '.flash-message')
         );
@@ -749,7 +748,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         $this->waitForPageLoad($page);
         // Check for confirmation message
-        $this->assertEquals(
+        $this->assertSame(
             'Your item(s) were emailed',
             $this->findCssAndGetText($page, '.modal .alert-success')
         );
@@ -884,7 +883,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->getMinkSession()->visit($this->getVuFindUrl() . '/Channels');
         $this->waitForPageLoad($page);
         if ($matchExpected) {
-            $this->assertEquals('Test List', $this->findCssAndGetText($page, 'h2.channel-title'));
+            $this->assertSame('Test List', $this->findCssAndGetText($page, 'h2.channel-title'));
             $this->assertCount(1, $page->findAll('css', 'li.channel-item'));
         } else {
             $this->unfindCss($page, 'h2.channel-title');
@@ -988,7 +987,7 @@ final class FavoritesTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.modal-body .btn.btn-primary');
         // Check for confirmation message
         $this->waitForLightboxHidden();
-        $this->assertEquals(
+        $this->assertSame(
             'Your saved item(s) were deleted.',
             $this->findCssAndGetText($page, '.alert-success')
         );

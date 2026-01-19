@@ -483,7 +483,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
         );
         $page = $session->getPage();
 
-        $this->assertEquals(
+        $this->assertSame(
             'An error has occurred',
             $this->findCssAndGetText($page, '.alert-danger p')
         );
@@ -644,7 +644,7 @@ final class OAuth2Test extends \VuFindTest\Integration\MinkTestCase
      *
      * @return void
      */
-    protected function restoreConfigs()
+    protected function restoreConfigs(): void
     {
         parent::restoreConfigs();
         if ($this->opensslKeyPairCreated) {

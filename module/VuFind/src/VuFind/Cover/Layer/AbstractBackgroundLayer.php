@@ -53,20 +53,15 @@ abstract class AbstractBackgroundLayer extends AbstractLayer
      */
     protected function createSeed($title, $callnumber)
     {
-        // Turn callnumber into number
-        if (null == $callnumber) {
-            $callnumber = $title;
+        // Pick text for seeding the algorithm:
+        $textSeed = $callnumber ?: $title ?: '';
+        $cv = 0;
+        // Add up the values of the characters in the seed string:
+        for ($i = 0; $i < strlen($textSeed); $i++) {
+            $cv += ord($textSeed[$i]);
         }
-        if (null !== $callnumber) {
-            $cv = 0;
-            for ($i = 0; $i < strlen($callnumber); $i++) {
-                $cv += ord($callnumber[$i]);
-            }
-            return $cv;
-        } else {
-            // If no callnumber, random
-            return ceil(rand(2 ** 4, 2 ** 32));
-        }
+        // If we failed to generate a non-zero seed, use a random one instead.
+        return $cv > 0 ? $cv : ceil(rand(2 ** 4, 2 ** 32));
     }
 
     /**

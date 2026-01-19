@@ -230,12 +230,12 @@ final class ApiTest extends \VuFindTest\Integration\MinkTestCase
             $text
         );
         $testToken = trim(substr($text, strpos($text, ':') + 1));
-        $this->assertTrue(strlen($testToken) > 0);
+        $this->assertGreaterThan(0, strlen($testToken));
 
         $this->clickCss($page, '.btn-default[data-bs-dismiss="modal"]');
 
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertSame(
             'test title',
             $this->findCssAndGetText($page, '.table.table-striped th', index: 0)
         );
