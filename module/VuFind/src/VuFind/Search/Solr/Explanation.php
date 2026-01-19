@@ -254,11 +254,9 @@ class Explanation extends \VuFind\Search\Base\Explanation
         $params->setNested('params', 'spellcheck', 'false');
         $explainParams = new ParamBagBag([
             'fields' => 'id,score',
-            'facet' => 'true', // This field will need an update when I do the facet API upgrade
             'params' => new ParamBag([
                 'debug' => 'true',
                 'indent' => 'true',
-                'param' => 'query', // Is this change correct?
                 'echoParams' => 'all',
                 'explainOther' => 'id:"' . addcslashes($recordId, '"') . '"',
             ]),
