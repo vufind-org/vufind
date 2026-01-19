@@ -173,7 +173,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#modal .btn.btn-primary', null, 1);
         $localIdentifier = $this->getLocalIdentifierFromReturnUrl($page);
         $this->clickCss($page, '.button-cancel');
-        $this->assertEquals(
+        $this->assertSame(
             'Payment canceled',
             $this->findCssAndGetText($page, '.alert.alert-success')
         );
@@ -188,7 +188,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#modal .btn.btn-primary', null, 1);
         $localIdentifier = $this->getLocalIdentifierFromReturnUrl($page);
         $this->clickCss($page, '.button-failure');
-        $this->assertEquals(
+        $this->assertSame(
             'Payment request failed',
             $this->findCssAndGetText($page, '.alert.alert-danger')
         );
@@ -493,7 +493,7 @@ final class OnlinePaymentTest extends \VuFindTest\Integration\MinkTestCase
 
         $page = $this->goToFines(false, false);
         $this->checkForMissingDevTools($page);
-        $this->assertEquals(
+        $this->assertSame(
             $expectedMsg,
             $this->findCssAndGetText($page, '.fines-info-area__blocked')
         );

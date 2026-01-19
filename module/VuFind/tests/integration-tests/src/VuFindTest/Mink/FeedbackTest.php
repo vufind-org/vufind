@@ -148,12 +148,12 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->setupPage();
         $this->fillInAndSubmitFeedbackForm($page, $sender);
         if ($expectSuccess) {
-            $this->assertEquals(
+            $this->assertSame(
                 'Thank you for your feedback.',
                 $this->findCssAndGetText($page, '#modal .alert-success')
             );
         } else {
-            $this->assertEquals(
+            $this->assertSame(
                 'Could not process your feedback. Please try again later.',
                 $this->findCssAndGetText($page, '#modal .alert-danger')
             );
@@ -195,7 +195,7 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
         ];
         foreach ($feedbackEntries as $feedbackParams) {
             $this->fillInAndSubmitFeedbackForm($page, ...$feedbackParams);
-            $this->assertEquals(
+            $this->assertSame(
                 'Thank you for your feedback.',
                 $this->findCssAndGetText($page, '#modal .alert-success')
             );
@@ -289,7 +289,7 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
         );
         $this->fillInAndSubmitFeedbackForm($page);
         // CAPTCHA should have failed...
-        $this->assertEquals(
+        $this->assertSame(
             'CAPTCHA not passed',
             $this->findCssAndGetText($page, '.modal-body .alert-danger')
         );
@@ -297,7 +297,7 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
         $this->findCss($page, 'form [name="demo_captcha"]')
             ->setValue('demo');
         $this->clickCss($page, '#modal input[type="submit"]');
-        $this->assertEquals(
+        $this->assertSame(
             'Thank you for your feedback.',
             $this->findCssAndGetText($page, '#modal .alert-success')
         );
@@ -337,7 +337,7 @@ class FeedbackTest extends \VuFindTest\Integration\MinkTestCase
             ]
         );
         $this->fillInAndSubmitFeedbackForm($page);
-        $this->assertEquals(
+        $this->assertSame(
             'Thank you for your feedback.',
             $this->findCssAndGetText($page, '#modal .alert-success')
         );

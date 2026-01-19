@@ -31,6 +31,7 @@
 
 namespace VuFind\Search\EDS;
 
+use Laminas\Stdlib\Parameters;
 use VuFind\Config\ConfigManagerInterface;
 use VuFindSearch\ParamBag;
 
@@ -124,12 +125,12 @@ class Params extends AbstractEDSParams
     /**
      * Pull the search parameters
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    public function initFromRequest(\Laminas\Stdlib\Parameters $request): void
+    public function initFromRequest(Parameters $request): void
     {
         parent::initFromRequest($request);
 

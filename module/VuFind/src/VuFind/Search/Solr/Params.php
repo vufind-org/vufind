@@ -30,6 +30,7 @@
 
 namespace VuFind\Search\Solr;
 
+use Laminas\Stdlib\Parameters;
 use VuFind\Config\ConfigManagerInterface;
 use VuFindSearch\ParamBag;
 
@@ -65,7 +66,7 @@ class Params extends \VuFind\Search\Base\Params
      * Ignore Case when using facet.contains
      * cf. https://lucene.apache.org/solr/guide/7_3/faceting.html
      *
-     * @var bool
+     * @var ?bool
      */
     protected ?bool $facetContainsIgnoreCase = null;
 
@@ -304,12 +305,12 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Initialize the object's search settings from a request object.
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    protected function initSearch(\Laminas\Stdlib\Parameters $request): void
+    protected function initSearch(Parameters $request): void
     {
         // Special case -- did we get a list of IDs instead of a standard query?
         $ids = $request->get('overrideIds', null);
@@ -450,12 +451,12 @@ class Params extends \VuFind\Search\Base\Params
     /**
      * Add filters to the object based on values found in the request object.
      *
-     * @param \Laminas\Stdlib\Parameters $request Parameter object representing user
+     * @param Parameters $request Parameter object representing user
      * request.
      *
      * @return void
      */
-    protected function initFilters(\Laminas\Stdlib\Parameters $request): void
+    protected function initFilters(Parameters $request): void
     {
         // Use the default behavior of the parent class, but add support for the
         // special illustrations filter.
