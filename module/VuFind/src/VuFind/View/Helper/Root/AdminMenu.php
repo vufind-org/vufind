@@ -29,9 +29,6 @@
 
 namespace VuFind\View\Helper\Root;
 
-use VuFind\Navigation\AdminMenu as AdminMenuNavigation;
-use VuFind\ServiceManager\Factory\Autowire;
-
 /**
  * Admin menu view helper
  *
