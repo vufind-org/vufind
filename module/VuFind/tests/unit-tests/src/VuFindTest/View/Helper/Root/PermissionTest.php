@@ -79,6 +79,8 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Convenience method to get permission helper
+     * 
+     * @return Permission
      */
     protected function getPermissionHelper($mockPmd)
     {
