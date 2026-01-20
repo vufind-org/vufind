@@ -52,7 +52,7 @@ class AdminMenu extends AbstractMenuHelper
      */
     public function render(?string $activeItem = null, string $idPrefix = ''): string
     {
-        return $this->getView()->render(
+        return $this->menu->render(
             'admin/menu.phtml',
             [
                 'items' => $this->getMenu()['Admin']['MenuItems'],
