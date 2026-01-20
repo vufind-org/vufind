@@ -31,7 +31,8 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Renderer\RendererInterface;
+use Laminas\View\Renderer\PhpRenderer;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Context manager (useful for using render() instead of partial() for better
@@ -51,8 +52,10 @@ class Context
      *
      * @param RendererInterface $view View renderer
      */
-    public function __construct(protected RendererInterface $view)
-    {
+    public function __construct(
+        #[Autowire]
+        protected PhpRenderer $view
+    ) {
     }
 
     /**
