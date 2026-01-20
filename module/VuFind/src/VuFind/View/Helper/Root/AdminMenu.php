@@ -29,6 +29,9 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\Navigation\AdminMenu as AdminMenuNavigation;
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
  * Admin menu view helper
  *
@@ -52,7 +55,7 @@ class AdminMenu extends AbstractMenuHelper
      */
     public function render(?string $activeItem = null, string $idPrefix = ''): string
     {
-        return $this->menu->render(
+        return $this->renderer->render(
             'admin/menu.phtml',
             [
                 'items' => $this->getMenu()['Admin']['MenuItems'],

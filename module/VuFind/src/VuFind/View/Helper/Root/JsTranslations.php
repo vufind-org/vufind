@@ -47,7 +47,6 @@ class JsTranslations extends AbstractJsStrings
      *
      * @param Translate $translate Translate helper
      * @param TransEsc  $transEsc  Translate + escape helper
-     * @param string    $varName   Variable name to store translations
      */
     public function __construct(
         #[Autowire(container: 'ViewHelperManager')]

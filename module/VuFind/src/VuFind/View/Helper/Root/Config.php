@@ -65,7 +65,7 @@ class Config
     public function __construct(
         #[Autowire]
         protected ConfigManagerInterface $configManager
-    ){
+    ) {
     }
 
     /**
