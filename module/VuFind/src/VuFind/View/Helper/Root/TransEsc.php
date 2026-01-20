@@ -60,17 +60,26 @@ class TransEsc
     /**
      * Translate and escape a string
      *
-     * @param string|object|array $str     String to translate or an array of text
-     *                                     domain and string to translate
-     * @param array               $tokens  Tokens to inject into the translated string
-     * @param string              $default Default value to use if no translation is
-     *                                     found (null for no default).
+     * @param string|object|array $str             String to translate or an array of text
+     *                                             domain and string to translate
+     * @param array               $tokens          Tokens to inject into the translated string
+     * @param string              $default         Default value to use if no translation is
+     *                                             found (null for no default).
+     * @param bool                $useIcuFormatter Should we use an ICU message formatter instead
+     * of the default behavior?
+     * @param string[]            $fallbackDomains Text domains to check if no match is found in
+     * the domain specified in $target
      *
      * @return string
      */
-    public function __invoke($str, $tokens = [], $default = null)
-    {
-        $translated = ($this->translate)($str, $tokens, $default);
+    public function __invoke(
+        $str,
+        $tokens = [],
+        $default = null,
+        $useIcuFormatter = false,
+        $fallbackDomains = []
+    ) {
+        $translated = ($this->translate)($str, $tokens, $default, $useIcuFormatter, $fallbackDomains);
         return ($this->escapeHtml)($translated);
     }
 }
