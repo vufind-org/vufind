@@ -22,15 +22,6 @@
 #     is set
 #   - icon: icon used for the item, has to be defined in theme config
 #   - attributes: additional attributes for the menu item's <a> tag
-#   - submenuItems: items to be shown in a dropdown menu. Example:
-#       - label: 'Main item label'
-#         url: '#'
-#         submenuItems:
-#           - label: 'Dropdown item 1'
-#             route: item-1-route
-#             description: 'Optional item description'
-#           - label: 'Dropdown item 2'
-#             route: item-2-route
 #
 # If you wish to completely override the default configuration with your local
 # configuration you can disable configuration inheritance by adding a

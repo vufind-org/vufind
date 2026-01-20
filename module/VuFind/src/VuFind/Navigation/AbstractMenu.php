@@ -258,31 +258,7 @@ abstract class AbstractMenu extends AbstractBase implements NavigationInterface
      */
     protected function processItems(array $items): array
     {
-        // Skip items with 'submenuItems' key but without submenu items to display.
-        $items = $this->processItemSubmenuItemsKey($items);
-        // Process remaining menu items.
         return $this->filterAvailable($items);
-    }
-
-    /**
-     * Process any items with a 'submenuItems' key.
-     *
-     * @param array $items Items to process
-     *
-     * @return array
-     */
-    protected function processItemSubmenuItemsKey(array $items): array
-    {
-        // Skip items with 'submenuItems' key but without submenu items to display.
-        foreach ($items as $i => $item) {
-            if (isset($item['submenuItems'])) {
-                $items[$i]['submenuItems'] = $this->filterAvailable($item['submenuItems']);
-                if (empty($items[$i]['submenuItems'])) {
-                    unset($items[$i]);
-                }
-            }
-        }
-        return $items;
     }
 
     /**

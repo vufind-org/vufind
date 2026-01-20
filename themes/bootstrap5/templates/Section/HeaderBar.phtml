@@ -18,29 +18,6 @@
                   );
                ?>
                 <?= $this->render($item['template'], $item) ?>
-              <?php elseif (isset($item['submenuItems'])): ?>
-                <?= $this->component('menu-button', [
-                  'toggleLabel' => $item['label'],
-                  'toggleAttrs' => [
-                    'class' => 'nav-link dropdown-toggle',
-                  ],
-                  'wrapperClass' => 'nav-item',
-                  'wrapperTag' => 'li',
-                  'menuItems' => array_map(
-                      function ($belowItem) {
-                        $url = isset($belowItem['route'])
-                          ? $this->url($belowItem['route'], $belowItem['routeParams'] ?? [])
-                          : $belowItem['url'];
-                        return [
-                          'label' => $belowItem['label'],
-                          'url' => $url,
-                          'description' => $belowItem['description'] ?? false,
-                          'selected' => $this->requestUri === $url,
-                        ];
-                      },
-                      $item['submenuItems'],
-                  ),
-                ]) ?>
               <?php else: ?>
                 <?php
                   $attributes = $this->htmlAttributes($item['attributes'] ?? []);
