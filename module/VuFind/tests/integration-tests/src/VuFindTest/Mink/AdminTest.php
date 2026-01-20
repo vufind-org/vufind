@@ -52,7 +52,7 @@ class AdminTest extends \VuFindTest\Integration\MinkTestCase
         $session = $this->getMinkSession();
         $session->visit($this->getVuFindUrl() . '/Admin');
         $page = $session->getPage();
-        $this->assertEquals('The Admin module is currently disabled.', $this->findCssAndGetText($page, 'p.error b'));
+        $this->assertSame('The Admin module is currently disabled.', $this->findCssAndGetText($page, 'p.error b'));
     }
 
     /**
