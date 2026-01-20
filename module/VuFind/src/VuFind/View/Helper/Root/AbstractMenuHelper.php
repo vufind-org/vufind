@@ -42,7 +42,7 @@ use VuFind\Navigation\AbstractMenu;
  *
  * @deprecated Use \VuFind\View\Helper\Root\Section instead
  */
-abstract class AbstractMenuHelper extends \Laminas\View\Helper\AbstractHelper
+abstract class AbstractMenuHelper
 {
     /**
      * Constructor
@@ -51,6 +51,16 @@ abstract class AbstractMenuHelper extends \Laminas\View\Helper\AbstractHelper
      */
     public function __construct(protected AbstractMenu $menu)
     {
+    }
+
+    /**
+     * Make helper invokable.
+     *
+     * @return static
+     */
+    public function __invoke()
+    {
+        return $this;
     }
 
     /**

@@ -31,7 +31,6 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
 use Laminas\View\Renderer\RendererInterface;
 
 /**
@@ -45,8 +44,17 @@ use Laminas\View\Renderer\RendererInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Context extends AbstractHelper
+class Context
 {
+    /**
+     * Constructor
+     *
+     * @param RendererInterface $view View renderer
+     */
+    public function __construct(protected RendererInterface $view)
+    {
+    }
+
     /**
      * Set an array of variables in the view; return the previous values of those
      * variables so they can be restored.
@@ -57,12 +65,10 @@ class Context extends AbstractHelper
      */
     public function apply($vars)
     {
-        $view = $this->getView();
-
         $oldVars = [];
         foreach ($vars as $k => $v) {
-            $oldVars[$k] = $view->$k ?? null;
-            $view->$k = $v;
+            $oldVars[$k] = $this->view->$k ?? null;
+            $this->view->$k = $v;
         }
         return $oldVars;
     }
@@ -76,13 +82,11 @@ class Context extends AbstractHelper
      */
     public function restore($vars)
     {
-        $view = $this->getView();
-
         foreach ($vars as $k => $v) {
             if (null === $v) {
-                unset($view->$k);
+                unset($this->view->$k);
             } else {
-                $view->$k = $v;
+                $this->view->$k = $v;
             }
         }
     }
@@ -101,23 +105,18 @@ class Context extends AbstractHelper
     public function renderInContext($template, $context)
     {
         $oldContext = $this->apply($context);
-        $html = $this->getView()->render($template);
+        $html = $this->view->render($template);
         $this->restore($oldContext);
         return $html;
     }
 
     /**
-     * Grab the helper object, so we can call methods on it.
-     *
-     * @param ?RendererInterface $view View object to modify.
+     * Return this helper instance.
      *
      * @return Context
      */
-    public function __invoke(?RendererInterface $view = null)
+    public function __invoke()
     {
-        if (null !== $view) {
-            $this->setView($view);
-        }
         return $this;
     }
 }

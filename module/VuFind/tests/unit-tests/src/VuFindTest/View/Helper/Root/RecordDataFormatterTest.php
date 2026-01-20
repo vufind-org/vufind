@@ -74,14 +74,20 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
     /**
      * Get view helpers needed by test.
      *
-     * @param ContainerInterface $container       Mock service container
-     * @param SchemaOrg          $schemaOrgHelper schema.org helper
+     * @param ContainerInterface                 $container       Mock service container
+     * @param SchemaOrg                          $schemaOrgHelper schema.org helper
+     * @param \Laminas\View\Renderer\PhpRenderer $view            View renderer (optional)
      *
      * @return array
      */
-    protected function getViewHelpers(ContainerInterface $container, SchemaOrg $schemaOrgHelper): array
-    {
-        $context = new \VuFind\View\Helper\Root\Context();
+    protected function getViewHelpers(
+        ContainerInterface $container,
+        SchemaOrg $schemaOrgHelper,
+        ?\Laminas\View\Renderer\PhpRenderer $view = null
+    ): array {
+        $mockView = $view ?? $this->createMock(\Laminas\View\Renderer\PhpRenderer::class);
+
+        $context = new \VuFind\View\Helper\Root\Context($mockView);
         $record = new \VuFind\View\Helper\Root\Record($this->createMock(TagsService::class));
         $serviceManager = $this->createMock(\VuFind\Db\Service\PluginManager::class);
         $serviceManager->method('get')->willReturnCallback(function ($service) {
@@ -285,9 +291,15 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
         );
         $this->addConfigRelatedServicesToContainer($container);
 
-        // Create a view object with a set of helpers:
-        $helpers = $this->getViewHelpers($container, $schemaOrgHelper);
-        $view = $this->getPhpRenderer($helpers);
+        // Create a view object first, then create helpers with it:
+        $view = $this->getPhpRenderer([]);
+        $helpers = $this->getViewHelpers($container, $schemaOrgHelper, $view);
+
+        // Now add all helpers to the view
+        foreach ($helpers as $name => $helper) {
+            $view->getHelperPluginManager()->setService($name, $helper);
+        }
+
         $container->set(\Laminas\View\HelperPluginManager::class, $view->getHelperPluginManager());
         $formatter = $factory($container, RecordDataFormatter::class);
 
@@ -298,7 +310,7 @@ class RecordDataFormatterTest extends \PHPUnit\Framework\TestCase
             ->setRouter($this->createMock(\Laminas\Router\RouteStackInterface::class))
             ->setRouteMatch($match);
 
-        // Inject the view object into all of the helpers:
+        // Inject the view object into the formatter and any helpers that need it:
         $formatter->setView($view);
         foreach ($helpers as $helper) {
             if (method_exists($helper, 'setView')) {

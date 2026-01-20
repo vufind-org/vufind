@@ -40,7 +40,7 @@ use VuFind\Config\ConfigManagerInterface;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/development Wiki
  */
-class Config extends \Laminas\View\Helper\AbstractHelper
+class Config
 {
     /**
      * Display date format
@@ -196,5 +196,15 @@ class Config extends \Laminas\View\Helper\AbstractHelper
     {
         return (bool)($this->get('config')->Catalog
             ->display_loan_type_in_holdings ?? false);
+    }
+
+    /**
+     * Return this helper instance (for method chaining).
+     *
+     * @return Config
+     */
+    public function __invoke()
+    {
+        return $this;
     }
 }

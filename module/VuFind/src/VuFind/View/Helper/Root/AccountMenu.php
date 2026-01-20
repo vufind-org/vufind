@@ -29,6 +29,8 @@
 
 namespace VuFind\View\Helper\Root;
 
+use VuFind\ServiceManager\Factory\Autowire;
+
 /**
  * Account menu view helper
  *
@@ -43,6 +45,36 @@ namespace VuFind\View\Helper\Root;
 class AccountMenu extends AbstractMenuHelper
 {
     /**
+     * Config helper
+     *
+     * @var Config
+     */
+    protected Config $configHelper;
+
+    /**
+     * Context helper
+     *
+     * @var Context
+     */
+    protected Context $contextHelper;
+
+    /**
+     * Constructor
+     *
+     * @param Config  $configHelper  Config view helper
+     * @param Context $contextHelper Context view helper
+     */
+    public function __construct(
+        #[Autowire(service: Config::class)]
+        Config $configHelper,
+        #[Autowire(service: Context::class)]
+        Context $contextHelper
+    ) {
+        $this->configHelper = $configHelper;
+        $this->contextHelper = $contextHelper;
+    }
+
+    /**
      * Create icon name for fines item
      *
      * @return string
@@ -50,7 +82,7 @@ class AccountMenu extends AbstractMenuHelper
     public function finesIcon(): string
     {
         $icon = 'currency-'
-            . strtolower($this->getView()->plugin('config')->get('config')->Site->defaultCurrency ?? 'usd');
+            . strtolower($this->configHelper->get('config')->Site->defaultCurrency ?? 'usd');
         return $icon;
     }
 
@@ -64,10 +96,8 @@ class AccountMenu extends AbstractMenuHelper
      */
     public function render(?string $activeItem = null, string $idPrefix = ''): string
     {
-        $contextHelper = $this->getView()->plugin('context');
         $menu = $this->getMenu();
-
-        return $contextHelper->renderInContext(
+        return $this->contextHelper->renderInContext(
             'myresearch/menu.phtml',
             [
                 'menu' => $menu,

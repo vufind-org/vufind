@@ -30,9 +30,9 @@
 
 namespace VuFind\View\Helper\Root;
 
-use Laminas\View\Helper\AbstractHelper;
 use VuFind\Role\PermissionDeniedManager;
 use VuFind\Role\PermissionManager;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Permission helper
@@ -44,7 +44,7 @@ use VuFind\Role\PermissionManager;
  * @license  http://opensource.org/licenses/gpl-2.0.php GNU General Public License
  * @link     https://vufind.org/wiki/ Wiki
  */
-class Permission extends AbstractHelper
+class Permission
 {
     /**
      * PermissionDenied manager for behavior on denied permissions
@@ -61,18 +61,40 @@ class Permission extends AbstractHelper
     protected $permissionManager;
 
     /**
+     * Translate escaper helper
+     *
+     * @var TransEsc
+     */
+    protected TransEsc $transEsc;
+
+    /**
+     * Context helper
+     *
+     * @var Context
+     */
+    protected Context $context;
+
+    /**
      * Constructor
      *
      * @param PermissionManager       $permissionManager       Manager to decide if a permission has been granted or
      * not
      * @param PermissionDeniedManager $permissionDeniedManager Manager for behavior on denied permissions
+     * @param TransEsc                $transEsc                TransEsc view helper
+     * @param Context                 $context                 Context view helper
      */
     public function __construct(
         PermissionManager $permissionManager,
-        PermissionDeniedManager $permissionDeniedManager
+        PermissionDeniedManager $permissionDeniedManager,
+        #[Autowire(service: TransEsc::class)]
+        TransEsc $transEsc,
+        #[Autowire(service: Context::class)]
+        Context $context
     ) {
         $this->permissionManager = $permissionManager;
         $this->permissionDeniedManager = $permissionDeniedManager;
+        $this->transEsc = $transEsc;
+        $this->context = $context;
     }
 
     /**
@@ -128,14 +150,24 @@ class Permission extends AbstractHelper
 
         switch ($displayLogic['action'] ?? '') {
             case 'showMessage':
-                return $this->view->transEsc($displayLogic['value']);
+                return $this->transEsc->__invoke($displayLogic['value']);
             case 'showTemplate':
-                return $this->view->context($this->view)->renderInContext(
+                return $this->context->renderInContext(
                     $displayLogic['value'],
                     $displayLogic['params']
                 );
             default:
                 return null;
         }
+    }
+
+    /**
+     * Return this helper instance (for method chaining).
+     *
+     * @return Permission
+     */
+    public function __invoke()
+    {
+        return $this;
     }
 }
