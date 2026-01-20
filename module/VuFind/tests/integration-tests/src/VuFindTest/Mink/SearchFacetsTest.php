@@ -189,7 +189,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->assertFullListFacetCount($page, 'count', $limit * 2, $exclusionActive);
 
         $excludeControl = $exclusionActive ? 'Exclude matching results ' : '';
-        $this->assertEquals(
+        $this->assertSame(
             'Weird IDs 9 results 9 ' . $excludeControl
             . 'Fiction 7 results 7 ' . $excludeControl
             . 'The Study Of P|pes 1 results 1 ' . $excludeControl
@@ -225,7 +225,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '#modal #facet-list-index .js-facet-next-page');
         $this->waitForPageLoad($page);
         $this->assertFullListFacetCount($page, 'index', $limit * 2, $exclusionActive);
-        $this->assertEquals(
+        $this->assertSame(
             'Fiction 7 results 7 ' . $excludeControl
             . 'The Study Of P|pes 1 results 1 ' . $excludeControl
             . 'The Study and Scor_ng of Dots.and-Dashes:Colons 1 results 1 ' . $excludeControl
@@ -482,7 +482,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         // now clear the filter
         $this->clickCss($page, '#modal button[type="reset"]');
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertSame(
             'Weird IDs 9 results 9 '
             . 'Fiction 7 results 7 '
             . 'The Study Of P|pes 1 results 1 '
@@ -689,7 +689,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $this->waitForPageLoad($page);
         $items = $page->findAll('css', '#modal #facet-list-count .js-facet-item');
         $this->assertCount($limit * 2 - 1, $items);
-        $this->assertEquals(
+        $this->assertSame(
             'Weird IDs 9 results 9 '
             . 'The Study Of P|pes 1 results 1 '
             . 'The Study and Scor_ng of Dots.and-Dashes:Colons 1 results 1 '
@@ -1348,8 +1348,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 
         // format:Book is also a normal facet, but count should still be empty unless enabled:
         $filter = $this->findCss($page, '.checkbox-filter');
-        $this->assertNotNull($filter);
-        $this->assertEquals('Books', $this->findCssAndGetText($filter->getParent(), '.icon-link__label'));
+        $this->assertSame('Books', $this->findCssAndGetText($filter->getParent(), '.icon-link__label'));
         $this->assertEqualsWithTimeout(
             $counts ? '9' : '',
             function () use ($filter) {
@@ -1359,8 +1358,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 
         // illustrated:Illustrated is only a checkbox facet:
         $filter2 = $this->findCss($page, '.checkbox-filter', null, 1);
-        $this->assertNotNull($filter2);
-        $this->assertEquals('Illustrated', $this->findCssAndGetText($filter2->getParent(), '.icon-link__label'));
+        $this->assertSame('Illustrated', $this->findCssAndGetText($filter2->getParent(), '.icon-link__label'));
         $illustratedCount = $this->findCssAndGetText($filter2->getParent(), '.avail-count');
         $this->assertEquals($counts ? '2' : '', $illustratedCount);
 
@@ -1504,11 +1502,11 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
     /**
      * Assert that the "reset filters" button is present.
      *
-     * @param \Behat\Mink\Element\Element $page Mink page object
+     * @param Element $page Mink page object
      *
      * @return void
      */
-    protected function assertResetFiltersButton($page)
+    protected function assertResetFiltersButton(Element $page): void
     {
         $reset = $page->findAll('css', '.reset-filters-btn');
         // The toggle bar has its own reset button, so we should have 2:
@@ -1593,7 +1591,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
 
         // A past bug would cause search terms to get duplicated after facets
         // were applied; make sure the search remains as expected!
-        $this->assertEquals(
+        $this->assertSame(
             '(All Fields:test AND All Fields:history)',
             $this->findCssAndGetText($page, '.adv_search_terms strong')
         );
@@ -1692,7 +1690,7 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         $page = $this->performSearch('building:weird_ids.mrc OR building:journals.mrc');
         $sidebar = $this->findCss($page, '.sidebar');
         $this->assertFalse($this->findCss($sidebar, '.js-user-selection-multi-filters')->isVisible());
-        $this->assertNotNull($sidebar->find('css', '.js-apply-multi-facets-selection'));
+        $this->findCss($sidebar, '.js-apply-multi-facets-selection');
     }
 
     /**

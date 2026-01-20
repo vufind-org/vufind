@@ -2460,7 +2460,7 @@ class Folio extends AbstractAPI implements
         if (!empty($holdDetails['comment'])) {
             $requestBody['patronComments'] = $holdDetails['comment'];
         }
-        $allowed = $this->getAllowedServicePoints(
+        $allowedServicePoints = $fulfillmentValue == 'Delivery' ? null : $this->getAllowedServicePoints(
             $instance->id,
             $holdDetails['item_id'] ?? null,
             $holdDetails['patron']['id']
@@ -2468,12 +2468,15 @@ class Folio extends AbstractAPI implements
         $preferredRequestType = $this->getPreferredRequestType($holdDetails);
         foreach ($this->getRequestTypeList($preferredRequestType) as $requestType) {
             // Skip illegal request types, if we have validation data available:
-            if (null !== $allowed) {
+            if (null !== $allowedServicePoints) {
                 if (
                     // Unsupported request type:
-                    !isset($allowed[$requestType])
+                    !isset($allowedServicePoints[$requestType])
                     // Unsupported pickup location:
-                    || !in_array($holdDetails['pickUpLocation'], array_column($allowed[$requestType] ?? [], 'id'))
+                    || !in_array(
+                        $holdDetails['pickUpLocation'],
+                        array_column($allowedServicePoints[$requestType] ?? [], 'id')
+                    )
                 ) {
                     continue;
                 }

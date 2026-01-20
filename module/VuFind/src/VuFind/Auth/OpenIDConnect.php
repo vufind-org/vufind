@@ -365,13 +365,13 @@ class OpenIDConnect extends AbstractBase implements \VuFindHttp\HttpServiceAware
     }
 
     /**
-     * Perform cleanup at logout time.
+     * Get URL users should be redirected to for logout in external services if necessary.
      *
-     * @param string $url URL to redirect user to after logging out.
+     * @param string $url Internal URL to redirect user to after logging out.
      *
-     * @return string Redirect URL (modified for OpenIDConnect logout).
+     * @return string Redirect URL (usually same as $url, but modified in some authentication modules).
      */
-    public function logout($url)
+    public function getLogoutRedirectUrl(string $url): string
     {
         $redirectUrl = $url;
         $endSessionEndpoint = false;

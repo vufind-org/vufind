@@ -139,9 +139,9 @@ final class UpgradeTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.main input.btn-primary');
         $this->waitForPageLoad($page);
         // Skip the security warning:
-        $this->assertEquals('Critical Issue: Insecure database settings', $this->findCssAndGetText($page, 'h2'));
+        $this->assertSame('Critical Issue: Insecure database settings', $this->findCssAndGetText($page, 'h2'));
         $ignoreSelector = '.main a.btn-default';
-        $this->assertEquals('ignore the problem', $this->findCssAndGetText($page, $ignoreSelector));
+        $this->assertSame('ignore the problem', $this->findCssAndGetText($page, $ignoreSelector));
         $this->clickCss($page, $ignoreSelector);
         $this->waitForPageLoad($page);
         // Now we should be on the duplicate tag screen; let's submit it:

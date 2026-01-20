@@ -235,7 +235,7 @@ final class ApiTest extends \VuFindTest\Integration\MinkTestCase
         $this->clickCss($page, '.btn-default[data-bs-dismiss="modal"]');
 
         $this->waitForPageLoad($page);
-        $this->assertEquals(
+        $this->assertSame(
             'test title',
             $this->findCssAndGetText($page, '.table.table-striped th', index: 0)
         );
