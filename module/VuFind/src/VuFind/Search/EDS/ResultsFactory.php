@@ -77,6 +77,6 @@ class ResultsFactory extends \VuFind\Search\Results\ResultsFactory
         }
         $configManager = $container->get(ConfigManagerInterface::class);
         $config = $configManager->getConfigObject($this->configName);
-        return parent::__invoke($container, $requestedName, compact('config'));
+        return parent::__invoke($container, $requestedName, [$config]);
     }
 }
