@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Unit;
 
+use Laminas\Http\Request;
 use Laminas\View\Model\ViewModel;
 use VuFind\Auth\ILSAuthenticator;
 use VuFind\Auth\Manager;
@@ -335,7 +336,8 @@ abstract class AbstractSectionTestCase extends \PHPUnit\Framework\TestCase
             $mockCart,
             $mockAuthManager,
             $mockViewModel,
-            $mockLocaleSettings
+            $mockLocaleSettings,
+            $this->createMock(Request::class),
         );
         $this->setSectionPlugin($container, $header, 'header');
         return $header;

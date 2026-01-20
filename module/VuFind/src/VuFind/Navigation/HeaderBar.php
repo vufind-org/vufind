@@ -29,6 +29,7 @@
 
 namespace VuFind\Navigation;
 
+use Laminas\Http\Request;
 use Laminas\View\Model\ViewModel;
 use VuFind\Auth\Manager;
 use VuFind\Cart;
@@ -56,6 +57,7 @@ class HeaderBar extends AbstractMenu
      * @param Manager        $authManager    Authentication manager
      * @param ViewModel      $viewModel      View model
      * @param LocaleSettings $localeSettings Locale settings
+     * @param Request        $request        Request
      */
     public function __construct(
         array $sectionConfig,
@@ -63,7 +65,8 @@ class HeaderBar extends AbstractMenu
         protected Cart $cart,
         protected Manager $authManager,
         protected ViewModel $viewModel,
-        protected LocaleSettings $localeSettings
+        protected LocaleSettings $localeSettings,
+        protected Request $request
     ) {
         parent::__construct($sectionConfig);
     }
@@ -78,7 +81,7 @@ class HeaderBar extends AbstractMenu
         $context = parent::getSectionContext();
         $context['userLang'] = $this->localeSettings->getUserLocale();
         $context['allLangs'] = $this->localeSettings->getEnabledLocales();
-        $context['requestUri'] = $_SERVER['REQUEST_URI'];
+        $context['requestUri'] = $this->request->getRequestUri();
         return $context;
     }
 
@@ -160,8 +163,8 @@ class HeaderBar extends AbstractMenu
      */
     public function checkThemeOptions(): bool
     {
-        return $this->viewModel->getVariable('themeOptions')
-            && (count($this->viewModel->getVariable('themeOptions')) > 1);
+        return ($options = $this->viewModel->getVariable('themeOptions'))
+            && (count($options) > 1);
     }
 
     /**

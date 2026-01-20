@@ -74,6 +74,7 @@ class HeaderBarFactory extends AbstractMenuFactory
                 $container->get(\VuFind\Auth\Manager::class),
                 $container->get('ViewManager')->getViewModel(),
                 $container->get(\VuFind\I18n\Locale\LocaleSettings::class),
+                $container->get('Request'),
                 ...($options ?? []),
             ]
         );

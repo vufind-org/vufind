@@ -41,13 +41,6 @@ namespace VuFind\Navigation;
 class FooterMenu extends AbstractMenu
 {
     /**
-     * Is cookie consent enabled?
-     *
-     * @var bool
-     */
-    protected bool $cookieConsentEnabled;
-
-    /**
      * Constructor
      *
      * @param array $sectionConfig Menu configuration
