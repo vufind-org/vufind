@@ -3,7 +3,7 @@ return [
     'extends' => false,
     'helpers' => [
         'abstract_factories' => [
-            VuFind\ServiceManager\Factory\AbstractAutowiringFactory::class,
+            \VuFind\ServiceManager\Factory\AbstractAutowiringFactory::class,
         ],
         'factories' => [
             'Laminas\View\Helper\HeadTitle' => 'VuFind\View\Helper\Root\HeadTitleFactory',

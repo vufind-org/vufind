@@ -30,6 +30,7 @@
 namespace VuFind\View\Helper\Root;
 
 use VuFind\Config\ConfigManagerInterface;
+use VuFind\ServiceManager\Factory\Autowire;
 
 /**
  * Config view helper
@@ -61,8 +62,10 @@ class Config
      *
      * @param ConfigManagerInterface $configManager Configuration manager
      */
-    public function __construct(protected ConfigManagerInterface $configManager)
-    {
+    public function __construct(
+        #[Autowire]
+        protected ConfigManagerInterface $configManager
+    ){
     }
 
     /**

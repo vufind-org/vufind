@@ -53,10 +53,9 @@ class JsTranslations extends AbstractJsStrings
         #[Autowire(container: 'ViewHelperManager')]
         protected Translate $translate,
         #[Autowire(container: 'ViewHelperManager')]
-        protected TransEsc $transEsc,
-        string $varName = 'vufindString'
+        protected TransEsc $transEsc
     ) {
-        parent::__construct($varName);
+        parent::__construct();
     }
 
     /**
