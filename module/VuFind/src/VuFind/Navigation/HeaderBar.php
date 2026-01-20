@@ -35,6 +35,7 @@ use VuFind\Auth\Manager;
 use VuFind\Cart;
 use VuFind\I18n\Locale\LocaleSettings;
 
+use function array_key_exists;
 use function count;
 
 /**
@@ -68,7 +69,62 @@ class HeaderBar extends AbstractMenu
         protected LocaleSettings $localeSettings,
         protected Request $request
     ) {
+        $this->addRequiredSettings(
+            [
+                'MenuItems',
+            ],
+            self::GROUP_CONTEXT
+        );
+        $this->addRequiredSettings(
+            [
+                'label',
+                'route',
+                'url',
+                'template',
+            ],
+            self::ITEM_CONTEXT
+        );
+        $this->addLocalizableSettings(
+            [
+                'url',
+            ],
+            self::ITEM_CONTEXT
+        );
         parent::__construct($sectionConfig);
+    }
+
+    /**
+     * Is the setting required?
+     *
+     * The optional context and context key parameters are used to evaluate if a
+     * conditionally required setting is required. If context is omitted returns
+     * true for both required and conditionally required settings.
+     *
+     * @param string               $setting    Setting key
+     * @param array<string, mixed> $context    Setting keys and values to be used in evaluation (optional)
+     * @param string               $contextKey Key identifying the context (optional)
+     *
+     * @return bool
+     */
+    public function isRequiredSetting(
+        string $setting,
+        array $context = [],
+        string $contextKey = self::DEFAULT_CONTEXT
+    ): bool {
+        if ($contextKey === self::ITEM_CONTEXT) {
+            // Conditional requirement checks.
+            $diff = array_diff(['route', 'url', 'template'], [$setting]);
+            if (count($diff) === 2) {
+                // Setting is one of the three. If one of the two other settings
+                // exists then this setting is optional.
+                return count(array_intersect($diff, array_keys($context))) === 0;
+            }
+            if ($setting === 'label' && array_key_exists('template', $context)) {
+                // Label is not required when a template setting exists.
+                return false;
+            }
+        }
+        return parent::isRequiredSetting($setting, $context, $contextKey);
     }
 
     /**

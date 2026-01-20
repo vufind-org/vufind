@@ -29,6 +29,8 @@
 
 namespace VuFind\Navigation;
 
+use function count;
+
 /**
  * FooterMenu section plugin
  *
@@ -50,7 +52,58 @@ class FooterMenu extends AbstractMenu
         array $sectionConfig,
         protected array $config
     ) {
+        $this->addRequiredSettings(
+            [
+                'label',
+                'MenuItems',
+            ],
+            self::GROUP_CONTEXT
+        );
+        $this->addRequiredSettings(
+            [
+                'label',
+                'route',
+                'url',
+            ],
+            self::ITEM_CONTEXT
+        );
+        $this->addLocalizableSettings(
+            [
+                'url',
+            ],
+            self::ITEM_CONTEXT
+        );
         parent::__construct($sectionConfig);
+    }
+
+    /**
+     * Is the setting required?
+     *
+     * The optional context and context key parameters are used to evaluate if a
+     * conditionally required setting is required. If context is omitted returns
+     * true for both required and conditionally required settings.
+     *
+     * @param string               $setting    Setting key
+     * @param array<string, mixed> $context    Setting keys and values to be used in evaluation (optional)
+     * @param string               $contextKey Key identifying the context (optional)
+     *
+     * @return bool
+     */
+    public function isRequiredSetting(
+        string $setting,
+        array $context = [],
+        string $contextKey = self::DEFAULT_CONTEXT
+    ): bool {
+        if ($contextKey === self::ITEM_CONTEXT) {
+            // Conditional requirement checks.
+            $diff = array_diff(['route', 'url'], [$setting]);
+            if (count($diff) === 1) {
+                // Setting is one of the two. If the other setting exists then
+                // this setting is optional.
+                return count(array_intersect($diff, array_keys($context))) === 0;
+            }
+        }
+        return parent::isRequiredSetting($setting, $context, $contextKey);
     }
 
     /**

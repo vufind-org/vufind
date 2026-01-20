@@ -29,6 +29,7 @@
 
 namespace VuFindTest\Navigation;
 
+use VuFind\Exception\BadConfig;
 use VuFind\Navigation\HeaderBar;
 use VuFindTest\Unit\AbstractSectionTestCase;
 
@@ -71,5 +72,55 @@ class HeaderBarTest extends AbstractSectionTestCase
             $this->getHeaderBarCheckMethods(false)
         )->getMenu();
         $this->assertCount(0, $menu);
+    }
+
+    /**
+     * Data provider for testRequiredConfiguration
+     *
+     * @return \Iterator<string, array>
+     */
+    public static function requiredConfigurationProvider(): \Iterator
+    {
+        yield 'Missing group settings' => [
+            ['Header' => []],
+            BadConfig::class,
+            'Missing required setting: MenuItems',
+        ];
+        yield 'Missing menu item settings' => [
+            [
+                'Header' => [
+                    'MenuItems' => [
+                        [
+                            'label' => 'Test item label',
+                        ],
+                    ],
+                ],
+            ],
+            BadConfig::class,
+            'Missing required setting: route',
+        ];
+    }
+
+    /**
+     * Test required configuration.
+     *
+     * @param array   $config                 Account menu configuration
+     * @param string  $expectedExceptionClass Expected exception class
+     * @param ?string $expectedExceptionMsg   Expected exception message
+     *
+     * @return void
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('requiredConfigurationProvider')]
+    public function testRequiredConfiguration(
+        array $config,
+        string $expectedExceptionClass,
+        ?string $expectedExceptionMsg = null
+    ): void {
+        $this->expectException($expectedExceptionClass);
+        if ($expectedExceptionMsg) {
+            $this->expectExceptionMessage($expectedExceptionMsg);
+        }
+        $container = $this->getContainerWithSectionRelatedServices();
+        $this->getHeaderBar($container, $config);
     }
 }
