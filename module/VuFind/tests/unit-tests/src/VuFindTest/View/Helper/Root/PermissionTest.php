@@ -79,7 +79,9 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
 
     /**
      * Convenience method to get permission helper
-     * 
+     *
+     * @param \VuFind\Role\PermissionDeniedManager $mockPmd Mock driver
+     *
      * @return Permission
      */
     protected function getPermissionHelper($mockPmd)
