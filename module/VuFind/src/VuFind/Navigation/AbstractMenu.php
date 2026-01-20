@@ -239,8 +239,7 @@ abstract class AbstractMenu extends AbstractBase implements NavigationInterface
      */
     protected function processGroup(array $group): array|false
     {
-        $items = $group['MenuItems'] ?? [];
-        $items = $this->processItems($items);
+        $items = $this->processItems($group['MenuItems'] ?? []);
         // Skip groups without items to display.
         if (!empty($items)) {
             $group['MenuItems'] = $items;
