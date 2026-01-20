@@ -78,6 +78,21 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
     ];
 
     /**
+     * Convenience method to get permission helper
+     */
+    protected function getPermissionHelper($mockPmd)
+    {
+        $mockTransEsc = $this->getTransEsc();
+        $mockContext = $this->getMockContextWithView();
+        return new Permission(
+            $this->getMockPm(false),
+            $mockPmd,
+            $mockTransEsc,
+            $mockContext
+        );
+    }
+
+    /**
      * Test the message display
      *
      * @return void
@@ -94,15 +109,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
             ]
         );
 
-        $mockTransEsc = $this->getMockTransEsc();
-        $mockContext = $this->getMockContext();
-
-        $helper = new Permission(
-            $this->getMockPm(false),
-            $mockPmdMessage,
-            $mockTransEsc,
-            $mockContext
-        );
+        $helper = $this->getPermissionHelper($mockPmdMessage);
 
         $displayBlock = $helper->getAlternateContent('permissionDeniedMessage');
         $this->assertEquals('dl_translatable_test', $displayBlock);
@@ -128,15 +135,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
             ]
         );
 
-        $mockTransEsc = $this->getMockTransEsc();
-        $mockContext = $this->getMockContextWithView();
-
-        $helper = new Permission(
-            $this->getMockPm(false),
-            $mockPmd,
-            $mockTransEsc,
-            $mockContext
-        );
+        $helper = $this->getPermissionHelper($mockPmd);
 
         $helper->getAlternateContent('permissionDeniedTemplate');
     }
@@ -158,15 +157,7 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
             ]
         );
 
-        $mockTransEsc = $this->getMockTransEsc();
-        $mockContext = $this->getMockContextWithView();
-
-        $helper = new Permission(
-            $this->getMockPm(false),
-            $mockPmd,
-            $mockTransEsc,
-            $mockContext
-        );
+        $helper = $this->getPermissionHelper($mockPmd);
 
         $this->assertSame(
             '<span class="label label-success">Available</span>',
@@ -207,11 +198,11 @@ class PermissionTest extends \PHPUnit\Framework\TestCase
     }
 
     /**
-     * Get mock TransEsc helper.
+     * Get TransEsc helper.
      *
      * @return \VuFind\View\Helper\Root\TransEsc
      */
-    protected function getMockTransEsc()
+    protected function getTransEsc()
     {
         $escapehtml = new \Laminas\View\Helper\EscapeHtml();
         $translate = new \VuFind\View\Helper\Root\Translate();

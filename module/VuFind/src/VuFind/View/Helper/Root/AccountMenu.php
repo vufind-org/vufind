@@ -45,20 +45,6 @@ use VuFind\ServiceManager\Factory\Autowire;
 class AccountMenu extends AbstractMenuHelper
 {
     /**
-     * Config helper
-     *
-     * @var Config
-     */
-    protected Config $configHelper;
-
-    /**
-     * Context helper
-     *
-     * @var Context
-     */
-    protected Context $contextHelper;
-
-    /**
      * Constructor
      *
      * @param Config  $configHelper  Config view helper
@@ -66,12 +52,10 @@ class AccountMenu extends AbstractMenuHelper
      */
     public function __construct(
         #[Autowire(service: Config::class)]
-        Config $configHelper,
+        protected Config $configHelper,
         #[Autowire(service: Context::class)]
-        Context $contextHelper
+        protected Context $contextHelper
     ) {
-        $this->configHelper = $configHelper;
-        $this->contextHelper = $contextHelper;
     }
 
     /**

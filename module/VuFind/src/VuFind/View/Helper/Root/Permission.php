@@ -47,34 +47,6 @@ use VuFind\ServiceManager\Factory\Autowire;
 class Permission
 {
     /**
-     * PermissionDenied manager for behavior on denied permissions
-     *
-     * @var PermissionDeniedManager
-     */
-    protected $permissionDeniedManager;
-
-    /**
-     * Permission manager to decide if a permission has been granted or not
-     *
-     * @var PermissionManager
-     */
-    protected $permissionManager;
-
-    /**
-     * Translate escaper helper
-     *
-     * @var TransEsc
-     */
-    protected TransEsc $transEsc;
-
-    /**
-     * Context helper
-     *
-     * @var Context
-     */
-    protected Context $context;
-
-    /**
      * Constructor
      *
      * @param PermissionManager       $permissionManager       Manager to decide if a permission has been granted or
@@ -84,17 +56,13 @@ class Permission
      * @param Context                 $context                 Context view helper
      */
     public function __construct(
-        PermissionManager $permissionManager,
-        PermissionDeniedManager $permissionDeniedManager,
+        protected PermissionManager $permissionManager,
+        protected PermissionDeniedManager $permissionDeniedManager,
         #[Autowire(service: TransEsc::class)]
-        TransEsc $transEsc,
+        protected TransEsc $transEsc,
         #[Autowire(service: Context::class)]
-        Context $context
+        protected Context $context
     ) {
-        $this->permissionManager = $permissionManager;
-        $this->permissionDeniedManager = $permissionDeniedManager;
-        $this->transEsc = $transEsc;
-        $this->context = $context;
     }
 
     /**
