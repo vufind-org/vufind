@@ -140,10 +140,6 @@ class LinkIqTest extends \PHPUnit\Framework\TestCase
                 'openurl_coverage_daterange_joiner' => ', ',
                 'openurl_coverage_dateranges_only' => '%%dateranges%%',
                 'openurl_coverage_dateranges_statement' => '%%dateranges%% (%%statement%%)',
-                'openurl_embargo_statementx' => '(Embargo: {value} {unit, select, DAY {value, plural, =1 {day}'
-                    . ' other {days}} WEEK {value, plural, =1 {week} other {weeks}} MONTH {value, plural =1 {month}'
-                    . ' other {months}} YEAR {value, plural, =1 {year} other {years}} other {foo}})',
-                'openurl_embargo_statementz' => '(Embargo: {value, plural, =1 {# week} other {# weeks}})',
                 'openurl_embargo_statement' => '(Embargo: {unit, select, DAY {{value, plural, =1 {# day}'
                     . ' other {# days}}} WEEK {{value, plural, =1 {# week} other {# weeks}}}'
                     . ' MONTH {{value, plural, =1 {# month} other {# months}}}'
