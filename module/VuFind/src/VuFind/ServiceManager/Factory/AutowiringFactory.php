@@ -106,7 +106,7 @@ class AutowiringFactory implements FactoryInterface
             } catch (\Exception $e) {
                 $paramName = $reflectionParameter->getName();
                 throw new \Exception(
-                    "Problem resolving parameter $paramName when building $requestedName",
+                    "Problem resolving parameter $paramName when building $requestedName: " . $e->getMessage(),
                     previous: $e
                 );
             }
