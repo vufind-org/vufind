@@ -150,6 +150,7 @@
     <phingcall target="eslint-report"/>
     <phingcall target="jshint-report"/>
     <phingcall target="phpstan-checkstyle"/>
+    <phingcall target="psalm-checkstyle"/>
     <phingcall target="rector-console"/>
   </target>
 
@@ -173,6 +174,7 @@
     <phingcall target="phpcs-console"/>
     <phingcall target="php-cs-fixer-dryrun"/>
     <phingcall target="phpstan-console"/>
+    <phingcall target="psalm-console"/>
     <phingcall target="rector-console"/>
   </target>
 
@@ -248,6 +250,18 @@
   <target name="phpstan-console">
     <exec executable="${srcdir}/vendor/bin/phpstan" escape="false" passthru="true" checkreturn="true">
       <arg line="--configuration=${srcdir}/tests/phpstan.neon --memory-limit=2G analyse" />
+    </exec>
+  </target>
+
+  <!-- Psalm -->
+  <target name="psalm-checkstyle">
+    <exec executable="${srcdir}/vendor/bin/psalm" escape="false" passthru="true" checkreturn="true">
+      <arg line="--report=${builddir}/reports/psalm-checkstyle.xml" />
+    </exec>
+  </target>
+  <target name="psalm-console">
+    <exec executable="${srcdir}/vendor/bin/psalm" escape="false" passthru="true" checkreturn="true">
+      <arg line="--diff" />
     </exec>
   </target>
 

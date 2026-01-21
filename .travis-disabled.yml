@@ -13,7 +13,7 @@ matrix:
         - PHING_TASKS=phpunitfast
     - php: 7.4
       env:
-        - PHING_TASKS="eslint jshint phpunitfast phpcs-console php-cs-fixer-dryrun checkLessToSass phpstan-console"
+        - PHING_TASKS="eslint jshint phpunitfast phpcs-console php-cs-fixer-dryrun checkLessToSass phpstan-console psalm-console"
 
 before_script:
   - touch solr/.disableAutomaticInstall
@@ -28,6 +28,7 @@ cache:
   directories:
     - .php_cs_cache
     - .phpstan_cache
+    - .psalm_cache
     - $HOME/.composer/cache/files
 
 script:
