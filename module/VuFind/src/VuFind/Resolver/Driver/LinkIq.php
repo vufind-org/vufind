@@ -77,7 +77,7 @@ class LinkIq extends AbstractBase implements TranslatorAwareInterface
      */
     public function getResolverUrlForMoreOptions(string $openURL): string
     {
-        if (!$this->moreOptionsBaseUrl) {
+        if (!$this->supportsMoreOptionsLink()) {
             throw new \Exception('More options URL unavailable');
         }
         return $this->moreOptionsBaseUrl . (str_contains($this->moreOptionsBaseUrl, '?') ? '&' : '?')
