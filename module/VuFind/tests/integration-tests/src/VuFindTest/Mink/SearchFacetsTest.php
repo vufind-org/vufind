@@ -65,13 +65,18 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
      * Get filtered search
      *
      * @param string $building Building filter to use
+     * @param string $format   Optional format filter to use
      *
      * @return Element
      */
-    protected function getFilteredSearch(string $building = 'weird_ids.mrc'): Element
+    protected function getFilteredSearch(string $building = 'weird_ids.mrc', string $format = ''): Element
     {
+        $url = $this->getVuFindUrl() . '/Search/Results?filter%5B%5D=building%3A"' . $building . '"';
+        if ($format) {
+            $url .= '&filter%5B%5D=format%3A"' . $format . '"';
+        }
         $session = $this->getMinkSession();
-        $session->visit($this->getVuFindUrl() . '/Search/Results?filter%5B%5D=building%3A"' . $building . '"');
+        $session->visit($url);
         return $session->getPage();
     }
 
@@ -1049,6 +1054,35 @@ class SearchFacetsTest extends \VuFindTest\Integration\MinkTestCase
         // Re-click the search button and confirm that filters go away
         $this->clickCss($page, '#searchForm .btn.btn-primary');
         $this->assertNoFilters($page);
+
+        // Test with two filters:
+        $page = $this->getFilteredSearch(format: 'Book');
+        $this->assertAppliedFilters(
+            $page,
+            [
+                'Library:weird_ids.mrc',
+                'Format:Book',
+            ]
+        );
+        // Remove one filter:
+        $this->clickCss($page, '.active-filters .filter-value');
+        $this->waitForPageLoad($page);
+        $this->assertFilterCount($page, 1);
+
+        // Test with two filters and removal from record page:
+        $page = $this->getFilteredSearch(format: 'Book');
+        $this->assertAppliedFilters(
+            $page,
+            [
+                'Library:weird_ids.mrc',
+                'Format:Book',
+            ]
+        );
+        // Now click the first result:
+        $this->clickCss($page, '.result-body a.title');
+        $this->waitForPageLoad($page);
+        // In this mode, we do not expect there to be any filters on the record page:
+        $this->assertFilterCount($page, 0);
     }
 
     /**
